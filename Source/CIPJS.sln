@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugApplication", "Utils\D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsureBuildingLoader", "Utils\InsureBuildingLoader\InsureBuildingLoader.csproj", "{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CalculationDifferenceLogger", "CalculationDifferenceLogger\CalculationDifferenceLogger.csproj", "{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,14 +63,6 @@ Global
 		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Release|x86.ActiveCfg = Release|Any CPU
 		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Release|x86.Build.0 = Release|Any CPU
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}.Debug|x86.Build.0 = Debug|Any CPU
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}.Release|x86.ActiveCfg = Release|Any CPU
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,13 +71,12 @@ Global
 		{0E7E9ED7-37D5-4769-AE8D-E1CB5A76CD1E} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{129E1930-7589-4C82-86A6-5C4A20C209D7} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
-		{7CF4CDB1-416F-4671-A699-1B0BDDF76AA9} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
 		SccLocalPath0 = .
@@ -109,9 +98,5 @@ Global
 		SccProjectTopLevelParentUniqueName5 = CIPJS.sln
 		SccProjectName5 = Utils/InsureBuildingLoader
 		SccLocalPath5 = Utils\\InsureBuildingLoader
-		SccProjectUniqueName6 = CalculationDifferenceLogger\\CalculationDifferenceLogger.csproj
-		SccProjectTopLevelParentUniqueName6 = CIPJS.sln
-		SccProjectName6 = CalculationDifferenceLogger
-		SccLocalPath6 = CalculationDifferenceLogger
 	EndGlobalSection
 EndGlobal
