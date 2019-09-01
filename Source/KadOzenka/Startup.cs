@@ -1,23 +1,4 @@
 ﻿using AutoMapper;
-using CIPJS.DAL.Balance;
-using CIPJS.DAL.Bank;
-using CIPJS.DAL.Building;
-using CIPJS.DAL.Comment;
-using CIPJS.DAL.Contract;
-using CIPJS.DAL.DamageAnalysis;
-using CIPJS.DAL.FileStorage;
-using CIPJS.DAL.Flat;
-using CIPJS.DAL.Fsp;
-using CIPJS.DAL.HierarchicalGridAnalysisDamage;
-using CIPJS.DAL.InputFile;
-using CIPJS.DAL.InputPlat;
-using CIPJS.DAL.InsuranceNoPay;
-using CIPJS.DAL.InsurancePayTo;
-using CIPJS.DAL.Invoice;
-using CIPJS.DAL.InvoiceSvod;
-using CIPJS.DAL.Mfc.Upload;
-using CIPJS.DAL.ReestrPay;
-using CIPJS.DAL.StrahNach;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
@@ -69,28 +50,8 @@ namespace CIPJS
 
             services.AddTransient<CoreUiService>();
             services.AddTransient<RegistersService>();
-            services.AddTransient<FspService>();
-            services.AddTransient<InputPlatService>();
 			services.AddTransient<DashboardService>();
-            services.AddTransient<MfcUploadService>();
-            services.AddTransient<FileStorageService>();
-            services.AddTransient<InputFileService>();
-            services.AddTransient<StrahNachService>();
-            services.AddTransient<BuildingService>();
-            services.AddTransient<FlatService>();
-            services.AddTransient<InsurancePayService>();
-            services.AddTransient<DamageAnalysisService>();
-            services.AddTransient<InsuranceNoPayService>();
-            services.AddTransient<BalanceService>();
-            services.AddTransient<InvoiceService>();
-            services.AddTransient<InvoiceSvodService>();
-            services.AddTransient<CommentService>();
-            services.AddTransient<ReestrPayService>(); 
-            services.AddTransient<DamageAnalysisService>();
-            services.AddTransient<ContractService>();
-            services.AddTransient<SkPolicySvdService>();
-            services.AddTransient<BankService>();
-            services.AddTransient<HierarchicalGridAnalysisDamageService>();
+            
 
             services.AddHttpContextAccessor();
             services.AddSession(options =>
