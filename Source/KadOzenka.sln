@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateObjectModel", "Util
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugApplication", "Utils\DebugApplication\DebugApplication.csproj", "{129E1930-7589-4C82-86A6-5C4A20C209D7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka\KadOzenka.Web.csproj", "{04FC3986-3A02-4E41-8CB4-72D43605511A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka", "KadOzenka\KadOzenka.csproj", "{04FC3986-3A02-4E41-8CB4-72D43605511A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,9 +79,9 @@ Global
 		SccProjectUniqueName2 = KadOzenka.Dal\\KadOzenka.Dal.csproj
 		SccProjectName2 = KadOzenka.Dal
 		SccLocalPath2 = KadOzenka.Dal
-		SccProjectUniqueName3 = KadOzenka\\KadOzenka.Web.csproj
-		SccProjectName3 = KadOzenka
-		SccLocalPath3 = KadOzenka
-		SccLocalPath4 = .
+		SccLocalPath3 = .
+		SccProjectUniqueName4 = KadOzenka\\KadOzenka.csproj
+		SccProjectName4 = KadOzenka
+		SccLocalPath4 = KadOzenka
 	EndGlobalSection
 EndGlobal
