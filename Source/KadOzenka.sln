@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateObjectModel", "Util
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugApplication", "Utils\DebugApplication\DebugApplication.csproj", "{129E1930-7589-4C82-86A6-5C4A20C209D7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka\KadOzenka.Web.csproj", "{04FC3986-3A02-4E41-8CB4-72D43605511A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,14 @@ Global
 		{129E1930-7589-4C82-86A6-5C4A20C209D7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{129E1930-7589-4C82-86A6-5C4A20C209D7}.Release|x86.ActiveCfg = Release|Any CPU
 		{129E1930-7589-4C82-86A6-5C4A20C209D7}.Release|x86.Build.0 = Release|Any CPU
+		{04FC3986-3A02-4E41-8CB4-72D43605511A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04FC3986-3A02-4E41-8CB4-72D43605511A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04FC3986-3A02-4E41-8CB4-72D43605511A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{04FC3986-3A02-4E41-8CB4-72D43605511A}.Debug|x86.Build.0 = Debug|Any CPU
+		{04FC3986-3A02-4E41-8CB4-72D43605511A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04FC3986-3A02-4E41-8CB4-72D43605511A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04FC3986-3A02-4E41-8CB4-72D43605511A}.Release|x86.ActiveCfg = Release|Any CPU
+		{04FC3986-3A02-4E41-8CB4-72D43605511A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,20 +65,23 @@ Global
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = Utils\\GenerateObjectModel\\GenerateObjectModel.csproj
+		SccProjectUniqueName0 = Utils\\GenerateObjectModel\\GenerateObjectModel.csproj
+		SccProjectTopLevelParentUniqueName0 = KadOzenka.sln
+		SccProjectName0 = Utils/GenerateObjectModel
+		SccLocalPath0 = Utils\\GenerateObjectModel
+		SccProjectUniqueName1 = Utils\\DebugApplication\\DebugApplication.csproj
 		SccProjectTopLevelParentUniqueName1 = KadOzenka.sln
-		SccProjectName1 = Utils/GenerateObjectModel
-		SccLocalPath1 = Utils\\GenerateObjectModel
-		SccProjectUniqueName2 = Utils\\DebugApplication\\DebugApplication.csproj
-		SccProjectTopLevelParentUniqueName2 = KadOzenka.sln
-		SccProjectName2 = Utils/DebugApplication
-		SccLocalPath2 = Utils\\DebugApplication
-		SccProjectUniqueName3 = KadOzenka.Dal\\KadOzenka.Dal.csproj
-		SccProjectName3 = KadOzenka.Dal
-		SccLocalPath3 = KadOzenka.Dal
+		SccProjectName1 = Utils/DebugApplication
+		SccLocalPath1 = Utils\\DebugApplication
+		SccProjectUniqueName2 = KadOzenka.Dal\\KadOzenka.Dal.csproj
+		SccProjectName2 = KadOzenka.Dal
+		SccLocalPath2 = KadOzenka.Dal
+		SccProjectUniqueName3 = KadOzenka\\KadOzenka.Web.csproj
+		SccProjectName3 = KadOzenka
+		SccLocalPath3 = KadOzenka
+		SccLocalPath4 = .
 	EndGlobalSection
 EndGlobal
