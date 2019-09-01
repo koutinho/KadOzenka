@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka.Web\KadOzenka.Web.csproj", "{E21F8899-80AA-4257-B958-8D044B26CF06}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal", "KadOzenka.Dal\KadOzenka.Dal.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}"
@@ -21,14 +19,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E21F8899-80AA-4257-B958-8D044B26CF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E21F8899-80AA-4257-B958-8D044B26CF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E21F8899-80AA-4257-B958-8D044B26CF06}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E21F8899-80AA-4257-B958-8D044B26CF06}.Debug|x86.Build.0 = Debug|Any CPU
-		{E21F8899-80AA-4257-B958-8D044B26CF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E21F8899-80AA-4257-B958-8D044B26CF06}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E21F8899-80AA-4257-B958-8D044B26CF06}.Release|x86.ActiveCfg = Release|Any CPU
-		{E21F8899-80AA-4257-B958-8D044B26CF06}.Release|x86.Build.0 = Release|Any CPU
 		{4B8710A1-4024-4C6E-87CD-F0734EE7F054}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4B8710A1-4024-4C6E-87CD-F0734EE7F054}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B8710A1-4024-4C6E-87CD-F0734EE7F054}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -65,7 +55,7 @@ Global
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 4
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
 		SccLocalPath0 = .
@@ -80,8 +70,5 @@ Global
 		SccProjectUniqueName3 = KadOzenka.Dal\\KadOzenka.Dal.csproj
 		SccProjectName3 = KadOzenka.Dal
 		SccLocalPath3 = KadOzenka.Dal
-		SccProjectUniqueName4 = KadOzenka.Web\\KadOzenka.Web.csproj
-		SccProjectName4 = KadOzenka
-		SccLocalPath4 = KadOzenka
 	EndGlobalSection
 EndGlobal
