@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka", "KadOzenka\KadOzenka.csproj", "{E21F8899-80AA-4257-B958-8D044B26CF06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka\KadOzenka.Web.csproj", "{E21F8899-80AA-4257-B958-8D044B26CF06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal", "KadOzenka.Dal\KadOzenka.Dal.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
 EndProject
@@ -68,20 +68,20 @@ Global
 		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
-		SccProjectUniqueName0 = Utils\\GenerateObjectModel\\GenerateObjectModel.csproj
-		SccProjectTopLevelParentUniqueName0 = KadOzenka.sln
-		SccProjectName0 = Utils/GenerateObjectModel
-		SccLocalPath0 = Utils\\GenerateObjectModel
-		SccProjectUniqueName1 = Utils\\DebugApplication\\DebugApplication.csproj
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Utils\\GenerateObjectModel\\GenerateObjectModel.csproj
 		SccProjectTopLevelParentUniqueName1 = KadOzenka.sln
-		SccProjectName1 = Utils/DebugApplication
-		SccLocalPath1 = Utils\\DebugApplication
-		SccLocalPath2 = .
-		SccProjectUniqueName3 = KadOzenka\\KadOzenka.csproj
-		SccProjectName3 = KadOzenka
-		SccLocalPath3 = KadOzenka
-		SccProjectUniqueName4 = KadOzenka.Dal\\KadOzenka.Dal.csproj
-		SccProjectName4 = KadOzenka.Dal
-		SccLocalPath4 = KadOzenka.Dal
+		SccProjectName1 = Utils/GenerateObjectModel
+		SccLocalPath1 = Utils\\GenerateObjectModel
+		SccProjectUniqueName2 = Utils\\DebugApplication\\DebugApplication.csproj
+		SccProjectTopLevelParentUniqueName2 = KadOzenka.sln
+		SccProjectName2 = Utils/DebugApplication
+		SccLocalPath2 = Utils\\DebugApplication
+		SccProjectUniqueName3 = KadOzenka.Dal\\KadOzenka.Dal.csproj
+		SccProjectName3 = KadOzenka.Dal
+		SccLocalPath3 = KadOzenka.Dal
+		SccProjectUniqueName4 = KadOzenka\\KadOzenka.Web.csproj
+		SccProjectName4 = KadOzenka
+		SccLocalPath4 = KadOzenka
 	EndGlobalSection
 EndGlobal

@@ -43,7 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
-    <ProjectReference Include="..\..\KadOzenka\KadOzenka.csproj" />
+    <ProjectReference Include="..\..\KadOzenka\KadOzenka.Web.csproj" />
   </ItemGroup>
 
 </Project>
