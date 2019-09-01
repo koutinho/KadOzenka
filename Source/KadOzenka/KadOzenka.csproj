@@ -1060,7 +1060,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CIPJS.DAL\KadOzenka.Dal.csproj" />
+    <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
 
   <ItemGroup>

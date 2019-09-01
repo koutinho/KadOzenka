@@ -24,11 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CIPJS.DAL\KadOzenka.Dal.csproj" />
-    <ProjectReference Include="..\..\CIPJS\KadOzenka.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="DbConnectionClasses">
       <HintPath>..\..\..\..\..\Inecas.RSM\Main\Source\Utils\DbConnectionClasses\bin\Debug\DbConnectionClasses.dll</HintPath>
     </Reference>
@@ -44,6 +39,11 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.0" />
     <PackageReference Include="Npgsql" Version="4.0.4" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
+    <ProjectReference Include="..\..\KadOzenka\KadOzenka.csproj" />
   </ItemGroup>
 
 </Project>
