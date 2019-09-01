@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="301" DefaultLayoutId="1003011" AllowSearchPanelResize="false" SrdRegisterCtegoryId="1"
+              IsBasic="false" OpenEmpty="false" LinkedRegistersList="301, 950, 328" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
+              SearchPanel="SkPackages" SearchPanelWindowHeight="640" SRDFunctionTag="INSUR.SK.PACKAGE">
+  <Buttons>
+    <Button Caption="Загрузка данных" NavigateURL="~/SkPackages/Load" OpenInRadWindow="true" NeedRefresh="true" SRDFunctionTag="INSUR.SK.PACKAGE.LOAD"/>
+    <!--<Button Caption="Перейти в связанный реестр" NavigateURL="~/SkPackages/Transition" OpenInNewWindow="true">
+      <Parameters>
+        <Parameter Key="id" Value="[ObjectId]" />
+      </Parameters>
+    </Button>-->
+    <Button Caption="Удалить" NavigateURL="~/SkPackages/Delete" OpenInRadWindow="true" NeedRefresh="true" SRDFunctionTag="INSUR.SK.PACKAGE.DELETE">
+      <Parameters>
+        <Parameter Key="id" Value="[ObjectId]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="[301000900]" Operation="NotEqual" Value="100008322" ByRef="true" />
+            <Condition Key="[301000300]" Operation="NotEqual" Value="12120009" ByRef="true" AndOr="And" OpeningBracket="(" />
+            <Condition Key="[301000300]" Operation="NotEqual" Value="12120011" ByRef="true" AndOr="And" ClosingBracket=")" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <Button Caption="Обработать" NavigateURL="~/SkPackages/Process" OpenInRadWindow="true" NeedRefresh="true" SRDFunctionTag="INSUR.SK.PACKAGE.PROCESS">
+      <Parameters>
+        <Parameter Key="id" Value="[ObjectId]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="[301000900]" Operation="NotEqual"  Value="100008322" ByRef="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <Button Caption="Выгрузить в Excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="INSUR.SK.PACKAGE.EXPORT"/>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>

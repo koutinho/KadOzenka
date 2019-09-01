@@ -1,0 +1,79 @@
+﻿@using Kendo.Mvc.UI
+@using CIPJS.Models.Building;
+@using Newtonsoft.Json;
+@model IEnumerable<UnLinkBuildingDTO>
+
+<span><b>Вы действительно хотите отвязать МКД?  Внимание! Также будут отвязаны Жилые помещения.  Связь помещения и ФСП будет удалена! </b></span>
+<span><b id="resultMessage"></b></span>
+@(Html.Kendo().Grid(Model)
+                                            .Name("grid")
+                                            .Columns(columns =>
+                                            {
+                                                columns.Bound(c => c.Unom).Width(140);
+                                                columns.Bound(c => c.CadasrNum).Title("Кадастровый номер").Width(190);
+                                                columns.Bound(c => c.YearStroi).Title("Год постройки").Width(110);
+                                            })
+                                            .ToolBar(toolbar =>
+                                            {
+                                                toolbar.Custom().Text("Отвязать данные МКД").HtmlAttributes(new { id = "unLinkMkdCommand" });
+                                                toolbar.Custom().Text("Отмена").HtmlAttributes(new { id = "cancelCommand" });
+                                            })
+                                            .HtmlAttributes(new { style = "height: 100%;" })
+                                            .Scrollable()
+                                            .Groupable()
+                                            .Sortable()
+                                            .Pageable(pageable => pageable
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                            .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .PageSize(20)
+                                            .ServerOperation(false))
+)
+
+<script>
+    // Load Page.
+    $(function () {
+
+        $("#unLinkMkdCommand").click(function (e) {
+            e.preventDefault();
+            // Выбираем emp_id
+            var ids = @Html.Raw(JsonConvert.SerializeObject(Model.Select(x=>x.EmpId)));
+            if (ids == null || ids.length == 0) {
+                Common.ShowError('Не удалось определить выбранные МКД');
+                return;
+            }
+            kendo.ui.progress($('body'), true);
+              $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("UnLinkMKD", "Tenements")',
+                    contentType: 'application/json',
+                    data: JSON.stringify(ids),
+                    dataType: 'json',
+                    success: function (data) {
+                        $('#resultMessage').css('color', 'green').text(data);
+                        kendo.ui.progress($('body'), false);
+                    },
+                  error: function (xhr, status, error) {
+                      $('#resultMessage').css('color', 'red').text("При обработке возникла ошибка! Текст ошибки: " + xhr.responseText /*xhr.responseJSON.Message*/);
+                      kendo.ui.progress($('body'), false);
+                    }
+                })
+
+
+        });
+
+        $("#cancelCommand").click(function (e) {
+            e.preventDefault();
+             if (window.parent) {
+               var kendoWindow = window.parent.$('.k-widget.k-window:visible .k-window-content.k-content.k-window-iframecontent').data('kendoWindow');
+               if (kendoWindow) {
+                    kendoWindow.close();
+               }
+             }
+        });
+
+    });
+</script>
+

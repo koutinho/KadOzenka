@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="380" Description="Основные статистические показатели" DefaultLayoutId="1003801" IsBasic="true" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" ShowSettingsPanel="true" 
+               SRDFunctionTag="AP.COMMON">
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

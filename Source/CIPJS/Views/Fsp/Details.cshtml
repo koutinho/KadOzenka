@@ -1,0 +1,260 @@
+﻿@using CIPJS.Models.Fsp;
+@using Core.Shared.Extensions
+@model FspDetails
+@{
+    string SumNachMfcLink = "<a href=\"/RegistersView/MfcInputNach?Transition=1&305000300=" + Model.Id + "\" target=\"_blank\" title=\"Перейти к реестру начислений\">Начислено МФЦ</a>";
+    string SumOplLink = "<a href=\"/RegistersView/MfcInputPlat?Transition=1&306000300=" + Model.Id + "\" target=\"_blank\" title=\"Перейти к реестру зачислений\">Зачислено</a>";
+}
+@Html.HiddenFor(m => m.Id)
+@Html.HiddenFor(m => m.ObjId)
+@(Html.Kendo().PanelBar()
+    .Name("PanelBar" + Model.Id)
+    .HtmlAttributes(new { @class = "panelbar" })
+               .Items(panelbar =>
+               {
+               panelbar.Add().Text("Общая информация о ФСП").Expanded(true).Content(
+@<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.FspNumber)
+        </div>
+        <div class="col-sm-4">
+            @Html.KendoTextBoxFor(m => m.FspNumber, true)
+        </div>
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.DateOpen)
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.DateOpen, "{0:dd.MM.yyyy}", new { @class = "k-textbox", @style = "width: 100%;", @readonly = "readonly" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.FspTypeName)
+        </div>
+        <div class="col-sm-4">
+            @Html.KendoTextBoxFor(m => m.FspTypeName, true)
+        </div>
+        <div class="col-sm-2">
+            <div class="control-label">
+                <a href="/RegistersView/MfcInputNach?Transition=1&305000300=@Model.Id" target="_blank" title="Перейти к реестру начислений">@Html.DisplayNameFor(m => m.OplKodpl)</a>
+                @if (Model.OplKodplUpdateDate.HasValue)
+                {
+                    <span title="@Model.OplKodplUpdateDate.Value.ToString("dd.MM.yyy")" style="color: red"> (менялась)</span>
+                }
+            </div>
+        </div>
+        <div class="col-sm-4">
+            @Html.KendoNumericExTextBoxFor(m => m.OplKodpl, 2, Model.Id.ToString(), true)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.Kodpl)
+        </div>
+        <div class="col-sm-4">
+            @Html.KendoTextBoxFor(m => m.Kodpl, true)
+        </div>
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.Npol)
+        </div>
+        <div class="col-sm-4">
+            @Html.KendoTextBoxFor(m => m.Npol, true)
+            @if (Model.FspType == ObjectModel.Directory.FSPType.Polis && Model.Npol.IsNotEmpty())
+            {
+                <div class="col-input-icon"><a class="k-icon k-i-hyperlink-open" href="/RegistersView/SkPolicySvdPolis?Transition=1&309000300=@Model.Id" target="_blank" title="Открыть полис"></a></div>
+            }
+            else if (Model.FspType == ObjectModel.Directory.FSPType.EPD && Model.Npol.IsNotEmpty())
+            {
+                <div class="col-input-icon"><a class="k-icon k-i-hyperlink-open" href="/RegistersView/SkPolicySvdCertificate?Transition=1&309000300=@Model.Id" target="_blank" title="Открыть свидетельство"></a></div>
+            }
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.DateContractBegin)
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.DateContractBegin, "{0:dd.MM.yyyy}", new { @class = "k-textbox", @style = "width: 100%;", @readonly = "readonly" })
+        </div>
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.DateContractEnd)
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.DateContractEnd, "{0:dd.MM.yyyy}", new { @class = "k-textbox", @style = "width: 100%;", @readonly = "readonly" })
+        </div>
+    </div>
+    @if (Model.FspType == ObjectModel.Directory.FSPType.Polis)
+    {
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Ss)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoNumericTextBoxFor(m => m.Ss, 2, editMode: false)
+            </div>
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Pr)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoTextBoxFor(m => m.Pr, editMode: false)
+            </div>
+        </div>
+    }
+</div>);
+               panelbar.Add().Text("Балансовая ведомость").HtmlAttributes(new { @id = "balanceList", fsp_id = "fsp_id_" + Model.Id }).Content(
+@<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    @(Html.Kendo().Grid(Model.Payments)
+        .Name("PaymentsGrid" + Model.Id)
+        .HtmlAttributes(new { @class = "PaymentsGrid" })
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.Year).Hidden(true)
+                .ClientGroupHeaderTemplate("#=value #</td>" +
+                "<td class=\"text-bold\"></td>" +
+                "<td class=\"text-bold\">#=aggregates.SumNachGby.sum != null ? kendo.toString(aggregates.SumNachGby.sum, 'n2') : ''#</td>" +
+                "<td class=\"text-bold\">#=aggregates.SumNachMfc.sum != null ? kendo.toString(aggregates.SumNachMfc.sum, 'n2') : ''#</td>" +
+                "<td class=\"text-bold\">#=aggregates.SumOpl.sum != null ? kendo.toString(aggregates.SumOpl.sum, 'n2') : ''#</td>" +
+                "<td class=\"text-bold\"></td>" +
+                "<td class=\"text-bold\">");
+            columns.Bound(c => c.Month).HtmlAttributes(new { style = "text-align: left;", @class = "fsp_payment_month"  }).Width("6%");
+            columns.Bound(c => c.OstatokSum).HtmlAttributes(new { style = "text-align: center;" }).Format("{0:n2}").Width("10%");
+            columns.Bound(c => c.SumNachGby).HtmlAttributes(new { style = "text-align: center;" }).Format("{0:n2}").Width("10%");
+            columns.Bound(c => c.SumNachMfc).HtmlAttributes(new { style = "text-align: center;" }).Format("{0:n2}").Width("10%").ClientHeaderTemplate(SumNachMfcLink);
+            columns.Bound(c => c.SumOpl).HtmlAttributes(new { style = "text-align: center;" }).Format("{0:n2}").Width("10%").ClientHeaderTemplate(SumOplLink);
+            columns.Bound(c => c.FlagOpl).HtmlAttributes(new { style = "text-align: center;" }).ClientTemplate("<div class='text-center'><span class='center k-icon #= FlagOpl ? 'k-i-plus' : 'k-i-minus' #'></span></div>").Width("10%");
+            columns.Bound(c => c.FlagInsur).HtmlAttributes(new { style = "text-align: center;" }).ClientTemplate("<div class='text-center'><span class='center k-icon #= FlagInsur ? 'k-i-check' : 'k-i-minus' #'></span></div>").Width("10%");
+        })
+        .Scrollable(scroll => scroll.Enabled(false))
+        .Selectable(s => s.Enabled(false))
+        .DataSource(ds => ds
+            .Ajax()
+            .Sort(sort => sort.Add("Number").Ascending())
+            .ServerOperation(false)
+            .Aggregates(groupAggregates =>
+            {
+                groupAggregates.Add(x => x.OstatokSum).Sum();
+                groupAggregates.Add(x => x.SumOpl).Sum();
+                groupAggregates.Add(x => x.SumNachMfc).Sum();
+                groupAggregates.Add(x => x.SumNachGby).Sum();
+            })
+            .Group(groups => groups.AddDescending(p => p.Year))
+            .Model(m =>
+            {
+                m.Field(p => p.Number);
+                m.Field(p => p.Year);
+                m.Field(p => p.Month);
+                m.Field(p => p.OstatokSum);
+                m.Field(p => p.SumOpl);
+                m.Field(p => p.SumNachMfc);
+                m.Field(p => p.SumNachGby);
+                m.Field(p => p.FlagOpl);
+                m.Field(p => p.FlagInsur);
+            }))
+            .Events(e => e.DataBound("onPaymentsGridDataBound")))
+    <div class="form-group"></div>
+</div>);
+                    panelbar.Add().Text("Оплаты страховых взносов ").Content(
+@<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <div id="platsGrid_@Model.Id"></div>
+        </div>
+    </div>
+</div>);
+}))
+<script>
+    $(function () {
+        kendo.ui.FilterMenu.fn.options.operators.string = {
+            contains: 'равно'
+        };
+
+        var platsGrid = $('#platsGrid_@Model.Id').kendoGrid({
+            scrollable: false,
+            filterable: {
+                extra: false
+            },
+            columns: [
+                {
+                    title: 'Период',
+                    field: 'PeriodRegDate',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Дата оплаты (МФЦ)',
+                    field: 'PmtDate',
+                    filterable: false,
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Сумма оплаты (МФЦ)',
+                    field: 'SumOpl',
+                    attributes: { style: "text-align: right;" }
+                },
+                {
+                    title: 'Ставка за 1 кв.м',
+                    field: 'Rate',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Подтверждено банком',
+                    field: 'ConfirmedBank',
+                    filterable: false,
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Банковский день',
+                    field: 'BankDay',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Оплачиваемый период (банк)',
+                    field: 'Period',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Период документа (банк)',
+                    field: 'DocPeriod',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Код плательщика',
+                    field: 'Kodpl',
+                    filterable: false,
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Год',
+                    field: 'Year',
+                    attributes: { style: "text-align: center;" }
+                }
+            ],
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetPlats", "Fsp")',
+                        data: { fspId: '@Model.Id' },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            }
+        }).data('kendoGrid');
+
+        //platsGrid.dataSource.query({
+        //    filter: { field: 'Year', operator: 'contains', value: (new Date()).getFullYear() }
+        //});
+    });
+
+    $(document).ready(function () {
+        //$("#balanceList > [fsp_id='@Model.Id']").text("");
+        $("[fsp-id='fsp_id_@Model.Id']").find(".k-link.k-header").text("");
+        $("[fsp-id='fsp_id_@Model.Id']").find(".k-link.k-header").append("<div id='testDIV@(Model.Id)' class='col-sm-9'>Балансовая ведомость</div><div id='testDIV@(Model.Id)' align='center' @(!Model.StrahEnd.HasValue ? "style=&quot;color:red;&quot;" : "style=&quot;color:green;&quot;")>@(Model.StrahEnd.HasValue ? $"Застраховано по: {Model.StrahEnd.Value:MMMM yyyy}" : "Не застраховано ")</div>");
+
+        //$("#balanceList > .k-header").text("");
+        //$("#balanceList > .k-header").append("<div id='testDIV@(Model.Id)' class='col-sm-9'>Балансовая ведомость</div><div id='testDIV@(Model.Id)' align='center' @(!Model.StrahEnd.HasValue ? "style=&quot;color:red;&quot;" : "style=&quot;color:green;&quot;")>@(Model.StrahEnd.HasValue ? $"Застраховано по: {Model.StrahEnd.Value:MMMM yyyy}" : "Не застраховано ")</div>");
+    });
+</script>

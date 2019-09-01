@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<RegNomerParams>
+    <Options>
+        <FacetType Caption="Типы фасета">
+            <ValueItems>
+                <Item Caption="Инкремент" Name="Increment"/>
+                <Item Caption="Константа" Name="Constant"/>
+                <Item Caption="Общесистемный классификатор" Name="Classifier"/>
+                <Item Caption="Поле ручного ввода" Name="Field"/>
+            </ValueItems>
+        </FacetType>
+        <ObjectType Caption="Типы объектов системы, которым требуются нумерация">
+            <ValueItems>
+                <Item Number="14" Caption="Сохраненный отчет"/>
+                <Item Number="625" Caption="Реестр переплат"/>
+            </ValueItems>
+        </ObjectType>
+        <FormatTypes>
+            <Format Name="YY" Caption="Год (ГГ)"/>
+            <Format Name="YYYY" Caption="Год (ГГГГ)"/>
+            <Format Name="MMYYYY" Caption="МесяцГод (ММГГГГ)"/>
+            <Format Name="DD.MM.YYYY" Caption="День.Месяц.Год (ДД.ММ.ГГГГ)"/>
+        </FormatTypes>
+        <Classifiers>
+            <Classifier ClName="DepartmentCode" Caption="Код подразделения" ProgId="Core.SRD.NumeratorClassifiers.DepartmentCodeClassifier">
+                <Params>
+                    <Param Name="Author" Caption="Имя пользователя" XPath="//headdocument/author"/>
+                </Params>
+            </Classifier>
+        </Classifiers>
+    </Options>
+  
+    <RegNumerators>
+      <RegNomer Number="1" Caption="Нумератор для документов, для каждого типа своя последовательность" ObjectTypeNumber="1">
+        <Template>
+          <Facets>
+            <Facet Position="0" Type="Field" Name="Тип документа" IsUnique="True" XPath="//headdocument/kinddocumentid"/>
+            <Facet Position="1" Type="Classifier" Name="DepartmentCode" IsUnique="True"/>
+            <Facet Position="2" Type="Constant">-</Facet>
+            <Facet Position="3" Type="Increment" Length="6" MinValue="100000" IncrementBy="1" Infill="0"/>
+            <Facet Position="4" Type="Constant">/</Facet>
+            <Facet Position="5" Type="Field" Name="Год (ГГ)" IsUnique="True" XPath="//headdocument/registrationdate" Format="YY"/>
+          </Facets>
+        </Template>
+      </RegNomer>
+        <RegNomer Number="14" Caption="Нумератор для сохранения отчетов" ObjectTypeNumber="13">
+          <Template>
+            <Facets>
+              <Facet Position="1" Type="Increment" Length="8" MinValue="1" IncrementBy="1" Infill=" "/>
+            </Facets>
+          </Template>
+        </RegNomer>
+        <RegNomer Number="625" Caption="Нумератор для реестра переплат" ObjectTypeNumber="625">
+            <Template>
+                <Facets>
+                    <Facet Position="1" Type="Field" Name="Раздел (Котел/УК)" IsUnique="True" XPath="/Section" />
+                    <Facet Position="2" Type="Constant">&#032;</Facet>
+                    <Facet Position="3" Type="Increment" Length="" MinValue="1" IncrementBy="1" Infill=""/>
+                </Facets>
+            </Template>
+        </RegNomer>
+      <RegNomer Number="354" Caption="Нумератор для реестра оплат" ObjectTypeNumber="354">
+        <Template>
+          <Facets>
+            <Facet Position="0" Type="Field" Name="Год" IsUnique="True" XPath="//root/Year" />
+            <Facet Position="0" Type="Field" Name="Тип" IsUnique="True" XPath="//root/FormType" />
+            <Facet Position="1" Type="Increment" Length="" MinValue="1" IncrementBy="1" Infill="0"/>
+          </Facets>
+        </Template>
+      </RegNomer>
+      <RegNomer Number="3131" Caption="Нумератор для реестра дел по ЖП" ObjectTypeNumber="313">
+        <Template>
+          <Facets>
+            <Facet Position="1" Type="Increment" Length="5" MinValue="1" IncrementBy="1" Infill="0"/>
+          </Facets>
+        </Template>
+      </RegNomer>
+      <RegNomer Number="3132" Caption="Нумератор для реестра дел по ОИ" ObjectTypeNumber="313">
+        <Template>
+          <Facets>
+            <Facet Position="1" Type="Increment" Length="5" MinValue="1" IncrementBy="1" Infill="0"/>
+          </Facets>
+        </Template>
+      </RegNomer>
+      <RegNomer Number="312" Caption="Нумератор для реестра расчет по ОИ" ObjectTypeNumber="312">
+        <Template>
+          <Facets>
+            <Facet Position="1" Type="Increment" Length="4" MinValue="1" IncrementBy="1" Infill="0"/>
+          </Facets>
+        </Template>
+      </RegNomer>
+      <RegNomer Number="3121" Caption="Нумератор для реестра расчет по ОИ" ObjectTypeNumber="312">
+        <Template>
+          <Facets>
+            <Facet Position="1" Type="Constant">ОИ-</Facet>
+            <Facet Position="2" Type="Field" Name="Округ" IsUnique="True" XPath="//root/Okrug" />
+            <Facet Position="3" Type="Constant">/</Facet>
+            <Facet Position="4" Type="Field" Name="Год" IsUnique="True" XPath="//root/Year" />
+            <Facet Position="5" Type="Constant">/</Facet>
+            <Facet Position="6" Type="Increment" Length="4" MinValue="1" IncrementBy="1" Infill="0"/>
+          </Facets>
+        </Template>
+      </RegNomer>
+    </RegNumerators>
+</RegNomerParams>
+<!--parentkey="Numeration" childkey="" CommentType="ExtConfigParam" desc=""-->

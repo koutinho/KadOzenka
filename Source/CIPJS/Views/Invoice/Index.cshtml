@@ -1,0 +1,729 @@
+﻿@using CIPJS.DAL.Invoice;
+@using Newtonsoft.Json;
+@using ObjectModel.Directory;
+
+@model InvoiceListDto
+
+<style type="text/css">
+    #DamageAmountContractsClone .k-dirty {
+        display: none;
+    }
+</style>
+
+<div id="invoice-panel-placeholder">
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div id="toolbarInvoice"></div>
+    </div>
+    <div class="form-group"></div>
+    @Html.HiddenFor(m => m.InvoiceDamageId)
+    @Html.HiddenFor(m => m.InvoiceAllPropertyId)
+    @if (Model.Details != null)
+    {
+        foreach (var contract in Model.Details)
+        {
+            <div class="invoice-details-form">
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    @await Html.PartialAsync("~/Views/Invoice/Details.cshtml", contract)
+                </div>
+            </div>
+            <div class="form-group"></div>
+        }
+    }
+</div>
+
+
+<script>
+    var canAdd = @Html.Raw(JsonConvert.SerializeObject(Model.CanAdd)),
+        statusInvoiceFormed = @Html.Raw((long)InvoiceStatus.Formed),
+        statusInvoiceDenied =  @Html.Raw((long)InvoiceStatus.Denied),
+        statusInvoiceDeniedAgreed =  @Html.Raw((long)InvoiceStatus.DeniedAgreed),
+        statusInvoiceErrorInDetails =  @Html.Raw((long)InvoiceStatus.ErrorInDetails);
+
+    function getInvoice() {
+        var Invoice = { 'InvoiceDamageId': $('[name="InvoiceDamageId"]').val(), 'InvoiceAllPropertyId': $('[name="InvoiceAllPropertyId"]').val() };
+        Invoice.Details = getInvoiceDetails();
+
+        @if (Model.InvoiceDamageId.HasValue)
+        {
+            <text>
+        var sumDamage = $('[name="SumDamage"]').data('kendoNumericTextBox'),
+            sumDamageBase = $('[name="SumDamageBase"]').data('kendoNumericTextBox');
+
+        Invoice.PartTown = kendo.parseFloat($('[name="PartTown"]').val());
+        Invoice.SumDamage = sumDamageBase ? sumDamageBase.value() : sumDamage.value();
+            </text>
+        }
+        return Invoice;
+    }
+
+    function getInvoiceDetails() {
+        var result = [];
+        $('#invoice-panel-placeholder .invoice-details-form').each(function (index, element) {
+            var item = getInvoiceDetail($(element));
+            if (item != null) {
+                result.push(item);
+            }
+        });
+        return result;
+    }
+
+    function getInvoiceDetail(formElement) {
+        var inninput = formElement.find('input[id^="Inn"]');
+        var innval;
+        if (inninput) {
+            innval = inninput.val();
+        }
+        var kppinput = formElement.find('input[id^="Kpp"]');
+        var kppval;
+        if (kppinput) {
+            kppval = kppinput.val();
+        }
+        var id = kendo.parseInt(formElement.find('input[id^="InvoiceId"]').val()),
+            guidId = formElement.find('input[id^="GuidId"]').val(),
+            numInvoice = formElement.find('input[id^="NumInvoice"]').val(),
+            dateInvoice = undefined,
+            fspId;
+
+        if (formElement.find('input[id^="FspId"]').length > 0) {
+            fspId = formElement.find('input[id^="FspId"]').data('kendoDropDownList').value();
+        }
+
+        var damageId = kendo.parseInt($('#InvoiceDamageId').val()),
+            allPropertyId = kendo.parseInt($('#InvoiceAllPropertyId').val()),
+            partDog;
+
+        if (allPropertyId == null && formElement.find('input[id^="AllPropertyId"]').length > 0) {
+            allPropertyId = formElement.find('input[id^="AllPropertyId"]').data('kendoDropDownList').value()
+        }
+        
+        if (formElement.find('input[id^="PartDog"]').length > 0) {
+            partDog = formElement.find('input[id^="PartDog"]').data('kendoNumericTextBox').value();
+        }
+
+        var sumOpl = formElement.find('input[id^="SumOpl"]').data('kendoNumericTextBox').value(),
+            elementInsurSymmaOtchet = formElement.find('input[id^="InsurSymmaOtchet"][data-role="numerictextbox"]'),
+            insurSymmaOtchet = elementInsurSymmaOtchet.length > 0 ? elementInsurSymmaOtchet.data('kendoNumericTextBox').value() : null,
+            subjectId = formElement.find('input[id^="SubjectId"]').val(),
+            subjectName = formElement.find('input[id^="SubjectName"]').val(),
+            phone = formElement.find('input[id^="Phone"]').data('kendoMaskedTextBox').value(),
+            rachAcc = formElement.find('input[id^="RachAcc"]').val(),
+            bankCardNumber = formElement.find('input[id^="BankCardNumber"]').val(),
+
+            bankId = formElement.find('input[id^="BankId"]').val(),
+            bankName = formElement.find('input[name="BankName"]').val(),
+            innBank = formElement.find('input[id^="BankInn"]').val(),
+            kppBank = formElement.find('input[id^="BankKpp"]').val(),
+            bicBank = formElement.find('input[id^="BicBank"]').val(),
+            korAcc = formElement.find('input[id^="KorAcc"]').val(),
+            kbk = formElement.find('input[id^="Kbk"]').val(),
+            oktmo = formElement.find('input[id^="Oktmo"]').val(),
+
+            noPayNoteId = kendo.parseInt(formElement.find('input[id^="NoPayNoteId"]').val()),
+            comment = formElement.find('input[name="Comment"]').val(),
+            svdPolyceDate = null,
+            dateZackluchenia = null,
+            svidPolycNum = null,
+            sort = null;
+        
+        if (formElement.find('input[name="SvidPolycNum"]').length > 0) {
+            svidPolycNum = formElement.find('input[name="SvidPolycNum"]').val();
+        }
+
+        var elementDateZackluchenia = formElement.find('input[id^="DateZackluchenia"]');
+        if (elementDateZackluchenia.length > 0) {
+            var svidDateZackluchenia = elementDateZackluchenia.data('kendoDatePicker').value();
+            dateZackluchenia = svidDateZackluchenia != null ? kendo.toString(svidDateZackluchenia, 's') : null;
+        }
+
+        var svidPolycNumDatePicker = formElement.find('input[id^="SvdPolyceDate"]').data('kendoDatePicker');
+        if (svidPolycNumDatePicker) {
+            var svidPolyceDateValue = svidPolycNumDatePicker.value();
+            svdPolyceDate = svidPolyceDateValue != null ? kendo.toString(svidPolyceDateValue, 's') : null;
+        }
+
+        if (id == null || (fspId == null && damageId == null && allPropertyId == null)) {
+            return null;
+        }
+
+        var kendoPicker = formElement.find('input[id^="DateInvoice"]').data('kendoDatePicker');
+        if (kendoPicker) {
+            var dateInvoiceValue = kendoPicker.value();
+            dateInvoice = dateInvoiceValue != null ? kendo.toString(dateInvoiceValue, 's') : null;
+        }
+
+        var sortTextBox = formElement.find('input[id^="Sort"]').data('kendoNumericTextBox');
+        if (sortTextBox) {
+            sort = sortTextBox.value();
+        } 
+
+        var statusCode = kendo.parseInt(formElement.find('input[id^="StatusCode"]').val());
+
+        return {
+            InvoiceId: id,
+            GuidId: guidId,
+            NumInvoice: numInvoice,
+            DateInvoice: dateInvoice,
+            FspId: fspId,
+            DamageId: damageId,
+            AllPropertyId: allPropertyId,
+            SumOpl: sumOpl,
+            SubjectId: subjectId,
+            SubjectName: subjectName,
+            Phone: phone,
+            Inn: innval,
+            Kpp: kppval,
+            RachAcc: rachAcc,
+            BankCardNumber: bankCardNumber,
+            BankId: bankId,
+            BankName: bankName,
+            InnBank: innBank,
+            KppBank: kppBank,
+            BicBank: bicBank,
+            KorAcc: korAcc,
+            noPayNoteId: noPayNoteId,
+            Comment: comment,
+            SvidPolycNum: svidPolycNum,
+            SvdPolyceDate: svdPolyceDate,
+            PartDog: partDog,
+            StatusCode: statusCode,
+            InsurSymmaOtchet: insurSymmaOtchet,
+            Sort: sort,
+            DateZackluchenia: dateZackluchenia,
+            Kbk: kbk,
+            Oktmo: oktmo
+        }
+    }
+
+    function buttonInvoiceReloadClick(e) {
+        var invoicePanelPlaceholder = $('#invoice-panel-placeholder');
+        var data = '';
+        var damageId = $('[name="InvoiceDamageId"]').val();
+        if (damageId) {
+            data = 'damageId=' + damageId + '&' + data;
+        }
+        var allPropertyId = $('[name="InvoiceAllPropertyId"]').val();
+        if (allPropertyId) {
+            data = 'allPropertyId=' + allPropertyId + '&' + data;
+        }
+
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("Index", "Invoice")?' + data,
+            success: function (result) {
+                invoicePanelPlaceholder.html(result);
+                var buttonAdd = invoicePanelPlaceholder.find('#buttonInvoiceAdd');
+                if (buttonAdd.length > 0) {
+                    buttonInvoiceAddDisable(!buttonAdd.is('[editmode="true"]'));
+                }
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            }
+        });
+
+        //CIPJS-434 обновляем данные по выплатам
+        if ($('#invoice-summary-ajax-loader').length > 0) {
+            if ($.isFunction(onInvoicePanelLoadComplete)) {
+                $('#invoice-summary-ajax-loader').addClass('ajax-data-loading').ajaxDataLoader({ oncomplete: onInvoicePanelLoadComplete });
+            }
+            else {
+                $('#invoice-summary-ajax-loader').addClass('ajax-data-loading').ajaxDataLoader();
+            }
+        }
+
+        //CIPJS-449 обновляем данные отчетов
+        if ($('.printforms-placeholder').length > 0) {
+            $('.printforms-placeholder').addClass('ajax-data-loading').ajaxDataLoader();
+        }
+    }
+
+    function buttonInvoiceAddClick(e) {
+        Common.ClearNotification();
+        buttonInvoiceAddDisable(true);
+
+        if (unsavedInvoiceExists()) {
+            Common.ShowError("Невозможно добавить новый счет, т.к. есть несохраненные счета");
+            buttonInvoiceAddDisable(false);
+            return;
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("CheckInvoice", "Invoice")',
+            data: { 'damageId': $('[name="InvoiceDamageId"]').val(), 'allPropertyId': $('[name="InvoiceAllPropertyId"]').val(), 'typeCode': $('[name="TypeCode"]').val() },
+            success: function (result) {
+                buttonInvoiceAddDisable(false);
+                if (result) {
+                    var damageId = kendo.parseInt($('[name="InvoiceDamageId"]').val()),
+                        allpropertyId = kendo.parseInt($('[name="InvoiceAllPropertyId"]').val()),
+                        invoicePanelPlaceholder = $('#invoice-panel-placeholder'),
+                        typeCode = $('[name="TypeCode"]').val();
+
+                    var invoiceDetailElement = createInvoiceDetailElement(-1, damageId, allpropertyId != null ? allpropertyId : result.AllPropertyId, result.SumOpl, typeCode, result.FspId, result.PartDog);
+                    invoicePanelPlaceholder.append(invoiceDetailElement);
+                    invoicePanelPlaceholder.append($('<div></div>').addClass('form-group'));
+                    invoicePanelPlaceholder.find('.ajax-data-loading').ajaxDataLoader();
+                } else {
+                    buttonInvoiceReloadClick(e);
+                }
+            },
+            error: function (response) {
+                buttonInvoiceAddDisable(false);
+                Common.ShowError(response.responseText);
+            }
+        });
+    }
+
+    function buttonInvoiceAddDisable(disable) {
+        var buttonInvoiceAdd = $("#toolbarInvoice").find('#buttonInvoiceAdd');
+        if (buttonInvoiceAdd.length > 0) {
+            KendoExtension.ToggleButtonDisable(buttonInvoiceAdd, disable);
+        }
+    }
+
+    function buttonInvoiceSaveClick(e) {
+        saveInvoice($(e.target).closest('.invoice-details-form'));
+    }
+
+    function saveInvoice(currentInvoiceForm) {
+        if (currentInvoiceForm == undefined || currentInvoiceForm.length == 0) {
+            return;
+        }
+
+        Common.ClearNotification();
+        var validator = $("#invoice-panel-placeholder").data("kendoValidator"),
+            hasCCCReport = currentInvoiceForm.find('input[id^="HasCCCReport"]').val() === "True";
+
+        if (validator.validate()) {
+            var Invoice = getInvoice();
+
+            kendo.ui.progress(currentInvoiceForm, true);
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Index", "Invoice")',
+                contentType: 'application/json',
+                data: JSON.stringify(Invoice),
+                dataType: 'json',
+                success: function (response) {
+                    kendo.ui.progress(currentInvoiceForm, false);
+
+                    if (response.Errors && response.Errors.length > 0) {
+                        Common.ShowError(response.Errors);
+                        return;
+                    }
+
+                    if (hasCCCReport) {
+                        Common.UI.ShowMessage('Внимание', 'Вы внесли изменения в реквизиты счета, необходимо сформировать новое Заключение.');
+                    }
+
+                    buttonInvoiceReloadClick();
+                },
+                error: function (response) {
+                    kendo.ui.progress(currentInvoiceForm, false);
+
+                    Common.ShowError(response.responseText);
+                }
+            });
+        } else {
+            var message = "Ошибки валидации:";
+            var errors = validator.errors();
+            $(errors).each(function () {
+                message += "<br />" + this;
+            });
+            Common.ShowError(message);
+        }
+    }
+
+    function createInvoiceDetailElement(id, damageId, allpropertyId, sum, typeCode, fspId, partDog) {
+        var dataUrl = '@Url.Action("GetInvoice", "Invoice")',
+            result = $('<div></div>'),
+            divFormHorisontal = $('<div></div>').addClass('form-horizontal').addClass('col-sm-12'),
+            divFormGroup = $('<div></div>').addClass('form-group'),
+            divInvoiceDetailForm = $('<div></div>')
+                .addClass('ajax-data-loading')
+                .addClass('invoice-details-form')
+                .attr('data-request-type', 'GET')
+                .attr('data-url', dataUrl)
+                .attr('data-param-id', id)
+                .attr('data-param-damageId', damageId)
+                .attr('data-param-allpropertyId', allpropertyId)
+                .attr('data-param-sum', sum)
+                .attr('data-param-fspId', fspId)
+                .attr('data-param-partDog', partDog)
+                .attr('data-loader', 'true')
+                .attr('data-param-damageAnalysisType', typeCode);
+
+        divFormHorisontal.append(divFormGroup);
+        divFormHorisontal.append(divInvoiceDetailForm);
+        return result.append(divFormHorisontal);
+    }
+
+    function changeInvoiceToolbar() {
+        $("#toolbarInvoice").kendoToolBar({
+            items: [
+                {
+                    type: "button",
+                    id: "buttonInvoiceRefresh",
+                    text: "",
+                    click: buttonInvoiceReloadClick,
+                    icon: "refresh",
+                    overflow: "never",
+                    attributes: { 'editmode': 'true' }
+                },
+                {
+                    type: "button",
+                    id: "buttonInvoiceAdd",
+                    text: "",
+                    click: buttonInvoiceAddClick,
+                    icon: "add",
+                    overflow: "never",
+                    attributes: canAdd ? { 'editmode': 'true' } : {}
+                }
+            ]
+        });
+    }
+
+    function getOverallInvoicePartDog() {
+        var details = getInvoiceDetails();
+
+        var overallPartDog = 0;
+
+        if (details != null) {
+            //БИК банка + Название банка + инн Банка! + КПП Банка + кор счет+ р\c
+            //BicBank + BankName + InnBank + KppBank + KorAcc + RachAcc
+            for (var i = 0; i < details.length; i++) {
+                if (details[i].PartDog != null &&
+                    (details[i].noPayNoteId == undefined || details[i].noPayNoteId == null) &&
+                    details[i].StatusCode != statusInvoiceDenied &&
+                    details[i].StatusCode != statusInvoiceDeniedAgreed &&
+                    details[i].StatusCode != statusInvoiceErrorInDetails) {
+                    overallPartDog += details[i].PartDog;
+                }
+            }
+        }
+
+        return overallPartDog;
+    }
+
+    function unsavedInvoiceExists() {
+        var details = getInvoiceDetails();
+
+        if (details != null) {
+            for (var i = 0; i < details.length; i++) {
+                if (details[i].InvoiceId == -1) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    function cloneDamageAmountContractsGrid() {
+        var damageAmountContractsGrid = $('#DamageAmountContracts[data-role="grid"]').data('kendoGrid');
+        if (damageAmountContractsGrid) {
+            var targetEl = $('#invoice-panel-placeholder > div.form-horizontal'),
+                formGroup = $('<div>').addClass('form-group'),
+                damageAmountContractsCloneEl = $('<div>').attr('id', 'DamageAmountContractsClone');
+            targetEl.append(formGroup);
+            targetEl.append(damageAmountContractsCloneEl);
+
+            var columns = [];
+
+            for (var i = 0; i < damageAmountContractsGrid.options.columns.length; i++) {
+                var column = damageAmountContractsGrid.options.columns[i];
+
+                if (column.field === "IsPaid") {
+                    column.template = '<div class="text-center"><span class="center k-icon #if (IsPaid) { # k-i-plus # } else { # k-i-minus #} #"></span></div>'
+                }
+
+                columns.push(column);
+            }
+
+            var damageAmountContractsClone = targetEl.find('#DamageAmountContractsClone').kendoGrid({
+                columns: columns,
+                dataSource: {
+                    schema: {
+                        model: {
+                            id: damageAmountContractsGrid.dataSource.options.schema.model.id,
+                            fields: damageAmountContractsGrid.dataSource.options.schema.model.fields
+                        }
+                    }
+                },
+                dataBound: damageAmountContractsGrid.options.dataBound
+            }).data('kendoGrid');
+
+            damageAmountContractsClone.dataSource.data(damageAmountContractsGrid.dataSource.data());
+
+            damageAmountContractsGrid.bind('dataBound', function () {
+                damageAmountContractsClone.dataSource.data(damageAmountContractsGrid.dataSource.data());
+                damageAmountContractsClone.refresh();
+            });
+        }
+    }
+
+    function updatePartDogStyle(formElement) {
+        var damageAmountContracts = $('#DamageAmountContracts[data-role="grid"]').data('kendoGrid'),
+            fspIdEl = formElement.find('input[id^="FspId"]').data('kendoDropDownList'),
+            partDogEl = formElement.find('input[id^="PartDog"]').data('kendoNumericTextBox'),
+            fspId = fspIdEl ? kendo.parseInt(fspIdEl.value()) : null,
+            partDog = partDogEl ? partDogEl.value() : 0,
+            partDogDifferent = false;
+
+        if (damageAmountContracts) {
+            var dataItems = damageAmountContracts.dataItems();
+
+            for (var i = 0; i < dataItems.length; i++) {
+                var contractFspId = dataItems[i].get('FspId'),
+                    contractPartInRoom = kendo.parseFloat(dataItems[i].get('PartInRoom')) || 0;
+
+                if (fspId != null && fspId == contractFspId) {
+                    partDogDifferent = Math.abs(partDog - contractPartInRoom) >= 0.01; 
+                }
+            }
+        }
+
+        if (partDogEl) {
+            if (partDogDifferent) {
+                partDogEl.element.closest('.k-numeric-wrap').find('.k-formatted-value, .k-input').addClass('background-yellow');
+            }
+            else {
+                partDogEl.element.closest('.k-numeric-wrap').find('.k-formatted-value, .k-input').removeClass('background-yellow');
+            }
+        }
+    }
+
+    function updateInsurSymmaOtchetStyle(formElement) {
+        var insurSymmaOtchetEl = formElement.find('input[id^="InsurSymmaOtchet"][data-role="numerictextbox"]').data('kendoNumericTextBox'),
+            insurSymmaOtchetChanged = formElement.find('input[id^="InsurSymmaOtchetChanged"]').val() === "True";
+
+        if (insurSymmaOtchetEl) {
+            if (insurSymmaOtchetChanged) {
+                insurSymmaOtchetEl.element.closest('.k-numeric-wrap').find('.k-formatted-value, .k-input').addClass('background-yellow')
+            }
+            else {
+                insurSymmaOtchetEl.element.closest('.k-numeric-wrap').find('.k-formatted-value, .k-input').removeClass('background-yellow');
+            }
+        }
+    }
+
+    function updatePanelBarHeader(formElement) {
+        var statusCode = kendo.parseInt(formElement.find('input[id^="StatusCode"]').val()),
+            panelBarHeader = formElement.find('.k-panelbar .k-header');
+        if (panelBarHeader.length > 0 && (statusCode == statusInvoiceDenied || statusCode == statusInvoiceDeniedAgreed)) {
+            panelBarHeader.addClass('background-red');
+        }
+    }
+
+    function checkNeedSaveInvoice(targeEl) {
+        if (targeEl == undefined || targeEl.length == undefined || targeEl.length == 0) {
+            return;
+        }
+        var currentInvoiceForm = targeEl.closest('.invoice-details-form'),
+            invoiceDetail = getInvoiceDetail(currentInvoiceForm);
+
+        if (invoiceDetail.StatusCode !== statusInvoiceFormed) {
+            return;
+        };
+
+        if ((invoiceDetail.FspId != null || invoiceDetail.AllPropertyId != null)
+            && invoiceDetail.SvidPolycNum != undefined && invoiceDetail.SvidPolycNum != null && invoiceDetail.SvidPolycNum.length > 0
+            && invoiceDetail.SvdPolyceDate != null
+            && invoiceDetail.PartDog != null
+            && invoiceDetail.SumOpl != null
+            && invoiceDetail.SubjectName != undefined && invoiceDetail.SubjectName != null && invoiceDetail.SubjectName.length > 0
+            && invoiceDetail.BicBank != undefined && invoiceDetail.BicBank != null && invoiceDetail.BicBank.length > 0
+            && invoiceDetail.BankName != undefined && invoiceDetail.BankName != null && invoiceDetail.BankName.length > 0
+            && invoiceDetail.InnBank != undefined && invoiceDetail.InnBank != null && invoiceDetail.InnBank.length > 0
+            && invoiceDetail.KppBank != undefined && invoiceDetail.KppBank != null && invoiceDetail.KppBank.length > 0
+            && invoiceDetail.KorAcc != undefined && invoiceDetail.KorAcc != null && invoiceDetail.KorAcc.length > 0) {
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение',
+                content: 'Сохранить редактируемый счет?',
+                onSuccess: function () {
+                    saveInvoice(currentInvoiceForm);
+                }
+            });
+        }
+    }
+
+    function setBankCredentialsEditable(formElement, editable) {
+        if (!formElement) {
+            return;
+        }
+
+        var bicBankControl = formElement.find('input[id^="BicBank"]').data('kendoAutoComplete'),
+            bankNameControl = formElement.find('input[name="BankName"]'),
+            innBankControl = formElement.find('input[id^="BankInn"]'),
+            bankKppControl = formElement.find('input[id^="BankKpp"]'),
+            korAccControl = formElement.find('input[id^="KorAcc"]'),
+            rachAccControl = formElement.find('input[id^="RachAcc"]'),
+            bankKppControl = formElement.find('input[id^="BankKpp"]'),
+            bankCardNumberControl = formElement.find('input[id^="BankCardNumber"]'),
+            selectBankButton = formElement.find('button[id^="selectBank"]');
+
+        if (bicBankControl) {
+            bicBankControl.readonly(!editable);
+        }
+        if (bankNameControl.length > 0) {
+            if (editable) {
+                bankNameControl.removeAttr('readonly');
+            }
+            else {
+                bankNameControl.attr('readonly', 'readonly');
+            }
+        }
+        if (innBankControl.length > 0) {
+            if (editable) {
+                innBankControl.removeAttr('readonly');
+            }
+            else {
+                innBankControl.attr('readonly', 'readonly');
+            }
+        }
+        if (bankKppControl.length > 0) {
+            if (editable) {
+                bankKppControl.removeAttr('readonly');
+            }
+            else {
+                bankKppControl.attr('readonly', 'readonly');
+            }
+        }
+        if (korAccControl.length > 0) {
+            if (editable) {
+                korAccControl.removeAttr('readonly');
+            }
+            else {
+                korAccControl.attr('readonly', 'readonly');
+            }
+        }
+        if (rachAccControl.length > 0) {
+            if (editable) {
+                rachAccControl.removeAttr('readonly');
+            }
+            else {
+                rachAccControl.attr('readonly', 'readonly');
+            }
+        }
+        if (bankCardNumberControl.length > 0) {
+            if (editable) {
+                bankCardNumberControl.removeAttr('readonly');
+            }
+            else {
+                bankCardNumberControl.attr('readonly', 'readonly');
+            }
+        }
+        KendoExtension.ToggleButtonDisable(selectBankButton, !editable);
+    }
+
+    function clearBankCredentials(formElement) {
+        if (!formElement) {
+            return;
+        }
+
+        var bankIdControl = formElement.find('input[id^="BankId"]'),
+            bicBankControl = formElement.find('input[id^="BicBank"]').data('kendoAutoComplete'),
+            bankNameControl = formElement.find('input[name="BankName"]'),
+            innBankControl = formElement.find('input[id^="BankInn"]'),
+            bankKppControl = formElement.find('input[id^="BankKpp"]'),
+            korAccControl = formElement.find('input[id^="KorAcc"]'),
+            rachAccControl = formElement.find('input[id^="RachAcc"]'),
+            bankKppControl = formElement.find('input[id^="BankKpp"]'),
+            bankCardNumberControl = formElement.find('input[id^="BankCardNumber"]'),
+            selectBankButton = formElement.find('button[id^="selectBank"]');
+
+        if (bankIdControl.length > 0) {
+            bankIdControl.val(null);
+        }
+        if (bicBankControl) {
+            bicBankControl.value(null);
+        }
+        if (bankNameControl.length > 0) {
+            bankNameControl.val(null);
+        }
+        if (innBankControl.length > 0) {
+            innBankControl.val(null);
+        }
+        if (bankKppControl.length > 0) {
+            bankKppControl.val(null);
+        }
+        if (korAccControl.length > 0) {
+            korAccControl.val(null);
+        }
+        if (rachAccControl.length > 0) {
+            rachAccControl.val(null);
+        }
+        if (bankKppControl.length > 0) {
+            bankKppControl.val(null);
+        }
+        if (bankCardNumberControl.length > 0) {
+            bankCardNumberControl.val(null);
+        }
+    }
+
+    $(function () {
+        changeInvoiceToolbar();
+
+        $('#toolbarInvoice').kendoTooltip({
+            filter: "a.k-button",
+            content: function (e) {
+                switch ($(e.target).attr('id')) {
+                    case "buttonInvoiceRefresh":
+                        return "Обновить";
+                    case "buttonInvoiceSave":
+                        return "Сохранить";
+                    case "buttonInvoiceEdit":
+                        return "Редактировать";
+                    case "buttonInvoiceCancel":
+                        return "Отмена";
+                    case "buttonInvoiceDelete":
+                        return "Удалить";
+                }
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });
+
+        $("#invoice-panel-placeholder").kendoValidator().data("kendoValidator");
+
+        cloneDamageAmountContractsGrid();
+
+        $('#invoice-panel-placeholder .invoice-details-form').each(function (index, element) {
+            updatePanelBarHeader($(element));
+            updatePartDogStyle($(element));
+            updateInsurSymmaOtchetStyle($(element));
+        });
+        
+        buttonInvoiceAddDisable(true);
+    });
+</script>
+
+<style>
+    span.k-widget.k-tooltip-validation {
+        display: inline-block;
+        text-align: left;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        background: none;
+        box-shadow: none;
+        color: red;
+    }
+
+    .k-numerictextbox .k-formatted-value.background-yellow,
+    .k-numerictextbox .k-state-focused .k-input.background-yellow {
+        background-color: yellow !important;
+    }
+
+    /*.k-tooltip-validation .k-warning {
+        display: none;
+    }*/
+
+    /*.invalid {
+        color: red;
+    }*/
+</style>

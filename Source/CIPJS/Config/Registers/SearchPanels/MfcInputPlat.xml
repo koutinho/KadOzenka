@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="Период учета" ID="PeriodPanel" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="Period_from" OwnType="MonthCalendar" AttributeNumber="306001400" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="Period_to" OwnType="MonthCalendar" AttributeNumber="306001400" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="Period" OwnType="MonthCalendar" AttributeNumber="306001400" QueryOperation="WithinDate" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Код плательщика" ID="Kodpl" OwnType="Text" AttributeNumber="306000800" QueryOperation="Equal" />
+      <ControlElement Caption="Источник" ID="TypeSource" ReferenceId="12121" OwnType="Combo" AttributeNumber="306002400" QueryOperation="Equal" ComboBoxFilter="None" />
+      <ControlElement Caption="Статус идентификации" ID="StatusIdentif" ReferenceId="12093" OwnType="Combo" AttributeNumber="306002200" QueryOperation="Equal" ComboBoxFilter="None" />
+      <ControlElement Caption="Статус загрузки" ID="LoadStatus" ReferenceId="12158" OwnType="Combo" AttributeNumber="306003500" QueryOperation="Equal" ComboBoxFilter="None" />
+    </children>
+  </ControlElement>
+  <ControlElement Caption="Адрес" OwnType="RadPanel">
+    <children>
+      <ControlElement Caption="Округ" ID="Okrug" OwnType="Combo" AttributeNumber="320000100" RegisterId="320" TextFieldAttribute="320000400" ValueFieldAttribute="320000100" QueryOperation="Equal" HasLinkedCombos="true"/>
+      <ControlElement Caption="Район" ID="District" OwnType="Combo" AttributeNumber="306003300" RegisterId="321" TextFieldAttribute="321000200" ValueFieldAttribute="321000100" ParentFilterAttribute="321000400" QueryOperation="Equal">
+        <parentComboBox>
+          <string>Okrug</string>
+        </parentComboBox>
+      </ControlElement>
+      <ControlElement Caption="UNOM" ID="Unom" OwnType="Text" AttributeNumber="306000500" QueryOperation="Equal" />
+      <ControlElement Caption="Адрес дома" ID="Address" OwnType="Text" AttributeNumber="306000600" QueryOperation="Like" />
+      <ControlElement Caption="Номер квартиры" ID="FlatNumber" OwnType="Text" AttributeNumber="306000500" QueryOperation="Equal" />
+    </children>
+  </ControlElement>
+  <ControlElement Caption="Характеристики помещения" OwnType="RadPanel">
+    <children>
+      <ControlElement Caption="Площадь страхования" ID="InsuranceAreaPanel" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="InsuranceArea_from" OwnType="Text" AttributeNumber="306001800" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="InsuranceArea_to" OwnType="Text" AttributeNumber="306001800" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="InsuranceArea" OwnType="Text" AttributeNumber="306001800" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Тип ЖП" ID="FlatType" OwnType="Combo" AttributeNumber="306001900" RegisterId="333" TextFieldAttribute="333000200" ValueFieldAttribute="333000100" QueryOperation="Equal" />
+    </children>
+  </ControlElement>
+  <ControlElement Caption="Платеж" OwnType="RadPanel">
+    <children>
+      <ControlElement Caption="С" ID="PaymentAmountFrom" OwnType="Text" AttributeNumber="306001600" QueryOperation="MoreThan" />
+      <ControlElement Caption="По" ID="PaymentAmountTo" OwnType="Text" AttributeNumber="306001600" QueryOperation="LessThan" />
+      <ControlElement Caption="Равно" ID="PaymentAmount" OwnType="Text" AttributeNumber="306001600" QueryOperation="Equal" />
+    </children>
+  </ControlElement>
+  <ControlElement Caption="Дата загрузки" OwnType="RadPanel">
+    <children>
+      <ControlElement Caption="С" ID="DownloadDateFrom" OwnType="Calendar" AttributeNumber="301000700" QueryOperation="MoreThan" />
+      <ControlElement Caption="По" ID="DownloadDateTo" OwnType="Calendar" AttributeNumber="301000700" QueryOperation="LessThan" />
+      <ControlElement Caption="Равно" ID="DownloadDateEq" OwnType="Calendar" AttributeNumber="301000700" QueryOperation="WithinDate" />
+    </children>
+  </ControlElement>
+</RootElement>

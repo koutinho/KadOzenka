@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FastReport.Web" Version="2018.4.1" />
+    <PackageReference Include="Platform" Version="1.0.99" />
+    <PackageReference Include="Platform.Reports" Version="1.0.14" />
+    <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ObjectModel\" />
+  </ItemGroup>
+
+</Project>

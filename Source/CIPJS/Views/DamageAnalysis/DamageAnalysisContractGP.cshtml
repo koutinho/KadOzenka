@@ -1,0 +1,201 @@
+﻿@using CIPJS.DAL.DamageAnalysis;
+
+@model List<DamageAnalysisContractDto>
+
+<style type="text/css">
+    #DamageAmountContracts .k-dirty {
+        display: none;
+    }
+
+    #DamageAmountContracts .background-yellow {
+        background-color: yellow;
+        color: #333 !important;
+    }
+</style>
+
+<div>
+    @(Html.Kendo().Grid<DamageAnalysisContractDto>
+    (Model)
+    .Name("DamageAmountContracts")
+    .ToolBar(x =>
+    {
+        x.Custom().Name("create-fsp").Text("Создать договор");
+    })
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.FspId).Hidden(true);
+        columns.Bound(c => c.Url).ClientTemplate("#= renderNumber(data) #").Title("№").Width("3%");
+        columns.Bound(c => c.ContractType).ClientTemplate("<div class=\"forTooltips\">#: ContractType ? ContractType : \"\"#</div>").Title("Тип договора").Width("10%");
+        columns.Bound(c => c.ContractNumber).Title("Код плательщика/Номер договора").ClientTemplate("<div class=\"forTooltips\"><a href='#: Url #' onClick='routeByContractsUrl({ Url:\"#: Url #\" }); return false;'>#: ContractNumber ? ContractNumber : \"\" #</a></div>").Width("14%");
+        columns.Bound(c => c.DateBegin).Title("Дата начала").ClientTemplate("<div class=\"forTooltips\">#: DateBegin != null ? DateBegin : '' #</div>").Width("7%");
+        columns.Bound(c => c.DateEnd).Title("Дата окончания").ClientTemplate("<div class=\"forTooltips\">#: DateEnd != null ? DateEnd : '' #</div>").Width("7%");
+        columns.Bound(c => c.AreaByContract).Title("Площадь по договору").ClientTemplate("<div class=\"forTooltips\">#: AreaByContract ? kendo.toString(AreaByContract, 'n2') : \"\"#</div>").Width("7%");
+        columns.Bound(c => c.PartInRoom).Title("Доля в квартире").ClientTemplate("<div class=\"forTooltips\">#: PartInRoom ? kendo.toString(PartInRoom, 'n2') : \"\"#</div>").Width("7%");
+        columns.Bound(c => c.InsurCostChanged).Hidden(true);
+        columns.Bound(c => c.InsurCost).Title("Страховая стоимость за 1 кв.м.").ClientTemplate("<div style=\"text-decoration:underline;\" class=\"forTooltips\" >#: InsurCost ? kendo.toString(InsurCost, 'n2') : \"\"#</div>").Width("11%");
+        columns.Bound(c => c.CalcCost).Title("Расчетная стоимость").ClientTemplate("<div style=\"text =align:right;\" class=\"forTooltips\">#: CalcCost ? kendo.toString(CalcCost, 'n2') : \"\"#</div>").Width("9%");
+        columns.Bound(c => c.InsurSum).Title("Страховая сумма").ClientTemplate("<div style=\"text =align:right;\" class=\"forTooltips\">#: InsurSum ? kendo.toString(InsurSum, 'n2') : \"\"#</div>").Width("9%");
+        columns.Bound(c => c.IsInsured).Title("Период застрахован").ClientTemplate("<div class='text-center'><span class='center k-icon #if (IsInsured) { # k-i-check # } else { # k-i-minus #} #'></span></div>").Width("8%");
+        columns.Bound(c => c.IsPaid).Title("Период оплачен").ClientTemplate("#if (FspId != null) {#<button type=\"button\" class=\"paid-command k-button #if (!IsInsured && IsPaid) { #background-yellow# }#\" editmode=\"true\"><span class=\"k-icon #if (IsPaid) {#k-i-plus#} else {#k-i-minus#}#\"></span></button> #}#").Width("8%");
+    })
+    .Resizable(resize => resize.Columns(true))
+    .Events(ev => ev.DataBound("onDataBoundContracts"))
+    .Editable(x =>
+    {
+        x.Mode(GridEditMode.InCell);
+    })
+    .Selectable(x =>
+    {
+        x.Mode(GridSelectionMode.Single);
+        x.Type(GridSelectionType.Cell);
+    })
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Model(x =>
+        {
+            x.Id(y => y.FspId);
+            x.Field(y => y.FspId);
+            x.Field(y => y.Url);
+            x.Field(y => y.ContractType);
+            x.Field(y => y.ContractNumber);
+            x.Field(y => y.AreaByContract);
+            x.Field(y => y.PartInRoom);
+            x.Field(y => y.InsurCostChanged);
+            x.Field(y => y.InsurCost);
+            x.Field(y => y.CalcCost);
+            x.Field(y => y.InsurSum);
+            x.Field(y => y.IsInsured);
+            x.Field(y => y.IsPaid);
+        })
+     )
+    )
+</div>
+
+<script type="text/javascript">
+    function routeByContractsUrl(data) {
+        window.open(data.Url);
+    }
+
+    var counter = 1;
+
+    function onDataBoundContracts(e) {
+        counter = 1;
+        var data = this.dataSource.data();
+        for (var i = 0; i < data.length; i++) {
+            var row = this.tbody.find("tr[data-uid=" + data[i].uid + "]");
+            if (data[i].IsInsured) {
+                row[0].cells[2].setAttribute('class', 'k-grid-opl');
+            }
+            if (data[i].InsurCostChanged) {
+                row[0].cells[9].setAttribute('class', 'background-yellow');
+            }
+        }
+    }
+
+    function renderNumber(data) {
+        return counter++;
+    }
+
+    $(document).ready(function () {
+        var damageAmountContractsGrid = $('#DamageAmountContracts').data('kendoGrid');
+        if (damageAmountContractsGrid) {
+            var insurCostColumn = damageAmountContractsGrid.columns.find(function (v, i) {
+                return damageAmountContractsGrid.columns[i].field == 'InsurCost';
+            });
+
+            if (insurCostColumn) {
+                insurCostColumn.editor = function (container, options) {
+                    var dataItem = damageAmountContractsGrid.dataSource.getByUid(options.model.uid),
+                        damageId = kendo.parseInt($('.mainContent > form > input[name="Id"]').val());
+
+                    if (damageId == null) {
+                        Common.ShowError('Невозможно определить идентификатор дела по ущербу');
+                        return;
+                    };
+
+                    var fspId = dataItem.get('FspId');
+                    if (fspId == null || fspId === 0) {
+                        Common.ShowError('Не удалось идентифкатор ФСП для записи');
+                        return;
+                    }
+                    
+                    var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=LivingPremiseInsurCostSelect',
+                        title = 'Выбор страховой стоимости за 1 кв.м.',
+                        callbackFn = function (item) {
+                            Common.UI.ShowConfirm({
+                                title: 'Внимание',
+                                content: 'Вы подтверждаете изменение размера страховой стоимости на величину страховой стоимости за 1 кв.м. на дату СС?',
+                                onSuccess: function (e) {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '@Url.Action("UpdateContractInsurCost", "DamageAnalysis")',
+                                        data: { damageId: damageId, fspId: fspId, livingPremiseInsurCostId: item.id },
+                                        success: function (response) {
+                                            if (response.Errors && response.Errors.length > 0) {
+                                                Common.ShowError(response.Errors.join('<br>'));
+                                            } else {
+                                                Common.UI.ShowMessage('Внимание', 'Вы изменили страховую стоимость за 1 кв.м., если ранее был произведен расчет ущерба, необходимо его скорректировать.');
+
+                                                dataItem.set('InsurCost', response.Data);
+                                                dataItem.set('InsurCostChanged', true);
+
+                                                if ($.isFunction(saveChanges)) {
+                                                    saveChanges(false, true);
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        };
+
+                    Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@ObjectModel.Insur.OMLivingPremiseInsurCost.GetRegisterId()');
+                }
+            }
+
+            damageAmountContractsGrid.bind('beforeEdit', function (e) {
+                Common.ClearNotification();
+
+                var cell = this.select(),
+                    insurCostColumnIndex = this.element.find('th[data-field="InsurCost"]').index();
+                if (cell.length > 0) {
+                    var cellIndex = cell[0].cellIndex,
+                        isReadOnly = $('#IsReadOnly').val().toLowerCase() == 'true',
+                        //CIPJS-716 "Размер страховой стоимости за 1 кв.м" невозможно изменить , если создан хотя бы один счет. 
+                        invoicesExists = $('#invoice-panel-placeholder .invoice-details-form').length > 0;
+
+                    if (isReadOnly || insurCostColumnIndex !== cellIndex) {
+                        e.preventDefault();
+                    }
+
+                    if (invoicesExists) {
+                        Common.ShowError('"Размер страховой стоимости за 1 кв.м" невозможно изменить, если создан хотя бы один счет');
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            setTimeout(function () {
+                damageAmountContractsGrid.element.find('.k-grid-toolbar > a.k-grid-create-fsp').on('click', function (e) {
+                    e.preventDefault();
+                    var damageId = kendo.parseInt($('.mainContent > form > input[name="Id"]').val()),
+                        objId = kendo.parseInt($('[name="ObjId"]').val()),
+                        insuranceOrganizationId = kendo.parseInt($('[name="InsurCompanyId"]').val());
+                    if (objId == null) {
+                        Common.ShowError('Не удалось определить объект связанный с делом по анализу ущерба');
+                        return;
+                    }
+                    var address = $('[name="Address"]').val(),
+                        url = '@Url.Action("Create", "Fsp")?objId=' + objId + (insuranceOrganizationId != null ? '&insuranceOrganizationId=' + insuranceOrganizationId : ''),
+                        title = 'Создать договор для помещения' + (address && address.length > 0 ? ' по адресу: ' + address : '');
+                    Common.UI.ShowWindow(title, url, 'fspCreateModal', function () {
+                        if ($.isFunction(updateObjectInfo)) {
+                            updateObjectInfo();
+                        }
+                    });
+                });
+            }, 0);
+        }
+    });
+</script>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="Номер свидетельства" ID="CertNumber" AttributeNumber="309002300" OwnType="Text" QueryOperation="Contains" />
+      <ControlElement Caption="Страховая компания" ID="InsuranceCompany" OwnType="Combo" AttributeNumber="309000600" RegisterId="328" TextFieldAttribute="328000200" ValueFieldAttribute="328000100" QueryOperation="Equal" />
+      <ControlElement Caption="Округ" ID="Okrug" OwnType="Combo" AttributeNumber="309000700" RegisterId="320" TextFieldAttribute="320000300" ValueFieldAttribute="320000100" QueryOperation="Equal" />
+      <ControlElement Caption="Район" ID="District" OwnType="Combo" AttributeNumber="309000800" RegisterId="321" TextFieldAttribute="321000200" ValueFieldAttribute="321000100" QueryOperation="Equal" />
+      <ControlElement Caption="Код плательщика" ID="PayerCode" OwnType="Text" AttributeNumber="309002100" QueryOperation="Equal" />
+      <ControlElement Caption="UNOM" ID="Unom" OwnType="Text" AttributeNumber="309001200" QueryOperation="Equal" />
+      <ControlElement Caption="Номер квартиры" ID="FlatNumber" OwnType="Text" AttributeNumber="309001600" QueryOperation="Equal" />
+      <!--<ControlElement Caption="Адрес" ID="Address" OwnType="Text" AttributeNumber="" QueryOperation="Like" />-->
+      <!--<ControlElement Caption="Управляющая компания" />-->
+      <ControlElement Caption="Сумма страхового взноса" ID="InsurancePremium" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="InsurancePremium_from" OwnType="Text" AttributeNumber="309003000" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="InsurancePremium_to" OwnType="Text" AttributeNumber="309003000" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="InsurancePremium_equal" OwnType="Text" AttributeNumber="309003000" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Период учета" ID="AccountingPeriod" OwnType="MonthCalendar" AttributeNumber="309000400" RegisterId="301" TextFieldAttribute="301000400" ValueFieldAttribute="301000100" QueryOperation="Equal" />
+    </children>
+  </ControlElement>
+</RootElement>

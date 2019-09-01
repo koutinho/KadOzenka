@@ -1,0 +1,65 @@
+﻿@using CIPJS.Models.Tenements
+
+@model List<InsuranceObjectsDto>
+
+@{
+    if (Model.Count > 0)
+    {
+        <text>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="control-label">Осуществляется связка объектов </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="control-label">Unom: @Model[0].Unom, Кадастровый номер: @Model[0].CadastralNumber, Адрес: @Model[0].Address.FullName</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="control-label">Unom: @Model[1].Unom, Кадастровый номер: @Model[1].CadastralNumber, Адрес: @Model[1].Address.FullName</label>
+                </div>
+            </div>
+            <div id="divSuccess" class="form-group">
+                <div class="col-sm-12">
+                    <label class="control-label text-green">Связывание объектов запущено! </label>
+                </div>
+            </div>
+            <div id="divError" class="form-group">
+                <div class="col-sm-12">
+                    <label class="control-label text-red" id="labelError"></label>
+                </div>
+            </div>
+            <script>
+                $('#divSuccess').hide();
+                $('#divError').hide();
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("LinkTwoMKD", "Tenements")',
+                    data: { 'firstId': '@Model[0].EmpId', 'secondId': '@Model[1].EmpId' },
+                    success: function () {
+                        $('#divSuccess').show();
+                        kendo.ui.progress($('body'), false);
+                    },
+                    error: function (response) {
+                        $('#divError').show();
+                        $('#labelError').text('Связывание объектов НЕ ОСУЩЕСТВЛЕНО. Причина: ' + response.responseText);
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            </script>
+        </text>
+    }
+    else
+    {
+        <text>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label class="control-label text-red" for="Note">Ошибка: @ViewBag.Message</label>
+                </div>
+            </div>
+        </text>
+    }
+}

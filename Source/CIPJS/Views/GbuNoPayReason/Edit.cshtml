@@ -1,0 +1,79 @@
+﻿@using Newtonsoft.Json;
+@using CIPJS.DAL.GbuNoPayReason;
+
+@model GbuNoPayReasonDto
+
+<div id="toolbar"></div>
+<form method="post" action="BaseDocumentEdit">
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Reason)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoTextBoxFor(x => x.Reason, false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.ShortExplanation)
+            </div>
+            <div class="col-sm-4">
+                @Html.TextAreaFor(m => m.ShortExplanation, new { @class = "k-textbox", @style = "width: 100%;height: 100px;resize: none;" })
+            </div>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var model = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+        $('#toolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: 'Сохранить',
+                    icon: 'check',
+                    click: function () {
+                        Common.ClearNotification();
+                        kendo.ui.progress($('body'), true);
+
+                        $.ajax({
+                            url: '@Url.Action("Edit", "GbuNoPayReason")',
+                            type: 'POST',
+                            data: {
+                                Id: model.Id,
+                                TypeInsur: model.TypeInsur,
+                                Reason: $('#Reason').val(),
+                                ShortExplanation: $('#ShortExplanation').val()
+                            },
+                            success: function(e) {
+                                kendo.ui.progress($('body'), false);
+                                if (e.Errors && e.Errors.length > 0) {
+                                    Common.ShowError(e.Errors.join('<br>'));
+                                } else {
+                                    Common.ShowMessage('Операция успешно выполнена');
+                                    Common.UI.CloseWindow('registerModalWindow', window.parent);
+                                }
+                            },
+                            error: function(e) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(e.responseText);
+                            }
+                        });
+                    }
+                },
+                {
+                    type: 'button',
+                    text: 'Отмена',
+                    icon: 'cancel',
+                    click: function () {
+                        Common.UI.CloseWindow('registerModalWindow', window.parent);
+                    }
+                }
+            ]
+        });
+    });
+</script>

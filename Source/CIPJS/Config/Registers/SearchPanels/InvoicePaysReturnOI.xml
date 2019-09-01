@@ -1,0 +1,32 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="Номер договора" ID="Number" OwnType="Text" AttributeNumber="310000900" QueryOperation="Equal" />
+      <ControlElement Caption="Дата договора" ID="ContractDate" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="ContractDate_from" OwnType="Calendar" AttributeNumber="310001000" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="ContractDate_to" OwnType="Calendar" AttributeNumber="310001000" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="ContractDate_equal" OwnType="Calendar" AttributeNumber="310001000" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Статус договора" ID="statusContract" OwnType="Combo" ReferenceId="12171" AttributeNumber="310002300" QueryOperation="Equal" ComboBoxFilter="None" />
+      <ControlElement Caption="Номер счета" ID="NumberInvoice" OwnType="Text" AttributeNumber="355002600" QueryOperation="Equal" />
+      <ControlElement Caption="Дата счета" ID="dateInvoice" OwnType="Panel">
+        <children>
+          <ControlElement Caption="с" ID="dateInvoice_S" OwnType="Calendar" AttributeNumber="355002700" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="dateInvoice_Po" OwnType="Calendar" AttributeNumber="355002700" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="dateInvoice_Equal" OwnType="Calendar" AttributeNumber="355002700" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Сумма счета" ID="SumOpl" OwnType="Panel">
+        <children>
+          <ControlElement Caption="с" ID="SumOpl_S" OwnType="Text" AttributeNumber="355001600" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="SumOpl_Po" OwnType="Text" AttributeNumber="355001600" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="SumOpl_Equal" OwnType="Text" AttributeNumber="355001600" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Получатель" ID="Subject" OwnType="Text" AttributeNumber="345000500" QueryOperation="Like" />
+      <ControlElement Caption="Статус счета" ID="statusInvoice" OwnType="Combo" ReferenceId="12170" AttributeNumber="355001800" QueryOperation="Equal" ComboBoxFilter="None" />
+    </children>
+  </ControlElement>
+</RootElement>

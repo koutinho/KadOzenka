@@ -1,0 +1,184 @@
+﻿@using CIPJS.Models.Fsp;
+@using ObjectModel.Directory;
+
+@model FspCreateDto
+
+<div id="createFspToolbar"></div>
+<form id="createFspForm">
+    @Html.HiddenFor(x => x.ObjId)
+    @Html.HiddenFor(x => x.InsuranceOrganizationId)
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.FspType)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoEnumDropDownListFor(x => x.FspType, isReadonly: false)
+            </div>
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Kodpl)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoTextBoxFor(x => x.Kodpl, isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Npol)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoTextBoxFor(x => x.Npol, isReadonly: false)
+            </div>
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.OplKodpl)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoNumericTextBoxFor(x => x.OplKodpl, precision: 2, isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.DateBegin)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoDatePickerFor(x => x.DateBegin, isReadonly: false)
+            </div>
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.DateEnd)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoDatePickerFor(x => x.DateEnd, isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Pralt)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoEnumDropDownListFor(x => x.Pralt, isReadonly: false)
+            </div>
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Ss)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoNumericTextBoxFor(x => x.Ss, precision: 2, isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Soplvz)
+            </div>
+            <div class="col-sm-4">
+                @Html.KendoNumericTextBoxFor(x => x.Soplvz, precision: 2, isReadonly: false)
+            </div>
+        </div>
+    </div>
+</form>
+
+<script id="policy-exists-template" type="x-tmpl-mustache">
+    В системе уже существует
+    <a href="{{url}}" target="_blank">{{docName}}</a> с указанными номером полиса/свидетельства, датой начала действия договора.
+    Создание нового договора не требуется.
+    Обратитесь в техническую поддержку.
+</script>
+
+<script type="text/javascript">
+    var docTypePolis = @Html.Raw((long)DocumentType.Polis);
+    $(document).ready(function () {
+        $('#DateBegin').data('kendoDatePicker').bind('change', function () {
+            var dateBegin = this.value();
+            if (dateBegin != null) {
+                var year = dateBegin.getFullYear() + 1,
+                    month = dateBegin.getMonth(),
+                    day = dateBegin.getDate() - 1;
+                $('#DateEnd').data('kendoDatePicker').value(new Date(year, month, day));
+            }
+            else {
+                $('#DateEnd').data('kendoDatePicker').value(null);
+            }
+        });
+
+        $('#createFspToolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: 'Сохранить',
+                    icon: 'check',
+                    click: function () {
+                        Common.ClearNotification();
+                        kendo.ui.progress($('body'), true);
+
+                        var form = $('#createFspForm'),
+                            fspType = form.find('[name="FspType"]').data('kendoDropDownList').value(),
+                            objId = kendo.parseInt(form.find('[name="ObjId"]').val()),
+                            insuranceOrganizationId = kendo.parseInt(form.find('[name="InsuranceOrganizationId"]').val()),
+                            kodPl = form.find('[name="Kodpl"]').val(),
+                            npol = form.find('[name="Npol"]').val(),
+                            oplKodpl = form.find('[name="OplKodpl"]').data('kendoNumericTextBox').value(),
+                            dateBegin = form.find('[name="DateBegin"]').data('kendoDatePicker').value(),
+                            dateEnd = form.find('[name="DateEnd"]').data('kendoDatePicker').value(),
+                            pralt = form.find('[name="Pralt"]').data('kendoDropDownList').value(),
+                            ss = form.find('[name="Ss"]').data('kendoNumericTextBox').value(),
+                            soplvz = form.find('[name="Soplvz"]').data('kendoNumericTextBox').value();
+
+                        $.ajax({
+                            url: '@Url.Action("Create", "Fsp")',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({
+                                FspType: fspType,
+                                ObjId: objId,
+                                InsuranceOrganizationId: insuranceOrganizationId,
+                                KodPl: kodPl,
+                                Npol: npol,
+                                OplKodpl: oplKodpl,
+                                DateBegin: dateBegin,
+                                DateEnd: dateEnd,
+                                Pralt: pralt,
+                                Ss: ss,
+                                Soplvz: soplvz
+                            }),
+                            dataType: 'json',
+                            success: function (e) {
+                                kendo.ui.progress($('body'), false);
+                                if (e.Errors && e.Errors.length > 0) {
+                                    Common.ShowError(e.Errors.join('<br>'));
+                                }
+                                else if (e.Data
+                                    && e.Data.existPolicySvdUrl
+                                    && e.Data.documentType) {
+
+                                    Common.UI.ShowMessage('Внимание', Mustache.render($('#policy-exists-template').html(),
+                                        {
+                                            docName: e.Data.documentType == docTypePolis ? 'полис' : 'свидетельство',
+                                            url: e.Data.existPolicySvdUrl
+                                        }));
+                                }
+                                else if (e.Data) {
+                                    Common.ShowMessage('Операция успешно выполнена');
+                                    Common.UI.CloseWindow('fspCreateModal', window.parent);
+                                }
+                                else {
+                                    Common.ShowError('Не удалось создать договор');
+                                }
+                            },
+                            error: function(e) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(e.responseText);
+                            }
+                        });
+                    }
+                },
+                {
+                    type: 'button',
+                    text: 'Отмена',
+                    icon: 'cancel',
+                    click: function () {
+                        Common.UI.CloseWindow('fspCreateModal', window.parent);
+                    }
+                }
+            ]
+        });
+    });
+</script>

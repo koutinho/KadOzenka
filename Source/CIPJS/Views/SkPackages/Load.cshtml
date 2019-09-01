@@ -1,0 +1,91 @@
+﻿<div id="toolbar"></div>
+<form>
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">Период</label>
+            </div>
+            <div class="col-sm-4">
+                <input id="period" name="period" style="width: 100%" />
+            </div>
+        </div>
+        <div class="form-group">
+            <input name="files" id="files" type="file" aria-label="files" accept=".dbf" />
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function () {
+        var period, files;
+
+        $('#toolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: 'Загрузить данные',
+                    icon: 'check',
+                    click: function (e) {
+                        Common.ClearNotification();
+                        var message = '';
+
+                        if (period.value() === undefined || period.value() == null) {
+                            message += 'Поле "Период" обязательно для заполнения<br>';
+                        }
+
+                        if (files.getFiles().length == 0) {
+                            message += 'Необходимо выбрать как минимум один файл<br>';
+                        }
+
+                        if (message.length != 0) {
+                            Common.ShowError(message);
+                            return;
+                        }
+
+                        var formData = new FormData($('form').get(0));
+
+                        formData.set('period', period.value().toUTCString())
+                        kendo.ui.progress($('body'), true);
+
+                        $.ajax({
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (e) {
+                                kendo.ui.progress($('body'), false);
+                                if (e.Errors && e.Errors.length > 0) {
+                                    Common.ShowError(e.Errors.join('<br>'));
+                                } else {
+                                    Common.ShowMessage('Файл загружен(ы). Импорт успешно запущен.');
+                                }
+                            },
+                            error: function (e) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(e.responseText);
+                            }
+                        });
+                    }
+                }
+            ]
+        });
+
+        period = $('#period').kendoDatePicker({
+            start: 'year',
+            depth: 'year',
+            format: 'MMMM yyyy',
+            dateInput: true,
+            value: new Date()
+        }).data('kendoDatePicker');
+
+        files = $('#files').kendoUpload({
+            validation: {
+                allowedExtensions: ['.dbf'],
+            },
+            error: function (e) {
+                Common.ShowError('При загрузке файлов произошла ошибка');
+            }
+        }).data('kendoUpload');
+    });
+</script>

@@ -1,0 +1,463 @@
+﻿@model long
+
+<div id="DamageAmount"></div>
+<style>
+    .k-grid-footer {
+        display: table-footer-group !important;
+    }
+
+    .k-grid td {
+        white-space: normal;
+    }
+</style>
+<script type="text/javascript">
+    function recalcDamageAmount() {
+        var dataItems = $('#DamageAmount').data('kendoGrid').dataItems();
+        for (var i = 0; i < dataItems.length; i++) {
+            updateDamageAmount(dataItems[i]);
+        }
+    }
+    
+    function updateDamageAmount(dataItem) {
+        var estimatedValue = kendo.parseFloat($('[name="EstimatedValue"]').val()) || 0;
+        if (dataItem) {
+            var correction = dataItem.get('Correction'),
+                materialDamage = dataItem.get('MaterialDamage') || 0,
+                proportionReplacementCost = dataItem.get('ProportionReplacementCost') || 0,
+                proportionDamagedArea = dataItem.get('ProportionDamagedArea') || 0;
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CalcDamageAmount", "DamageAnalysis")',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    Correction: correction,
+                    MaterialDamage: materialDamage,
+                    ProportionReplacementCost: proportionReplacementCost,
+                    ProportionDamagedArea: proportionDamagedArea,
+                    EstimatedValue: estimatedValue
+                }),
+                dataType: 'json',
+                success: function (response) {
+                    if (response.Errors && response.Errors.length > 0) {
+                        Common.ShowError(response.Errors);
+                        return;
+                    }
+
+                    dataItem.set('DamageAmount', response.Data);
+                }, error: function (e) {
+                    Common.ShowError(e.responseText);
+                }
+            });
+
+        }
+    }
+
+    $(function () {
+        var editCellIndex = null,
+            editRowIndex = null;
+
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("DamageAmountRead", "DamageAmount")',
+                    data: { damageId: '@Model' },
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json'
+                },
+                update: {
+                    type: "POST",
+                    url: '@Url.Action("DamageAmountUpdate", "DamageAmount")',
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: 'json',
+                    data: { damageId: '@Model' }
+                },
+                parameterMap: function (options, operation) {
+                    var parameters = { damageId: options.damageId };
+                    if (operation !== "read" && options.models) {
+                        parameters.models = kendo.stringify(options.models);
+                    }
+                    return parameters;
+                }
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: {
+                        Id: { editable: false, defaultValue: -1 },
+                        DamageAssessmentMethodId: { editable: true, type: "number", defaultValue: null },
+                        ElementOfConstruction: { editable: false },
+                        ElementOfConstruction_Code: { editable: false, type: 'number' },
+                        MaterialDamageRange: { editable: false, type: 'string', defaultValue: null },
+                        MaterialDamage: { editable: true, type: "number", defaultValue: null },
+                        ProportionReplacementCost: { editable: false, type: "number", defaultValue: null },
+                        ProportionDamagedArea: { editable: true, type: "number", defaultValue: null },
+                        DamageAmount: { editable: true, type: "number", defaultValue: null },
+                        Correction: { editable: true, type: "number", defaultValue: 1 }
+                    }
+                }
+            },
+            change: function (e) {
+                var gridData = $('#DamageAmount').data('kendoGrid');
+                if (gridData) {
+                    var damageAmountSum = gridData.dataSource.aggregates().DamageAmount.sum;
+                    $('label[for=CalculDamageSummary]').text(kendo.toString(damageAmountSum != null ? damageAmountSum : 0, "N2"));
+                    updateSummaryStyles();
+
+                    if (e.field && e.action == "itemchange") {
+                        var model = e.items[0];
+                        var groupFooterIndex = 0;
+                        var groupFooters = gridData.tbody.children(".k-group-footer");
+
+                        function updateGroupFooters(items) {
+                            var updatedSubGroup;
+                            var updatedElement;
+                            for (var idx = 0; idx < items.length; idx++) {
+                                var item = items[idx];
+                                if (item.hasSubgroups) {
+                                    updatedSubGroup = updateGroupFooters(item.items);
+                                }
+                                if (updatedSubGroup || $.inArray(model, item.items) !== -1) {
+                                    updatedElement = true;
+                                    groupFooters.eq(groupFooterIndex).replaceWith(gridData.groupFooterTemplate(item.aggregates));
+                                }
+                                groupFooterIndex++;
+                            }
+                            return updatedElement;
+                        }
+
+                        updateGroupFooters(this.view());
+
+                        gridData.footer.find(".k-footer-template").replaceWith(gridData.footerTemplate(this.aggregates()));
+                    }
+                }
+            },
+            aggregate: [
+                { field: 'ProportionReplacementCost', aggregate: 'sum' },
+                { field: 'DamageAmount', aggregate: 'sum' }
+            ],
+            requestEnd: function (e) {
+                if (e.type != 'read') {
+                    if (e.response) {
+                        if ($.isFunction(checkDamageAnalysisStatus)) {
+                            checkDamageAnalysisStatus(true);
+                        }
+                        else {
+                            Common.ShowMessage('Операция успешно выполнена');
+                        }
+                    } else {
+                        Common.ShowError('Произошла ошибка');
+                    }
+                }
+            }
+        });
+
+        var grid = $('#DamageAmount').kendoGrid({
+            dataSource: dataSource,
+            columns: [
+                { field: 'Id', hidden: true, title: 'Id' },
+                {
+                    field: 'ElementOfConstruction',
+                    title: 'Элемент конструкции',
+                    template: '#: data.ElementOfConstruction != null ? data.ElementOfConstruction : ""#',
+                    footerTemplate: '<div style="font-weight:bold">Всего</div>',
+                    width: "25%"
+                },
+                {
+                    field: 'Correction',
+                    title: 'Поправочный коэффициент',
+                    template: Common.UI.CustomTemplate('Correction', '#: Correction ? kendo.toString(Correction, "\\#.\\#\\#") : ""#'),
+                    editor: correctionEditor,
+                    attributes: { style: 'text-align: right' },
+                    width: "15%"
+                },
+                {
+                    field: 'ProportionReplacementCost',
+                    title: 'Удельный вес восстановительной стоимости',
+                    aggregates: ['sum'],
+                    template: Common.UI.CustomTemplate('ProportionReplacementCost', '#: ProportionReplacementCost ? kendo.toString(ProportionReplacementCost, "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    attributes: { style: 'text-align: right' },
+                    footerTemplate: '<div style="font-weight:bold;text-align:right">#= sum != null ? kendo.toString(sum, "n0") : "" #</div>',
+                    width: "15%"
+                },
+                {
+                    field: 'MaterialDamageRange',
+                    title: 'Разброс',
+                    attributes: { style: 'text-align: right' },
+                    hidden: true
+                },
+                {
+                    field: 'MaterialDamage',
+                    title: 'Материальный ущерб %',
+                    template: Common.UI.CustomTemplate('MaterialDamage', '#: MaterialDamage ? kendo.toString(MaterialDamage,  "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    editor: gridMaterialDamage,
+                    attributes: { style: 'text-align: right' },
+                    width: "15%"
+                },
+                {
+                    field: 'ProportionDamagedArea',
+                    title: 'Удельный вес<br /> поврежденного участка',
+                    template: Common.UI.CustomTemplate('ProportionDamagedArea', '#: ProportionDamagedArea ? kendo.toString(ProportionDamagedArea, "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    editor: gridProportionDamagedArea,
+                    attributes: { style: 'text-align: right' },
+                    width: "15%"
+                },
+                {
+                    field: 'DamageAmount',
+                    title: 'Сумма ущерба',
+                    aggregates: ['sum'],
+                    template: Common.UI.CustomTemplate('DamageAmount', '#: DamageAmount ? kendo.toString(DamageAmount, "n2") : ""#'),
+                    editor: gridDamageAmount,
+                    attributes: { style: 'text-align: right' },
+                    footerTemplate: '<div id="DamageAmountSum" style="font-weight:bold;text-align:right">#= sum != null ? kendo.toString(sum, "n2") : "" #</div>',
+                    width: "15%"
+                }
+            ],
+            height: '100%',
+            dataBound: onDataBoundAmountss,
+            scrollable: false,
+            navigatable: true,
+            editable: { confirmation: true },
+            resizable: true,
+            beforeEdit: function (e) {
+                var isReadOnly = $('#IsReadOnly').val();
+                if (isReadOnly.toLowerCase() == 'true') {
+                    e.preventDefault();
+                } else if (e.model.ProportionReplacementCost) {
+                    //nothing
+                } else {
+                    e.preventDefault();
+                }
+            },
+            edit: function (e) {
+                editCellIndex = $(e.container)[0].cellIndex;
+                editRowIndex = $(e.container).closest('tr')[0].rowIndex;
+            }
+        });
+
+        function SetEnterMove() {
+            var gridData = grid.data('kendoGrid');
+            if (gridData) {
+                var firstColumnIndex = -1;
+                for (var col = 0; col < gridData.columns.length; col++) {
+                    if (gridData.columns[col].field == 'MaterialDamage') {
+                        firstColumnIndex = col;
+                    }
+                }
+
+                grid.on('keyup', 'table', function (e) {
+                    var keyCode = e.keyCode || e.which;
+                    
+                    if (keyCode == 13 && editCellIndex && editRowIndex) {
+                        var tdNumber = editCellIndex;
+                        var trNumber = editRowIndex - 1;
+
+                        if (tdNumber == firstColumnIndex) {
+                            tdNumber++;
+                        } else {
+                            tdNumber--;
+                            trNumber++;
+                        }
+
+                        var targetRow;
+
+                        while (true) {
+                            targetRow = grid.find('tbody tr:eq(' + trNumber + ')');
+                            if (targetRow.length == 0) {
+                                return;
+                            }
+                            var targetDataItem = gridData.dataItem(targetRow);
+                            if (!targetDataItem) {
+                                return;
+                            }
+                            if (targetDataItem.ProportionReplacementCost) {
+                                break;
+                            }
+
+                            trNumber++;
+                        }
+
+                        var targetCell = targetRow.find('td:eq(' + tdNumber + ')');
+                        gridData.editCell(targetCell);
+                    }
+                });
+            }
+        }
+
+        SetEnterMove();
+
+        function updateFromModal(options, data) {
+            if (data) {
+                var mainGridData = grid.data('kendoGrid').dataSource.data();
+                for (var i = 0; i < mainGridData.length; i++) {
+                    if (mainGridData[i].uid === options.model.uid) {
+                        mainGridData[i].set('DamageAssessmentMethodId', data.Id);
+                        mainGridData[i].MaterialDamageRange = data.MaterialDamageRange;
+                        mainGridData[i].set('MaterialDamage', data.MaterialDamage);
+                        mainGridData[i].set('ProportionDamagedArea', data.PropDamArea);
+
+                        updateDamageAmount(mainGridData[i]);
+                    }
+                }
+            }
+        };
+
+        function updateFromEditorDecimalMaterialDamage(e) {
+            var mainGridData = grid.data('kendoGrid').dataSource.data();
+            for (var i = 0; i < mainGridData.length; i++) {
+                if (mainGridData[i].uid === e.sender.element[0].getAttribute('uid')) {
+                    updateDamageAmount(mainGridData[i]);
+                }
+            }
+        };
+
+        function updateFromEditorDecimalProportionDamagedArea(e) {
+            var mainGridData = grid.data('kendoGrid').dataSource.data();
+            for (var i = 0; i < mainGridData.length; i++) {
+                if (mainGridData[i].uid === e.sender.element[0].getAttribute('uid')) {
+                    updateDamageAmount(mainGridData[i]);
+                }
+            }
+        };
+
+        function correctionEditor(container, options) {
+            var dataItem = options.model;
+
+            KendoExtension.EditorDecimal(container, options, function () {
+                var textBox = this,
+                    value = textBox.value();
+
+                if (value == null) {
+                    dataItem.set(options.field, 1);
+                }
+
+                updateDamageAmount(dataItem);
+            }, 2, '#.##', 0, 1);
+        }
+
+        function gridMaterialDamage(container, options) {
+            var isManual = $('#IsManual').is(":checked");
+            if (isManual) {
+                KendoExtension.EditorDecimal(container, options, updateFromEditorDecimalMaterialDamage, 6, "#.######");
+            } else {
+                var mainGridData = grid.data('kendoGrid').dataSource.data();
+                for (var i = 0; i < mainGridData.length; i++) {
+                    if (mainGridData[i].uid === options.model.uid) {
+                        elemConstrCode = mainGridData[i].get('ElementOfConstruction_Code');
+                        var dopCondition = '';
+                        if (elemConstrCode == 12126005) {
+                            var itemId = $('#FloorType').data('kendoDropDownList').value();
+                            dopCondition = '&refId=12127&refItemId=' + itemId;
+                        }
+                        var contentUrl = '@Url.Action("DamageAssessmentMethodGridSelect", "DamageAssessmentMethod")' + '?code=' + elemConstrCode + dopCondition,
+                            title = 'Выбор методики оценки ущерба. ' + mainGridData[i].ElementOfConstruction,
+                            callbackFn = function (e) {
+                                var iframeDomElement = e.element.children("iframe")[0];
+                                var iframeWindowObject = iframeDomElement.contentWindow;
+                                var iframejQuery = iframeWindowObject.$;
+                                var matDam = iframejQuery('#materialDamage');
+                                var propDamArea = iframejQuery('#proportionDamagedArea');
+                                var grid = iframejQuery('#step2Grid').data("kendoGrid");
+                                var dataItem = grid.dataItem(grid.select());
+                                updateFromModal(options, {
+                                    Id: dataItem.Id,
+                                    MaterialDamageRange: dataItem.get('MaterialDamageRange'),
+                                    MaterialDamage: matDam.data("kendoNumericTextBox").value(),
+                                    PropDamArea: propDamArea.data("kendoNumericTextBox").value()
+                                });
+                            };
+
+                        Common.UI.ShowWindow(title, contentUrl, 'selectDamageWnd', callbackFn, 1000, 500);
+                    }
+                }
+            }
+        };
+
+        function gridProportionDamagedArea(container, options) {
+            var isManual = $('#IsManual').is(":checked");
+            if (isManual) {
+                KendoExtension.EditorDecimal(container, options, updateFromEditorDecimalProportionDamagedArea, 6, "#.######");
+            } else {
+                var mainGridData = grid.data('kendoGrid').dataSource.data();
+                for (var i = 0; i < mainGridData.length; i++) {
+                    if (mainGridData[i].uid === options.model.uid) {
+                        dataItemId = mainGridData[i].get('DamageAssessmentMethodId');
+                        id = mainGridData[i].get('Id');
+                        var contentSMDUrl = '@Url.Action("DamageAssessmentMethodSelectMaterialDamageWithLoad", "DamageAssessmentMethod")' + '?id=' + dataItemId + '&recordId=' + id,
+                            title = 'Выбор методики оценки ущерба',
+                            callbackSMDFn = function (e) {
+                                var iframeDomElement = e.element.children("iframe")[0];
+                                var iframeWindowObject = iframeDomElement.contentWindow;
+                                var iframejQuery = iframeWindowObject.$;
+
+                                var matDam = iframejQuery('#MaterialDamage');
+                                var propDamArea = iframejQuery('#ProportionDamagedArea');
+                                updateFromModal(options, {
+                                    Id: dataItemId,
+                                    MaterialDamage: matDam.data("kendoNumericTextBox").value(),
+                                    PropDamArea: propDamArea.data("kendoNumericTextBox").value()
+                                });
+                            };
+
+                        Common.UI.ShowWindow(title, contentSMDUrl, 'selectMaterialDamageWnd', callbackSMDFn, 800, 250);
+                    }
+                }
+            }
+        };
+
+        function gridDamageAmount(container, options) {
+            var isManual = $('#IsManual').is(":checked");
+            if (!isManual) {
+                var mainGridData = grid.data('kendoGrid').dataSource.data();
+                for (var i = 0; i < mainGridData.length; i++) {
+                    if (mainGridData[i].uid === options.model.uid) {
+                        dataItemId = mainGridData[i].get('DamageAssessmentMethodId');
+                        id = mainGridData[i].get('Id');
+                        var contentSMDUrl = '@Url.Action("DamageAssessmentMethodSelectMaterialDamageWithLoad", "DamageAssessmentMethod")' + '?id=' + dataItemId + '&recordId=' + id,
+                            title = 'Выбор методики оценки ущерба',
+                            callbackSMDFn = function (e) {
+                                var iframeDomElement = e.element.children("iframe")[0];
+                                var iframeWindowObject = iframeDomElement.contentWindow;
+                                var iframejQuery = iframeWindowObject.$;
+
+                                var matDam = iframejQuery('#MaterialDamage');
+                                var propDamArea = iframejQuery('#ProportionDamagedArea');
+                                updateFromModal(options, {
+                                    Id: dataItemId,
+                                    MaterialDamage: matDam.data("kendoNumericTextBox").value(),
+                                    PropDamArea: propDamArea.data("kendoNumericTextBox").value()
+                                });
+                            };
+
+                        Common.UI.ShowWindow(title, contentSMDUrl, 'selectMaterialDamageWnd', callbackSMDFn, 800, 250);
+                    }
+                }
+            }
+        };
+
+        function onDataBoundAmountss(e) {
+            counter = 1;
+            var gridData = grid.data('kendoGrid');
+            var data = gridData.dataSource.data();
+            for (var i = 0; i < data.length; i++) {
+                var row = gridData.tbody.find("tr[data-uid=" + data[i].uid + "]");
+                if (data[i].ElementOfConstruction_Code == 12126007 ||
+                    data[i].ElementOfConstruction_Code == 12126008 ||
+                    data[i].ElementOfConstruction_Code == 12126009 ||
+                    data[i].ElementOfConstruction_Code == 12126016 ||
+                    data[i].ElementOfConstruction_Code == 12126017 ||
+                    data[i].ElementOfConstruction_Code == 12126018 ||
+                    data[i].ElementOfConstruction_Code == 12126020 ||
+                    data[i].ElementOfConstruction_Code == 12126021 ||
+                    data[i].ElementOfConstruction_Code == 12126023 ||
+                    data[i].ElementOfConstruction_Code == 12126024 ||
+                    data[i].ElementOfConstruction_Code == 12126025) {
+                    row[0].cells[1].setAttribute('style', 'text-align: right');
+                } else {
+                    row[0].cells[1].setAttribute('style', 'text-align: left');
+                }
+            }
+        };
+    });
+</script>

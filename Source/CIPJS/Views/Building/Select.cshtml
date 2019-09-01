@@ -1,0 +1,14 @@
+﻿
+<script type="text/javascript">
+    $(function () {
+        if ($_GET['CallBackFunction'] !== undefined) {
+            if (parent && parent.parent && typeof (parent.parent[$_GET['CallBackFunction']]) === "function") {
+
+                if ($_GET['ObjectId'] !== undefined)
+                    parent.parent[$_GET['CallBackFunction']]($_GET['ObjectId']);
+            }
+        }
+
+        Common.UI.CloseWindow('insurBuildingsSelectWnd', window.parent.parent);
+    });
+</script>

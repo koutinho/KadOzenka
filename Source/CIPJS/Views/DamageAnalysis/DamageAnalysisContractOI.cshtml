@@ -1,0 +1,99 @@
+﻿@using CIPJS.DAL.DamageAnalysis;
+
+@model List<DamageAnalysisContractDto>
+
+<div>
+    @(Html.Kendo().Grid<DamageAnalysisContractDto>(Model)
+          .Name("DamageAmountContracts")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.ContractNumber).Title("Номер договора").ClientTemplate("<div class=\"forTooltips\"><a href='#: Url #' onClick='routeByContractsUrl({ Url:\"#: Url #\" }); return false;'>#: ContractNumber ? ContractNumber : \"\" #</a></div>").Width("60%");
+              columns.Bound(c => c.Paysign).Title("Признак рассрочки").Width("15%");
+              columns.Bound(c => c.DateBegin).Title("Дата начала").ClientTemplate("<div class=\"forTooltips\">#: DateBegin != null ? DateBegin : '' #</div>").Width("7%");
+              columns.Bound(c => c.DateEnd).Title("Дата окончания").ClientTemplate("<div class=\"forTooltips\">#: DateEnd != null ? DateEnd : '' #</div>").Width("7%");
+              columns.Bound(c => c.IsInsured).Title("Период застрахован").ClientTemplate("<div class='text-center'><span class='center k-icon #if (IsInsured) { # k-i-check # } else { # k-i-minus #} #'></span></div>").Width("11%");
+          })
+          .Resizable(resize => resize.Columns(true))
+          .Events(ev => ev.DataBound("onDataBoundContracts")))
+</div>
+<div id="contractTerms" style="margin-top:15px"></div>
+<div id="contractPayments">
+    <div class="row">
+        <div class="col-sm-12">
+            <h5 class="text-center">
+                <strong>Платежи по договору</strong>
+            </h5>
+            <div id="payments-grid"></div>
+        </div>
+    </div>
+</div>
+<style>
+    #payments-grid .k-loading-mask{ position: inherit !important }
+    #payments-grid > .k-grid-content { max-height: 275px; min-height: 40px; }
+</style>
+<script>
+    function routeByContractsUrl(data) {
+        window.open(data.Url);
+    };
+
+    function onDataBoundContracts(e) {
+        var data = this.dataSource.data();
+        if (data.length > 0) {
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].IsInsured) {
+                    var row = this.tbody.find("tr[data-uid=" + data[i].uid + "]");
+                    row[0].cells[0].setAttribute('class', 'k-grid-opl');
+                }
+            }
+
+            $.get('@Url.Action("ContractOITerms", "Contract")',
+                { propertyId: data[0].AllPropertyId },
+                function(res) {
+                    $('#contractTerms').html(res);
+                    createPaymentsGrid(data[0].AllPropertyId);
+                },
+                'html');
+        }
+    };
+
+    function createPaymentsGrid(propId) {
+        var paymentsGrid = $('#payments-grid').kendoGrid({
+            scrollable: true,
+            columns: [
+                {
+                    title: 'Номер договора',
+                    field: 'Ndog'
+                },
+                {
+                    title: 'Дата договора',
+                    field: 'Ndogdat',
+                    template: '#:Ndogdat?kendo.toString(kendo.parseDate(Ndogdat), "dd.MM.yyyy"):""#'
+                },
+                {
+                    title: 'Номер ПП',
+                    field: 'Paynumber'
+                },
+                {
+                    title: 'Дата ПП',
+                    field: 'PmtDate',
+                    template: '#:PmtDate?kendo.toString(kendo.parseDate(PmtDate), "dd.MM.yyyy"):""#'
+                },
+                {
+                    title: 'Сумма ПП',
+                    field: 'SumOpl',
+                    template: '#:SumOpl?kendo.toString(SumOpl, "n2"):""#'
+                }
+            ],
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("PaymentsGrid_Read", "Contract")',
+                        data: { id: propId },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            }
+        }).data('kendoGrid');
+    }
+</script>

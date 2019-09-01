@@ -1,0 +1,75 @@
+﻿@model CIPJS.Models.Fsp.LinkSingleToFlatViewModel
+<script>
+    $(function () {
+        var wnd = Common.UI.GetWindow('registerModalWindow', window.parent);
+        wnd.title(wnd.title() + ' для ФСП №@Html.Raw(Model.FspNumber)');
+        wnd.maximize();
+
+        var needConfirm = @Model.HasLinkToFlat.ToString().ToLower();
+        if (needConfirm) {
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение',
+                content: 'Внимание! Для ФСП уже установлена связь с помещением @Model.LinkToFlatDescription. Продолжить?',
+                onSuccess: openSelectFlatWindow,
+                onFail: closeWindow
+            });
+        } else {
+            openSelectFlatWindow();
+        }
+
+        function closeWindow() {
+            Common.UI.CloseWindow('registerModalWindow', window.parent);
+        }
+
+        function openSelectFlatWindow() {
+            Common.UI.CreateChooseWindow({
+                title: 'Выбор квартиры',
+                url: '@Url.Action("Index", "RegistersView")' + '?registerId=InsurFlatsSelect',
+                callback: linkToFlatConfirm,
+                closeCallback: closeWindow,
+                onLoad: fillSearchFilter,
+                gridId: 'Grid-@ObjectModel.Insur.OMFlat.GetRegisterId()',
+                useCheckedItems: true
+            });
+        }
+
+        function linkToFlatConfirm(flats) {
+            if (flats.length === 1)
+                linkToFlat(flats);
+            else
+                $.post(
+                    '@Url.Action("LinkToFlatConfirmMessage", "Fsp")',
+                    { FspId: @Model.FspId, Flats: flats },
+                    function(msg) {
+                        Common.UI.ShowConfirm({
+                            title: 'Подтверждение',
+                            content: msg,
+                            onSuccess: function() { linkToFlat(flats); },
+                            onFail: closeWindow
+                        });
+                    });
+        }
+
+        function linkToFlat(flats) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("LinkSingleToFlat", "Fsp")',
+                data: { FspId: @Model.FspId, Flats: flats },
+                success: function () {
+                    window.parent.Common.ShowMessage('Операция успешно выполнена');
+                    closeWindow();
+                },
+                error: function (e) {
+                    Common.ShowError(e.responseText);
+                    $(document.body).append('<p>' + e.responseText + '</p>');
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
+
+        function fillSearchFilter() {
+            $('#Unom', this.contentWindow.document).val('@Html.Raw(Model.Unom)');
+            $('#FlatNumber', this.contentWindow.document).val('@Html.Raw(Model.Kvnom)');
+        }
+    });
+</script>

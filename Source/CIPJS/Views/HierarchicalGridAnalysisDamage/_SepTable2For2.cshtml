@@ -1,0 +1,110 @@
+﻿<style>
+</style>
+
+<div id="STP2">
+    @Html.Label("Возвраты")
+    <div id="main_grid_obj"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            url: '@Url.Action("GetDataST", "HierarchicalGridAnalysisDamage")',
+            type: 'POST',
+            data: {
+                Index: 2
+            @{ if (ViewBag.AdminIndex != null)
+               {
+                   <Text>,AdminIndex: @ViewBag.AdminIndex</Text>
+               }
+            } },
+            success: function (response) {
+                Init(response);
+            },
+            error: function (response) {
+
+            }
+        });
+
+        function Init(obj) {
+
+            $('#STP2 #main_grid_obj').kendoGrid({
+                dataSource: {
+                    data: obj
+                },
+                sortable: true,
+                pageable: false,
+                detailTemplate: kendo.template('<div id="grid_obj"></div>'),
+                detailInit: detailInit,
+                dataBound: function () {
+                    this.expandRow(this.tbody.find("tr.k-master-row"));
+                    this.collapseRow(this.tbody.find("tr.k-master-row"));
+                },
+                columns: [
+                    {
+                        field: "GroupVal",
+                        title: "Возврат из Казначейства",
+                        width: "85%"
+                    },
+                    {
+                        field: "Count",
+                        title: "Количество",
+                        width: "15%"
+                    },
+                    {
+                        field: "Value",
+                        title: "value",
+                        hidden: true
+                    }
+                ]
+            });
+        }
+
+        function detailInit(e) {
+            var detailRow = e.detailRow;
+
+            detailRow.find("#grid_obj").kendoGrid({
+                selectable: true,
+                dataSource: {
+                    data: e.data.Value,
+                    pageSize: 5
+                },
+                scrollable: false,
+                sortable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    { field: 'Sum_damage', title: 'Сумма Ущерба, руб.', width: "11em" },
+                    { field: 'Sum_opl', title: 'в том числе Выплата из бюджета города, руб.', width: "11em" },
+                    { field: 'Strah_plat', title: 'в том числе Возмещение СК, руб.', width: "11em" },
+                    { field: 'Fio', title: 'ФИО', width: "11em" },
+                    { field: 'Num_invoice', title: '№ счета', width: "11em" },
+                    { field: 'Izn_num', title: '№ Реестра', width: "11em" },
+                    {
+                        field: 'Izn_date', title: 'Дата формирования Реестра', width: "11em", template: function (dataItem) {
+                            if (dataItem.Izn_date != null) {
+                                var dtarr = dataItem.Izn_date.split('T')[0].split('-');
+                                return kendo.htmlEncode(dtarr[2] + "." + dtarr[1] + "." + dtarr[0]);
+                            }
+
+                            return "";
+                        }
+                    },
+                    { field: 'Povt_num', title: 'Повторно включен в Реестр №', width: "11em" },
+                    {
+                        field: 'Povt_date', title: 'Дата формирования Реестра', width: "11em", template: function (dataItem) {
+                            if (dataItem.Povt_date != null) {
+                                var dtarr = dataItem.Povt_date.split('T')[0].split('-');
+                                return kendo.htmlEncode(dtarr[2] + "." + dtarr[1] + "." + dtarr[0]);
+                            }
+
+                            return "";
+                        }
+                    }
+                ]
+            });
+        }
+
+    });
+</script>

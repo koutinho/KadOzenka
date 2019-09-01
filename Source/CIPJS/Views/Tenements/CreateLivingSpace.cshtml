@@ -1,0 +1,210 @@
+﻿@using CIPJS.Models.Tenements
+@model LivingSpaceDto
+
+<form>
+    @Html.HiddenFor(x => x.BuildingId)
+    <ul id="ls_panelbar" class="panelbar">
+        <li id="COMON_DATA">
+            <span>Общие данные</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.UploadDate)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(x => x.UploadDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.InInsuranceProgram)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoCheckBoxFor(x => x.InInsuranceProgram)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Unom)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoTextBoxFor(x => x.Unom, editMode: false)
+                        </div>
+                        <div class="col-sm-1">
+                            <button id="selectMkd" class="k-button" style="width: 100%">...</button>
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.FlatNumber)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.FlatNumber)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.CadastralNumber)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.CadastralNumber)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.CadastralRegistrationDate)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(x => x.CadastralRegistrationDate)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.SpacePurpose)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(x => x.SpacePurpose)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.SpaceType)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(x => x.SpaceType)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.TotalArea)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.TotalArea, 2)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.RoomsCount)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.RoomsCount)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Note)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.TextBoxAreaFor(x => x.Note, 1, 2, true)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="ADDRESS">
+            <span>Сведения об адресе</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Okrug)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.Okrug, editMode: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.District)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.District, editMode: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.FullName)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoTextBoxFor(x => x.FullName, editMode: false)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="static-nav">
+        <a href="#COMON_DATA">Общие данные</a>
+        <a href="#ADDRESS">Сведения об адресе</a>
+        <div id="toolbar" style="position:absolute; bottom: 20px; width: 95%;"></div>
+    </div>
+</form>
+<script>
+    $(function () {
+        $('.static-nav a').on('click', function (e) {
+            e.preventDefault();
+            var elementId = $(e.target).attr('href');
+            if (elementId && $(elementId).offset()) {
+                $('html,body').animate({ scrollTop: $(elementId).offset().top - 9 }, 500);
+            }
+        });
+
+        var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+        KendoExtension.ToggleEditMode(true);
+        panelbar.expand('li');
+
+        $('#toolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: '',
+                    icon: 'save',
+                    id: 'save',
+                    click: function () {
+                        Common.ClearNotification();
+                        kendo.ui.progress($('body'), true);
+                        
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("CreateLivingSpace", "Tenements")',
+                            data: $('form').serialize(),
+                            success: function (e) {
+                                if (e.Errors && e.Errors.length > 0) {
+                                    Common.ShowError(e.Errors);
+                                } else {
+                                    Common.ShowMessage('Жилое помещение успешно создано');
+                                    setTimeout(function () {
+                                        location.href = '@Html.Raw(Url.Action("", "ObjectCard",  new { RegisterViewId = "LivingSpaces", isVertical = true, useMasterPage = true }))' + '&ObjId=' + e.Data;
+                                    }, 1000);
+                                }
+
+                                kendo.ui.progress($('body'), false);
+                            }, error: function (e) {
+                                Common.ShowError(e.responseText)
+                                kendo.ui.progress($('body'), false);
+                            }
+                        });
+                    }
+                }
+            ]
+        }).data('kendoToolBar');
+
+        $('#selectMkd').on('click', function (e) {
+            e.preventDefault();
+
+            var title = 'Выбор объекта',
+                contentUrl = '@Html.Raw(Url.Action("Index", "RegistersView", new { registerId = "InsurBuildingsSelect" }))';
+
+            Common.UI.ChooseWindow(title, contentUrl, function (item) {
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetInfoOfObject", "Tenements")',
+                    data: { 'id': item.id },
+                    success: function (e) {
+                        $('[name="BuildingId"]').val(e.Data.EmpId);
+                        $('[name="Unom"]').val(e.Data.Unom);
+                        $('[name="Okrug"]').val(e.Data.Okrug);
+                        $('[name="District"]').val(e.Data.District);
+                        $('[name="FullName"]').val(e.Data.Address.FullName);
+                        kendo.ui.progress($('body'), false);
+                    }, error: function (e) {
+                        Common.ShowError(e.responseText)
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }, 'Grid-@ObjectModel.Insur.OMBuilding.GetRegisterId()');
+        });
+    });
+</script>

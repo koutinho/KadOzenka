@@ -1,0 +1,43 @@
+﻿@model CIPJS.Models.Contract.AllPropertyDetails
+
+<fieldset style="margin-top: 120px;">
+    <div class="form-group">
+        <div class="col-xs-12 label-value" style="text-align: center; padding: 4px; border: 2px solid #99979c; border-radius: 6px;">
+            @Html.Label("Status", Core.Shared.Extensions.EnumExtensions.GetEnumDescription(Model.Status), new { style = "font-size: 18px;" })
+        </div>
+    </div>
+    <div class="row form-group">
+        <div class="col-xs-12 label-value" style="display: inline-block;">
+            <div class="col-xs-6 label-value">
+                @Html.Label("TotalSumPayPrefix", "Всего к выплате:")
+            </div>
+            <div class="col-xs-6 label-value" style="text-align: right;">
+                @Html.Label("TotalSumPay", Model.TotalSumPay.HasValue ? Model.TotalSumPay.Value.ToString("N2") : "0,00", new { style = "font-size: 14px;" })
+            </div>
+        </div>
+        <div class="col-xs-12 label-value" style="display: inline-block;">
+            <div class="col-xs-6 label-value">
+                @Html.Label("TotalSumPaidPrefix", "Выплачено:")
+            </div>
+            <div class="col-xs-6 label-value" style="text-align: right;">
+                @Html.Label("TotalSumPaid", Model.TotalSumPaid.HasValue ? Model.TotalSumPaid.Value.ToString("N2") : "0,00", new { style = "font-size: 14px;" })
+            </div>
+        </div>
+        <div class="col-xs-12 label-value" style="display: inline-block;">
+            <div class="col-xs-6 label-value">
+                @Html.Label("TotalMustPayPrefix", "Подлежит оплате:")
+            </div>
+            <div class="col-xs-6 label-value" style="text-align: right;">
+                @Html.Label("TotalMustPay", Model.TotalMustPay.HasValue ? Model.TotalMustPay.Value.ToString("N2") : "0,00", new { style = "font-size: 14px;" })
+            </div>
+        </div>
+        <div class="col-xs-12 label-value" style="display: inline-block;">
+            <div class="col-xs-6 label-value">
+                @Html.Label("TotalRemainderPrefix", "Остаток:")
+            </div>
+            <div class="col-xs-6 label-value" style="text-align: right;">
+                @Html.Label("TotalRemainder", Model.TotalRemainder.HasValue ? Model.TotalRemainder.Value.ToString("N2") : "0,00", new { style = "font-size: 14px;" })
+            </div>
+        </div>
+    </div>
+</fieldset>

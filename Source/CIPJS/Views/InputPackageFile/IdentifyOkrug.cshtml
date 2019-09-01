@@ -1,0 +1,58 @@
+﻿@using Newtonsoft.Json;
+@using CIPJS.Models.InputFilePackage;
+
+@model List<InputFilePackageIdentifyOkrugDto>
+
+@{
+    string message = $"Внимание! Зачисления МФЦ по {(Model.Count > 1 ? "округам" : "округу")} в количестве {Model.Sum(x => x.PlatCount)} штук будут связаны со строками банка";
+}
+
+<div id="identify-okrug-toolbar"></div>
+<div class="form-horizontal col-sm-12">
+    <h5>@message</h5>
+</div>
+
+<script type="text/javascript">
+    var inputFilePackageIds = @Html.Raw(JsonConvert.SerializeObject(Model.Select(x => x.Id).ToArray()));
+
+    $(document).ready(function () {
+        $('#identify-okrug-toolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: 'Связать',
+                    icon: 'check',
+                    click: function (e) {
+                        Common.ClearNotification();
+
+                        if (inputFilePackageIds == undefined
+                            || inputFilePackageIds == null
+                            || inputFilePackageIds.length == 0) {
+                            Common.ShowError('Необходимо выбрать хотя бы одну строку округа');
+                            return;
+                        }
+
+                        kendo.ui.progress($('body'), true);
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("IdentifyOkrug", "InputPackageFile")',
+                            data: JSON.stringify(inputFilePackageIds),
+                            contentType: 'application/json',
+                            dataType: 'json',
+                            success: function (e) {
+                                kendo.ui.progress($('body'), false);
+                                if (e.Errors && e.Errors.length > 0) {
+                                    Common.ShowError(e.Errors.join('<br>'));
+                                } else {
+                                    Common.UI.CloseWindow('registerModalWindow', window.parent);
+                                }
+                            }
+                        });
+                    }
+                }
+            ]
+        });
+    });
+</script>
+

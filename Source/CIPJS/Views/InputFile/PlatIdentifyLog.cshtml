@@ -1,0 +1,98 @@
+﻿@using CIPJS.Models.InputFile;
+@using Newtonsoft.Json;
+
+@model PlatIdentifyLogDto
+
+<style type="text/css">
+    .k-loading-mask {
+        position: absolute !important;
+    }
+
+    #loading-icon {
+        width: 100%;
+        height: 52px;
+    }
+</style>
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-1">
+            @Html.CustomLabelFor(m => m.Status)
+        </div>
+        <div class="col-sm-1">
+            <div id="loading-icon">
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div id="statusName">
+                @Html.Label("statusName", Model.Status)
+            </div>
+            <div id="statusProgressBar"></div>
+        </div>
+    </div>
+    <div id="trace-data-placeholder" class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.IdentiedCount)
+        </div>
+        <div class="col-sm-4">
+            @Html.KendoNumericTextBoxFor(m => m.IdentiedCount, 0, true, false)
+        </div>
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.NotIdentiedCount)
+        </div>
+        <div class="col-sm-4">
+            @Html.KendoNumericTextBoxFor(m => m.NotIdentiedCount, 0, true, false)
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var platIdentifyLogId = @Html.Raw(JsonConvert.SerializeObject(Model.Id)),
+            percent = @Html.Raw(JsonConvert.SerializeObject(Model.Percent)),
+            statusProgreesBar = $('#statusProgressBar').kendoProgressBar({
+                type: 'percent',
+                animation: {
+                    duration: 600
+                }
+            }).data('kendoProgressBar'),
+            identifidCountNumericTextBox = $('#IdentiedCount').data('kendoNumericTextBox'),
+            notIdentifidCountNumericTextBox = $('#NotIdentiedCount').data('kendoNumericTextBox');
+
+        if (percent < 100) {
+
+            kendo.ui.progress($('#loading-icon'), true);
+
+            var progressInterval = setInterval(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("GetPlatIdentifyLog", "InputFile")',
+                        data: { platIdentifyLogId: platIdentifyLogId },
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response && response.Data) {
+                                statusProgreesBar.value(response.Data.Percent);
+                                $('label[for="statusName"]').text(response.Data.Status);
+                                identifidCountNumericTextBox.value(response.Data.IdentiedCount);
+                                notIdentifidCountNumericTextBox.value(response.Data.NotIdentiedCount);
+
+                                if (response.Data.Percent >= 100) {
+                                    kendo.ui.progress($('#loading-icon'), false);
+                                    clearInterval(progressInterval);
+                                }
+                            }
+
+                            if (response.Errors && response.Errors.length > 0) {
+                                Common.ClearNotification();
+                                Common.ShowError(response.Errors.join('<br>'));
+                                kendo.ui.progress($('#loading-icon'), false);
+                                clearInterval(progressInterval);
+                            }
+                        }
+                });
+            }, 4000);
+        }
+        statusProgreesBar.value(percent);
+    });
+</script>

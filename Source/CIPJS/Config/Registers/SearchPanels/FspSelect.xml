@@ -1,0 +1,9 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Width="0" AttributeNumber="0">
+    <children>
+      <ControlElement Caption="Номер ФСП" ID="txNumber" OwnType="Text" AttributeNumber="308000400" QueryOperation="Equal" />
+      <ControlElement Caption="Код плательщика" ID="txKodpl" OwnType="Text" AttributeNumber="308001100" QueryOperation="Equal" />
+      <ControlElement Caption="Тип ФСП" ID="cmbType" ReferenceId="333" OwnType="Combo" AttributeNumber="308000200" QueryOperation="Equal" ComboBoxFilter="None" />
+    </children>
+  </ControlElement>
+</RootElement>

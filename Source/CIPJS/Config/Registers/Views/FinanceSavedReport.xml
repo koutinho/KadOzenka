@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="809" IsBasic="false" DefaultLayoutId="1000809" NonResettableFilterId="1000809"
+              ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
+              ShowSettingsPanel="false" UseMasterPage="false" ShowListsMenu="false">
+  <Buttons>
+    <Button Caption="Сформировать" OpenInRadWindow="false" Type="DropDown">
+      <DropDownButtons>
+        <!--Общее имущество -->
+        <Button Caption="Расчет" NavigateURL="~/Report/Viewer" OpenInRadWindow="true" NeedRefresh="true">
+          <Parameters>
+            <Parameter Key="ReportTypeId" Value="1006" />
+            <Parameter Key="ReportObjectId" Value="{Get:80900700}" IsRequired="false"/>
+            <Parameter Key="ReportRegisterId" Value="{Get:80900600}" IsRequired="false"/>
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Hide">
+              <Conditions>
+                <Condition Key="{Get:80900600}" Operation="NotEqual" Value="312" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <Button Caption="Акт" NavigateURL="~/Report/Viewer" OpenInRadWindow="true" NeedRefresh="true">
+          <Parameters>
+            <Parameter Key="ReportTypeId" Value="1004" />
+            <Parameter Key="ReportObjectId" Value="{Get:80900700}" IsRequired="false"/>
+            <Parameter Key="ReportRegisterId" Value="{Get:80900600}" IsRequired="false"/>
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Hide">
+              <Conditions>
+                <Condition Key="{Get:80900600}" Operation="NotEqual" Value="312" />
+              </Conditions>
+            </ConditionGroup>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="{Get:calculationstatus}" Operation="NotEqual" Value="303002" />
+                <Condition Key="{Get:calculationstatus}" Operation="NotEqual" Value="303004" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <Button Caption="Карточка" NavigateURL="~/Report/Viewer" OpenInRadWindow="true" NeedRefresh="true">
+          <Parameters>
+            <Parameter Key="ReportTypeId" Value="1003" />
+            <Parameter Key="ReportObjectId" Value="{Get:80900700}" IsRequired="false"/>
+            <Parameter Key="ReportRegisterId" Value="{Get:80900600}" IsRequired="false"/>
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Hide">
+              <Conditions>
+                <Condition Key="{Get:80900600}" Operation="NotEqual" Value="312" />
+              </Conditions>
+            </ConditionGroup>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="{Get:calculationstatus}" Operation="NotEqual" Value="303002" />
+                <Condition Key="{Get:calculationstatus}" Operation="NotEqual" Value="303004" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <!--Анализ ущерба-->
+        <Button Caption="Заключение" NavigateURL="~/DamageAnalysis/CCCReport" OpenInRadWindow="true" NeedRefresh="true">
+          <Parameters>
+            <Parameter Key="ReportTypeId" Value="1001" />
+            <Parameter Key="ReportObjectId" Value="{Get:ReportObjectId}" IsRequired="false"/>
+            <Parameter Key="ReportRegisterId" Value="{Get:ReportRegisterId}" IsRequired="false"/>
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Hide">
+              <Conditions>
+                <Condition Key="{Get:ReportRegisterId}" Operation="NotEqual" Value="355" />
+                <Condition Key="{Get:DamageAnalysisType}" AndOr="Or" Operation="NotEqual" Value="Dwelling" />
+                <Condition Key="{Get:CanEdit}" AndOr="Or" Operation="Equal" Value="False" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <Button Caption="Заключение" NavigateURL="~/DamageAnalysis/CCCReport" OpenInRadWindow="true" NeedRefresh="true">
+          <Parameters>
+            <Parameter Key="ReportTypeId" Value="1002" />
+            <Parameter Key="ReportObjectId" Value="{Get:ReportObjectId}" IsRequired="false"/>
+            <Parameter Key="ReportRegisterId" Value="{Get:ReportRegisterId}" IsRequired="false"/>
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Hide">
+              <Conditions>
+                <Condition Key="{Get:ReportRegisterId}" Operation="NotEqual" Value="355" />
+                <Condition Key="{Get:DamageAnalysisType}" AndOr="Or" Operation="NotEqual" Value="CommonOwnership" />
+                <Condition Key="{Get:CanEdit}" AndOr="Or" Operation="Equal" Value="False" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+      </DropDownButtons>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition Key="{Get:ReadOnly}" Operation="Equal" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <!--TODO реализовать карточку объектов-->
+    <!--<Button Caption="Посмотреть" NavigateURL="~/CoreUI/Registers/ObjectCard/ObjectCards.aspx?RegisterViewId=FinanceSavedReport">
+      <Parameters>
+        <Parameter Key="Mode" Value="card" />
+        <Parameter Key="ObjectId" Value="[ObjectID]" />
+        <Parameter Key="ReadOnly" Value="false" />
+      </Parameters>
+    </Button>-->
+    <Button Caption="Скачать результат" NavigateURL="~/Report/DownloadSavedReport" OpenInNewWindow="true">
+      <Parameters>
+        <Parameter Key="SavedReportId" Value="[ObjectID]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition Key="{Get:ReadOnly}" Operation="Equal" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <Button Caption="Удалить" NavigateURL="~/Report/Delete" NeedRefresh="true" WindowHeight="400" WindowWidth="700">
+      <Parameters>
+        <Parameter Key="SavedReportId" Value="[ObjectID]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition Key="{Get:ReadOnly}" Operation="Equal" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+  </Buttons>
+  <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

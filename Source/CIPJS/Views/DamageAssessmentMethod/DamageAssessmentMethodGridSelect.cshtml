@@ -1,0 +1,231 @@
+﻿@using CIPJS.DAL.DamageAssessmentMethod
+
+@model DamageAssessmentMethodGridSelectDto
+
+<style>
+    body{
+        display: flex;
+        flex-direction: column;
+    }
+    .k-grid td {
+        white-space: normal;
+    }
+    #mainForm {
+        flex: 1;
+    }
+    #footer {
+        pointer-events: none;
+    }
+</style>
+
+<div id="toolbar"></div>
+<div id="mainForm">
+    <div id="step1Grid"></div>
+    <div id="step2Grid" style="display: none;"></div>
+    <div id="step3Form" style="display: none;">
+        <ul>
+            <li class="k-state-active">
+                <span>Ввод материального ущерба</span>
+                <div>
+                    <div class="form-horizontal col-sm-12">
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-4">
+                                <label class="control-label" id="note"></label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                                <label class="control-label">Материальный ущерб, %</label>
+                            </div>
+                            <div class="col-sm-8">
+                                <input id="materialDamage" style="width:100%;" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                                <label class="control-label">Удельный вес поврежденного участка</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input id="proportionDamagedArea" style="width:100%;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="footer"></div>
+
+<script>
+    $(document).ready(function () {
+        var step = 1, maxValue = 0, minValue = 0;
+        var toolbar = $('#toolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: 'Назад',
+                    id: 'back',
+                    enable: false,
+                    click: function () {
+                        if (step == 2) {
+                            footer.remove($('#footer .k-item:last'));
+                            $('#step1Grid').show();
+                            $('#step2Grid').hide();
+                            toolbar.enable($('#back'), false);
+                            toolbar.hide($('#chooseStep2'));
+                            toolbar.show($('#chooseStep1'));
+                            step = 1;
+                        } else if (step == 3) {
+                            footer.remove($('#footer .k-item:last'));
+                            $('#step2Grid').show();
+                            $('#step3Form').hide();
+                            toolbar.hide($('#save'));
+                            toolbar.show($('#chooseStep2'));
+                            step = 2;
+                        }
+                    }
+                }, {
+                    type: 'button',
+                    text: 'Сохранить',
+                    id: 'save',
+                    hidden: true,
+                    click: function () {
+                        if (materialDamage.value() < minValue || materialDamage.value() > maxValue) {
+                            Common.ShowError('Материальный ущерб должен быть больше или равен ' + minValue + ', но меньше или равен ' + maxValue);
+                            return;
+                        }
+                        if (proportionDamagedArea.value() == undefined) {
+                            Common.ShowError('Введите "Удельный вес поврежденного участка"');
+                            return;
+                        }
+                        Common.UI.CloseWindow('selectDamageWnd', window.parent);
+                    }
+                }, {
+                    type: 'button',
+                    text: 'Выбрать',
+                    id: 'chooseStep1',
+                    click: function () {
+                        var dataItem = step1Grid.dataItem(step1Grid.select());
+                        
+                        footer.append({ text: dataItem.Title });
+                        step2Grid.dataSource.read({ title: dataItem.Title});
+                        $('#step1Grid').hide();
+                        $('#step2Grid').show();
+                        step = 2;
+                        toolbar.hide($('#chooseStep1'));
+                        toolbar.show($('#chooseStep2'));
+                        toolbar.enable($('#back'));
+                    }
+                }, {
+                    type: 'button',
+                    text: 'Выбрать',
+                    id: 'chooseStep2',
+                    hidden: true,
+                    click: function () {
+                        var dataItem = step2Grid.dataItem(step2Grid.select());
+
+                        minValue = dataItem.MaterialDamageMin ? dataItem.MaterialDamageMin : 0;
+                        maxValue = dataItem.MaterialDamageMax ? dataItem.MaterialDamageMax : 0;
+                        $('#note').text('от ' + minValue + ' до ' + maxValue);
+                        footer.append({ text: dataItem.DamageSymptom }, $('#footer .k-item:first'));
+                        $('#step3Form').show();
+                        $('#step2Grid').hide();
+                        step = 3;
+                        toolbar.hide($('#chooseStep2'));
+                        toolbar.show($('#save'));
+                    }
+                }
+            ]
+        }).data('kendoToolBar');
+
+        var step1Grid = $('#step1Grid').kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("DamageAssessmentMethodTitlesRead", "DamageAssessmentMethod")',
+                        data: { code: '@Model.Code', refId: '@Model.RefId', refItemId: '@Model.RefItemId' },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            columns: [
+                {
+                    field: 'Title',
+                    title: 'Элемент конструкции'
+                }
+            ],
+            scrollable: false,
+            selectable: 'row',
+            dataBound: function () {
+                step1Grid.select($('#step1Grid tbody>tr:first-of-type'))
+                if (step1Grid.dataItems().length == 1) {
+                    $('#chooseStep1').click();
+                }
+                this.element.find('tr').css('cursor', 'pointer');
+                this.element.find('tbody tr[data-uid]').dblclick(function () {
+                    $('#chooseStep1').click();
+                });
+            }
+        }).data('kendoGrid');
+
+        var step2Grid = $('#step2Grid').kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("DamageAssessmentMethodsRead", "DamageAssessmentMethod")',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            columns: [
+                {
+                    field: 'Id',
+                    hidden: true,
+                    title: 'Id'
+                },
+                {
+                    field: 'DamageSymptom',
+                    title: 'Признаки  ущерба'
+                },
+                {
+                    field: 'MaterialDamageMin',
+                    title: 'Минимальный процент урона'
+                },
+                {
+                    field: 'MaterialDamageMax',
+                    title: 'Максимальный процент урона'
+                }
+            ],
+            autoBind: false,
+            scrollable: false,
+            selectable: 'row',
+            dataBound: function () {
+                step2Grid.select($('#step2Grid tbody>tr:first-of-type'))
+                if (step2Grid.dataItems().length == 1) {
+                    $('#chooseStep2').click();
+                }
+                this.element.find('tr').css('cursor', 'pointer');
+                this.element.find('tbody tr[data-uid]').dblclick(function () {
+                    $('#chooseStep2').click();
+                });
+            }
+        }).data('kendoGrid');
+
+        $('#step3Form ul').kendoPanelBar({});
+
+        var materialDamage = $('#materialDamage').kendoNumericTextBox({
+            format: 'n2',
+            spinners: false
+        }).data('kendoNumericTextBox');
+
+        var proportionDamagedArea = $('#proportionDamagedArea').kendoNumericTextBox({
+            format: 'n2',
+            spinners: false
+        }).data('kendoNumericTextBox');
+
+        var footer = $('#footer').kendoTreeView().data('kendoTreeView');
+    });
+</script>

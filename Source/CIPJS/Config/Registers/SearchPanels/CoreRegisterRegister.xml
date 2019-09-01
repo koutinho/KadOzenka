@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+    <ControlElement Caption="Реестр" OwnType="RadPanel">
+        <children>
+            <ControlElement ID="cmbRegisterName" Caption="Наименование" OwnType="Combo" AttributeNumber="93000100" RegisterId="930" TextFieldAttribute="93000300" ValueFieldAttribute="93000100" QueryOperation="Equal"/>
+            <ControlElement ID="txtRegisterId" Caption="Номер" OwnType="AutoCompleteBox" MinTypedCharsForSearch="1" AttributeNumber="93000100" ValueFieldAttribute="93000100" QueryOperation="Equal"/>
+            <ControlElement ID="txtRegisterCode" Caption="Код" OwnType="AutoCompleteBox" MinTypedCharsForSearch="2" AttributeNumber="93000200" ValueFieldAttribute="93000200" QueryOperation="Equal"/>
+            <ControlElement ID="txtStorageType" Caption="Тип хранения данных" OwnType="ListBox" AllowItemSelection="true" AttributeNumber="93000800" QueryOperation="Equal" Height="130">
+                <CustomItems>
+                    <KeyValuePair>
+                        <Key>1</Key>
+                        <Value>1 - Хранение истории, использование ALLPRI</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>2</Key>
+                        <Value>2 - Хранение истории, без ALLPRI</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>3</Key>
+                        <Value>3 - Без истории, использование ALLPRI</Value>
+                    </KeyValuePair>
+                    <KeyValuePair>
+                        <Key>4</Key>
+                        <Value>4 - Без истории, без ALLPRI</Value>
+                    </KeyValuePair>
+                </CustomItems>
+            </ControlElement>
+            <ControlElement ID="virtual" Caption="Виртуальный" OwnType="CheckBox" AttributeNumber="93001000" QueryOperation="Equal" Value="1" />
+        </children>
+    </ControlElement>
+</RootElement>

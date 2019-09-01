@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RegisterView RegisterId="308" DefaultLayoutId="1003081" NonResettableFilterId="1003081" UseMasterPage="false"
+              LinkedRegistersList="308, 307" AllowSearchPanelResize="false" IsBasic="false" OpenEmpty="false"
+              UseSubMap="true" AllowMultiColumnSorting="true" JoinType="Left"
+              ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="false"
+              SearchPanel="FspEpd">
+  <Buttons>
+    <Button Caption="Выбрать" NavigateURL="/"></Button>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>

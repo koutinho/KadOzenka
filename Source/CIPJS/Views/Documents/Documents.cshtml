@@ -1,0 +1,299 @@
+﻿@using ObjectModel.Insur;
+@using CIPJS.Models.Documents;
+
+@model DocumentObjDto
+
+<div id="DocumentsGrid">
+</div>
+
+<script>
+    function addNewRow(data) {
+        var isReadOnly = $('#IsReadOnly').val().toLowerCase() == 'true';
+        if (isReadOnly) return;
+
+        var gridData = $('#DocumentsGrid').data('kendoGrid');
+        gridData.addRow();
+        var dataGridData = gridData.dataSource.data();
+        for (var i = 0; i < dataGridData.length; i++) {
+            if (dataGridData[i].uid == data.UID) {
+                dataGridData[i].ObjId = @Model.ObjId;
+                dataGridData[i].ReestrId = @Model.ReestrId;
+            }
+        }
+        gridData.refresh();
+    };
+
+    function documentUploadedCallback(data) {
+        var mainGridData = $('#DocumentsGrid').data('kendoGrid').dataSource.data();
+        for (var i = 0; i < mainGridData.length; i++) {
+            if (mainGridData[i].uid === data.uid) {
+                mainGridData[i].set('FileStorageId', data.fileStorageId);
+                mainGridData[i].set('DocIsHave', true);
+                $('#DocumentsGrid').data('kendoGrid').refresh();
+            }
+        }
+    }
+
+    function uploadFile(data) {
+        var isReadOnly = $('#IsReadOnly').val().toLowerCase() == 'true';
+        if (isReadOnly) {
+        } else {
+            if (!data.Id) {
+                var contentUrl = '@Url.Action("DocumentsUpload", "Documents")' + '?id=' + data.EmpId + '&uid=' + data.options.model.uid,
+                    title = "Загрузка файла " + data.options.model.DocTypeName;
+                Common.UI.ShowWindow(title, contentUrl, 'documentsUploadWnd', null, 700, 250);
+            }
+        }
+    };
+
+    $(function () {
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("DocumentRead", "Documents")',
+                    data: { objId: '@Model.ObjId', reestrId: '@Model.ReestrId', type: '@Model.ContractType'},
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json'
+                },
+                create: {
+                    type: "POST",
+                    url: '@Url.Action("DocumentCreate", "Documents")',
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: 'json',
+                    data: { objId: '@Model.ObjId', reestrId: '@Model.ReestrId' }
+                },
+                update: {
+                    type: "POST",
+                    url: '@Url.Action("DocumentUpdate", "Documents")',
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: 'json'
+                },
+                destroy: {
+                    type: "POST",
+                    url: '@Url.Action("DocumentDestroy", "Documents")',
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: 'json'
+                },
+                parameterMap: function (options, operation) {
+                    var parameters = { objId: options.objId, reestrId: options.reestrId, type: options.type };
+                    if (operation !== "read" && options.models) {
+                        parameters.models = kendo.stringify(options.models);
+                    }
+                    return parameters;
+                }
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "EmpId",
+                    fields: {
+                        EmpId: { editable: false, defaultValue: -1 },
+                        ObjId: { editable: true, type: "number", defaultValue: null },
+                        ReestrId: { editable: true, type: "number", defaultValue: null },
+                        FileStorageId: { editable: true, type: "number", defaultValue: null },
+                        DocTypeId: { editable: true, type: "number", defaultValue: null },
+                        DocTypeName: { editable: true, type: "string", defaultValue: null },
+                        DocIsHave: { editable: true, type: "boolean", defaultValue: null },
+                        DocTypeM_Code: { editable: true, type: "number", defaultValue: null },
+                        DocNumber: { editable: true, type: "string", defaultValue: null },
+                        DocDate: { editable: true, type: "date", defaultValue: null },
+                        DocOrgId: { editable: true, type: "number", defaultValue: null },
+                        DocOrgName: { editable: true, type: "string", defaultValue: null },
+                        UserName: { editable: false, type: "string", defaultValue: null },
+                        DateCreate: { editable: false, type: "date", defaultValue: null },
+                        FIOScan: { editable: true, type: "string", defaultValue: null },
+                        NeedSetDate: { editable: true, type: "boolean", defaultValue: null }
+                    }
+                }
+            },
+            change: function (e) {
+                var damageData = $('[name="DamageData"]').data("kendoDatePicker");
+                if (damageData) {
+                    e.items.forEach(function (item) {
+                        if ((paidDocTypeId == null || item.DocTypeId != paidDocTypeId) && item.DocDate && item.DocDate < damageData.value()) {
+                            Common.ShowError("Некорректная дата документа от СК (" + item.DocDate.toLocaleDateString() + ")");
+                            item.DocDate = null;
+                        }
+                    })
+                } /*else {
+                    Common.ShowError("Введите дату страхового события");
+                    e.items.forEach(function (item) {
+                        if (item.DocDate) {
+                            item.DocDate = null;
+                        }
+                    })
+                }*/
+            },
+            requestEnd: function (e) {
+                if (e.type != 'read') {
+                    if (e.response) {
+                        Common.ShowMessage('Операция успешно выполнена');
+                    } else {
+                        Common.ShowError('Произошла ошибка');
+                    }
+                }
+
+                if (e.type === 'create') {
+                    var gridDocs = $('#DocumentsGrid').data('kendoGrid');
+                    if (gridDocs) {
+                        gridDocs.dataSource.read();
+                    }
+                }
+            }
+        });
+
+        var grid = $('#DocumentsGrid').kendoGrid({
+            dataSource: dataSource,
+            columns: [
+                { field: 'EmpId', hidden: true, title: 'EmpId' },
+                { field: 'ObjId', hidden: true, title: 'ObjId' },
+                { field: 'ReestrId', hidden: true, title: 'ReestrId' },
+                {
+                    field: 'FileStorageId',
+                    title: 'Файл',
+                    editor: gridFileStorage,
+                    template: '<div class="text-center"># if (data.ObjId == null) {# <img src="/images/Registers/16x16_Add.png" /> # } else if (data.FileStorageId != null) { # <img onclick="downloadFile(#:FileStorageId#)" src="/images/Registers/16x16_Attach.png" /> # } else { # <img src="/images/Registers/16x16_Open.png" /> #} #</div>',
+                    width: "60px"
+                },
+                {
+                    field: 'DocTypeId',
+                    title: 'Вид документа-основания',
+                    editor: gridDocType,
+                    template: '#: data.DocTypeName != null ? data.DocTypeName : "" #',
+                    //width: "32%"
+                },
+                {
+                    title: 'Наличие',
+                    template: '<div class="text-center"><input id="DocIsHave-#:data.uid#" type="checkbox" #= data.DocIsHave ? \'checked="checked"\' : "" # class= "k-checkbox doc-is-have-checkbox" editmode="true" />'
+                        + '<label class="k-checkbox-label" for="DocIsHave-#:data.uid#"></label></div>',
+                    width: "80px"
+                },
+                {
+                    field: 'DocTypeM',
+                    title: 'Бумажная/электронная',
+                    editor: KendoExtension.EditorReference('@Url.Action("GetItems", "Dictionary")', 12167),
+                    width: "115px"
+                },
+                { field: 'DocNumber', width: 200, title: 'Номер', width:"15%" },
+                {
+                    field: 'DocDate',
+                    title: 'Дата',
+                    format: "{0:dd.MM.yyyy}",
+                    width: 150,
+                    attributes: { style: "text-align:right;" },
+                    width: "130px",
+                    editor: KendoExtension.EditorDate
+                },
+                { field: 'UserName', width: 200, title: 'Пользователь', width: "350px" },
+                {
+                    field: 'DateCreate',
+                    title: 'Дата ввода',
+                    format: "{0:dd.MM.yyyy HH:mm}",
+                    width: 150,
+                    attributes: { style: "text-align:right;" },
+                    width: "130px"
+                },
+                { field: 'NeedSetDate', hidden: true, title: 'ReestrId' },
+                { command: [{ name: 'destroy', text: '' }], width: "40px", attributes: { class: 'close-command-cell' } }
+            ],
+            height: '100%',
+            scrollable: false,
+            editable: { createAt: 'bottom', confirmation: true },
+            resizable: true,
+            dataBound: function (e) {
+                var grid = this;
+                var data = grid.dataSource.data();
+                var isReadOnly = $('#IsReadOnly').val().toLowerCase() == 'true';
+                for (var i = 0; i < data.length; i++) {
+                    if ((data[i].DocIsHave == undefined || !data[i].DocIsHave) && data[i].ObjId && data[i].ReestrId == @OMDamage.GetRegisterId()) {
+                        var row = grid.tbody.find("tr[data-uid=" + data[i].uid + "]");
+                        row[0].cells[5].setAttribute('class', 'k-grid-no');
+                    }
+                }
+
+                if (isReadOnly) {
+                    grid.element.find('input.doc-is-have-checkbox').attr('disabled', 'disabled');
+                }
+            },
+            beforeEdit: function (e) {
+                var isReadOnly = $('#IsReadOnly').val().toLowerCase() == 'true';
+                if (isReadOnly) {
+                    e.preventDefault();
+                } else if (e.model.ObjId == null) {
+                    if (e.sender._current[0].innerHTML != '<div class="text-center"> <img src="/images/Registers/16x16_Add.png"> </div>') {
+                        e.preventDefault();
+                    }
+                }
+            },
+            cellClose: function (e) {
+                var docNumberIndex = this.element.find('th[data-field="DocNumber"]').index(),
+                    docDateIndex = this.element.find('th[data-field="DocDate"]').index(),
+                    currentColumnIndex = e.container.index();
+
+                if (e.type === "save") {
+                    if ((currentColumnIndex == docNumberIndex && e.model.DocNumber != null && e.model.DocNumber.length > 0)
+                        || (currentColumnIndex == docDateIndex && e.model.DocDate != null)) {
+                        setTimeout(function () {
+                            e.model.set('DocIsHave', true)
+                        }, 0);
+                    }
+                }
+            }
+        });
+
+        function updateFromModalDocType(options, data) {
+            if (data) {
+                var mainGridData = grid.data('kendoGrid').dataSource.data();
+                for (var i = 0; i < mainGridData.length; i++) {
+                    if (mainGridData[i].uid === options.model.uid) {
+                        mainGridData[i].set('DocTypeId', data.Id);
+                        mainGridData[i].set('DocTypeName', data.DocumentBase);
+                        grid.data('kendoGrid').refresh();
+                    }
+                }
+            }
+        }
+
+        function gridDocType(container, options) {
+            var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=DocBaseTypeSelect',
+                title = 'Выбор вида документа-основания',
+                callbackFn = function (item) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetById", "DocBaseType")',
+                        data: { 'id': item.id },
+                        success: function (data) {
+                            updateFromModalDocType(options, data);
+                        }
+                    });
+                };
+
+            @if(Model.ContractType == ObjectModel.Directory.ContractType.Dwelling)
+            {
+                <text>contentUrl += "&Transition=1&32300400=ЖП";</text>
+            }
+            else if(Model.ContractType == ObjectModel.Directory.ContractType.CommonOwnership)
+            {
+                <text>contentUrl += "&Transition=1&32300400=ОИ";</text>
+            }
+
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMDocBaseType.GetRegisterId()');
+        }
+
+        function gridFileStorage(container, options) {
+            if (options.model.ObjId == null) {
+                addNewRow({ UID: options.model.uid });
+            } else {
+                uploadFile({ Id: options.model.FileStorageId, EmpId: options.model.EmpId, options: options });
+            }
+        }
+
+        grid.on('change', 'input.doc-is-have-checkbox', function (e) {
+            grid.data('kendoGrid').dataItem($(e.target).closest('tr')).set('DocIsHave', this.checked);
+        });
+    });
+
+    function downloadFile(fileStorageId) {
+        window.open('@Url.Action("GetFileFromStorage", "Documents")' + '?fileStorageId=' + fileStorageId, '_blank');
+    }
+</script>

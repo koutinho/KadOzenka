@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="400" DefaultLayoutId="1004001" AllowSearchPanelResize="false" IsBasic="false"
+              OpenEmpty="false" LinkedRegistersList="400,401,402,405,406,407" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
+              ShowActualDate="false" SearchPanel="EhdData" SearchPanelWindowHeight="654">
+
+  <Buttons>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>

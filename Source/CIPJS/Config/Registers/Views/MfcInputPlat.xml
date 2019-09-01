@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="306" DefaultLayoutId="1003061" AllowSearchPanelResize="false" SrdRegisterCtegoryId="1"
+              IsBasic="false" OpenEmpty="true" LinkedRegistersList="306, 308, 320, 321, 333, 301, 303, 328, 304, 305, 316, 382" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
+              SearchPanel="MfcInputPlat" SearchPanelWindowHeight="654" SRDFunctionTag="INSUR.MFC.ZACH">
+  <Buttons>
+    <Button Caption="Операции" OpenInRadWindow="false" Type="DropDown" SRDFunctionTag="INSUR.MFC.ZACH.ACTIONS">
+      <DropDownButtons>
+        <Button Caption="Учесть зачисления на ФСП" NavigateURL="~/RegistersView/FspSelect" OpenInRadWindow="true" SRDFunctionTag="INSUR.MFC.ZACH.ACTIONS.LINK">
+          <Parameters>
+            <Parameter Key="InputRegisterId" Value="[RegisterId]" />
+            <Parameter Key="InputObjectId" Value="[ObjectId]" />
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <Button Caption="Отвязать зачисления от ФСП" NavigateURL="~/Fsp/UnbindAndAccount" OpenInRadWindow="true" WindowHeight="675" WindowWidth="900" SRDFunctionTag="INSUR.MFC.ZACH.ACTIONS.FREE">
+          <Parameters>
+            <Parameter Key="InputRegisterId" Value="[RegisterId]" />
+            <Parameter Key="InputObjectId" Value="[ObjectId]" />
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+      </DropDownButtons>
+    </Button>
+    <Button Caption="Выгрузить в Excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="INSUR.MFC.ZACH.EXPORT"/>
+    <Button Caption="Выгрузить в DBF" NavigateURL="~/Registers/ExportDbf" OpenInNewWindow="true" SRDFunctionTag="INSUR.MFC.ZACH.EXPORT">
+      <Parameters>
+        <Parameter Key="layoutId" Value="1003061" />
+      </Parameters>
+    </Button>
+    <Button Caption="Связь со строкой банка" NavigateURL="~/InputPlat/LinkPlat" OpenInRadWindow="true" SRDFunctionTag="INSUR.MFC.ZACH.ACTIONS.BANKLINK" NeedRefresh="true">
+      <Parameters>
+        <Parameter Key="inputPlatId" Value="[ObjectId]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition ByRef="true" Key="[306002200]" Operation="NotEqual" Value="10000111" />
+            <Condition AndOr="And" ByRef="true" Key="[306002200]" Operation="NotEqual" Value="12093004" />
+            <Condition AndOr="And" ByRef="true" Key="[306002200]" Operation="NotEqual" Value="0" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <Button Caption="Просмотр и редактирование связи строк оплат" NavigateURL="~/InputPlat/LinkPlat" OpenInRadWindow="true" SRDFunctionTag="INSUR.MFC.ZACH.ACTIONS.BANKLINK" NeedRefresh="true">
+      <Parameters>
+        <Parameter Key="inputPlatId" Value="[ObjectId]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition ByRef="true" Key="[306002200]" Operation="Equal" Value="10000111" />
+            <Condition AndOr="Or" ByRef="true" Key="[306002200]" Operation="Equal" Value="12093004" />
+            <Condition AndOr="Or" ByRef="true" Key="[306002200]" Operation="Equal" Value="0" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>

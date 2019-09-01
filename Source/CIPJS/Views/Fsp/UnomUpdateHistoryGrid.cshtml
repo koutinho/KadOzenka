@@ -1,0 +1,206 @@
+﻿<style>
+.k-filter-menu-container > span[title="Оператор"] { display: none }
+</style>
+<div id="grdUnomUpdateHistory" style="border:none"></div>
+<script>
+    var gridConfig = {
+        dataSource: {
+            transport: {
+                read: {
+                    url: '@Url.Action("GetUnomUpdateHistory", "Fsp")',
+                    type: 'GET'
+                },
+                create: {
+                    url: '@Url.Action("InsertUnomUpdateHistory", "Fsp")',
+                    type: 'POST'
+                },
+                update: {
+                    url: '@Url.Action("UpdateUnomUpdateHistory", "Fsp")',
+                    type: 'POST'
+                },
+                destroy: {
+                    url: '@Url.Action("DeleteUnomUpdateHistory", "Fsp")',
+                    type: 'POST'
+                },
+                parameterMap: function(data, operation) {
+                    if (operation !== 'read') {
+                        data.Id = operation === 'create' ? -1 : data.Id;
+                        data.DateChange = data.DateChange ? data.DateChange.toJSON() : null;
+                    }
+                    return data;
+                }
+            },
+            schema: {
+                model: {
+                    id: 'Id',
+                    fields: {
+                        Id: { type: 'number', defaultValue: -1 },
+                        OldUnom: { type: 'number', defaultValue: null, validation: { required: true } },
+                        NewUnom: { type: 'number', defaultValue: null, validation: { required: true } },
+                        OldLinkMkd: { type: 'number' },
+                        NewLinkMkd: { type: 'number' },
+                        OldAddress: { type: 'string' },
+                        NewAddress: { type: 'string' },
+                        UserChange: { type: 'string', editable: false, operator: 'contains' },
+                        DateChange: { type: 'date', editable: false },
+                        Comment: { type: 'string' }
+                    }
+                }
+            }
+        },
+        height: '100%',
+        editable: { mode: 'inline' },
+        filterable: {
+            extra: false,
+            operators: { string: { contains: 'Contains' } }
+        },
+        columns: [
+            {
+                field: 'OldUnom',
+                title: 'Старый UNOM',
+                editor: unomEditor,
+                filterable: {ui : simpleNumericFilter},
+                width: 150
+            }, {
+                field: 'NewUnom',
+                title: 'Новый UNOM',
+                editor: unomEditor,
+                filterable: { ui: simpleNumericFilter },
+                width: 150
+            }, {
+                field: 'OldAddress',
+                title: 'Старый адрес',
+                filterable: false,
+                editor: readonlyEditor
+            }, {
+                field: 'NewAddress',
+                title: 'Новый адрес',
+                filterable: false,
+                editor: readonlyEditor
+            }, {
+                field: 'DateChange',
+                title: 'Дата изменения',
+                width: 130,
+                template: '#= data.DateChange ? kendo.toString(kendo.parseDate(DateChange), "dd.MM.yyyy") : "" #',
+                filterable: false
+            }, {
+                field: 'UserChange',
+                title: 'Пользователь',
+                width: 170
+            }, {
+                field: 'Comment',
+                title: 'Комментарий',
+                width: 300
+            }, {
+                headerTemplate: '<button class="k-button k-button-icontext" onclick="gridUnomUpdateHistory.addRow()"><span class="k-icon k-i-plus"></span>Добавить</button>',
+                headerAttributes: { 'class': 'headerButton' },
+                command: ['edit', 'destroy'],
+                width: 230
+            }
+        ],
+        edit: function(e) {
+            $(e.container).find("input[name='OldAddress']").prop('disabled', true);
+        }
+    };
+
+    var gridUnomUpdateHistory = null;
+    var windowUnomUpdateHistory = $('#wndUnomUpdateHistory').data('kendoWindow');
+    if (windowUnomUpdateHistory) {
+        windowUnomUpdateHistory.bind('open',
+            function() {
+                gridUnomUpdateHistory = $('#grdUnomUpdateHistory').kendoGrid(gridConfig).data('kendoGrid');
+            });
+        windowUnomUpdateHistory.bind('close',
+            function() {
+                gridUnomUpdateHistory.destroy();
+            });
+    } else {
+        gridUnomUpdateHistory = $('#grdUnomUpdateHistory').kendoGrid(gridConfig).data('kendoGrid');
+    }
+
+    var unomDataSource = new kendo.data.DataSource({
+        serverFiltering: true,
+        schema: {
+            model: {
+                fields: { emp_id: { type: 'number' }, unom: { type: 'string' }, short_address: { type: 'string' } }
+            }
+        },
+        transport: {
+            read: {
+                url: '@Url.Action("FindUnoms", "Building")'
+            }
+        }
+    });
+
+    function onChangeAutoComplete(e) {
+        var value = e.sender.value();
+        if (!value) return true;
+
+        var data = e.sender.dataSource.view();
+        for(var idx = 0, length = data.length; idx < length; idx++)
+            if (data[idx].unom === value)
+                return true;
+
+        e.sender.value('');
+        return false;
+    }
+
+    function onFilterAutoComplete(e) {
+        if (!e.sender.value()) {
+            e.preventDefault();
+            e.sender.dataSource.data([]);
+        }
+    }
+
+    function onSelectUnom(e) {
+        var fieldPrefix = e.sender.element.attr('name').substring(0, 3);
+        var row = e.sender.element.closest('tr');
+        var rowData = gridUnomUpdateHistory.dataItem(row);
+        rowData.set(fieldPrefix + 'Address', e.dataItem.short_address);
+        rowData.set(fieldPrefix + 'LinkMkd', e.dataItem.emp_id);
+    }
+
+    function unomEditor(container, options) {
+        $('<input required name="' + options.field + '" />')
+            .appendTo(container)
+            .kendoAutoComplete({
+                dataSource: unomDataSource,
+                dataTextField: 'unom',
+                dataValueField: 'unom',
+                valuePrimitive: true,
+                filter: 'contains',
+                minLength: 3,
+                select: onSelectUnom,
+                change: onChangeAutoComplete,
+                filtering: onFilterAutoComplete
+            });
+        appendValidator(container, options.field);
+    }
+
+    function readonlyEditor(container, options) {
+        $('<input type="text" class="k-input k-textbox" readonly name="' + options.field + '" style="border:none;text-indent:0" />').appendTo(container);
+    }
+
+    function simpleNumericEditor(container, options) {
+        $('<input name="' + options.field + '" required autocomplete="off" />')
+            .appendTo(container)
+            .kendoNumericTextBox({
+                decimals: 0,
+                format: '#',
+                spinners: false
+            });
+        appendValidator(container, options.field);
+    }
+
+    function simpleNumericFilter(element) {
+        element.kendoNumericTextBox({
+            decimals: 0,
+            format: '#',
+            spinners: false
+        });
+    }
+
+    function appendValidator(container, fieldName) {
+        $('<span class="k-invalid-msg" data-for="' + fieldName + '"></span>').appendTo(container);
+    }
+</script>

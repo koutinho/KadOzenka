@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="975" DefaultLayoutId="1000975" Description="Очередь долгих процессов" LinkedRegistersList="975,976,977,950,941" ShowActualDate="false"
+              ShowObjectCards="false" SearchPanel="CoreLongProcessQueue" ShowFilterMenuOnToolbar="true" SRDFunctionTag="ADMIN.LONG_PROCESS">
+    <Buttons>
+        <!--
+        0 - Добавлен
+        1 - Подготовлен к запуску
+        2 - Выполняется
+        3 - Завершен успешно
+        4 - Завершен с ошибкой
+        5 - Отправлен запрос на остановку
+        6 - Остановлен
+        -->
+        <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects">
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+                <Parameter Key="RegisterId" Value="[RegisterId]" />
+                <Parameter Key="LightMode" Value="true" />
+            </Parameters>
+        </Button>
+        <Button Caption="Перезапустить" NavigateURL="~/LongProcessManagement/Restart" WindowHeight="160" WindowWidth="520">
+          <Parameters>
+            <Parameter Key="queueId" Value="[ObjectID]" />
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="[97500900]" Operation="NotEqual" Value="4" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="5" AndOr="And" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="6" AndOr="And" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <Button Caption="Отменить задание" NavigateURL="~/LongProcessManagement/CancelTask" WindowHeight="300" WindowWidth="500">
+            <Parameters>
+                <Parameter Key="TaskId" Value="[ObjectID]" />
+            </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="[97500900]" Operation="NotEqual" Value="0" />
+                        <Condition Key="[97500900]" Operation="NotEqual" Value="1" AndOr="And" />
+                        <Condition Key="[97500900]" Operation="NotEqual" Value="2" AndOr="And" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+        </Button>
+        <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
+    </Buttons>
+</RegisterView>

@@ -1,0 +1,115 @@
+﻿<div class="container" style="border: 1px solid #7ea700">
+    <div style="text-align: center"><b>Информация об изменении признака страхования МКД за период</b></div>
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-4">
+                <b> С </b> <input id="fromdatepicker" title="datepicker" style="width: 100%" />
+            </div>
+            <div class="col-sm-4">
+                <b> ПО </b> <input id="todatepicker" title="datepicker" style="width: 100%" />
+            </div>
+        </div>
+
+    </div>
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-4">
+                <button id="selectButton" style="vertical-align: bottom">Выбрать</button>
+            </div>
+        </div>
+    </div>
+    <div class="form-horizontal col-sm-12">
+        <div id="grid"></div>
+    </div>
+
+</div>
+<script>
+    // Инициализация dataSource
+    var InitializeDataSource = function (fromDate, toDate) {
+
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '/Building/GetMkdFlagInsurCalculatedEveryDay?fromDate=' + fromDate.toISOString().substring(0, 10) + '&toDate=' + toDate.toISOString().substring(0, 10) + ''
+                }
+            },
+            schema: {
+                model: {
+                    id: 'emp_id',
+                    fields: {
+                        unom: { type: 'string', editable: false },
+                        cadastr_num: { type: 'string', editable: false },
+                        short_address: { type: 'string', editable: false },
+                        new_flag_insur: { type: 'string', editable: false },
+                        old_flag_insur: { type: 'string', editable: false },
+                        changes_date: { type: 'string', editable: false },
+                        username: { type: 'string', editable: false }
+                    }
+                }
+            },
+            pageSize: 10
+        });
+
+        return dataSource;
+    };
+
+    // Обработка клика на кнопку "Выбрать".
+    // Обновляем данные отображения по выбранному периоду.
+    var SelectButtonClickHandle = function () {
+        var fromDate = $("#fromdatepicker").data("kendoDatePicker").value();
+        var toDate = $("#todatepicker").data("kendoDatePicker").value();
+
+        var dataSource = InitializeDataSource(fromDate, toDate);
+        var grid = $("#grid").data("kendoGrid");
+        grid.setDataSource(dataSource);
+
+    };
+
+
+
+    $(document).ready(function () {
+        $('#selectButton').kendoButton({
+            click: SelectButtonClickHandle
+        });
+
+        // Инициализация дат.
+        var toDate = new Date();
+        var fromDate = new Date();
+        fromDate.setDate(toDate.getDate() - 1);
+
+        $("#fromdatepicker").kendoDatePicker({
+            value: fromDate,
+            dateInput: true
+        });
+        $("#todatepicker").kendoDatePicker({
+            value: toDate,
+            dateInput: true
+        });
+
+        // Инициализация грида.
+        $("#grid").kendoGrid({
+            columns: [
+                { field: 'emp_id', title: 'EMP_ID' },
+                { field: 'unom', title: 'UNOM', width: 100, template: '<a href="ObjectCard?ObjId=#= emp_id#&RegisterViewId=Tenements&isVertical=true&useMasterPage=true">#= unom#</a>' },
+                { field: 'cadastr_num', title: 'Кадастровый номер', width: 300, template: '<a href="ObjectCard?ObjId=#= emp_id#&RegisterViewId=Tenements&isVertical=true&useMasterPage=true">#= cadastr_num#</a>' },
+                { field: 'short_address', title: 'Адрес', width: 300 },
+                { field: 'new_flag_insur', title: 'Новое значение', width: 100 },
+                { field: 'old_flag_insur', title: 'Старое значение', width: 100 },
+                { field: 'changes_date', title: 'Дата изменения', width: 200 },
+                { field: 'username', title: 'Пользователь', width: 300 }
+            ],
+            dataSource: InitializeDataSource(fromDate, toDate),
+            pageable: true,
+            resizable: true,
+            groupable: true,
+            sortable: true,
+        });
+
+        // Скрываем колонку EMP_ID.
+        var grid = $("#grid").data("kendoGrid");
+        grid.hideColumn("emp_id");
+    });
+
+
+</script>

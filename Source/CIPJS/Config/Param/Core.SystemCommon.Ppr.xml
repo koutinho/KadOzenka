@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SystemCommon xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <ApplicationName>Система страхования (ТЕСТОВЫЙ СТЕНД)</ApplicationName>
+    <KendoTheme>metro</KendoTheme>
+    <DefaultLayout>_Layout</DefaultLayout>
+
+    <ActiveDirectoryDomain>cipgs.ru</ActiveDirectoryDomain>
+
+    <DefaultDomainName>CIPGS</DefaultDomainName>
+
+  <SrdSettings>
+        <UseRoleSubsystem>false</UseRoleSubsystem>
+    </SrdSettings>
+  
+    <MailServer>
+      <Host>pochta.mos.ru</Host>
+      <Port>25</Port>
+      <Login>ops_system@property.mos.ru</Login>
+      <Password></Password>
+      <EnableSsl>false</EnableSsl>
+      <FromEmail>ops_noreply@property.mos.ru</FromEmail>
+    </MailServer>
+  
+    <ErrorManagment>
+        <Phone></Phone>
+        <Email></Email>
+    </ErrorManagment>
+</SystemCommon>

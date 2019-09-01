@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="316" DefaultLayoutId="1003161" AllowSearchPanelResize="false" IsBasic="false" UseMasterPage="false"
+              OpenEmpty="true" LinkedRegistersList="316,258,259,319" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
+              ShowActualDate="false" SearchPanel="InsurBuildings" SearchPanelWindowHeight="654">
+  <Buttons>
+    <Button Caption="Выбрать" NavigateURL="/"></Button>
+  </Buttons>
+  <StatusBarConfiguration StatusBarEnabled="false"/>
+</RegisterView>

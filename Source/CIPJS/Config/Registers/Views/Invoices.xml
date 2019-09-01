@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="355" DefaultLayoutId="1003551" AllowSearchPanelResize="false" SrdRegisterCtegoryId="1"
+              IsBasic="false" OpenEmpty="false" LinkedRegistersList="355, 354, 313" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="false" ShowObjectCards="false" ShowSettingsPanel="false">
+  <Buttons>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>

@@ -1,0 +1,721 @@
+﻿@using CIPJS.Models.Tenements;
+@using ObjectModel.Insur;
+
+@model LinkMKDLivingSpacesDto
+
+<ul id="ls_panelbar" class="panelbar">
+    <li id="SingleLinkFlat">
+        <span>Для ЖП, связанного с ЕГРН, найден ЖП, связанный с БТИ</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div id="SingleLinkFlatGrid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="NoBtiFlat">
+        <span>Для ЖП, связанного с ЕГРН, не найден ЖП, связанный с БТИ</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div id="NoBtiFlatGrid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="NoFiasFlat">
+        <span>Для ЖП, связанного с БТИ, не найден ЖП, связанный с ЕГРН</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div id="NoFiasFlatGrid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="Reason">
+        <span>Основание</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        @Html.TextArea("Reason", "", 2, 1, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+
+<script>
+    function deleteRows() {
+        var dataSource = $('#NoFiasFlatGrid').data('kendoGrid').dataSource;
+        var data = dataSource.data();
+        var arrayUid = [];
+        kendo.ui.progress($('body'), true);
+        for (var i = 0; i < data.length; ++i) {
+            var row = $('#NoFiasFlatGrid').data('kendoGrid').tbody.find("tr[data-uid=" + data[i].uid + "]");
+            var cheked = row.find('.k-checkbox').is(':checked');
+            if (cheked) {
+                arrayUid.push(data[i].uid);
+            }
+        }
+        for (var i = 0; i < data.length; ++i) {
+            if (arrayUid.includes(data[i].uid)) {
+                dataSource.remove(data[i]);
+                i--;
+            }
+        }
+        kendo.ui.progress($('body'), false);
+    };
+
+    function deleteSingleRows() {
+        kendo.ui.progress($('body'), true);
+        var dataSource = $('#SingleLinkFlatGrid').data('kendoGrid').dataSource;
+        var data = dataSource.data();
+        var arrayUid = [];
+        for (var i = 0; i < data.length; ++i) {
+            var row = $('#SingleLinkFlatGrid').data('kendoGrid').tbody.find("tr[data-uid=" + data[i].uid + "]");
+            var cheked = row.find('.k-checkbox').is(':checked');
+            if (cheked) {
+                arrayUid.push(data[i].uid);
+            }
+        }
+        for (var i = 0; i < data.length; ++i) {
+            if (arrayUid.includes(data[i].uid)) {
+                dataSource.remove(data[i]);
+                i--;
+            }
+        }
+        kendo.ui.progress($('body'), false);
+    };
+
+    function flatNotActual(number) {
+        var grid = undefined;
+        if (number == 1) {
+            var grid = $('#NoBtiFlatGrid');
+        } else if (number == 2) {
+            var grid = $('#NoFiasFlatGrid');
+        }
+        if (grid) {
+            var selected = grid.dataItem(grid.select());
+            if (selected) {
+                Common.UI.ShowConfirm({
+                    title: 'Подтверждение',
+                    content: 'Вы точно хотите присвоить статус «Не актуально»?',
+                    onSuccess: function (e) {
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("FlatNotActual", "Tenements")',
+                            data: { 'id': selected.EmpId },
+                            success: function () {
+                                grid.refresh();
+                                kendo.ui.progress($('body'), false);
+                            },
+                            error: function (response) {
+                                Common.ShowError(response.responseText);
+                                kendo.ui.progress($('body'), false);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+
+    function linkLS() {
+        Common.UI.ShowConfirm({
+            title: 'Подтверждение',
+            content: 'вы точно хотите связать ЖП?',
+            onSuccess: function (e) {
+                var grid = $('#NoBtiFlatGrid').data('kendoGrid');
+                var selected = grid.dataItem(grid.select());
+                if (selected) {
+                    var noBtiGrid = $('#NoFiasFlatGrid').data('kendoGrid');
+                    var data = noBtiGrid.dataSource.data();
+                    if (data.length == 1) {
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("LinkFlatSave", "Tenements")',
+                            data: { 'fiasId': selected.EmpId, 'btiId': data[0].EmpId },
+                            success: function () {
+                                grid.refresh();
+                                noBtiGrid.dataSource.data([]);
+                                kendo.ui.progress($('body'), false);
+                            },
+                            error: function (response) {
+                                Common.ShowError(response.responseText);
+                                kendo.ui.progress($('body'), false);
+                            }
+                        });
+                    } else {
+                        Common.ShowError('В таблице "Для МКД, связанного с БТИ, не найден МКД, связанны с ЕГРН" должна быть одна запись');
+                    }
+                } else {
+                    Common.ShowError('В таблице "Для МКД, связанного с ЕГРН, не найден МКД, связанны с БТИ" выберите запись');
+                }
+            }
+        });
+    }
+
+    function linkLSSingle() {
+        Common.UI.ShowConfirm({
+            title: 'Подтверждение',
+            content: 'вы точно хотите связать ЖП?',
+            onSuccess: function (e) {
+                var grid = $('#SingleLinkLSGrid').data('kendoGrid');
+                var dataSource = grid.dataSource;
+                var data = dataSource.data();
+                var arrayIds = [];
+                for (var i = 0; i < data.length; i += 2) {
+                    var row = grid.tbody.find("tr[data-uid=" + data[i].uid + "]");
+                    var cheked = row.find('.k-checkbox').is(':checked');
+                    if (cheked) {
+                        arrayIds.push({ FiasId: data[i].EmpId, BtiId: data[i + 1].EmpId });
+                    }
+                }
+                
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("LinkFlatArraySave", "Tenements")',
+                    data: { 'arrayIds': arrayIds },
+                    success: function () {
+                        grid.refresh();
+                        kendo.ui.progress($('body'), false);
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+        });
+    }
+
+    function historyFlat(number) {
+        var grid = undefined;
+        if (number == 1) {
+            var grid = $('#NoBtiFlatGrid').data('kendoGrid');
+        } else if (number == 2) {
+            var grid = $('#NoFiasFlatGrid').data('kendoGrid');
+        } else if (number == 3) {
+            var grid = $('#SingleLinkFlatGrid').data('kendoGrid');
+        }
+        if (grid) {
+            var selected = grid.dataItem(grid.select());
+            if (selected) {
+                Common.UI.ShowWindow('История изменений', '@Url.Action("Index", "RegistersView")' +
+                    '?registerId=InsurChangesLog&Transition=1&qs=352000200equal%27' + selected.EmpId + '%27and352000300equal%27' + '@OMFlat.GetRegisterId()' + '%27');
+            }
+        }
+    }
+
+    function buttonMoveForSelectClick(e) {
+        Common.ClearNotification();
+        var grid = $('#NoBtiFlatGrid').data('kendoGrid');
+        var dopQuery = "";
+        if (grid) {
+            var selected = grid.dataItem(grid.select());
+            if (selected) {
+                if (selected.CadastralNumber) {
+                    dopQueru += "&CadastralNumber=" + selected.CadastralNumber;
+                }
+                if (selected.Unom) {
+                    dopQueru += "&Unom=" + selected.Unom;
+                }
+                if (selected.FlatNumber) {
+                    dopQueru += "&FlatNumber=" + selected.FlatNumber;
+                }
+            }
+        }
+        var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=LivingSpacesSelect' + dopQuery + '&Transition=1&qs=317002000equal%27' + @Model.NoFiasMkdId + '%27',
+            title = 'Выбор ЖП',
+            callbackFn = function (item) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetFlatById", "Tenements")',
+                    data: { 'id': item.id, 'selectedId': getSelectedId },
+                    success: function (data) {
+                        var grid = $("#NoFiasMkdGrid").data("kendoGrid");
+                        if (grid) {
+                            kendo.ui.progress($('body'), true);
+                            var dataSource = grid.dataSource;
+                            var total = dataSource.data().length;
+                            dataSource.insert(total, {
+                                EmpId: data.EmpId,
+                                Unom: data.Unom,
+                                IsMatchUnom: data.IsMatchUnom,
+                                CadastralNumber: data.CadastralNumber,
+                                IsMatchCadastralNumber: data.IsMatchCadastralNumber,
+                                Okrug: data.Okrug,
+                                District: data.District,
+                                FlatNumber: data.FlatNumber,
+                                IsMatchFlatNumber: data.IsMatchFlatNumber,
+                                SpaceType: data.SpaceType,
+                                SpaceType_Code: data.SpaceType_Code,
+                                IsMatchSpaceType: data.IsMatchSpaceType,
+                                SpacePurpose: data.SpacePurpose,
+                                SpacePurpose_Code: data.SpacePurpose_Code,
+                                IsMatchSpacePurpose: data.IsMatchSpacePurpose,
+                                TotalArea: data.TotalArea,
+                                IsMatchTotalArea: data.IsMatchTotalArea,
+                                dirty: false
+                            });
+                            dataSource.page(dataSource.totalPages());
+                            kendo.ui.progress($('body'), false);
+                        }
+                    }
+                });
+            };
+
+        Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMFlat.GetRegisterId()');
+    };
+
+    $(function () {
+        var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+        panelbar.expand('li');
+
+        var dataSourceNoBtiFlat = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("NoBtiFlatRead", "Tenements")',
+                    contentType: 'application/json; charset=utf-8',
+                    data: { NoBtiMkdId: @Model.NoBtiMkdId, NoFiasMkdId: @Model.NoFiasMkdId },
+                    dataType: 'json'
+                },
+                update: {
+                    type: "POST",
+                    url: '@Url.Action("NoBtiFlatUpdate", "Tenements")',
+                    data: { NoBtiMkdId: @Model.NoBtiMkdId, NoFiasMkdId: @Model.NoFiasMkdId, reason: $('#Reason').val() },
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: 'json'
+                },
+                parameterMap: function (options, operation) {
+                    var parameters = { reason: options.reason, NoBtiMkdId: options.NoBtiMkdId, NoFiasMkdId: options.NoFiasMkdId };
+                    if (operation !== "read" && options.models) {
+                        parameters.models = kendo.stringify(options.models);
+                    }
+                    return parameters;
+                }
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "EmpId",
+                    fields: {
+                        EmpId: { editable: false, defaultValue: -1 },
+                        Unom: { editable: true, type: "number", defaultValue: null },
+                        CadastralNumber: { editable: true, type: "string" },
+                        Okrug: { editable: false, type: "string", defaultValue: null },
+                        District: { editable: false, type: "string", defaultValue: null },
+                        FlatNumber: { editable: true, type: 'number', defaultValue: null  },
+                        SpaceType_Code: { editable: true, type: 'number', defaultValue: null },
+                        SpaceType: { editable: true, type: 'string', defaultValue: null },
+                        SpacePurpose_Code: { editable: true, type: 'number', defaultValue: null },
+                        SpacePurpose: { editable: true, type: 'string', defaultValue: null },
+                        TotalArea: { editable: true, type: "number", defaultValue: null }
+                    }
+                }
+            },
+            requestEnd: function (e) {
+                if (e.type != 'read') {
+                    if (e.response) {
+                        Common.ShowMessage('Операция успешно выполнена');
+                    } else {
+                        Common.ShowError('Произошла ошибка');
+                    }
+                }
+            }
+        });
+
+        var gridNoBtiFlat = $('#NoBtiFlatGrid').kendoGrid({
+            toolbar: [
+                "save", "cancel",
+                {
+                    template: "<input type='button' class='k-button' value='Жилое помещение не актуально' onclick='flatNotActual(1)' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='Связать ЖП в текущей таблице' onclick='linkLS()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='История изменений' onclick='historyFlat(1)' />"
+                }
+            ],
+            dataSource: dataSourceNoBtiFlat,
+            columns: [
+                { field: 'EmpId', hidden: true, title: 'EmpId' },
+                {
+                    field: 'Unom',
+                    title: 'UNOM',
+                    template: '#: data.Unom != null ? data.Unom : ""#',
+                    width: "5%"
+                },
+                {
+                    field: 'CadastralNumber',
+                    title: 'Кадастровый номер',
+                    template: '#: data.CadastralNumber != null ? data.CadastralNumber : ""#',
+                    width: "10%"
+                },
+                {
+                    field: 'Okrug',
+                    title: 'Округ',
+                    template: '#: data.Okrug != null ? data.Okrug : ""#',
+                    width: "15%"
+                },
+                {
+                    field: 'District',
+                    title: 'Район',
+                    template: '#: data.District != null ? data.District : ""#',
+                    width: "15%"
+                },
+                {
+                    field: 'FlatNumber',
+                    title: 'Номер квартиры',
+                    template: '#: data.FlatNumber != null ? data.FlatNumber : ""#',
+                    width: "5%"
+                },
+                {
+                    field: 'SpaceType',
+                    title: 'Тип помещения',
+                    editor: KendoExtension.EditorReference('@Url.Action("GetItems", "Dictionary")', 12161),
+                    width: "20%"
+                },
+                {
+                    field: 'SpacePurpose',
+                    title: 'Назначение помещения"',
+                    editor: KendoExtension.EditorReference('@Url.Action("GetItems", "Dictionary")', 12162),
+                    width: "20%"
+                },
+                {
+                    field: 'TotalArea',
+                    title: 'Общая площадь',
+                    template: Common.UI.CustomTemplate('TotalArea', '#: TotalArea ? kendo.toString(TotalArea,  "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    attributes: { style: 'text-align: right' },
+                    width: "5%"
+                }
+            ],
+            change: function (e) {
+                var grid = $('#NoFiasFlatGrid').data('kendoGrid');
+                if (grid) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("NoFiasFlatRead", "Tenements")',
+                        data: { id: getSelectedId, NoBtiMkdId: @Model.NoBtiMkdId, NoFiasMkdId: @Model.NoFiasMkdId },
+                        success: function (data) {
+                            grid.dataSource.data(data);
+                        }
+                    });
+                }
+            },
+            height: 200,
+            editable: { confirmation: true },
+            resizable: true,
+            selectable: "row",
+            messages: {
+                commands: {
+                    cancel: 'Отмена',
+                    save: 'Сохранить'
+                }
+            }
+        });
+
+        function getSelectedId() {
+            var grid = gridNoBtiFlat.data('kendoGrid');
+            var selected = grid.dataItem(grid.select());
+            if (selected) {
+                return selected.EmpId;
+            }
+            return selected;
+        }
+
+        var dataSourceNoFiasFlat = new kendo.data.DataSource({
+            transport: {
+                update: {
+                    type: "POST",
+                    url: '@Url.Action("NoBtiFlatUpdate", "Tenements")',
+                    data: { reason: $('#Reason').val(), selectedId: getSelectedId },
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: 'json'
+                },
+                parameterMap: function (options, operation) {
+                    var parameters = { reason: options.reason, selectedId: options.selectedId };
+                    if (operation !== "read" && options.models) {
+                        parameters.models = kendo.stringify(options.models);
+                    }
+                    return parameters;
+                }
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "EmpId",
+                    fields: {
+                        EmpId: { editable: false, defaultValue: -1 },
+                        Unom: { editable: true, type: "number", defaultValue: null },
+                        CadastralNumber: { editable: true, type: "string" },
+                        Okrug: { editable: false, type: "string", defaultValue: null },
+                        District: { editable: false, type: "string", defaultValue: null },
+                        FlatNumber: { editable: true, type: 'number', defaultValue: null },
+                        SpaceType_Code: { editable: true, type: 'number', defaultValue: null },
+                        SpaceType: { editable: true, type: 'string', defaultValue: null },
+                        SpacePurpose_Code: { editable: true, type: 'number', defaultValue: null },
+                        SpacePurpose: { editable: true, type: 'string', defaultValue: null },
+                        TotalArea: { editable: true, type: "number", defaultValue: null }
+                    }
+                }
+            },
+            requestEnd: function (e) {
+                if (e.type != 'read') {
+                    if (e.response) {
+                        Common.ShowMessage('Операция успешно выполнена');
+                    } else {
+                        Common.ShowError('Произошла ошибка');
+                    }
+                }
+            }
+        });
+
+        var gridNoFiasFlat = $('#NoFiasFlatGrid').kendoGrid({
+            dataSource: dataSourceNoFiasFlat,
+            toolbar: ["save", "cancel",
+                {
+                    template: "<input type='button' class='k-button' value='Жилое помещение не актуально' onclick='flatNotActual(2)' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='Убрать отмеченные' onclick='deleteRows()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='Перейти в реестр ЖП' onclick='buttonMoveForSelectClick()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='История изменений' onclick='historyFlat(2)' />"
+                }
+            ],
+            columns: [
+                { field: 'EmpId', hidden: true, title: 'EmpId' },
+                {
+                    field: 'Unom',
+                    title: 'UNOM',
+                    template: '#: data.Unom != null ? data.Unom : ""#',
+                    width: "5%"
+                },
+                {
+                    field: 'CadastralNumber',
+                    title: 'Кадастровый номер',
+                    template: '#: data.CadastralNumber != null ? data.CadastralNumber : ""#',
+                    width: "10%"
+                },
+                {
+                    field: 'Okrug',
+                    title: 'Округ',
+                    template: '#: data.Okrug != null ? data.Okrug : ""#',
+                    width: "14%"
+                },
+                {
+                    field: 'District',
+                    title: 'Район',
+                    template: '#: data.District != null ? data.District : ""#',
+                    width: "14%"
+                },
+                {
+                    field: 'FlatNumber',
+                    title: 'Номер квартиры',
+                    template: '#: data.FlatNumber != null ? data.FlatNumber : ""#',
+                    width: "4%"
+                },
+                {
+                    field: 'SpaceType',
+                    title: 'Тип помещения',
+                    editor: KendoExtension.EditorReference('@Url.Action("GetItems", "Dictionary")', 12161),
+                    width: "20%"
+                },
+                {
+                    field: 'SpacePurpose',
+                    title: 'Назначение помещения"',
+                    editor: KendoExtension.EditorReference('@Url.Action("GetItems", "Dictionary")', 12162),
+                    width: "20%"
+                },
+                {
+                    field: 'TotalArea',
+                    title: 'Общая площадь',
+                    template: Common.UI.CustomTemplate('TotalArea', '#: TotalArea ? kendo.toString(TotalArea,  "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    attributes: { style: 'text-align: right' },
+                    width: "5%"
+                },
+                { selectable: true, width: "3%" }
+            ],
+            autoBind: false,
+            height: 300,
+            editable: { confirmation: true },
+            resizable: true,
+            dataBound: function (e) {
+                var dataItems = gridNoFiasFlat.data('kendoGrid').dataItems();
+                dataItems.forEach(function (element) {
+                    var row = gridNoFiasFlat.data('kendoGrid').tbody.find("tr[data-uid=" + element.uid + "]");
+                    if (!element.IsMatchUnom) {
+                        row[0].cells[1].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchCadastralNumber) {
+                        row[0].cells[2].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchFlatNumber) {
+                        row[0].cells[5].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchSpaceType) {
+                        row[0].cells[6].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchSpacePurpose) {
+                        row[0].cells[7].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchTotalArea) {
+                        row[0].cells[8].setAttribute('class', 'k-grid-no');
+                    }
+                })
+            },
+            messages: {
+                commands: {
+                    cancel: 'Отмена',
+                    save: 'Сохранить'
+                }
+            }
+        });
+
+        var dataSourceSingleLinkFlat = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("SingelLinkBtiFiasFlatRead", "Tenements")',
+                    contentType: 'application/json; charset=utf-8',
+                    data: { NoBtiMkdId: @Model.NoBtiMkdId, NoFiasMkdId: @Model.NoFiasMkdId },
+                    dataType: 'json'
+                },
+                parameterMap: function (options, operation) {
+                    var parameters = { NoBtiMkdId: options.NoBtiMkdId, NoFiasMkdId: options.NoFiasMkdId };
+                    if (operation !== "read" && options.models) {
+                        parameters.models = kendo.stringify(options.models);
+                    }
+                    return parameters;
+                }
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "EmpId",
+                    fields: {
+                        EmpId: { editable: false, defaultValue: -1 },
+                        Unom: { editable: false, type: "number", defaultValue: null },
+                        CadastralNumber: { editable: false, type: "string" },
+                        Okrug: { editable: false, type: "string", defaultValue: null },
+                        District: { editable: false, type: "string", defaultValue: null },
+                        FlatNumber: { editable: false, type: 'number', defaultValue: null },
+                        SpaceType_Code: { editable: false, type: 'number', defaultValue: null },
+                        SpaceType: { editable: false, type: 'string', defaultValue: null },
+                        SpacePurpose_Code: { editable: false, type: 'number', defaultValue: null },
+                        SpacePurpose: { editable: false, type: 'string', defaultValue: null },
+                        TotalArea: { editable: false, type: "number", defaultValue: null }
+                    }
+                }
+            }
+        });
+
+        dataSourceSingleLinkFlat.group([
+            { field: 'GroupName' },
+        ]);
+
+        $('#SingleLinkFlatGrid').kendoGrid({
+            dataSource: dataSourceSingleLinkFlat,
+            toolbar: [
+                {
+                    template: "<input type='button' class='k-button' value='Связать ЖП в текущей таблице' onclick='linkLSSingle()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='Убрать отмеченные' onclick='deleteSingleRows()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='История изменений' onclick='historyFlat(3)' />"
+                }
+            ],
+            columns: [
+                { field: 'EmpId', hidden: true, title: 'EmpId' },
+                {
+                    field: "GroupName",
+                    hidden: true,
+                    groupHeaderTemplate: " "
+                },
+                { selectable: true, width: "3%" },
+                {
+                    field: 'Unom',
+                    title: 'UNOM',
+                    template: '#: data.Unom != null ? data.Unom : ""#',
+                    width: "5%"
+                },
+                {
+                    field: 'CadastralNumber',
+                    title: 'Кадастровый номер',
+                    template: '#: data.CadastralNumber != null ? data.CadastralNumber : ""#',
+                    width: "10%"
+                },
+                {
+                    field: 'Okrug',
+                    title: 'Округ',
+                    template: '#: data.Okrug != null ? data.Okrug : ""#',
+                    width: "14%"
+                },
+                {
+                    field: 'District',
+                    title: 'Район',
+                    template: '#: data.District != null ? data.District : ""#',
+                    width: "14%"
+                },
+                {
+                    field: 'FlatNumber',
+                    title: 'Номер квартиры',
+                    template: '#: data.FlatNumber != null ? data.FlatNumber : ""#',
+                    width: "4%"
+                },
+                {
+                    field: 'SpaceType',
+                    title: 'Тип помещения',
+                    width: "20%"
+                },
+                {
+                    field: 'SpacePurpose',
+                    title: 'Назначение помещения"',
+                    width: "20%"
+                },
+                {
+                    field: 'TotalArea',
+                    title: 'Общая площадь',
+                    template: Common.UI.CustomTemplate('TotalArea', '#: TotalArea ? kendo.toString(TotalArea,  "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    attributes: { style: 'text-align: right' },
+                    width: "5%"
+                }
+            ],
+            height: 600,
+            editable: { confirmation: true },
+            resizable: true
+        });
+    });
+</script>
+
+<style>
+    #ls_panelbar {
+        width: 98% !important;
+    }
+</style>

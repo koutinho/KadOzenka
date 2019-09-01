@@ -1,0 +1,232 @@
+﻿@using Core.Shared.Extensions
+<style>
+    #flatConsolidationGrid .k-grid-header .k-header {
+        text-align: center;
+    }
+
+    #flatConsolidationGrid td.k-detail-cell {
+        padding: 0px;
+    }
+
+    #flatConsolidationGrid .history {
+        text-align: left;
+    }
+
+    #flatConsolidationGrid .history_to {
+        float: right;
+    }
+
+    #flatConsolidationGrid .k-detail-cell .k-grid {
+        border-left: none;
+        color: gray;
+    }
+
+        #flatConsolidationGrid .k-detail-cell .k-grid .k-grid-header {
+            display: none;
+        }
+
+    .underline {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    img {
+        height: 20px;
+    }
+
+    #flatConsolidationGrid.k-grid td {
+        white-space: inherit;
+    }
+
+        #flatConsolidationGrid.k-grid td:nth-child(5) {
+            color: black;
+        }
+
+    #flatConsolidationGrid .k-grid-header {
+        display: none;
+    }
+
+    #flatConsolidationGrid td span.title {
+        display: block;
+        font-weight: bold;
+        text-align: center;
+    }
+</style>
+<div id="flatConsolidationGrid"></div>
+<script>
+    var flatId = @Html.Raw(Model),
+        nachUrl = '@Html.Raw(Url.Content("~/RegistersView/MfcInputNach?Transition=1"))';
+
+    $(function () {
+        var grid = $('#flatConsolidationGrid').kendoGrid({
+            scrollable: false,
+            columns: [
+                {
+                    field: 'Group',
+                    groupHeaderTemplate: '#=value#',
+                    hidden: true
+                },
+                {
+                    field: 'Source',
+                    width: '50px',
+                    attributes: { style: 'text-align: center;' },
+                    template: function (dataItem) {
+                        if (dataItem.Source == 'Б') {
+                            return '<img src="/images/bti.png" />';
+                        } else if (dataItem.Source == 'Е') {
+                            return '<img src="/images/egrn.png" />';
+                        } else if (dataItem.Source == 'Р') {
+                            return '<img src="/images/logo.png" />';
+                        }
+
+                        return dataItem.Source != null ? dataItem.Source : '';
+                    },
+                    title: ' '
+                },
+                {
+                    field: 'Name',
+                    width: '250px',
+                    title: 'Параметр помещения',
+                    template: '<span class="#:Name?"":"title"#">#:Name?Name:"Параметр помещения"#</span>'
+                },
+                {
+                    field: 'Flat',
+                    template: '<span role="flat" class="#:(Flat && Flat.Value)?"":"title"# #:(Flat && Flat.HaveHistory)?"underline":""#">#:(Flat && Flat.Value)?Flat.Value:Name?"-":"Объект страхования"#</span>',
+                    attributes: { style: 'text-align: center;' },
+                    title: 'Объект страхования'
+                },
+                {
+                    field: 'Egrn',
+                    template: '<span role="egrn" class="#:(Egrn && Egrn.Value)?"":"title"# #:(Egrn && Egrn.HistoryValues && Egrn.HistoryValues.length > 0)?"underline":""#">#:(Egrn && Egrn.Value)?Egrn.Value:Name?"-":"ЕГРН"#</span>',
+                    attributes: { style: 'text-align: center;' },
+                    title: 'ЕГРН'
+                },
+                {
+                    field: 'Egrn',
+                    template: '<span role="bti" class="#:(Bti && Bti.Value)?"":"title"# #:(Bti && Bti.HistoryValues && Bti.HistoryValues.length > 0)?"underline":""#">#:(Bti && Bti.Value)?Bti.Value:Name?"-":"БТИ"#</span>',
+                    attributes: { style: 'text-align: center;' },
+                    title: 'БТИ'
+                },
+                {
+                    field: 'Mfc',
+                    template: '<span role="mfc" class="#:(Mfc && Mfc.Value)?"":"title"# #:(Mfc && Mfc.PeriodRegDate)?"underline":""#">#:(Mfc && Mfc.Value)?Mfc.Value:Name?"-":"МФЦ"#</span>',
+                    attributes: { style: 'text-align: center;' },
+                    title: 'МФЦ'
+                }
+            ],
+            dataSource: {
+                group: { field: 'Group' },
+                sort: { field: 'OrdinalNumber', dir: 'asc' },
+                transport: {
+                    read: {
+                        url: '@Url.Action("FlatConsolidatedData_Read", "Tenements")',
+                        data: { id: '@Model' },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            dataBound: function () {
+                var elProgram = $('table td:contains("Статус участия в программе")').parent().find('td:nth-child(5) span');
+
+                if (elProgram.text() == "ДА") {
+                    elProgram.addClass('text-green');
+                } else {
+                    elProgram.addClass('text-red');
+                }
+
+                elProgram.css('font-size', '16px');
+                elProgram.css('font-weight', 'bold');
+
+                $('span.underline[role="flat"]').click(function (e) {
+                    var tr = $(e.target).closest('tr');
+                    var data = grid.dataItem(tr);
+
+                    ShowHistory(data.Flat.HistoryValues, data.Name);
+                });
+
+                $('span.underline[role="egrn"]').click(function (e) {
+                    var tr = $(e.target).closest('tr');
+                    var data = grid.dataItem(tr);
+
+                    ShowHistory(data.Egrn.HistoryValues, data.Name);
+                });
+                $('span.underline[role="bti"]').click(function (e) {
+                    var tr = $(e.target).closest('tr');
+                    var data = grid.dataItem(tr);
+
+                    ShowHistory(data.Bti.HistoryValues, data.Name);
+                });
+                $('span.underline[role="mfc"]').click(function (e) {
+                    var tr = $(e.target).closest('tr');
+                    var data = grid.dataItem(tr);
+
+                    if (data && data.Mfc && data.Mfc.PeriodRegDate) {
+                        var qsquery = "&qs=(305000400equal'" + '@ObjectModel.Directory.InsuranceSourceType.Mfc.ToString("D")' + "'and308000600equal'" + flatId + "'and305000700equal'" + data.Mfc.PeriodRegDate + "')";
+                        var newWindow = window.open(nachUrl + qsquery, '_blank');
+                        newWindow.focus();
+                    }
+                });
+            }
+        }).data('kendoGrid');
+
+        function ShowHistory(dataSource, attributeName) {
+            var windowElement = $('<div></div>');
+
+            $('body').append(windowElement);
+
+            var modalWindow = windowElement.kendoWindow({
+                title: 'История изменения атрибута ' + attributeName,
+                draggable: false,
+                resizable: false,
+                modal: true,
+                width: '50%',
+                close: function () {
+                    this.destroy();
+                    $('body').css('overflow', 'auto');
+                }
+            }).data('kendoWindow');
+
+            modalWindow.content($('<div id="historyGrid"></div>'));
+
+            $('#historyGrid').kendoGrid({
+                dataSource: new kendo.data.DataSource({
+                    data: dataSource
+                }),
+                columns: [
+                    {
+                        field: 'Value',
+                        title: 'Значение',
+                        attributes: { style: 'text-align: center;' },
+                        headerAttributes: { style: 'text-align: center;' }
+                    },
+                   
+                    {
+                        field: 'From',
+                        title: 'Дата с',
+                        template: '#:kendo.toString(kendo.parseDate(From), "dd.MM.yyyy")#',
+                        attributes: { style: 'text-align: center;' },
+                        headerAttributes: { style: 'text-align: center;' }
+                    },
+                    {
+                        field: 'To',
+                        title: 'Дата по',
+                        template: '#:kendo.toString(kendo.parseDate(To), "dd.MM.yyyy")#',
+                        attributes: { style: 'text-align: center;' },
+                        headerAttributes: { style: 'text-align: center;' }
+                    },
+                    {
+                        field: 'ChangeUser',
+                        title: 'Пользователь',
+                        attributes: { style: 'text-align: center;' },
+                        headerAttributes: { style: 'text-align: center;' }
+                    }
+                 
+                ]
+            });
+
+            $('body').css('overflow', 'hidden');
+            modalWindow.center().open();
+        }
+    });
+</script>

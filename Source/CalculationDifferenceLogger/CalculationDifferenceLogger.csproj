@@ -1,0 +1,109 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="app.config" />
+    <None Remove="Config\Param\Core.DataBase.Connections.Dev.xml" />
+    <None Remove="Config\Param\Core.DataBase.Connections.Prod.xml" />
+    <None Remove="Config\Param\Core.Diagnostics.xml" />
+    <None Remove="Config\Param\Core.DocNumeration.xml" />
+    <None Remove="Config\Param\Core.FileStorages.Dev.xml" />
+    <None Remove="Config\Param\Core.FileStorages.Ppr.xml" />
+    <None Remove="Config\Param\Core.FileStorages.Prod.xml" />
+    <None Remove="Config\Param\Core.LongProcess.xml" />
+    <None Remove="Config\Param\Core.Numeration.xml" />
+    <None Remove="Config\Param\Core.SystemCommon.Dev.xml" />
+    <None Remove="Config\Param\Core.SystemCommon.Ppr.xml" />
+    <None Remove="Config\Param\Core.SystemCommon.Prod.xml" />
+    <None Remove="Config\Param\FmReportTypes.xml" />
+    <None Remove="Config\Param\InsurObjectFlagInsur.xml" />
+    <None Remove="Config\Param\InsurObjectMapBuilding.xml" />
+    <None Remove="Config\Param\InsurObjectMapFlat.xml" />
+    <None Remove="Config\Param\Postgres.Backup.Dev.xml" />
+    <None Remove="Config\Param\Postgres.Backup.Ppr.xml" />
+    <None Remove="Config\Param\Postgres.Backup.Prod.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="app.config">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.DataBase.Connections.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.DataBase.Connections.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.Diagnostics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.DocNumeration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.FileStorages.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.FileStorages.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.FileStorages.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.LongProcess.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.Numeration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.SystemCommon.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.SystemCommon.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.SystemCommon.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\FmReportTypes.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\InsurObjectFlagInsur.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\InsurObjectMapBuilding.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\InsurObjectMapFlat.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Postgres.Backup.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Postgres.Backup.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Postgres.Backup.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Platform" Version="1.0.99" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CIPJS.DAL\CIPJS.DAL.csproj" />
+  </ItemGroup>
+
+</Project>

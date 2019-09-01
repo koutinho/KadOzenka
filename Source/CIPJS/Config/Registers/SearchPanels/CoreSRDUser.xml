@@ -1,0 +1,58 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Width="0" AttributeNumber="0">
+    <children>
+
+      <ControlElement Caption="Подразделение" ID="cbDepartment" OwnType="Combo" HasLinkedCombos="true" AttributeNumber="95000200" RegisterId="941" TextFieldAttribute="94100300" ValueFieldAttribute="94100100" QueryOperation="Equal" />
+
+      <ControlElement Caption="ФИО" ID="cbUser" OwnType="Combo" AttributeNumber="95000100" RegisterId="950" TextFieldAttribute="95000400" ValueFieldAttribute="95000100" ParentFilterAttribute="95000200" QueryOperation="Equal">
+        <parentComboBox>
+          <string>cbDepartment</string>
+        </parentComboBox>
+      </ControlElement>
+
+      <ControlElement Caption="Имя пользователя" ID="txLogin" OwnType="Text" AttributeNumber="95000300" QueryOperation="Like" />
+
+      <ControlElement Caption="Роль" ID="role" OwnType="Combo" ComboBoxFilter="Like" AttributeNumber="95200200" RegisterId="945" TextFieldAttribute="94500200" ValueFieldAttribute="94500100" QueryOperation="Equal" />
+
+      <ControlElement Caption="Учетная запись заблокирована" ID="deleted_panel" OwnType="Panel">
+        <children>
+          <ControlElement Caption="Да" ID="deleted_yes" OwnType="CheckBox" AttributeNumber="95001000" QueryOperation="Equal" DefaultValue="false" Value="1">
+            <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                <Condition Expression="[deleted_no]" />
+              </ConditionGroup>
+            </ConditionGroups>
+          </ControlElement>
+          <ControlElement Caption="Нет" ID="deleted_no" OwnType="CheckBox" AttributeNumber="95001000" QueryOperation="NotEqual" DefaultValue="true" Value="1">
+            <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                <Condition Expression="[deleted_yes]" />
+              </ConditionGroup>
+            </ConditionGroups>
+          </ControlElement>
+        </children>
+      </ControlElement>
+
+      <ControlElement Caption="Доменная учетная запись" ID="ad_panel" OwnType="Panel">
+        <children>
+          <ControlElement Caption="Да" ID="ad_yes" OwnType="CheckBox" AttributeNumber="95001500" QueryOperation="Equal" Value="1">
+            <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                <Condition Expression="[ad_no]" />
+              </ConditionGroup>
+            </ConditionGroups>
+          </ControlElement>
+          <ControlElement Caption="Нет" ID="ad_no" OwnType="CheckBox" AttributeNumber="95001500" QueryOperation="NotEqual" Value="1">
+            <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                <Condition Expression="[ad_yes]" />
+              </ConditionGroup>
+            </ConditionGroups>
+          </ControlElement>
+        </children>
+      </ControlElement>
+
+    </children>
+  </ControlElement>
+
+</RootElement>

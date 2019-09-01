@@ -1,0 +1,29 @@
+﻿<RootElement>
+  <ControlElement Caption="Документ" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="Номер документа" ID="reg_number" OwnType="Text" AttributeNumber="80900900" QueryOperation="Like" />
+
+      <ControlElement Caption="Дата создания" ID="date_panel" OwnType="Panel">
+        <children>
+          <ControlElement Caption="с " ID="create_date_from" OwnType="Calendar" AttributeNumber="80900800" QueryOperation="MoreThan" />
+          <ControlElement Caption="по" ID="create_date_to" OwnType="Calendar" AttributeNumber="80900800" QueryOperation="LessThan" />
+        </children>
+      </ControlElement>
+
+      <ControlElement Caption="Вид документа" ID="type" OwnType="Combo" ReferenceId="12195" AttributeNumber="80900200" QueryOperation="Equal" />
+      <ControlElement Caption="Комментарий" ID="comment" OwnType="Text" AttributeNumber="80901000" QueryOperation="Like" />
+
+    </children>
+  </ControlElement>
+
+  <ControlElement Caption="Автор" OwnType="RadPanel" AttributeNumber="0" Expanded="true">
+    <children>
+      <ControlElement Caption="Подразделение" ID="cbAuthorDepartment" OwnType="Combo" HasLinkedCombos="true" AttributeNumber="95000200" RegisterId="941" TextFieldAttribute="94100300" ValueFieldAttribute="94100100" QueryOperation="Equal" />
+      <ControlElement Caption="ФИО" ID="cbAuthorUser" OwnType="Combo" AttributeNumber="80900500" RegisterId="950" TextFieldAttribute="95000400" ValueFieldAttribute="95000100" ParentFilterAttribute="95000200" QueryOperation="Equal">
+        <parentComboBox>
+          <string>cbAuthorDepartment</string>
+        </parentComboBox>
+      </ControlElement>
+    </children>
+  </ControlElement>
+</RootElement>

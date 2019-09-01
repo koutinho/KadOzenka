@@ -1,0 +1,88 @@
+﻿@using CIPJS.Models.MfcUpload;
+@using Newtonsoft.Json;
+
+@model LogFileDto
+
+<style type="text/css">
+    .k-loading-mask {
+         position: absolute !important; 
+    }
+
+    #loading-icon {
+        width: 100%;
+        height: 52px;
+    }
+</style>
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-1">
+            @Html.CustomLabelFor(m => m.Status)
+        </div>
+        <div class="col-sm-1">
+            <div id="loading-icon">
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div id="statusName">
+                @Html.Label("statusName", Model.Status)
+            </div>
+            <div id="statusProgressBar"></div>
+        </div>
+    </div>
+    <div id="trace-data-placeholder" class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.TraceData)
+        </div>
+        <div class="col-sm-10">
+            @Html.TextAreaFor(m => m.TraceData, new { @class = "k-textbox", @style = "width: 100%;height: 200px;resize: none;" })
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var logFileId = @Html.Raw(JsonConvert.SerializeObject(Model.Id)),
+            percent = @Html.Raw(JsonConvert.SerializeObject(Model.Percent)),
+            statusProgreesBar = $('#statusProgressBar').kendoProgressBar({
+                type: 'percent',
+                animation: {
+                    duration: 600
+                }
+            }).data('kendoProgressBar');
+        if (percent < 100) {
+            $('#trace-data-placeholder').hide();
+            kendo.ui.progress($('#loading-icon'), true);
+
+            var progressInterval = setInterval(function () {
+                    $.ajax({
+                        type: 'GET',
+                        url: '@Url.Action("GetLogFileStatus", "MfcUpload")',
+                        data: { logFileId: logFileId },
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response && response.Data) {
+                                statusProgreesBar.value(response.Data.Percent);
+                                $('label[for="statusName"]').text(response.Data.Status)
+                                if (response.Data.Percent >= 100) {
+                                    kendo.ui.progress($('#loading-icon'), false);
+                                    clearInterval(progressInterval);
+                                    $('#trace-data-placeholder').show();
+                                    $('textarea[name="TraceData"]').val(response.Data.TraceData);
+                                }
+                            }
+
+                            if (response.Errors && response.Errors.length > 0) {
+                                Common.ClearNotification();
+                                Common.ShowError(response.Errors.join('<br>'));
+                                kendo.ui.progress($('#loading-icon'), false);
+                                clearInterval(progressInterval);
+                            }
+                        }
+                });
+            }, 4000);
+        }
+        statusProgreesBar.value(percent);
+    });
+</script>

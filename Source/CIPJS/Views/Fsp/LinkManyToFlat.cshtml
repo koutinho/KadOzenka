@@ -1,0 +1,189 @@
+﻿@model CIPJS.Models.Fsp.LinkManyToFlatViewModel
+<style>
+    form.container {
+        max-width: none;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .modal-dialog-content {
+        width: auto;
+    }
+
+    .form-horizontal {
+        width: auto !important;
+    }
+
+    .row {
+        margin-top: 10px;
+    }
+
+    .unom {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    label {
+        font-weight: normal;
+    }
+
+    .k-checkbox-label {
+        margin-top: 10px
+    }
+</style>
+<form class="container k-form" action="@Url.Action("LinkManyToFlat", "Fsp")" method="post">
+    @foreach (long id in Model.FspIds)
+    {
+        <input type="hidden" name="FspIds[]" value="@id" />
+    }
+    <input type="hidden" name="Unom" data-bind="value: unom" />
+    <div class="row">
+        <div class="col-sm-12">
+            <button class="k-button k-primary" data-bind="click: confirmLink" type="button">Связать с объектами</button>
+            <button class="k-button" data-bind="click: closeWindow" type="button">Отмена</button>
+            @if (Model.ShowUnomUpdateHistory)
+            {
+                <button class="k-button" data-bind="click: showUnomUpdateHistoryGrid" type="button" style="float: right">Таблица изменений UNOM</button>
+            }
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div>
+                <span>Для установления связи между выбранными ФСП и помещениями будет использоваться МКД с UNOM = </span>
+                @if (Model.CurrentBuildingId.HasValue)
+                {
+                    <a class="unom" target="_blank" href="@Url.Action("Index", "ObjectCard", new { ObjId=Model.CurrentBuildingId, RegisterViewId="Tenements", isVertical="true", useMasterPage="true" })">@Model.CurrentUnom</a>
+                }
+                else
+                {
+                    <span>@Model.CurrentUnom</span>
+                }
+                <span> по адресу @Model.CurrentAddress</span>
+            </div>
+            <div style="padding-top:25px">
+                <input id="changeUnomCheckbox" type="checkbox" class="k-checkbox" data-bind="events: { change: changeUnomCheck }" />
+                <label class="k-checkbox-label" for="changeUnomCheckbox">Изменить UNOM (выбрать другой МКД)</label>
+                <input id="unomAutocomplete"
+                       data-role="autocomplete"
+                       data-bind="value: newMkdObjectId, visible: changeUnom, source: unomDataSource, events: { select: onSelectUnom, change: onChangeUnom, filtering: onFilterUnom }"
+                       data-text-field="unom"
+                       data-value-field="emp_id"
+                       data-value-primitive="true"
+                       data-filter="contains"
+                       data-min-length="3">
+                <div data-bind="visible: newUnomSelected">
+                    <div>
+                        <a class="unom" href="#" target="_blank" data-bind="text: newUnom, attr: { href: newMkdObjectHref }"></a>: <span data-bind="text: newAddress"></span>
+                    </div>
+                    <div>
+                        <textarea name="Comment" class="k-textbox" data-bind="value: comments" placeholder="Введите комментарий..." style="width:100%;height:176px"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    var $$ = window.top.$;
+    var windowUnomUpdateHistory = $$('#wndUnomUpdateHistory');
+    var wnd = Common.UI.GetWindow('registerModalWindow', window.parent);
+    wnd.setOptions({ width: 750, height: 400 });
+    wnd.center();
+    var vm = kendo.observable({
+        changeUnom: false,
+        unom: '@Model.CurrentUnom',
+        comments: '@Html.Raw(Model.Comment.Replace("'", "\\'"))',
+        newUnom: '@Model.AltUnom',
+        newAddress: '@Html.Raw(Model.AltAddress.Replace("'", "\\'"))',
+        newMkdObjectId: '@Model.AltUnom',
+        newUnomSelected: function () {
+            return this.get('changeUnom') && this.get('newUnom').length > 0;
+        },
+        newMkdObjectHref: function () {
+            var objid = this.get('newMkdObjectId');
+            return objid == null
+                ? 'javascript:void(0)'
+                : '@Html.Raw(Url.Action("Index", "ObjectCard", new { RegisterViewId = "Tenements", isVertical = "true", useMasterPage = "true" }))&ObjId=' + objid;
+        },
+        unomDataSource: new kendo.data.DataSource({
+            serverFiltering: true,
+            schema: {
+                model: {
+                    fields: { emp_id: { type: 'number' }, unom: { type: 'string' }, short_address: { type: 'string' } }
+                }
+            },
+            transport: {
+                read: {
+                    url: '@Url.Action("FindUnoms", "Building")'
+                }
+            }
+        }),
+        confirmLink: function () {
+            if (this.changeUnom && this.newUnom.length > 0)
+                this.set('unom', this.newUnom);
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение операции',
+                content: 'Связать ФСП в кол-ве @Model.FspIds.Count с квартирами из МКД С UNOM ' + this.unom + '?',
+                onSuccess: this.submitForm,
+                onFail: this.closeWindow
+            });
+        },
+        changeUnomCheck: function (e) {
+            this.set('changeUnom', e.target.checked);
+        },
+        onChangeUnom: function (e) {
+            var value = e.sender.value();
+            if (!value) return this.clearUnom();
+
+            var data = e.sender.dataSource.view();
+            for(var idx = 0, length = data.length; idx < length; idx++)
+                if (data[idx].unom === value)
+                    return true;
+
+            e.sender.value('');
+            this.clearUnom();
+            return false;
+        },
+        onSelectUnom: function(e) {
+            this.set('newUnom', e.dataItem.unom);
+            this.set('newAddress', e.dataItem.short_address);
+            this.set('newMkdObjectId', e.dataItem.emp_id);
+            this.set('comments', '');
+        },
+        onFilterUnom: function(e) {
+            if (!e.sender.value()) {
+                e.preventDefault();
+                e.sender.dataSource.data([]);
+            }
+        },
+        clearUnom: function (e) {
+            this.set('newUnom', '');
+            this.set('newAddress', '');
+            this.set('newMkdObjectId', null);
+            this.set('comments', '');
+        },
+        submitForm: function () {
+            $('form').submit();
+        },
+        closeWindow: function () {
+            windowUnomUpdateHistory.destroy();
+            wnd.close();
+        },
+        showUnomUpdateHistoryGrid: function () {
+            windowUnomUpdateHistory.maximize().open();
+        }
+    });
+    kendo.bind(document.body, vm);
+
+    if (windowUnomUpdateHistory.length === 1)
+        windowUnomUpdateHistory.data('kendoWindow').destroy();
+    windowUnomUpdateHistory = $$('<div id="wndUnomUpdateHistory"></div>')
+        .appendTo(window.top.document.body)
+        .kendoWindow({
+            content: '@Url.Action("UnomUpdateHistoryGrid", "Fsp")',
+            title: 'Таблица изменений UNOM',
+            visible: false
+        })
+        .data('kendoWindow');
+</script>

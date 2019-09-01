@@ -1,0 +1,503 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="09/28/2018 17:14:59" ReportInfo.Modified="05/29/2019 12:40:18" ReportInfo.CreatorVersion="2018.2.19.0">
+  <ScriptText>using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using FastReport;
+using FastReport.Data;
+using FastReport.Dialog;
+using FastReport.Barcode;
+using FastReport.Table;
+using FastReport.Utils;
+
+namespace FastReport
+{
+  public class ReportScript
+  {
+  }
+}
+</ScriptText>
+  <Dictionary/>
+  <ReportPage Name="Page1" RawPaperSize="9" LeftMargin="15" TopMargin="15" RightMargin="15">
+    <ReportTitleBand Name="ReportTitle1" Width="680.4" Height="9.45" CanGrow="true"/>
+    <DataBand Name="BandEmpty" Top="12.65" Width="680.4" Height="37.8">
+      <RichObject Name="Rich2" Left="9.45" Top="18.9" Width="610.47" Height="18.9" CanGrow="true" Text="{\rtf1\ansi\ansicpg1251\deff0\deflang1049{\fonttbl{\f0\fnil\fcharset0 Times New Roman;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset204{\*\fname Arial;}Arial CYR;}{\f3\fnil\fcharset204 Tahoma;}}&#13;&#10;{\colortbl ;\red163\green21\blue21;}&#13;&#10;{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\lang1033\b\f0\fs28\par&#13;&#10;\par&#13;&#10;\par&#13;&#10;\par&#13;&#10;\par&#13;&#10;\par&#13;&#10;\par&#13;&#10;\f1\fs24\par&#13;&#10;[\cf1\b0 EMPTY\cf0\b .EmptyTitle]\par&#13;&#10;\lang1049\b0\f2\par&#13;&#10;\lang1033\f1 [\cf1 EMPTY\cf0 .EmptyText]\lang1049\f3\fs17\par&#13;&#10;}&#13;&#10;"/>
+    </DataBand>
+    <DataBand Name="BandCommon" Top="53.65" Width="680.4" Height="544.32" StartNewPage="true" Guides="47.25">
+      <RichObject Name="Rich1" Top="198.45" Width="680.4" Height="66.15" Text="{\rtf1\ansi\ansicpg1251\deff0\deflang1049{\fonttbl{\f0\fnil\fcharset204{\*\fname Arial;}Arial CYR;}{\f1\fnil\fcharset204 Tahoma;}}&#13;&#10;{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\qc\b\f0\fs28\'c7\'e0\'ea\'eb\'fe\'f7\'e5\'ed\'e8\'e5 \'b9 [Common.DocNumber]\par&#13;&#10;\'ee \'e2\'ee\'e7\'ec\'e5\'f9\'e5\'ed\'e8\'e8 \'f3\'f9\'e5\'f0\'e1\'e0 \'e2 \'f7\'e0\'f1\'f2\'e8 \'ee\'e1\'ff\'e7\'e0\'f2\'e5\'eb\'fc\'f1\'f2\'e2 \par&#13;&#10;\'cf\'f0\'e0\'e2\'e8\'f2\'e5\'eb\'fc\'f1\'f2\'e2\'e0 \'cc\'ee\'f1\'ea\'e2\'fb\b0\f1\fs17\par&#13;&#10;}&#13;&#10;"/>
+      <TableObject Name="Table6" Top="283.5" Width="677.75" Height="105.84">
+        <TableColumn Name="Column159" Width="0"/>
+        <TableColumn Name="Column123" Width="85.05"/>
+        <TableColumn Name="Column124" Width="592.7"/>
+        <TableRow Name="Row112" Height="26.46">
+          <TableCell Name="Cell789" Text="Составлено     [Common.DateInput]  г.     на основании: " VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell643" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell644" VertAlign="Bottom"/>
+        </TableRow>
+        <TableRow Name="Row111" Height="26.46">
+          <TableCell Name="Cell790" Text="Документов по страховому случаю, представленных страховой" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell641" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell642" VertAlign="Bottom"/>
+        </TableRow>
+        <TableRow Name="Row109" Height="26.46">
+          <TableCell Name="Cell791" Text="компанией" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell634" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell635" Border.Lines="Bottom" Text="[Common.InsurOrg] " VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+        <TableRow Name="Row110" Height="26.46">
+          <TableCell Name="Cell792" Text="письмо от" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell639" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell640" Border.Lines="Bottom" Text="[Common.DamageInput] № [Common.InsurNom]" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+      </TableObject>
+      <TextObject Name="Text3" Top="406.35" Width="680.4" Height="18.9" Text="Данные договора страхования" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TableObject Name="Table1" Left="381.78" Width="292.95" Height="120.95">
+        <TableColumn Name="Column1" Width="292.95"/>
+        <TableRow Name="Row1" Height="26.45">
+          <TableCell Name="Cell1" Text="Согласовано" HorzAlign="Center" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row2" MinHeight="94.5" Height="94.5" AutoSize="true">
+          <TableCell Name="Cell6" Text="[Common.DEPTHEAD]" HorzAlign="Center" Font="Arial, 11pt"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table3" Left="381.78" Top="120.96" Width="296.21" Height="37.8">
+        <TableColumn Name="Column7" Width="133.43"/>
+        <TableColumn Name="Column94" Width="10.45"/>
+        <TableColumn Name="Column9" Width="152.33"/>
+        <TableRow Name="Row8">
+          <TableCell Name="Cell32" Border.Lines="Bottom" Border.Width="0.5" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell508" Border.Lines="Bottom" Border.Width="0.5" VertAlign="Bottom"/>
+          <TableCell Name="Cell34" Border.Lines="Bottom" Border.Width="0.5" Text="[Common.PODPISANTHEAD]" HorzAlign="Right" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+        <TableRow Name="Row9">
+          <TableCell Name="Cell37" Text="/подпись/" HorzAlign="Center" Font="Arial, 7pt"/>
+          <TableCell Name="Cell509"/>
+          <TableCell Name="Cell39" Text="              /ф.и.о./" HorzAlign="Center" Font="Arial, 7pt"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table41" Left="381.78" Top="158.76" Width="295.97" Height="18.9">
+        <TableColumn Name="Column242" Width="18.9"/>
+        <TableColumn Name="Column243" Width="45.36"/>
+        <TableColumn Name="Column244" Width="26.46"/>
+        <TableColumn Name="Column245" Width="139.86"/>
+        <TableColumn Name="Column246" Width="65.39"/>
+        <TableRow Name="Row183">
+          <TableCell Name="Cell1022" Text="&quot;" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1023" Border.Lines="Bottom" Border.Width="0.5" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1024" Text="&quot;" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1025" Border.Lines="Bottom" Border.Width="0.5" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1026" Text="[Common.Year]" HorzAlign="Right" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table5" Top="434.7" Width="678.17" Height="100.17">
+        <TableColumn Name="Column11" Width="107"/>
+        <TableColumn Name="Column12" Width="0"/>
+        <TableColumn Name="Column13" Width="259.69"/>
+        <TableColumn Name="Column14" Width="32.89"/>
+        <TableColumn Name="Column15" Width="170.1"/>
+        <TableColumn Name="Column263" Width="108.49"/>
+        <TableColumn Name="Column225" Width="0"/>
+        <TableRow Name="Row11" Height="26.46">
+          <TableCell Name="Cell921" Text="Договор  страхования (страховое свидетельство)" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="6"/>
+          <TableCell Name="Cell42" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell43" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell44" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell45" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1049"/>
+          <TableCell Name="Cell962"/>
+        </TableRow>
+        <TableRow Name="Row12" Height="26.46">
+          <TableCell Name="Cell46" Text="Серия, номер" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell47" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell48" Border.Lines="Bottom" Border.Width="0.5" Text="[Common.Ndog]" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell49" Text="от" HorzAlign="Right" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell50" Border.Lines="Bottom" Border.Width="0.5" Text="[Common.Ndogdat]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell1050"/>
+          <TableCell Name="Cell963"/>
+        </TableRow>
+        <TableRow Name="Row13" MinHeight="32.13" Height="32.13" AutoSize="true">
+          <TableCell Name="Cell51" Text="Страхователь" Padding="2, 1, 0, 1" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell52" Border.Lines="Bottom" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell53" Border.Lines="Bottom" Border.Width="0.5" Text="[Common.InsurWorker]" Padding="0, 1, 0, 1" HorzAlign="Center" VertAlign="Bottom" Font="Arial, 11pt, style=Bold" ColSpan="3"/>
+          <TableCell Name="Cell54" Border.Lines="Bottom" HorzAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell55" Border.Lines="Bottom" HorzAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell1051" Border.Lines="Bottom" Border.Width="0.5" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell964" Border.Lines="Bottom" HorzAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row172" Height="15.12">
+          <TableCell Name="Cell965" Text="(фамилия, имя, отчество," Padding="2, 0, 2, 1" HorzAlign="Center" Font="Arial, 7pt" ColSpan="6"/>
+          <TableCell Name="Cell966"/>
+          <TableCell Name="Cell967" HorzAlign="Center" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell968"/>
+          <TableCell Name="Cell969"/>
+          <TableCell Name="Cell1053"/>
+          <TableCell Name="Cell970"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+    <DataBand Name="BandAddress" Top="601.17" Width="680.4" Height="41.58">
+      <TableObject Name="Table34" Width="678.13" Height="41.58">
+        <TableColumn Name="Column205" Width="678.13"/>
+        <TableRow Name="Row164" MinHeight="26.46" Height="26.46">
+          <TableCell Name="Cell922" Border.Lines="Bottom" Border.Width="0.5" Text="[Address.Address]" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+        <TableRow Name="Row179" Height="15.12" AutoSize="true">
+          <TableCell Name="Cell1006" Text="[Address.Podtext]" HorzAlign="Center" Font="Arial, 7pt"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+    <DataBand Name="BandInsur" Top="645.95" Width="680.4" Height="425.25">
+      <TableObject Name="Table32" Width="677.75" Height="109.62">
+        <TableColumn Name="Column195" Width="120.96"/>
+        <TableColumn Name="Column196" Width="1.89"/>
+        <TableColumn Name="Column197" Width="54.81"/>
+        <TableColumn Name="Column198" Width="149.31"/>
+        <TableColumn Name="Column199" Width="350.78"/>
+        <TableRow Name="Row184" Height="26.46">
+          <TableCell Name="Cell1054" Border.Lines="Bottom" Border.Width="0.5" Text="[Insur.Bank1]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="5"/>
+          <TableCell Name="Cell1055" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell1056" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell1057" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell1058" Border.Lines="Bottom" VertAlign="Bottom"/>
+        </TableRow>
+        <TableRow Name="Row174" Height="15.12">
+          <TableCell Name="Cell976" Text="банковские реквизиты)" HorzAlign="Center" Font="Arial, 7pt" ColSpan="5"/>
+          <TableCell Name="Cell977"/>
+          <TableCell Name="Cell978"/>
+          <TableCell Name="Cell979"/>
+          <TableCell Name="Cell980"/>
+        </TableRow>
+        <TableRow Name="Row158" Height="26.46">
+          <TableCell Name="Cell890" Border.Lines="Bottom" Border.Width="0.5" Text="[Insur.Bank2]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="5"/>
+          <TableCell Name="Cell891" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell892" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell893" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell894" Border.Lines="Bottom" VertAlign="Bottom"/>
+        </TableRow>
+        <TableRow Name="Row175" Height="15.12">
+          <TableCell Name="Cell981" ColSpan="5"/>
+          <TableCell Name="Cell982"/>
+          <TableCell Name="Cell983"/>
+          <TableCell Name="Cell984"/>
+          <TableCell Name="Cell985"/>
+        </TableRow>
+        <TableRow Name="Row159" Height="26.46">
+          <TableCell Name="Cell895" Border.Lines="Bottom" Border.Width="0.5" Text="[Insur.Bank3]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="5"/>
+          <TableCell Name="Cell896" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell897" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell898" Border.Lines="Bottom" VertAlign="Bottom"/>
+          <TableCell Name="Cell899" Border.Lines="Bottom" VertAlign="Bottom"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table4" Top="160.65" Width="677.38" Height="264.6">
+        <TableColumn Name="Column165" Width="62.37"/>
+        <TableColumn Name="Column166" Width="85.43"/>
+        <TableColumn Name="Column167" Width="19.28"/>
+        <TableColumn Name="Column168" Width="153.09"/>
+        <TableColumn Name="Column169" Width="357.21"/>
+        <TableRow Name="Row147" Height="26.46">
+          <TableCell Name="Cell835" Border.Lines="Bottom" Text="[Insur.ST4TEXT_1]" NullValue="()" VertAlign="Bottom" Font="Arial, 11pt, style=Italic" ColSpan="5"/>
+          <TableCell Name="Cell836" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell837" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell838" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell839" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row148" Height="26.46">
+          <TableCell Name="Cell840" Text="В том числе:" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="5"/>
+          <TableCell Name="Cell841" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell842" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell843" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell844" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row149" Height="26.46">
+          <TableCell Name="Cell845" Text="Нежилые помещения" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell846" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell847" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell848" Border.Lines="Bottom" Text="[Insur.ST1]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell849" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row150" Height="26.46">
+          <TableCell Name="Cell850" Text="Внеквартирное инженерное оборудование" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="4"/>
+          <TableCell Name="Cell851" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell852" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell853" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell854" Border.Lines="Bottom" Text="[Insur.ST2]" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+        <TableRow Name="Row151" Height="26.46">
+          <TableCell Name="Cell855" Text="Лифты" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell856" Border.Lines="Bottom" Text="[Insur.ST3]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="4"/>
+          <TableCell Name="Cell857" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell858" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell859" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row152" Height="26.46">
+          <TableCell Name="Cell860" Text="Страховая сумма" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell861" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell862" Border.Lines="Bottom" Text="[Insur.SS4]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell863" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell864" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row153" Height="26.46">
+          <TableCell Name="Cell865" Text="В том числе:" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="5"/>
+          <TableCell Name="Cell866" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell867" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell868" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell869" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row154" Height="26.46">
+          <TableCell Name="Cell870" Text="Нежилые помещения" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell871" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell872" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell873" Border.Lines="Bottom" Text="[Insur.SS1]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell874" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row155" Height="26.46">
+          <TableCell Name="Cell875" Text="Внеквартирное инженерное оборудование" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="4"/>
+          <TableCell Name="Cell876" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell877" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell878" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell879" Border.Lines="Bottom" Text="[Insur.SS2]" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+        <TableRow Name="Row156" Height="26.46">
+          <TableCell Name="Cell880" Text="Лифты" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell881" Border.Lines="Bottom" Text="[Insur.SS3]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="4"/>
+          <TableCell Name="Cell882" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell883" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell884" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+      </TableObject>
+      <RichObject Name="Rich4" Left="318.28" Top="141.75" Width="359.1" Height="18.9" Border.Lines="Bottom" Text="{\rtf1\ansi\ansicpg1251\deff0\deflang1049{\fonttbl{\f0\fnil\fcharset204{\*\fname Arial;}Arial CYR;}{\f1\fnil\fcharset0 Arial;}{\f2\fnil\fcharset204 Tahoma;}}&#13;&#10;{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\f0\fs22 [Insur.ST4]\lang1033\f1  \i [Insur.ST4TEXT]\lang1049\i0\f2\fs17\par&#13;&#10;}&#13;&#10;"/>
+      <RichObject Name="Rich3" Top="141.75" Width="318.28" Height="22.68" Text="{\rtf1\ansi\ansicpg1251\deff0\deflang1049{\fonttbl{\f0\fnil\fcharset204{\*\fname Arial;}Arial CYR;}{\f1\fnil\fcharset204 Tahoma;}}&#13;&#10;{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\f0\fs22\'d1\'f2\'f0\'e0\'f5\'ee\'e2\'e0\'ff \'f1\'f2\'ee\'e8\'ec\'ee\'f1\'f2\'fc \'ee\'e1\'fa\'e5\'ea\'f2\'e0 \'f1\'f2\'f0\'e0\'f5\'ee\'e2\'e0\'ed\'e8\'ff\f1\fs17\par&#13;&#10;}&#13;&#10;" Padding="5, 1, 2, 1"/>
+    </DataBand>
+    <DataBand Name="BandTitle" Top="1074.4" Width="680.4" Height="28.35">
+      <TextObject Name="Text8" Width="670.95" Height="28.35" Text="Расчет ущерба" HorzAlign="Center" VertAlign="Bottom" Font="Arial, 12pt, style=Bold"/>
+    </DataBand>
+    <DataBand Name="BandRaschet" Top="1105.95" Width="680.4" Height="612.36">
+      <TableObject Name="Table42" Width="677.82" Height="279.51">
+        <TableColumn Name="Column264" Width="139.63"/>
+        <TableColumn Name="Column265" Width="8.46"/>
+        <TableColumn Name="Column266" Width="67.81"/>
+        <TableColumn Name="Column267" Width="246.08"/>
+        <TableColumn Name="Column268" Width="215.84"/>
+        <TableRow Name="Row185" Height="32.15">
+          <TableCell Name="Cell1059" Text="Сумма ущерба" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell1060" Border.Lines="Bottom" Text="[Raschet.SumDamage]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="4"/>
+          <TableCell Name="Cell1061" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1062" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1063" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row186" Height="32.15">
+          <TableCell Name="Cell1064" Border.Lines="Bottom" Text="([Raschet.SumDamageText])" VertAlign="Bottom" Font="Arial, 11pt, style=Italic" ColSpan="5"/>
+          <TableCell Name="Cell1065" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1066" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1067" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1068" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row187" Height="41.58">
+          <TableCell Name="Cell1069" Text="Размер возмещения ущерба в части обязательств Правительства Москвы (страховой субсидии)" Padding="2, 1, 0, 1" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="5"/>
+          <TableCell Name="Cell1070" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1071" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1072" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1073" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row188" Height="32.15">
+          <TableCell Name="Cell1074" Text="([Raschet.PartTown]% от суммы ущерба)" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell1075" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1076" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1077" Border.Lines="Bottom" Text="[Raschet.Doplata]" HorzAlign="Right" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell1078" Border.Lines="Bottom" HorzAlign="Right" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row189" Height="32.15">
+          <TableCell Name="Cell1079" Border.Lines="Bottom" Text="([Raschet.DoplataText])" VertAlign="Bottom" Font="Arial, 11pt, style=Italic" ColSpan="5"/>
+          <TableCell Name="Cell1080" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1081" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1082" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1083" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row190" Height="32.15">
+          <TableCell Name="Cell1084" Text="Расчет произвел:" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell1085" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1086" Border.Lines="Bottom" Text="[Raschet.AgreementDepFio]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell1087" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1088" Border.Lines="Bottom" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row191" Height="26.11">
+          <TableCell Name="Cell1089" Font="Times New Roman, 12pt" ColSpan="5"/>
+          <TableCell Name="Cell1090" HorzAlign="Center" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell1091" HorzAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1092" HorzAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1093" HorzAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row192" Height="32.15">
+          <TableCell Name="Cell1094" Text="[Raschet.AgreementDepFio2]" Font="Arial, 11pt" ColSpan="4"/>
+          <TableCell Name="Cell1095" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1096" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1097" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1098" Border.Lines="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row193" Height="18.92">
+          <TableCell Name="Cell1099" Font="Times New Roman, 12pt" ColSpan="4"/>
+          <TableCell Name="Cell1100" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1101" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1102" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1103" Text="(подпись)" HorzAlign="Center" Font="Arial, 7pt"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table26" Top="283.5" Width="149.31" Height="56.69">
+        <TableColumn Name="Column269" Width="149.31"/>
+        <TableRow Name="Row194" Height="32.13">
+          <TableCell Name="Cell1104" Border.Lines="Bottom" Border.Width="0.5" Text="[Common.DateInput]" HorzAlign="Center" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+        <TableRow Name="Row177" Height="24.56">
+          <TableCell Name="Cell1000" Text="(дата)" HorzAlign="Center" Font="Arial, 7pt"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table43" Top="349.65" Width="677.32" Height="47.26">
+        <TableColumn Name="Column270" Restrictions="HideAllProperties" Width="380.65"/>
+        <TableColumn Name="Column271" Width="17.85"/>
+        <TableColumn Name="Column138" Width="58.59"/>
+        <TableColumn Name="Column139" Width="54.05"/>
+        <TableColumn Name="Column140" Width="1"/>
+        <TableColumn Name="Column272" Width="11.34"/>
+        <TableColumn Name="Column273" Width="57.83"/>
+        <TableColumn Name="Column143" Width="96.01"/>
+        <TableRow Name="Row195" Height="33.08">
+          <TableCell Name="Cell1105" Text="Проверил:" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell1106" Border.Lines="Bottom" Border.Width="0.5" Font="Times New Roman, 12pt" ColSpan="4"/>
+          <TableCell Name="Cell718" Border.Lines="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell719" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell720" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1107" Text="[Raschet.AgreementFio2]" Padding="0, 1, 0, 1" HorzAlign="Right" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell1108" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell723" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row196" Height="14.18">
+          <TableCell Name="Cell1109" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1110" Text="(подпись)" HorzAlign="Center" Font="Arial, 7pt" ColSpan="4"/>
+          <TableCell Name="Cell727" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell728" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell729" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell1111" Text="              /ф.и.о./" HorzAlign="Center" Font="Arial, 7pt" ColSpan="3"/>
+          <TableCell Name="Cell1112" HorzAlign="Center" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell732" HorzAlign="Center" Font="Times New Roman, 8pt"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table44" Left="379.89" Top="404.46" Width="296.35" Height="18.9">
+        <TableColumn Name="Column247" Width="18.9"/>
+        <TableColumn Name="Column248" Width="45.74"/>
+        <TableColumn Name="Column249" Width="26.46"/>
+        <TableColumn Name="Column250" Width="139.1"/>
+        <TableColumn Name="Column251"/>
+        <TableRow Name="Row197">
+          <TableCell Name="Cell1027" Text="&quot;" Padding="0, 1, 2, 1" Font="Arial, 11pt"/>
+          <TableCell Name="Cell1028" Border.Lines="Bottom" Border.Width="0.5" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1029" Text="&quot;" Font="Arial, 11pt"/>
+          <TableCell Name="Cell1030" Border.Lines="Bottom" Border.Width="0.5" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1031" Text="[Common.Year]" HorzAlign="Right" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+      </TableObject>
+      <TextObject Name="Text9" Top="472.5" Width="674.73" Height="18.9" Text="Заключение о выплате из бюджета города Москвы" HorzAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TableObject Name="Table45" Top="500.85" Width="676.64" Height="111.51">
+        <TableColumn Name="Column274" Width="155.74"/>
+        <TableColumn Name="Column275" Width="61.24"/>
+        <TableColumn Name="Column276" Width="184.09"/>
+        <TableColumn Name="Column277" Width="61.24"/>
+        <TableColumn Name="Column278" Width="214.33"/>
+        <TableRow Name="Row198" Height="32.13">
+          <TableCell Name="Cell1113" Text="Подлежит выплате" VertAlign="Bottom" Font="Arial, 11pt"/>
+          <TableCell Name="Cell1114" Border.Lines="Bottom" Border.Width="0.5" Text="[Raschet.PaymentInsur]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="4"/>
+          <TableCell Name="Cell1115" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1116" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1117" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row199" Height="32.13">
+          <TableCell Name="Cell1118" Border.Lines="Bottom" Border.Width="0.5" Text="([Raschet.PaymentInsurText])" VertAlign="Bottom" Font="Arial, 11pt, style=Italic" ColSpan="5"/>
+          <TableCell Name="Cell1119" VertAlign="Bottom" Font="Times New Roman, 12pt, style=Italic"/>
+          <TableCell Name="Cell1120" VertAlign="Bottom" Font="Times New Roman, 12pt, style=Italic"/>
+          <TableCell Name="Cell1121" VertAlign="Bottom" Font="Times New Roman, 12pt, style=Italic"/>
+          <TableCell Name="Cell1122" VertAlign="Bottom" Font="Times New Roman, 12pt, style=Italic"/>
+        </TableRow>
+        <TableRow Name="Row200" Height="32.13">
+          <TableCell Name="Cell1123" Text="В выплате следует отказать" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="2"/>
+          <TableCell Name="Cell1124" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1125" Border.Lines="Bottom" Border.Width="0.5" Text="[Raschet.Reject]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell1126" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1127" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row201" Height="15.12">
+          <TableCell Name="Cell1128" ColSpan="2"/>
+          <TableCell Name="Cell1129"/>
+          <TableCell Name="Cell1130" Text="(указать причину)" HorzAlign="Center" Font="Arial, 7pt" ColSpan="3"/>
+          <TableCell Name="Cell1131" HorzAlign="Center"/>
+          <TableCell Name="Cell1132" HorzAlign="Center"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+    <DataBand Name="BandReject" Top="1721.51" Width="680.4" Height="30.62">
+      <TableObject Name="Table35" Width="677.01" Height="30.62">
+        <TableColumn Name="Column210" Width="155.74"/>
+        <TableColumn Name="Column211" Width="70.69"/>
+        <TableColumn Name="Column212" Width="184.09"/>
+        <TableColumn Name="Column213" Width="61.24"/>
+        <TableColumn Name="Column214" Width="205.25"/>
+        <TableRow Name="Row169" Height="30.62">
+          <TableCell Name="Cell947" Border.Lines="Bottom" Border.Width="0.5" Text="[Reject.RejectNextRow]" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="5"/>
+          <TableCell Name="Cell948" Border.Lines="Bottom"/>
+          <TableCell Name="Cell949" Border.Lines="Bottom"/>
+          <TableCell Name="Cell950" Border.Lines="Bottom"/>
+          <TableCell Name="Cell951" Border.Lines="Bottom"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+    <DataBand Name="BandSign" Top="1755.33" Width="680.4" Height="198.45">
+      <TableObject Name="Table46" Top="85.05" Width="677.12" Height="64.26">
+        <TableColumn Name="Column279" Width="380.65"/>
+        <TableColumn Name="Column280" Width="10.5"/>
+        <TableColumn Name="Column152" Width="58.59"/>
+        <TableColumn Name="Column153" Width="10.5"/>
+        <TableColumn Name="Column154" Width="54.05"/>
+        <TableColumn Name="Column281" Width="11.34"/>
+        <TableColumn Name="Column282" Width="57.75"/>
+        <TableColumn Name="Column157" Width="93.74"/>
+        <TableRow Name="Row202" MinHeight="45.36" Height="45.36" AutoSize="true">
+          <TableCell Name="Cell1133" Text="[Sign.SignatureDep]" Padding="0, 1, 0, 1" Font="Arial, 11pt" RowSpan="2"/>
+          <TableCell Name="Cell1134" Border.Lines="Bottom" Border.Width="0.5" Font="Times New Roman, 12pt" ColSpan="4"/>
+          <TableCell Name="Cell760" Border.Lines="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell761" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell762" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1135" Text="[Sign.SignatureFio]" Padding="0, 1, 0, 1" HorzAlign="Right" VertAlign="Bottom" Font="Arial, 11pt" ColSpan="3"/>
+          <TableCell Name="Cell1136" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell765" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row203" MinHeight="26.46" AutoSize="true">
+          <TableCell Name="Cell1137" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1138" Text="(подпись)" HorzAlign="Center" Font="Arial, 7pt" ColSpan="4"/>
+          <TableCell Name="Cell769" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell770" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell771" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell1139" Text="              /ф.и.о./" HorzAlign="Center" Font="Arial, 7pt" ColSpan="3"/>
+          <TableCell Name="Cell1140" HorzAlign="Center" Font="Times New Roman, 8pt"/>
+          <TableCell Name="Cell774" HorzAlign="Center" Font="Times New Roman, 8pt"/>
+        </TableRow>
+      </TableObject>
+      <TableObject Name="Table39" Left="381.02" Top="151.2" Width="296.35" Height="18.9">
+        <TableColumn Name="Column232" Width="18.9"/>
+        <TableColumn Name="Column233" Width="45.74"/>
+        <TableColumn Name="Column234" Width="26.46"/>
+        <TableColumn Name="Column235" Width="139.1"/>
+        <TableColumn Name="Column236"/>
+        <TableRow Name="Row181">
+          <TableCell Name="Cell1012" Text="&quot;" Padding="0, 1, 2, 1" Font="Arial, 11pt"/>
+          <TableCell Name="Cell1013" Border.Lines="Bottom" Border.Width="0.5" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1014" Text="&quot;" Font="Arial, 11pt"/>
+          <TableCell Name="Cell1015" Border.Lines="Bottom" Border.Width="0.5" HorzAlign="Center" VertAlign="Bottom" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell1016" Text="[Common.Year]" HorzAlign="Right" VertAlign="Bottom" Font="Arial, 11pt"/>
+        </TableRow>
+      </TableObject>
+    </DataBand>
+  </ReportPage>
+</Report>

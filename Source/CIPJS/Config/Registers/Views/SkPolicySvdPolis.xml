@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="309" DefaultLayoutId="1003091" AllowSearchPanelResize="false" SrdRegisterCtegoryId="1"
+              IsBasic="false" OpenEmpty="true" LinkedRegistersList="309, 320, 321, 328, 301, 308" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
+              SearchPanel="SkPolicySvdPolis" SearchPanelWindowHeight="654" SRDFunctionTag="INSUR.SK.POLICY">
+  <Buttons>
+    <Button Caption="Выгрузить в Excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="INSUR.SK.POLICY.EXPORT"/>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>

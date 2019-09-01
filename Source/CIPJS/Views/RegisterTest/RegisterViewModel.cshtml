@@ -1,0 +1,194 @@
+﻿@using CIPJS.Models.RegisterTest;
+@using Core.Register;
+
+@model List<RegisterAttributeField>
+
+
+<div id="attributeList" class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    @{
+        foreach (RegisterAttributeField field in Model)
+        {
+            if (field.IsPrimaryKey)
+            {
+                <text>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.Label(field.Title)
+                    </div>
+                    <div class="col-sm-10" id="PrimaryKey">
+                        @Html.Label(field.Value?.ToString())
+                    </div>
+                </div>
+                </text>
+                continue;
+            }
+
+            switch (field.Type)
+            {
+                case RegisterAttributeType.BOOLEAN:
+                    <text>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>@field.Title</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.Kendo().CheckBox().Name(field.AttributeId.ToString()).Checked(field.Value == null || field.Value == DBNull.Value ? false : Convert.ToBoolean(field.Value)).HtmlAttributes(new { dataAttrId = field.AttributeId })
+                        </div>
+                    </div>
+                    </text>
+                    break;
+                case RegisterAttributeType.DATE:
+                    <text>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>@field.Title</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().DateTimePicker()
+                                .Name(field.AttributeId.ToString())
+                                .Format("dd.MM.yyyy HH:mm")
+                                .Value(field.Value == null || field.Value == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(field.Value))
+                                .HtmlAttributes(new { style = "width: 50%", dataAttrId = field.AttributeId })
+                            )
+                        </div>
+                    </div>
+                    </text>
+                    break;
+                case RegisterAttributeType.DECIMAL:
+                    <text>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>@field.Title</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().NumericTextBox<decimal>()
+                                .Name(field.AttributeId.ToString())
+                                .Format("N2")
+                                .Decimals(2)
+                                .Value(field.Value == null || field.Value == DBNull.Value ? (decimal?)null : Convert.ToDecimal(field.Value))
+                                .HtmlAttributes(new { style = "width: 50%", dataAttrId = field.AttributeId }))
+                        </div>
+                    </div>
+                    </text>
+                    break;
+                case RegisterAttributeType.INTEGER:
+                    <text>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>@field.Title</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().NumericTextBox<long>()
+                                .Name(field.AttributeId.ToString())
+                                .Format("N0")
+                                .Decimals(0)
+                                .Value(field.Value == null || field.Value == DBNull.Value ? (long?)null : Convert.ToInt64(field.Value))
+                                .HtmlAttributes(new { style = "width: 50%", dataAttrId = field.AttributeId }))
+                        </div>
+                    </div>
+                    </text>
+                    break;
+                case RegisterAttributeType.STRING:
+                    <text>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>@field.Title</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.TextArea(field.AttributeId.ToString(), (field.Value == null || field.Value == DBNull.Value ? string.Empty : field.Value?.ToString()), 3, 0, new { @class = "k-textbox", @style = "width: 50%; resize: none;", dataAttrId = field.AttributeId })
+                        </div>
+                    </div>
+                    </text>
+                    break;
+                case RegisterAttributeType.REFERENCE:
+                    <text>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>@field.Title</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().DropDownList()
+                                .Name(field.AttributeId.ToString())
+                                .DataTextField("Value")
+                                .DataValueField("Value")
+                                .DataSource(source => {
+                                    source.Read(read =>
+                                    {
+                                        read.Action("GetItems", "Dictionary", new { referenceId = field.ReferenceId });
+                                    });
+                                })
+                                .Value(field.Value == null || field.Value == DBNull.Value ? "0" : field.Value?.ToString())
+                                .HtmlAttributes(new { style = "width: 50%", dataAttrId = field.AttributeId }))
+                        </div>
+                    </div>
+                    </text>
+                    break;
+                case RegisterAttributeType.LINK:
+                    <text>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label>@field.Title</label>
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().DropDownList()
+                                .Name(field.AttributeId.ToString())
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .DataSource(source => {
+                                    source.Read(read =>
+                                    {
+                                        read.Action("GetItems", "RegisterTest", new { registerId = field.ParentRegisterId });
+                                    });
+                                })
+                                .Value(field.Value == null || field.Value == DBNull.Value ? "0" : field.Value?.ToString())
+                                .HtmlAttributes(new { style = "width: 50%", dataAttrId = field.AttributeId }))
+                        </div>
+                    </div>
+                    </text>
+                    break;
+            }
+        }
+    }
+    <div class="form-group">
+        <div class="col-sm-2">
+            @(Html.Kendo().Button()
+                .Name("Submit")
+                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                .Content("Сохранить")
+                .Events(ev => ev.Click("onClickSubmit")))
+        </div>
+    </div>
+</div>
+
+<script>
+    function onClickSubmit(e) {
+        var objectId = @ViewBag.ObjectId;
+        var registerId = @ViewBag.RegisterId;
+
+        var result = [];
+        $('[dataattrid]').each(function (index, element) {
+            if (element.type != 'hidden') {
+                if (element.type == 'checkbox') {
+                    result.push({ AttributeId: element.getAttribute('dataattrid'), Value: element.checked });
+                } else {
+                    result.push({ AttributeId: element.getAttribute('dataattrid'), Value: element.value });
+                }
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            contentType: 'application/json',
+            url: '@Url.Action("SaveObject", "RegisterTest")',
+            data: JSON.stringify({ list: result, registerId: registerId, objectId: objectId }),
+            dataType: 'json',
+            success: function (result) {
+                objectId = result.ObjectId;
+                Common.ShowMessage("Данные успешно сохранены");
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            }
+        });
+    }
+</script>

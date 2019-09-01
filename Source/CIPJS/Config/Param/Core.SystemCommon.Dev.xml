@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SystemCommon xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ApplicationName>Система страхования</ApplicationName>
+  <KendoTheme>metro</KendoTheme>
+  <DefaultLayout>_Layout</DefaultLayout>
+  
+  <ActiveDirectoryDomain>GENIX.genix.dc</ActiveDirectoryDomain>
+
+  <DefaultDomainName>GENIX1</DefaultDomainName>
+
+  <Oracle10SupportEnable>false</Oracle10SupportEnable>
+
+  <Oracle10SupportPort>8005</Oracle10SupportPort>
+
+  <SrdSettings>
+    <UseRoleSubsystem>false</UseRoleSubsystem>
+  </SrdSettings>
+
+  <MailServer>
+    <Host>pochta.mos.ru</Host>
+    <Port>25</Port>
+    <Login>ops_system@property.mos.ru</Login>
+    <Password></Password>
+    <EnableSsl>false</EnableSsl>
+    <FromEmail>ops_noreply@property.mos.ru</FromEmail>
+  </MailServer>
+
+  <ErrorManagment>
+    <Phone></Phone>
+    <Email></Email>
+  </ErrorManagment>
+</SystemCommon>

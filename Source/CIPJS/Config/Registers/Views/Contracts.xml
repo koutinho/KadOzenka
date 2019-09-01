@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="310" DefaultLayoutId="1003101" AllowSearchPanelResize="false" SrdRegisterCtegoryId="1"
+              IsBasic="false" OpenEmpty="false" LinkedRegistersList="310, 312, 316, 809, 258, 328, 345, 319, 386" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
+              SearchPanel="Contracts" SearchPanelWindowHeight="590" ObjectCardTitleTemplate="Номер договора №[310000900] от [310001000:dd.MM.yyyy]"
+              SRDFunctionTag="INSUR.COMMPROP.RIGHT">
+  <Buttons>
+    <Button Caption="Выгрузить в Excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="INSUR.COMMPROP.RIGHT.EXPORT"/>
+    <Button Caption="Сформировать счета" NavigateURL="~/Contract/FormInvoices" OpenInRadWindow="true" NeedRefresh="true" SRDFunctionTag="INSUR.COMMPROP.RIGHT.INVOICECREATE">
+      <Parameters>
+        <Parameter Key="id" Value="[ObjectId]" />
+      </Parameters>
+    </Button>
+  </Buttons>
+  <Tabs>
+    <Tab Caption="Договор" NavigateURL="/Contract/Details">
+      <Parameters>
+        <Parameter Key="id" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
+    <Tab Caption="Объект страхования МКД" NavigateURL="~/Tenements/InsuranceObjects">
+      <Parameters>
+        <Parameter Key="Id" Value="[312000200]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Hide">
+          <Conditions>
+            <Condition Key="[312000200]" Operation="Equal" Value="" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Tab>
+    <Tab Caption="Расчет" NavigateURL="/Calculation/ComonData">
+      <Parameters>
+        <Parameter Key="calculationId" Value="[312000100]" />
+      </Parameters>
+    </Tab>
+    <Tab Caption="ФСП" NavigateURL="/Calculation/Print">
+      <Parameters>
+        <Parameter Key="Id" Value="[312000200]" />
+      </Parameters>
+    </Tab>
+    <Tab Caption="Платежи" NavigateURL="/Calculation/Print">
+      <Parameters>
+        <Parameter Key="Id" Value="[312000200]" />
+      </Parameters>
+    </Tab>
+    <Tab Caption="Расчет ущерба" NavigateURL="/Calculation/Print">
+      <Parameters>
+        <Parameter Key="Id" Value="[312000200]" />
+      </Parameters>
+    </Tab>
+    <Tab Caption="Сведения о страховых выплатах" NavigateURL="/Calculation/Print">
+      <Parameters>
+        <Parameter Key="Id" Value="[312000200]" />
+      </Parameters>
+    </Tab>
+    <Tab Caption="Сведения об отказах в страховых выплатах" NavigateURL="/Calculation/Print">
+      <Parameters>
+        <Parameter Key="Id" Value="[312000200]" />
+      </Parameters>
+    </Tab>
+    <Tab Caption="Печатные формы" NavigateURL="/RegistersView/FinanceSavedReport">
+        <Parameters>
+          <Parameter Key="Transition" Value="1" />
+          <Parameter Key="80900600" Value="[RegisterId]"/>
+          <Parameter Key="80900700" Value="[ObjectId]" />
+        </Parameters>
+      </Tab>
+    </Tabs>
+</RegisterView>

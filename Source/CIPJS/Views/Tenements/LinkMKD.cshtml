@@ -1,0 +1,755 @@
+﻿@using ObjectModel.Bti;
+@using ObjectModel.Insur;
+
+<ul id="ls_panelbar" class="panelbar">
+    <li>
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group"></div>
+            <div class="form-group">
+                <div id="ToolbarMKD">
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="NoBtiMkd">
+        <span>Для МКД, связанного с ЕГРН, не найден МКД, связанный с БТИ</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div id="NoBtiMkdGrid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="NoFiasMkd">
+        <span>Для МКД, связанного с БТИ, не найден МКД, связанный с ЕГРН</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div id="NoFiasMkdGrid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+    <li id="Reason">
+        <span>Основание</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        @Html.TextArea("Reason", "", 2, 1, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
+
+<script>
+    function getSelectedId() {
+        var grid = $('#NoBtiMkdGrid').data('kendoGrid');
+        var selected = grid.dataItem(grid.select());
+        if (selected) {
+            return selected.EmpId;
+        }
+        return selected;
+    }
+
+    function deleteRows() {
+        Common.ClearNotification();
+        kendo.ui.progress($('body'), true);
+        var dataSource = $('#NoFiasMkdGrid').data('kendoGrid').dataSource;
+        var data = dataSource.data();
+        var arrayUid = [];
+        for (var i = 0; i < data.length; ++i) {
+            var row = $('#NoFiasMkdGrid').data('kendoGrid').tbody.find("tr[data-uid=" + data[i].uid + "]");
+            var cheked = row.find('.k-checkbox').is(':checked');
+            if (cheked) {
+                arrayUid.push(data[i].uid);
+            }
+        }
+        for (var i = 0; i < data.length; ++i) {
+            if (arrayUid.includes(data[i].uid)) {
+                dataSource.remove(data[i]);
+                i--;
+            }
+        }
+        kendo.ui.progress($('body'), false);
+    };
+
+    function mkdNotActual(number) {
+        Common.ClearNotification();
+        var grid = undefined;
+        if (number == 1) {
+            var grid = $('#NoBtiMkdGrid').data('kendoGrid');
+        } else if (number == 2) {
+            var grid = $('#NoFiasMkdGrid').data('kendoGrid');
+        }
+        if (grid) {
+            var selected = grid.dataItem(grid.select());
+            if (selected) {
+                Common.UI.ShowConfirm({
+                    title: 'Подтверждение',
+                    content: 'Вы точно хотите присвоить статус «Не актуально»?',
+                    onSuccess: function (e) {
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("BuildingNotActual", "Tenements")',
+                            data: { 'id': selected.EmpId },
+                            success: function () {
+                                grid.refresh();
+                                kendo.ui.progress($('body'), false);
+                            },
+                            error: function (response) {
+                                Common.ShowError(response.responseText);
+                                kendo.ui.progress($('body'), false);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    }
+
+    function linkLS() {
+        Common.ClearNotification();
+        var grid = $('#NoBtiMkdGrid').data('kendoGrid');
+        var selected = grid.dataItem(grid.select());
+        if (selected) {
+            var noBtiGrid = $('#NoFiasMkdGrid').data('kendoGrid');
+            var data = noBtiGrid.dataSource.data();
+            if (data.length == 1) {
+                var contentUrl = '@Url.Action("LinkLivingSpace", "Tenements")' + '?NoBtiMkdId=' + selected.EmpId + '&NoFiasMkdId=' + data[0].EmpId,
+                    title = "Связь жилых помещений",
+                    callbackFn = function (e) { };
+
+                Common.UI.ShowWindow(title, contentUrl, 'linkLSWnd', callbackFn);
+            } else {
+                Common.ShowError('В таблице "Для МКД, связанного с БТИ, не найден МКД, связанны с ЕГРН" должна быть одна запись');
+            }
+        } else {
+            Common.ShowError('В таблице "Для МКД, связанного с ЕГРН, не найден МКД, связанны с БТИ" выберите запись');
+        }
+    }
+
+    function linkMKD() {
+        Common.ClearNotification();
+        Common.UI.ShowConfirm({
+            title: 'Подтверждение',
+            content: 'вы точно хотите связать МКД?',
+            onSuccess: function (e) {
+                kendo.ui.progress($('body'), true);
+                var grid = $('#NoBtiMkdGrid').data('kendoGrid');
+                var selected = grid.dataItem(grid.select());
+                if (selected) {
+                    var noBtiGrid = $('#NoFiasMkdGrid').data('kendoGrid');
+                    var data = noBtiGrid.dataSource.data();
+                    if (data.length == 1) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.Action("CheckFlats", "Tenements")',
+                            data: { 'fiasId': selected.EmpId, 'btiId': data[0].EmpId },
+                            success: function (response) {
+                                if (response.Count > 0) {
+                                    var height = 120 + response.Count * 20;
+                                    kendo.ui.progress($('body'), false);
+                                    Common.UI.ShowConfirm({
+                                        title: 'Подтверждение',
+                                        height: height + 'px',
+                                        content: 'Имеются проблемы со связыванием ЖП.<br />' + response.Result +
+                                            'Рекомендуется сделать проверку ЖП.<br />Если проверка выполнена, то нажмите "Да"',
+                                        onSuccess: function (e) {
+                                            kendo.ui.progress($('body'), true);
+                                            callLinkMKD(selected.EmpId, data[0].EmpId, grid, noBtiGrid);
+                                        }
+                                    });
+                                } else {
+                                    callLinkMKD(selected.EmpId, data[0].EmpId, grid, noBtiGrid);
+                                }
+                            },
+                            error: function (response) {
+                                Common.ShowError(response.responseText);
+                                kendo.ui.progress($('body'), false);
+                            }
+                        });
+
+                        
+                    } else {
+                        Common.ShowError('В таблице "Для МКД, связанного с БТИ, не найден МКД, связанны с ЕГРН" должна быть одна запись');
+                        kendo.ui.progress($('body'), false);
+                    }
+                } else {
+                    Common.ShowError('В таблице "Для МКД, связанного с ЕГРН, не найден МКД, связанны с БТИ" выберите запись');
+                    kendo.ui.progress($('body'), false);
+                }
+            }
+        });
+    }
+
+    function callLinkMKD(fiasId, btiId, grid, noBtiGrid) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LinkMKDSave", "Tenements")',
+            data: { 'fiasId': fiasId, 'btiId': btiId },
+            success: function () {
+                grid.refresh();
+                noBtiGrid.dataSource.data([]);
+                kendo.ui.progress($('body'), false);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    function historyMKD(number) {
+        Common.ClearNotification();
+        var grid = undefined;
+        if (number == 1) {
+            grid = $('#NoBtiMkdGrid').data('kendoGrid');
+        } else if (number == 2) {
+            grid = $('#NoFiasMkdGrid').data('kendoGrid');
+        }
+        if (grid) {
+            var selected = grid.dataItem(grid.select());
+            if (selected) {
+                Common.UI.ShowWindow('История изменений', '@Url.Action("Index", "RegistersView")' +
+                    '?registerId=InsurChangesLog&Transition=1&qs=352000200equal%27' + selected.EmpId + '%27and352000300equal%27' + '@OMBuilding.GetRegisterId()' + '%27');
+            }
+        }
+    }
+
+    function autoLink() {
+        Common.ClearNotification();
+        var contentUrl = '@Url.Action("LinkMKDAuto", "Tenements")' + '?list=' + '@ViewBag.SelectList',
+            title = "Автоматическая связь МКД",
+            callbackFn = function (e) {
+                var grid = $('#NoBtiMkdGrid').data('kendoGrid');
+                if (grid) {
+                    grid.refresh();
+                }
+            };
+
+        Common.UI.ShowWindow(title, contentUrl, 'linkLSWnd', callbackFn);
+    }
+
+    function buttonMoveForSelectClick(e) {
+        Common.ClearNotification();
+        var selectId = getSelectedId();
+        if (selectId == null) {
+            Common.ShowError('Не выбран МКД, связанный с ЕГРН без связи с БТИ');
+            return;
+        }
+        var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=TenementsSelect&Transition=1&qs=316002400isnotnulland316002500isnull',
+            title = 'Выбор МКД',
+            callbackFn = function (item) {
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetBuildingById", "Tenements")',
+                    data: { 'id': item.id, 'selectedId': selectId },
+                    success: function (data) {
+                        var grid = $("#NoFiasMkdGrid").data("kendoGrid");
+                        if (grid) {
+                            var dataSource = grid.dataSource;
+                            var total = dataSource.data().length;
+                            dataSource.insert(total, {
+                                EmpId: data.EmpId,
+                                Unom: data.Unom,
+                                IsMatchUnom: data.IsMatchUnom,
+                                CadastralNumber: data.CadastralNumber,
+                                IsMatchCadastralNumber: data.IsMatchCadastralNumber,
+                                OkrugId: data.OkrugId,
+                                IsMatchOkrugId: data.IsMatchOkrugId,
+                                OkrugShortName: data.OkrugShortName,
+                                DistrictId: data.DistrictId,
+                                IsMatchDistrictId: data.IsMatchDistrictId,
+                                DistrictShortName: data.DistrictShortName,
+                                AddressId: data.AddressId,
+                                IsMatchAddressId: data.IsMatchAddressId,
+                                AddressFullName: data.AddressFullName,
+                                ConstructionYear: data.ConstructionYear,
+                                IsMatchConstructionYear: data.IsMatchConstructionYear,
+                                ApartmentsCount: data.ApartmentsCount,
+                                UIsMatchApartmentsCountnom: data.IsMatchApartmentsCount,
+                                TotalArea: data.TotalArea,
+                                IsMatchTotalArea: data.IsMatchTotalArea,
+                                dirty: false
+                            });
+                            dataSource.page(dataSource.totalPages());
+                        }
+                        kendo.ui.progress($('body'), false);
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            };
+
+        Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBuilding.GetRegisterId()');
+    };
+
+    $(function () {
+        var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+        panelbar.expand('li');
+
+        $("#ToolbarMKD").kendoToolBar({
+            items: [
+                { type: "button", text: "Автоматическая связка", click: autoLink }
+            ]
+        });
+
+        var dataSourceNoBtiMkd = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("NoBtiMkdRead", "Tenements")',
+                    data: { list: '@ViewBag.SelectList' },
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json'
+                },
+                update: {
+                    type: "POST",
+                    url: '@Url.Action("NoBtiMkdUpdate", "Tenements")',
+                    data: { reason: $('#Reason').val() },
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: 'json'
+                },
+                parameterMap: function (options, operation) {
+                    var parameters = { reason: options.reason, list: options.list };
+                    if (operation !== "read" && options.models) {
+                        parameters.models = kendo.stringify(options.models);
+                    }
+                    return parameters;
+                }
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "EmpId",
+                    fields: {
+                        EmpId: { editable: false, defaultValue: -1 },
+                        Unom: { editable: true, type: "number", defaultValue: null },
+                        CadastralNumber: { editable: true, type: "string" },
+                        OkrugId: { editable: true, type: "number", defaultValue: null },
+                        OkrugShortName: { editable: true, type: "string", defaultValue: null },
+                        DistrictId: { editable: true, type: "number", defaultValue: null },
+                        DistrictShortName: { editable: true, type: "string", defaultValue: null },
+                        AddressId: { editable: true, type: "number", defaultValue: null },
+                        AddressFullName: { editable: true, type: "string", defaultValue: null },
+                        ConstructionYear: { editable: true, type: 'number', defaultValue: null },
+                        ApartmentsCount: { editable: true, type: 'number', defaultValue: null },
+                        TotalArea: { editable: true, type: "number", defaultValue: null }
+                    }
+                }
+            },
+            requestEnd: function (e) {
+                if (e.type != 'read') {
+                    if (e.response) {
+                        Common.ShowMessage('Операция успешно выполнена');
+                    } else {
+                        Common.ShowError('Произошла ошибка');
+                    }
+                }
+            }
+        });
+
+        var gridNoBtiMkd = $('#NoBtiMkdGrid').kendoGrid({
+            toolbar: [
+                "save",
+                "cancel",
+                {
+                    template: "<input type='button' class='k-button' value='Многоквартирный дом не актуален' onclick='mkdNotActual(1)' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='Связать выбранные МКД' onclick='linkMKD()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='Связать ЖП, выбранных МКД' onclick='linkLS()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='История изменений' onclick='historyMKD(1)' />"
+                }
+            ],
+            dataSource: dataSourceNoBtiMkd,
+            columns: [
+                { field: 'EmpId', hidden: true, title: 'EmpId' },
+                {
+                    field: 'Unom',
+                    title: 'UNOM',
+                    template: '#: data.Unom != null ? data.Unom : ""#',
+                    width: "5%"
+                },
+                {
+                    field: 'CadastralNumber',
+                    title: 'Кадастровый номер',
+                    template: '#: data.CadastralNumber != null ? data.CadastralNumber : ""#',
+                    width: "10%"
+                },
+                { field: 'OkrugId', hidden: true, title: 'Id' },
+                {
+                    field: 'OkrugShortName',
+                    title: 'Округ',
+                    template: '#: data.OkrugShortName != null ? data.OkrugShortName : ""#',
+                    editor: gridOkrug,
+                    width: "15%"
+                },
+                { field: 'DistrictId', hidden: true, title: 'Id' },
+                {
+                    field: 'DistrictShortName',
+                    title: 'Район',
+                    template: '#: data.DistrictShortName != null ? data.DistrictShortName : ""#',
+                    editor: gridDistrict,
+                    width: "15%"
+                },
+                { field: 'AddressId', hidden: true, title: 'Id' },
+                {
+                    field: 'AddressFullName',
+                    title: 'Адрес',
+                    template: '#: data.AddressFullName != null ? data.AddressFullName : ""#',
+                    editor: gridAddress,
+                    width: "35%"
+                },
+                {
+                    field: 'ConstructionYear',
+                    title: 'Год постройки',
+                    template: Common.UI.CustomTemplate('ConstructionYear', '#: ConstructionYear ? kendo.toString(ConstructionYear, "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    width: "5%"
+                },
+                {
+                    field: 'ApartmentsCount',
+                    title: 'Количество квартир в доме',
+                    template: Common.UI.CustomTemplate('ApartmentsCount', '#: ApartmentsCount ? kendo.toString(ApartmentsCount, "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    width: "5%"
+                },
+                {
+                    field: 'TotalArea',
+                    title: 'Общая площадь',
+                    template: Common.UI.CustomTemplate('TotalArea', '#: TotalArea ? kendo.toString(TotalArea,  "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    attributes: { style: 'text-align: right' },
+                    width: "5%"
+                }
+            ],
+            change: function (e) {
+                var grid = $('#NoFiasMkdGrid').data('kendoGrid');
+                if (grid) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("NoFiasMkdRead", "Tenements")',
+                        data: { 'id': getSelectedId },
+                        success: function (data) {
+                            kendo.ui.progress($('body'), true);
+                            grid.dataSource.data(data);
+                            kendo.ui.progress($('body'), false);
+                        },
+                        error: function (response) {
+                            Common.ShowError(response.responseText);
+                        }
+                    });
+                }
+            },
+            height: 200,
+            resizable: true,
+            selectable: "row",
+            messages: {
+                commands: {
+                    cancel: 'Отмена',
+                    save: 'Сохранить'
+                }
+            }
+        });
+
+        $("#NoBtiMkdGrid tbody").on("dblclick", "td", function (e) {
+            var cellElement = this;
+            var cell = $(cellElement);
+            var grid = $("#NoBtiMkdGrid").getKendoGrid();
+            grid.editCell(cell);
+        });
+
+        $("#NoBtiMkdGrid tbody").on("blur", "td", function (e) {
+            var cellElement = this;
+            var cell = $(cellElement);
+            var grid = $("#NoBtiMkdGrid").getKendoGrid();
+            grid.closeCell(cell);
+        });
+
+        function gridOkrug(container, options) {
+            Common.ClearNotification();
+            var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=BtiOkrugSelect',
+                title = 'Выбор округа',
+                callbackFn = function (item) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetObjById", "BtiOkrug")',
+                        data: { 'id':item.id },
+                        success: function (data) {
+                            kendo.ui.progress($('body'), true);
+                            var mainGridData = gridNoBtiMkd.data('kendoGrid').dataSource.data();
+                            for (var i = 0; i < mainGridData.length; i++) {
+                                if (mainGridData[i].uid === options.model.uid) {
+                                    mainGridData[i].set('OkrugId', data.Id);
+                                    mainGridData[i].set('OkrugShortName', data.ShortName);
+                                }
+                            }
+                            kendo.ui.progress($('body'), false);
+                        }
+                    });
+                };
+
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBtiOkrug.GetRegisterId()');
+        };
+
+        function gridDistrict(container, options) {
+            Common.ClearNotification();
+            var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=BtiDistrictSelect',
+                title = 'Выбор района',
+                callbackFn = function (item) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetObjById", "BtiDistrict")',
+                        data: { 'id':item.id },
+                        success: function (data) {
+                            kendo.ui.progress($('body'), true);
+                            var mainGridData = gridNoBtiMkd.data('kendoGrid').dataSource.data();
+                            for (var i = 0; i < mainGridData.length; i++) {
+                                if (mainGridData[i].uid === options.model.uid) {
+                                    mainGridData[i].set('DistrictId', data.Id);
+                                    mainGridData[i].set('DistrictShortName', data.ShortName);
+                                }
+                            }
+                            kendo.ui.progress($('body'), false);
+                        }
+                    });
+                };
+
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBtiDistrict.GetRegisterId()');
+        };
+
+        function gridAddress(container, options) {
+            Common.ClearNotification();
+            var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=AddressSelect',
+                title = 'Выбор адреса',
+                callbackFn = function (item) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetObjById", "Address")',
+                        data: { 'id':item.id },
+                        success: function (data) {
+                            kendo.ui.progress($('body'), true);
+                            var mainGridData = gridNoBtiMkd.data('kendoGrid').dataSource.data();
+                            for (var i = 0; i < mainGridData.length; i++) {
+                                if (mainGridData[i].uid === options.model.uid) {
+                                    mainGridData[i].set('AddressId', data.Id);
+                                    mainGridData[i].set('AddressFullName', data.FullAddress);
+                                }
+                            }
+                            kendo.ui.progress($('body'), false);
+                        }
+                    });
+                };
+
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMAddress.GetRegisterId()');
+        };
+
+        var dataSourceNoFiasMkd = new kendo.data.DataSource({
+            transport: {
+                update: {
+                    type: "POST",
+                    url: '@Url.Action("NoBtiMkdUpdate", "Tenements")',
+                    data: { reason: $('#Reason').val(), selectedId: getSelectedId },
+                    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                    dataType: 'json'
+                },
+                parameterMap: function (options, operation) {
+                    var parameters = { reason: options.reason, selectedId: options.selectedId };
+                    if (operation !== "read" && options.models) {
+                        parameters.models = kendo.stringify(options.models);
+                    }
+                    return parameters;
+                }
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "EmpId",
+                    fields: {
+                        EmpId: { editable: false, defaultValue: -1 },
+                        Unom: { editable: true, type: "number", defaultValue: null },
+                        CadastralNumber: { editable: true, type: "string" },
+                        OkrugId: { editable: true, type: "number", defaultValue: null },
+                        OkrugShortName: { editable: true, type: "string", defaultValue: null },
+                        DistrictId: { editable: true, type: "number", defaultValue: null },
+                        DistrictShortName: { editable: true, type: "string", defaultValue: null },
+                        AddressId: { editable: true, type: "number", defaultValue: null },
+                        AddressFullName: { editable: true, type: "string", defaultValue: null },
+                        ConstructionYear: { editable: true, type: 'number', defaultValue: null },
+                        ApartmentsCount: { editable: true, type: 'number', defaultValue: null },
+                        TotalArea: { editable: true, type: "number", defaultValue: null }
+                    }
+                }
+            },
+            requestEnd: function (e) {
+                if (e.type != 'read') {
+                    if (e.response) {
+                        Common.ShowMessage('Операция успешно выполнена');
+                    } else {
+                        Common.ShowError('Произошла ошибка');
+                    }
+                }
+            }
+        });
+
+        var gridNoFiasMkd = $('#NoFiasMkdGrid').kendoGrid({
+            dataSource: dataSourceNoFiasMkd,
+            toolbar: ["save", "cancel",
+                {
+                    template: "<input type='button' class='k-button' value='Многоквартирный дом не актуален' onclick='mkdNotActual(2)' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='Убрать отмеченные' onclick='deleteRows()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='Перейти в реестр МКД' onclick='buttonMoveForSelectClick()' />"
+                },
+                {
+                    template: "<input type='button' class='k-button' value='История изменений' onclick='historyMKD(2)' />"
+                }
+            ],
+            columns: [
+                { field: 'EmpId', hidden: true, title: 'EmpId' },
+                {
+                    field: 'Unom',
+                    title: 'UNOM',
+                    template: '#: data.Unom != null ? data.Unom : ""#',
+                    width: "5%"
+                },
+                {
+                    field: 'CadastralNumber',
+                    title: 'Кадастровый номер',
+                    template: '#: data.CadastralNumber != null ? data.CadastralNumber : ""#',
+                    width: "10%"
+                },
+                { field: 'OkrugId', hidden: true, title: 'OkrugId' },
+                {
+                    field: 'OkrugShortName',
+                    title: 'Округ',
+                    template: '#: data.OkrugShortName != null ? data.OkrugShortName : ""#',
+                    editor: gridOkrug,
+                    width: "15%"
+                },
+                { field: 'DistrictId', hidden: true, title: 'DistrictId' },
+                {
+                    field: 'DistrictShortName',
+                    title: 'Район',
+                    template: '#: data.DistrictShortName != null ? data.DistrictShortName : ""#',
+                    editor: gridDistrict,
+                    width: "15%"
+                },
+                { field: 'AddressId', hidden: true, title: 'AddressId' },
+                {
+                    field: 'AddressFullName',
+                    title: 'Адрес',
+                    template: '#: data.AddressFullName != null ? data.AddressFullName : ""#',
+                    editor: gridAddress,
+                    width: "37%"
+                },
+                {
+                    field: 'ConstructionYear',
+                    title: 'Год постройки',
+                    template: Common.UI.CustomTemplate('ConstructionYear', '#: ConstructionYear ? kendo.toString(ConstructionYear, "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    width: "5%"
+                },
+                {
+                    field: 'ApartmentsCount',
+                    title: 'Количество квартир в доме',
+                    template: Common.UI.CustomTemplate('ApartmentsCount', '#: ApartmentsCount ? kendo.toString(ApartmentsCount, "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    width: "5%"
+                },
+                {
+                    field: 'TotalArea',
+                    title: 'Общая площадь',
+                    template: Common.UI.CustomTemplate('TotalArea', '#: TotalArea ? kendo.toString(TotalArea,  "\\#.\\#\\#\\#\\#\\#\\#") : ""#'),
+                    attributes: { style: 'text-align: right' },
+                    width: "5%"
+                },
+                { selectable: true, width: "3%" }
+            ],
+            autoBind: false,
+            height: 300,
+            resizable: true,
+            dataBound: function (e) {
+                var dataItems = gridNoFiasMkd.data('kendoGrid').dataItems();
+                dataItems.forEach(function (element) {
+                    var row = gridNoFiasMkd.data('kendoGrid').tbody.find("tr[data-uid=" + element.uid + "]");
+                    if (!element.IsMatchUnom) {
+                        row[0].cells[1].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchCadastralNumber) {
+                        row[0].cells[2].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchOkrugId) {
+                        row[0].cells[4].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchDistrictId) {
+                        row[0].cells[6].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchAddressId) {
+                        row[0].cells[8].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchConstructionYear) {
+                        row[0].cells[9].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchApartmentsCount) {
+                        row[0].cells[10].setAttribute('class', 'k-grid-no');
+                    }
+                    if (!element.IsMatchTotalArea) {
+                        row[0].cells[11].setAttribute('class', 'k-grid-no');
+                    }
+                })
+            },
+            messages: {
+                commands: {
+                    cancel: 'Отмена',
+                    save: 'Сохранить'
+                }
+            }
+        });
+
+        $("#NoFiasMkdGrid tbody").on("dblclick", "td", function (e) {
+            var cellElement = this;
+            var cell = $(cellElement);
+            var grid = $("#NoFiasMkdGrid").getKendoGrid();
+            grid.editCell(cell);
+        });
+
+        $("#NoFiasMkdGrid tbody").on("blur", "td", function (e) {
+            var cellElement = this;
+            var cell = $(cellElement);
+            var grid = $("#NoFiasMkdGrid").getKendoGrid();
+            grid.closeCell(cell);
+        });
+    });
+</script>
+
+<style>
+    #ls_panelbar {
+        width: 98%!important;
+    }
+
+    #ToolbarMKD {
+        width: 93%;
+        padding-left: 20px;
+        margin-left: 30px;
+    }
+</style>

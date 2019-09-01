@@ -1,0 +1,120 @@
+﻿<div id="LinkStrahPostGrid"></div>
+<script>
+    var model = kendo.data.Model.define({
+        id: 'Id',
+        fields: {
+            Id: { type: 'number' },
+            DateStart: { type: 'date', defaultValue: new Date().truncateTime(), validation: { required: true } },
+            LinkCompany: { type: 'number', defaultValue: null, validation: { required: true } },
+            LinkCompanyName: { type: 'string' },
+            StatusNew: { type: 'boolean', defaultValue: true },
+            KodPost: { type: 'number', defaultValue: null, validation: { required: true } },
+        }
+    });
+
+    var ds = new kendo.data.DataSource({
+        transport: {
+            read: '@Url.Action("GetStrahPostLinks", "InsuranceOrganization")',
+            create: {
+                url: '@Url.Action("InsertStrahPostLinks", "InsuranceOrganization")',
+                type: 'POST'
+            },
+            update: {
+                url: '@Url.Action("UpdateStrahPostLinks", "InsuranceOrganization")',
+                type: 'POST'
+            },
+            destroy: {
+                url: '@Url.Action("DeleteStrahPostLinks", "InsuranceOrganization")',
+                type: 'POST'
+            },
+            parameterMap: function (data, operation) {
+                if (operation !== 'read') {
+                    data.DateStart = data.DateStart.toJSON();
+                    data.Id = operation === 'create' ? -1 : data.Id;
+                }
+                return data;
+            }
+        },
+        schema: { model }
+    });
+
+    var grid = $('#LinkStrahPostGrid').kendoGrid({
+        dataSource: ds,
+        height: '100%',
+        editable: { mode: 'inline' },
+        filterable: { extra: false },
+        columns: [
+            {
+                field: 'LinkCompany',
+                title: 'Страховая организация',
+                template: '#= LinkCompanyName #',
+                filterable: {
+                    ui: function (element) {
+                        element
+                            .width(300)
+                            .closest('.k-filter-menu-container')
+                            .children('[title="Оператор"]')
+                            .remove();
+                        element.kendoDropDownList({
+                            autoBind: true,
+                            valuePrimitive: true,
+                            dataTextField: 'FullName',
+                            dataValueField: 'Id',
+                            text: 'Выберите организацию',
+                            dataSource: { transport: { read: '@Url.Action("GetByName", "InsuranceOrganization")' } }
+                        });
+                    }
+                },
+                editor: function (container, options) {
+                    $('<input name="' + options.field + '" required />')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            autoBind: false,
+                            valuePrimitive: true,
+                            dataTextField: 'FullName',
+                            dataValueField: 'Id',
+                            text: options.model.LinkCompanyName || 'Выберите организацию',
+                            dataSource: { transport: { read: '@Url.Action("GetByName", "InsuranceOrganization")' } },
+                            select: function(e) {
+                                options.model.set('LinkCompanyName', e.dataItem.FullName);
+                            }
+                        });
+                    $('<span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                        .appendTo(container);
+
+                }
+            }, {
+                field: 'KodPost',
+                title: 'Код поставщика',
+                width: 170,
+                editor: function (container, options) {
+                    $('<input name="' + options.field + '" required autocomplete="off" />')
+                        .prependTo(container)
+                        .kendoNumericTextBox({
+                            decimals: 0,
+                            format: '#',
+                            spinners: false
+                        });
+                    $('<span class="k-invalid-msg" data-for="' + options.field + '"></span>')
+                        .appendTo(container);
+                }
+            }, {
+                field: 'DateStart',
+                title: 'Дата начала',
+                width: 170,
+                template: '#= kendo.toString(DateStart, "dd.MM.yyyy") #'
+            }, {
+                field: 'StatusNew',
+                title: 'Новый код',
+                width: 110,
+                template: '#= StatusNew ? "Да" : "Нет" #'
+            }, {
+                headerTemplate: '<button class="k-button k-button-icontext" onclick="grid.addRow()"><span class="k-icon k-i-plus"></span>Добавить</button>',
+                headerAttributes: { 'class': 'headerButton' },
+                command: ['edit', 'destroy'],
+                title: '&nbsp;',
+                width: 230
+            }
+        ]
+    }).data('kendoGrid');
+</script>

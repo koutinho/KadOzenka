@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="Период учета" ID="PeriodPanel" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="Period_from" OwnType="MonthCalendar" AttributeNumber="32500200" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="Period_to" OwnType="MonthCalendar" AttributeNumber="32500200" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="Period" OwnType="MonthCalendar" AttributeNumber="32500200" QueryOperation="WithinDate" DefaultValue="[firstdayofprevmonth]"/>
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Округ" ID="Okrug" OwnType="Combo" AttributeNumber="32500300" RegisterId="320" TextFieldAttribute="320000400" ValueFieldAttribute="320000100" QueryOperation="Equal" />
+    </children>
+  </ControlElement>
+</RootElement>

@@ -1,0 +1,96 @@
+﻿<style>
+</style>
+
+<div id="STP1">
+    @Html.Label("Реестр оплат")
+    <div id="main_grid_obj"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $.ajax({
+            url: '@Url.Action("GetDataST", "HierarchicalGridAnalysisDamage")',
+            type: 'POST',
+            data: {
+                Index: 1
+            @{ if (ViewBag.AdminIndex != null)
+               {
+                   <Text>,AdminIndex: @ViewBag.AdminIndex</Text>
+               }
+            } },
+            success: function (response) {
+                Init(response);
+            },
+            error: function (response) {
+
+            }
+        });
+
+        function Init(obj) {
+
+            $('#STP1 #main_grid_obj').kendoGrid({
+                dataSource: {
+                    data: obj
+                },
+                sortable: true,
+                pageable: false,
+                detailTemplate: kendo.template('<div id="grid_obj"></div>'),
+                detailInit: detailInit,
+                dataBound: function () {
+                    this.expandRow(this.tbody.find("tr.k-master-row"));
+                    this.collapseRow(this.tbody.find("tr.k-master-row"));
+                },
+                columns: [
+                    {
+                        field: "GroupVal",
+                        title: "Статус реестра оплат",
+                        width: "85%"
+                    },
+                    {
+                        field: "Count",
+                        title: "Количество",
+                        width: "15%"
+                    },
+                    {
+                        field: "Value",
+                        title: "value",
+                        hidden: true
+                    }
+                ]
+            });
+        }
+
+        function detailInit(e) {
+            var detailRow = e.detailRow;
+
+            detailRow.find("#grid_obj").kendoGrid({
+                selectable: true,
+                dataSource: {
+                    data: e.data.Value,
+                    pageSize: 5
+                },
+                scrollable: false,
+                sortable: true,
+                resizable: true,
+                pageable: true,
+                columns: [
+                    { field: 'Num', title: '№ Реестра', width: "11em" },
+                    {
+                        field: 'Date', title: 'Дата формирования Реестра', width: "7em", template: function (dataItem) {
+                            if (dataItem.Date != null) {
+                                var dtarr = dataItem.Date.split('T')[0].split('-');
+                                return kendo.htmlEncode(dtarr[2] + "." + dtarr[1] + "." + dtarr[0]);
+                            }
+
+                            return "";
+                        }
+                    },
+                    { field: 'Count', title: 'Кол-во счетов в Реестре', width: "11em" },                    
+                    { field: 'SymptomJPOI', title: 'Признак: ЖП/ОИ', width: "12em" }                    
+                ]
+            });
+        }
+
+    });
+</script>

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="349" DefaultLayoutId="1003491" DockNavigationPanel="true" AllowSearchPanelResize="false" UseMasterPage="false"
+              IsBasic="false" OpenEmpty="false" LinkedRegistersList="349" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="false" ShowObjectCards="false" ShowSettingsPanel="false"
+              SearchPanel="ShareResponsibilityICCity" SearchPanelWindowHeight="654">
+  <Buttons>
+    <Button Caption="Выбрать" NavigateURL="/"></Button>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>

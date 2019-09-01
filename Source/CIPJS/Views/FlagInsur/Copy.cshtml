@@ -1,0 +1,81 @@
+﻿@model int
+
+<div style="padding-bottom: 20px">
+    @(Html.Kendo().ToolBar().Name("toolbar").Items(toolBar =>
+                                        {
+                                            toolBar.Add().Type(CommandType.Button).Text("Скопировать признак").Id("btnCopyAttribute").Click("btnCopyAttribute_Click");
+                                        }))
+</div>
+<div class="container" id="divConfirm">
+
+    <div class="form-group">
+        <div class="col-sm-1">
+            @(Html.Label("lblTotalCount", $"Выбрано объектов: {Model}"))
+        </div>
+        <div class="col-sm-1">
+            @(Html.CheckBox("isGPCopyCheck", false)) Производить копирование признака в ЖП
+        </div>
+    </div>
+    <div class="form-group" id="divConfirmMessage">
+        <div class="col-sm-1">
+            @(Html.Label("lblConfirmMessage", "Вы уверены, что хотите скопировать признак?"))
+        </div>
+    </div>
+</div>
+<div class="container" id="divProgress" hidden="hidden">
+    <div class="form-group">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8" style="text-align: center">
+            @Html.Label("lblProgress", "Обработано 0 / 0")
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            @(Html.Kendo().ProgressBar().Name("pgsBar").Min(0).Max(100))
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+</div>
+
+<script>
+    var totalCount = @Model;
+
+    $(document).ready(function () {
+        $("label[for='lblProgress']").hide();
+
+        if (totalCount == 0) {
+            $("#divConfirmMessage").hide();
+            $("#toolbar").hide();
+        }
+    })
+
+    function btnCopyAttribute_Click() {
+        $("#divConfirm").hide();
+        $("#toolbar").hide();
+        $("#divProgress").show();
+        $("label[for='lblProgress']").show();
+        var isGPCopyCheck = $('#isGPCopyCheck').val();
+        $.get("/FlagInsur/DoCopy?UniqueSessionKey=" + '@ViewBag.UniqueSessionKey' + '&isGPCopyCheck=' + isGPCopyCheck)
+            .success(copying_started);
+    }
+
+    function copying_started() {
+        /* Запустить обновление прогресса */
+        var progress = setInterval(function () {
+            $.get("/FlagInsur/GetCopyProgress?UniqueSessionKey=" + '@ViewBag.UniqueSessionKey')
+                .done(function (processedCount) {
+                    var value = (processedCount * 100) / totalCount;
+                    $("#pgsBar").data("kendoProgressBar").value(value);
+                    $("label[for='lblProgress']").text('Обработано ' + processedCount + ' / ' + totalCount);
+
+                    if (value == 100) {
+                        clearInterval(progress);
+                        $("label[for='lblProgress']").text('Операция выполнена успешно!');
+                    }
+                });
+        }, 1000);
+    }
+
+</script>

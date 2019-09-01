@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="UNOM МКД" ID="Unom" OwnType="Text" AttributeNumber="316000900" QueryOperation="Equal" />
+      <ControlElement Caption="Адрес" ID="Address" OwnType="Text" AttributeNumber="319000300" QueryOperation="Context" />
+      <ControlElement Caption="Округ" ID="Okrug" OwnType="Combo" AttributeNumber="316000700" RegisterId="258" TextFieldAttribute="258000300" ValueFieldAttribute="258000100" QueryOperation="Equal" />
+      <ControlElement Caption="Район" ID="District" OwnType="Combo" AttributeNumber="316000800" RegisterId="259" TextFieldAttribute="259000300" ValueFieldAttribute="259000100" QueryOperation="Equal" />
+      <ControlElement Caption="Площадь здания" ID="Opl" OwnType="Text" AttributeNumber="316001400" QueryOperation="Equal" />
+    </children>
+  </ControlElement>
+  
+</RootElement>

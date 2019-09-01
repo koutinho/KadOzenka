@@ -1,0 +1,59 @@
+﻿@using CIPJS.DAL.Comment;
+@using Core.Shared.Extensions;
+
+@model CommentDto
+
+@Html.HiddenFor(m => m.CommentId, (object)new { @id = $"CommentId{Model.GuidId}" })
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group">
+        <div class="col-sm-1">
+            @Html.CustomLabelFor(m => m.Comment)
+        </div>
+        <div class="col-sm-7">
+            @Html.TextBoxAreaFor(m => m.Comment, 1, 3, isReadonly: Model.ReadOnly, id: "Comment" + Model.GuidId)
+        </div>
+        <div class="col-sm-3">
+            @Html.CustomLabel(Model.UserName.IsNullOrEmpty() ? "" : "От: " + Model.UserName, alignCenter: false)<br />
+            @Html.CustomLabel(Model.UserName.IsNullOrEmpty() ? "" : Model.UserDepartment, alignCenter: false)<br />
+            @Html.CustomLabel(Model.DateCreate.HasValue ? "Опубликовано: " + Model.DateCreate?.ToString("dd.MM.yyyy hh:mm:ss") ?? "" : "", alignCenter: false)
+        </div>
+        <div class="col-sm-1">
+            @Html.KendoButton("deleteComment" + Model.GuidId, "", isReadonly: Model.ReadOnly, icon: "close")
+        </div>
+    </div>
+</div>
+
+<script>
+    function onKeyPressComment(e) {
+        var key = window.event.keyCode;
+        if (key === 13) {
+            //debugger;
+            //$(this).next(':input').focus();
+        }
+    }
+    function onChangeComment() {
+        buttonCommentSaveClick();
+    }
+
+    $('#deleteComment' + '@Model.GuidId').click(function (e) {
+        e.preventDefault();
+        var idComment = $('[id="CommentId' + '@Model.GuidId' + '"]').val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("Delete", "Comment")',
+            data: { 'id': idComment},
+            success: function () {
+                buttonCommentReloadClick(e);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            }
+        });
+    });
+
+    $(function () {
+        $('#Comment' + '@Model.GuidId').bind('keypress', onKeyPressComment);
+        $('#Comment' + '@Model.GuidId').bind('change', onChangeComment);
+    });
+</script>

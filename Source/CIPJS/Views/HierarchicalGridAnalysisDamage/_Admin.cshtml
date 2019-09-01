@@ -1,0 +1,43 @@
+﻿<style>
+    #STADM .k-dropdown{
+        width: 100%;
+    }
+</style>
+
+<div id="STADM">
+    <div class="box col-sm-12">
+        <div class="col-sm-2">
+            @Html.Label("Роль")
+        </div>
+        <div class="col-sm-6">
+            <input class="k-textbox" id="roleSel" />
+        </div>
+
+        <div class="col-sm-4">
+            <button id="btnEdit" class="btn btn-default">Выбрать</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#STADM #roleSel').kendoDropDownList({
+            filter: "startswith",
+            minLength: 3,
+            dataSource: [
+                { Value: "INSUR_HIERARCHICALGRIDANALYSISDAMAGE_INJECTORS", Id: 0 },
+                { Value: "INSUR_HIERARCHICALGRIDANALYSISDAMAGE_INSPECTOR", Id: 1 },
+                { Value: "INSUR_HIERARCHICALGRIDANALYSISDAMAGE_MATCHING", Id: 2 },
+            ],
+            dataTextField: "Value",
+            dataValueField: "Id"
+        });
+        var dropdownlist = $("#STADM #roleSel").data("kendoDropDownList");
+
+        $('#STADM #btnEdit').on('click', function () {            
+            Common.UI.ChooseWindow(dropdownlist.text(), '@Url.Action("Index", "HierarchicalGridAnalysisDamage")?AdminIndex=' + dropdownlist.value());
+        });
+
+    });
+</script>

@@ -1,0 +1,309 @@
+﻿@using ObjectModel.Directory;
+@using Newtonsoft.Json;
+@using Core.Shared.Extensions;
+
+@model List<ObjectModel.Insur.OMInvoice>
+
+@{
+    ReestrPayType reestrPayType = (ReestrPayType)ViewBag.ReestrPayType;
+    int? invoiceCount = ViewBag.ErrorMessage == null ? (int?)Model.Count : null;
+    decimal? invoiceSum = ViewBag.ErrorMessage == null ? Model.Sum(x => x.SumOpl) : null;
+    string windowTitle = ViewBag.ErrorMessage == null ?
+        $"Сформировать реестр выплат из {Model.Count} счетов на " +
+        $"сумму { (invoiceSum.HasValue ? invoiceSum.Value.ToString("N2").Split(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator)[0] : "0") } руб. " +
+        $"{(invoiceSum.HasValue ? invoiceSum.Value.ToString("N2").Split(System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator)[1] : "00")} коп."
+        : "Сформировать реестр выплат";
+
+    string reestrPayUrl = null;
+    switch (reestrPayType)
+    {
+        case ReestrPayType.ReturnBonusOI:
+            reestrPayUrl = Url.Content("~/RegistersView/ReestrPaysReturnOI?type=12168003&Transition=1");
+            break;
+        case ReestrPayType.DamageGP:
+            reestrPayUrl = Url.Content("~/RegistersView/ReestrPaysGP?type=12168001&Transition=1");
+            break;
+        case ReestrPayType.DamageOI:
+            reestrPayUrl = Url.Content("~/RegistersView/ReestrPaysOI?type=12168002&Transition=1");
+            break;
+    }
+}
+<style>
+    #reestrPayGrid td {
+        white-space: normal;
+        word-wrap: break-word;
+    }
+</style>
+<div id="toolbar"></div>
+@if (ViewBag.ErrorMessage != null)
+{
+    <div style="padding: 10px;">@ViewBag.ErrorMessage</div>
+}
+else
+{
+    int ordinal = 0;
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        @if (reestrPayType == ReestrPayType.ReturnBonusOI && Model != null && Model.Any())
+        {
+        <div class="form-group">
+            <div class="col-sm-12">
+                <table id="reestrPayInvoiceGrid">
+                    <colgroup>
+                        <col width="50%" />
+                        <col />
+                        <col />
+                        <col />
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th data-field="Name">Получатель</th>
+                            <th data-field="Number">Номер счета</th>
+                            <th data-field="Date">Дата счета</th>
+                            <th data-field="Amount">Сумма счета</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ 
+                            var groupModels = Model.GroupBy(x => new { x.SubjectName, x.dateInvoice, x.NumInvoice }).ToList();
+
+                            foreach (var item in groupModels)
+                            {
+                        <tr>
+                            <td>@item.Key.SubjectName</td>
+                            <td>@item.Key.NumInvoice</td>
+                            <td>@(item.Key.dateInvoice.HasValue ? item.Key.dateInvoice.Value.ToString("dd.MM.yyyy") : "")</td>
+                            <td>@(item.Sum(x => x.SumOpl).Value.ToString("N2"))</td>
+                        </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        }
+        <div class="form-group">
+            <div class="col-sm-12">
+                <table id="reestrPayGrid">
+                    @if (reestrPayType == ReestrPayType.ReturnBonusOI)
+                    {
+                        <colgroup>
+                            <col width="2%" />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col width="12%" />
+                            <col />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th data-field="Ordinal">№</th>
+                                <th data-field="Ndog">Номер договора</th>
+                                <th data-field="Ndogdat">Дата договора</th>
+                                <th data-field="SubjectName">Получатель</th>
+                                <th data-field="SumOpl">Сумма выплаты</th>
+                                <th data-field="NumInvoice">Номер счета</th>
+                                <th data-field="DateInvoice">Дата счета</th>
+                                <th data-field="BicBank">БИК банка</th>
+                                <th data-field="BankName">Название банка</th>
+                                <th data-field="RachAcc">Расчетный счет</th>
+                                <th data-field="Status">Статус счета</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@(++ordinal)</td>
+                                    <td>@item.ParentAllProperty?.Ndog</td>
+                                    <td>@item.ParentAllProperty?.Ndogdat?.ToString("dd.MM.yyyy")</td>
+                                    <td>@item.SubjectName</td>
+                                    <td><div style="text-align:right;">@item.SumOpl?.ToString("N2")</div></td>
+                                    <td>@item.NumInvoice</td>
+                                    <td>@item.dateInvoice?.ToString("dd.MM.yyyy")</td>
+                                    <td>@item.BicBank</td>
+                                    <td>@item.BankName</td>
+                                    <td>@item.RachAcc</td>
+                                    <td>@item.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    }
+                    else
+                    {
+                        <colgroup>
+                            <col style="width:40px" />
+                            <col style="width:190px" />
+                            <col style="width:90px" />
+                            <col style="width:115px" />
+                            <col style="width:20%" />
+                            <col style="width:115px" />
+                            <col style="width:120px" />
+                            <col style="width:12%" />
+                            <col style="width:185px" />
+                            <col style="width:130px" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th data-field="Ordinal">№</th>
+                                <th data-field="NomDoc">Номер дела</th>
+                                <th data-field="NomDate">Дата дела</th>
+                                <th data-field="DataZakluchenia">Дата заключения</th>
+                                <th data-field="SumDamage">Сумма ущерба</th>
+                                <th data-field="SubjectName">Получатель</th>
+                                <th data-field="SumOpl">Сумма выплаты</th>
+                                <th data-field="BicBank">БИК банка</th>
+                                <th data-field="BankName">Название банка</th>
+                                <th data-field="RachAcc">Расчетный счет</th>
+                                <th data-field="Status">Статус счета</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@(++ordinal)</td>
+                                    <td>@item.ParentDamage?.NomDoc</td>
+                                    <td>@item.ParentDamage?.NomDate?.ToString("dd.MM.yyyy")</td>
+                                    <td>@item.DataZakluchenia?.ToString("dd.MM.yyyy")</td>
+                                    <td><div style="text-align:right;">@item.ParentDamage?.SumDamage?.ToString("N2")</div></td>
+                                    <td>@item.SubjectName</td>
+                                    <td><div style="text-align:right;">@item.SumOpl?.ToString("N2")</div></td>
+                                    <td>@item.BicBank</td>
+                                    <td>@item.BankName</td>
+                                    <td>@item.RachAcc</td>
+                                    <td>@item.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        var reestPayUrl = @Html.Raw(JsonConvert.SerializeObject(reestrPayUrl)),
+            invoiceSum = @Html.Raw(JsonConvert.SerializeObject(invoiceSum)),
+            invoiceCount = @Html.Raw(JsonConvert.SerializeObject(invoiceCount)),
+            windowTitle = @Html.Raw(JsonConvert.SerializeObject(windowTitle)),
+            currentWindow = Common.UI.GetWindow('registerModalWindow', window.parent);
+
+        if (currentWindow != null && windowTitle != null) {
+            currentWindow.title(windowTitle);
+        }
+
+        $('#toolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: 'Сформировать',
+                    icon: 'check',
+                    enable: @(ViewBag.ErrorMessage != null ? "false" : "true"),
+                    click: function () {
+                        Common.ClearNotification();
+                        kendo.ui.progress($('body'), true);
+
+                        @if (Model != null && Model.Any())
+                        {<text>
+                        $.ajax({
+                            url: '@Url.Action("Form", "ReestrPay")',
+                            type: 'POST',
+                            data: '{ Ids: @Json.Serialize(Model.Select(x => x.EmpId).ToList()), Type: "@ViewBag.ReestrPayType" }',
+                            contentType: 'application/json',
+                            dataType: 'json',
+                            success: function(response) {
+                                kendo.ui.progress($('body'), false);
+                                if (response.Errors && response.Errors.length > 0) {
+                                    Common.ShowError(response.Errors.join('<br>'));
+                                } else if (response.Data) {
+                                    var message = 'Внимание! Сформирован Реестр выплат',
+                                        decimalSeparator = kendo.culture().numberFormat["."],
+                                        reestrPayId = response.Data.EmpId;
+
+                                    if (response.Data.Num != undefined && response.Data.Num != null && response.Data.Num.length > 0) {
+                                        message += ' №<b>' + response.Data.Num + '</b>';
+                                    }
+                                    
+                                    if (response.Data.Date != undefined && response.Data.Date != null) {
+                                        message += ' от <b>' + kendo.toString(kendo.parseDate(response.Data.Date, 's'), 'dd.MM.yyyy') + '</b>';
+                                    }
+
+                                    if (invoiceCount != undefined && invoiceCount != null) {
+                                        message += ' включающий в себя <b>' + invoiceCount + '</b> счетов';
+                                    }
+
+                                    if (invoiceSum != undefined && invoiceSum != null) {
+                                        message += ' на сумму <b>' + kendo.toString(invoiceSum, 'n2').split(decimalSeparator)[0] + ' руб. ' + kendo.toString(invoiceSum, 'n2').split(decimalSeparator)[1] + ' коп.</b> ';
+                                    }
+
+                                    var buttons = [];
+
+                                    if (reestPayUrl != null && reestrPayId != undefined && reestrPayId != null) {
+                                        buttons.push({
+                                            caption: 'Перейти в реестр',
+                                            class: 'k-primary',
+                                            click: function (e) {
+                                                window.top.location.href = reestPayUrl + '&354000100=' + reestrPayId;
+                                            }
+                                        });
+                                    } else {
+                                        buttons.push({
+                                            caption: 'ОК',
+                                            class: 'k-primary',
+                                            click: function (e) {
+                                                Common.UI.CloseWindow('registerModalWindow', window.parent);
+                                            }
+                                        });
+                                    }
+
+                                    buttons.push({
+                                        caption: 'Отмена',
+                                        click: function (e) {
+                                            Common.UI.CloseWindow('registerModalWindow', window.parent);
+                                        }
+                                    });
+
+                                    Common.UI.ShowDialog({
+                                        title: 'Подтверждение',
+                                        content: message,
+                                        icon: 'confirm',
+                                        showCloseBtn: false,
+                                        additionalButtons: buttons
+                                    });
+                                }
+                                else {
+                                    Common.ShowError('Не удалось сформировать реестр выплат');
+                                }
+                            },
+                            error: function(e) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(e.responseText);
+                            }
+                        });
+                        </text>}
+                    }
+                }
+            ]
+        });
+
+        if ($('#reestrPayInvoiceGrid').length)
+            $('#reestrPayInvoiceGrid').kendoGrid({ scrollable: false });
+
+        $('#reestrPayGrid').kendoGrid({
+            sortable: false,
+            resizable: true,
+            dataBound: function() {
+                if (false)
+                    for (var i = 0; i < this.columns.length; i++)
+                        this.autoFitColumn(i);
+            }
+        });
+    });
+</script>

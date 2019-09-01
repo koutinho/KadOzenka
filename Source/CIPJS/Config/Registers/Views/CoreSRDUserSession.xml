@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="949" DefaultLayoutId="1009491" Description="Представление для сессий СРД" JoinType="Left" 
+              ShowObjectCards="false" ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false"
+              SRDFunctionTag="CORE.SRD.USERS">
+  <Buttons>
+    <Button Caption="Экспорт в Excel" CommandName="ExportToExcel" SRDFunctionTag="CORE.REGISTER.EXCELEXPORT.CORE_SRD_SESSION" />
+    <Button Caption="Экспорт в DBF" CommandName="ExportToDBF" SRDFunctionTag="CORE.REGISTER.DBFEXPORT.CORE_SRD_SESSION" />
+  </Buttons>
+  <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

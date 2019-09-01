@@ -1,0 +1,263 @@
+﻿@using ObjectModel.Insur;
+@using ObjectModel.Directory;
+
+<style>
+    #buildingConsolidationGrid .k-grid-header .k-header {
+        text-align: center;
+    }
+
+    td.k-detail-cell {
+        padding: 0px;
+    }
+
+    .history {
+        text-align: left;
+    }
+
+    .history_to {
+        float: right;
+    }
+
+    .k-detail-cell .k-grid {
+        border-left: none;
+        color: gray;
+    }
+
+        .k-detail-cell .k-grid .k-grid-header {
+            display: none;
+        }
+
+    .underline {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    img {
+        height: 20px;
+    }
+
+    .grid-header {
+        font-weight: bold;
+        text-align: center;
+    }
+
+        .grid-header td {
+            line-height: normal;
+        }
+
+    #buildingConsolidationGrid.k-grid td {
+        white-space: inherit;
+    }
+    /*#buildingConsolidationGrid.k-grid td:nth-child(5) {
+        color: black;
+    }*/
+    #buildingConsolidationGrid .k-grid-header {
+        display: none;
+    }
+
+    #buildingConsolidationGrid td span.title {
+        display: block;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .bg-red {
+        color: red;
+    }
+</style>
+<div id="buildingConsolidationGrid"></div>
+<script>
+    $(function () {
+        var grid = $('#buildingConsolidationGrid').kendoGrid({
+            scrollable: false,
+            columns: [
+                {
+                    field: 'Group',
+                    groupHeaderTemplate: '#=value#',
+                    hidden: true
+                },
+                {
+                    field: 'Source',
+                    width: '50px',
+                    attributes: { style: 'text-align: center;' },
+                    template: function (dataItem) {
+                        if (dataItem.Source == 'Б') {
+                            return '<img src="/images/bti.png" />';
+                        } else if (dataItem.Source == 'Е') {
+                            return '<img src="/images/egrn.png" />';
+                        } else if (dataItem.Source == 'Р') {
+                            return '<img src="/images/logo.png" />';
+                        }
+
+                        return dataItem.Source != null ? dataItem.Source : '';
+                    },
+                    title: ' '
+                },
+                {
+                    field: 'Name',
+                    width: '250px',
+                    title: 'Параметр МКД',
+                    template: '<span class="#:Name?NameClass:"title"#">#:Name?Name:"Параметр МКД"#</span>'
+                },
+                {
+                    field: 'Mkd',
+                    template: '<span role="mkd" class="#:(Mkd && Mkd.Value)?"":"title"# #:(Mkd && Mkd.HaveHistory)?"underline":""#">#:(Mkd && Mkd.Value)?Mkd.Value:Name?"-":"Объект страхования"#</span>',
+                    attributes: { style: 'text-align: center;' },
+                    title: 'Объект страхования'
+                },
+                {
+                    field: 'Egrn',
+                    template: '<span role="egrn" class="#:(Egrn && Egrn.Value)?"":"title"# #:(Egrn && Egrn.HaveHistory)?"underline":""#">#:(Egrn && Egrn.Value)?Egrn.Value:Name?"-":"ЕГРН"#</span>',
+                    attributes: { style: 'text-align: center;' },
+                    title: 'ЕГРН'
+                },
+                @for (int i = 0; i < ViewBag.BtiCount; i++)
+                {
+                <text>
+                {
+                    field: 'Btis[@i]',
+                    template: '<span role="bti_@i" class="#:(Btis && Btis[@i] && Btis[@i].Value)?"":"title"# #:(Btis && Btis[@i] && Btis[@i].HaveHistory)?"underline":""#">#:(Btis && Btis[@i] && Btis[@i].Value)?Btis[@i].Value:Name?"-":"БТИ"#</span>',
+                    attributes: { style: 'text-align: center;' },
+                    title: 'БТИ'
+                },
+                </text>
+                }
+                {
+                    field: 'Mfc',
+                    template: '<span role="mfc" class="#:(Mfc && Mfc.Value)?"":"title"# #:(Mfc && Mfc.Value && Mfc.PeriodRegDate && Mfc.HaveHistory)?"":""#">#:(Mfc && Mfc.Value)?Mfc.Value:Name?"-":"МФЦ"#</span>',
+                    attributes: { style: 'text-align: center;' },
+                    title: 'МФЦ'
+                },
+            ],
+            dataSource: {
+                group: { field: 'Group' },
+                sort: { field: 'OrdinalNumber', dir: 'asc' },
+                transport: {
+                    read: {
+                        url: '@Url.Action("BuildingConsolidatedData_Read", "Tenements")',
+                        data: { id: '@Model' },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            dataBound: function () {
+                var elProgram = $('table td:contains("Статус участия в программе")').parent().find('td:nth-child(5) span');
+
+                if (elProgram.text() == "ДА") {
+                    elProgram.addClass('text-green');
+                } else {
+                    elProgram.addClass('text-red');
+                }
+
+                elProgram.css('font-size', '16px');
+                elProgram.css('font-weight', 'bold');
+
+                $('span.underline[role="mkd"]').click(function (e) {
+                    var tr = $(e.target).closest('tr');
+                    var data = grid.dataItem(tr);
+
+                    ShowHistory(data.Mkd.ReestrId, data.Mkd.ObjectId, data.Mkd.AttributeId, data.Name);
+                });
+
+                $('span.underline[role="egrn"]').click(function (e) {
+                    var tr = $(e.target).closest('tr');
+                    var data = grid.dataItem(tr);
+
+                    ShowHistory(data.Egrn.ReestrId, data.Egrn.ObjectId, data.Egrn.AttributeId, data.Name);
+                });
+
+                @for (int i = 0; i < ViewBag.BtiCount; i++)
+                {
+                <text>
+                $('span.underline[role="bti_@i"]').click(function (e) {
+                    var tr = $(e.target).closest('tr');
+                    var data = grid.dataItem(tr);
+
+                    ShowHistory(data.Btis[@i].ReestrId, data.Btis[@i].ObjectId, data.Btis[@i].AttributeId, data.Name);
+                });
+                </text>
+                }
+
+                $('span.underline[role="mfc"]').click(function (e) {
+                    var nachUrl = '@Html.Raw(Url.Content("~/RegistersView/MfcInputNach?Transition=1"))';
+                    var tr = $(e.target).closest('tr');
+                    var data = grid.dataItem(tr);
+                    if (data && data.Mfc && data.Mfc.PeriodRegDate) {
+                        var qsquery = "&qs=317002000equal'" + '@Model' + "'and308000700equal'" + '@OMFlat.GetRegisterId()' + "'and305000400equal'" + '@InsuranceSourceType.Mfc.ToString("D")' + "'and305000700equal'" + data.Mfc.PeriodRegDate + "'";
+                        //window.open(nachUrl + qsquery, '_blank');
+                    }
+                });
+
+                $('#buildingConsolidationGrid tr:has(td:nth-child(3):contains("Параметр МКД"))').addClass('grid-header');
+            }
+        }).data('kendoGrid');
+
+        function ShowHistory(reestrId, objectId, attributeId, attributeName) {
+            if (reestrId && objectId && attributeId) {
+                var windowElement = $('<div></div>');
+
+                $('body').append(windowElement);
+
+                var modalWindow = windowElement.kendoWindow({
+                    draggable: true,
+                    resizable: true,
+                    modal: true,
+                    width: '50%',
+                    close: function () {
+                        this.destroy();
+                        $('body').css('overflow', 'auto');
+                    }
+                }).data('kendoWindow');
+
+                windowElement.prev().find(".k-window-title").html('История изменения атрибута <b>' + attributeName + '</b>');
+
+                modalWindow.content($('<div id="historyGrid"></div>'));
+
+                $('#historyGrid').kendoGrid({
+                    dataSource: new kendo.data.DataSource({
+                        transport: {
+                            read: {
+                                url: '@Url.Action("GetHistoryAttributeDate", "Tenements")',
+                                data: { objectId: objectId, reestrId: reestrId, attributeId: attributeId },
+                                contentType: 'application/json; charset=utf-8',
+                                dataType: 'json'
+                            }
+                        }
+                    }),
+                    columns: [
+                        {
+                            field: 'Value',
+                            title: 'Значение',
+                            attributes: { style: 'text-align: center;' },
+                            headerAttributes: { style: 'text-align: center;' }
+                        },
+                        {
+                            field: 'From',
+                            title: 'Дата с',
+                            template: '#:kendo.toString(kendo.parseDate(From), "dd.MM.yyyy")#',
+                            attributes: { style: 'text-align: center;' },
+                            headerAttributes: { style: 'text-align: center;' }
+                        },
+                        {
+                            field: 'To',
+                            title: 'Дата по',
+                            template: '#:kendo.toString(kendo.parseDate(To), "dd.MM.yyyy")#',
+                            attributes: { style: 'text-align: center;' },
+                            headerAttributes: { style: 'text-align: center;' }
+                        },
+                        {
+                            field: 'UserName',
+                            title: 'Пользователь',
+                            attributes: { style: 'text-align: center;' },
+                            headerAttributes: { style: 'text-align: center;' }
+                        }
+                    ]
+                });
+
+                $('body').css('overflow', 'hidden');
+                modalWindow.center().open();
+            }
+        }
+    });
+</script>

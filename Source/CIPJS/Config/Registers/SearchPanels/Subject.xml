@@ -1,0 +1,10 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="Тип субъекта" ID="SubjectType" OwnType="Combo" ReferenceId="12142" AttributeNumber="345002300" QueryOperation="Equal" ComboBoxFilter="None" />
+      <ControlElement Caption="Округ" ID="Okrug" OwnType="Combo" AttributeNumber="345000200" RegisterId="320" TextFieldAttribute="320000400" ValueFieldAttribute="320000100" QueryOperation="Equal" />
+      <ControlElement Caption="Наименование субъекта" ID="SubjectName" OwnType="Text" AttributeNumber="345000500" QueryOperation="Like" />
+      <ControlElement Caption="ИНН субъекта" ID="Inn" OwnType="Text" AttributeNumber="345001400" QueryOperation="Like" />
+    </children>
+  </ControlElement>
+</RootElement>

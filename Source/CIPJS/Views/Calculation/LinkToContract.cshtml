@@ -1,0 +1,63 @@
+﻿@using CIPJS.DAL.Calculation;
+
+@model CalculationContractLinkDto
+
+@{
+    var cultureRu = new System.Globalization.CultureInfo("ru-RU");
+}
+
+@using (Html.BeginForm("LinkToContract", "Calculation", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.CalculationId)
+    @Html.HiddenFor(m => m.ContractId)
+    @Html.HiddenFor(m => m.ContractNumerAndDate)
+}
+
+<script>
+    function checkLink() {
+        var contractId = $('[name="ContractId"]').val();
+        if (contractId) {
+            var contractNom = $('[name="ContractNumerAndDate"]').val();
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение',
+                content: 'Выбранный расчет уже связан с договором №" ' + contractNom + ', продолжить?',
+                onSuccess: function (e) {
+                    selectContract();
+                },
+                onFail: function (e) {
+                    Common.UI.CloseWindow('registerModalWindow', window.parent);
+                }
+            });
+        } else {
+            selectContract();
+        }
+    }
+
+    function selectContract() {
+        var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=ContractsSelect',
+            title = 'Выбор договора',
+            callbackFn = function (item) {
+                $('[name="ContractId"]').val(item.id);
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: { jsonLink: JSON.stringify(formObject) },
+                    success: function () {
+                        Common.ShowMessage('Операция успешно выполнена');
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            };
+
+        Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@ObjectModel.Insur.OMAllProperty.GetRegisterId()');
+    }
+
+    $(function () {
+        checkLink();
+    });
+</script>

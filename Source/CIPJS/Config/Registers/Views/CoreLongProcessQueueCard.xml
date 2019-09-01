@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="975" DefaultLayoutId="1000975" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowFilterMenuOnToolbar="true"
+              ShowObjectCards="false" ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="ADMIN.LONG_PROCESS">
+    <Buttons>
+        <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" SRDFunctionTag="ADMIN.LONG_PROCESS">
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+                <Parameter Key="RegisterId" Value="[RegisterId]" />
+                <Parameter Key="LightMode" Value="true" />
+            </Parameters>
+        </Button>
+        <Button Caption="Перезапустить" NavigateURL="~/LongProcessManagement/Restart" WindowHeight="160" WindowWidth="520">
+          <Parameters>
+            <Parameter Key="queueId" Value="[ObjectID]" />
+          </Parameters>
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="[97500900]" Operation="NotEqual" Value="4" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="5" AndOr="And" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="6" AndOr="And" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+        </Button>
+        <Button Caption="Отменить задание" NavigateURL="~/LongProcessManagement/CancelTask" WindowHeight="300" WindowWidth="500">
+            <Parameters>
+                <Parameter Key="TaskId" Value="[ObjectID]" />
+            </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="[97500900]" Operation="NotEqual" Value="0" />
+                        <Condition Key="[97500900]" Operation="NotEqual" Value="1" AndOr="And" />
+                        <Condition Key="[97500900]" Operation="NotEqual" Value="2" AndOr="And" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+        </Button>
+        <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

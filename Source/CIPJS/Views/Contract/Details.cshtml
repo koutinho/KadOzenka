@@ -1,0 +1,771 @@
+﻿@using Core.SRD
+@model CIPJS.Models.Contract.AllPropertyDetails
+
+<style>
+    .static-nav > fieldset label,
+    .static-nav > .control-data > fieldset label {
+        font-weight: normal;
+    }
+</style>
+<form>
+    @Html.HiddenFor(m => m.Id)
+    <ul id="ls_panelbar" class="panelbar">
+        <li id="contract">
+            <span>Информация о договоре</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.ContractNumber)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(m => m.ContractNumber, editMode: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BeginDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.BeginDate, editMode: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Status)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoEnumDropDownListFor(m => m.Status, editMode: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.InsuranceCompany)
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.KendoTextBoxFor(m => m.InsuranceCompany, true, editMode: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.PartInsuranceCompany)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoNumericTextBoxFor(m => m.PartInsuranceCompany, 2, editMode: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Policyholder)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoTextBoxFor(m => m.Policyholder, editMode: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.OrgType)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(m => m.OrgType, editMode: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Paysign)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(m => m.Paysign, editMode: false)
+                        </div>
+                    </div>
+                    <partial name="Terms" /> 
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.PartMoscow)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(m => m.PartMoscow, 2)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="mkd">
+            <span>Многоквартирный дом</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Unom)
+                        </div>
+                        <div class="col-sm-4">
+                            @if (Model.BuildingId.HasValue)
+                            {
+                                <label class="control-label">
+                                    <a href="@Html.Raw($"/ObjectCard?ObjId={Model.BuildingId}&RegisterViewId=Tenements&isVertical=true&useMasterPage=true")" target="_blank">@Model.Unom</a>
+                                </label>
+                            }
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.CadastralNumber)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.CadastralNumber, true, editMode: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Address)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoTextBoxFor(m => m.Address, true, editMode: false)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="payments">
+            <span>Платежи по договору</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div id="payments-grid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        @if (Model.HasCalculation)
+        {<text>
+                <li id="calculation" not-expand="true">
+                    <span>Расчет страховой стоимости</span>
+                    <div>
+                        <div class="form-horizontal col-sm-12">
+                            <div class="form-group"></div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    @Html.CustomLabelFor(m => m.Oplc)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.KendoNumericTextBoxFor(m => m.Oplc, 2, editMode: false)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.CustomLabelFor(m => m.CalculatedArea)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.KendoNumericTextBoxFor(m => m.CalculatedArea, 2, editMode: false)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.CustomLabelFor(m => m.IndicatorR)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.KendoNumericTextBoxFor(m => m.IndicatorR, 2, editMode: false)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-2">
+                                    @Html.CustomLabelFor(m => m.ActualCost)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.KendoNumericTextBoxFor(m => m.ActualCost, 2, editMode: false)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.CustomLabelFor(m => m.CoefActualCost)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.KendoNumericTextBoxFor(m => m.CoefActualCost, 2, editMode: false)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.CustomLabelFor(m => m.ActualCostCurrent)
+                                </div>
+                                <div class="col-sm-2">
+                                    @Html.KendoNumericTextBoxFor(m => m.ActualCostCurrent, 2, editMode: false)
+                                </div>
+                            </div>
+                            <div class="form-group"></div>
+                            <h5 class="text-center">
+                                <strong>
+                                    Таблица "Определение удельного веса (Ui) отдельных конструкций на основании IV раздела технического паспорта,
+                                    а также показателей уделього веса значения стоимости по каждой конструкции на на основании базовой стоимости всего дома"
+                                </strong>
+                            </h5>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">№ категории</th>
+                                        <th class="text-center">Наименование конструкциии</th>
+                                        <th class="text-center">Удельный вес конструкции, Ui, %</th>
+                                        <th class="text-center">Стоимость констр. по зданию, Ci=Cб*Ui, руб</th>
+                                        <th class="text-center">Стоимость констр. общей зоны, Cim=Ci*R, руб</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="cat_1">
+                                        <td class="text-center" rowspan="8">I</td>
+                                        <td>@Html.CustomLabelFor(m => m.Ui1)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui1)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui1ValueByBuilding.HasValue ? Model.Ui1ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui1ValueCommonArea.HasValue ? Model.Ui1ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_1">
+                                        <td>@Html.CustomLabelFor(m => m.Ui2)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui2)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui2ValueByBuilding.HasValue ? Model.Ui2ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui2ValueCommonArea.HasValue ? Model.Ui2ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_1">
+                                        <td>@Html.CustomLabelFor(m => m.Ui3)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui3)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui3ValueByBuilding.HasValue ? Model.Ui3ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui3ValueCommonArea.HasValue ? Model.Ui3ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_1">
+                                        <td>@Html.CustomLabelFor(m => m.Ui4)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui4)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui4ValueByBuilding.HasValue ? Model.Ui4ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui4ValueCommonArea.HasValue ? Model.Ui4ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_1">
+                                        <td>@Html.CustomLabelFor(m => m.Ui5)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui5)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui5ValueByBuilding.HasValue ? Model.Ui5ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui5ValueCommonArea.HasValue ? Model.Ui5ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_1">
+                                        <td>@Html.CustomLabelFor(m => m.Ui6)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui6)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui6ValueByBuilding.HasValue ? Model.Ui6ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui6ValueCommonArea.HasValue ? Model.Ui6ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_1">
+                                        <td>@Html.CustomLabelFor(m => m.Ui7)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui7)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui7ValueByBuilding.HasValue ? Model.Ui7ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui7ValueCommonArea.HasValue ? Model.Ui7ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_1">
+                                        <td>@Html.CustomLabelFor(m => m.Ui8)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui8)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui8ValueByBuilding.HasValue ? Model.Ui8ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui8ValueCommonArea.HasValue ? Model.Ui8ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_2">
+                                        <td class="text-center">II</td>
+                                        <td>@Html.CustomLabelFor(m => m.Ui9)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui9)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui9ValueByBuilding.HasValue ? Model.Ui9ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui9ValueCommonArea.HasValue ? Model.Ui9ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr class="cat_3">
+                                        <td class="text-center">III</td>
+                                        <td>@Html.CustomLabelFor(m => m.Ui10)</td>
+                                        <td>
+                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui10)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "specific_weight", @style = "width: 100%;" })
+                                                            .Spinners(false))
+                                        </td>
+                                        <td class="text-right value_by_building">
+                                            @(Model.Ui10ValueByBuilding.HasValue ? Model.Ui10ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                        <td class="text-right value_comon_area">
+                                            @(Model.Ui10ValueCommonArea.HasValue ? Model.Ui10ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>@Html.CustomLabelFor(m => m.Ui11)</td>
+                                        <td style="padding:0;">
+                                            <table style="width:100%;">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="border:none">
+                                                            @(Html.Kendo().NumericTextBoxFor(m => m.Ui11)
+                                                            .Format("N2")
+                                                            .Min(0)
+                                                            .Decimals(2)
+                                                            .HtmlAttributes(new { @class = "spTotalWeight", @style = "width: 100%;", @readonly = "readonly" })
+                                                            .Spinners(false))
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border:none">
+                                                            <span class="field-validation-valid k-syntax-error total_weight_error"></span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                        <td class="text-right">
+                                            <span class="spTotalValueByBuilding">
+                                                @(Model.Ui11ValueByBuilding.HasValue ? Model.Ui11ValueByBuilding.Value.ToString("N2") : string.Empty)
+                                            </span>
+                                        </td>
+                                        <td class="text-right">
+                                            <span class="spTotalValueComonArea">
+                                                @(Model.Ui11ValueCommonArea.HasValue ? Model.Ui11ValueCommonArea.Value.ToString("N2") : string.Empty)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-horizontal col-sm-12">
+                            <div class="form-group"></div>
+                            <div class="col-sm-12 calculationSumInfo">
+                                <h5 class="text-center">
+                                    <strong>
+                                        Расчет страховой премии и ежемесячного страхового взноса по категориям общего имущества
+                                    </strong>
+                                </h5>
+                                <table class="table table-bordered table-striped" id="calculationSumInfo">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" data-field="name">Категории</th>
+                                            <th class="text-center" data-field="cost">Страховая стоимость</th>
+                                            <th class="text-center" data-field="amount">Страховая сумма</th>
+                                            <th class="text-center" data-field="baserate">Базовый страховой тариф</th>
+                                            <th class="text-center" data-field="annualprem">Годовая страховая премия</th>
+                                            <th class="text-center" data-field="monthlyprem">Ежемесячный страховой взнос</th>
+                                        </tr>
+                                    </thead>
+                                    <tr>
+                                        <td>Общая зона дома без санитарно-технических работи внутридомового инженерного оборудования</td>
+                                        <td id="TotalCost1" class="text-right">
+                                            @Html.Value("TotalCost1", "{0:N2}")
+                                        </td>
+                                        <td id="DesignCost1" class="text-right">
+                                            @Html.Value("DesignCost1", "{0:N2}")
+                                        </td>
+                                        <td id="BasicRate1" class="text-right">
+                                            @Html.Value("BasicRate1", "{0:N2}")
+                                        </td>
+                                        <td id="AnnualBonus1" class="text-right">
+                                            @Html.Value("AnnualBonus1", "{0:N2}")
+                                        </td>
+                                        <td id="MonthlyBonus1" class="text-right">
+                                            @Html.Value("MonthlyBonus1", "{0:N2}")
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Общая зона дома по санитарно техническим работам и внутридомовому инженерному оборудованию</td>
+                                        <td id="TotalCost2" class="text-right">
+                                            @Html.Value("TotalCost2", "{0:N2}")
+                                        </td>
+                                        <td id="DesignCost2" class="text-right">
+                                            @Html.Value("DesignCost2", "{0:N2}")
+                                        </td>
+                                        <td id="BasicRate2" class="text-right">
+                                            @Html.Value("BasicRate2", "{0:N2}")
+                                        </td>
+                                        <td id="AnnualBonus2" class="text-right">
+                                            @Html.Value("AnnualBonus2", "{0:N2}")
+                                        </td>
+                                        <td id="MonthlyBonus2" class="text-right">
+                                            @Html.Value("MonthlyBonus2", "{0:N2}")
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Лифты и лифтовое оборудование</td>
+                                        <td id="TotalCost3" class="text-right">
+                                            @Html.Value("TotalCost3", "{0:N2}")
+                                        </td>
+                                        <td id="DesignCost3" class="text-right">
+                                            @Html.Value("DesignCost3", "{0:N2}")
+                                        </td>
+                                        <td id="BasicRate3" class="text-right">
+                                            @Html.Value("BasicRate3", "{0:N2}")
+                                        </td>
+                                        <td id="AnnualBonus3" class="text-right">
+                                            @Html.Value("AnnualBonus3", "{0:N2}")
+                                        </td>
+                                        <td id="MonthlyBonus3" class="text-right">
+                                            @Html.Value("MonthlyBonus3", "{0:N2}")
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>По дому в целом</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td id="SizeAnnualBonus" class="text-right">
+                                            @Html.Value("SizeAnnualBonus", "{0:N2}")
+                                        </td>
+                                        <td id="SizeAnnualBonusMonthlyBonus" class="text-right">
+                                            @Html.Value("SizeAnnualBonusMonthlyBonus", "{0:N2}")
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>По одной квартире</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td id="SizeAnnualBonusFlat" class="text-right">
+                                            @Html.Value("SizeAnnualBonusFlat", "{0:N2}")
+                                        </td>
+                                        <td id="SizeAnnualBonusMonthlyBonusFlat" class="text-right">
+                                            @Html.Value("SizeAnnualBonusMonthlyBonusFlat", "{0:N2}")
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+        </text>}
+        <li id="bonus">
+            <span>Возврат части премии  ( максимальная сумма возврата = @Model.NMax)</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/Invoice/Index")" data-param-allPropertyId="@Model.Id" data-param-isReadOnly="true" data-loader="true"></div>
+                    <div class="form-group">
+                    </div>
+                </div>
+            </div>
+        </li>
+        @if (Model.Id > 0)
+        {
+            <li id="comment">
+                <span>Комментарии</span>
+                <div>
+                    <div class="form-horizontal col-sm-12">
+                        <div class="form-group"></div>
+                        <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/Comment/Index")" data-param-reestrId="310" data-param-objectId="@Model.Id" data-param-isReadOnly="true" data-loader="true"></div>
+                        <div class="form-group">
+                        </div>
+                    </div>
+                </div>
+            </li>
+        }
+        <li id="agreement">
+            <span>Согласование</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabel("Договор создан")
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CalculatePersonDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.CalculatePersonDate, true, "dd.MM.yyyy HH:mm", editMode: false)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CalculatePersonFIO)
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.KendoTextBoxFor(m => m.CalculatePersonFIO, true, editMode: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-5">
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CalculatePersonPost)
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.TextBoxAreaFor(m => m.CalculatePersonPost, 1, 2, true, editMode: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.KendoButton("setAgreedStatus", "Согласовано", !Model.CanAgreed)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.PrimaryMatchingDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.PrimaryMatchingDate, true, "dd.MM.yyyy HH:mm", editMode: false)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.PrimaryMatchingFIO)
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.KendoTextBoxFor(m => m.PrimaryMatchingFIO, true, editMode: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-5">
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.PrimaryMatchingPost)
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.TextBoxAreaFor(m => m.PrimaryMatchingPost, 1, 2, true, editMode: false)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="static-nav">
+        <nav id="navigation-menu">
+            <a href="#contract">Договор</a>
+            <a href="#mkd">МКД</a>
+            <a href="#payments">Платежи</a>
+            @if (Model.HasCalculation)
+            {
+                <text><a href="#calculation">Расчет</a></text>
+            }
+            <a href="#bonus">Возврат части премии</a>
+            <a href="#comment" nav-name="comments">Комментарии <span class="label label-count"></span></a>
+            <a href="#agreement">Согласование</a>
+        </nav>
+
+        @if (Model.Status.HasValue)
+        {
+            <div class="control-data">
+                @Html.Partial("ControlData", Model)
+            </div>
+        }
+
+        <div id="toolbar" style="position:absolute; bottom: 20px;width: 95%;"></div>
+    </div>
+</form>
+<script>
+    $(function () {
+        var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+        panelbar.expand($('li:not([not-expand="true"])'));
+
+        $("#navigation-menu a").mPageScroll2id({
+            highlightSelector:"#navigation-menu a"
+        });
+
+        $('[name="PartMoscow"]').bind('change', function () {
+            var part = $('[name="PartMoscow"]').data('kendoNumericTextBox').value();
+            var totalSumPay = parseFloat('@Model.RasPripay'.replace(",", ".")) * part / 100;
+            $('label[for=TotalSumPay]').text(kendo.toString(totalSumPay, "N2"));
+        });
+
+        $('#payments-grid').kendoGrid({
+            scrollable: false,
+            columns: [
+                {
+                    title: 'Номер договора',
+                    field: 'Ndog'
+                },
+                {
+                    title: 'Дата договора',
+                    field: 'Ndogdat',
+                    template: '#:Ndogdat?kendo.toString(kendo.parseDate(Ndogdat), "dd.MM.yyyy"):""#'
+                },
+                {
+                    title: 'Номер ПП',
+                    field: 'Paynumber'
+                },
+                {
+                    title: 'Дата ПП',
+                    field: 'PmtDate',
+                    template: '#:PmtDate?kendo.toString(kendo.parseDate(PmtDate), "dd.MM.yyyy"):""#'
+                },
+                {
+                    title: 'Сумма ПП',
+                    field: 'SumOpl',
+                    template: '#:SumOpl?kendo.toString(SumOpl, "n2"):""#'
+                },
+            ],
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("PaymentsGrid_Read", "Contract")',
+                        data: { id: @Model.Id },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            }
+        }).data('kendoGrid');
+
+        $('#setAgreedStatus').click(function (e) {
+            e.preventDefault();
+            var inumDoc = $('[name="ContractNumber"]').val();
+            var date = $('[name="BeginDate"]').val();
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение',
+                content: 'Вы подтверждаете что договор №' + inumDoc + '  от ' + date + ' согласовано?',
+                onSuccess: function (e) {
+                    var id = $('.mainContent > form > input[name="Id"]').val();
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("Agreed", "Contract")',
+                        data: { 'id': id },
+                        success: function (e) {
+                            $('#PrimaryMatchingDate').data('kendoDatePicker').value(e.Data.date);
+                            $('#PrimaryMatchingFIO').val(e.Data.user);
+                            $('#PrimaryMatchingPost').val(e.Data.post);
+                            kendo.ui.progress($('body'), false);
+                        },
+                        error: function (response) {
+                            Common.ShowError(response.responseText);
+                            kendo.ui.progress($('body'), false);
+                        }
+                    });
+                }
+            });
+        });
+
+        var toolbar = $('#toolbar').kendoToolBar({
+            items: [
+            @if (SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.INSUR_COMMPROP_RIGHT_WRITE))
+                {
+                    @Html.Raw(@"{
+                    type: 'button',
+                    text: '',
+                    icon: 'pencil',
+                    id: 'edit',
+                    click: function() {
+                            toolbar.hide($('#edit'));
+                            toolbar.show($('#save'));
+                            KendoExtension.ToggleEditMode(true);
+                        }
+                    },
+                    {
+                    type: 'button',
+                    text: '',
+                    icon: 'save',
+                    id: 'save',
+                    hidden: true,
+                    click: function() {
+                            Common.ClearNotification();
+                            kendo.ui.progress($('body'), true);
+
+                        $.ajax({
+                            type: 'POST',
+                            url: '" + @Url.Action("Update", "Contract") + @"',
+                            data: $('form').serialize(),
+                            success: function(e) {
+                                    if (e.Errors && e.Errors.length > 0) {
+                                        Common.ShowError(e.Errors);
+                                    } else {
+                                        refreshView('" + @Url.Content("~/Contract/ControlData/") + @"', { id: " + @Model.Id + @" }, '.control-data', 'GET',
+                                        function() { Common.ShowMessage('Карточка успешно сохранена'); });
+                                        toolbar.hide($('#save'));
+                                        toolbar.show($('#edit'));
+                                        KendoExtension.ToggleEditMode(false);
+                                    }
+                                    kendo.ui.progress($('body'), false);
+                                }, error: function(e) {
+                                    Common.ShowError(e.responseText)
+                                   kendo.ui.progress($('body'), false);
+                                }
+                            });
+                        }
+                    }");
+                }
+            ]
+        }).data('kendoToolBar');
+    });
+</script>
+
+<style>
+    .k-grid-no {
+        background: linear-gradient(to bottom, rgba(250,128,114,0.76) 0%,rgba(250,128,114,1) 100%);
+    }
+
+    .row {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
+</style>

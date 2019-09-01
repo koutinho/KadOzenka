@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="Тип файла" ID="FileType" OwnType="Combo" AttributeNumber="301000300" QueryOperation="Equal" ComboBoxFilter="None">
+        <CustomItems>
+          <KeyValuePair>
+            <Key>12120002</Key>
+            <Value>Реестр полисов</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120005</Key>
+            <Value>Реестр расторгнутых полисов</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120006</Key>
+            <Value>Реестр свидетельств</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120007</Key>
+            <Value>Реестр страховых выплат по жилым помещениям</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120008</Key>
+            <Value>Реестр сведений об отказах  в страховых выплатах по жилым помещениям</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120009</Key>
+            <Value>Реестр сведений о заключенных договорах страхования общего имущества собственников помещений</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120010</Key>
+            <Value>Реестр сведений о заключенных дополнительных соглашениях к договорам страхования общего имущества собственников помещений</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120011</Key>
+            <Value>Реестр сведений о поступивших платежах по договорам страхования общего имущества собственников помещений</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120012</Key>
+            <Value>Cведения о страховых выплатах по договорам страхования общего имущества собственников помещений</Value>
+          </KeyValuePair>
+          <KeyValuePair>
+            <Key>12120013</Key>
+            <Value>Реестр сведений о заявленных и неурегулированных страховых событиях по договорам общего имущества собственников помещений и об отказах в страховых выплатах по ним</Value>
+          </KeyValuePair>
+        </CustomItems>
+      </ControlElement>
+      <ControlElement Caption="Статус файла" ID="FileStatus" OwnType="Combo" AttributeNumber="301000900" ReferenceId="12119" QueryOperation="Equal" ComboBoxFilter="None" />
+      <ControlElement Caption="Страховая компания" ID="InsuranceCompany" OwnType="Combo" AttributeNumber="301001900" RegisterId="328" TextFieldAttribute="328000300" ValueFieldAttribute="328000100" QueryOperation="Equal" />
+      <ControlElement Caption="Дата загрузки" ID="DownloadDate" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="DownloadDate_from" OwnType="Calendar" AttributeNumber="301000700" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="DownloadDate_to" OwnType="Calendar" AttributeNumber="301000700" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="DownloadDate_equal" OwnType="Calendar" AttributeNumber="301000700" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Период учета" ID="PeriodPanel" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="Period_from" OwnType="MonthCalendar" AttributeNumber="301000400" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="Period_to" OwnType="MonthCalendar" AttributeNumber="301000400" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="Period" OwnType="MonthCalendar" AttributeNumber="301000400" QueryOperation="WithinDate" />
+        </children>
+      </ControlElement>
+    </children>
+  </ControlElement>
+</RootElement>

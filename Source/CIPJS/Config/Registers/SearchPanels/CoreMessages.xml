@@ -1,0 +1,45 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Width="0" AttributeNumber="0">
+    <children>
+
+      <ControlElement Caption="Подразделение" ID="cbDepartment" OwnType="Combo" HasLinkedCombos="true" AttributeNumber="95000200" RegisterId="941" TextFieldAttribute="94100300" ValueFieldAttribute="94100100" QueryOperation="Equal" />
+
+      <ControlElement Caption="ФИО" ID="cbUser" OwnType="Combo" AttributeNumber="95000100" RegisterId="950" TextFieldAttribute="95000400" ValueFieldAttribute="95000100" ParentFilterAttribute="95000200" QueryOperation="Equal">
+        <parentComboBox>
+          <string>cbDepartment</string>
+        </parentComboBox>
+      </ControlElement>
+
+      <ControlElement Caption="Тема" ID="txLogin" OwnType="Text" AttributeNumber="98000400" QueryOperation="Like" />
+
+      <ControlElement Caption="Дата" ID="date_panel" OwnType="Panel">
+        <children>
+          <ControlElement Caption="с " ID="create_date_from" OwnType="Calendar" AttributeNumber="98000500" QueryOperation="MoreThan" />
+          <ControlElement Caption="по" ID="create_date_to" OwnType="Calendar" AttributeNumber="98000500" QueryOperation="LessThan" />
+        </children>
+      </ControlElement>
+
+      <ControlElement Caption="Дата" ID="create_date" OwnType="Calendar" AttributeNumber="98000500" QueryOperation="WithinDate" />
+
+    </children>
+  </ControlElement>
+
+  <ControlElement Caption="Автор" OwnType="RadPanel" Width="0" AttributeNumber="0">
+    <children>
+
+      <ControlElement Caption="Отправлены мной" ID="sentByMe" OwnType="CheckBox" QueryOperation="Equal" AttributeNumber="98000200" Value="{SRDSession:UserId}" />
+      
+      <ControlElement Caption="Подразделение" ID="cbDepartment" OwnType="Combo" HasLinkedCombos="true" AttributeNumber="95000200" RegisterId="941" TextFieldAttribute="94100300" ValueFieldAttribute="94100100" QueryOperation="Equal" />
+
+      <ControlElement Caption="ФИО" ID="cbUser" OwnType="Combo" AttributeNumber="98000200" RegisterId="950" TextFieldAttribute="95000400" ValueFieldAttribute="95000100" ParentFilterAttribute="95000200" QueryOperation="Equal">
+        <parentComboBox>
+          <string>cbDepartment</string>
+        </parentComboBox>
+      </ControlElement>
+
+      
+
+    </children>
+  </ControlElement>
+
+</RootElement>

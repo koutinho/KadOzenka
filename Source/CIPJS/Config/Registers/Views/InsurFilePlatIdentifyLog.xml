@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="359" DefaultLayoutId="1003591" LinkedRegistersList="359, 301, 321, 320"
+              AllowSearchPanelResize="false" IsBasic="false" OpenEmpty="false"
+              UseSubMap="true" AllowMultiColumnSorting="true" JoinType="Left"
+              ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="true" ShowSettingsPanel="true" SearchPanel="InsurFilePlatIdentifyLog">
+  <Tabs>
+    <Tab Caption="Статистика" NavigateURL="~/InputFile/PlatIdentifyLog">
+      <Parameters>
+        <Parameter Key="platIdentifyLogId" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
+</RegisterView>

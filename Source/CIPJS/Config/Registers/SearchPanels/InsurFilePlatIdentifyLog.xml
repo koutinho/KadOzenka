@@ -1,0 +1,8 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel">
+    <children>
+      <ControlElement Caption="Наименование файла" ID="FileName" OwnType="Text" AttributeNumber="301000200" QueryOperation="Like" />
+      <ControlElement Caption="Период учета" ID="Period" OwnType="MonthCalendar" AttributeNumber="301000400" QueryOperation="Equal" />
+    </children>
+  </ControlElement>
+</RootElement>

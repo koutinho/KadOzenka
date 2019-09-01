@@ -1,0 +1,349 @@
+﻿@using CIPJS.DAL.Subject
+@using ObjectModel.Directory
+
+@model SubjectDto
+@{
+    var cultureRu = new System.Globalization.CultureInfo("ru-RU");
+}
+
+<form>
+    @Html.HiddenFor(x => x.EmpId)
+    <ul id="subject_panelbar" class="panelbar" style="width:86%">
+        <li id="COMON_DATA">
+            <span>Общие данные</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.TypeSubjectCode)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(x => x.TypeSubjectCode, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.SubjectName)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.SubjectName, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.NameForInvoice)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoTextBoxFor(x => x.NameForInvoice, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group" id="divBirthday">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Birthday)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(x => x.Birthday, isReadonly: false)
+                        </div>
+                    </div>
+                    @if (!ViewBag.IsFisical)
+                    {
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(x => x.Inn)
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.KendoTextValidator(m => m.Inn, "^(\\d{0,12})$", isReadonly: false, skipSerialize: true, validMes: "ИНН: 12 символов")
+                            </div>
+                            <div class="col-sm-2">
+                                @Html.CustomLabelFor(x => x.Kpp)
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.KendoTextValidator(m => m.Kpp, "^(\\d{9})$", isReadonly: false, skipSerialize: true, id: "Kpp", validMes: "КПП: 9 символов")
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </li>
+        <li id="BANK">
+            <span>Банковские реквизиты</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    @Html.HiddenFor(x => x.BankId)
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BankBic)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoAutoCopmpliteFor(x => x.BankBic, "BankBic", "Bank", "GetBankByBik", "function() {return {bic: $('#BankBic').val()};}", isReadonly: false)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.KendoButton("selectBank", "...", isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BankName)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.BankName, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BankInn)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextValidator(m => m.BankInn, "^(\\d{0,12})$", isReadonly: false, skipSerialize: true, id: "BankInn", validMes: "ИНН банка: 12 символов")
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BankKpp)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextValidator(m => m.BankKpp, "^(\\d{9})$", isReadonly: false, skipSerialize: true, id: "BankKpp", validMes: "КПП банка: 9 символов")
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BankKorAcc)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextValidator(m => m.BankKorAcc, "^(\\d{20})$", isReadonly: false, skipSerialize: true, id: "BankKorAcc", validMes: "Кор.счет: 20 символов")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="CDATA">
+            <span>Сводные данные</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.RachAcc)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextValidator(m => m.RachAcc, "^(\\d{20})$", isReadonly: false, skipSerialize: true, id: "RachAcc", validMes: "Расч. счет: 20 символов")
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.NumCard)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.NumCard, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group" id="divLegalDoc">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.NomDoc)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.NomDoc, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.DateDoc)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(x => x.DateDoc, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group" id="divFromDoc">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.DateInDoc)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(x => x.DateInDoc, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.OrgDoc)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.OrgDoc, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.OrgAdrF)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoTextBoxFor(x => x.OrgAdrF, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group" id="divOrgAdrU">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.OrgAdrU)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoTextBoxFor(x => x.OrgAdrU, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group" id="divUriFIO">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.EmplRole)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.EmplRole, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Fio)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.Fio, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.OrgPhone)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.OrgPhone, isReadonly: false)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="static-nav">
+        <nav id="navigation-menu">
+            <a href="#COMON_DATA">Общие данные</a>
+            <a href="#BANK">Банковские реквизиты</a>
+            <a href="#CDATA">Общие данные</a>
+        </nav>
+        <div id="subjectToolbar" style="position:absolute; bottom: 20px; width: 95%;"></div>
+    </div>
+</form>
+<script>
+    function setElements() {
+        var subjectType = $('#TypeSubjectCode').val();
+        if (subjectType == '@((long)SubjectType.Individual)') {
+            $('#divBirthday').show();
+            $('#divNumCard').show();
+            $('#divLegalDoc').show();
+            $('#divFromDoc').show();
+        } else {
+            $('#divBirthday').hide();
+            $('#divNumCard').hide();
+            $('#divLegalDoc').hide();
+            $('#divFromDoc').hide();
+        }
+        if (subjectType == '@((long)SubjectType.LegalEntity)' || subjectType == '@((long)SubjectType.ManagementCompany)') {
+            $('#divOrgAdrU').show();
+            $('#divUriFIO').show();
+        } else {
+            $('#divOrgAdrU').hide();
+            $('#divUriFIO').hide();
+        }
+    }
+
+    function typeSubjectCodeChange(e) {
+        setElements();
+    }
+
+     $('#selectBank').click(function (e) {
+        e.preventDefault();
+        var contentUrl = '@Url.Action("Index", "RegistersView")' + '?registerId=BankSelect',
+            title = 'Выбор Банка',
+                callbackFn = function (item) {
+                    $.ajax({
+                    type: 'POST',
+                        url: '@Url.Action("GetById", "Bank")',
+                        data: { 'id': item.id },
+                        success: function (data) {
+                            $('[id="BankId"]').val(data.EmpId);
+                            $('[id="BankName"]').val(data.BankName);
+                            $('[id="BankInn"]').val(data.BankInn);
+                            $('[id="BankKpp"]').val(data.BankKpp);
+                            $('[id="BankKpp"]').val(data.BankKpp);
+                            $('[id="BankBic"]').val(data.BankBic);
+                            $('[id="BankKorAcc"]').val(data.BankKorAcc);
+                        }
+                    });
+                };
+
+        Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@ObjectModel.Insur.OMBank.GetRegisterId()');
+    });
+
+    $(function () {
+        setElements();
+        var panelbar = $('#subject_panelbar').kendoPanelBar().data('kendoPanelBar');
+        panelbar.expand($('li'));
+
+        $("#navigation-menu a").mPageScroll2id({
+            highlightSelector:"#navigation-menu a"
+        });
+
+        kendo.ui.FilterMenu.fn.options.operators.string = {
+            contains: 'равно'
+        };
+
+        $('#TypeSubjectCode').data("kendoDropDownList").bind("change", typeSubjectCodeChange);
+
+        $('#subjectToolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: '',
+                    icon: 'save',
+                    id: 'save',
+                    click: function () {
+                        Common.ClearNotification();
+                        var validator = $("#subject_panelbar").data("kendoValidator");
+                        if (validator.validate()) {
+                            kendo.ui.progress($('body'), true);
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Action("SubjectCard", "Subject")',
+                                data: $('form').serialize(),
+                                success: function (e) {
+                                    if (e.Errors && e.Errors.length > 0) {
+                                        Common.ShowError(e.Errors);
+                                    } else {
+                                        Common.ShowMessage('Карточка успешно сохранена');
+                                        KendoExtension.ToggleEditMode(false);
+                                    }
+
+                                    kendo.ui.progress($('body'), false);
+                                }, error: function (e) {
+                                    Common.ShowError(e.responseText)
+                                    kendo.ui.progress($('body'), false);
+                                }
+                            });
+                        } else {
+                            var message = "Ошибки валидации:";
+                            var errors = validator.errors();
+                            $(errors).each(function () {
+                                message += "<br />" + this;
+                            });
+                            Common.ShowError(message);
+                        }
+                    }
+                }
+            ]
+        }).data('kendoToolBar');
+
+        $('.static-nav a').on('click', function (e) {
+            e.preventDefault();
+            var elementId = $(e.target).attr('href');
+            if (elementId && $(elementId).offset()) {
+                $('html,body').animate({ scrollTop: $(elementId).offset().top - 9 }, 500);
+            }
+        });
+
+        $("#subject_panelbar").kendoValidator().data("kendoValidator");
+
+        var autoCopmpl = $('#BankBic').data('kendoAutoComplete');
+        if (autoCopmpl) {
+            autoCopmpl.bind("select", function (e) {
+                $('[id="BankId"]').val(e.dataItem.EmpId);
+                $('[id="BankName"]').val(e.dataItem.BankName);
+                $('[id="BankInn"]').val(e.dataItem.BankInn);
+                $('[id="BankKpp"]').val(e.dataItem.BankKpp);
+                $('[id="BankKpp"]').val(e.dataItem.BankKpp);
+                $('[id="BankBic"]').val(e.dataItem.BankBic);
+                $('[id="BankKorAcc"]').val(e.dataItem.BankKorAcc);
+            });
+            autoCopmpl.bind('change', function () {
+                $('[id="BankId"]').val('');
+            });
+        }
+    });
+</script>

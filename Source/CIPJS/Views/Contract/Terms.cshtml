@@ -1,0 +1,62 @@
+﻿@model CIPJS.Models.Contract.AllPropertyDetails
+<div class="form-group">
+    <div class="col-sm-12">
+        <h5 class="text-center">
+            <strong>
+                Таблица "Условия договора страхования"
+            </strong>
+        </h5>
+        <table id="contract-table">
+            <thead>
+                <tr>
+                    <th data-field="name" width="33%">Элемент конструкции</th>
+                    <th data-field="costDog">Страховая стоимость (Договор)</th>
+                    <th data-field="costProj">Страховая стоимость (Проект)</th>
+                    <th data-field="amountDog">Страховая сумма (Договор)</th>
+                    <th data-field="amountProj">Страховая сумма (Проект)</th>
+                    <th data-field="premiumDog">Страховая премия (Договор)</th>
+                    <th data-field="premiumProj">Страховая премия (Проект)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Конструктивные элементы и помещения общего пользования</td>
+                    <td><div style="text-align:right" class="@(Model.St1 == Model.TotalCost1Limit ? "k-grid-opl" : "k-grid-no")">@Model.St1?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.St1 == Model.TotalCost1Limit ? "k-grid-opl" : "")">@Model.TotalCost1Limit?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.Ss1 == Model.DesignCost1Limit ? "k-grid-opl" : "k-grid-no")">@Model.Ss1?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.Ss1 == Model.DesignCost1Limit ? "k-grid-opl" : "")">@Model.DesignCost1Limit?.ToString("n2")</div></td>
+                    <td data-field="premiumDog1"></td>
+                    <td data-field="premiumProj1"></td>
+                </tr>
+                <tr>
+                    <td>Внеквартирное инженерное оборудование</td>
+                    <td><div style="text-align:right" class="@(Model.St2 == Model.TotalCost2Limit ? "k-grid-opl" : "k-grid-no")">@Model.St2?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.St2 == Model.TotalCost2Limit ? "k-grid-opl" : "")">@Model.TotalCost2Limit?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.Ss2 == Model.DesignCost2Limit ? "k-grid-opl" : "k-grid-no")">@Model.Ss2?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.Ss2 == Model.DesignCost2Limit ? "k-grid-opl" : "")">@Model.DesignCost2Limit?.ToString("n2")</div></td>
+                    <td data-field="premiumDog2"></td>
+                    <td data-field="premiumProj2"></td>
+                </tr>
+                <tr>
+                    <td>Лифтовое оборудование</td>
+                    <td><div style="text-align:right" class="@(Model.St3 == Model.TotalCost3Limit ? "k-grid-opl" : "k-grid-no")">@Model.St3?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.St3 == Model.TotalCost3Limit ? "k-grid-opl" : "")">@Model.TotalCost3Limit?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.Ss3 == Model.DesignCost3Limit ? "k-grid-opl" : "k-grid-no")">@Model.Ss3?.ToString("n2")</div></td>
+                    <td><div style="text-align:right" class="@(Model.Ss3 == Model.DesignCost3Limit ? "k-grid-opl" : "")">@Model.DesignCost3Limit?.ToString("n2")</div></td>
+                    <td data-field="premiumDog3"></td>
+                    <td data-field="premiumProj3"></td>
+                </tr>
+                <tr>
+                    <td>По дому в целом</td>
+                    <td data-field="costDog4"></td>
+                    <td data-field="costProj4"></td>
+                    <td data-field="amountDog4"></td>
+                    <td data-field="amountProj4"></td>
+                    <td><div style="text-align:right;" class="@(Model.RasPripay == Model.SizeBonusMkd ? "k-grid-opl" : "k-grid-no")">@Model.RasPripay?.ToString("n2")</div></td>
+                    <td><div style="text-align:right">@Model.SizeBonusMkd?.ToString("n2")</div></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>$('#contract-table').kendoGrid({ scrollable: false });</script>

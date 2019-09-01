@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNetCore.Html;
+
+@model Core.UI.Registers.Models.CoreUi.ViewFilterDto
+
+<div id="splitter">
+</div>
+
+@await Html.PartialAsync("~/Views/CoreUi_/Registers/FilterQueryEditorExTemplates.cshtml")
+@*@Html.Partial("~/Views/CoreUi/Registers/FilterQueryEditorExTemplates.cshtml")*@
+
+<script>
+    $(document).ready(function () {
+        $('#splitter').filterQueryBuilderExtended(
+            {
+                registerViewId: '@Model.RegisterViewId',
+                saveUrl:        '@Url.Action("SaveFiltr", "CoreUi")',
+                saveParams: {
+                    queryId:    '@Model.QueryId'
+                },
+                deleteUrl:        '@Url.Action("DeleteFiltrCondition", "CoreUi")',
+                attributesUrl:    '@Url.Action("GetAttributes", "CoreUi")',
+                referencesUrl:    '@Url.Action("GetReference", "CoreUi")',
+                reestrListUrl:    '@Url.Action("GetReestList", "CoreUi")',
+                joinTypeListUrl:  '@Url.Action("GetJoinTypeList", "CoreUi")',
+                functionsListUrl: '@Url.Action("GetFunctionsList", "CoreUi")',
+                filter:           '@(new HtmlString(Model.Filter))',
+                readOnly:         '@Model.IsReadOnly'
+            });
+    });
+</script>

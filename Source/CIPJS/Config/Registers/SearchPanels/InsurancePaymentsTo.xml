@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel">
+    <children>
+      <ControlElement Caption="СК" ID="InsuranceOrganization" OwnType="Combo" AttributeNumber="314000700" RegisterId="328" TextFieldAttribute="328000200" ValueFieldAttribute="328000100" QueryOperation="Equal" />
+      <!--<ControlElement Caption="Тип договора" ID="Type" OwnType="Combo" AttributeNumber="314000200" RegisterId="308" TextFieldAttribute="308000200" ValueFieldAttribute="308000100" QueryOperation="Equal" />-->
+      <ControlElement Caption="Номер договора" ID="ContractNumber" OwnType="Text" AttributeNumber="314002200" QueryOperation="Equal" />
+      <ControlElement Caption="Дата договора" ID="ContractDate" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="ContractDate_from" OwnType="Calendar" AttributeNumber="314002300" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="ContractDate_to" OwnType="Calendar" AttributeNumber="314002300" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="ContractDate_equal" OwnType="Calendar" AttributeNumber="314002300" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <!--<ControlElement Caption="UNOM" ID="Unom" OwnType="Text" AttributeNumber="" QueryOperation="Equal" />-->
+      <ControlElement Caption="Номер квартиры" ID="FlatNumer" OwnType="Text" AttributeNumber="314001000" QueryOperation="Equal" />
+      <!--Адрес ФИАС (поиск по адресу сделать универсальным как во всех остальных карточках)-->
+      <ControlElement Caption="Размер ущерба" ID="DamageAmount" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="DamageAmount_from" OwnType="Text" AttributeNumber="314001600" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="DamageAmount_to" OwnType="Text" AttributeNumber="314001600" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="DamageAmount_equal" OwnType="Text" AttributeNumber="314001600" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Размер удержанной части страхового возмещения" ID="WithheldAmount" OwnType="Panel">
+        <children>
+          <ControlElement Caption="c " ID="WithheldAmount_from" OwnType="Text" AttributeNumber="314001800" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="WithheldAmount_to" OwnType="Text" AttributeNumber="314001800" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="WithheldAmount_equal" OwnType="Text" AttributeNumber="314001800" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+    </children>
+  </ControlElement>
+</RootElement>

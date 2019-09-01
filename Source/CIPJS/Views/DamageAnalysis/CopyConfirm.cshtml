@@ -1,0 +1,190 @@
+﻿@using ObjectModel.Directory;
+@using CIPJS.Models.DamageAnalysis;
+
+<style type="text/css">
+    .k-widget.k-dropdown {
+        width: 100%;
+    }
+</style>
+
+@model CopyConfirmDto
+<div class="form-horizontal col-sm-12 modal-dialog-content">
+    <div class="modal-dialog-type" style="padding: 15px;min-height: 60px;">
+        <span class="k-icon k-i-question" style="font-size: 50px;color: #787878"></span>
+        <span class="modal-dialog-message" style="margin-left: 10px;">Внимание! Вы подтверждаете создание нового дела со следующими параметрами?</span>
+    </div>
+
+    <div class="damage-info-form form-group" style="border-top: solid 1px #00000033;">
+        <div class="form-horizontal col-sm-12">
+            @Html.HiddenFor(m => m.Id)
+            @Html.HiddenFor(m => m.TypeCode)
+            @Html.HiddenFor(m => m.ObjId)
+            <div class="form-group"></div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Unom)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextBoxFor(m => m.Unom, true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Address)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoTextBoxFor(m => m.Address, true)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.FlatNumber)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextBoxFor(m => m.FlatNumber, true)
+                </div>
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Area)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoNumericTextBoxFor(m => m.Area, precision: 2, isReadonly: true)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="damage-date-form form-group" style="border-top: solid 1px #00000033;">
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group"></div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.DamageDate)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoDatePickerFor(m => m.DamageDate, false)
+                </div>
+                @if (Model.TypeCode == ContractType.Dwelling)
+                {
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.CausesOfDamageGP, NotSetRequired: true)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.KendoEnumDropDownListFor(m => m.CausesOfDamageGP, false)
+                    </div>
+                }
+                @if (Model.TypeCode == ContractType.CommonOwnership)
+                {
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.CausesOfDamageOI, NotSetRequired: true)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.KendoEnumDropDownListFor(m => m.CausesOfDamageOI, false)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" style="border-top: solid 1px #00000033;">
+        <div class="modal-dialog-footer" style="text-align: left;padding: 10px 10px 0 0;">
+            <button style="margin-left:10px;" class="k-primary k-button button-yes">Создать</button>
+            <button style="margin-left:10px;" class="k-button button-no">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('.modal-dialog-content').on('click', '.button-yes', function () {
+            Common.ClearNotification();
+
+            var damageId = kendo.parseInt($('.damage-info-form input[name="Id"]').val()),
+                objId = kendo.parseInt($('[name="ObjId"]').val()),
+                damageDate = $('div.damage-date-form [name="DamageDate"]').data("kendoDatePicker").value(),
+                typeCode = $('[name="TypeCode"]').val(),
+                causesOfDamageGpDropDownList = $("#CausesOfDamageGP").data("kendoDropDownList"),
+                causesOfDamageGp = causesOfDamageGpDropDownList ? causesOfDamageGpDropDownList.value() : null,
+                causesOfDamageOIDropDownList = $("#CausesOfDamageOI").data("kendoDropDownList"),
+                causesOfDamageOI = causesOfDamageOIDropDownList ? causesOfDamageOIDropDownList.value() : null;
+
+            if (objId == null) {
+                Common.ShowError('Не удалось определить объект связанный с делом по анализу ущерба');
+                return;
+            }
+
+            if (damageDate > new Date()) {
+                Common.ShowError("Дата страхового события должна быть меньше текущей даты");
+                return;
+            }
+            
+            kendo.ui.progress($('body'), true);
+
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("Get", "DamageAnalysis")',
+                data: {
+                    objId: objId,
+                    damageDate: kendo.toString(damageDate, 's'),
+                    type: typeCode,
+                    causesOfDamageGp: causesOfDamageGp,
+                    causesOfDamageOI: causesOfDamageOI
+                },
+                success: function (e) {
+                    kendo.ui.progress($('body'), false);
+                    if (e.Errors && e.Errors.length > 0) {
+                        Common.ShowError(e.Errors.join('<br>'));
+                    } else if (e.Data != null
+                        && e.Data.Id != undefined
+                        && e.Data.Id != null) {
+                        Common.UI.ShowConfirm({
+                            title: 'Внимание',
+                            content: 'Новое дело совпадает с делом ' + (e.Data.NomDoc ? ('№' + e.Data.NomDoc + ' ') : '') +
+                                'по Дате СС, жилому помещению и причине ущерба.' +
+                                'Новое дело считается ДОПОЛНИТЕЛЬНОЙ ВЫПЛАТОЙ (в номер дела будет добавлен префикс)?',
+                            onSuccess: function (e) {
+                                copyDamage(damageId, damageDate, causesOfDamageGp, causesOfDamageOI, false);
+                            },
+                            onFail: function (e) {
+                                copyDamage(damageId, damageDate, causesOfDamageGp, causesOfDamageOI, true);
+                                
+                                var window = $(this).closest('[data-role=window]').data('kendoWindow');
+                                window.close();
+                                window.destroy();
+                            }
+                        });
+                    }
+                    else {
+                        copyDamage(damageId, damageDate, causesOfDamageGp, causesOfDamageOI, false);
+                    }
+                }
+            });
+        });
+
+        $('.modal-dialog-footer').on('click', '.button-no', function () {
+            Common.UI.CloseWindow('registerModalWindow', window.parent);
+        });
+
+        function copyDamage(damageId, damageDate, causesOfDamageGp, causesOfDamageOI, generateNewNumber) {
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Copy", "DamageAnalysis")',
+                data: {
+                    damageId: damageId,
+                    damageDate: kendo.toString(damageDate, 's'),
+                    causesOfDamageGp: causesOfDamageGp,
+                    causesOfDamageOI: causesOfDamageOI,
+                    generateNewNumber: generateNewNumber
+                },
+                success: function (e) {
+                    kendo.ui.progress($('body'), false);
+                    if (e.Errors && e.Errors.length > 0) {
+                        Common.ShowError(e.Errors.join('<br>'));
+                    } else {
+                        Common.UI.CloseWindow('registerModalWindow', window.parent);
+                    }
+                }
+            });
+        }
+    });
+</script>

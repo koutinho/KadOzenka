@@ -1,0 +1,792 @@
+﻿@using CIPJS.Models.Tenements
+@using Core.SRD
+
+@model InsuranceObjectsDto
+
+<style>
+    #changeInInsuranceProgramSystem {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    #changeInInsuranceProgram {
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+        text-decoration: underline;
+        pointer-events: none;
+    }
+
+    .underlineElement {
+        cursor: pointer;
+        text-decoration: underline;
+    }
+</style>
+<form>
+    @Html.HiddenFor(x => x.EmpId)
+    <ul id="ls_panelbar" class="panelbar">
+        <li id="COMON_DATA">
+            <span>Общие данные</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.UploadDate)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(x => x.UploadDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabel("Подлежит страхованию")
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(x => x.InInsuranceProgramSystem)
+                        </div>
+                        <div class="col-sm-1">
+                            <label id="changeInInsuranceProgramSystem" class="@((Model.InInsuranceProgramSystem ?? false) ? "text-green font-weight-bold" : "text-red font-weight-bold") control-label">@((Model.InInsuranceProgramSystem ?? false) ? "ДА" : "НЕТ")</label>
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(x => x.InInsuranceProgram)
+                        </div>
+                        <div class="col-sm-1">
+                            <label id="changeInInsuranceProgram" class="@((Model.InInsuranceProgram ?? false) ? "text-green font-weight-bold" : "text-red font-weight-bold") control-label underlineElement">@((Model.InInsuranceProgram ?? false) ? "ДА" : "НЕТ")</label>
+                            @Html.HiddenFor(x => x.InInsuranceProgram)
+                        </div>
+                    </div>
+                    @{if (!Model.InInsuranceProgramSystem.HasValue || Model.InInsuranceProgramSystem == false)
+                        {
+                            <div class="form-group">
+                                <div class="col-sm-6"> </div>
+                                <div class="col-sm-2">
+                                    @Html.CustomLabel("Причина")
+                                </div>
+                                <div class="col-sm-4">
+                                    <span>@ViewBag.CalculatedFlagMessage</span>
+                                </div>
+                            </div>
+                        } }
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Unom)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.Unom)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BuildingStatusByGBU)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoReferenceDropDownListFor(x => x.BuildingStatusByGBU, 12163)
+                            <!--Html.KendoEnumDropDownListFor(x => x.BuildingStatusByGBU)-->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.CadastralNumber)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(x => x.CadastralNumber)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BuildingPurpose)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoReferenceDropDownListFor(x => x.BuildingPurpose, 21, withFilter: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.CadastralRegistrationDate)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(x => x.CadastralRegistrationDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BuildingStatus)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(x => x.BuildingStatus)
+                        </div>
+                    </div>
+                    <div class="form-group" style="display: none;">
+
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BtiStatus)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoReferenceDropDownListFor(x => x.BtiStatus, 65, withFilter: true)
+                        </div>
+
+                        @*<div class="col-sm-2">
+                                @Html.CustomLabelFor(x => x.BtiStatus)
+                            </div>
+                            <div class="col-sm-4">
+                                @Html.KendoEnumDropDownListFor(x => x.BtiStatus, withFilter: true)
+                            </div>*@
+                        @*<div class="col-sm-2" style="display: none;">
+                                @Html.CustomLabelFor(x => x.BuildingPurpose)
+                            </div>
+                            <div class="col-sm-4" style="display: none;">
+                                @Html.KendoReferenceDropDownListFor(x => x.BuildingPurpose)
+                            </div>*@
+                    </div>
+                    <div class="form-group">
+                        @{ if (string.IsNullOrEmpty(Model.Note))
+                            {
+                                <text>
+                                    <div class="col-sm-2">
+                                        @Html.CustomLabelFor(x => x.Note)
+                                    </div></text>
+                            }
+                            else
+                            {
+                                <text>
+                                    <div class="col-sm-2">
+                                        <label id="NoteLabel" class="control-label underlineElement" for="Note">Примечание</label>
+                                    </div></text>
+                            }
+                        }
+                        <div class="col-sm-10">
+                            @Html.TextBoxAreaFor(x => x.Note, 1, 2, true)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="ADDRESS">
+            <span>Сведения об адресе</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Okrug)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDictionaryDropDownListFor(x => x.Okrug, x => x.Name)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.District)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDictionaryDropDownListFor(x => x.District, x => x.Name)
+                        </div>
+                        <div class="col-sm-4" style="display:none">
+                            @Html.KendoTextBoxFor(x => x.DistrictId)
+                        </div>
+                    </div>
+                    @await Html.PartialAsync("InsuranceObjectAddress.cshtml", Model)
+                </div>
+            </div>
+        </li>
+        <li id="CDATA">
+            <span>Сводные данные</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            @await Html.PartialAsync("BuildingConsolidatedData.cshtml", Model.EmpId)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="COMON_INFO">
+            <span>Общие сведения</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.ConstructionYear)
+                        </div>
+                        <div class="col-sm-4">
+                            @(Html.Kendo().NumericTextBoxFor(x => x.ConstructionYear).Min(1).Max(9999).Format("#").Spinners(false)
+                                                                                .HtmlAttributes(new { @style = "width:100%", @readonly = "readonly", @editmode = "true" }))
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.TotalArea)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.TotalArea, 2)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.ApartmentsCount)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.ApartmentsCount)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.DwellingArea)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.DwellingArea, 2)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.FloorsCount)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.FloorsCount)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.UninhabitedPremiseArea)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.UninhabitedPremiseArea, 2)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.PassengerElevatorsCount)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.PassengerElevatorsCount)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.ColdRoomArea)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.ColdRoomArea, 2)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.FreightElevatorsCount)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.FreightElevatorsCount)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.BalconyArea)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.BalconyArea, 2)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.RoofArea)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.RoofArea, 2)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.LoggiasArea)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(x => x.LoggiasArea, 2)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="GA" not-expand="true">
+            <span>Жилые помещения</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div id="dwellingGrid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="CONTRACTS">
+            <span>Договора страхования</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div id="contractsGrid"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group"></div>
+            </div>
+        </li>
+        <li id="COMMENTS">
+            <span>Комментарии</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/Comment/Index")" data-param-reestrId="316" data-param-objectId="@Model.EmpId" data-param-isReadOnly="true" data-loader="true"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="static-nav">
+        <nav id="navigation-menu">
+            <a href="#COMON_DATA">Общие данные</a>
+            <a href="#ADDRESS">Сведения об адресе</a>
+            <a href="#CDATA">Сводные данные</a>
+            <a href="#COMON_INFO">Общие сведения</a>
+            <a href="#GA">Жилые помещения <span class="label label-count"></span></a>
+            <a href="#CONTRACTS">Договора страхования <span class="label label-count"></span></a>
+            <a href="#COMMENTS" nav-name="comments">Комментарии <span class="label label-count"></span></a>
+        </nav>
+        <div id="toolbar" style="position:absolute; bottom: 20px; width: 95%;"></div>
+
+        <fieldset style="margin-top: 20px;">
+            <div class="form-group" style="text-align: center; border: 1px solid #99979c; border-radius: 6px;">
+                <div class="col-xs-12 label-value" style="font-weight: bold;">
+                    @Html.CustomLabel("МФЦ")
+                </div>
+                <div class="col-xs-12 label-value">
+                    @Html.CustomLabel(DateTime.Now.AddMonths(-1).ToString("MMMM yyyy"))
+                </div>
+                <div class="col-xs-12 label-value" style="text-align: left; padding-left: 4px;">
+                    @Html.CustomLabel("Начислено:")
+                </div>
+                <div class="col-xs-12 label-value">
+                    <div class="col-xs-6 label-value" style="text-align: left; padding-left: 24px;">
+                        <span class="k-icon k-i-sum"></span>
+                        @Html.CustomLabel(":")
+                        @Html.CustomLabel((Model.AccruedSumCurrent.HasValue ? Model.AccruedSumCurrent.Value.ToString("N2") : "0,00"), classCSS: Model.AccruedSumCurrent > 0 ? "text-green" : "text-red")
+                    </div>
+                    <div class="col-xs-6 label-value" style="text-align: left; padding-left: 24px;">
+                        @Html.CustomLabel("S:")
+                        @Html.CustomLabel((Model.AccruedOplCurrent.HasValue ? Model.AccruedOplCurrent.Value.ToString("N2") : "0,00"), classCSS: Model.AccruedOplCurrent > 0 ? "text-green" : "text-red")
+                    </div>
+                </div>
+                <div class="col-xs-12 label-value" style="text-align: left; padding-left: 4px;">
+                    @Html.CustomLabel("Оплачено:")
+                </div>
+                <div class="col-xs-12 label-value">
+                    <div class="col-xs-6 label-value" style="text-align: left; padding-left: 24px;">
+                        <span class="k-icon k-i-sum"></span>
+                        @Html.CustomLabel(":")
+                        @Html.CustomLabel((Model.CreditedSumCurrent.HasValue ? Model.CreditedSumCurrent.Value.ToString("N2") : "0,00"), classCSS: Model.CreditedSumCurrent > 0 ? "text-green" : "text-red")
+                    </div>
+                    <div class="col-xs-6 label-value" style="text-align: left; padding-left: 24px;">
+                        @Html.CustomLabel("S:")
+                        @Html.CustomLabel((Model.CreditedOplCurrent.HasValue ? Model.CreditedOplCurrent.Value.ToString("N2") : "0,00"), classCSS: Model.CreditedOplCurrent > 0 ? "text-green" : "text-red")
+                    </div>
+                </div>
+                <div class="col-xs-12 label-value">
+                </div>
+                <div class="col-xs-12 label-value">
+                    @Html.CustomLabel(DateTime.Now.AddMonths(-2).ToString("MMMM yyyy"))
+                </div>
+                <div class="col-xs-12 label-value" style="text-align: left; padding-left: 4px;">
+                    @Html.CustomLabel("Начислено:")
+                </div>
+                <div class="col-xs-12 label-value">
+                    <div class="col-xs-6 label-value" style="text-align: left; padding-left: 24px;">
+                        <span class="k-icon k-i-sum"></span>
+                        @Html.CustomLabel(":")
+                        @Html.CustomLabel((Model.AccruedSumLast.HasValue ? Model.AccruedSumLast.Value.ToString("N2") : "0,00"), classCSS: Model.AccruedSumLast > 0 ? "text-green" : "text-red")
+                    </div>
+                    <div class="col-xs-6 label-value" style="text-align: left; padding-left: 24px;">
+                        @Html.CustomLabel("S:")
+                        @Html.CustomLabel((Model.AccruedOplLast.HasValue ? Model.AccruedOplLast.Value.ToString("N2") : "0,00"), classCSS: Model.AccruedOplLast > 0 ? "text-green" : "text-red")
+                    </div>
+                </div>
+                <div class="col-xs-12 label-value" style="text-align: left; padding-left: 4px;">
+                    @Html.CustomLabel("Оплачено:")
+                </div>
+                <div class="col-xs-12 label-value">
+                    <div class="col-xs-6 label-value" style="text-align: left; padding-left: 24px;">
+                        <span class="k-icon k-i-sum"></span>
+                        @Html.CustomLabel(":")
+                        @Html.CustomLabel((Model.CreditedSumLast.HasValue ? Model.CreditedSumLast.Value.ToString("N2") : "0,00"), classCSS: Model.CreditedSumLast > 0 ? "text-green" : "text-red")
+                    </div>
+                    <div class="col-xs-6 label-value" style="text-align: left; padding-left: 24px;">
+                        @Html.CustomLabel("S:")
+                        @Html.CustomLabel((Model.CreditedOplLast.HasValue ? Model.CreditedOplLast.Value.ToString("N2") : "0,00"), classCSS: Model.CreditedOplLast > 0 ? "text-green" : "text-red")
+                    </div>
+                </div>
+                <div class="col-xs-12 label-value">
+                </div>
+            </div>
+        </fieldset>
+
+        <div id="wndReferenceDetails" />
+    </div>
+</form>
+<script>
+    function SaveInsuranceObject() {
+        var noEntered = [];
+
+        if ($("#Address_Region").val() == '')
+            noEntered.push('регион');
+        if ($("#Address_City").val() == '')
+            noEntered.push('город');
+        if ($("#Address_Street").val().trim() == '')
+            noEntered.push('улица');
+        if ($("[name='Address.House']").val() == '')
+            noEntered.push('дом');
+
+        if (noEntered.length > 0) {
+            kendo.ui.progress($('body'), false);
+            Common.UI.ShowConfirm({
+                title: 'Внимание!',
+                content: 'Не все обязательные параметры адреса (' + noEntered.join(', ') + ') заданы. Вы уверены, что хотите сохранить объект в таком виде?',
+                onSuccess: function (e) {
+                    kendo.ui.progress($('body'), true);
+                    SendData2Save();
+                }
+            });
+        } else {
+            kendo.ui.progress($('body'), true);
+            SendData2Save();
+        }
+    }
+
+    function SendData2Save() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("InsuranceObject", "Tenements")',
+            data: $('form').serialize(),
+            success: function(e) {
+                    if (e.Errors && e.Errors.length > 0) {
+                        Common.ShowError(e.Errors);
+                    } else {
+                        Common.ShowMessage('Карточка успешно сохранена');
+                        KendoExtension.ToggleEditMode(false);
+                        $('#changeInInsuranceProgram').css('pointer-events', 'none');
+                        $('#buildingConsolidationGrid').data('kendoGrid').dataSource.read();
+                        $('#toolbar').data("kendoToolBar").hide($('#save'));
+                        $('#toolbar').data("kendoToolBar").show($('#edit'));
+                    }
+                    kendo.ui.progress($('body'), false);
+                }, error: function(e) {
+                    Common.ShowError(e.responseText)
+                    kendo.ui.progress($('body'), false);
+                }
+        });
+    }
+
+    $(function () {
+        $("#navigation-menu a").mPageScroll2id({
+            highlightSelector:"#navigation-menu a"
+        });
+
+        var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+
+        panelbar.expand($('li:not([not-expand="true"])'));
+
+        kendo.ui.FilterMenu.fn.options.operators.string = {
+            contains: 'равно'
+        };
+
+        $('#dwellingGrid').kendoGrid({
+            toolbar: [
+                { name: "excel" }
+            ],
+            scrollable: false,
+            resizable: true,
+            filterable: {
+                extra: false
+            },
+            columns: [
+                {
+                    title: 'Номер квартиры',
+                    field: 'FlatNumber',
+                    width: '6%',
+                    attributes: { style: 'text-align: center;#:FillColor ? "background-color: rgb(238,238,238)" : ""#' },
+                    template: '<a href="@Url.Action("Index", "ObjectCard", new { RegisterViewId = "LivingSpaces", isVertical = true, useMasterPage = true })&ObjId=#:Id#" target="_blank">#:FlatNumber?FlatNumber:"(не заполнено)"#</a>'
+                },
+                {
+                    title: 'Кадастровый номер ЕГРН',
+                    field: 'CadastralNumber',
+                    attributes: { style: "text-align: center;" },
+                },
+                {
+                    title: 'Общая площадь ЕГРН',
+                    field: 'TotalAreaEgrn',
+                    attributes: { style: "text-align: center;" },
+                    template: '#:TotalAreaEgrn?kendo.toString(TotalAreaEgrn, "n2"):""#'
+                },
+                {
+                    title: 'Общая площадь БТИ',
+                    field: 'TotalAreaBti',
+                    attributes: { style: "text-align: center;" },
+                    template: '#:TotalAreaBti?kendo.toString(TotalAreaBti, "n2"):""#'
+                },
+                {
+                    title: 'Кол-во комнат БТИ',
+                    field: 'RoomsCountBti',
+                    width: '8%',
+                    template: '#:RoomsCountBti?kendo.toString(RoomsCountBti, "n0"):""#',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Общая площадь МФЦ ',
+                    field: 'TotalAreaMfc',
+                    template: '#:TotalAreaMfc?kendo.toString(TotalAreaMfc, "n2"):""#',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Площадь страхования МФЦ',
+                    field: 'InsuranceArea',
+                    template: '#:InsuranceArea?kendo.toString(InsuranceArea, "n2"):""#',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Кол-во комнат МФЦ',
+                    field: 'RoomsCountMfc',
+                    width: '8%',
+                    template: '#:RoomsCountMfc?kendo.toString(RoomsCountMfc, "n0"):""#',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Статус помещения МФЦ',
+                    field: 'StatusFlatMfc',
+                    template: '#:StatusFlatMfc?StatusFlatMfc:""#',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Тип помещения МФЦ',
+                    field: 'TypeFlatMfc',
+                    template: '#:TypeFlatMfc?TypeFlatMfc:""#',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Кол-во ФСП',
+                    field: 'FspCount',
+                    template: '#:FspCount?kendo.toString(FspCount, "n0"):""#',
+                    width: '6%',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    title: 'Застраховано в текущем периоде',
+                    field: 'InsuredInCurrentPeriod',
+                    template: '#:InsuredInCurrentPeriod?InsuredInCurrentPeriod:""#',
+                    attributes: { style: "text-align: center;" }
+                }
+            ],
+            dataBound: function () {
+                if (!$('a[href="#GA"] span').text()) {
+                    //CIPJS-939 Неверно работает счет квартир
+                      $.ajax({
+                            type: 'GET',
+                            url: '@Url.Action("GetMkdFlatsCount", "Tenements")',
+                            data: { id: '@Model.EmpId'},
+                            dataType: 'json',
+                          success: function (data) {
+                              $('a[href="#GA"] span').text(data);
+                          },
+                          error: function () {
+                              Common.ShowError('Возникла ошибка подсчета жилищных помещений!');
+                              $('a[href="#GA"] span').text(0);
+                          }
+                        });
+                }
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("Dwelling_Read", "Tenements")',
+                        data: { id: '@Model.EmpId' },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            excelExport: function (e) {
+                var unom = '@Model.Unom';
+                if (unom == undefined || unom == '') {
+                    unom = '@Model.CadastralNumber'.replace(/:/g, '-');
+                }
+                if (unom != undefined && unom.length > 0) {
+                    unom += '_';
+                }
+                e.workbook.fileName = 'Жилые_помещения_' + unom + kendo.toString(new Date(), 'dd.MM.yyyy') + '.xlsx';
+                KendoExtension.ExportGridWithTemplatesContent(e);
+            },
+            messages: {
+                commands: {
+                    excel: 'Экспорт в Excel'
+                }
+            }
+        });
+
+        $('#contractsGrid').kendoGrid({
+            scrollable: false,
+            columns: [
+                {
+                    field: 'Number',
+                    title: 'Номер',
+                    template: '<a href="@Url.Action("Index", "ObjectCard", new { RegisterViewId = "Contracts", isVertical = true, useMasterPage = true })&ObjId=#:Id#" target="_blank">#:Number?Number:"(не заполнено)"#</a>'
+                },
+                {
+                    field: 'Date',
+                    title: 'Дата',
+                    template: '#:Date?kendo.toString(kendo.parseDate(Date), "dd.MM.yyyy"):""#'
+                },
+                {
+                    field: 'Company',
+                    title: 'Страховая компания'
+                },
+                {
+                    field: 'Subject',
+                    title: 'Страхователь'
+                },
+                {
+                    field: 'Amount',
+                    title: 'Страховая премия',
+                    template: '#:Amount?kendo.toString(Amount, "n2"):""#'
+                }
+            ],
+            dataBound: function () {
+                if (!$('a[href="#CONTRACTS"] span').text()) {
+                    $('a[href="#CONTRACTS"] span').text(this.dataItems().length);
+                }
+            },
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("Contracts_Read", "Tenements")',
+                        data: { id: '@Model.EmpId' },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            }
+        });
+
+        var toolbar = $('#toolbar').kendoToolBar({
+            items: [
+            @if (SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.INSUR_OBJ_BUILDING_WRITE))
+                {
+                    @Html.Raw(@"{
+                    type: 'button',
+                    text: '',
+                    icon: 'pencil',
+                    id: 'edit',
+                    click: function() {
+                            KendoExtension.ToggleEditMode(true);
+                            $('[name=""Address.FullName""]').attr('readonly', true);
+                            $('#changeInInsuranceProgram').css('pointer-events', 'auto');
+                            toolbar.hide($('#edit'));
+                            toolbar.show($('#save'));
+                        }
+                    },
+                {
+                    type: 'button',
+                    text: '',
+                    icon: 'save',
+                    id: 'save',
+                    hidden: true,
+                    click: function() {
+                            Common.ClearNotification();
+                            kendo.ui.progress($('body'), true);
+
+                            SaveInsuranceObject();
+                    }
+                },");
+                }
+                {
+                type: 'button',
+                    imageUrl: '/images/audit.png',
+                    id: 'audit',
+                    hidden: false,
+                    click: function () {
+                        var wndReferenceDetails = $("#wndReferenceDetails").kendoWindow({
+                        resizable: false,
+                            draggable: false,
+                            actions: ["Close"],
+                            modal: true,
+                            content: "/ReferenceDetails/Index?objectId=" + @Model.EmpId + "&registerId=316"
+                        });
+
+                        wndReferenceDetails.data("kendoWindow").open().maximize();
+                    }
+                }
+            ]
+        }).data('kendoToolBar');
+
+        $('#toolbar').kendoTooltip({
+            filter: "a.k-button",
+            content: function (e) {
+                switch ($(e.target).attr('id')) {
+                    case "edit":
+                        return "Редактировать";
+                    case "save":
+                        return "Сохранить";
+                    case "audit":
+                        return "Аудит";
+                    case "print":
+                        return "Печать";
+                }
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });
+
+        $('#Okrug_Id').data('kendoDropDownList').setOptions({
+            change: function () {
+                var value = this.value();
+
+                if (value && value.length > 0) {
+                    $('#District_Id').data('kendoDropDownList').dataSource.read({ '259000500': value });
+                }
+            }
+        });
+
+        $('#Okrug_Id').data('kendoDropDownList').trigger('change');
+
+        $('#changeInInsuranceProgram').click(function () {
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение',
+                content: 'Внимание! Вы подтверждаете изменение статуса участия в программе страхования?',
+                onSuccess: function () {
+                    if ($('[name="InInsuranceProgram"]').val() == 'True') {
+                        $('#changeInInsuranceProgram').text('НЕТ');
+                        $('#changeInInsuranceProgram').removeClass('text-green');
+                        $('#changeInInsuranceProgram').addClass('text-red');
+                        $('[name="InInsuranceProgram"]').val('False');
+                    } else {
+                        $('#changeInInsuranceProgram').text('ДА');
+                        $('#changeInInsuranceProgram').removeClass('text-red');
+                        $('#changeInInsuranceProgram').addClass('text-green');
+                        $('[name="InInsuranceProgram"]').val('True');
+                    }
+                }
+            });
+        });
+
+        if ($('#NoteLabel')) {
+            $('#NoteLabel').click(function () {
+                Common.UI.ShowWindow('Примечание',
+                    '@Html.Raw(Url.Action("InsuranceObjectNote", "Tenements", new { id = Model.EmpId }))', 'SetNoteWindow',
+                    function (e) {
+                    },
+                    700, 350, true, true);
+            });
+        }
+
+        $('.static-nav a').on('click', function (e) {
+            e.preventDefault();
+            var elementId = $(e.target).attr('href');
+            if (elementId && $(elementId).offset()) {
+                $('html,body').animate({ scrollTop: $(elementId).offset().top - 9 }, 500);
+            }
+        });
+    });
+</script>
+
+<style>
+    fieldset label {
+        font-size: 12px !important;
+        margin-bottom: 0px;
+    }
+
+    .static-nav > fieldset label {
+        font-weight: normal !important;
+    }
+</style>

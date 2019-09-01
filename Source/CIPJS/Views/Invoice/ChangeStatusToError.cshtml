@@ -1,0 +1,315 @@
+﻿@model CIPJS.Models.Invoice.ChangeStatusToErrorDto
+
+<div id="toolbar"></div>
+@if (ViewBag.ErrorMessage != null)
+{
+    <div style="padding: 10px;">@ViewBag.ErrorMessage</div>
+}
+else
+{
+    <form>
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group">
+                @for (int i = 0; i < (Model?.Invoices?.Count ?? 0); i++)
+                {
+                    @Html.HiddenFor(x => x.Invoices[i].Id)
+                }
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    «Внимание! Вы подтверждаете, что для выбранных счетов будет изменен статус счета на «Ошибка в реквизитах». Автоматически будут созданы  копии счетов в  новом статусе «Создан».
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <table id="grid">
+                        <colgroup>
+                            <col />
+                            <col />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th data-field="Subject">Получатель</th>
+                                <th data-field="Amount">Сумма счета</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Invoices)
+                            {
+                                <tr>
+                                    <td>@item.SubjectName</td>
+                                    <td><div style="text-align:right;">@item.SumOpl?.ToString("N2")</div></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.NumInvoice)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextBoxFor(m => m.NumInvoice, false)
+                </div>
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.DateInvoice)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoDatePickerFor(m => m.DateInvoice, false, maxDate: DateTime.Now)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.SubjectName)
+                </div>
+                <div class="col-sm-3">
+                    @Html.KendoTextBoxFor(m => m.SubjectName, false)
+                    @Html.HiddenFor(m => m.SubjectId)
+                </div>
+                <div class="col-sm-1">
+                    @Html.KendoButton("selectSubject", "...")
+                </div>
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Phone)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextBoxFor(m => m.Phone, false)
+                </div>
+            </div>
+            @if (ViewBag.IsInvoicePaysGP != null && ViewBag.IsInvoicePaysGP)
+            {
+            <div class="form-group" style="display:none;">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Inn)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextBoxFor(m => m.Inn, false)
+                </div>
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Kpp)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextBoxFor(m => m.Kpp, false)
+                </div>
+            </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.Inn)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.KendoTextValidator(m => m.Inn, @"^(\d{10}|\d{12}|\d{20})$", false, validMes: "ИНН: 10 или 12 или 20 символов")
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.Kpp)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.KendoTextValidator(m => m.Kpp, "^(\\d{9})$", false, validMes: "КПП: 9 символов")
+                    </div>
+                </div>
+            }
+
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.BicBank)
+                </div>
+                <div class="col-sm-3">
+                    @Html.KendoAutoCopmpliteFor(x => x.BicBank, "BankBic", "Bank", "GetBankByBik", "function() {return {bic: $('#BicBank').val()};}", isReadonly: false, validMes: "БИК банка обязателен для заполнения")
+                    @Html.HiddenFor(m => m.BankId)
+                    <span class="k-invalid-msg" data-for="BicBank"></span>
+                </div>
+                <div class="col-sm-1">
+                    @Html.KendoButton("selectBank", "...")
+                </div>
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.BankName)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextValidator(m => m.BankName, "^(.*)$", isReadonly: false, validMes: "Название банка обязательно для заполнения")
+                </div>
+            </div>
+            @* CIPJS-435 скрыть поля для ввода этих значений *@
+            <div class="form-group" style="display:none;">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.InnBank)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextBoxFor(m => m.InnBank, false)
+                </div>
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.KppBank)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextBoxFor(m => m.KppBank, false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.KorAcc)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextValidator(m => m.KorAcc, "^(\\d{20})$", false, validMes: "Кор.счет: 20 символов")
+                </div>
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.RachAcc)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoTextValidator(m => m.RachAcc, "^(\\d{20})$", false, validMes: "Расч. счет: 20 символов")
+                </div>
+            </div>
+        </div>
+    </form>
+}
+<script>
+    $(document).ready(function () {
+        var validator = $('form').kendoValidator().data('kendoValidator');
+
+        var toolbar = $('#toolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: 'ДА',
+                    id: 'yes',
+                    icon: '',
+                    enable: @(ViewBag.ErrorMessage != null ? "false" : "true"),
+                    click: function () {
+                        Common.ClearNotification();
+
+                        @if (Model != null && Model.Invoices != null && Model.Invoices.Any())
+                        {<text>
+                        if (!validator.validate()) {
+                            var message = 'Ошибки валидации:';
+                            $(validator.errors()).each(function () {
+                                message += '<br/>' + this;
+                            });
+                            Common.ShowError(message);
+                            return;
+                        }
+
+                        var numInvoice = $('#NumInvoice');
+                        if (!numInvoice.val() || numInvoice.val() == '') {
+                            numInvoice.val('б/н');
+                        }
+
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            url: '@Url.Action("ChangeStatusToError", "Invoice")',
+                            type: 'POST',
+                            data: $('form').serialize(),
+                            success: function(e) {
+                                kendo.ui.progress($('body'), false);
+                                if (e.Errors && e.Errors.length > 0) {
+                                    Common.ShowError(e.Errors);
+                                } else {
+                                    toolbar.enable($('#yes'), false);
+                                    Common.ShowMessage('Операция успешно выполнена');
+                                    setTimeout(function () { Common.UI.CloseWindow('registerModalWindow', window.parent); }, 2000);
+                                }
+                            },
+                            error: function(e) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(e.responseText);
+                            }
+                        });
+                        </text>}
+                    }
+                },
+                {
+                    type: 'button',
+                    text: 'НЕТ',
+                    icon: '',
+                    click: function () {
+                        Common.ClearNotification();
+                        Common.UI.CloseWindow('registerModalWindow', window.parent);
+                    }
+                }
+            ]
+        }).data('kendoToolBar');
+
+        $('#grid').kendoGrid({ sortable: false });
+        
+        $('#selectSubject').click(function (e) {
+            e.preventDefault();
+            var contentUrl = '@Url.Action("Index", "RegistersView", new { registerId = "SubjectSelect" })',
+                title = 'Выбор Получателя',
+                callbackFn = function (item) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetById", "Subject")',
+                        data: { 'id': item.id },
+                        success: function (data) {
+                            $('[name="SubjectId"]').val(data.EmpId);
+                            $('[name="SubjectName"]').val(data.SubjectName);
+                            $('[name="Phone"]').val(data.OrgPhone);
+                            $('[name="Inn"]').val(data.Inn);
+                            $('[name="Kpp"]').val(data.Kpp);
+                            $('[name="RachAcc"]').val(data.RachAcc);
+                            $('[name="BankId"]').val(data.BankId);
+                            $('[name="BankName"]').val(data.BankName);
+                            $('[name="InnBank"]').val(data.BankInn);
+                            $('[name="KppBank"]').val(data.BankKpp);
+                            $('[name="BicBank"]').val(data.BankBic);
+                            $('[name="KorAcc"]').val(data.BankKorAcc);
+                        }
+                    });
+                };
+
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@ObjectModel.Insur.OMSubject.GetRegisterId()');
+        });
+
+        $('#selectBank').click(function (e) {
+            e.preventDefault();
+            var contentUrl = '@Url.Action("Index", "RegistersView", new { registerId = "BankSelect" })',
+                title = 'Выбор Банка',
+                callbackFn = function (item) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("GetById", "Bank")',
+                        data: { 'id': item.id },
+                        success: function (data) {
+                            $('[id="BankId"]').val(data.EmpId);
+                            $('[id="BankName"]').val(data.BankName);
+                            $('[id="InnBank"]').val(data.BankInn);
+                            $('[id="KppBank"]').val(data.BankKpp);
+                            $('[id="BicBank"]').val(data.BankBic);
+                            $('[id="KorAcc"]').val(data.BankKorAcc);
+                        }
+                    });
+                };
+
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@ObjectModel.Insur.OMBank.GetRegisterId()');
+        });
+
+        var autoCopmpl = $('#BicBank').data('kendoAutoComplete');
+        if (autoCopmpl) {
+            autoCopmpl.bind("select", function (e) {
+                $('[id="BankId"]').val(e.dataItem.EmpId);
+                $('[id="BankName"]').val(e.dataItem.BankName);
+                $('[id="InnBank"]').val(e.dataItem.BankInn);
+                $('[id="KppBank"]').val(e.dataItem.BankKpp);
+                $('[id="BicBank"]').val(e.dataItem.BankBic);
+                $('[id="KorAcc"]').val(e.dataItem.BankKorAcc);
+            });
+            autoCopmpl.bind('change', function () {
+                $('[id="BankId"]').val('');
+            });
+        }
+
+        var dateInvoiceDatePicker = $('#DateInvoice').data('kendoDatePicker');
+        if (dateInvoiceDatePicker) {
+            dateInvoiceDatePicker.bind('change', function () {
+                var value = this.value();
+
+                if (value == null) {
+                    this.element.val('')
+                } else if (value > new Date()) {
+                    common.ShowError('Дата счета не может быть больше текущей даты!');
+                    this.value(new Date());
+                }
+            });
+        }
+    });
+</script>

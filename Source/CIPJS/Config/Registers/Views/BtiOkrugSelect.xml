@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="258" DefaultLayoutId="1002581" DockNavigationPanel="true" AllowSearchPanelResize="false" UseMasterPage="false"
+              IsBasic="false" OpenEmpty="false" LinkedRegistersList="258" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="false" ShowObjectCards="false" ShowSettingsPanel="false"
+              SearchPanel="BtiOkrug" SearchPanelWindowHeight="654">
+  <Buttons>
+    <Button Caption="Выбрать" NavigateURL="/"></Button>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>
