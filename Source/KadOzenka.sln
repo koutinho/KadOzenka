@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka\KadOzenka.Web.csproj", "{E21F8899-80AA-4257-B958-8D044B26CF06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka.Web\KadOzenka.Web.csproj", "{E21F8899-80AA-4257-B958-8D044B26CF06}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal", "KadOzenka.Dal\KadOzenka.Dal.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
 EndProject
@@ -80,7 +80,7 @@ Global
 		SccProjectUniqueName3 = KadOzenka.Dal\\KadOzenka.Dal.csproj
 		SccProjectName3 = KadOzenka.Dal
 		SccLocalPath3 = KadOzenka.Dal
-		SccProjectUniqueName4 = KadOzenka\\KadOzenka.Web.csproj
+		SccProjectUniqueName4 = KadOzenka.Web\\KadOzenka.Web.csproj
 		SccProjectName4 = KadOzenka
 		SccLocalPath4 = KadOzenka
 	EndGlobalSection
