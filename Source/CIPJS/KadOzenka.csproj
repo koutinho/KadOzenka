@@ -971,10 +971,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CIPJS.DAL\CIPJS.DAL.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Config\Registers\SearchPanels\Address.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1061,6 +1057,10 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CIPJS.DAL\KadOzenka.Dal.csproj" />
   </ItemGroup>
 
   <ItemGroup>

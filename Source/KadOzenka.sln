@@ -3,17 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIPJS", "CIPJS\CIPJS.csproj", "{E21F8899-80AA-4257-B958-8D044B26CF06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka", "CIPJS\KadOzenka.csproj", "{E21F8899-80AA-4257-B958-8D044B26CF06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CIPJS.DAL", "CIPJS.DAL\CIPJS.DAL.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal", "CIPJS.DAL\KadOzenka.Dal.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateObjectModel", "Utils\GenerateObjectModel\GenerateObjectModel.csproj", "{0E7E9ED7-37D5-4769-AE8D-E1CB5A76CD1E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugApplication", "Utils\DebugApplication\DebugApplication.csproj", "{129E1930-7589-4C82-86A6-5C4A20C209D7}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InsureBuildingLoader", "Utils\InsureBuildingLoader\InsureBuildingLoader.csproj", "{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,14 +53,6 @@ Global
 		{129E1930-7589-4C82-86A6-5C4A20C209D7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{129E1930-7589-4C82-86A6-5C4A20C209D7}.Release|x86.ActiveCfg = Release|Any CPU
 		{129E1930-7589-4C82-86A6-5C4A20C209D7}.Release|x86.Build.0 = Release|Any CPU
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Debug|x86.Build.0 = Debug|Any CPU
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Release|x86.ActiveCfg = Release|Any CPU
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,33 +60,28 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{0E7E9ED7-37D5-4769-AE8D-E1CB5A76CD1E} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{129E1930-7589-4C82-86A6-5C4A20C209D7} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
-		{E0FAB1D0-0A69-4FEA-BD74-C02D29AC1B61} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
-		SccProjectUniqueName0 = CIPJS\\CIPJS.csproj
-		SccProjectName0 = CIPJS
-		SccLocalPath0 = CIPJS
-		SccProjectUniqueName1 = CIPJS.DAL\\CIPJS.DAL.csproj
-		SccProjectName1 = CIPJS.DAL
-		SccLocalPath1 = CIPJS.DAL
-		SccProjectUniqueName2 = Utils\\GenerateObjectModel\\GenerateObjectModel.csproj
-		SccProjectTopLevelParentUniqueName2 = KadOzenka.sln
-		SccProjectName2 = Utils/GenerateObjectModel
-		SccLocalPath2 = Utils\\GenerateObjectModel
-		SccProjectUniqueName3 = Utils\\DebugApplication\\DebugApplication.csproj
-		SccProjectTopLevelParentUniqueName3 = KadOzenka.sln
-		SccProjectName3 = Utils/DebugApplication
-		SccLocalPath3 = Utils\\DebugApplication
-		SccProjectUniqueName4 = Utils\\InsureBuildingLoader\\InsureBuildingLoader.csproj
-		SccProjectTopLevelParentUniqueName4 = KadOzenka.sln
-		SccProjectName4 = Utils/InsureBuildingLoader
-		SccLocalPath4 = Utils\\InsureBuildingLoader
-		SccLocalPath5 = .
+		SccProjectUniqueName0 = Utils\\GenerateObjectModel\\GenerateObjectModel.csproj
+		SccProjectTopLevelParentUniqueName0 = KadOzenka.sln
+		SccProjectName0 = Utils/GenerateObjectModel
+		SccLocalPath0 = Utils\\GenerateObjectModel
+		SccProjectUniqueName1 = Utils\\DebugApplication\\DebugApplication.csproj
+		SccProjectTopLevelParentUniqueName1 = KadOzenka.sln
+		SccProjectName1 = Utils/DebugApplication
+		SccLocalPath1 = Utils\\DebugApplication
+		SccLocalPath2 = .
+		SccProjectUniqueName3 = CIPJS\\KadOzenka.csproj
+		SccProjectName3 = CIPJS
+		SccLocalPath3 = CIPJS
+		SccProjectUniqueName4 = CIPJS.DAL\\KadOzenka.Dal.csproj
+		SccProjectName4 = CIPJS.DAL
+		SccLocalPath4 = CIPJS.DAL
 	EndGlobalSection
 EndGlobal

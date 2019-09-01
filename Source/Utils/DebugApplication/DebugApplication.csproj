@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CIPJS.DAL\CIPJS.DAL.csproj" />
-    <ProjectReference Include="..\..\CIPJS\CIPJS.csproj" />
+    <ProjectReference Include="..\..\CIPJS.DAL\KadOzenka.Dal.csproj" />
+    <ProjectReference Include="..\..\CIPJS\KadOzenka.csproj" />
   </ItemGroup>
 
   <ItemGroup>
