@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost:4400/CIPJS",
+      "applicationUrl": "http://localhost:4400/KadOzenka",
       "sslPort": 0
     },
     "iisExpress": {
@@ -20,14 +20,14 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "CIPJS": {
+    "KadOzenka.Web": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50251/",
+      "launchUrl": "http://localhost:50252/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:50251/"
+      "applicationUrl": "http://localhost:50252/"
     }
   }
 }
