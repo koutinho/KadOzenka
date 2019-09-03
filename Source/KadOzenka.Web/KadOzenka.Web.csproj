@@ -203,7 +203,6 @@
     <None Remove="Config\Registers\Views\InspectorPersonSelect.xml" />
     <None Remove="Config\Registers\Views\InsuranceOrganizationSelect.xml" />
     <None Remove="Config\Registers\Views\InsuranceOrganizationSelectCalc.xml" />
-    <None Remove="Config\Registers\Views\InsurBuildings.xml" />
     <None Remove="Config\Registers\Views\InsurBuildingsSelect.xml" />
     <None Remove="Config\Registers\Views\InsurCalculations.xml" />
     <None Remove="Config\Registers\Views\InsurChangesLog.xml" />
@@ -220,6 +219,7 @@
     <None Remove="Config\Registers\Views\InvoiceSvod.xml" />
     <None Remove="Config\Registers\Views\LivingPremiseInsurCostSelect.xml" />
     <None Remove="Config\Registers\Views\LivingSpaces.xml" />
+    <None Remove="Config\Registers\Views\MarketObjects.xml" />
     <None Remove="Config\Registers\Views\MfcInputNach.xml" />
     <None Remove="Config\Registers\Views\MfcInputPlat.xml" />
     <None Remove="Config\Registers\Views\MfcInputPlatSelect.xml" />
@@ -800,7 +800,7 @@
     <Content Include="Config\Registers\Views\BtiData.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\InsurBuildings.xml">
+    <Content Include="Config\Registers\Views\MarketObjects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\InsurBuildingsSelect.xml">
