@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="Globals">
     <SccProjectName>SAK</SccProjectName>
@@ -16,6 +16,11 @@
     <PackageReference Include="Platform" Version="1.0.99" />
     <PackageReference Include="Platform.Reports" Version="1.0.14" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ObjectModel\" />
+    <Folder Include="MarketParsers\" />
   </ItemGroup>
 
 </Project>

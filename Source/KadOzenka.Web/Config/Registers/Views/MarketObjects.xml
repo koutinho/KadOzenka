@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="316" DefaultLayoutId="1003161" AllowSearchPanelResize="false" IsBasic="false"
-              OpenEmpty="false" LinkedRegistersList="316, 320, 321" UseSubMap="true" AllowMultiColumnSorting="true"
+<RegisterView RegisterId="100" DefaultLayoutId="1001001" AllowSearchPanelResize="false" IsBasic="false"
+              OpenEmpty="false" LinkedRegistersList="100" UseSubMap="true" AllowMultiColumnSorting="true"
               JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
-              ShowActualDate="false" SearchPanel="InsurBuildings" SearchPanelWindowHeight="654">
+              ShowActualDate="false" SearchPanel="" SearchPanelWindowHeight="654">
 
   <Buttons>
   </Buttons>
