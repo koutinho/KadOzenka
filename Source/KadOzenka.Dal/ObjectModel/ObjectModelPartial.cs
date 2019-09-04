@@ -15,7 +15,7 @@ namespace ObjectModel.Market
         public OMCoreObject()
         {
 
-            Uid = -1;
+            Id = -1;
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();

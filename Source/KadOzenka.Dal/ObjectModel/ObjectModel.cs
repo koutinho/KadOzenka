@@ -13,91 +13,31 @@ namespace ObjectModel.Market
     public sealed partial class OMCoreObject : OMBaseClass<OMCoreObject>
     {
 
-        private long _uid;
+        private long _id;
         /// <summary>
-        /// 10000100 Уникальный идентификатор объекта недвижимости сторонней площадки (UID)
+        /// 10000100 Уникальный идентификатор объекта недвижимости сторонней площадки (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 10000100)]
-        public long Uid
+        public long Id
         {
             get
             {
-                CheckPropertyInited("Uid");
-                return _uid;
+                CheckPropertyInited("Id");
+                return _id;
             }
             set
             {
-                _uid = value;
-                NotifyPropertyChanged("Uid");
-            }
-        }
-
-
-        private long _dictionarytype;
-        /// <summary>
-        /// 10000200 Тип справочника (DICTIONARY_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10000200)]
-        public long DictionaryType
-        {
-            get
-            {
-                CheckPropertyInited("DictionaryType");
-                return _dictionarytype;
-            }
-            set
-            {
-                _dictionarytype = value;
-                NotifyPropertyChanged("DictionaryType");
-            }
-        }
-
-
-        private string _markettype;
-        /// <summary>
-        /// 10000300 Тип сторонней площадки (MARKET_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10000300)]
-        public string MarketType
-        {
-            get
-            {
-                CheckPropertyInited("MarketType");
-                return _markettype;
-            }
-            set
-            {
-                _markettype = value;
-                NotifyPropertyChanged("MarketType");
-            }
-        }
-
-
-        private long _marketid;
-        /// <summary>
-        /// 10000400 Уникальный идентификатор в рамках сторонней площадки (MARKET_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10000400)]
-        public long MarketId
-        {
-            get
-            {
-                CheckPropertyInited("MarketId");
-                return _marketid;
-            }
-            set
-            {
-                _marketid = value;
-                NotifyPropertyChanged("MarketId");
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
         private string _url;
         /// <summary>
-        /// 10000500 URL-адрес объявления (URL)
+        /// 10000200 URL-адрес объявления (URL)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000500)]
+        [RegisterAttribute(AttributeID = 10000200)]
         public string Url
         {
             get
@@ -109,6 +49,66 @@ namespace ObjectModel.Market
             {
                 _url = value;
                 NotifyPropertyChanged("Url");
+            }
+        }
+
+
+        private long _referenceid;
+        /// <summary>
+        /// 10000300 Тип справочника (REFERENCEID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10000300)]
+        public long Referenceid
+        {
+            get
+            {
+                CheckPropertyInited("Referenceid");
+                return _referenceid;
+            }
+            set
+            {
+                _referenceid = value;
+                NotifyPropertyChanged("Referenceid");
+            }
+        }
+
+
+        private string _code;
+        /// <summary>
+        /// 10000400 Тип сторонней площадки (CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10000400)]
+        public string Code
+        {
+            get
+            {
+                CheckPropertyInited("Code");
+                return _code;
+            }
+            set
+            {
+                _code = value;
+                NotifyPropertyChanged("Code");
+            }
+        }
+
+
+        private long _marketid;
+        /// <summary>
+        /// 10000500 Уникальный идентификатор в рамках сторонней площадки (MARKET_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10000500)]
+        public long MarketId
+        {
+            get
+            {
+                CheckPropertyInited("MarketId");
+                return _marketid;
+            }
+            set
+            {
+                _marketid = value;
+                NotifyPropertyChanged("MarketId");
             }
         }
 
