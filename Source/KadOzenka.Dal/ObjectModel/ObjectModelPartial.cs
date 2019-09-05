@@ -7,7 +7,7 @@ using Core.ObjectModel.CustomAttribute;
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 100 Объект аналог
+    /// 100 Таблица, содержащая объекты аналоги
     /// </summary>
     public partial class OMCoreObject
     {
@@ -31,7 +31,7 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 101 Объект, хранящий данные по объектам из ЦИАН-а
+    /// 101 Таблица, содержащая объекты полученные с ЦИАНа
     /// </summary>
     public partial class OMCianObject
     {

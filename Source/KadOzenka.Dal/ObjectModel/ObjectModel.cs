@@ -6,7 +6,7 @@ using ObjectModel.Directory;
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 100 Объект аналог (MARKET_CORE_OBJECT)
+    /// 100 Таблица, содержащая объекты аналоги (MARKET_CORE_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 100)]
     [Serializable]
@@ -15,9 +15,9 @@ namespace ObjectModel.Market
 
         private long _id;
         /// <summary>
-        /// 10000100 Уникальный идентификатор объекта недвижимости сторонней площадки (ID)
+        /// 10002000 Уникальный идентификатор объекта недвижимости сторонней площадки (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 10000100)]
+        [PrimaryKey(AttributeID = 10002000)]
         public long Id
         {
             get
@@ -35,9 +35,9 @@ namespace ObjectModel.Market
 
         private string _url;
         /// <summary>
-        /// 10000200 URL-адрес объявления (URL)
+        /// 10002100 URL-адрес объявления (URL)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000200)]
+        [RegisterAttribute(AttributeID = 10002100)]
         public string Url
         {
             get
@@ -53,51 +53,161 @@ namespace ObjectModel.Market
         }
 
 
-        private long _referenceid;
+        private long _marketcode;
         /// <summary>
-        /// 10000300 Тип справочника (REFERENCEID)
+        /// 10002200 Числовой идентификатор типа сторонней площадки (MARKET_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000300)]
-        public long Referenceid
+        [RegisterAttribute(AttributeID = 10002200)]
+        public long MarketCode
         {
             get
             {
-                CheckPropertyInited("Referenceid");
-                return _referenceid;
+                CheckPropertyInited("MarketCode");
+                return _marketcode;
             }
             set
             {
-                _referenceid = value;
-                NotifyPropertyChanged("Referenceid");
+                _marketcode = value;
+                NotifyPropertyChanged("MarketCode");
             }
         }
 
 
-        private string _code;
+        private string _market;
         /// <summary>
-        /// 10000400 Тип сторонней площадки (CODE)
+        /// 10002300 Наименование сторонней площадки (MARKET)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000400)]
-        public string Code
+        [RegisterAttribute(AttributeID = 10002300)]
+        public string Market
         {
             get
             {
-                CheckPropertyInited("Code");
-                return _code;
+                CheckPropertyInited("Market");
+                return _market;
             }
             set
             {
-                _code = value;
-                NotifyPropertyChanged("Code");
+                _market = value;
+                NotifyPropertyChanged("Market");
+            }
+        }
+
+
+        private MarketTypes _market_Code;
+        /// <summary>
+        /// 10002300 Наименование сторонней площадки (справочный код) (MARKET_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10002300)]
+        public MarketTypes Market_Code
+        {
+            get
+            {
+                CheckPropertyInited("Market_Code");
+                return this._market_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_market))
+                    {
+                         _market = descr;
+                    }
+                }
+                else
+                {
+                     _market = descr;
+                }
+
+                this._market_Code = value;
+                NotifyPropertyChanged("Market");
+                NotifyPropertyChanged("Market_Code");
+            }
+        }
+
+
+        private long _propertytypecode;
+        /// <summary>
+        /// 10002400 Числовой иденификатор типа объекта недвижимости (PROPERTY_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10002400)]
+        public long PropertyTypeCode
+        {
+            get
+            {
+                CheckPropertyInited("PropertyTypeCode");
+                return _propertytypecode;
+            }
+            set
+            {
+                _propertytypecode = value;
+                NotifyPropertyChanged("PropertyTypeCode");
+            }
+        }
+
+
+        private string _propertytype;
+        /// <summary>
+        /// 10002500 Наименование типа объекта недвижимости (PROPERTY_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10002500)]
+        public string PropertyType
+        {
+            get
+            {
+                CheckPropertyInited("PropertyType");
+                return _propertytype;
+            }
+            set
+            {
+                _propertytype = value;
+                NotifyPropertyChanged("PropertyType");
+            }
+        }
+
+
+        private PropertyTypes _propertytype_Code;
+        /// <summary>
+        /// 10002500 Наименование типа объекта недвижимости (справочный код) (PROPERTY_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10002500)]
+        public PropertyTypes PropertyType_Code
+        {
+            get
+            {
+                CheckPropertyInited("PropertyType_Code");
+                return this._propertytype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_propertytype))
+                    {
+                         _propertytype = descr;
+                    }
+                }
+                else
+                {
+                     _propertytype = descr;
+                }
+
+                this._propertytype_Code = value;
+                NotifyPropertyChanged("PropertyType");
+                NotifyPropertyChanged("PropertyType_Code");
             }
         }
 
 
         private long _marketid;
         /// <summary>
-        /// 10000500 Уникальный идентификатор в рамках сторонней площадки (MARKET_ID)
+        /// 10002600 Уникальный идентификатор в рамках сторонней площадки (MARKET_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000500)]
+        [RegisterAttribute(AttributeID = 10002600)]
         public long MarketId
         {
             get
@@ -115,9 +225,9 @@ namespace ObjectModel.Market
 
         private long? _price;
         /// <summary>
-        /// 10000600 Цена объекта недвижимости (PRICE)
+        /// 10002700 Цена объекта недвижимости (PRICE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000600)]
+        [RegisterAttribute(AttributeID = 10002700)]
         public long? Price
         {
             get
@@ -135,9 +245,9 @@ namespace ObjectModel.Market
 
         private DateTime? _parsertime;
         /// <summary>
-        /// 10000700 Время обнаружения объявления парсером (PARSER_TIME)
+        /// 10002800 Время обнаружения объявления парсером (PARSER_TIME)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000700)]
+        [RegisterAttribute(AttributeID = 10002800)]
         public DateTime? ParserTime
         {
             get
@@ -155,9 +265,9 @@ namespace ObjectModel.Market
 
         private string _region;
         /// <summary>
-        /// 10000800 Название региона, к которому относится объект недвижимости (REGION)
+        /// 10002900 Название региона, к которому относится объект недвижимости (REGION)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000800)]
+        [RegisterAttribute(AttributeID = 10002900)]
         public string Region
         {
             get
@@ -175,9 +285,9 @@ namespace ObjectModel.Market
 
         private string _city;
         /// <summary>
-        /// 10000900 Название города, к которому относится объект недвижимости (CITY)
+        /// 10003000 Название города, к которому относится объект недвижимости (CITY)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10000900)]
+        [RegisterAttribute(AttributeID = 10003000)]
         public string City
         {
             get
@@ -195,9 +305,9 @@ namespace ObjectModel.Market
 
         private string _address;
         /// <summary>
-        /// 10001000 Адрес объекта недвижимости (ADDRESS)
+        /// 10003100 Адрес объекта недвижимости (ADDRESS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10001000)]
+        [RegisterAttribute(AttributeID = 10003100)]
         public string Address
         {
             get
@@ -215,9 +325,9 @@ namespace ObjectModel.Market
 
         private string _metro;
         /// <summary>
-        /// 10001100 Ближайшие станции метро списком через запятую (METRO)
+        /// 10003200 Ближайшие станции метро списком через запятую (METRO)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10001100)]
+        [RegisterAttribute(AttributeID = 10003200)]
         public string Metro
         {
             get
@@ -235,9 +345,9 @@ namespace ObjectModel.Market
 
         private string _images;
         /// <summary>
-        /// 10001200 URL-адреса изображений объекта недвижимости списком через запятую (IMAGES)
+        /// 10003300 URL-адреса изображений объекта недвижимости списком через запятую (IMAGES)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10001200)]
+        [RegisterAttribute(AttributeID = 10003300)]
         public string Images
         {
             get
@@ -255,9 +365,9 @@ namespace ObjectModel.Market
 
         private string _description;
         /// <summary>
-        /// 10001300 Описание объекта недвижимости (DESCRIPTION)
+        /// 10003400 Описание объекта недвижимости (DESCRIPTION)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10001300)]
+        [RegisterAttribute(AttributeID = 10003400)]
         public string Description
         {
             get
@@ -275,9 +385,9 @@ namespace ObjectModel.Market
 
         private decimal? _lat;
         /// <summary>
-        /// 10001400 Широта (LAT)
+        /// 10003500 Широта (LAT)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10001400)]
+        [RegisterAttribute(AttributeID = 10003500)]
         public decimal? Lat
         {
             get
@@ -295,9 +405,9 @@ namespace ObjectModel.Market
 
         private decimal? _lng;
         /// <summary>
-        /// 10001500 Долгота (LNG)
+        /// 10003600 Долгота (LNG)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10001500)]
+        [RegisterAttribute(AttributeID = 10003600)]
         public decimal? Lng
         {
             get
@@ -318,7 +428,7 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 101 Объект, хранящий данные по объектам из ЦИАН-а (MARKET_CIAN_OBJECT)
+    /// 101 Таблица, содержащая объекты полученные с ЦИАНа (MARKET_CIAN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 101)]
     [Serializable]
@@ -565,51 +675,11 @@ namespace ObjectModel.Market
         }
 
 
-        private long _referenceid;
-        /// <summary>
-        /// 10101300 Тип справочника (REFERENCEID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10101300)]
-        public long Referenceid
-        {
-            get
-            {
-                CheckPropertyInited("Referenceid");
-                return _referenceid;
-            }
-            set
-            {
-                _referenceid = value;
-                NotifyPropertyChanged("Referenceid");
-            }
-        }
-
-
-        private string _code;
-        /// <summary>
-        /// 10101400 Тип категории, к которой относится объект недвижимостиcode (CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10101400)]
-        public string Code
-        {
-            get
-            {
-                CheckPropertyInited("Code");
-                return _code;
-            }
-            set
-            {
-                _code = value;
-                NotifyPropertyChanged("Code");
-            }
-        }
-
-
         private long? _categoryid;
         /// <summary>
-        /// 10101500 Идентификатор категории, к которой относится объект недвижимости (CATEGORY_ID)
+        /// 10101300 Идентификатор категории, к которой относится объект недвижимости (CATEGORY_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10101500)]
+        [RegisterAttribute(AttributeID = 10101300)]
         public long? CategoryId
         {
             get
@@ -627,9 +697,9 @@ namespace ObjectModel.Market
 
         private long? _regionid;
         /// <summary>
-        /// 10101600 Идентификатор региона, к которому относится объект недвижимости (REGION_ID)
+        /// 10101400 Идентификатор региона, к которому относится объект недвижимости (REGION_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10101600)]
+        [RegisterAttribute(AttributeID = 10101400)]
         public long? RegionId
         {
             get
@@ -647,9 +717,9 @@ namespace ObjectModel.Market
 
         private long? _cityid;
         /// <summary>
-        /// 10101700 Идентификатор города, к которому относится объект недвижимости (CITY_ID)
+        /// 10101500 Идентификатор города, к которому относится объект недвижимости (CITY_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10101700)]
+        [RegisterAttribute(AttributeID = 10101500)]
         public long? CityId
         {
             get

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 
+using ObjectModel.Directory;
+
 namespace DebugApplication.Model
 {
     class PropertyObject
@@ -33,6 +35,7 @@ namespace DebugApplication.Model
         public long? City_Id { get; set; }
         public decimal? Lat { get; set; }
         public decimal? Lng { get; set; }
+        public PropertyTypes propertyType { get; set; }
 
         public PropertyObject(RestAPICianPropertyObject cianObject)
         {
@@ -63,6 +66,7 @@ namespace DebugApplication.Model
             City_Id = cianObject.City_Id;
             Lat = ToNullableDecimal(cianObject.Coords.Lat);
             Lng = ToNullableDecimal(cianObject.Coords.Lng);
+            propertyType = GetPropertyObjectType(Building_year, Category_Id, Subcategory);
         }
 
         public override string ToString() => Url + "\n";
@@ -71,5 +75,52 @@ namespace DebugApplication.Model
         public static decimal? ToNullableDecimal(string str) => string.IsNullOrEmpty(str) ? null : (decimal?)decimal.Parse(str, CultureInfo.InvariantCulture);
         public static decimal? ToNullableDecimal(double? value) => value.Equals(null) ? null : (decimal?)value;
         public static DateTime? ToNullableDateTime(string time) => string.IsNullOrEmpty(time) ? null : (DateTime?)DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+        private PropertyTypes GetPropertyObjectType(long? buildingYear, long? categoryId, string subcategory)
+        {
+            if (buildingYear != null && buildingYear != 0 && buildingYear > DateTime.Now.Year) return PropertyTypes.UncompletedBuilding;
+            else
+            {
+                switch (categoryId)
+                {
+                    case 1:
+                    case 2:
+                        return PropertyTypes.Pllacement;
+                    case 3:
+                        switch (subcategory)
+                        {
+                            case "Офисная":
+                                return PropertyTypes.Pllacement;
+                            case "Гараж":
+                                return PropertyTypes.Parking;
+                            case "Готовый бизнес":
+                            case "Свободного назначения":
+                            case "Торговая":
+                            case "Производственная":
+                                return PropertyTypes.Company;
+                            case "Здание":
+                                return PropertyTypes.Building;
+                            default:
+                                Console.WriteLine(subcategory);
+                                return PropertyTypes.Other;
+                        }
+                    case 4:
+                        switch (subcategory)
+                        {
+                            case "Дом":
+                                return PropertyTypes.Building;
+                            case "Участок":
+                                return PropertyTypes.Stead;
+                            case "Таунхаус":
+                                return PropertyTypes.Building;
+                            default:
+                                Console.WriteLine(subcategory);
+                                return PropertyTypes.Other;
+                        }
+                    default:
+                        return PropertyTypes.Other;
+                }
+            }
+        }
+
     }
 }

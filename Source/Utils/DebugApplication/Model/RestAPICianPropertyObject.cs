@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
+using ObjectModel.Directory;
+
 namespace DebugApplication.Model
 {
     class RestAPICianPropertyObject
@@ -41,46 +43,46 @@ namespace DebugApplication.Model
                                              $"\nBuilding_year: {Building_year}\nDeal_type: {Deal_type}\nImages: {Images}\nDescription: {Description}\nCategory: {Category}" +
                                              $"\nSubcategory: {Subcategory}\nCategory_Id: {Category_Id}\nRegion_Id: {Region_Id}\nCity_Id: {City_Id}\nCoords:\n{Coords}";
 
-        public new int GetType()
+        public new PropertyTypes GetType()
         {
             switch (Category_Id)
             {
                 case 1:
                 case 2:
-                    return 4;
+                    return PropertyTypes.Pllacement;
                 case 3:
                     switch (Subcategory)
                     {
                         case "Офисная":
-                            return 4;
+                            return PropertyTypes.Pllacement;
                         case "Гараж":
-                            return 8;
+                            return PropertyTypes.Parking;
                         case "Готовый бизнес":
                         case "Свободного назначения":
                         case "Торговая":
                         case "Производственная":
-                            return 7;
+                            return PropertyTypes.Company;
                         case "Здание":
-                            return 2;
+                            return PropertyTypes.Building;
                         default:
                             Console.WriteLine(Subcategory);
-                            return 0;
+                            return PropertyTypes.Other;
                     }
                 case 4:
                     switch (Subcategory)
                     {
                         case "Дом":
-                            return 2;
+                            return PropertyTypes.Building;
                         case "Участок":
-                            return 1;
+                            return PropertyTypes.Stead;
                         case "Таунхаус":
-                            return 2;
+                            return PropertyTypes.Building;
                         default:
                             Console.WriteLine(Subcategory);
-                            return 0;
+                            return PropertyTypes.Other;
                     }
                 default:
-                    return 0;
+                    return PropertyTypes.Other;
             }
         }
 
