@@ -1,7 +1,13 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using Core.ErrorManagment;
 using Core.SRD;
 using ObjectModel.Market;
+
+using DebugApplication.LinksGenerator;
+using DebugApplication.Parser.Cian;
 
 namespace DebugApplication
 {
@@ -9,23 +15,31 @@ namespace DebugApplication
     {
         static void Main(string[] args)
         {
-            try
-            {
-                var test = SRDSession.Current;
 
-                OMCoreObject obj = new OMCoreObject
+            List<string> links = new LinkGenerator().GenerateCianLinks();
+            Parser.Cian.Client client = new Parser.Cian.Client(new CianDataParser(links));
+            Console.WriteLine(string.Join("\n", client.Parser.GetProperty().Select(x => x.ToString())));
+            client.Parser.GetProperty().ForEach(
+                element => 
                 {
-                    Address = "test",
-                    Price = 100,
+                    OMCoreObject obj = new OMCoreObject
+                    {
+                        Url = element.Url,
+                        Price = element.Price,
+                        MarketId = 1,
+                        Code = "1"
+                    };
+                    OMCianObject cianObj = new OMCianObject
+                    {
+                        Id = obj.Id,
+                        Code = "145"
+                    };
 
-                };
-
-                obj.Save();
-            }
-            catch (System.Exception ex)
-            {
-                ErrorManager.LogError(ex);
-            }            
+                    obj.Save();
+                    cianObj.Save();
+                }
+            );
+           
         }
     }
 }

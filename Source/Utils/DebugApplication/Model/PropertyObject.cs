@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Globalization;
+
+namespace DebugApplication.Model
+{
+    class PropertyObject
+    {
+        public long Id { get; set; }
+        public string Url { get; set; }
+        public long? Price { get; set; }
+        public DateTime? Time { get; set; }
+        public string Region { get; set; }
+        public string City { get; set; }
+        public string Address { get; set; }
+        public string Metro { get; set; }
+        public long? Rooms_count { get; set; }
+        public long? Floor_number { get; set; }
+        public long? Floors_count { get; set; }
+        public decimal? Area { get; set; }
+        public decimal? Area_kitchen { get; set; }
+        public decimal? Area_living { get; set; }
+        public decimal? Area_land { get; set; }
+        public long? Building_year { get; set; }
+        public string Deal_type { get; set; }
+        public string Images { get; set; }
+        public string Description { get; set; }
+        public string Category { get; set; }
+        public string Subcategory { get; set; }
+        public long? Category_Id { get; set; }
+        public long? Region_Id { get; set; }
+        public long? City_Id { get; set; }
+        public decimal? Lat { get; set; }
+        public decimal? Lng { get; set; }
+
+        public PropertyObject(RestAPICianPropertyObject cianObject)
+        {
+            //Id = cianObject.GetUid();
+            Id = 0;
+            Url = cianObject.Url;
+            Price = cianObject.Price;
+            Time = ToNullableDateTime(cianObject.Time_publish);
+            Region = cianObject.Region;
+            City = cianObject.City;
+            Address = cianObject.Address;
+            Metro = cianObject.Metro;
+            Rooms_count = cianObject.Rooms_count;
+            Floor_number = cianObject.Floor_number;
+            Floors_count = cianObject.Floors_count;
+            Area = ToNullableDecimal(cianObject.Area);
+            Area_kitchen = ToNullableDecimal(cianObject.Area_kitchen);
+            Area_living = ToNullableDecimal(cianObject.Area_living);
+            Area_land = ToNullableDecimal(cianObject.Area_land);
+            Building_year = cianObject.Building_year;
+            Deal_type = cianObject.Deal_type;
+            Images = cianObject.Images;
+            Description = cianObject.Description;
+            Category = cianObject.Category;
+            Subcategory = cianObject.Subcategory;
+            Category_Id = cianObject.Category_Id;
+            Region_Id = cianObject.Region_Id;
+            City_Id = cianObject.City_Id;
+            Lat = ToNullableDecimal(cianObject.Coords.Lat);
+            Lng = ToNullableDecimal(cianObject.Coords.Lng);
+        }
+
+        public override string ToString() => Url + "\n";
+
+        public string GetNullableValue(object obj) => obj == null ? "-" : obj.ToString();
+        public static decimal? ToNullableDecimal(string str) => string.IsNullOrEmpty(str) ? null : (decimal?)decimal.Parse(str, CultureInfo.InvariantCulture);
+        public static decimal? ToNullableDecimal(double? value) => value.Equals(null) ? null : (decimal?)value;
+        public static DateTime? ToNullableDateTime(string time) => string.IsNullOrEmpty(time) ? null : (DateTime?)DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+    }
+}

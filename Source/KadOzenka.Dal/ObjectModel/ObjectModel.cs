@@ -314,3 +314,355 @@ namespace ObjectModel.Market
 
     }
 }
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 101 Объект, хранящий данные по объектам из ЦИАН-а (MARKET_CIAN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 101)]
+    [Serializable]
+    public sealed partial class OMCianObject : OMBaseClass<OMCianObject>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10100100 Уникальный идентификатор записи (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _roomscount;
+        /// <summary>
+        /// 10100200 Количество комнат в объекте недвижимости (ROOMS_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100200)]
+        public long? RoomsCount
+        {
+            get
+            {
+                CheckPropertyInited("RoomsCount");
+                return _roomscount;
+            }
+            set
+            {
+                _roomscount = value;
+                NotifyPropertyChanged("RoomsCount");
+            }
+        }
+
+
+        private long? _floornumber;
+        /// <summary>
+        /// 10100300 Этаж, на котором расположен объект недвижимости (FLOOR_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100300)]
+        public long? FloorNumber
+        {
+            get
+            {
+                CheckPropertyInited("FloorNumber");
+                return _floornumber;
+            }
+            set
+            {
+                _floornumber = value;
+                NotifyPropertyChanged("FloorNumber");
+            }
+        }
+
+
+        private long? _floorscount;
+        /// <summary>
+        /// 10100400 Количество этажей в объекте недвижимости (FLOORS_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100400)]
+        public long? FloorsCount
+        {
+            get
+            {
+                CheckPropertyInited("FloorsCount");
+                return _floorscount;
+            }
+            set
+            {
+                _floorscount = value;
+                NotifyPropertyChanged("FloorsCount");
+            }
+        }
+
+
+        private decimal? _area;
+        /// <summary>
+        /// 10100500 Общая площадь объекта недвижимости (AREA)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100500)]
+        public decimal? Area
+        {
+            get
+            {
+                CheckPropertyInited("Area");
+                return _area;
+            }
+            set
+            {
+                _area = value;
+                NotifyPropertyChanged("Area");
+            }
+        }
+
+
+        private decimal? _areakitchen;
+        /// <summary>
+        /// 10100600 Площадь кухни объекта недвижимости (AREA_KITCHEN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100600)]
+        public decimal? AreaKitchen
+        {
+            get
+            {
+                CheckPropertyInited("AreaKitchen");
+                return _areakitchen;
+            }
+            set
+            {
+                _areakitchen = value;
+                NotifyPropertyChanged("AreaKitchen");
+            }
+        }
+
+
+        private decimal? _arealiving;
+        /// <summary>
+        /// 10100700 Жилая площадь объекта недвижимости (AREA_LIVING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100700)]
+        public decimal? AreaLiving
+        {
+            get
+            {
+                CheckPropertyInited("AreaLiving");
+                return _arealiving;
+            }
+            set
+            {
+                _arealiving = value;
+                NotifyPropertyChanged("AreaLiving");
+            }
+        }
+
+
+        private decimal? _arealand;
+        /// <summary>
+        /// 10100800 Площадь земельного участка, на котором расположен объект недвижимости (AREA_LAND)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100800)]
+        public decimal? AreaLand
+        {
+            get
+            {
+                CheckPropertyInited("AreaLand");
+                return _arealand;
+            }
+            set
+            {
+                _arealand = value;
+                NotifyPropertyChanged("AreaLand");
+            }
+        }
+
+
+        private long? _buildingyear;
+        /// <summary>
+        /// 10100900 Год постройки объекта недвижимости (BUILDING_YEAR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100900)]
+        public long? BuildingYear
+        {
+            get
+            {
+                CheckPropertyInited("BuildingYear");
+                return _buildingyear;
+            }
+            set
+            {
+                _buildingyear = value;
+                NotifyPropertyChanged("BuildingYear");
+            }
+        }
+
+
+        private string _dealtype;
+        /// <summary>
+        /// 10101000 Тип предлагаемой в объявлении сделки (DEAL_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101000)]
+        public string DealType
+        {
+            get
+            {
+                CheckPropertyInited("DealType");
+                return _dealtype;
+            }
+            set
+            {
+                _dealtype = value;
+                NotifyPropertyChanged("DealType");
+            }
+        }
+
+
+        private string _category;
+        /// <summary>
+        /// 10101100 Категория, к которой относится объект недвижимости (CATEGORY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101100)]
+        public string Category
+        {
+            get
+            {
+                CheckPropertyInited("Category");
+                return _category;
+            }
+            set
+            {
+                _category = value;
+                NotifyPropertyChanged("Category");
+            }
+        }
+
+
+        private string _subcategory;
+        /// <summary>
+        /// 10101200 Подкатегория, к которой относится объект недвижимости (SUBCATEGORY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101200)]
+        public string Subcategory
+        {
+            get
+            {
+                CheckPropertyInited("Subcategory");
+                return _subcategory;
+            }
+            set
+            {
+                _subcategory = value;
+                NotifyPropertyChanged("Subcategory");
+            }
+        }
+
+
+        private long _referenceid;
+        /// <summary>
+        /// 10101300 Тип справочника (REFERENCEID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101300)]
+        public long Referenceid
+        {
+            get
+            {
+                CheckPropertyInited("Referenceid");
+                return _referenceid;
+            }
+            set
+            {
+                _referenceid = value;
+                NotifyPropertyChanged("Referenceid");
+            }
+        }
+
+
+        private string _code;
+        /// <summary>
+        /// 10101400 Тип категории, к которой относится объект недвижимостиcode (CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101400)]
+        public string Code
+        {
+            get
+            {
+                CheckPropertyInited("Code");
+                return _code;
+            }
+            set
+            {
+                _code = value;
+                NotifyPropertyChanged("Code");
+            }
+        }
+
+
+        private long? _categoryid;
+        /// <summary>
+        /// 10101500 Идентификатор категории, к которой относится объект недвижимости (CATEGORY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101500)]
+        public long? CategoryId
+        {
+            get
+            {
+                CheckPropertyInited("CategoryId");
+                return _categoryid;
+            }
+            set
+            {
+                _categoryid = value;
+                NotifyPropertyChanged("CategoryId");
+            }
+        }
+
+
+        private long? _regionid;
+        /// <summary>
+        /// 10101600 Идентификатор региона, к которому относится объект недвижимости (REGION_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101600)]
+        public long? RegionId
+        {
+            get
+            {
+                CheckPropertyInited("RegionId");
+                return _regionid;
+            }
+            set
+            {
+                _regionid = value;
+                NotifyPropertyChanged("RegionId");
+            }
+        }
+
+
+        private long? _cityid;
+        /// <summary>
+        /// 10101700 Идентификатор города, к которому относится объект недвижимости (CITY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101700)]
+        public long? CityId
+        {
+            get
+            {
+                CheckPropertyInited("CityId");
+                return _cityid;
+            }
+            set
+            {
+                _cityid = value;
+                NotifyPropertyChanged("CityId");
+            }
+        }
+
+    }
+}
