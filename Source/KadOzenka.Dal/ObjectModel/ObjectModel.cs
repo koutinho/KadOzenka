@@ -3,6 +3,7 @@ using Core.ObjectModel;
 using Core.ObjectModel.CustomAttribute;
 using Core.Shared.Extensions;
 using ObjectModel.Directory;
+
 namespace ObjectModel.Market
 {
     /// <summary>
@@ -803,6 +804,58 @@ namespace ObjectModel.Market
             {
                 _district = value;
                 NotifyPropertyChanged("District");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 103 Таблица, содержащая настройки модуля (MARKET_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 103)]
+    [Serializable]
+    public sealed partial class OMSettings : OMBaseClass<OMSettings>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10300100 Идентификатор настройки (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _settingvalue;
+        /// <summary>
+        /// 10300200 Значение настройки (SETTING_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10300200)]
+        public string SettingValue
+        {
+            get
+            {
+                CheckPropertyInited("SettingValue");
+                return _settingvalue;
+            }
+            set
+            {
+                _settingvalue = value;
+                NotifyPropertyChanged("SettingValue");
             }
         }
 

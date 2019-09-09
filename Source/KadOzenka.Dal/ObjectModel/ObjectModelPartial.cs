@@ -75,3 +75,27 @@ namespace ObjectModel.Market
         }
     }
 }
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 103 Таблица, содержащая настройки модуля
+    /// </summary>
+    public partial class OMSettings
+    {
+
+        public OMSettings()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSettings(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
