@@ -5,7 +5,7 @@ using System.Globalization;
 
 using ObjectModel.Directory;
 
-namespace DebugApplication.Model
+namespace OuterMarketParser.Model
 {
     class PropertyObject
     {
@@ -39,8 +39,7 @@ namespace DebugApplication.Model
 
         public PropertyObject(RestAPICianPropertyObject cianObject)
         {
-            //Id = cianObject.GetUid();
-            Id = 0;
+            Id = cianObject.Id;
             Url = cianObject.Url;
             Price = cianObject.Price;
             Time = ToNullableDateTime(cianObject.Time_publish);
@@ -69,12 +68,9 @@ namespace DebugApplication.Model
             propertyType = GetPropertyObjectType(Building_year, Category_Id, Subcategory);
         }
 
-        public override string ToString() => Url + "\n";
-
-        public string GetNullableValue(object obj) => obj == null ? "-" : obj.ToString();
-        public static decimal? ToNullableDecimal(string str) => string.IsNullOrEmpty(str) ? null : (decimal?)decimal.Parse(str, CultureInfo.InvariantCulture);
-        public static decimal? ToNullableDecimal(double? value) => value.Equals(null) ? null : (decimal?)value;
-        public static DateTime? ToNullableDateTime(string time) => string.IsNullOrEmpty(time) ? null : (DateTime?)DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+        private static decimal? ToNullableDecimal(string str) => string.IsNullOrEmpty(str) ? null : (decimal?)decimal.Parse(str, CultureInfo.InvariantCulture);
+        private static decimal? ToNullableDecimal(double? value) => value.Equals(null) ? null : (decimal?)value;
+        private static DateTime? ToNullableDateTime(string time) => string.IsNullOrEmpty(time) ? null : (DateTime?)DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         private PropertyTypes GetPropertyObjectType(long? buildingYear, long? categoryId, string subcategory)
         {
             if (buildingYear != null && buildingYear != 0 && buildingYear > DateTime.Now.Year) return PropertyTypes.UncompletedBuilding;

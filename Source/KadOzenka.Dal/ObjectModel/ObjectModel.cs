@@ -736,3 +736,75 @@ namespace ObjectModel.Market
 
     }
 }
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 102 Таблица, содержащая объекты полученные с авито (MARKET_AVITO_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 102)]
+    [Serializable]
+    public sealed partial class OMAvitoObject : OMBaseClass<OMAvitoObject>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10200100 Уникальный идентификатор объекта авито (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _title;
+        /// <summary>
+        /// 10200200 Заголовок объявления (TITLE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200200)]
+        public string Title
+        {
+            get
+            {
+                CheckPropertyInited("Title");
+                return _title;
+            }
+            set
+            {
+                _title = value;
+                NotifyPropertyChanged("Title");
+            }
+        }
+
+
+        private string _district;
+        /// <summary>
+        /// 10200300 Название округа, к которому относится объект недвижимости (DISTRICT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200300)]
+        public string District
+        {
+            get
+            {
+                CheckPropertyInited("District");
+                return _district;
+            }
+            set
+            {
+                _district = value;
+                NotifyPropertyChanged("District");
+            }
+        }
+
+    }
+}

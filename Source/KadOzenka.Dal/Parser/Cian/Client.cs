@@ -4,7 +4,7 @@ using System.Text;
 
 using Newtonsoft.Json;
 
-namespace DebugApplication.Parser.Cian
+namespace OuterMarketParser.Parser.Cian
 {
     class Client
     {

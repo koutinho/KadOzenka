@@ -4,7 +4,7 @@ using System.Text;
 
 using ObjectModel.Market;
 
-namespace DebugApplication.Model.DatabaseOperations
+namespace OuterMarketParser.Model.DatabaseOperations
 {
     class DataToPostgreSQL : IDataToPostgreSQL
     {
@@ -29,12 +29,25 @@ namespace DebugApplication.Model.DatabaseOperations
                 Lat = element.Lat,
                 Lng = element.Lng
             };
+            obj.Save();
             OMCianObject cianObj = new OMCianObject
             {
-                RoomsCount = element.Rooms_count
-                //<=====Продолжить отсюда
+                Id = obj.Id,
+                RoomsCount = element.Rooms_count,
+                FloorNumber = element.Floor_number,
+                FloorsCount = element.Floors_count,
+                Area = element.Area,
+                AreaKitchen = element.Area_kitchen,
+                AreaLiving = element.Area_living,
+                AreaLand = element.Area_land,
+                BuildingYear = element.Building_year,
+                DealType = element.Deal_type,
+                Category = element.Category,
+                Subcategory = element.Subcategory,
+                CategoryId = element.Category_Id,
+                RegionId = element.Region_Id,
+                CityId = element.City_Id
             };
-            obj.Save();
             cianObj.Save();
         }
     }

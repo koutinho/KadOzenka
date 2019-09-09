@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DebugApplication.LinksGenerator
+namespace OuterMarketParser.LinksGenerator
 {
     interface ILinkGenerator
     {

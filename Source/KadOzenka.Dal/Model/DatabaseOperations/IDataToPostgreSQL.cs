@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-using DebugApplication.Model;
+using OuterMarketParser.Model;
 
-namespace DebugApplication.Model.DatabaseOperations
+namespace OuterMarketParser.Model.DatabaseOperations
 {
     interface IDataToPostgreSQL
     {

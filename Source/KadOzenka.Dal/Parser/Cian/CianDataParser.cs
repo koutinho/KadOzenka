@@ -8,9 +8,10 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using DebugApplication.Model;
+using OuterMarketParser.Model;
+using OuterMarketParser.Parser;
 
-namespace DebugApplication.Parser.Cian
+namespace OuterMarketParser.Parser.Cian
 {
     class CianDataParser : IParser
     {

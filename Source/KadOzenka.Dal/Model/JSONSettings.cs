@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
-namespace DebugApplication.Model
+namespace OuterMarketParser.Model
 {
     class JSONSettings
     {

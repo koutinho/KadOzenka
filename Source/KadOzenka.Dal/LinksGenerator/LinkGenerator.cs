@@ -7,9 +7,9 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-using DebugApplication.Model;
+using OuterMarketParser.Model;
 
-namespace DebugApplication.LinksGenerator
+namespace OuterMarketParser.LinksGenerator
 {
     class LinkGenerator : ILinkGenerator
     {
@@ -24,6 +24,7 @@ namespace DebugApplication.LinksGenerator
                 DateTime currentTime = yesterday.AddSeconds(1);
                 yesterday = yesterday.AddMinutes(_settings.MinutesDelta);
                 result.Add(_settings.ToString(currentTime.ToString(_settings.Cian.DateTimeTemplate), yesterday.ToString(_settings.Cian.DateTimeTemplate)));
+                Console.WriteLine(_settings.ToString(currentTime.ToString(_settings.Cian.DateTimeTemplate), yesterday.ToString(_settings.Cian.DateTimeTemplate)));
             }
             return result.Take(1).ToList();
         }

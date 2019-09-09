@@ -51,3 +51,27 @@ namespace ObjectModel.Market
         }
     }
 }
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 102 Таблица, содержащая объекты полученные с авито
+    /// </summary>
+    public partial class OMAvitoObject
+    {
+
+        public OMAvitoObject()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMAvitoObject(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}

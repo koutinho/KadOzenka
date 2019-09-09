@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DebugApplication.Model
+namespace OuterMarketParser.Model
 {
     class Coordinates
     {

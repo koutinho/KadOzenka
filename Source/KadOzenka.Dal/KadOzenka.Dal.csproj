@@ -20,7 +20,12 @@
 
   <ItemGroup>
     <Folder Include="ObjectModel\" />
-    <Folder Include="MarketParsers\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Settings\ConnectionsSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-using DebugApplication.Model;
+using OuterMarketParser.Model;
 
-namespace DebugApplication.Parser
+namespace OuterMarketParser.Parser
 {
     interface IParser
     {

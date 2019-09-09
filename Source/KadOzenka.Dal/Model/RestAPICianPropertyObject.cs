@@ -5,7 +5,7 @@ using System.Text;
 
 using ObjectModel.Directory;
 
-namespace DebugApplication.Model
+namespace OuterMarketParser.Model
 {
     class RestAPICianPropertyObject
     {

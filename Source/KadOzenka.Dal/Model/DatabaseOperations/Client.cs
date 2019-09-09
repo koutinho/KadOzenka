@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DebugApplication.Model.DatabaseOperations
+namespace OuterMarketParser.Model.DatabaseOperations
 {
     class Client
     {
