@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 
 using OuterMarketParser.Model;
 using OuterMarketParser.Parser;
+using OuterMarketParser.Exceptions;
 
 namespace OuterMarketParser.Parser.Cian
 {
@@ -21,21 +22,23 @@ namespace OuterMarketParser.Parser.Cian
 
         public void GetProperty(string link)
         {
-            string data = new StreamReader(WebRequest.Create(link).GetResponse().GetResponseStream(), Encoding.UTF8).ReadToEnd();
-            Property.AddRange(
-                JsonConvert.DeserializeObject<List<RestAPICianPropertyObject>>(
-                    ((JObject)JsonConvert.DeserializeObject(data))["data"].ToString()
-                ).Select(x => new PropertyObject(x))
-            );
+            try
+            {
+                string data = new StreamReader(WebRequest.Create(link).GetResponse().GetResponseStream(), Encoding.UTF8).ReadToEnd();
+                List<PropertyObject> initArray = JsonConvert.DeserializeObject<List<RestAPICianPropertyObject>>(((JObject)JsonConvert.DeserializeObject(data))["data"].ToString())
+                                                            .Select(x => new PropertyObject(x)).ToList();
+                Property.AddRange(initArray);
+                if (initArray.Count >= 50) throw new ParserFullFillException($"Переполнение в запросе: {link}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public void GetProperty(List<string> links)
         {
-            foreach (string link in links)
-            {
-                GetProperty(link);
-                Console.WriteLine($"===>{Property.Count}");
-            }
+            foreach (string link in links) GetProperty(link);
         }
 
         public List<PropertyObject> GetProperty() => Property;

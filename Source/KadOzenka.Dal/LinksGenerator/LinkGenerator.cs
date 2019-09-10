@@ -8,25 +8,37 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using OuterMarketParser.Model;
+using OuterMarketParser.DatabaseReader;
 
 namespace OuterMarketParser.LinksGenerator
 {
     class LinkGenerator : ILinkGenerator
     {
-        private readonly JSONSettings _settings = JsonConvert.DeserializeObject<JSONSettings>(JObject.Parse(File.ReadAllText(@"Settings\ConnectionsSettings.json"))["api"].ToString());
 
-        public List<string> GenerateCianLinks()
+        public List<string> GenerateCianLinks(OuterMarketSettings settings)
         {
             List<string> result = new List<string>();
-            var yesterday = DateTime.Today.AddDays(-1);
-            while (yesterday < DateTime.Today)
+            var lastUpdateDate = settings.LastSuccesfulUpdateDate;
+            while (lastUpdateDate < DateTime.Today)
             {
-                DateTime currentTime = yesterday.AddSeconds(1);
-                yesterday = yesterday.AddMinutes(_settings.MinutesDelta);
-                result.Add(_settings.ToString(currentTime.ToString(_settings.Cian.DateTimeTemplate), yesterday.ToString(_settings.Cian.DateTimeTemplate)));
-                Console.WriteLine(_settings.ToString(currentTime.ToString(_settings.Cian.DateTimeTemplate), yesterday.ToString(_settings.Cian.DateTimeTemplate)));
+                DateTime currentTime = lastUpdateDate.AddSeconds(1);
+                lastUpdateDate = lastUpdateDate.AddMinutes(settings.TimeDelta);
+                result.Add(string.Format(settings.Link, 
+                                         settings.Login, 
+                                         settings.Token, 
+                                         settings.DealId, 
+                                         string.Join("&", settings.RegionIDs.Select(x => $"region_id={x}")),
+                                         currentTime.ToString(settings.Template),
+                                         lastUpdateDate.ToString(settings.Template)));
+                Console.WriteLine(string.Format(settings.Link,
+                                         settings.Login,
+                                         settings.Token,
+                                         settings.DealId,
+                                         string.Join("&", settings.RegionIDs.Select(x => $"region_id={x}")),
+                                         currentTime.ToString(settings.Template),
+                                         lastUpdateDate.ToString(settings.Template)));
             }
-            return result.Take(1).ToList();
+            return result.ToList();
         }
     }
 }

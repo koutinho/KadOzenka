@@ -4,6 +4,7 @@ using System.Text;
 using System.Globalization;
 
 using ObjectModel.Directory;
+using OuterMarketParser.Exceptions;
 
 namespace OuterMarketParser.Model
 {
@@ -73,48 +74,54 @@ namespace OuterMarketParser.Model
         private static DateTime? ToNullableDateTime(string time) => string.IsNullOrEmpty(time) ? null : (DateTime?)DateTime.ParseExact(time, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
         private PropertyTypes GetPropertyObjectType(long? buildingYear, long? categoryId, string subcategory)
         {
-            if (buildingYear != null && buildingYear != 0 && buildingYear > DateTime.Now.Year) return PropertyTypes.UncompletedBuilding;
-            else
+            try
             {
-                switch (categoryId)
+                if (buildingYear != null && buildingYear != 0 && buildingYear > DateTime.Now.Year) return PropertyTypes.UncompletedBuilding;
+                else
                 {
-                    case 1:
-                    case 2:
-                        return PropertyTypes.Pllacement;
-                    case 3:
-                        switch (subcategory)
-                        {
-                            case "Офисная":
-                                return PropertyTypes.Pllacement;
-                            case "Гараж":
-                                return PropertyTypes.Parking;
-                            case "Готовый бизнес":
-                            case "Свободного назначения":
-                            case "Торговая":
-                            case "Производственная":
-                                return PropertyTypes.Company;
-                            case "Здание":
-                                return PropertyTypes.Building;
-                            default:
-                                Console.WriteLine(subcategory);
-                                return PropertyTypes.Other;
-                        }
-                    case 4:
-                        switch (subcategory)
-                        {
-                            case "Дом":
-                                return PropertyTypes.Building;
-                            case "Участок":
-                                return PropertyTypes.Stead;
-                            case "Таунхаус":
-                                return PropertyTypes.Building;
-                            default:
-                                Console.WriteLine(subcategory);
-                                return PropertyTypes.Other;
-                        }
-                    default:
-                        return PropertyTypes.Other;
+                    switch (categoryId)
+                    {
+                        case 1:
+                        case 2:
+                            return PropertyTypes.Pllacement;
+                        case 3:
+                            switch (subcategory)
+                            {
+                                case "Офисная":
+                                    return PropertyTypes.Pllacement;
+                                case "Гараж":
+                                    return PropertyTypes.Parking;
+                                case "Готовый бизнес":
+                                case "Свободного назначения":
+                                case "Торговая":
+                                case "Производственная":
+                                    return PropertyTypes.Company;
+                                case "Здание":
+                                    return PropertyTypes.Building;
+                                default:
+                                    throw new SubcategoryException($"Категория {Subcategory} не обрабатывается");
+                            }
+                        case 4:
+                            switch (subcategory)
+                            {
+                                case "Дом":
+                                    return PropertyTypes.Building;
+                                case "Участок":
+                                    return PropertyTypes.Stead;
+                                case "Таунхаус":
+                                    return PropertyTypes.Building;
+                                default:
+                                    throw new SubcategoryException($"Категория {Subcategory} не обрабатывается");
+                            }
+                        default:
+                            return PropertyTypes.Other;
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return PropertyTypes.Other;
             }
         }
 
