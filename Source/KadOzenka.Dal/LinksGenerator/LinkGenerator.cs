@@ -22,20 +22,23 @@ namespace OuterMarketParser.LinksGenerator
             {
                 DateTime currentTime = lastUpdateDate.AddSeconds(1);
                 lastUpdateDate = lastUpdateDate.AddMinutes(settings.TimeDelta);
-                result.Add(string.Format(settings.Link, 
-                                         settings.Login, 
-                                         settings.Token, 
-                                         settings.DealId, 
-                                         string.Join("&", settings.RegionIDs.Select(x => $"region_id={x}")),
-                                         currentTime.ToString(settings.Template),
-                                         lastUpdateDate.ToString(settings.Template)));
-                Console.WriteLine(string.Format(settings.Link,
-                                         settings.Login,
-                                         settings.Token,
-                                         settings.DealId,
-                                         string.Join("&", settings.RegionIDs.Select(x => $"region_id={x}")),
-                                         currentTime.ToString(settings.Template),
-                                         lastUpdateDate.ToString(settings.Template)));
+                foreach(int region in settings.RegionIDs)
+                {
+                    result.Add(string.Format(settings.Link,
+                                             settings.Login,
+                                             settings.Token,
+                                             settings.DealId,
+                                             $"region_id={region}",
+                                             currentTime.ToString(settings.Template),
+                                             lastUpdateDate.ToString(settings.Template)));
+                    //Console.WriteLine(string.Format(settings.Link,
+                    //                                settings.Login,
+                    //                                settings.Token,
+                    //                                settings.DealId,
+                    //                                $"region_id={region}",
+                    //                                currentTime.ToString(settings.Template),
+                    //                                lastUpdateDate.ToString(settings.Template)));
+                }
             }
             return result.ToList();
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 
 using ObjectModel.Market;
 
@@ -8,7 +9,7 @@ namespace OuterMarketParser.Model.DatabaseOperations
 {
     class DataToPostgreSQL : IDataToPostgreSQL
     {
-        public DataToPostgreSQL(List<PropertyObject> coreObjects) => coreObjects.ForEach(element => SaveObject(element));
+        public DataToPostgreSQL(List<PropertyObject> coreObjects) => coreObjects.Distinct().ToList().ForEach(element => SaveObject(element));
 
         public void SaveObject(PropertyObject element)
         {
