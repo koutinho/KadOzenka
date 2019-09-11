@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Text;
 
 using ObjectModel.Directory;
-using OuterMarketParser.Exceptions; 
 
 namespace OuterMarketParser.Model
 {
@@ -44,5 +43,68 @@ namespace OuterMarketParser.Model
                                              $"\nBuilding_year: {Building_year}\nDeal_type: {Deal_type}\nImages: {Images}\nDescription: {Description}\nCategory: {Category}" +
                                              $"\nSubcategory: {Subcategory}\nCategory_Id: {Category_Id}\nRegion_Id: {Region_Id}\nCity_Id: {City_Id}\nCoords:\n{Coords}";
 
+        public new PropertyTypes GetType()
+        {
+            switch (Category_Id)
+            {
+                case 1:
+                case 2:
+                    return PropertyTypes.Pllacement;
+                case 3:
+                    switch (Subcategory)
+                    {
+                        case "Офисная":
+                            return PropertyTypes.Pllacement;
+                        case "Гараж":
+                            return PropertyTypes.Parking;
+                        case "Готовый бизнес":
+                        case "Свободного назначения":
+                        case "Торговая":
+                        case "Производственная":
+                            return PropertyTypes.Company;
+                        case "Здание":
+                            return PropertyTypes.Building;
+                        default:
+                            Console.WriteLine(Subcategory);
+                            return PropertyTypes.Other;
+                    }
+                case 4:
+                    switch (Subcategory)
+                    {
+                        case "Дом":
+                            return PropertyTypes.Building;
+                        case "Участок":
+                            return PropertyTypes.Stead;
+                        case "Таунхаус":
+                            return PropertyTypes.Building;
+                        default:
+                            Console.WriteLine(Subcategory);
+                            return PropertyTypes.Other;
+                    }
+                default:
+                    return PropertyTypes.Other;
+            }
+        }
+
+        public double GetArea()
+        {
+            switch (Category_Id)
+            {
+                case 4:
+                    switch (Subcategory)
+                    {
+                        case "Участок":
+                            return double.Parse(Area_land, CultureInfo.InvariantCulture) * 100;
+                        default:
+                            return double.Parse(Area, CultureInfo.InvariantCulture);
+                    }
+                default:
+                    return double.Parse(Area, CultureInfo.InvariantCulture);
+            }
+        }
+        public int GetUid() => Int32.Parse($"1{Id}");
+        public string GetName() => $"1_{Id}";
+        public int GetTarget() => Category_Id == 3 ? 1 : 2;
+        public DateTime GetTimePublished() => DateTime.ParseExact(Time_publish, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
     }
 }

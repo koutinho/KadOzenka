@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="323" DefaultLayoutId="1003231" DockNavigationPanel="true" AllowSearchPanelResize="false" UseMasterPage="false"
+              IsBasic="false" OpenEmpty="false" LinkedRegistersList="323" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="false" ShowObjectCards="false" ShowSettingsPanel="false"
+              SearchPanel="DocBaseType" SearchPanelWindowHeight="654">
+  <Buttons>
+    <Button Caption="Выбрать" NavigateURL="/"></Button>
+    <Button Caption="Добавить" NavigateURL="~/Documents/BaseDocumentEdit" WindowHeight="200" WindowWidth="450" NeedRefresh="true">
+      <Parameters>
+        <Parameter Key="Id" Value="-1" />
+        <Parameter Key="ContractType" Value="{Get:32300400}" />
+      </Parameters>
+    </Button>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>

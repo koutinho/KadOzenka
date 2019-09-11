@@ -3,6 +3,7 @@ using Core.ObjectModel;
 using Core.ObjectModel.CustomAttribute;
 using Core.Shared.Extensions;
 using ObjectModel.Directory;
+
 namespace ObjectModel.Market
 {
     /// <summary>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="381" DefaultLayoutId="1003811" AllowSearchPanelResize="false" SrdRegisterCtegoryId="1"
+              IsBasic="false" OpenEmpty="false" LinkedRegistersList="381, 355, 310, 316, 354, 345, 950" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="true" ShowSettingsPanel="true" 
+              SearchPanel="InvoiceSvod" SRDFunctionTag="INSUR.ROPL.DAMAGE.FLAT">
+  <Buttons>
+    <Button Caption="Выгрузить в Excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="INSUR.ROPL.DAMAGE.FLAT.EXPORT"/>
+    <Button Caption="Согласовать счета" NavigateURL="/InvoiceSvod/Agreed" OpenInRadWindow="true" NeedRefresh="true" SRDFunctionTag="INSUR.ROPL.DAMAGE.FLAT.AGREEDLIST">
+      <Parameters>
+        <Parameter Key="InvoiceSvodId" Value="[ObjectId]" />
+        <Parameter Key="Type" Value="12168003" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <Button Caption="Сформировать реестр выплат" NavigateURL="/ReestrPay/FormSvod" OpenInRadWindow="true" NeedRefresh="true" SRDFunctionTag="INSUR.ROPL.DAMAGE.FLAT.REPORT">
+      <Parameters>
+        <Parameter Key="InvoiceSvodId" Value="[ObjectId]" />
+        <Parameter Key="Type" Value="12168003" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <Button Caption="Изменить статус счета-ошибка в реквизитах" NavigateURL="/InvoiceSvod/ChangeStatusToError" OpenInRadWindow="true" NeedRefresh="true" SRDFunctionTag="INSUR.ROPL.DAMAGE.FLAT.CHSTATUS">
+      <Parameters>
+        <Parameter Key="InvoiceSvodId" Value="[ObjectId]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    <Button Caption="Удалить" NavigateURL="/InvoiceSvod/Delete" OpenInRadWindow="true" NeedRefresh="true"  WindowHeight="160" WindowWidth="500" SRDFunctionTag="INSUR.ROPL.DAMAGE.FLAT.DELETE">
+      <Parameters>
+        <Parameter Key="InvoiceSvodId" Value="[ObjectId]" />
+      </Parameters>
+    </Button>
+  </Buttons>
+  <Tabs>
+    <Tab Caption="Счета" NavigateURL="/RegistersView/InvoicePaysReturnOI">
+      <Parameters>
+        <Parameter Key="Transition" Value="1" />
+        <Parameter Key="355003900" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
+</RegisterView>

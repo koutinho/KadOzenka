@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="370" DefaultLayoutId="1003701" LinkedRegistersList="370, 301, 321, 320, 950"
+              AllowSearchPanelResize="false" IsBasic="false" OpenEmpty="false"
+              UseSubMap="true" AllowMultiColumnSorting="true" JoinType="Left"
+              ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="true" ShowSettingsPanel="true" SearchPanel="InsurFileProcessLog">
+  <Tabs>
+    <Tab Caption="Статистика" NavigateURL="~/InputFile/InsurFileProcessLog">
+      <Parameters>
+        <Parameter Key="fileProcessLogId" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
+</RegisterView>

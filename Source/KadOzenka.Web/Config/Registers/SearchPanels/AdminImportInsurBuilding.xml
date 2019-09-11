@@ -1,0 +1,22 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="UNOM" ID="Unom" OwnType="Text" AttributeNumber="36001100" QueryOperation="Equal" />
+      <ControlElement Caption="Кадастровый номер" ID="KadNumber" OwnType="Text" AttributeNumber="36001000" QueryOperation="Like" />
+      
+      <ControlElement Caption="Дата загрузки" ID="date_panel" OwnType="Panel">
+          <children>
+              <ControlElement Caption="с " ID="create_date_from" OwnType="Calendar" AttributeNumber="36000500" QueryOperation="MoreThan" />
+              <ControlElement Caption="по" ID="create_date_to" OwnType="Calendar" AttributeNumber="36000500" QueryOperation="LessThan" />
+          </children>
+      </ControlElement>
+
+      <ControlElement Caption="Дата" ID="create_date" OwnType="Calendar" AttributeNumber="36000500" QueryOperation="WithinDate" DefaultValue="[CurrentDay]" />
+
+      <ControlElement Caption="Ошибка" ID="error_yes" OwnType="CheckBox" AttributeNumber="36000800" QueryOperation="Equal" DefaultValue="false" Value="1" />
+
+      <ControlElement Caption="Успешно" ID="error_no" OwnType="CheckBox" AttributeNumber="36000800" QueryOperation="Equal" DefaultValue="false" Value="0" />
+
+    </children>
+  </ControlElement>
+</RootElement>

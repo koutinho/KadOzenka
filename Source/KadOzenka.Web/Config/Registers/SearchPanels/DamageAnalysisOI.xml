@@ -1,0 +1,71 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
+    <children>
+      <ControlElement Caption="Номер дела" ID="NomDoc" OwnType="Text" AttributeNumber="313006100" QueryOperation="Equal" />
+      <ControlElement Caption="Дата дела" ID="NomDate" OwnType="Panel">
+        <children>
+          <ControlElement Caption="с" ID="NomDate_S" OwnType="Calendar" AttributeNumber="313006200" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="NomDate_Po" OwnType="Calendar" AttributeNumber="313006200" QueryOperation="LessOrEqual" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Статус дела" ID="status" OwnType="Combo" ReferenceId="12165" AttributeNumber="313005900" QueryOperation="Equal" ComboBoxFilter="None" />
+      <ControlElement Caption="Статус счета" ID="InvoiceStatus" OwnType="Combo" ReferenceId="12170" AttributeNumber="355001800" QueryOperation="Equal" ComboBoxFilter="None" />
+      <ControlElement Caption="Страховая компания" ID="InsurOrg" OwnType="Combo" AttributeNumber="313000400" RegisterId="328" TextFieldAttribute="328000300" ValueFieldAttribute="328000100" QueryOperation="Equal" />
+      <ControlElement Caption="Причина ущерба" ID="DamageReason" OwnType="Combo" ReferenceId="12136" AttributeNumber="313008000" QueryOperation="Equal" ComboBoxFilter="None" />
+      <ControlElement Caption="Выплата по служебной записке" ID="FlagSlygebka" OwnType="Combo" AttributeNumber="313007000" QueryOperation="Equal" ComboBoxFilter="None">
+          <CustomItems>
+              <KeyValuePair>
+                  <Key>1</Key>
+                  <Value>Да</Value>
+              </KeyValuePair>
+              <KeyValuePair>
+                  <Key>0</Key>
+                  <Value>Нет</Value>
+              </KeyValuePair>
+          </CustomItems>
+      </ControlElement>
+      <ControlElement Caption="Пользователь, создавший дело" ID="AgreementId1" OwnType="Combo" AttributeNumber="313002600" RegisterId="950" TextFieldAttribute="95000400" ValueFieldAttribute="95000100" QueryOperation="Equal" ComboBoxFilter="None">
+          <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionSimple">
+              <ConditionType>Equal</ConditionType>
+              <LeftOperand xsi:type="QSColumnSimple">
+                  <AttributeID>95000200</AttributeID>
+                  <Type>Value</Type>
+              </LeftOperand>
+              <LeftOperandLevel>0</LeftOperandLevel>
+              <RightOperand xsi:type="QSColumnConstant">
+                  <Value xsi:type="xsd:long">52494</Value>
+              </RightOperand>
+              <RightOperandLevel>0</RightOperandLevel>
+          </QSCondition>
+      </ControlElement>
+      <ControlElement Caption="Пользователь, проверивший дело" ID="AgreementId2" OwnType="Combo" AttributeNumber="313002800" RegisterId="950" TextFieldAttribute="95000400" ValueFieldAttribute="95000100" QueryOperation="Equal" ComboBoxFilter="None">
+          <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionSimple">
+              <ConditionType>Equal</ConditionType>
+              <LeftOperand xsi:type="QSColumnSimple">
+                  <AttributeID>95000200</AttributeID>
+                  <Type>Value</Type>
+              </LeftOperand>
+              <LeftOperandLevel>0</LeftOperandLevel>
+              <RightOperand xsi:type="QSColumnConstant">
+                  <Value xsi:type="xsd:long">52494</Value>
+              </RightOperand>
+              <RightOperandLevel>0</RightOperandLevel>
+          </QSCondition>
+      </ControlElement>
+      <ControlElement Caption="Размер ущерба, СК" ID="SumDamage" OwnType="Panel">
+        <children>
+          <ControlElement Caption="с" ID="SumDamage_S" OwnType="Text" AttributeNumber="313002400" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="SumDamage_Po" OwnType="Text" AttributeNumber="313002400" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="SumDamage_Equal" OwnType="Text" AttributeNumber="313002400" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+      <ControlElement Caption="Размер ущерба, Система" ID="CalculDamage" OwnType="Panel">
+        <children>
+          <ControlElement Caption="с" ID="CalculDamage_S" OwnType="Text" AttributeNumber="313003200" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="CalculDamage_Po" OwnType="Text" AttributeNumber="313003200" QueryOperation="LessOrEqual" />
+          <ControlElement Caption="равно" ID="CalculDamage_Equal" OwnType="Text" AttributeNumber="313003200" QueryOperation="Equal" />
+        </children>
+      </ControlElement>
+    </children>
+  </ControlElement>
+</RootElement>

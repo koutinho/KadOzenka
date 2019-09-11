@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<RegisterView RegisterId="308" DefaultLayoutId="1003082" NonResettableFilterId="1003082" 
+              LinkedRegistersList="308, 309, 307, 317, 319, 316" AllowSearchPanelResize="false" IsBasic="false" OpenEmpty="true"
+              UseSubMap="true" AllowMultiColumnSorting="true" JoinType="Left" SearchPanelWindowHeight="545"
+              ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
+              SearchPanel="FspPolicy" SRDFunctionTag="INSUR.FSP.POLICY" ObjectCardTitleTemplate="Название ФСП: [308000400]" >
+  <Buttons>
+    <Button Caption="Связать с помещением" NavigateURL="~/Fsp/LinkToFlat" OpenInRadWindow="true" WindowHeight="180" WindowWidth="500" SRDFunctionTag="INSUR.FSP.POLICY.ATTACHTOFLAT" />
+    <Button Caption="Удалить связь с помещением" NavigateURL="~/Fsp/UnlinkFlatConfirm" OpenInRadWindow="true" WindowHeight="180" WindowWidth="500" SRDFunctionTag="INSUR.FSP.POLICY.ATTACHTOFLAT" />
+    <Button Caption="Перерасчитать на текущий период" NavigateURL="~/Fsp/Recalc" OpenInRadWindow="true" WindowHeight="150" WindowWidth="500">
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+      <Parameters>
+        <Parameter Key="FspId" Value="[ObjectId]" IsRequired="false"/>
+      </Parameters>
+    </Button>
+    <Button Caption="Выгрузить в Excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="INSUR.FSP.POLICY.EXPORT"/>
+  </Buttons>
+  <Tabs>
+    <Tab Caption="ФСП" NavigateURL="/Fsp/Details">
+      <Parameters>
+        <Parameter Key="id" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
+</RegisterView>

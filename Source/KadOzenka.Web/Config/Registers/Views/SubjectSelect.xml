@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="345" DefaultLayoutId="1003451" DockNavigationPanel="true" AllowSearchPanelResize="false" UseMasterPage="false"
+              IsBasic="false" OpenEmpty="true" LinkedRegistersList="345,344" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="false" ShowObjectCards="false" ShowSettingsPanel="false"
+              SearchPanel="Subject" SearchPanelWindowHeight="654">
+  <Buttons>
+    <Button Caption="Выбрать" NavigateURL="/"></Button>
+    <Button Caption="Создать" NavigateURL="~/Subject/SubjectCard" NeedRefresh="true">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="-1" />
+        <Parameter Key="IsFisical" Value="{Get:IsFisical}" />
+      </Parameters>
+    </Button>
+    <Button Caption="Редактировать" NavigateURL="~/Subject/SubjectCard" NeedRefresh="true">
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectId]" />
+        <Parameter Key="IsFisical" Value="{Get:IsFisical}" />
+      </Parameters>
+    </Button>
+    <Button Caption="Удалить" NavigateURL="~/Subject/Delete" NeedRefresh="true" WindowHeight="150" WindowWidth="600">
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+      <Parameters>
+        <Parameter Key="Id" Value="[ObjectId]" />
+      </Parameters>
+    </Button>
+  </Buttons>
+  <Tabs>
+  </Tabs>
+</RegisterView>
