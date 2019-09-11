@@ -1,8 +1,0 @@
-﻿<RootElement>
-  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
-    <children>
-      <ControlElement Caption="Название банка" ID="BankName" OwnType="Text" AttributeNumber="344000200" QueryOperation="Equal" />
-      <ControlElement Caption="БИК банка" ID="BankBik" OwnType="Text" AttributeNumber="344000600" QueryOperation="Equal" />
-    </children>
-  </ControlElement>
-</RootElement>

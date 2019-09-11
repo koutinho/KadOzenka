@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<RegisterView RegisterId="308" DefaultLayoutId="1003081" NonResettableFilterId="1003084"
-              AllowSearchPanelResize="false" IsBasic="false" OpenEmpty="false"
-              UseSubMap="true" AllowMultiColumnSorting="true"
-              ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
-              SearchPanel="FspAllProperty" SRDFunctionTag="INSUR.FSP">
-</RegisterView>

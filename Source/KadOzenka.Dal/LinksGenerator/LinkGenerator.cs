@@ -14,7 +14,6 @@ namespace OuterMarketParser.LinksGenerator
 {
     class LinkGenerator : ILinkGenerator
     {
-
         public List<string> GenerateCianLinks(OuterMarketSettings settings)
         {
             List<string> result = new List<string>();

@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using OuterMarketParser.Model;
 using OuterMarketParser.Parser;
 using OuterMarketParser.Exceptions;
+using Core.ErrorManagment;
 
 namespace OuterMarketParser.Parser.Cian
 {
@@ -32,7 +33,7 @@ namespace OuterMarketParser.Parser.Cian
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorManager.LogError(ex);
             }
         }
 

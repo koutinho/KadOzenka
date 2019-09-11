@@ -5,6 +5,7 @@ using System.Globalization;
 
 using ObjectModel.Directory;
 using OuterMarketParser.Exceptions;
+using Core.ErrorManagment;
 
 namespace OuterMarketParser.Model
 {
@@ -120,7 +121,7 @@ namespace OuterMarketParser.Model
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorManager.LogError(ex);
                 return PropertyTypes.Other;
             }
         }

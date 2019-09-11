@@ -1,4 +1,0 @@
-﻿<RootElement>
-  <ControlElement Caption="Элемент конструкции" ID="ElementConstruction" OwnType="Combo" AttributeNumber="324000600" ReferenceId="12126" QueryOperation="Equal" ComboBoxFilter="None" />
-  <ControlElement Caption="Признаки  ущерба" ID="DamageSymptom" OwnType="Text" AttributeNumber="32400200" QueryOperation="Equal" />
-</RootElement>
