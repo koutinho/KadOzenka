@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateDbScripts", "Utils\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugApplication", "Utils\DebugApplication\DebugApplication.csproj", "{620E8F25-59FD-4854-A112-E34658EBDFD0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GISStandProject", "GISStandProject\GISStandProject.csproj", "{F0346EBC-9237-4802-BF75-710E00671189}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,14 @@ Global
 		{620E8F25-59FD-4854-A112-E34658EBDFD0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{620E8F25-59FD-4854-A112-E34658EBDFD0}.Release|x86.ActiveCfg = Release|Any CPU
 		{620E8F25-59FD-4854-A112-E34658EBDFD0}.Release|x86.Build.0 = Release|Any CPU
+		{F0346EBC-9237-4802-BF75-710E00671189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0346EBC-9237-4802-BF75-710E00671189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0346EBC-9237-4802-BF75-710E00671189}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F0346EBC-9237-4802-BF75-710E00671189}.Debug|x86.Build.0 = Debug|Any CPU
+		{F0346EBC-9237-4802-BF75-710E00671189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0346EBC-9237-4802-BF75-710E00671189}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0346EBC-9237-4802-BF75-710E00671189}.Release|x86.ActiveCfg = Release|Any CPU
+		{F0346EBC-9237-4802-BF75-710E00671189}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,7 +86,7 @@ Global
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
 		SccLocalPath0 = .
@@ -98,5 +108,8 @@ Global
 		SccProjectTopLevelParentUniqueName5 = KadOzenka.sln
 		SccProjectName5 = Utils/GenerateDbScripts
 		SccLocalPath5 = Utils\\GenerateDbScripts
+		SccProjectUniqueName6 = GISStandProject\\GISStandProject.csproj
+		SccProjectName6 = GISStandProject
+		SccLocalPath6 = GISStandProject
 	EndGlobalSection
 EndGlobal
