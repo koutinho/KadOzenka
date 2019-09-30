@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SystemCommon xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ApplicationName>Система страхования</ApplicationName>
-  <KendoTheme>metro</KendoTheme>
-  <DefaultLayout>_Layout</DefaultLayout>
+  <ApplicationName>Кадастровая оценка</ApplicationName>
+  <ApplicationSubName></ApplicationSubName>
+  <KendoTheme>silver.genix</KendoTheme>
+  <DefaultLayout>_LayoutLeftPanel</DefaultLayout>
+  <DesignType>LeftPanel</DesignType>
   
   <ActiveDirectoryDomain>GENIX.genix.dc</ActiveDirectoryDomain>
 

@@ -12,6 +12,18 @@ namespace ObjectModel.Market
     public partial class OMCoreObject
     {
 
+
+        /// <summary>
+        /// Ссылка на (101 Таблица, содержащая объекты полученные с ЦИАНа)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Market.OMCianObject> CianObject { get; set; }
+
+        /// <summary>
+        /// Ссылка на (102 Таблица, содержащая объекты полученные с авито)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Market.OMAvitoObject> AvitoObject { get; set; }
         public OMCoreObject()
         {
 
@@ -19,6 +31,10 @@ namespace ObjectModel.Market
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            CianObject = new List<ObjectModel.Market.OMCianObject>();
+
+            AvitoObject = new List<ObjectModel.Market.OMAvitoObject>();
 
         }
         public OMCoreObject(bool trackPropertyChanging) : this()
@@ -94,6 +110,38 @@ namespace ObjectModel.Market
 
         }
         public OMSettings(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Cld
+{
+    /// <summary>
+    /// 304 Организации
+    /// </summary>
+    public partial class OMSubject
+    {
+
+
+        /// <summary>
+        /// Ссылка на (941 Подразделение в организации пользователя системы)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Core.SRD.OMDepartment> Department { get; set; }
+        public OMSubject()
+        {
+
+            EmpId = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+            Department = new List<ObjectModel.Core.SRD.OMDepartment>();
+
+        }
+        public OMSubject(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
