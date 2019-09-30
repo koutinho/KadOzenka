@@ -641,12 +641,6 @@
     <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\themedata.thmx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\PlatformJs\Dashboards.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\PlatformJs\RegisterView.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
