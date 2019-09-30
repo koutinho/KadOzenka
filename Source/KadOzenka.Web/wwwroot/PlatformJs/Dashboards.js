@@ -18,16 +18,31 @@ function onDashboardWindowRefresh() {
                 data: $("form").serialize(),
                 success: function (result) {
                     kendo.ui.progress($('body'), false);
+                    var newDashboard = !$("form [name=Id]").val() || $("form [name=Id]").val() == -1 ? true : false;
+
                     Common.UI.ShowInfo({
                         content: 'Рабочий стол сохранен',
                         icon: 'ok',
                         onSuccess: function () {
                             Common.UI.CloseWindow('Dashboard', window.parent);
+
+                            if (result) {
+                                if (newDashboard) {
+                                    $('#dashBoardList').append('<li title="' + result.Name + '"><a data-id="' + result.Id + '" href="#">' + result.Name + '</a></li>');
+                                    $("#dashBoardList a.active").removeClass('active');
+                                    $('#dashBoardList a[data-id=' + result.Id + ']').addClass("active");
+                                    SetDashBoard(result.Id);
+                                    SetActiveLayout(result.Id);
+                                }
+                                else {
+                                    var $li = $('#dashBoardList li[data-id=' + result.Id + ']');
+                                    $li.attr('title', result.Name);
+                                    $li.find('a').text(result.Name);
+                                }
+                            }
                         }
                     });
 
-                    var dropDownList = $('#dashBoardList').data('kendoDropDownList');
-                    dropDownList.dataSource.read();
                     wnd.close();
                 },
                 error: function (result) {
@@ -68,12 +83,50 @@ function onAddGadgetWindowClose() {
 }
 
 function getCurrentDashBoard() {
-    var currentDashBoardId = $('#dashBoardList').data('activeId');
+    var currentDashBoardId = $('#dashBoardList a.active').data("id");
     if (currentDashBoardId == null || currentDashBoardId == undefined) {
-        currentDashBoardId = $('#dashBoardList').find('li:first').data("id");
+        currentDashBoardId = $('#dashBoardList').find('li:first a').data("id");
     }
 
     return currentDashBoardId;
+}
+
+function SetDashBoard(selectedDashboardId) {
+    kendo.ui.progress($("body"), true);
+    $.ajax({
+        type: 'POST',
+        url: '\\Dashboard\\DashboardPanels',
+        data: { 'id': selectedDashboardId },
+        success: function (result) {
+            $("#dashBoardPanels").html(result);
+            CheckForHide();
+            kendo.ui.progress($("body"), false);
+        },
+        error: function (result) {
+            Common.UI.ShowDialog({
+                title: 'Ошибка',
+                content: result.responseText,
+                icon: 'error',
+                showCloseBtn: true
+            });
+            kendo.ui.progress($("body"), false);
+        }
+    });
+}
+
+function SetActiveLayout(dashBoard) {
+    if (!dashBoard)
+        dashBoard = getCurrentDashBoard();
+
+    $.ajax({
+        type: 'GET',
+        url: '\\Dashboard\\GetCurrentLayoutType',
+        data: { id: dashBoard },
+        success: function (result) {
+            $("#dashBoardLayoutList a.active").removeClass('active');
+            $("#dashBoardLayoutList a[data-value=" + result + "]").addClass("active");
+        }
+    });
 }
 
 function HideEdit() {
@@ -246,11 +299,15 @@ $(function () {
                     data: { 'id': currentDashBoardId },
                     success: function () {
                         var currentDashBoardId = getCurrentDashBoard();
-                        var $dashBoard = $('#dashBoardList').find('li[data-id="' + currentDashBoardId + '"');
+                        var $dashBoard = $('#dashBoardList').find('li a[data-id="' + currentDashBoardId + '"]');
 
                         if ($dashBoard.length > 0) {
-                            $dashBoard.remove();
-                            CheckForHide();
+                            $dashBoard.parent().remove();
+                            var $el = $('#dashBoardList').find('li:first a');
+                            if ($el.length > 0) {
+                                SetDashBoard($el.data('id'));
+                                $el.addClass("active");
+                            }
                         }
                     },
                     error: function () {
@@ -295,12 +352,107 @@ $(function () {
         });
     });
 
+    $('#main-left-panel').on('click', '#buttonPrintDashBoard', function (e) {
+        e.preventDefault();
+
+        var currentDashBoardId = getCurrentDashBoard();
+        if (currentDashBoardId == undefined) {
+            Common.UI.ShowDialog({
+                title: 'Внимание!',
+                content: 'Не выбран рабочий стол',
+                icon: 'warning',
+                showCloseBtn: true
+            });
+            return;
+        }
+
+        if ($('.panelbar') && $('.panelbar').data('kendoPanelBar') && $('.panelbar').data('kendoPanelBar').expand) {
+            $('.panelbar').data('kendoPanelBar').expand($('li'));
+        }
+
+        var printWindow = window.open('', 'PRINT');
+
+        printWindow.document.write($('html').html());
+        setTimeout(function () {
+            $(printWindow.document).find('input[data-role="datepicker"]').each(function (i, item) {
+                $(item).val($('#' + $(item).attr('id')).val());
+            });
+            $(printWindow.document).find('.static-nav').remove();
+            $(printWindow.document).find('#ls_panelbar').css('width', 'auto');
+
+            $(printWindow.document).find('span.k-select').each(function (i, item) {
+                $(item).remove();
+            });
+
+            $(printWindow.document).find('span.k-icon').each(function (i, item) {
+                $(item).remove();
+            });
+
+            $(printWindow.document).find('a').each(function (i, item) {
+                $(item).removeAttr("href");
+            });
+
+            //...
+
+            $('input[value=""]').each(function (i, item) {
+                $(item).attr('value', $(item).val());
+            });
+
+            $('input[role="spinbutton"]').each(function (i, item) {
+                $(item).attr('value', $(item).val());
+            });
+
+            /* Хлебные крошки */
+            var titleEl = $('<div></div>');
+            var pathItems = $(window.top.document).find('#PathInfo span.menu-breadcrumb').toArray();
+            var breadCrumbs = [];
+            $.each(pathItems, function (i, item) {
+                breadCrumbs.push(pathItems[i].innerHTML);
+            });
+            var title = breadCrumbs.join(" / ");
+
+            titleEl.css('padding', '10px');
+            titleEl.css('font-size', '20px');
+            titleEl.text(title);
+            titleEl.prependTo($(printWindow.document).find('body'));
+
+            /* Кем распечатано */
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                url: '\\Dashboard\\GetUserName',
+                type: 'GET',
+                success: function (e) {
+                    var subTitleEl = $('<div></div>');
+                    console.log(currentDashBoardId);
+                    var dasbName = $('#dashBoardList').find("li[data-id='" + currentDashBoardId + "']").text();
+                    subTitleEl.html(dasbName + '<br/>' + 'Распечатано: ' + new Date().toLocaleString() + '<br/>' + e);
+                    subTitleEl.css('padding', '0px 10px 5px 10px');
+
+                    titleEl.after(subTitleEl);
+
+                    //удаление панелей 
+                    $(printWindow.document).find('#MainHead').empty();
+                    $(printWindow.document).find('#main-left-panel').empty();
+
+                    /* Отобразить окно с отчетом */
+                    printWindow.addEventListener('afterprint', function () { printWindow.close(); });
+                    printWindow.print();
+
+                    kendo.ui.progress($('body'), false);
+                },
+                error: function () {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+
+        }, 200);
+    });
+
     $('#main-left-panel').on('click', '#buttoExportToExcel', function (e) {
         e.preventDefault();
 
         var currentDashBoardId = getCurrentDashBoard();
-        if (currentDashBoardId == undefined)
-        {
+        if (currentDashBoardId == undefined) {
             Common.UI.ShowDialog({
                 title: 'Внимание!',
                 content: 'Не выбран рабочий стол',
@@ -318,29 +470,9 @@ $(function () {
         e.preventDefault();
 
         var $this = $(this);
-        var selectedDashboardId = $this.parent().data("id");
-        $('#dashBoardList').data('activeId', selectedDashboardId);
-
-        kendo.ui.progress($("body"), true);
-        $.ajax({
-            type: 'POST',
-            url: '\\Dashboard\\DashboardPanels',
-            data: { 'id': selectedDashboardId },
-            success: function (result) {
-                $("#dashBoardPanels").html(result);
-                CheckForHide();
-                kendo.ui.progress($("body"), false);
-            },
-            error: function (result) {
-                Common.UI.ShowDialog({
-                    title: 'Ошибка',
-                    content: result.responseText,
-                    icon: 'error',
-                    showCloseBtn: true
-                });
-                kendo.ui.progress($("body"), false);
-            }
-        });
+        var selectedDashboardId = $this.data("id");
+        SetDashBoard(selectedDashboardId);
+        SetActiveLayout(selectedDashboardId);
     });
 
     // Изменение размеров панелей и перегрузка панелей после сохранения изменений
@@ -371,4 +503,9 @@ $(function () {
             }
         });
     });
+
+    $('.top-panel').parent().css('height', $('.top-panel').height());
+    $('.top-panel').css('position', 'fixed');
+    $('.top-panel').css('z-index', 1);
+    $('.top-panel').css('width', 'inherit');
 });

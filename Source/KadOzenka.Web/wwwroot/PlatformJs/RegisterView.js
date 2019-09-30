@@ -22,7 +22,7 @@ var $_GET = $_GET || (function () {
 var RegisterView = RegisterView || {
 
     InitRegisterView: function (registerViewSettings) {
-        
+
         var clearSelection = false,
             pageChanged = false,
             isModelTransition = registerViewSettings.IsModelTransition,
@@ -542,12 +542,10 @@ var RegisterView = RegisterView || {
 
             if (e.target.data('command') === 'ExportToExcel') {
                 var parameters = grid.GetDataFunc();
-                var attrib = '';
-                for (var key in parameters) {
-                    attrib += key + '=' + encodeURIComponent(parameters[key]) + '&';
-                }
-                attrib += 'CurrentLayoutId=' + registerViewSettings.CurrentLayoutId;
-                var url = registerViewSettings.RegistersExportToExcelUrl + '?' + attrib;
+                parameters.CurrentLayoutId = registerViewSettings.CurrentLayoutId;
+
+                var url = registerViewSettings.RegistersExportToExcelUrl + '?parametersJson=' + encodeURIComponent(JSON.stringify(parameters));
+
                 window.open(url, '_blank');
                 return;
             }
@@ -579,9 +577,11 @@ var RegisterView = RegisterView || {
         //orientation = "horizontal" : "vertical"
         function changeObjectCardOrientation(orientation) {
             var splitter = $(splitterSelector).data("kendoSplitter");
-            
-            if (splitter.orientation == orientation) 
+
+            if (splitter.orientation == orientation)
                 return;
+
+            var oldMarker = splitter._marker;
 
             splitter.element.children(".k-splitbar").remove();
             splitter.orientation = splitter.options.orientation = orientation;
@@ -596,14 +596,17 @@ var RegisterView = RegisterView || {
             if (orientation == "vertical") {
                 $(splitterSelector + " .k-pane:last").css({ left: "0px" });
             }
+
+            var pos = $._data($(window)[0], "events").resize.map(function (e) { return e.namespace; }).indexOf('kendoSplitter' + oldMarker);
+            $._data($(window)[0], "events").resize.splice(pos, 1);
             
             updateSplitterSettings(orientation, getSplitterSize());
-            
+
             var toolbar = $("#GridToolBar-" + registerViewSettings.CurrentRegisterId).data("kendoToolBar");
-            
+
             toolbar.enable($("#objectCardRight-" + registerViewSettings.CurrentRegisterId), orientation != "horizontal");
             toolbar.enable($("#objectCardBottom-" + registerViewSettings.CurrentRegisterId), orientation != "vertical");
-            
+
             // Почему-то без этого groupButton не закрывается после блокировки кнопки
             $("#gearButton-" + registerViewSettings.CurrentRegisterId + "_wrapper .k-split-button-arrow").click()
         }
@@ -611,12 +614,9 @@ var RegisterView = RegisterView || {
         $("#showSqlButton-" + registerViewSettings.CurrentRegisterId).bind("click", function (e) {
 
             var parameters = grid.GetDataFunc();
-            var attrib = '';
-            for (var key in parameters) {
-                attrib += key + '=' + encodeURIComponent(parameters[key]) + '&';
-            }
-            attrib += 'CurrentLayoutId=' + registerViewSettings.CurrentLayoutId;
-            var url = registerViewSettings.RegistersShowSqlUrl + '?' + attrib;
+            parameters.CurrentLayoutId = registerViewSettings.CurrentLayoutId;
+
+            var url = registerViewSettings.RegistersShowSqlUrl + '?parametersJson=' + encodeURIComponent(JSON.stringify(parameters));
 
             OpenInKendoWindow(url,
                 "SQL-запрос",
@@ -627,7 +627,7 @@ var RegisterView = RegisterView || {
         });
 
         $("#setLayoutButton-" + registerViewSettings.CurrentRegisterId).bind("click", function (e) {
-            
+
             var url = registerViewSettings.CoreRegisterLayoutAllUrl;
             var title = 'Раскладки ' + registerViewSettings.CurrentRegisterViewTitle;
 
@@ -646,7 +646,7 @@ var RegisterView = RegisterView || {
         $("#setPageSize-" + registerViewSettings.CurrentRegisterId).bind("click", function (e) {
             var windowPlacehoder = $('<div id="SetPageSizeWindow"></div>');
             $('body').append(windowPlacehoder);
-            
+
             var url = registerViewSettings.CoreRegisterSetPageSize;
             var title = 'Установка количества строк на странице';
 
@@ -670,7 +670,7 @@ var RegisterView = RegisterView || {
             var modalWindow = windowPlacehoder.kendoWindow(windowCfg).data('kendoWindow');
             modalWindow.center().open();
         });
-        
+
         $("#resetSortButton-" + registerViewSettings.CurrentRegisterId).bind("click", function (e) {
             grid.dataSource.sort({});
             if (grid && grid.resetSorting) {
@@ -804,6 +804,7 @@ var RegisterView = RegisterView || {
         setSearchWindowSize();
 
         $(searchWindowToolbarSelector + ' #SearchButton').on('click', function (e) {
+
             //закрываем отдельное окно
             if (searchWindow) {
                 searchWindow.close();
@@ -827,6 +828,10 @@ var RegisterView = RegisterView || {
                 searchAplied = true;
                 grid.dataSource.read();
             }
+
+            setTimeout(() => {
+                $(window).resize();
+            }, 100);
 
         });
 
@@ -939,7 +944,7 @@ var RegisterView = RegisterView || {
             var title = 'Раскладки ' + registerViewSettings.CurrentRegisterViewTitle;
             Common.UI.ShowWindow(title, url);
         }
-        
+
         window.openQueriesWindow = function (id) {
             var url = registerViewSettings.CoreRegisterQryUrl;
             var currentRegisterId = registerViewSettings.CurrentRegisterId;
@@ -1173,7 +1178,7 @@ var RegisterView = RegisterView || {
             return search;
         }
 
-        function GetFilterValues() {
+        function GetFilterValues() { // toDo
             var databaseFiltersGrid = $(menuFiltersGridSelector).data('kendoGrid');
             var databaseFilters = [];
             //добавляем сохраненные фильтры
@@ -1226,8 +1231,14 @@ var RegisterView = RegisterView || {
 
             // поиск
             parameters.searchData = GetSearchValues();
+
+            var registerViewSearch = $('.search-filter').data('registerViewSearch');
+            if (registerViewSearch)
+                parameters.SearchDataNewDesign = JSON.stringify(registerViewSearch.getStruct());
+
             // фильтры
             parameters.databaseFilters = GetFilterValues();
+
             //списки
             if (typeof (getSelectedListItem) === "function") {
                 parameters.selectedLists = getSelectedListItem();
@@ -1384,8 +1395,8 @@ var RegisterView = RegisterView || {
         grid.dataSource.read();
 
         grid.GetDataFunc = function () {
-            var paramenetrs = GetData();
-            return paramenetrs;
+            var parameters = GetData();
+            return parameters;
         }
     },
 
@@ -1924,6 +1935,151 @@ var RegisterView = RegisterView || {
         });
 
         $(sidePanelSelector + ' [name=IsTransition]').on('change', function (e) {
+            e.preventDefault();
+            var registerGrid = $(gridSelector).data('kendoGrid');
+            if (registerGrid) {
+                registerGrid.dataSource.read();
+            }
+        });
+    },
+
+    InitFilterWindow: function (registerViewSettings) {
+        var filterWindowSelector = "#filterWindow-" + registerViewSettings.CurrentRegisterId,
+            menuFiltersGridSelector = "#menu-filters_grid-" + registerViewSettings.CurrentRegisterId,
+            gridSelector = "#Grid-" + registerViewSettings.CurrentRegisterId,
+            filterButtonSelector = "#filterButton-" + registerViewSettings.CurrentRegisterId,
+            filterWindowContentClass = "filter-window-content",
+            filterWindowFooter = "filter-window-footer";
+
+        var initWindow = function () {
+            var $dialogTemplate = $('<div class="' + filterWindowContentClass + '"><div class="k-window-actions"><span class="filter-window-title">Фильтры</span><a href="#" class="k-button k-bare k-button-icon k-button-close" style="float: right;"><span class="k-icon k-i-close" style="color: rgba(96, 101, 116, 0.5);"></span></a></div><div class="filter-window-grid-container"><div id="menu-filters_grid-' + registerViewSettings.CurrentRegisterId + '"></div></div><div class="' + filterWindowFooter + '"></div></div>');
+            var $dialog = $dialogTemplate.kendoWindow({
+                title: false,
+                draggable: false,
+                visible: false,
+                resizable: false,
+                width:  '430px',
+                height: '370px'
+            }).data('kendoWindow');
+
+            $('.' + filterWindowFooter).append('<button type="button" class="k-button k-primary k-grid-find pull-right" style="width: 132px;">Найти</button><button type="button" class="k-button k-grid-reset pull-right" style="width: 105px;">Сбросить</button>')
+
+            return $dialog;
+        };
+
+
+        var initFilters = function () {
+            var dataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: registerViewSettings.RegistersGetFiltersSettingUrl,
+                        dataType: "json",
+                        data: {
+                            UniqueSessionKey: registerViewSettings.UniqueSessionKey
+                        },
+                        schema: {
+                            model: {
+                                id: "Id",
+                                fields: {
+                                    Name: { type: "string" }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            $(menuFiltersGridSelector).kendoGrid({
+                columns: [
+                    { selectable: true, width: "40px" },
+                    {
+                        field: "Name",
+                        title: "Наименование"
+                    }
+                ],
+                dataBound: onFilterDataBound,
+                dataSource: dataSource
+            });
+
+            //обработка кнопки "Найти"
+            $('.' + filterWindowFooter + ' .k-button.k-grid-find').on('click', function (e) {
+                e.preventDefault();
+                var registerGrid = $('.register-grid').data('kendoGrid');
+                if (registerGrid) {
+                    if (registerGrid.gridClearSelection != undefined)
+                        registerGrid.gridClearSelection();
+                    searchAplied = true;
+                    registerGrid.dataSource.read();
+                }
+            });
+
+            //обработка кнопки "Сбросить"
+            $('.' + filterWindowFooter + ' .k-button.k-grid-reset').on('click', function (e) {
+                e.preventDefault();
+                clearSelectedFilterItem();
+
+                if (!window.location.origin) {
+                    // For IE
+                    window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+                }
+                history.pushState(null, null, window.location.origin + window.location.pathname);
+
+                var registerGrid = $('.register-grid').data('kendoGrid');
+                if (registerGrid) {
+                    if (registerGrid.gridClearSelection != undefined)
+                        registerGrid.gridClearSelection();
+                    searchAplied = true;
+                    registerGrid.dataSource.read();
+                }
+            });
+        };
+
+        function onFilterDataBound(arg) {
+            if ($_GET["QueryId"]) {
+                selectFilterItem(parseInt($_GET["QueryId"]));
+            }
+        }
+
+        function selectFilterItem(queryId) {
+            var filterGrid = $(menuFiltersGridSelector).data('kendoGrid');
+            if (filterGrid) {
+                var rows = filterGrid.dataSource.view();
+
+                if (rows.length > 0) {
+                    for (var i = 0; i < rows.length; i++) {
+                        if (rows[i].Id == queryId) {
+                            filterGrid.tbody.find("tr[data-uid='" + rows[i].uid + "']").find(".k-checkbox").attr("checked", true);
+                        }
+                    }
+                }
+            }
+        }
+
+        // отчистка выбранных элементов в таблице фильтров
+        function clearSelectedFilterItem() {
+            var view = $(menuFiltersGridSelector).data('kendoGrid').dataSource.view();
+            for (var i = 0; i < view.length; i++) {
+                if ($(menuFiltersGridSelector).data('kendoGrid').tbody.find("tr[data-uid='" + view[i].uid + "']").find(".k-checkbox").is(":checked")) {
+                    $(menuFiltersGridSelector).data('kendoGrid').tbody.find("tr[data-uid='" + view[i].uid + "']").find(".k-checkbox").attr("checked", false);
+                }
+            }
+            $(menuFiltersGridSelector).data('kendoGrid').clearSelection();
+            delete $_GET.QueryId;
+        }
+
+        var dialog = initWindow();
+        initFilters();
+        selectFilterItem(61);
+
+        $(filterButtonSelector).on('click', function () {
+            dialog.center().open();
+        });
+
+        $('.' + filterWindowContentClass + ' .k-button-close').on('click', function () {
+            dialog.close();
+        });
+
+        $(filterWindowSelector + ' [name=IsTransition]').on('change', function (e) {
             e.preventDefault();
             var registerGrid = $(gridSelector).data('kendoGrid');
             if (registerGrid) {
