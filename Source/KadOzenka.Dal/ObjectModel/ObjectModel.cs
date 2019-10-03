@@ -15,7 +15,7 @@ namespace ObjectModel.Market
 
         private long _id;
         /// <summary>
-        /// 10002000 Уникальный идентификатор объекта недвижимости сторонней площадки (ID)
+        /// 10002000 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 10002000)]
         public long Id
@@ -55,7 +55,7 @@ namespace ObjectModel.Market
 
         private string _market;
         /// <summary>
-        /// 10002300 Наименование сторонней площадки (MARKET)
+        /// 10002300 Источник данных (MARKET)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public string Market
@@ -75,7 +75,7 @@ namespace ObjectModel.Market
 
         private MarketTypes _market_Code;
         /// <summary>
-        /// 10002300 Наименование сторонней площадки (справочный код) (MARKET_CODE)
+        /// 10002300 Источник данных (справочный код) (MARKET_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public MarketTypes Market_Code
@@ -165,7 +165,7 @@ namespace ObjectModel.Market
 
         private long _marketid;
         /// <summary>
-        /// 10002600 Уникальный идентификатор в рамках сторонней площадки (MARKET_ID)
+        /// 10002600 Идентификатор в Источнике данных (MARKET_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002600)]
         public long MarketId
@@ -185,7 +185,7 @@ namespace ObjectModel.Market
 
         private long? _price;
         /// <summary>
-        /// 10002700 Цена объекта недвижимости (PRICE)
+        /// 10002700 Цена (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002700)]
         public long? Price
@@ -205,7 +205,7 @@ namespace ObjectModel.Market
 
         private DateTime? _parsertime;
         /// <summary>
-        /// 10002800 Время обнаружения объявления парсером (PARSER_TIME)
+        /// 10002800 Дата сделки (PARSER_TIME)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002800)]
         public DateTime? ParserTime
@@ -225,7 +225,7 @@ namespace ObjectModel.Market
 
         private string _region;
         /// <summary>
-        /// 10002900 Название региона, к которому относится объект недвижимости (REGION)
+        /// 10002900 Регион (REGION)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002900)]
         public string Region
@@ -243,9 +243,29 @@ namespace ObjectModel.Market
         }
 
 
+        private long? _region_Code;
+        /// <summary>
+        /// 10002900 Регион (справочный код) (REGION_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10002900)]
+        public long? Region_Code
+        {
+            get
+            {
+                CheckPropertyInited("Region_Code");
+                return _region_Code;
+            }
+            set
+            {
+                _region_Code = value;
+                NotifyPropertyChanged("Region_Code");
+            }
+        }
+
+
         private string _city;
         /// <summary>
-        /// 10003000 Название города, к которому относится объект недвижимости (CITY)
+        /// 10003000 Город (CITY)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003000)]
         public string City
@@ -263,9 +283,29 @@ namespace ObjectModel.Market
         }
 
 
+        private long? _city_Code;
+        /// <summary>
+        /// 10003000 Город (справочный код) (CITY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10003000)]
+        public long? City_Code
+        {
+            get
+            {
+                CheckPropertyInited("City_Code");
+                return _city_Code;
+            }
+            set
+            {
+                _city_Code = value;
+                NotifyPropertyChanged("City_Code");
+            }
+        }
+
+
         private string _address;
         /// <summary>
-        /// 10003100 Адрес объекта недвижимости (ADDRESS)
+        /// 10003100 Адрес (ADDRESS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003100)]
         public string Address
@@ -285,7 +325,7 @@ namespace ObjectModel.Market
 
         private string _metro;
         /// <summary>
-        /// 10003200 Ближайшие станции метро списком через запятую (METRO)
+        /// 10003200 Ближайшие станции метро (METRO)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003200)]
         public string Metro
@@ -305,7 +345,7 @@ namespace ObjectModel.Market
 
         private string _images;
         /// <summary>
-        /// 10003300 URL-адреса изображений объекта недвижимости списком через запятую (IMAGES)
+        /// 10003300 URL-адреса изображений (IMAGES)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003300)]
         public string Images
@@ -325,7 +365,7 @@ namespace ObjectModel.Market
 
         private string _description;
         /// <summary>
-        /// 10003400 Описание объекта недвижимости (DESCRIPTION)
+        /// 10003400 Описание (DESCRIPTION)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003400)]
         public string Description
@@ -420,7 +460,7 @@ namespace ObjectModel.Market
 
         private long? _roomscount;
         /// <summary>
-        /// 10003900 Количество комнат в объекте недвижимости (ROOMS_COUNT)
+        /// 10003900 Количество комнат (ROOMS_COUNT)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003900)]
         public long? RoomsCount
@@ -658,52 +698,12 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _regionid;
+        private string _district;
         /// <summary>
-        /// 10005100 Идентификатор региона (REGION_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005100)]
-        public long? RegionId
-        {
-            get
-            {
-                CheckPropertyInited("RegionId");
-                return _regionid;
-            }
-            set
-            {
-                _regionid = value;
-                NotifyPropertyChanged("RegionId");
-            }
-        }
-
-
-        private long? _cityid;
-        /// <summary>
-        /// 10005200 Идентификатор города (CITY_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005200)]
-        public long? CityId
-        {
-            get
-            {
-                CheckPropertyInited("CityId");
-                return _cityid;
-            }
-            set
-            {
-                _cityid = value;
-                NotifyPropertyChanged("CityId");
-            }
-        }
-
-
-        private long? _district;
-        /// <summary>
-        /// 10005300 Округ (DISTRICT)
+        /// 10005300 Район (DISTRICT)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005300)]
-        public long? District
+        public string District
         {
             get
             {
@@ -714,6 +714,26 @@ namespace ObjectModel.Market
             {
                 _district = value;
                 NotifyPropertyChanged("District");
+            }
+        }
+
+
+        private long? _district_Code;
+        /// <summary>
+        /// 10005300 Район (справочный код) (DISTRICT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005300)]
+        public long? District_Code
+        {
+            get
+            {
+                CheckPropertyInited("District_Code");
+                return _district_Code;
+            }
+            set
+            {
+                _district_Code = value;
+                NotifyPropertyChanged("District_Code");
             }
         }
 
@@ -740,7 +760,7 @@ namespace ObjectModel.Market
 
         private string _buildingcadastralnumber;
         /// <summary>
-        /// 10005500 Кадастровый здания (BUILDING_CADASTRAL_NUMBER)
+        /// 10005500 Кадастровый номер здания (BUILDING_CADASTRAL_NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005500)]
         public string BuildingCadastralNumber
@@ -760,7 +780,7 @@ namespace ObjectModel.Market
 
         private string _cadastralquartal;
         /// <summary>
-        /// 10005600 Кадастровый квартал (CADASTRAL_QUARTAL)
+        /// 10005600 Кадастровый номер квартала (CADASTRAL_QUARTAL)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005600)]
         public string CadastralQuartal
@@ -798,22 +818,102 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _groupcode;
+        private long? _group_Code;
         /// <summary>
-        /// 10005800 Код группы (GROUP_CODE)
+        /// 10005700 Группа (справочный код) (GROUP_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10005800)]
-        public long? GroupCode
+        [RegisterAttribute(AttributeID = 10005700)]
+        public long? Group_Code
         {
             get
             {
-                CheckPropertyInited("GroupCode");
-                return _groupcode;
+                CheckPropertyInited("Group_Code");
+                return _group_Code;
             }
             set
             {
-                _groupcode = value;
-                NotifyPropertyChanged("GroupCode");
+                _group_Code = value;
+                NotifyPropertyChanged("Group_Code");
+            }
+        }
+
+
+        private string _subgroup;
+        /// <summary>
+        /// 10005800 Подгруппа (SUBGROUP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005800)]
+        public string Subgroup
+        {
+            get
+            {
+                CheckPropertyInited("Subgroup");
+                return _subgroup;
+            }
+            set
+            {
+                _subgroup = value;
+                NotifyPropertyChanged("Subgroup");
+            }
+        }
+
+
+        private long? _subgroup_Code;
+        /// <summary>
+        /// 10005800 Подгруппа (справочный код) (SUBGROUP_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005800)]
+        public long? Subgroup_Code
+        {
+            get
+            {
+                CheckPropertyInited("Subgroup_Code");
+                return _subgroup_Code;
+            }
+            set
+            {
+                _subgroup_Code = value;
+                NotifyPropertyChanged("Subgroup_Code");
+            }
+        }
+
+
+        private long? _zone;
+        /// <summary>
+        /// 10005900 Зона (ZONE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005900)]
+        public long? Zone
+        {
+            get
+            {
+                CheckPropertyInited("Zone");
+                return _zone;
+            }
+            set
+            {
+                _zone = value;
+                NotifyPropertyChanged("Zone");
+            }
+        }
+
+
+        private decimal _pricepermeter;
+        /// <summary>
+        /// 100002701 Цена за кв.м (PROCE_PER_METER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 100002701)]
+        public decimal PricePerMeter
+        {
+            get
+            {
+                CheckPropertyInited("PricePerMeter");
+                return _pricepermeter;
+            }
+            set
+            {
+                _pricepermeter = value;
+                NotifyPropertyChanged("PricePerMeter");
             }
         }
 

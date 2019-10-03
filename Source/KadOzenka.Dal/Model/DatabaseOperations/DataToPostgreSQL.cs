@@ -31,8 +31,8 @@ namespace OuterMarketParser.Model.DatabaseOperations
                     Description = element.Description,
                     Lat = element.Lat,
                     Lng = element.Lng,
-                    DealType_Code = ObjectModel.Directory.DealTypes.Sale,
-                    DealView_Code = ObjectModel.Directory.DealViews.Offer,
+                    //DealType_Code = ObjectModel.Directory.DealTypes.Sale,
+                    //DealView_Code = ObjectModel.Directory.DealViews.Offer,
                     RoomsCount = element.Rooms_count,
                     FloorNumber = element.Floor_number,
                     FloorsCount = element.Floors_count,
@@ -45,8 +45,8 @@ namespace OuterMarketParser.Model.DatabaseOperations
                     Category = element.Category,
                     Subcategory = element.Subcategory,
                     CategoryId = element.Category_Id,
-                    RegionId = element.Region_Id,
-                    CityId = element.City_Id
+                    Region_Code = element.Region_Id,
+                    City_Code = element.City_Id
                 };
                 obj.Save();
             }
