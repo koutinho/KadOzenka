@@ -15,9 +15,9 @@ namespace DebugApplication
     {
         static void Main(string[] args)
         {
-			List<OMCoreObject> test = OMCoreObject.Where().SelectAll().SetPackageSize(10).Execute();
+			//List<OMCoreObject> test = OMCoreObject.Where().SelectAll().SetPackageSize(10).Execute();
 
-			//LoadRosreestrDeals();
+			LoadRosreestrDeals();
             //LongProcessManagementService service = new LongProcessManagementService();
             //service.Start();
             //return;

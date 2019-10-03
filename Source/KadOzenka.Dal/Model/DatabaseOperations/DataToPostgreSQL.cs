@@ -45,8 +45,8 @@ namespace OuterMarketParser.Model.DatabaseOperations
                     Category = element.Category,
                     Subcategory = element.Subcategory,
                     CategoryId = element.Category_Id,
-                    Region_Code = element.Region_Id,
-                    City_Code = element.City_Id
+                    //Region_Code = element.Region_Id,
+                    //City_Code = element.City_Id
                 };
                 obj.Save();
             }
