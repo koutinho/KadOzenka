@@ -245,7 +245,7 @@ namespace ObjectModel.Market
 
         private long? _region_Code;
         /// <summary>
-        /// 10002900 Регион (справочный код) (REGION_ID)
+        /// 10002900 Регион (справочный код) (Null)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002900)]
         public long? Region_Code
@@ -285,7 +285,7 @@ namespace ObjectModel.Market
 
         private long? _city_Code;
         /// <summary>
-        /// 10003000 Город (справочный код) (CITY_ID)
+        /// 10003000 Город (справочный код) (Null)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003000)]
         public long? City_Code
@@ -900,7 +900,7 @@ namespace ObjectModel.Market
 
         private decimal _pricepermeter;
         /// <summary>
-        /// 100002701 Цена за кв.м (PROCE_PER_METER)
+        /// 100002701 Цена за кв.м (PRICE_PER_METER)
         /// </summary>
         [RegisterAttribute(AttributeID = 100002701)]
         public decimal PricePerMeter
