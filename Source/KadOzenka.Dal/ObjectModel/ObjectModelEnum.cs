@@ -34,6 +34,12 @@ namespace ObjectModel.Directory
         [Description("Яндекс недвижимость")]
         [EnumCode("3")]
         YandexProterty = 3,
+        /// <summary>
+        /// Росреестр (737)
+        /// </summary>
+        [Description("Росреестр")]
+        [EnumCode("4")]
+        Rosreestr = 737,
     }
 
     /// <summary>
@@ -105,10 +111,10 @@ namespace ObjectModel.Directory
     }
 
     /// <summary>
-    /// Виды сделок с недвижимостью (10)
+    /// Тип сделки (10)
     ///</summary>
     [ReferenceInfo(ReferenceId = 10)]
-    public enum DealViews : long
+    public enum DealType : long
     {
         /// <summary>
         /// Значение отсутствует
@@ -117,43 +123,29 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
         /// <summary>
-        /// Предложение (733)
+        /// Предложение-продажа (733)
         /// </summary>
-        [Description("Предложение")]
+        [Description("Предложение-продажа")]
         [EnumCode("1")]
-        Offer = 733,
+        SaleSuggestion = 733,
         /// <summary>
-        /// Сделка (734)
+        /// Сделка купли-продажи (734)
         /// </summary>
-        [Description("Сделка")]
+        [Description("Сделка купли-продажи")]
         [EnumCode("2")]
-        Deal = 734,
-    }
-
-    /// <summary>
-    /// Типы сделок с недвижимостью (11)
-    ///</summary>
-    [ReferenceInfo(ReferenceId = 11)]
-    public enum DealTypes : long
-    {
+        SaleDeal = 734,
         /// <summary>
-        /// Значение отсутствует
+        /// Предложение-аренда (735)
         /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
+        [Description("Предложение-аренда")]
+        [EnumCode("3")]
+        RentSuggestion = 735,
         /// <summary>
-        /// Продажа (735)
+        /// Сделка-аренда (736)
         /// </summary>
-        [Description("Продажа")]
-        [EnumCode("1")]
-        Sale = 735,
-        /// <summary>
-        /// Аренда (736)
-        /// </summary>
-        [Description("Аренда")]
-        [EnumCode("2")]
-        Rent = 736,
+        [Description("Сделка-аренда")]
+        [EnumCode("4")]
+        RentDeal = 736,
     }
 
     /// <summary>

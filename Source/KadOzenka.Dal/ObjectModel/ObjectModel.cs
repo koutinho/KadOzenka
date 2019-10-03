@@ -383,12 +383,12 @@ namespace ObjectModel.Market
         }
 
 
-        private DealTypes _dealtype_Code;
+        private DealType _dealtype_Code;
         /// <summary>
         /// 10003600 Тип сделки (справочный код) (DEAL_TYPE_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003600)]
-        public DealTypes DealType_Code
+        public DealType DealType_Code
         {
             get
             {
@@ -414,61 +414,6 @@ namespace ObjectModel.Market
                 this._dealtype_Code = value;
                 NotifyPropertyChanged("DealType");
                 NotifyPropertyChanged("DealType_Code");
-            }
-        }
-
-
-        private string _dealview;
-        /// <summary>
-        /// 10003800 Вид сделки (DEAL_VIEW)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003800)]
-        public string DealView
-        {
-            get
-            {
-                CheckPropertyInited("DealView");
-                return _dealview;
-            }
-            set
-            {
-                _dealview = value;
-                NotifyPropertyChanged("DealView");
-            }
-        }
-
-
-        private DealViews _dealview_Code;
-        /// <summary>
-        /// 10003800 Вид сделки (справочный код) (DEAL_VIEW_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003800)]
-        public DealViews DealView_Code
-        {
-            get
-            {
-                CheckPropertyInited("DealView_Code");
-                return this._dealview_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_dealview))
-                    {
-                         _dealview = descr;
-                    }
-                }
-                else
-                {
-                     _dealview = descr;
-                }
-
-                this._dealview_Code = value;
-                NotifyPropertyChanged("DealView");
-                NotifyPropertyChanged("DealView_Code");
             }
         }
 
