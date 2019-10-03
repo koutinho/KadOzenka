@@ -6,13 +6,9 @@
   <DefaultLayout>_LayoutLeftPanel</DefaultLayout>
   <DesignType>LeftPanel</DesignType>
   
-  <ActiveDirectoryDomain>GENIX.genix.dc</ActiveDirectoryDomain>
+  <ActiveDirectoryDomain></ActiveDirectoryDomain>
 
-  <DefaultDomainName>GENIX1</DefaultDomainName>
-
-  <Oracle10SupportEnable>false</Oracle10SupportEnable>
-
-  <Oracle10SupportPort>8005</Oracle10SupportPort>
+  <DefaultDomainName></DefaultDomainName>
 
   <SrdSettings>
     <UseRoleSubsystem>false</UseRoleSubsystem>
