@@ -389,7 +389,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.14" />
-    <PackageReference Include="Platform.Web" Version="1.0.177" />
+    <PackageReference Include="Platform.Web" Version="1.0.178" />
   </ItemGroup>
 
   <ItemGroup>
