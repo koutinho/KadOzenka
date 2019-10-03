@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SystemCommon xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <ApplicationName>Кадастровая оценка</ApplicationName>
-    <ApplicationSubName></ApplicationSubName>
+    <ApplicationSubName>Центр имущественных платежей и жилищного страхования</ApplicationSubName>
     <LeftPanelTitle>Департамент имущества города Москвы</LeftPanelTitle>
     <LeftPanelDescription>Центр имущественных платежей и жилищного страхования</LeftPanelDescription>
     <KendoTheme>silver.genix</KendoTheme>
