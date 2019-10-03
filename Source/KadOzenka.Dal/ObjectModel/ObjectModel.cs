@@ -243,26 +243,6 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _region_Code;
-        /// <summary>
-        /// 10002900 Регион (справочный код) (Null)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002900)]
-        public long? Region_Code
-        {
-            get
-            {
-                CheckPropertyInited("Region_Code");
-                return _region_Code;
-            }
-            set
-            {
-                _region_Code = value;
-                NotifyPropertyChanged("Region_Code");
-            }
-        }
-
-
         private string _city;
         /// <summary>
         /// 10003000 Город (CITY)
@@ -279,26 +259,6 @@ namespace ObjectModel.Market
             {
                 _city = value;
                 NotifyPropertyChanged("City");
-            }
-        }
-
-
-        private long? _city_Code;
-        /// <summary>
-        /// 10003000 Город (справочный код) (Null)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003000)]
-        public long? City_Code
-        {
-            get
-            {
-                CheckPropertyInited("City_Code");
-                return _city_Code;
-            }
-            set
-            {
-                _city_Code = value;
-                NotifyPropertyChanged("City_Code");
             }
         }
 
@@ -800,7 +760,7 @@ namespace ObjectModel.Market
 
         private string _group;
         /// <summary>
-        /// 10005700 Группа (GROUP)
+        /// 10005700 Группа (KO_GROUP)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005700)]
         public string Group
@@ -820,7 +780,7 @@ namespace ObjectModel.Market
 
         private long? _group_Code;
         /// <summary>
-        /// 10005700 Группа (справочный код) (GROUP_CODE)
+        /// 10005700 Группа (справочный код) (KO_GROUP_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005700)]
         public long? Group_Code
@@ -840,7 +800,7 @@ namespace ObjectModel.Market
 
         private string _subgroup;
         /// <summary>
-        /// 10005800 Подгруппа (SUBGROUP)
+        /// 10005800 Подгруппа (KO_SUBGROUP)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005800)]
         public string Subgroup
@@ -860,7 +820,7 @@ namespace ObjectModel.Market
 
         private long? _subgroup_Code;
         /// <summary>
-        /// 10005800 Подгруппа (справочный код) (SUBGROUP_CODE)
+        /// 10005800 Подгруппа (справочный код) (KO_SUBGROUP_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005800)]
         public long? Subgroup_Code
