@@ -3,7 +3,7 @@
 <form>
     <input type="hidden" name="Id" value="@Model.Id" />
     <ul id="ls_panelbar" class="panelbar">
-        <li id="Section_Object" data-expand>
+        <li id="Section_Main" data-expand>
             <span>Основной блок</span>
             <div>
                 <div class="form-horizontal col-sm-12">
@@ -56,148 +56,129 @@
                             <label class="control-label">Описание</label>
                         </div>
                         <div class="col-sm-10">
-                            <textarea class="k-textbox" readonly>"@Model.Description" </textarea>
+                            <textarea class="k-textbox" readonly rows="5" style="resize:none;">"@Model.Description" </textarea>
                         </div>
                     </div>
                 </div>
             </div>
         </li>
-        <li id="Section_RD" data-expand>
-            <span>Основание использования</span>
+        <li id="Section_Reestr" data-expand>
+            <span>Данные Росрестра</span>
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
                     <div class="form-group">
                         <div class="col-sm-2">
-                            <label class="control-label">Вид права</label>
+                            <label class="control-label">Кадастровый номер</label>
                         </div>
                         <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.Object.RightType*@" />
+                            <input class="k-textbox" readonly value="@Model.CadastralNumber" />
                         </div>
                         <div class="col-sm-2">
-                            <label class="control-label">@*@Html.CustomLabelFor(m => m.ObjectState.State)*@</label>
+                            <label class="control-label">Кадастровый район</label>
                         </div>
                         <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.State*@" />
+                            <input class="k-textbox" readonly value="@Model.CadastralQuartal" />
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
-                            <label class="control-label">@*@Html.CustomLabelFor(m => m.ObjectRd.Type)*@</label>
+                            <label class="control-label">Кадастровый район</label>
                         </div>
                         <div class="col-sm-4">
-                            <div class="row">
-                                <div class="col-sm-9">
-                                    <input class="k-textbox" readonly value="@*@Model.ObjectRd.Type*@" />
-                                </div>
-                                <div class="col-sm-3">
-                                    <label class="control-label">@*@Html.CustomLabelFor(m => m.ObjectRd.Number)*@</label>
-                                </div>
-                            </div>
+                            <input class="k-textbox" readonly value="@Model.CadastralQuartal" />
                         </div>
                         <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectRd.Number*@" />
+                            <label class="control-label">Кадастровый номер здания</label>
                         </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">@*@Html.CustomLabelFor(m => m.ObjectRd.Date)*@</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectRd.Date?.ToString("dd.MM.yyyy")*@" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">@*@Html.CustomLabelFor(m => m.ObjectRd.Title)*@</label>
-                        </div>
-                        <div class="col-sm-10">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectRd.Title*@" />
+                        <div class="col-sm-4">
+                            <input class="k-textbox" readonly value="@Model.BuildingCadastralNumber" />
                         </div>
                     </div>
                 </div>
             </div>
+           
         </li>
-        <li id="Section_State" data-expand>
-            <span>Сведения по стоимости и амортизации</span>
+        <li id="Section_OKS" data-expand>
+            <span>Данные ОКС</span>
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
                     <div class="form-group">
                         <div class="col-sm-2">
-                            <label class="control-label">Срок полезного использования, мес</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.UseMonths*@" />
+                            <label class="control-label">Год постройки</label>
                         </div>
                         <div class="col-sm-2">
-                            <label class="control-label">Амортизационная группа</label>
+                            <input class="k-textbox" readonly value="@Model.BuildingYear" />
                         </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.AmortisationGroup*@" />
+                        <div class="col-sm-2">
+                            <label class="control-label">Этажноcть</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.FloorsCount" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Номер этажа</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.FloorNumber" />
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
-                            <label class="control-label">Первоначальная стоимость, руб.</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.CostInitial*@" />
+                            <label class="control-label">Площадь кухни</label>
                         </div>
                         <div class="col-sm-2">
-                            <label class="control-label">Амортизация, %</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.AmortisationPercent*@" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Остаточная стоимость, руб.</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.CostRest*@" />
+                            <input class="k-textbox" readonly value="@Model.AreaKitchen" />
                         </div>
                         <div class="col-sm-2">
-                            <label class="control-label">Амортизация, руб.</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.AmortisationSum*@" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Причина переоценки</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.ReevaluationReason*@" />
+                            <label class="control-label">Площадь жилая</label>
                         </div>
                         <div class="col-sm-2">
-                            <label class="control-label">Дата переоценки</label>
+                            <input class="k-textbox" readonly value="@Model.AreaLiving" />
                         </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@*@Model.ObjectState.ReevaluationDate?.ToString("dd.MM.yyyy")*@" />
-                        </div>
+
                     </div>
                 </div>
-            </div>
+                </div>
         </li>
-        <li id="Section_Subject" data-expand>
-            <span>Сведения о предприятиях</span>
+        <li id="Section_Group" data-expand>
+            <span>Группировка</span>
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Зона</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.Zone" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Группа</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.Group" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Подгруппа</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="k-textbox" readonly value="@Model.Subgroup" />
+                        </div>
+                    </div>
                     <div id="gu_list">
                     </div>
-                    <div class="form-group"></div>
                 </div>
             </div>
         </li>
     </ul>
     <div class="static-nav">
         <nav id="navigation-menu">
-            <a href="#Section_Object">Объект @*@Model.Object.RsmNum*@</a>
-            <a href="#Section_RD">Основание использования</a>
-            <a href="#Section_State">Сведения по стоимости и амортизации</a>
-            <a href="#Section_Subject">Сведения о предприятиях</a>
+            <a href="#Section_Main">Основные данные</a>
+            <a href="#Section_Reestr">Данные Росреестра</a>
+            <a href="#Section_OKS">Данные ОКС</a>
+            <a href="#Section_Group">Группировка</a>
         </nav>
     </div>
 </form>
@@ -209,26 +190,7 @@
         $("#navigation-menu a").mPageScroll2id({
             highlightSelector:"#navigation-menu a"
         });
-
-        loadGuList(@Model.Id);
-
-        function loadGuList($id) {
-
-            if ($id) {
-                $.ajax({
-                type: 'GET',
-                    url: '@Url.Action("GuList", "MovableProperty")',
-                    data: { id: $id  },
-                    success: function(data) {
-                        if (data) {
-                            $('#gu_list').append(data);
-                            $('#guPanelbar').kendoPanelBar().data('kendoPanelBar');
-                        }
-                    }
-                });
-            }
-        }
-    });
+     });
 </script>
 
 
