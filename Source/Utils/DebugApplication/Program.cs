@@ -63,28 +63,35 @@ namespace DebugApplication
 
 			foreach (RangeRow row in sheet.Rows)
             {
-				var analogObject = new OMCoreObject
+				try
 				{
-					Market_Code = MarketTypes.Rosreestr,
-					DealType_Code = DealType.SaleDeal,
+					var analogObject = new OMCoreObject
+					{
+						Market_Code = MarketTypes.Rosreestr,
+						DealType_Code = DealType.SaleDeal,
 
-					CadastralNumber = row.ElementAt(0).ToString(),
-					BuildingCadastralNumber = row.ElementAt(1).ToString() != "0" ? row.ElementAt(1).ToString() : String.Empty,
-					CadastralQuartal = row.ElementAt(2).ToString() != "0" ? row.ElementAt(1).ToString() : String.Empty,
-					//GroupCode =  row.ElementAt(3)
-					Group = row.ElementAt(5).ToString(),
-					Subgroup = row.ElementAt(3).ToString(),
-					Address = row.ElementAt(6).ToString(),
-					ParserTime = row.ElementAt(10).ParseToDateTime(),
-					PropertyType_Code = LoadRosreestrDealsGetPropertyType(row.ElementAt(12).ToString()),
-					Area = row.ElementAt(18).ParseToDecimal(),
-					Price = row.ElementAt(19).ParseToLong(),
-					PricePerMeter = row.ElementAt(20).ParseToDecimal(),
-					District = row.ElementAt(24).ToString(),
-					Zone = row.ElementAt(25).ParseToLong(),
-				};
+						CadastralNumber = row.ElementAt(0).ToString(),
+						BuildingCadastralNumber = row.ElementAt(1).ToString() != "0" ? row.ElementAt(1).ToString() : String.Empty,
+						CadastralQuartal = row.ElementAt(2).ToString() != "0" ? row.ElementAt(1).ToString() : String.Empty,
+						//GroupCode =  row.ElementAt(3)
+						Group = row.ElementAt(5).ToString(),
+						Subgroup = row.ElementAt(3).ToString(),
+						Address = row.ElementAt(6).ToString(),
+						ParserTime = row.ElementAt(10).ParseToDateTime(),
+						PropertyType_Code = LoadRosreestrDealsGetPropertyType(row.ElementAt(12).ToString()),
+						Area = row.ElementAt(18).ParseToDecimal(),
+						Price = row.ElementAt(19).ParseToLong(),
+						PricePerMeter = row.ElementAt(20).ParseToDecimal(),
+						District = row.ElementAt(24).ToString(),
+						Zone = row.ElementAt(25).ParseToLong(),
+					};
 
-				objects.Add(analogObject);
+					objects.Add(analogObject);
+				}
+				catch (Exception ex)
+				{
+					log += $"{row.ElementAt(0)};false;{ex.Message}\n";
+				}
 			}
 
 			int iterator = 0;
