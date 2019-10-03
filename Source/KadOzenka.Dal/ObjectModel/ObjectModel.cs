@@ -6,7 +6,7 @@ using ObjectModel.Directory;
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 100 Таблица, содержащая объекты аналоги (MARKET_CORE_OBJECT)
+    /// 100 Аналоги (MARKET_CORE_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 100)]
     [Serializable]
@@ -49,26 +49,6 @@ namespace ObjectModel.Market
             {
                 _url = value;
                 NotifyPropertyChanged("Url");
-            }
-        }
-
-
-        private long _marketcode;
-        /// <summary>
-        /// 10002200 Числовой идентификатор типа сторонней площадки (MARKET_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002200)]
-        public long MarketCode
-        {
-            get
-            {
-                CheckPropertyInited("MarketCode");
-                return _marketcode;
-            }
-            set
-            {
-                _marketcode = value;
-                NotifyPropertyChanged("MarketCode");
             }
         }
 
@@ -128,29 +108,9 @@ namespace ObjectModel.Market
         }
 
 
-        private long _propertytypecode;
-        /// <summary>
-        /// 10002400 Числовой иденификатор типа объекта недвижимости (PROPERTY_TYPE_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002400)]
-        public long PropertyTypeCode
-        {
-            get
-            {
-                CheckPropertyInited("PropertyTypeCode");
-                return _propertytypecode;
-            }
-            set
-            {
-                _propertytypecode = value;
-                NotifyPropertyChanged("PropertyTypeCode");
-            }
-        }
-
-
         private string _propertytype;
         /// <summary>
-        /// 10002500 Наименование типа объекта недвижимости (PROPERTY_TYPE)
+        /// 10002500 Тип объекта недвижимости (PROPERTY_TYPE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002500)]
         public string PropertyType
@@ -170,7 +130,7 @@ namespace ObjectModel.Market
 
         private PropertyTypes _propertytype_Code;
         /// <summary>
-        /// 10002500 Наименование типа объекта недвижимости (справочный код) (PROPERTY_TYPE_CODE)
+        /// 10002500 Тип объекта недвижимости (справочный код) (PROPERTY_TYPE_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002500)]
         public PropertyTypes PropertyType_Code
@@ -403,63 +363,121 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _lng;
+        private string _dealtype;
         /// <summary>
-        /// 10003600 Долгота (LNG)
+        /// 10003600 Тип сделки (DEAL_TYPE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003600)]
-        public decimal? Lng
+        public string DealType
         {
             get
             {
-                CheckPropertyInited("Lng");
-                return _lng;
+                CheckPropertyInited("DealType");
+                return _dealtype;
             }
             set
             {
-                _lng = value;
-                NotifyPropertyChanged("Lng");
+                _dealtype = value;
+                NotifyPropertyChanged("DealType");
             }
         }
 
-    }
-}
 
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 101 Таблица, содержащая объекты полученные с ЦИАНа (MARKET_CIAN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 101)]
-    [Serializable]
-    public partial class OMCianObject : OMBaseClass<OMCianObject>
-    {
-
-        private long _id;
+        private DealTypes _dealtype_Code;
         /// <summary>
-        /// 10100100 Уникальный идентификатор записи (ID)
+        /// 10003600 Тип сделки (справочный код) (DEAL_TYPE_CODE)
         /// </summary>
-        [PrimaryKey(AttributeID = 10100100)]
-        public long Id
+        [RegisterAttribute(AttributeID = 10003600)]
+        public DealTypes DealType_Code
         {
             get
             {
-                CheckPropertyInited("Id");
-                return _id;
+                CheckPropertyInited("DealType_Code");
+                return this._dealtype_Code;
             }
             set
             {
-                _id = value;
-                NotifyPropertyChanged("Id");
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_dealtype))
+                    {
+                         _dealtype = descr;
+                    }
+                }
+                else
+                {
+                     _dealtype = descr;
+                }
+
+                this._dealtype_Code = value;
+                NotifyPropertyChanged("DealType");
+                NotifyPropertyChanged("DealType_Code");
+            }
+        }
+
+
+        private string _dealview;
+        /// <summary>
+        /// 10003800 Вид сделки (DEAL_VIEW)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10003800)]
+        public string DealView
+        {
+            get
+            {
+                CheckPropertyInited("DealView");
+                return _dealview;
+            }
+            set
+            {
+                _dealview = value;
+                NotifyPropertyChanged("DealView");
+            }
+        }
+
+
+        private DealViews _dealview_Code;
+        /// <summary>
+        /// 10003800 Вид сделки (справочный код) (DEAL_VIEW_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10003800)]
+        public DealViews DealView_Code
+        {
+            get
+            {
+                CheckPropertyInited("DealView_Code");
+                return this._dealview_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_dealview))
+                    {
+                         _dealview = descr;
+                    }
+                }
+                else
+                {
+                     _dealview = descr;
+                }
+
+                this._dealview_Code = value;
+                NotifyPropertyChanged("DealView");
+                NotifyPropertyChanged("DealView_Code");
             }
         }
 
 
         private long? _roomscount;
         /// <summary>
-        /// 10100200 Количество комнат в объекте недвижимости (ROOMS_COUNT)
+        /// 10003900 Количество комнат в объекте недвижимости (ROOMS_COUNT)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10100200)]
+        [RegisterAttribute(AttributeID = 10003900)]
         public long? RoomsCount
         {
             get
@@ -475,11 +493,31 @@ namespace ObjectModel.Market
         }
 
 
+        private decimal? _lng;
+        /// <summary>
+        /// 10004000 Долгота (LNG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10004000)]
+        public decimal? Lng
+        {
+            get
+            {
+                CheckPropertyInited("Lng");
+                return _lng;
+            }
+            set
+            {
+                _lng = value;
+                NotifyPropertyChanged("Lng");
+            }
+        }
+
+
         private long? _floornumber;
         /// <summary>
-        /// 10100300 Этаж, на котором расположен объект недвижимости (FLOOR_NUMBER)
+        /// 10004100 Количество этажей (FLOOR_NUMBER)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10100300)]
+        [RegisterAttribute(AttributeID = 10004100)]
         public long? FloorNumber
         {
             get
@@ -497,9 +535,9 @@ namespace ObjectModel.Market
 
         private long? _floorscount;
         /// <summary>
-        /// 10100400 Количество этажей в объекте недвижимости (FLOORS_COUNT)
+        /// 10004200 Этажность (FLOORS_COUNT)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10100400)]
+        [RegisterAttribute(AttributeID = 10004200)]
         public long? FloorsCount
         {
             get
@@ -517,9 +555,9 @@ namespace ObjectModel.Market
 
         private decimal? _area;
         /// <summary>
-        /// 10100500 Общая площадь объекта недвижимости (AREA)
+        /// 10004300 Общая площадь (AREA)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10100500)]
+        [RegisterAttribute(AttributeID = 10004300)]
         public decimal? Area
         {
             get
@@ -537,9 +575,9 @@ namespace ObjectModel.Market
 
         private decimal? _areakitchen;
         /// <summary>
-        /// 10100600 Площадь кухни объекта недвижимости (AREA_KITCHEN)
+        /// 10004400 Площадь кухни (AREA_KITCHEN)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10100600)]
+        [RegisterAttribute(AttributeID = 10004400)]
         public decimal? AreaKitchen
         {
             get
@@ -557,9 +595,9 @@ namespace ObjectModel.Market
 
         private decimal? _arealiving;
         /// <summary>
-        /// 10100700 Жилая площадь объекта недвижимости (AREA_LIVING)
+        /// 10004500 Жилая площадь (AREA_LIVING)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10100700)]
+        [RegisterAttribute(AttributeID = 10004500)]
         public decimal? AreaLiving
         {
             get
@@ -577,9 +615,9 @@ namespace ObjectModel.Market
 
         private decimal? _arealand;
         /// <summary>
-        /// 10100800 Площадь земельного участка, на котором расположен объект недвижимости (AREA_LAND)
+        /// 10004600 Площадь земельного участка (AREA_LAND)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10100800)]
+        [RegisterAttribute(AttributeID = 10004600)]
         public decimal? AreaLand
         {
             get
@@ -597,9 +635,9 @@ namespace ObjectModel.Market
 
         private long? _buildingyear;
         /// <summary>
-        /// 10100900 Год постройки объекта недвижимости (BUILDING_YEAR)
+        /// 10004700 Год постройки (BUILDING_YEAR)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10100900)]
+        [RegisterAttribute(AttributeID = 10004700)]
         public long? BuildingYear
         {
             get
@@ -615,31 +653,11 @@ namespace ObjectModel.Market
         }
 
 
-        private string _dealtype;
-        /// <summary>
-        /// 10101000 Тип предлагаемой в объявлении сделки (DEAL_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10101000)]
-        public string DealType
-        {
-            get
-            {
-                CheckPropertyInited("DealType");
-                return _dealtype;
-            }
-            set
-            {
-                _dealtype = value;
-                NotifyPropertyChanged("DealType");
-            }
-        }
-
-
         private string _category;
         /// <summary>
-        /// 10101100 Категория, к которой относится объект недвижимости (CATEGORY)
+        /// 10004800 Категория (CATEGORY)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10101100)]
+        [RegisterAttribute(AttributeID = 10004800)]
         public string Category
         {
             get
@@ -657,9 +675,9 @@ namespace ObjectModel.Market
 
         private string _subcategory;
         /// <summary>
-        /// 10101200 Подкатегория, к которой относится объект недвижимости (SUBCATEGORY)
+        /// 10004900 Подкатегория (SUBCATEGORY)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10101200)]
+        [RegisterAttribute(AttributeID = 10004900)]
         public string Subcategory
         {
             get
@@ -677,9 +695,9 @@ namespace ObjectModel.Market
 
         private long? _categoryid;
         /// <summary>
-        /// 10101300 Идентификатор категории, к которой относится объект недвижимости (CATEGORY_ID)
+        /// 10005000 Идентификатор категории (CATEGORY_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10101300)]
+        [RegisterAttribute(AttributeID = 10005000)]
         public long? CategoryId
         {
             get
@@ -697,9 +715,9 @@ namespace ObjectModel.Market
 
         private long? _regionid;
         /// <summary>
-        /// 10101400 Идентификатор региона, к которому относится объект недвижимости (REGION_ID)
+        /// 10005100 Идентификатор региона (REGION_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10101400)]
+        [RegisterAttribute(AttributeID = 10005100)]
         public long? RegionId
         {
             get
@@ -717,9 +735,9 @@ namespace ObjectModel.Market
 
         private long? _cityid;
         /// <summary>
-        /// 10101500 Идентификатор города, к которому относится объект недвижимости (CITY_ID)
+        /// 10005200 Идентификатор города (CITY_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10101500)]
+        [RegisterAttribute(AttributeID = 10005200)]
         public long? CityId
         {
             get
@@ -734,65 +752,13 @@ namespace ObjectModel.Market
             }
         }
 
-    }
-}
 
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 102 Таблица, содержащая объекты полученные с авито (MARKET_AVITO_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 102)]
-    [Serializable]
-    public partial class OMAvitoObject : OMBaseClass<OMAvitoObject>
-    {
-
-        private long _id;
+        private long? _district;
         /// <summary>
-        /// 10200100 Уникальный идентификатор объекта авито (ID)
+        /// 10005300 Округ (DISTRICT)
         /// </summary>
-        [PrimaryKey(AttributeID = 10200100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private string _title;
-        /// <summary>
-        /// 10200200 Заголовок объявления (TITLE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10200200)]
-        public string Title
-        {
-            get
-            {
-                CheckPropertyInited("Title");
-                return _title;
-            }
-            set
-            {
-                _title = value;
-                NotifyPropertyChanged("Title");
-            }
-        }
-
-
-        private string _district;
-        /// <summary>
-        /// 10200300 Название округа, к которому относится объект недвижимости (DISTRICT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10200300)]
-        public string District
+        [RegisterAttribute(AttributeID = 10005300)]
+        public long? District
         {
             get
             {
@@ -803,6 +769,106 @@ namespace ObjectModel.Market
             {
                 _district = value;
                 NotifyPropertyChanged("District");
+            }
+        }
+
+
+        private string _cadastralnumber;
+        /// <summary>
+        /// 10005400 Кадастровый номер помещения (CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005400)]
+        public string CadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("CadastralNumber");
+                return _cadastralnumber;
+            }
+            set
+            {
+                _cadastralnumber = value;
+                NotifyPropertyChanged("CadastralNumber");
+            }
+        }
+
+
+        private string _buildingcadastralnumber;
+        /// <summary>
+        /// 10005500 Кадастровый здания (BUILDING_CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005500)]
+        public string BuildingCadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("BuildingCadastralNumber");
+                return _buildingcadastralnumber;
+            }
+            set
+            {
+                _buildingcadastralnumber = value;
+                NotifyPropertyChanged("BuildingCadastralNumber");
+            }
+        }
+
+
+        private string _cadastralquartal;
+        /// <summary>
+        /// 10005600 Кадастровый квартал (CADASTRAL_QUARTAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005600)]
+        public string CadastralQuartal
+        {
+            get
+            {
+                CheckPropertyInited("CadastralQuartal");
+                return _cadastralquartal;
+            }
+            set
+            {
+                _cadastralquartal = value;
+                NotifyPropertyChanged("CadastralQuartal");
+            }
+        }
+
+
+        private string _group;
+        /// <summary>
+        /// 10005700 Группа (GROUP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005700)]
+        public string Group
+        {
+            get
+            {
+                CheckPropertyInited("Group");
+                return _group;
+            }
+            set
+            {
+                _group = value;
+                NotifyPropertyChanged("Group");
+            }
+        }
+
+
+        private long? _groupcode;
+        /// <summary>
+        /// 10005800 Код группы (GROUP_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005800)]
+        public long? GroupCode
+        {
+            get
+            {
+                CheckPropertyInited("GroupCode");
+                return _groupcode;
+            }
+            set
+            {
+                _groupcode = value;
+                NotifyPropertyChanged("GroupCode");
             }
         }
 
@@ -861,401 +927,963 @@ namespace ObjectModel.Market
     }
 }
 
-namespace ObjectModel.Cld
+namespace ObjectModel.KO
 {
     /// <summary>
-    /// 304 Организации (CLD_SUBJECT_Q)
+    /// 200 Объект кадастровой оценки (KO_MAIN_OBJECT)
     /// </summary>
-    [RegisterInfo(RegisterID = 304)]
+    [RegisterInfo(RegisterID = 200)]
     [Serializable]
-    public partial class OMSubject : OMBaseClass<OMSubject>
+    public partial class OMMainObject : OMBaseClass<OMMainObject>
     {
 
-        private long _empid;
+        private long _id;
         /// <summary>
-        /// 30400100 Идентификатор (EMP_ID)
+        /// 20002000 Уникальный идентификатор объекта кадастровой оценки (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 30400100)]
-        public long EmpId
+        [PrimaryKey(AttributeID = 20002000)]
+        public long Id
         {
             get
             {
-                CheckPropertyInited("EmpId");
-                return _empid;
+                CheckPropertyInited("Id");
+                return _id;
             }
             set
             {
-                _empid = value;
-                NotifyPropertyChanged("EmpId");
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private string _subjecttype;
+        private string _cadastralnumber;
         /// <summary>
-        /// 30400200 Тип субъекта (SUBJECT_TYPE)
+        /// 20002100 Кадастровый номер объекта оценки (CADASTRAL_NUMBER)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400200)]
-        public string SubjectType
+        [RegisterAttribute(AttributeID = 20002100)]
+        public string CadastralNumber
         {
             get
             {
-                CheckPropertyInited("SubjectType");
-                return _subjecttype;
+                CheckPropertyInited("CadastralNumber");
+                return _cadastralnumber;
             }
             set
             {
-                _subjecttype = value;
-                NotifyPropertyChanged("SubjectType");
+                _cadastralnumber = value;
+                NotifyPropertyChanged("CadastralNumber");
             }
         }
 
 
-        private long? _subjecttype_Code;
+        private string _objecttype;
         /// <summary>
-        /// 30400200 Тип субъекта (справочный код) (SUBJECT_TYPE_ID)
+        /// 20002200 Тип объекта кадастровой оценки (OBJECT_TYPE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400200)]
-        public long? SubjectType_Code
+        [RegisterAttribute(AttributeID = 20002200)]
+        public string ObjectType
         {
             get
             {
-                CheckPropertyInited("SubjectType_Code");
-                return _subjecttype_Code;
+                CheckPropertyInited("ObjectType");
+                return _objecttype;
             }
             set
             {
-                _subjecttype_Code = value;
-                NotifyPropertyChanged("SubjectType_Code");
+                _objecttype = value;
+                NotifyPropertyChanged("ObjectType");
             }
         }
 
 
-        private DateTime? _downloaddate;
+        private PropertyTypes _objecttype_Code;
         /// <summary>
-        /// 30400300 Дата загрузки сведений (DOWNLOAD_DATE)
+        /// 20002200 Тип объекта кадастровой оценки (справочный код) (OBJECT_TYPE_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400300)]
-        public DateTime? DownloadDate
+        [RegisterAttribute(AttributeID = 20002200)]
+        public PropertyTypes ObjectType_Code
         {
             get
             {
-                CheckPropertyInited("DownloadDate");
-                return _downloaddate;
+                CheckPropertyInited("ObjectType_Code");
+                return this._objecttype_Code;
             }
             set
             {
-                _downloaddate = value;
-                NotifyPropertyChanged("DownloadDate");
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_objecttype))
+                    {
+                         _objecttype = descr;
+                    }
+                }
+                else
+                {
+                     _objecttype = descr;
+                }
+
+                this._objecttype_Code = value;
+                NotifyPropertyChanged("ObjectType");
+                NotifyPropertyChanged("ObjectType_Code");
             }
         }
 
 
-        private string _fullname;
+        private long? _groupid;
         /// <summary>
-        /// 30400400 Полное наименование (FULL_NAME)
+        /// 20002300 Идентификатор группы объекта кадастровой оценки (GROUP_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400400)]
-        public string FullName
+        [RegisterAttribute(AttributeID = 20002300)]
+        public long? GroupId
         {
             get
             {
-                CheckPropertyInited("FullName");
-                return _fullname;
+                CheckPropertyInited("GroupId");
+                return _groupid;
             }
             set
             {
-                _fullname = value;
-                NotifyPropertyChanged("FullName");
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 201 Единица кадастровой оценки (KO_UNIT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 201)]
+    [Serializable]
+    public partial class OMUnit : OMBaseClass<OMUnit>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20102000 Уникальный идентификатор единицы объекта кадастровой оценки (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20102000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private string _shortname;
+        private long? _objectid;
         /// <summary>
-        /// 30400500 Краткое наименование (SHORT_NAME)
+        /// 20102100 Уникальный идентификатор объекта кадастровой оценки (OBJECT_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400500)]
-        public string ShortName
+        [RegisterAttribute(AttributeID = 20102100)]
+        public long? ObjectId
         {
             get
             {
-                CheckPropertyInited("ShortName");
-                return _shortname;
+                CheckPropertyInited("ObjectId");
+                return _objectid;
             }
             set
             {
-                _shortname = value;
-                NotifyPropertyChanged("ShortName");
+                _objectid = value;
+                NotifyPropertyChanged("ObjectId");
             }
         }
 
 
-        private string _shortorfullname;
+        private long? _tourid;
         /// <summary>
-        /// 30400501 Краткое или полное наименование ()
+        /// 20102200 Идентификатор тура объекта кадастровой оценки (TOUR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400501)]
-        public string ShortOrFullName
+        [RegisterAttribute(AttributeID = 20102200)]
+        public long? TourId
         {
             get
             {
-                CheckPropertyInited("ShortOrFullName");
-                return _shortorfullname;
+                CheckPropertyInited("TourId");
+                return _tourid;
             }
             set
             {
-                _shortorfullname = value;
-                NotifyPropertyChanged("ShortOrFullName");
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
             }
         }
 
 
-        private string _inn;
+        private long? _taskid;
         /// <summary>
-        /// 30400600 ИНН (INN)
+        /// 20102300 Идентификатор задания единицы объекта кадастровой оценки (TASK_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400600)]
-        public string Inn
+        [RegisterAttribute(AttributeID = 20102300)]
+        public long? TaskId
         {
             get
             {
-                CheckPropertyInited("Inn");
-                return _inn;
+                CheckPropertyInited("TaskId");
+                return _taskid;
             }
             set
             {
-                _inn = value;
-                NotifyPropertyChanged("Inn");
+                _taskid = value;
+                NotifyPropertyChanged("TaskId");
             }
         }
 
 
-        private string _kpp;
+        private long? _modelid;
         /// <summary>
-        /// 30400700 КПП (KPP)
+        /// 20102400 Уникальный идентификатор модели (MODEL_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400700)]
-        public string Kpp
+        [RegisterAttribute(AttributeID = 20102400)]
+        public long? ModelId
         {
             get
             {
-                CheckPropertyInited("Kpp");
-                return _kpp;
+                CheckPropertyInited("ModelId");
+                return _modelid;
             }
             set
             {
-                _kpp = value;
-                NotifyPropertyChanged("Kpp");
+                _modelid = value;
+                NotifyPropertyChanged("ModelId");
             }
         }
 
 
-        private string _okpo;
+        private long? _groupid;
         /// <summary>
-        /// 30400800 ОКПО (OKPO)
+        /// 20102500 Уникальный идентификатор группы (GROUP_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400800)]
-        public string Okpo
+        [RegisterAttribute(AttributeID = 20102500)]
+        public long? GroupId
         {
             get
             {
-                CheckPropertyInited("Okpo");
-                return _okpo;
+                CheckPropertyInited("GroupId");
+                return _groupid;
             }
             set
             {
-                _okpo = value;
-                NotifyPropertyChanged("Okpo");
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
             }
         }
 
 
-        private string _ogrn;
+        private string _status;
         /// <summary>
-        /// 30400900 Номер ОГРН (OGRN)
+        /// 20102600 Статус единицы оценки (STATUS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30400900)]
-        public string Ogrn
+        [RegisterAttribute(AttributeID = 20102600)]
+        public string Status
         {
             get
             {
-                CheckPropertyInited("Ogrn");
-                return _ogrn;
+                CheckPropertyInited("Status");
+                return _status;
             }
             set
             {
-                _ogrn = value;
-                NotifyPropertyChanged("Ogrn");
+                _status = value;
+                NotifyPropertyChanged("Status");
             }
         }
 
 
-        private DateTime? _ogrndate;
+        private KoUnitStatus _status_Code;
         /// <summary>
-        /// 30401000 Дата ОГРН (OGRN_DATE)
+        /// 20102600 Статус единицы оценки (справочный код) (STATUS_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401000)]
-        public DateTime? OgrnDate
+        [RegisterAttribute(AttributeID = 20102600)]
+        public KoUnitStatus Status_Code
         {
             get
             {
-                CheckPropertyInited("OgrnDate");
-                return _ogrndate;
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
             }
             set
             {
-                _ogrndate = value;
-                NotifyPropertyChanged("OgrnDate");
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
             }
         }
 
 
-        private string _regnumber;
+        private DateTime? _creationdate;
         /// <summary>
-        /// 30401100 Номер свидетельства о регистрации (REG_NUMBER)
+        /// 20102700 Дата создания (CREATION_DATE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401100)]
-        public string RegNumber
+        [RegisterAttribute(AttributeID = 20102700)]
+        public DateTime? CreationDate
         {
             get
             {
-                CheckPropertyInited("RegNumber");
-                return _regnumber;
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
             }
             set
             {
-                _regnumber = value;
-                NotifyPropertyChanged("RegNumber");
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
             }
         }
 
 
-        private string _regorgan;
+        private decimal? _cadastralcost;
         /// <summary>
-        /// 30401200 Орган регистрации (REG_ORGAN)
+        /// 20102800 Кадастровая стоимость (CADASTRAL_COST)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401200)]
-        public string RegOrgan
+        [RegisterAttribute(AttributeID = 20102800)]
+        public decimal? CadastralCost
         {
             get
             {
-                CheckPropertyInited("RegOrgan");
-                return _regorgan;
+                CheckPropertyInited("CadastralCost");
+                return _cadastralcost;
             }
             set
             {
-                _regorgan = value;
-                NotifyPropertyChanged("RegOrgan");
+                _cadastralcost = value;
+                NotifyPropertyChanged("CadastralCost");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 202 Тур оценки (KO_TOUR)
+    /// </summary>
+    [RegisterInfo(RegisterID = 202)]
+    [Serializable]
+    public partial class OMTour : OMBaseClass<OMTour>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20202000 Уникальный идентификатор тура (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20202000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private string _phone;
+        private long? _year;
         /// <summary>
-        /// 30401300 Телефон (PHONE)
+        /// 20202100 Год проведения тур (YEAR)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401300)]
-        public string Phone
+        [RegisterAttribute(AttributeID = 20202100)]
+        public long? Year
         {
             get
             {
-                CheckPropertyInited("Phone");
-                return _phone;
+                CheckPropertyInited("Year");
+                return _year;
             }
             set
             {
-                _phone = value;
-                NotifyPropertyChanged("Phone");
+                _year = value;
+                NotifyPropertyChanged("Year");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 203 Задание на оценку (KO_TASK)
+    /// </summary>
+    [RegisterInfo(RegisterID = 203)]
+    [Serializable]
+    public partial class OMTask : OMBaseClass<OMTask>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20302000 Уникальный идентификатор задания на оценку (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20302000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private string _fax;
+        private DateTime? _creationdate;
         /// <summary>
-        /// 30401400 Факс (FAX)
+        /// 20302100 Дата создания (CREATION_DATE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401400)]
-        public string Fax
+        [RegisterAttribute(AttributeID = 20302100)]
+        public DateTime? CreationDate
         {
             get
             {
-                CheckPropertyInited("Fax");
-                return _fax;
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
             }
             set
             {
-                _fax = value;
-                NotifyPropertyChanged("Fax");
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
             }
         }
 
 
-        private string _email;
+        private long? _documentid;
         /// <summary>
-        /// 30401500 Email (EMAIL)
+        /// 20302200 Идентификатор документа (DOCUMENT_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401500)]
-        public string Email
+        [RegisterAttribute(AttributeID = 20302200)]
+        public long? DocumentId
         {
             get
             {
-                CheckPropertyInited("Email");
-                return _email;
+                CheckPropertyInited("DocumentId");
+                return _documentid;
             }
             set
             {
-                _email = value;
-                NotifyPropertyChanged("Email");
+                _documentid = value;
+                NotifyPropertyChanged("DocumentId");
             }
         }
 
 
-        private string _www;
+        private string _notetype;
         /// <summary>
-        /// 30401600 www (WWW)
+        /// 20302300 Тип статьи (NOTE_TYPE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401600)]
-        public string Www
+        [RegisterAttribute(AttributeID = 20302300)]
+        public string NoteType
         {
             get
             {
-                CheckPropertyInited("Www");
-                return _www;
+                CheckPropertyInited("NoteType");
+                return _notetype;
             }
             set
             {
-                _www = value;
-                NotifyPropertyChanged("Www");
+                _notetype = value;
+                NotifyPropertyChanged("NoteType");
             }
         }
 
 
-        private string _surname;
+        private KoNoteType _notetype_Code;
         /// <summary>
-        /// 30401700 Фамилия (SURNAME)
+        /// 20302300 Тип статьи (справочный код) (NOTE_TYPE_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401700)]
-        public string Surname
+        [RegisterAttribute(AttributeID = 20302300)]
+        public KoNoteType NoteType_Code
         {
             get
             {
-                CheckPropertyInited("Surname");
-                return _surname;
+                CheckPropertyInited("NoteType_Code");
+                return this._notetype_Code;
             }
             set
             {
-                _surname = value;
-                NotifyPropertyChanged("Surname");
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_notetype))
+                    {
+                         _notetype = descr;
+                    }
+                }
+                else
+                {
+                     _notetype = descr;
+                }
+
+                this._notetype_Code = value;
+                NotifyPropertyChanged("NoteType");
+                NotifyPropertyChanged("NoteType_Code");
+            }
+        }
+
+
+        private long? _tourid;
+        /// <summary>
+        /// 20302400 Уникальный идентификатор тура (TOUR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20302400)]
+        public long? TourId
+        {
+            get
+            {
+                CheckPropertyInited("TourId");
+                return _tourid;
+            }
+            set
+            {
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
+            }
+        }
+
+
+        private long? _responsedocid;
+        /// <summary>
+        /// 20302500 Уникальный идентификатор документа ответа (RESPONSE_DOCUMENT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20302500)]
+        public long? ResponseDocId
+        {
+            get
+            {
+                CheckPropertyInited("ResponseDocId");
+                return _responsedocid;
+            }
+            set
+            {
+                _responsedocid = value;
+                NotifyPropertyChanged("ResponseDocId");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 20302600 Статус (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20302600)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private KoTaskStatus _status_Code;
+        /// <summary>
+        /// 20302600 Статус (справочный код) (STATUS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20302600)]
+        public KoTaskStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 204 Документы (KO_DOCUMENT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 204)]
+    [Serializable]
+    public partial class OMDocument : OMBaseClass<OMDocument>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20402000 Уникальный идентификатор документа (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20402000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private DateTime? _creationdate;
+        /// <summary>
+        /// 20402100 Дата создания (CREATION_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20402100)]
+        public DateTime? CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private DateTime? _documentdate;
+        /// <summary>
+        /// 20402200 Дата документа (DOCUMENT_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20402200)]
+        public DateTime? DocumentDate
+        {
+            get
+            {
+                CheckPropertyInited("DocumentDate");
+                return _documentdate;
+            }
+            set
+            {
+                _documentdate = value;
+                NotifyPropertyChanged("DocumentDate");
+            }
+        }
+
+
+        private long? _number;
+        /// <summary>
+        /// 20402300 Номер документа (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20402300)]
+        public long? Number
+        {
+            get
+            {
+                CheckPropertyInited("Number");
+                return _number;
+            }
+            set
+            {
+                _number = value;
+                NotifyPropertyChanged("Number");
+            }
+        }
+
+
+        private string _typecode;
+        /// <summary>
+        /// 20402400 Тип документа (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20402400)]
+        public string TypeCode
+        {
+            get
+            {
+                CheckPropertyInited("TypeCode");
+                return _typecode;
+            }
+            set
+            {
+                _typecode = value;
+                NotifyPropertyChanged("TypeCode");
+            }
+        }
+
+
+        private KoDocType _typecode_Code;
+        /// <summary>
+        /// 20402400 Тип документа (справочный код) (TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20402400)]
+        public KoDocType TypeCode_Code
+        {
+            get
+            {
+                CheckPropertyInited("TypeCode_Code");
+                return this._typecode_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_typecode))
+                    {
+                         _typecode = descr;
+                    }
+                }
+                else
+                {
+                     _typecode = descr;
+                }
+
+                this._typecode_Code = value;
+                NotifyPropertyChanged("TypeCode");
+                NotifyPropertyChanged("TypeCode_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 205 Группы/Подгруппы (KO_GROUP)
+    /// </summary>
+    [RegisterInfo(RegisterID = 205)]
+    [Serializable]
+    public partial class OMGroup : OMBaseClass<OMGroup>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20502000 Уникальный идентификатор группы (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20502000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _parentid;
+        /// <summary>
+        /// 20502100 Уникальный идентификатор родительской группы (PARENT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20502100)]
+        public long? ParentId
+        {
+            get
+            {
+                CheckPropertyInited("ParentId");
+                return _parentid;
+            }
+            set
+            {
+                _parentid = value;
+                NotifyPropertyChanged("ParentId");
+            }
+        }
+
+
+        private string _groupname;
+        /// <summary>
+        /// 20502200 Наименование группы (GROUP_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20502200)]
+        public string GroupName
+        {
+            get
+            {
+                CheckPropertyInited("GroupName");
+                return _groupname;
+            }
+            set
+            {
+                _groupname = value;
+                NotifyPropertyChanged("GroupName");
+            }
+        }
+
+
+        private string _groupalgoritm;
+        /// <summary>
+        /// 20502300 Механизм группировки (GROUP_ALGORITM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20502300)]
+        public string GroupAlgoritm
+        {
+            get
+            {
+                CheckPropertyInited("GroupAlgoritm");
+                return _groupalgoritm;
+            }
+            set
+            {
+                _groupalgoritm = value;
+                NotifyPropertyChanged("GroupAlgoritm");
+            }
+        }
+
+
+        private KoGroupAlgoritm _groupalgoritm_Code;
+        /// <summary>
+        /// 20502300 Механизм группировки (справочный код) (GROUP_ALGORITM_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20502300)]
+        public KoGroupAlgoritm GroupAlgoritm_Code
+        {
+            get
+            {
+                CheckPropertyInited("GroupAlgoritm_Code");
+                return this._groupalgoritm_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_groupalgoritm))
+                    {
+                         _groupalgoritm = descr;
+                    }
+                }
+                else
+                {
+                     _groupalgoritm = descr;
+                }
+
+                this._groupalgoritm_Code = value;
+                NotifyPropertyChanged("GroupAlgoritm");
+                NotifyPropertyChanged("GroupAlgoritm_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 206 Модель (KO_MODEL)
+    /// </summary>
+    [RegisterInfo(RegisterID = 206)]
+    [Serializable]
+    public partial class OMModel : OMBaseClass<OMModel>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20602000 Уникальный идентификатор модели (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20602000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _groupid;
+        /// <summary>
+        /// 20602100 Идентификатор группы (GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20602100)]
+        public long? GroupId
+        {
+            get
+            {
+                CheckPropertyInited("GroupId");
+                return _groupid;
+            }
+            set
+            {
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
             }
         }
 
 
         private string _name;
         /// <summary>
-        /// 30401800 Имя (NAME)
+        /// 20602200 Наименование (NAME)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401800)]
+        [RegisterAttribute(AttributeID = 20602200)]
         public string Name
         {
             get
@@ -1271,602 +1899,500 @@ namespace ObjectModel.Cld
         }
 
 
-        private string _patronymic;
+        private string _description;
         /// <summary>
-        /// 30401900 Отчество (PATRONYMIC)
+        /// 20602300 Описание (DESCRIPTION)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30401900)]
-        public string Patronymic
+        [RegisterAttribute(AttributeID = 20602300)]
+        public string Description
         {
             get
             {
-                CheckPropertyInited("Patronymic");
-                return _patronymic;
+                CheckPropertyInited("Description");
+                return _description;
             }
             set
             {
-                _patronymic = value;
-                NotifyPropertyChanged("Patronymic");
+                _description = value;
+                NotifyPropertyChanged("Description");
             }
         }
 
 
-        private string _legaladdress;
+        private string _formula;
         /// <summary>
-        /// 30402000 Юридический адрес (LEGAL_ADDRESS)
+        /// 20602400 Формула (FORMULA)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402000)]
-        public string LegalAddress
+        [RegisterAttribute(AttributeID = 20602400)]
+        public string Formula
         {
             get
             {
-                CheckPropertyInited("LegalAddress");
-                return _legaladdress;
+                CheckPropertyInited("Formula");
+                return _formula;
             }
             set
             {
-                _legaladdress = value;
-                NotifyPropertyChanged("LegalAddress");
+                _formula = value;
+                NotifyPropertyChanged("Formula");
             }
         }
 
 
-        private string _postaddress;
+        private string _algoritmtype;
         /// <summary>
-        /// 30402100 Почтовый адрес (POST_ADDRESS)
+        /// 20602500 Метод рассчёта (ALGORITM_TYPE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402100)]
-        public string PostAddress
+        [RegisterAttribute(AttributeID = 20602500)]
+        public string AlgoritmType
         {
             get
             {
-                CheckPropertyInited("PostAddress");
-                return _postaddress;
+                CheckPropertyInited("AlgoritmType");
+                return _algoritmtype;
             }
             set
             {
-                _postaddress = value;
-                NotifyPropertyChanged("PostAddress");
+                _algoritmtype = value;
+                NotifyPropertyChanged("AlgoritmType");
             }
         }
 
 
-        private string _orgtype;
+        private KoAlgoritmType _algoritmtype_Code;
         /// <summary>
-        /// 30402200 Вид предприятия (ORG_TYPE)
+        /// 20602500 Метод рассчёта (справочный код) (ALGORITM_TYPE_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402200)]
-        public string OrgType
+        [RegisterAttribute(AttributeID = 20602500)]
+        public KoAlgoritmType AlgoritmType_Code
         {
             get
             {
-                CheckPropertyInited("OrgType");
-                return _orgtype;
+                CheckPropertyInited("AlgoritmType_Code");
+                return this._algoritmtype_Code;
             }
             set
             {
-                _orgtype = value;
-                NotifyPropertyChanged("OrgType");
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_algoritmtype))
+                    {
+                         _algoritmtype = descr;
+                    }
+                }
+                else
+                {
+                     _algoritmtype = descr;
+                }
+
+                this._algoritmtype_Code = value;
+                NotifyPropertyChanged("AlgoritmType");
+                NotifyPropertyChanged("AlgoritmType_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 207 Модель тура (KO_TOUR_MODEL)
+    /// </summary>
+    [RegisterInfo(RegisterID = 207)]
+    [Serializable]
+    public partial class OMTourModel : OMBaseClass<OMTourModel>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20702000 Уникальный идентификатор модели тура (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20702000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private long? _orgtype_Code;
+        private long? _tourid;
         /// <summary>
-        /// 30402200 Вид предприятия (справочный код) (ORG_TYPE_ID)
+        /// 20702100 Идентификатор тура (TOUR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402200)]
-        public long? OrgType_Code
+        [RegisterAttribute(AttributeID = 20702100)]
+        public long? TourId
         {
             get
             {
-                CheckPropertyInited("OrgType_Code");
-                return _orgtype_Code;
+                CheckPropertyInited("TourId");
+                return _tourid;
             }
             set
             {
-                _orgtype_Code = value;
-                NotifyPropertyChanged("OrgType_Code");
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
             }
         }
 
 
-        private string _okfs;
+        private long? _modelid;
         /// <summary>
-        /// 30402300 ОКФС (OKFS)
+        /// 20702200 Идентификатор модели (MODEL_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402300)]
-        public string Okfs
+        [RegisterAttribute(AttributeID = 20702200)]
+        public long? ModelId
         {
             get
             {
-                CheckPropertyInited("Okfs");
-                return _okfs;
+                CheckPropertyInited("ModelId");
+                return _modelid;
             }
             set
             {
-                _okfs = value;
-                NotifyPropertyChanged("Okfs");
+                _modelid = value;
+                NotifyPropertyChanged("ModelId");
             }
         }
 
 
-        private long? _okfs_Code;
+        private string _status;
         /// <summary>
-        /// 30402300 ОКФС (справочный код) (OKFS_ID)
+        /// 20702300 Статус (STATUS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402300)]
-        public long? Okfs_Code
+        [RegisterAttribute(AttributeID = 20702300)]
+        public string Status
         {
             get
             {
-                CheckPropertyInited("Okfs_Code");
-                return _okfs_Code;
+                CheckPropertyInited("Status");
+                return _status;
             }
             set
             {
-                _okfs_Code = value;
-                NotifyPropertyChanged("Okfs_Code");
+                _status = value;
+                NotifyPropertyChanged("Status");
             }
         }
 
 
-        private string _okopf;
+        private KoModelStatus _status_Code;
         /// <summary>
-        /// 30402400 ОКОПФ (OKOPF)
+        /// 20702300 Статус (справочный код) (STATUS_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402400)]
-        public string Okopf
+        [RegisterAttribute(AttributeID = 20702300)]
+        public KoModelStatus Status_Code
         {
             get
             {
-                CheckPropertyInited("Okopf");
-                return _okopf;
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
             }
             set
             {
-                _okopf = value;
-                NotifyPropertyChanged("Okopf");
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 208 Факторы группы (KO_GROUP_FACTOR)
+    /// </summary>
+    [RegisterInfo(RegisterID = 208)]
+    [Serializable]
+    public partial class OMGroupFactor : OMBaseClass<OMGroupFactor>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 20802000 Уникальный идентификатор фактора группы (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 20802000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private long? _okopf_Code;
+        private long? _groupid;
         /// <summary>
-        /// 30402400 ОКОПФ (справочный код) (OKOPF_ID)
+        /// 20802100 Идентификатор группы (GROUP_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402400)]
-        public long? Okopf_Code
+        [RegisterAttribute(AttributeID = 20802100)]
+        public long? GroupId
         {
             get
             {
-                CheckPropertyInited("Okopf_Code");
-                return _okopf_Code;
+                CheckPropertyInited("GroupId");
+                return _groupid;
             }
             set
             {
-                _okopf_Code = value;
-                NotifyPropertyChanged("Okopf_Code");
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
             }
         }
 
 
-        private string _okato;
+        private long? _factorid;
         /// <summary>
-        /// 30402500 ОКАТО (OKATO)
+        /// 20802200 Идентификатор фактора (FACTOR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402500)]
-        public string Okato
+        [RegisterAttribute(AttributeID = 20802200)]
+        public long? FactorId
         {
             get
             {
-                CheckPropertyInited("Okato");
-                return _okato;
+                CheckPropertyInited("FactorId");
+                return _factorid;
             }
             set
             {
-                _okato = value;
-                NotifyPropertyChanged("Okato");
+                _factorid = value;
+                NotifyPropertyChanged("FactorId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 210 Факторы модели (KO_MODEL_FACTOR)
+    /// </summary>
+    [RegisterInfo(RegisterID = 210)]
+    [Serializable]
+    public partial class OMModelFactor : OMBaseClass<OMModelFactor>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21002000 Уникальный идентификатор фактора модели (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 21002000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private long? _okato_Code;
+        private long? _modelid;
         /// <summary>
-        /// 30402500 ОКАТО (справочный код) (OKATO_ID)
+        /// 21002100 Идентификатор модели (MODEL_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402500)]
-        public long? Okato_Code
+        [RegisterAttribute(AttributeID = 21002100)]
+        public long? ModelId
         {
             get
             {
-                CheckPropertyInited("Okato_Code");
-                return _okato_Code;
+                CheckPropertyInited("ModelId");
+                return _modelid;
             }
             set
             {
-                _okato_Code = value;
-                NotifyPropertyChanged("Okato_Code");
+                _modelid = value;
+                NotifyPropertyChanged("ModelId");
             }
         }
 
 
-        private string _okved;
+        private long? _factorid;
         /// <summary>
-        /// 30402600 ОКВЭД (OKVED)
+        /// 21002200 Идентификатор фактора (FACTOR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402600)]
-        public string Okved
+        [RegisterAttribute(AttributeID = 21002200)]
+        public long? FactorId
         {
             get
             {
-                CheckPropertyInited("Okved");
-                return _okved;
+                CheckPropertyInited("FactorId");
+                return _factorid;
             }
             set
             {
-                _okved = value;
-                NotifyPropertyChanged("Okved");
+                _factorid = value;
+                NotifyPropertyChanged("FactorId");
             }
         }
 
 
-        private long? _okved_Code;
+        private long? _markerid;
         /// <summary>
-        /// 30402600 ОКВЭД (справочный код) (OKVED_ID)
+        /// 21002300 Идентификатор метки (MARKER_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402600)]
-        public long? Okved_Code
+        [RegisterAttribute(AttributeID = 21002300)]
+        public long? MarkerId
         {
             get
             {
-                CheckPropertyInited("Okved_Code");
-                return _okved_Code;
+                CheckPropertyInited("MarkerId");
+                return _markerid;
             }
             set
             {
-                _okved_Code = value;
-                NotifyPropertyChanged("Okved_Code");
+                _markerid = value;
+                NotifyPropertyChanged("MarkerId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 211 Справочник меток (KO_MARK_CATALOG)
+    /// </summary>
+    [RegisterInfo(RegisterID = 211)]
+    [Serializable]
+    public partial class OMMarkCatalog : OMBaseClass<OMMarkCatalog>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21102000 Уникальный идентификатор метки (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 21102000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private long? _upid;
+        private long? _groupid;
         /// <summary>
-        /// 30402700 Ведомственная подчиненность (UP_ID)
+        /// 21102100 Идентификатор группы (GROUP_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402700)]
-        public long? UpId
+        [RegisterAttribute(AttributeID = 21102100)]
+        public long? GroupId
         {
             get
             {
-                CheckPropertyInited("UpId");
-                return _upid;
+                CheckPropertyInited("GroupId");
+                return _groupid;
             }
             set
             {
-                _upid = value;
-                NotifyPropertyChanged("UpId");
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
             }
         }
 
 
-        private DateTime? _createdate;
+        private long? _factorid;
         /// <summary>
-        /// 30402800 Дата создания (CREATE_DATE)
+        /// 21102200 Идентификатор фактора (FACTOR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402800)]
-        public DateTime? CreateDate
+        [RegisterAttribute(AttributeID = 21102200)]
+        public long? FactorId
         {
             get
             {
-                CheckPropertyInited("CreateDate");
-                return _createdate;
+                CheckPropertyInited("FactorId");
+                return _factorid;
             }
             set
             {
-                _createdate = value;
-                NotifyPropertyChanged("CreateDate");
+                _factorid = value;
+                NotifyPropertyChanged("FactorId");
             }
         }
 
 
-        private DateTime? _dateend;
+        private string _valuefactor;
         /// <summary>
-        /// 30402900 Дата прекращения (DATE_END)
+        /// 21102300 Значение фактора (VALUE_FACTOR)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30402900)]
-        public DateTime? DateEnd
+        [RegisterAttribute(AttributeID = 21102300)]
+        public string ValueFactor
         {
             get
             {
-                CheckPropertyInited("DateEnd");
-                return _dateend;
+                CheckPropertyInited("ValueFactor");
+                return _valuefactor;
             }
             set
             {
-                _dateend = value;
-                NotifyPropertyChanged("DateEnd");
+                _valuefactor = value;
+                NotifyPropertyChanged("ValueFactor");
             }
         }
 
 
-        private string _state;
+        private decimal? _metkafactor;
         /// <summary>
-        /// 30403000 Состояние субъекта (STATE)
+        /// 21102400 Значение метки (METKA_FACTOR)
         /// </summary>
-        [RegisterAttribute(AttributeID = 30403000)]
-        public string State
+        [RegisterAttribute(AttributeID = 21102400)]
+        public decimal? MetkaFactor
         {
             get
             {
-                CheckPropertyInited("State");
-                return _state;
+                CheckPropertyInited("MetkaFactor");
+                return _metkafactor;
             }
             set
             {
-                _state = value;
-                NotifyPropertyChanged("State");
-            }
-        }
-
-
-        private long? _state_Code;
-        /// <summary>
-        /// 30403000 Состояние субъекта (справочный код) (STATE_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403000)]
-        public long? State_Code
-        {
-            get
-            {
-                CheckPropertyInited("State_Code");
-                return _state_Code;
-            }
-            set
-            {
-                _state_Code = value;
-                NotifyPropertyChanged("State_Code");
-            }
-        }
-
-
-        private string _legalindex;
-        /// <summary>
-        /// 30403100 Юридический адрес: индекс (LEGAL_INDEX)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403100)]
-        public string LegalIndex
-        {
-            get
-            {
-                CheckPropertyInited("LegalIndex");
-                return _legalindex;
-            }
-            set
-            {
-                _legalindex = value;
-                NotifyPropertyChanged("LegalIndex");
-            }
-        }
-
-
-        private string _legallocality;
-        /// <summary>
-        /// 30403200 Юридический адрес: нас.пункт (LEGAL_LOCALITY)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403200)]
-        public string LegalLocality
-        {
-            get
-            {
-                CheckPropertyInited("LegalLocality");
-                return _legallocality;
-            }
-            set
-            {
-                _legallocality = value;
-                NotifyPropertyChanged("LegalLocality");
-            }
-        }
-
-
-        private string _postindex;
-        /// <summary>
-        /// 30403300 Почтовый адрес: индекс (POST_INDEX)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403300)]
-        public string PostIndex
-        {
-            get
-            {
-                CheckPropertyInited("PostIndex");
-                return _postindex;
-            }
-            set
-            {
-                _postindex = value;
-                NotifyPropertyChanged("PostIndex");
-            }
-        }
-
-
-        private string _postlocality;
-        /// <summary>
-        /// 30403400 Почтовый адрес: нас.пункт (POST_LOCALITY)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403400)]
-        public string PostLocality
-        {
-            get
-            {
-                CheckPropertyInited("PostLocality");
-                return _postlocality;
-            }
-            set
-            {
-                _postlocality = value;
-                NotifyPropertyChanged("PostLocality");
-            }
-        }
-
-
-        private string _gutype;
-        /// <summary>
-        /// 30403500 Тип ГУ (GU_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403500)]
-        public string GUType
-        {
-            get
-            {
-                CheckPropertyInited("GUType");
-                return _gutype;
-            }
-            set
-            {
-                _gutype = value;
-                NotifyPropertyChanged("GUType");
-            }
-        }
-
-
-        private long? _gutype_Code;
-        /// <summary>
-        /// 30403500 Тип ГУ (справочный код) (GU_TYPE_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403500)]
-        public long? GUType_Code
-        {
-            get
-            {
-                CheckPropertyInited("GUType_Code");
-                return _gutype_Code;
-            }
-            set
-            {
-                _gutype_Code = value;
-                NotifyPropertyChanged("GUType_Code");
-            }
-        }
-
-
-        private long? _sourceidgu;
-        /// <summary>
-        /// 30403600 ИД в источнике (SOURCE_ID_GU)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403600)]
-        public long? SourceIdGu
-        {
-            get
-            {
-                CheckPropertyInited("SourceIdGu");
-                return _sourceidgu;
-            }
-            set
-            {
-                _sourceidgu = value;
-                NotifyPropertyChanged("SourceIdGu");
-            }
-        }
-
-
-        private long? _oktmo;
-        /// <summary>
-        /// 30403700 ОКТМО (OKTMO)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403700)]
-        public long? Oktmo
-        {
-            get
-            {
-                CheckPropertyInited("Oktmo");
-                return _oktmo;
-            }
-            set
-            {
-                _oktmo = value;
-                NotifyPropertyChanged("Oktmo");
-            }
-        }
-
-
-        private bool? _isoiv;
-        /// <summary>
-        /// 30403800 Признак ОИВ (IS_OIV)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403800)]
-        public bool? IsOiv
-        {
-            get
-            {
-                CheckPropertyInited("IsOiv");
-                return _isoiv;
-            }
-            set
-            {
-                _isoiv = value;
-                NotifyPropertyChanged("IsOiv");
-            }
-        }
-
-
-        private long? _addagreementid;
-        /// <summary>
-        /// 30403900 Идентификатор доп. соглашения (ADD_AGREEMENT_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30403900)]
-        public long? AddAgreementId
-        {
-            get
-            {
-                CheckPropertyInited("AddAgreementId");
-                return _addagreementid;
-            }
-            set
-            {
-                _addagreementid = value;
-                NotifyPropertyChanged("AddAgreementId");
-            }
-        }
-
-
-        private string _postfias;
-        /// <summary>
-        /// 30404000 Почтовый адрес - ФИАС (POST_FIAS)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30404000)]
-        public string PostFias
-        {
-            get
-            {
-                CheckPropertyInited("PostFias");
-                return _postfias;
-            }
-            set
-            {
-                _postfias = value;
-                NotifyPropertyChanged("PostFias");
-            }
-        }
-
-
-        private string _legalfias;
-        /// <summary>
-        /// 30404100 Юридический адрес - ФИАС (LEGAL_FIAS)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 30404100)]
-        public string LegalFias
-        {
-            get
-            {
-                CheckPropertyInited("LegalFias");
-                return _legalfias;
-            }
-            set
-            {
-                _legalfias = value;
-                NotifyPropertyChanged("LegalFias");
+                _metkafactor = value;
+                NotifyPropertyChanged("MetkaFactor");
             }
         }
 
