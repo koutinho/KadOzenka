@@ -389,7 +389,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.14" />
-    <PackageReference Include="Platform.Web" Version="1.0.178" />
+    <PackageReference Include="Platform.Web" Version="1.0.179" />
   </ItemGroup>
 
   <ItemGroup>
@@ -642,5 +642,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <ConfigPath Include="$(ProjectDir)Config\**\*.*" />
+  </ItemGroup>
+  <Target Name="CopyConfigFiles" AfterTargets="Publish">
+    <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
+  </Target>
 
 </Project>
