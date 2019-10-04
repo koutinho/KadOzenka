@@ -4,7 +4,7 @@
     <input type="hidden" name="Id" value="@Model.Id" />
     <ul id="ls_panelbar" class="panelbar">
         <li id="Section_Main" data-expand>
-            <span>Основной блок</span>
+            <span>Основные данные</span>
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
@@ -56,7 +56,7 @@
                             <label class="control-label">Описание</label>
                         </div>
                         <div class="col-sm-10">
-                            <textarea class="k-textbox" readonly rows="5" style="resize:none;">"@Model.Description" </textarea>
+                            <textarea class="k-textbox" readonly rows="5" style="resize:none;">@Model.Description</textarea>
                         </div>
                     </div>
                 </div>
@@ -83,10 +83,10 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
-                            <label class="control-label">Кадастровый район</label>
+                            <label class="control-label">Район</label>
                         </div>
                         <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@Model.CadastralQuartal" />
+                            <input class="k-textbox" readonly value="@Model.District" />
                         </div>
                         <div class="col-sm-2">
                             <label class="control-label">Кадастровый номер здания</label>
@@ -160,11 +160,13 @@
                         <div class="col-sm-2">
                             <input class="k-textbox" readonly value="@Model.Group" />
                         </div>
+                     </div>
+                    <div class="form-group">
                         <div class="col-sm-2">
                             <label class="control-label">Подгруппа</label>
                         </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.Subgroup" />
+                        <div class="col-sm-10">
+                            <textarea class="k-textbox" readonly rows="2" style="resize:none;">@Model.Subgroup</textarea>
                         </div>
                     </div>
                     <div id="gu_list">
