@@ -72,7 +72,7 @@ namespace DebugApplication
 
 						CadastralNumber = row.ElementAt(0).ToString(),
 						BuildingCadastralNumber = row.ElementAt(1).ToString() != "0" ? row.ElementAt(1).ToString() : String.Empty,
-						CadastralQuartal = row.ElementAt(2).ToString() != "0" ? row.ElementAt(1).ToString() : String.Empty,
+						CadastralQuartal = row.ElementAt(2).ToString() != "0" ? row.ElementAt(2).ToString() : String.Empty,
 						//GroupCode =  row.ElementAt(3)
 						Group = row.ElementAt(5).ToString(),
 						Subgroup = row.ElementAt(3).ToString(),
