@@ -10,19 +10,45 @@ using OuterMarketParser.LinksGenerator;
 using OuterMarketParser.Model.DatabaseOperations;
 using OuterMarketParser.Parser.Cian;
 using OuterMarketParser.DatabaseReader;
+using ObjectModel.Market;
 
 namespace OuterMarketParser.Launcher
 {
-    class OuterMarketParser : ILongProcess
+    public class OuterMarketParser : ILongProcess
     {
 
         public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
-            OuterMarketSettings settings = new OuterMarketSettings();
-            List<string> links = new LinkGenerator().GenerateCianLinks(settings);
-            Parser.Cian.Client client = new Parser.Cian.Client(new CianDataParser(links));
-            Model.DatabaseOperations.Client dbCient = new Model.DatabaseOperations.Client(new DataToPostgreSQL(client.Parser.GetProperty()));
-            settings.UpdateLastSuccesfulUpdateDate();
+            try
+            {
+                OuterMarketSettings settings = new OuterMarketSettings();
+                List<string> links = new LinkGenerator().GenerateCianLinks(settings);
+                Parser.Cian.Client client = new Parser.Cian.Client(new CianDataParser(links));
+                Model.DatabaseOperations.Client dbCient = new Model.DatabaseOperations.Client(new DataToPostgreSQL(client.Parser.GetProperty()));
+                settings.UpdateLastSuccesfulUpdateDate();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        public void StartProcess()
+        {
+            try
+            {
+                OuterMarketSettings settings = new OuterMarketSettings();
+                List<string> links = new LinkGenerator().GenerateCianLinks(settings);
+                Console.WriteLine("=====> " + links.Count);
+                Parser.Cian.Client client = new Parser.Cian.Client(new CianDataParser(links));
+                Model.DatabaseOperations.Client dbCient = new Model.DatabaseOperations.Client(new DataToPostgreSQL(client.Parser.GetProperty()));
+                settings.UpdateLastSuccesfulUpdateDate();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            Console.WriteLine("=====> Writen To Postgres");
         }
 
         public void LogError(long? objectId, Exception ex, long? errorId = null)

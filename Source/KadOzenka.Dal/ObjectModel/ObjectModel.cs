@@ -700,7 +700,7 @@ namespace ObjectModel.Market
 
         private string _cadastralnumber;
         /// <summary>
-        /// 10005400 Кадастровый номер помещения (CADASTRAL_NUMBER)
+        /// 10005400 Кадастровый номер (CADASTRAL_NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005400)]
         public string CadastralNumber
@@ -944,7 +944,7 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20002000 Уникальный идентификатор объекта кадастровой оценки (ID)
+        /// 20002000 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 20002000)]
         public long Id
@@ -964,7 +964,7 @@ namespace ObjectModel.KO
 
         private string _cadastralnumber;
         /// <summary>
-        /// 20002100 Кадастровый номер объекта оценки (CADASTRAL_NUMBER)
+        /// 20002100 Кадастровый номер (CADASTRAL_NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 20002100)]
         public string CadastralNumber
@@ -984,7 +984,7 @@ namespace ObjectModel.KO
 
         private string _objecttype;
         /// <summary>
-        /// 20002200 Тип объекта кадастровой оценки (OBJECT_TYPE)
+        /// 20002200 Тип объекта (OBJECT_TYPE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20002200)]
         public string ObjectType
@@ -1004,7 +1004,7 @@ namespace ObjectModel.KO
 
         private PropertyTypes _objecttype_Code;
         /// <summary>
-        /// 20002200 Тип объекта кадастровой оценки (справочный код) (OBJECT_TYPE_CODE)
+        /// 20002200 Тип объекта (справочный код) (OBJECT_TYPE_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20002200)]
         public PropertyTypes ObjectType_Code
@@ -1037,12 +1037,12 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _groupid;
+        private string _groupid;
         /// <summary>
-        /// 20002300 Идентификатор группы объекта кадастровой оценки (GROUP_ID)
+        /// 20002300 Группа (KO_GROUP)
         /// </summary>
         [RegisterAttribute(AttributeID = 20002300)]
-        public long? GroupId
+        public string GroupId
         {
             get
             {
@@ -1053,6 +1053,26 @@ namespace ObjectModel.KO
             {
                 _groupid = value;
                 NotifyPropertyChanged("GroupId");
+            }
+        }
+
+
+        private long? _groupid_Code;
+        /// <summary>
+        /// 20002300 Группа (справочный код) (KO_GROUP_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20002300)]
+        public long? GroupId_Code
+        {
+            get
+            {
+                CheckPropertyInited("GroupId_Code");
+                return _groupid_Code;
+            }
+            set
+            {
+                _groupid_Code = value;
+                NotifyPropertyChanged("GroupId_Code");
             }
         }
 

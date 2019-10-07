@@ -24,20 +24,16 @@ namespace OuterMarketParser.LinksGenerator
                 lastUpdateDate = lastUpdateDate.AddMinutes(settings.TimeDelta);
                 foreach(int region in settings.RegionIDs)
                 {
-                    result.Add(string.Format(settings.Link,
-                                             settings.Login,
-                                             settings.Token,
-                                             settings.DealId,
-                                             $"region_id={region}",
-                                             currentTime.ToString(settings.Template),
-                                             lastUpdateDate.ToString(settings.Template)));
-                    //Console.WriteLine(string.Format(settings.Link,
-                    //                                settings.Login,
-                    //                                settings.Token,
-                    //                                settings.DealId,
-                    //                                $"region_id={region}",
-                    //                                currentTime.ToString(settings.Template),
-                    //                                lastUpdateDate.ToString(settings.Template)));
+                    foreach(int deal in settings.DealIds)
+                    {
+                        result.Add(string.Format(settings.Link,
+                                                 settings.Login,
+                                                 settings.Token,
+                                                 deal,
+                                                 $"region_id={region}",
+                                                 currentTime.ToString(settings.Template),
+                                                 lastUpdateDate.ToString(settings.Template)));
+                    }
                 }
             }
             return result.ToList();

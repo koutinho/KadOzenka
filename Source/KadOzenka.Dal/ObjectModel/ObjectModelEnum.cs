@@ -5,9 +5,9 @@ using Core.Shared.Attributes;
 namespace ObjectModel.Directory
 {
     /// <summary>
-    /// Виды сторонних площадок (1)
+    /// Виды сторонних площадок (101)
     ///</summary>
-    [ReferenceInfo(ReferenceId = 1)]
+    [ReferenceInfo(ReferenceId = 101)]
     public enum MarketTypes : long
     {
         /// <summary>
@@ -43,9 +43,9 @@ namespace ObjectModel.Directory
     }
 
     /// <summary>
-    /// Виды объектов недвижимости (2)
+    /// Виды объектов недвижимости (102)
     ///</summary>
-    [ReferenceInfo(ReferenceId = 2)]
+    [ReferenceInfo(ReferenceId = 102)]
     public enum PropertyTypes : long
     {
         /// <summary>
@@ -111,9 +111,9 @@ namespace ObjectModel.Directory
     }
 
     /// <summary>
-    /// Тип сделки (10)
+    /// Тип сделки (110)
     ///</summary>
-    [ReferenceInfo(ReferenceId = 10)]
+    [ReferenceInfo(ReferenceId = 110)]
     public enum DealType : long
     {
         /// <summary>
