@@ -12,9 +12,14 @@
 
     <DefaultDomainName>CIPGS</DefaultDomainName>
 
-  <SrdSettings>
-        <UseRoleSubsystem>false</UseRoleSubsystem>
+    <SrdSettings>
+      <UseRoleSubsystem>false</UseRoleSubsystem>
     </SrdSettings>
+
+    <MessageSettings>
+      <!--Частота проверки наличия новых личных сообщений (в секундах). 0 - проверка отключена.-->
+      <Delay>5</Delay>
+    </MessageSettings>
   
     <MailServer>
       <Host>pochta.mos.ru</Host>

@@ -16,6 +16,11 @@
     <UseRoleSubsystem>false</UseRoleSubsystem>
   </SrdSettings>
 
+  <MessageSettings>
+    <!--Частота проверки наличия новых личных сообщений (в секундах). 0 - проверка отключена.-->
+    <Delay>5</Delay>
+  </MessageSettings>
+
   <MailServer>
     <Host>pochta.mos.ru</Host>
     <Port>25</Port>
