@@ -27,4 +27,9 @@
         <Phone></Phone>
         <Email></Email>
     </ErrorManagment>
+
+  <OmAssemblies>
+    <string>Platform</string>
+    <string>KadOzenka.Dal</string>
+  </OmAssemblies>
 </SystemCommon>

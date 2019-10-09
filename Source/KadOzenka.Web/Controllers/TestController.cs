@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.Register;
+using ObjectModel.Core.SRD;
+using ObjectModel.Market;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -142,8 +144,31 @@ namespace CIPJS.Controllers
             _service = service;
         }
 
-        // GET: /<controller>/
-        public IActionResult Index()
+		[HttpGet]
+		public IActionResult ObjectCard(long id)
+		{
+			var analogItem = OMCoreObject
+				.Where()
+				.SetPackageSize(10)
+				//.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return Json(analogItem);
+		}
+
+		[HttpGet]
+		public IActionResult UserCard(long id)
+		{
+			var test = OMUser
+				.Where(x => x.Id == id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return Json(test);
+		}
+
+		// GET: /<controller>/
+		public IActionResult Index()
         {
 			var dto = new DashboardDtoTest
 			{

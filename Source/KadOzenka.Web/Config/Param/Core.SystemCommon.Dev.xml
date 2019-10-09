@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <SystemCommon xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <ApplicationName>Кадастровая оценка</ApplicationName>
+  <ApplicationName>Рыночная оценка объектов недвижимости города Москвы</ApplicationName>
   <ApplicationSubName>Центр имущественных платежей и жилищного страхования</ApplicationSubName>
   <LeftPanelTitle>Департамент имущества города Москвы</LeftPanelTitle>
   <LeftPanelDescription>Центр имущественных платежей и жилищного страхования</LeftPanelDescription>
@@ -34,4 +34,9 @@
     <Phone></Phone>
     <Email></Email>
   </ErrorManagment>
+
+  <OmAssemblies>
+    <string>Platform</string>
+    <string>KadOzenka.Dal</string>
+  </OmAssemblies>
 </SystemCommon>
