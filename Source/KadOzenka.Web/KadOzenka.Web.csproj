@@ -423,9 +423,6 @@
     <None Update="Config\Registers\Views\PfhdFact.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\Registers\Views\SkPackages.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -645,6 +642,10 @@
 
   <ItemGroup>
     <ConfigPath Include="$(ProjectDir)Config\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
   </ItemGroup>
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
