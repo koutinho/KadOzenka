@@ -1,18 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="101" DefaultLayoutId="1001002" AllowSearchPanelResize="false" IsBasic="false"
+<RegisterView RegisterId="200" DefaultLayoutId="1002001" LinkedRegistersList="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23" AllowSearchPanelResize="false" IsBasic="false"
               OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true"
               JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
               ShowActualDate="false" SearchPanel="" SearchPanelWindowHeight="654">
-  
+
   <Buttons>
-    <Button Caption="Все данные" NavigateURL="~/RosReestrObjects">
+    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />
         <Parameter Key="RegisterId" Value="[RegisterId]" />
         <Parameter Key="LightMode" Value="true" />
       </Parameters>
     </Button>
+
+    <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
   </Buttons>
+  
   <Tabs>
+    <Tab Caption="Основные данные" NavigateURL="/GbuObjects/ObjectCard">
+      <Parameters>
+        <Parameter Key="id" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
   </Tabs>
+  
 </RegisterView>

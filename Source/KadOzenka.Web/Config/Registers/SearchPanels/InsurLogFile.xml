@@ -1,7 +1,0 @@
-﻿<RootElement>
-  <ControlElement Caption="Основные данные" OwnType="RadPanel">
-    <children>
-      <ControlElement Caption="Наименование файла" ID="FileName" OwnType="Text" AttributeNumber="322000200" QueryOperation="Like" />
-    </children>
-  </ControlElement>
-</RootElement>

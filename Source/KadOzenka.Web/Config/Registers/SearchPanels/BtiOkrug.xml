@@ -1,6 +1,0 @@
-﻿<RootElement>
-  <ControlElement Caption="Основные данные" OwnType="RadPanel" Expanded="true">
-    <children>
-    </children>
-  </ControlElement>
-</RootElement>

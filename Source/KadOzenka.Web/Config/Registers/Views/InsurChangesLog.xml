@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="352" DefaultLayoutId="1003521" AllowSearchPanelResize="false" IsBasic="false" UseMasterPage="false"
-              OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true" LinkedRegistersList="352,950"
-              JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="false" ShowObjectCards="false" ShowSettingsPanel="true"
-              ShowActualDate="false" SearchPanel="InsurChangesLog">
-</RegisterView>
