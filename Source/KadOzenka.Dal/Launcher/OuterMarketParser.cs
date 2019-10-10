@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Linq;
 
 using Core.Register.LongProcessManagment;
 
@@ -10,7 +11,6 @@ using OuterMarketParser.LinksGenerator;
 using OuterMarketParser.Model.DatabaseOperations;
 using OuterMarketParser.Parser.Cian;
 using OuterMarketParser.DatabaseReader;
-using ObjectModel.Market;
 
 namespace OuterMarketParser.Launcher
 {

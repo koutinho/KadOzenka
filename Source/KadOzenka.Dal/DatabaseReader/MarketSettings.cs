@@ -12,7 +12,7 @@ using Core.Register.LongProcessManagment;
 
 namespace OuterMarketParser.DatabaseReader
 {
-    class OuterMarketSettings
+    public class OuterMarketSettings
     {
         public DateTime LastSuccesfulUpdateDate { get; set; }
         public string InitialTimeTemplate { get; set; }

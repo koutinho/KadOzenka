@@ -149,6 +149,206 @@ namespace ObjectModel.Directory
     }
 
     /// <summary>
+    /// Процесс обработки (113)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 113)]
+    public enum ProcessStep : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// Не обработан (738)
+        /// </summary>
+        [Description("Не обработан")]
+        [EnumCode("1")]
+        DoNotProcessed = 738,
+        /// <summary>
+        /// Получен адрес (739)
+        /// </summary>
+        [Description("Получен адрес")]
+        [EnumCode("2")]
+        AddressStep = 739,
+        /// <summary>
+        /// Получен кадастровый номер (740)
+        /// </summary>
+        [Description("Получен кадастровый номер")]
+        [EnumCode("3")]
+        CadastralNumberStep = 740,
+        /// <summary>
+        /// Проверено наличие цены (741)
+        /// </summary>
+        [Description("Проверено наличие цены")]
+        [EnumCode("4")]
+        PriceStep = 741,
+        /// <summary>
+        /// Проверено наличие площади (742)
+        /// </summary>
+        [Description("Проверено наличие площади")]
+        [EnumCode("5")]
+        AreaStep = 742,
+        /// <summary>
+        /// Проверено на дублирование (743)
+        /// </summary>
+        [Description("Проверено на дублирование")]
+        [EnumCode("6")]
+        DuplicateStep = 743,
+    }
+
+    /// <summary>
+    /// Сегмент рынка недвижимости (114)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 114)]
+    public enum MarketSegment : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// Апартаменты (744)
+        /// </summary>
+        [Description("Апартаменты")]
+        [EnumCode("1")]
+        Appartment = 744,
+        /// <summary>
+        /// Гаражи (745)
+        /// </summary>
+        [Description("Гаражи")]
+        [EnumCode("2")]
+        Parking = 745,
+        /// <summary>
+        /// Гостиницы (746)
+        /// </summary>
+        [Description("Гостиницы")]
+        [EnumCode("3")]
+        Hotel = 746,
+        /// <summary>
+        /// ИЖС (747)
+        /// </summary>
+        [Description("ИЖС")]
+        [EnumCode("4")]
+        IZHS = 747,
+        /// <summary>
+        /// Машиноместа (748)
+        /// </summary>
+        [Description("Машиноместа")]
+        [EnumCode("5")]
+        CarParking = 748,
+        /// <summary>
+        /// МЖС (749)
+        /// </summary>
+        [Description("МЖС")]
+        [EnumCode("6")]
+        MZHS = 749,
+        /// <summary>
+        /// Офисы (750)
+        /// </summary>
+        [Description("Офисы")]
+        [EnumCode("7")]
+        Office = 750,
+        /// <summary>
+        /// Производство и склады (751)
+        /// </summary>
+        [Description("Производство и склады")]
+        [EnumCode("8")]
+        Factory = 751,
+        /// <summary>
+        /// Садоводческое, огородническое и дачное использование (752)
+        /// </summary>
+        [Description("Садоводческое, огородническое и дачное использование")]
+        [EnumCode("9")]
+        Garden = 752,
+        /// <summary>
+        /// Санатории (753)
+        /// </summary>
+        [Description("Санатории")]
+        [EnumCode("10")]
+        Sanatorium = 753,
+        /// <summary>
+        /// Торговля (754)
+        /// </summary>
+        [Description("Торговля")]
+        [EnumCode("11")]
+        Trading = 754,
+    }
+
+    /// <summary>
+    /// Материал стен (115)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 115)]
+    public enum WallMaterial : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// Кирпичные (755)
+        /// </summary>
+        [Description("Кирпичные")]
+        [EnumCode("1")]
+        Brick = 755,
+        /// <summary>
+        /// Монолитные (756)
+        /// </summary>
+        [Description("Монолитные")]
+        [EnumCode("2")]
+        Monolit = 756,
+        /// <summary>
+        /// Панельные и блочные (757)
+        /// </summary>
+        [Description("Панельные и блочные")]
+        [EnumCode("3")]
+        Panel = 757,
+        /// <summary>
+        /// Иное (758)
+        /// </summary>
+        [Description("Иное")]
+        [EnumCode("4")]
+        Other = 758,
+    }
+
+    /// <summary>
+    /// Класс качества (116)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 116)]
+    public enum QualityClass : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// А (760)
+        /// </summary>
+        [Description("А")]
+        [EnumCode("1")]
+        A = 760,
+        /// <summary>
+        /// В (761)
+        /// </summary>
+        [Description("В")]
+        [EnumCode("2")]
+        B = 761,
+        /// <summary>
+        /// В+ (762)
+        /// </summary>
+        [Description("В+")]
+        [EnumCode("3")]
+        Bplus = 762,
+    }
+
+    /// <summary>
     /// Статусы единицы оценки (200)
     ///</summary>
     [ReferenceInfo(ReferenceId = 200)]

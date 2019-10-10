@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Market;
+using System.Diagnostics;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -12,8 +13,7 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.Id == id)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
-
-			return View(analogItem);
+            return View(analogItem);
 		}
 	}
 }

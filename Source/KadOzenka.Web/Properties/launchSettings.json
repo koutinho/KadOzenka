@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost:4400/KadOzenka",
+      "applicationUrl": "http://localhost:4041",
       "sslPort": 0
     },
     "iisExpress": {
@@ -15,10 +15,11 @@
     "IIS Express": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:4400",
+      "launchUrl": "http://localhost:4041",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "nativeDebugging": true
     },
     "KadOzenka.Web": {
       "commandName": "Project",

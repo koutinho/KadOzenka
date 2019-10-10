@@ -6,6 +6,420 @@ using Core.ObjectModel.CustomAttribute;
 using System.Xml.Serialization;
 
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 1 Неопределено
+    /// </summary>
+    public partial class OMSource1
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 2 Росреестр
+    /// </summary>
+    public partial class OMSource2
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 3 Департамент экономической политики и развития города Москвы
+    /// </summary>
+    public partial class OMSource3
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 4 МосгорБТИ
+    /// </summary>
+    public partial class OMSource4
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 5 Департамент городского имущества города Москвы
+    /// </summary>
+    public partial class OMSource5
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 6 Департамент жилищно-коммунального хозяйства города Москвы
+    /// </summary>
+    public partial class OMSource6
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 7 Департамент культурного наследия города Москвы
+    /// </summary>
+    public partial class OMSource7
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 8 Департамент спорта и туризма города Москвы
+    /// </summary>
+    public partial class OMSource8
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 9 Департамент природопользования и охраны окружающей среды города Москвы
+    /// </summary>
+    public partial class OMSource9
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 10 Росавтодор
+    /// </summary>
+    public partial class OMSource10
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 11 Департамент капитального ремонта города Москвы
+    /// </summary>
+    public partial class OMSource11
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 12 Комитет по архитектуре и градостроительству города Москвы
+    /// </summary>
+    public partial class OMSource12
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 13 Управление Росреестра по Москве
+    /// </summary>
+    public partial class OMSource13
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 14 ГБУ (ЦОД)
+    /// </summary>
+    public partial class OMSource14
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 15 ГКО 2014
+    /// </summary>
+    public partial class OMSource15
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 16 ГКО 2016
+    /// </summary>
+    public partial class OMSource16
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 17 Правительство города Москвы
+    /// </summary>
+    public partial class OMSource17
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 18 Сведения о судебных разбирательствах
+    /// </summary>
+    public partial class OMSource18
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 19 Комиссии по расмотрению споров
+    /// </summary>
+    public partial class OMSource19
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 20 Наименование объектов по предыдущим турам
+    /// </summary>
+    public partial class OMSource20
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 21 Расчет ЦФ (ГБУ)
+    /// </summary>
+    public partial class OMSource21
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 22 Наименования адресов и гаражей
+    /// </summary>
+    public partial class OMSource22
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 23 ГКО 2018
+    /// </summary>
+    public partial class OMSource23
+    {
+        /// <summary>
+        /// Ссылка на (200 Объект кадастровой оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.KO
 {
     /// <summary>
@@ -18,7 +432,7 @@ namespace ObjectModel.KO
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
-        public ObjectModel.KO.OMMainObject ParentMainObject { get; set; }
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
 
         /// <summary>
         /// Ссылка на (202 Тур оценки)
@@ -65,13 +479,6 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMTour ParentTour { get; set; }
-
-        /// <summary>
-        /// Ссылка на (204 Документы)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMDocument ParentDocument { get; set; }
 
     }
 }

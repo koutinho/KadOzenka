@@ -3,6 +3,282 @@ using Core.ObjectModel;
 using Core.ObjectModel.CustomAttribute;
 using Core.Shared.Extensions;
 using ObjectModel.Directory;
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 1 Неопределено (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 1)]
+    [Serializable]
+    public partial class OMSource1 : OMBaseClass<OMSource1>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 2 Росреестр (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 2)]
+    [Serializable]
+    public partial class OMSource2 : OMBaseClass<OMSource2>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 3 Департамент экономической политики и развития города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 3)]
+    [Serializable]
+    public partial class OMSource3 : OMBaseClass<OMSource3>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 4 МосгорБТИ (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 4)]
+    [Serializable]
+    public partial class OMSource4 : OMBaseClass<OMSource4>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 5 Департамент городского имущества города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 5)]
+    [Serializable]
+    public partial class OMSource5 : OMBaseClass<OMSource5>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 6 Департамент жилищно-коммунального хозяйства города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 6)]
+    [Serializable]
+    public partial class OMSource6 : OMBaseClass<OMSource6>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 7 Департамент культурного наследия города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 7)]
+    [Serializable]
+    public partial class OMSource7 : OMBaseClass<OMSource7>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 8 Департамент спорта и туризма города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 8)]
+    [Serializable]
+    public partial class OMSource8 : OMBaseClass<OMSource8>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 9 Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 9)]
+    [Serializable]
+    public partial class OMSource9 : OMBaseClass<OMSource9>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 10 Росавтодор (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 10)]
+    [Serializable]
+    public partial class OMSource10 : OMBaseClass<OMSource10>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 11 Департамент капитального ремонта города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 11)]
+    [Serializable]
+    public partial class OMSource11 : OMBaseClass<OMSource11>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 12 Комитет по архитектуре и градостроительству города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 12)]
+    [Serializable]
+    public partial class OMSource12 : OMBaseClass<OMSource12>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 13 Управление Росреестра по Москве (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 13)]
+    [Serializable]
+    public partial class OMSource13 : OMBaseClass<OMSource13>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 14 ГБУ (ЦОД) (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 14)]
+    [Serializable]
+    public partial class OMSource14 : OMBaseClass<OMSource14>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 15 ГКО 2014 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 15)]
+    [Serializable]
+    public partial class OMSource15 : OMBaseClass<OMSource15>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 16 ГКО 2016 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 16)]
+    [Serializable]
+    public partial class OMSource16 : OMBaseClass<OMSource16>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 17 Правительство города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 17)]
+    [Serializable]
+    public partial class OMSource17 : OMBaseClass<OMSource17>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 18 Сведения о судебных разбирательствах (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 18)]
+    [Serializable]
+    public partial class OMSource18 : OMBaseClass<OMSource18>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 19 Комиссии по расмотрению споров (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 19)]
+    [Serializable]
+    public partial class OMSource19 : OMBaseClass<OMSource19>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 20 Наименование объектов по предыдущим турам (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 20)]
+    [Serializable]
+    public partial class OMSource20 : OMBaseClass<OMSource20>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 21 Расчет ЦФ (ГБУ) (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 21)]
+    [Serializable]
+    public partial class OMSource21 : OMBaseClass<OMSource21>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 22 Наименования адресов и гаражей (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 22)]
+    [Serializable]
+    public partial class OMSource22 : OMBaseClass<OMSource22>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 23 ГКО 2018 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 23)]
+    [Serializable]
+    public partial class OMSource23 : OMBaseClass<OMSource23>
+    {
+    }
+}
+
 namespace ObjectModel.Market
 {
     /// <summary>
@@ -279,6 +555,26 @@ namespace ObjectModel.Market
             {
                 _address = value;
                 NotifyPropertyChanged("Address");
+            }
+        }
+
+
+        private string _formalizedaddress;
+        /// <summary>
+        /// 10003101 Формализованный адрес (FORMALIZED_ADDRESS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10003101)]
+        public string FormalizedAddress
+        {
+            get
+            {
+                CheckPropertyInited("FormalizedAddress");
+                return _formalizedaddress;
+            }
+            set
+            {
+                _formalizedaddress = value;
+                NotifyPropertyChanged("FormalizedAddress");
             }
         }
 
@@ -858,22 +1154,442 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal _pricepermeter;
+        private string _processtype;
         /// <summary>
-        /// 100002701 Цена за кв.м (PRICE_PER_METER)
+        /// 10006000 Стадия проверки на дублирование (PROCESS_TYPE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 100002701)]
-        public decimal PricePerMeter
+        [RegisterAttribute(AttributeID = 10006000)]
+        public string ProcessType
         {
             get
             {
-                CheckPropertyInited("PricePerMeter");
-                return _pricepermeter;
+                CheckPropertyInited("ProcessType");
+                return _processtype;
             }
             set
             {
-                _pricepermeter = value;
-                NotifyPropertyChanged("PricePerMeter");
+                _processtype = value;
+                NotifyPropertyChanged("ProcessType");
+            }
+        }
+
+
+        private ProcessStep _processtype_Code;
+        /// <summary>
+        /// 10006000 Стадия проверки на дублирование (справочный код) (PROCESS_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006000)]
+        public ProcessStep ProcessType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ProcessType_Code");
+                return this._processtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_processtype))
+                    {
+                         _processtype = descr;
+                    }
+                }
+                else
+                {
+                     _processtype = descr;
+                }
+
+                this._processtype_Code = value;
+                NotifyPropertyChanged("ProcessType");
+                NotifyPropertyChanged("ProcessType_Code");
+            }
+        }
+
+
+        private string _country;
+        /// <summary>
+        /// 10006100 Страна (COUNTRY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006100)]
+        public string Country
+        {
+            get
+            {
+                CheckPropertyInited("Country");
+                return _country;
+            }
+            set
+            {
+                _country = value;
+                NotifyPropertyChanged("Country");
+            }
+        }
+
+
+        private string _province;
+        /// <summary>
+        /// 10006200 Федеральный округ (PROVINCE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006200)]
+        public string Province
+        {
+            get
+            {
+                CheckPropertyInited("Province");
+                return _province;
+            }
+            set
+            {
+                _province = value;
+                NotifyPropertyChanged("Province");
+            }
+        }
+
+
+        private string _areal;
+        /// <summary>
+        /// 10006300 Область (AREAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006300)]
+        public string Areal
+        {
+            get
+            {
+                CheckPropertyInited("Areal");
+                return _areal;
+            }
+            set
+            {
+                _areal = value;
+                NotifyPropertyChanged("Areal");
+            }
+        }
+
+
+        private string _distr;
+        /// <summary>
+        /// 10006400 Округ (DISTR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006400)]
+        public string Distr
+        {
+            get
+            {
+                CheckPropertyInited("Distr");
+                return _distr;
+            }
+            set
+            {
+                _distr = value;
+                NotifyPropertyChanged("Distr");
+            }
+        }
+
+
+        private string _sattlement;
+        /// <summary>
+        /// 10006500 Поселение (SATTLEMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006500)]
+        public string Sattlement
+        {
+            get
+            {
+                CheckPropertyInited("Sattlement");
+                return _sattlement;
+            }
+            set
+            {
+                _sattlement = value;
+                NotifyPropertyChanged("Sattlement");
+            }
+        }
+
+
+        private string _locality;
+        /// <summary>
+        /// 10006600 Район (LOCALITY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006600)]
+        public string Locality
+        {
+            get
+            {
+                CheckPropertyInited("Locality");
+                return _locality;
+            }
+            set
+            {
+                _locality = value;
+                NotifyPropertyChanged("Locality");
+            }
+        }
+
+
+        private string _street;
+        /// <summary>
+        /// 10006800 Улица (STREET)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006800)]
+        public string Street
+        {
+            get
+            {
+                CheckPropertyInited("Street");
+                return _street;
+            }
+            set
+            {
+                _street = value;
+                NotifyPropertyChanged("Street");
+            }
+        }
+
+
+        private string _house;
+        /// <summary>
+        /// 10006900 Дом (HOUSE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10006900)]
+        public string House
+        {
+            get
+            {
+                CheckPropertyInited("House");
+                return _house;
+            }
+            set
+            {
+                _house = value;
+                NotifyPropertyChanged("House");
+            }
+        }
+
+
+        private string _propertymarketsegment;
+        /// <summary>
+        /// 10007000 Сегмент рынка недвижимости (PROPERTY_MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007000)]
+        public string PropertyMarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("PropertyMarketSegment");
+                return _propertymarketsegment;
+            }
+            set
+            {
+                _propertymarketsegment = value;
+                NotifyPropertyChanged("PropertyMarketSegment");
+            }
+        }
+
+
+        private MarketSegment _propertymarketsegment_Code;
+        /// <summary>
+        /// 10007000 Сегмент рынка недвижимости (справочный код) (PROPERTY_MARKET_SEGMENT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007000)]
+        public MarketSegment PropertyMarketSegment_Code
+        {
+            get
+            {
+                CheckPropertyInited("PropertyMarketSegment_Code");
+                return this._propertymarketsegment_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_propertymarketsegment))
+                    {
+                         _propertymarketsegment = descr;
+                    }
+                }
+                else
+                {
+                     _propertymarketsegment = descr;
+                }
+
+                this._propertymarketsegment_Code = value;
+                NotifyPropertyChanged("PropertyMarketSegment");
+                NotifyPropertyChanged("PropertyMarketSegment_Code");
+            }
+        }
+
+
+        private string _wallmaterial;
+        /// <summary>
+        /// 10007100 Материал стен (WALL_MATERIAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007100)]
+        public string WallMaterial
+        {
+            get
+            {
+                CheckPropertyInited("WallMaterial");
+                return _wallmaterial;
+            }
+            set
+            {
+                _wallmaterial = value;
+                NotifyPropertyChanged("WallMaterial");
+            }
+        }
+
+
+        private WallMaterial _wallmaterial_Code;
+        /// <summary>
+        /// 10007100 Материал стен (справочный код) (WALL_MATERIAL_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007100)]
+        public WallMaterial WallMaterial_Code
+        {
+            get
+            {
+                CheckPropertyInited("WallMaterial_Code");
+                return this._wallmaterial_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_wallmaterial))
+                    {
+                         _wallmaterial = descr;
+                    }
+                }
+                else
+                {
+                     _wallmaterial = descr;
+                }
+
+                this._wallmaterial_Code = value;
+                NotifyPropertyChanged("WallMaterial");
+                NotifyPropertyChanged("WallMaterial_Code");
+            }
+        }
+
+
+        private string _qualityclass;
+        /// <summary>
+        /// 10007200 Класс качества (QUALITY_CLASS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007200)]
+        public string QualityClass
+        {
+            get
+            {
+                CheckPropertyInited("QualityClass");
+                return _qualityclass;
+            }
+            set
+            {
+                _qualityclass = value;
+                NotifyPropertyChanged("QualityClass");
+            }
+        }
+
+
+        private QualityClass _qualityclass_Code;
+        /// <summary>
+        /// 10007200 Класс качества (справочный код) (QUALITY_CLASS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007200)]
+        public QualityClass QualityClass_Code
+        {
+            get
+            {
+                CheckPropertyInited("QualityClass_Code");
+                return this._qualityclass_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_qualityclass))
+                    {
+                         _qualityclass = descr;
+                    }
+                }
+                else
+                {
+                     _qualityclass = descr;
+                }
+
+                this._qualityclass_Code = value;
+                NotifyPropertyChanged("QualityClass");
+                NotifyPropertyChanged("QualityClass_Code");
+            }
+        }
+
+
+        private decimal? _subwayspace;
+        /// <summary>
+        /// 10007300 Расстояние до ближайшей станции метро (SUBWAY_SPACE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007300)]
+        public decimal? SubwaySpace
+        {
+            get
+            {
+                CheckPropertyInited("SubwaySpace");
+                return _subwayspace;
+            }
+            set
+            {
+                _subwayspace = value;
+                NotifyPropertyChanged("SubwaySpace");
+            }
+        }
+
+
+        private long? _regionid;
+        /// <summary>
+        /// 100002701 Идентификатор региона (REGION_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 100002701)]
+        public long? RegionId
+        {
+            get
+            {
+                CheckPropertyInited("RegionId");
+                return _regionid;
+            }
+            set
+            {
+                _regionid = value;
+                NotifyPropertyChanged("RegionId");
+            }
+        }
+
+
+        private long? _cityid;
+        /// <summary>
+        /// 100002801 Идентификатор города (CITY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 100002801)]
+        public long? CityId
+        {
+            get
+            {
+                CheckPropertyInited("CityId");
+                return _cityid;
+            }
+            set
+            {
+                _cityid = value;
+                NotifyPropertyChanged("CityId");
             }
         }
 
@@ -932,10 +1648,10 @@ namespace ObjectModel.Market
     }
 }
 
-namespace ObjectModel.KO
+namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 200 Объект кадастровой оценки (KO_MAIN_OBJECT)
+    /// 200 Объект кадастровой оценки (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 200)]
     [Serializable]
@@ -944,9 +1660,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20002000 Идентификатор (ID)
+        /// 20000100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 20002000)]
+        [PrimaryKey(AttributeID = 20000100)]
         public long Id
         {
             get
@@ -964,9 +1680,9 @@ namespace ObjectModel.KO
 
         private string _cadastralnumber;
         /// <summary>
-        /// 20002100 Кадастровый номер (CADASTRAL_NUMBER)
+        /// 20000200 Кадастровый номер (CADASTRAL_NUMBER)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20002100)]
+        [RegisterAttribute(AttributeID = 20000200)]
         public string CadastralNumber
         {
             get
@@ -984,9 +1700,9 @@ namespace ObjectModel.KO
 
         private string _objecttype;
         /// <summary>
-        /// 20002200 Тип объекта (OBJECT_TYPE)
+        /// 20000300 Тип объекта (OBJECT_TYPE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20002200)]
+        [RegisterAttribute(AttributeID = 20000300)]
         public string ObjectType
         {
             get
@@ -1004,9 +1720,9 @@ namespace ObjectModel.KO
 
         private PropertyTypes _objecttype_Code;
         /// <summary>
-        /// 20002200 Тип объекта (справочный код) (OBJECT_TYPE_CODE)
+        /// 20000300 Тип объекта (справочный код) (OBJECT_TYPE_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20002200)]
+        [RegisterAttribute(AttributeID = 20000300)]
         public PropertyTypes ObjectType_Code
         {
             get
@@ -1039,9 +1755,9 @@ namespace ObjectModel.KO
 
         private string _groupid;
         /// <summary>
-        /// 20002300 Группа (KO_GROUP)
+        /// 20000400 Группа (KO_GROUP)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20002300)]
+        [RegisterAttribute(AttributeID = 20000400)]
         public string GroupId
         {
             get
@@ -1059,9 +1775,9 @@ namespace ObjectModel.KO
 
         private long? _groupid_Code;
         /// <summary>
-        /// 20002300 Группа (справочный код) (KO_GROUP_CODE)
+        /// 20000400 Группа (справочный код) (KO_GROUP_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20002300)]
+        [RegisterAttribute(AttributeID = 20000400)]
         public long? GroupId_Code
         {
             get
@@ -1091,9 +1807,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20102000 Уникальный идентификатор единицы объекта кадастровой оценки (ID)
+        /// 20100100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 20102000)]
+        [PrimaryKey(AttributeID = 20100100)]
         public long Id
         {
             get
@@ -1111,9 +1827,9 @@ namespace ObjectModel.KO
 
         private long? _objectid;
         /// <summary>
-        /// 20102100 Уникальный идентификатор объекта кадастровой оценки (OBJECT_ID)
+        /// 20100200 Идентификатор объекта (OBJECT_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102100)]
+        [RegisterAttribute(AttributeID = 20100200)]
         public long? ObjectId
         {
             get
@@ -1131,9 +1847,9 @@ namespace ObjectModel.KO
 
         private long? _tourid;
         /// <summary>
-        /// 20102200 Идентификатор тура объекта кадастровой оценки (TOUR_ID)
+        /// 20100300 Идентификатор тура (TOUR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102200)]
+        [RegisterAttribute(AttributeID = 20100300)]
         public long? TourId
         {
             get
@@ -1151,9 +1867,9 @@ namespace ObjectModel.KO
 
         private long? _taskid;
         /// <summary>
-        /// 20102300 Идентификатор задания единицы объекта кадастровой оценки (TASK_ID)
+        /// 20100400 Идентификатор задания (TASK_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102300)]
+        [RegisterAttribute(AttributeID = 20100400)]
         public long? TaskId
         {
             get
@@ -1171,9 +1887,9 @@ namespace ObjectModel.KO
 
         private long? _modelid;
         /// <summary>
-        /// 20102400 Уникальный идентификатор модели (MODEL_ID)
+        /// 20100500 Идентификатор модели (MODEL_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102400)]
+        [RegisterAttribute(AttributeID = 20100500)]
         public long? ModelId
         {
             get
@@ -1191,9 +1907,9 @@ namespace ObjectModel.KO
 
         private long? _groupid;
         /// <summary>
-        /// 20102500 Уникальный идентификатор группы (GROUP_ID)
+        /// 20100600 Идентификатор группы (GROUP_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102500)]
+        [RegisterAttribute(AttributeID = 20100600)]
         public long? GroupId
         {
             get
@@ -1211,9 +1927,9 @@ namespace ObjectModel.KO
 
         private string _status;
         /// <summary>
-        /// 20102600 Статус единицы оценки (STATUS)
+        /// 20100700 Статус (STATUS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102600)]
+        [RegisterAttribute(AttributeID = 20100700)]
         public string Status
         {
             get
@@ -1231,9 +1947,9 @@ namespace ObjectModel.KO
 
         private KoUnitStatus _status_Code;
         /// <summary>
-        /// 20102600 Статус единицы оценки (справочный код) (STATUS_CODE)
+        /// 20100700 Статус (справочный код) (STATUS_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102600)]
+        [RegisterAttribute(AttributeID = 20100700)]
         public KoUnitStatus Status_Code
         {
             get
@@ -1266,9 +1982,9 @@ namespace ObjectModel.KO
 
         private DateTime? _creationdate;
         /// <summary>
-        /// 20102700 Дата создания (CREATION_DATE)
+        /// 20100800 Дата создания (CREATION_DATE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102700)]
+        [RegisterAttribute(AttributeID = 20100800)]
         public DateTime? CreationDate
         {
             get
@@ -1286,9 +2002,9 @@ namespace ObjectModel.KO
 
         private decimal? _cadastralcost;
         /// <summary>
-        /// 20102800 Кадастровая стоимость (CADASTRAL_COST)
+        /// 20100900 Кадастровая стоимость (CADASTRAL_COST)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20102800)]
+        [RegisterAttribute(AttributeID = 20100900)]
         public decimal? CadastralCost
         {
             get
@@ -1318,9 +2034,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20202000 Уникальный идентификатор тура (ID)
+        /// 20200100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 20202000)]
+        [PrimaryKey(AttributeID = 20200100)]
         public long Id
         {
             get
@@ -1338,9 +2054,9 @@ namespace ObjectModel.KO
 
         private long? _year;
         /// <summary>
-        /// 20202100 Год проведения тур (YEAR)
+        /// 20200200 Год проведения тура (YEAR)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20202100)]
+        [RegisterAttribute(AttributeID = 20200200)]
         public long? Year
         {
             get
@@ -1370,9 +2086,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20302000 Уникальный идентификатор задания на оценку (ID)
+        /// 20300100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 20302000)]
+        [PrimaryKey(AttributeID = 20300100)]
         public long Id
         {
             get
@@ -1390,9 +2106,9 @@ namespace ObjectModel.KO
 
         private DateTime? _creationdate;
         /// <summary>
-        /// 20302100 Дата создания (CREATION_DATE)
+        /// 20300200 Дата создания (CREATION_DATE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20302100)]
+        [RegisterAttribute(AttributeID = 20300200)]
         public DateTime? CreationDate
         {
             get
@@ -1410,9 +2126,9 @@ namespace ObjectModel.KO
 
         private long? _documentid;
         /// <summary>
-        /// 20302200 Идентификатор документа (DOCUMENT_ID)
+        /// 20300300 Идентификатор входящего документа (DOCUMENT_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20302200)]
+        [RegisterAttribute(AttributeID = 20300300)]
         public long? DocumentId
         {
             get
@@ -1430,9 +2146,9 @@ namespace ObjectModel.KO
 
         private string _notetype;
         /// <summary>
-        /// 20302300 Тип статьи (NOTE_TYPE)
+        /// 20300400 Тип статьи (NOTE_TYPE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20302300)]
+        [RegisterAttribute(AttributeID = 20300400)]
         public string NoteType
         {
             get
@@ -1450,9 +2166,9 @@ namespace ObjectModel.KO
 
         private KoNoteType _notetype_Code;
         /// <summary>
-        /// 20302300 Тип статьи (справочный код) (NOTE_TYPE_CODE)
+        /// 20300400 Тип статьи (справочный код) (NOTE_TYPE_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20302300)]
+        [RegisterAttribute(AttributeID = 20300400)]
         public KoNoteType NoteType_Code
         {
             get
@@ -1485,9 +2201,9 @@ namespace ObjectModel.KO
 
         private long? _tourid;
         /// <summary>
-        /// 20302400 Уникальный идентификатор тура (TOUR_ID)
+        /// 20300500 Идентификатор тура (TOUR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20302400)]
+        [RegisterAttribute(AttributeID = 20300500)]
         public long? TourId
         {
             get
@@ -1505,9 +2221,9 @@ namespace ObjectModel.KO
 
         private long? _responsedocid;
         /// <summary>
-        /// 20302500 Уникальный идентификатор документа ответа (RESPONSE_DOCUMENT_ID)
+        /// 20300600 Идентификатор исходящего документа (RESPONSE_DOCUMENT_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20302500)]
+        [RegisterAttribute(AttributeID = 20300600)]
         public long? ResponseDocId
         {
             get
@@ -1525,9 +2241,9 @@ namespace ObjectModel.KO
 
         private string _status;
         /// <summary>
-        /// 20302600 Статус (STATUS)
+        /// 20300700 Статус (STATUS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20302600)]
+        [RegisterAttribute(AttributeID = 20300700)]
         public string Status
         {
             get
@@ -1545,9 +2261,9 @@ namespace ObjectModel.KO
 
         private KoTaskStatus _status_Code;
         /// <summary>
-        /// 20302600 Статус (справочный код) (STATUS_CODE)
+        /// 20300700 Статус (справочный код) (STATUS_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20302600)]
+        [RegisterAttribute(AttributeID = 20300700)]
         public KoTaskStatus Status_Code
         {
             get
@@ -1583,153 +2299,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 204 Документы (KO_DOCUMENT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 204)]
-    [Serializable]
-    public partial class OMDocument : OMBaseClass<OMDocument>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 20402000 Уникальный идентификатор документа (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 20402000)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private DateTime? _creationdate;
-        /// <summary>
-        /// 20402100 Дата создания (CREATION_DATE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20402100)]
-        public DateTime? CreationDate
-        {
-            get
-            {
-                CheckPropertyInited("CreationDate");
-                return _creationdate;
-            }
-            set
-            {
-                _creationdate = value;
-                NotifyPropertyChanged("CreationDate");
-            }
-        }
-
-
-        private DateTime? _documentdate;
-        /// <summary>
-        /// 20402200 Дата документа (DOCUMENT_DATE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20402200)]
-        public DateTime? DocumentDate
-        {
-            get
-            {
-                CheckPropertyInited("DocumentDate");
-                return _documentdate;
-            }
-            set
-            {
-                _documentdate = value;
-                NotifyPropertyChanged("DocumentDate");
-            }
-        }
-
-
-        private long? _number;
-        /// <summary>
-        /// 20402300 Номер документа (NUMBER)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20402300)]
-        public long? Number
-        {
-            get
-            {
-                CheckPropertyInited("Number");
-                return _number;
-            }
-            set
-            {
-                _number = value;
-                NotifyPropertyChanged("Number");
-            }
-        }
-
-
-        private string _typecode;
-        /// <summary>
-        /// 20402400 Тип документа (TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20402400)]
-        public string TypeCode
-        {
-            get
-            {
-                CheckPropertyInited("TypeCode");
-                return _typecode;
-            }
-            set
-            {
-                _typecode = value;
-                NotifyPropertyChanged("TypeCode");
-            }
-        }
-
-
-        private KoDocType _typecode_Code;
-        /// <summary>
-        /// 20402400 Тип документа (справочный код) (TYPE_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20402400)]
-        public KoDocType TypeCode_Code
-        {
-            get
-            {
-                CheckPropertyInited("TypeCode_Code");
-                return this._typecode_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_typecode))
-                    {
-                         _typecode = descr;
-                    }
-                }
-                else
-                {
-                     _typecode = descr;
-                }
-
-                this._typecode_Code = value;
-                NotifyPropertyChanged("TypeCode");
-                NotifyPropertyChanged("TypeCode_Code");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 205 Группы/Подгруппы (KO_GROUP)
     /// </summary>
     [RegisterInfo(RegisterID = 205)]
@@ -1739,9 +2308,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20502000 Уникальный идентификатор группы (ID)
+        /// 20500100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 20502000)]
+        [PrimaryKey(AttributeID = 20500100)]
         public long Id
         {
             get
@@ -1759,9 +2328,9 @@ namespace ObjectModel.KO
 
         private long? _parentid;
         /// <summary>
-        /// 20502100 Уникальный идентификатор родительской группы (PARENT_ID)
+        /// 20500200 Идентификатор родительской группы (PARENT_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20502100)]
+        [RegisterAttribute(AttributeID = 20500200)]
         public long? ParentId
         {
             get
@@ -1779,9 +2348,9 @@ namespace ObjectModel.KO
 
         private string _groupname;
         /// <summary>
-        /// 20502200 Наименование группы (GROUP_NAME)
+        /// 20500300 Наименование группы (GROUP_NAME)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20502200)]
+        [RegisterAttribute(AttributeID = 20500300)]
         public string GroupName
         {
             get
@@ -1799,9 +2368,9 @@ namespace ObjectModel.KO
 
         private string _groupalgoritm;
         /// <summary>
-        /// 20502300 Механизм группировки (GROUP_ALGORITM)
+        /// 20500400 Механизм группировки (GROUP_ALGORITM)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20502300)]
+        [RegisterAttribute(AttributeID = 20500400)]
         public string GroupAlgoritm
         {
             get
@@ -1819,9 +2388,9 @@ namespace ObjectModel.KO
 
         private KoGroupAlgoritm _groupalgoritm_Code;
         /// <summary>
-        /// 20502300 Механизм группировки (справочный код) (GROUP_ALGORITM_CODE)
+        /// 20500400 Механизм группировки (справочный код) (GROUP_ALGORITM_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20502300)]
+        [RegisterAttribute(AttributeID = 20500400)]
         public KoGroupAlgoritm GroupAlgoritm_Code
         {
             get
@@ -1866,9 +2435,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20602000 Уникальный идентификатор модели (ID)
+        /// 20600100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 20602000)]
+        [PrimaryKey(AttributeID = 20600100)]
         public long Id
         {
             get
@@ -1886,9 +2455,9 @@ namespace ObjectModel.KO
 
         private long? _groupid;
         /// <summary>
-        /// 20602100 Идентификатор группы (GROUP_ID)
+        /// 20600200 Идентификатор группы (GROUP_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20602100)]
+        [RegisterAttribute(AttributeID = 20600200)]
         public long? GroupId
         {
             get
@@ -1906,9 +2475,9 @@ namespace ObjectModel.KO
 
         private string _name;
         /// <summary>
-        /// 20602200 Наименование (NAME)
+        /// 20600300 Наименование (NAME)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20602200)]
+        [RegisterAttribute(AttributeID = 20600300)]
         public string Name
         {
             get
@@ -1926,9 +2495,9 @@ namespace ObjectModel.KO
 
         private string _description;
         /// <summary>
-        /// 20602300 Описание (DESCRIPTION)
+        /// 20600400 Описание (DESCRIPTION)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20602300)]
+        [RegisterAttribute(AttributeID = 20600400)]
         public string Description
         {
             get
@@ -1946,9 +2515,9 @@ namespace ObjectModel.KO
 
         private string _formula;
         /// <summary>
-        /// 20602400 Формула (FORMULA)
+        /// 20600500 Формула (FORMULA)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20602400)]
+        [RegisterAttribute(AttributeID = 20600500)]
         public string Formula
         {
             get
@@ -1966,9 +2535,9 @@ namespace ObjectModel.KO
 
         private string _algoritmtype;
         /// <summary>
-        /// 20602500 Метод рассчёта (ALGORITM_TYPE)
+        /// 20600600 Метод рассчёта (ALGORITM_TYPE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20602500)]
+        [RegisterAttribute(AttributeID = 20600600)]
         public string AlgoritmType
         {
             get
@@ -1986,9 +2555,9 @@ namespace ObjectModel.KO
 
         private KoAlgoritmType _algoritmtype_Code;
         /// <summary>
-        /// 20602500 Метод рассчёта (справочный код) (ALGORITM_TYPE_CODE)
+        /// 20600600 Метод рассчёта (справочный код) (ALGORITM_TYPE_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20602500)]
+        [RegisterAttribute(AttributeID = 20600600)]
         public KoAlgoritmType AlgoritmType_Code
         {
             get
@@ -2033,9 +2602,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20702000 Уникальный идентификатор модели тура (ID)
+        /// 20700100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 20702000)]
+        [PrimaryKey(AttributeID = 20700100)]
         public long Id
         {
             get
@@ -2053,9 +2622,9 @@ namespace ObjectModel.KO
 
         private long? _tourid;
         /// <summary>
-        /// 20702100 Идентификатор тура (TOUR_ID)
+        /// 20700200 Идентификатор тура (TOUR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20702100)]
+        [RegisterAttribute(AttributeID = 20700200)]
         public long? TourId
         {
             get
@@ -2073,9 +2642,9 @@ namespace ObjectModel.KO
 
         private long? _modelid;
         /// <summary>
-        /// 20702200 Идентификатор модели (MODEL_ID)
+        /// 20700300 Идентификатор модели (MODEL_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20702200)]
+        [RegisterAttribute(AttributeID = 20700300)]
         public long? ModelId
         {
             get
@@ -2093,9 +2662,9 @@ namespace ObjectModel.KO
 
         private string _status;
         /// <summary>
-        /// 20702300 Статус (STATUS)
+        /// 20700400 Статус (STATUS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20702300)]
+        [RegisterAttribute(AttributeID = 20700400)]
         public string Status
         {
             get
@@ -2113,9 +2682,9 @@ namespace ObjectModel.KO
 
         private KoModelStatus _status_Code;
         /// <summary>
-        /// 20702300 Статус (справочный код) (STATUS_CODE)
+        /// 20700400 Статус (справочный код) (STATUS_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20702300)]
+        [RegisterAttribute(AttributeID = 20700400)]
         public KoModelStatus Status_Code
         {
             get
@@ -2160,9 +2729,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 20802000 Уникальный идентификатор фактора группы (ID)
+        /// 20800100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 20802000)]
+        [PrimaryKey(AttributeID = 20800100)]
         public long Id
         {
             get
@@ -2180,9 +2749,9 @@ namespace ObjectModel.KO
 
         private long? _groupid;
         /// <summary>
-        /// 20802100 Идентификатор группы (GROUP_ID)
+        /// 20800200 Идентификатор группы (GROUP_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20802100)]
+        [RegisterAttribute(AttributeID = 20800200)]
         public long? GroupId
         {
             get
@@ -2200,9 +2769,9 @@ namespace ObjectModel.KO
 
         private long? _factorid;
         /// <summary>
-        /// 20802200 Идентификатор фактора (FACTOR_ID)
+        /// 20800300 Идентификатор фактора (FACTOR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 20802200)]
+        [RegisterAttribute(AttributeID = 20800300)]
         public long? FactorId
         {
             get
@@ -2232,9 +2801,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 21002000 Уникальный идентификатор фактора модели (ID)
+        /// 21000100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 21002000)]
+        [PrimaryKey(AttributeID = 21000100)]
         public long Id
         {
             get
@@ -2252,9 +2821,9 @@ namespace ObjectModel.KO
 
         private long? _modelid;
         /// <summary>
-        /// 21002100 Идентификатор модели (MODEL_ID)
+        /// 21000200 Идентификатор модели (MODEL_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21002100)]
+        [RegisterAttribute(AttributeID = 21000200)]
         public long? ModelId
         {
             get
@@ -2272,9 +2841,9 @@ namespace ObjectModel.KO
 
         private long? _factorid;
         /// <summary>
-        /// 21002200 Идентификатор фактора (FACTOR_ID)
+        /// 21000300 Идентификатор фактора (FACTOR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21002200)]
+        [RegisterAttribute(AttributeID = 21000300)]
         public long? FactorId
         {
             get
@@ -2292,9 +2861,9 @@ namespace ObjectModel.KO
 
         private long? _markerid;
         /// <summary>
-        /// 21002300 Идентификатор метки (MARKER_ID)
+        /// 21000400 Идентификатор метки (MARKER_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21002300)]
+        [RegisterAttribute(AttributeID = 21000400)]
         public long? MarkerId
         {
             get
@@ -2324,9 +2893,9 @@ namespace ObjectModel.KO
 
         private long _id;
         /// <summary>
-        /// 21102000 Уникальный идентификатор метки (ID)
+        /// 21100100 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 21102000)]
+        [PrimaryKey(AttributeID = 21100100)]
         public long Id
         {
             get
@@ -2344,9 +2913,9 @@ namespace ObjectModel.KO
 
         private long? _groupid;
         /// <summary>
-        /// 21102100 Идентификатор группы (GROUP_ID)
+        /// 21100200 Идентификатор группы (GROUP_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21102100)]
+        [RegisterAttribute(AttributeID = 21100200)]
         public long? GroupId
         {
             get
@@ -2364,9 +2933,9 @@ namespace ObjectModel.KO
 
         private long? _factorid;
         /// <summary>
-        /// 21102200 Идентификатор фактора (FACTOR_ID)
+        /// 21100300 Идентификатор фактора (FACTOR_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21102200)]
+        [RegisterAttribute(AttributeID = 21100300)]
         public long? FactorId
         {
             get
@@ -2384,9 +2953,9 @@ namespace ObjectModel.KO
 
         private string _valuefactor;
         /// <summary>
-        /// 21102300 Значение фактора (VALUE_FACTOR)
+        /// 21100400 Значение фактора (VALUE_FACTOR)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21102300)]
+        [RegisterAttribute(AttributeID = 21100400)]
         public string ValueFactor
         {
             get
@@ -2404,9 +2973,9 @@ namespace ObjectModel.KO
 
         private decimal? _metkafactor;
         /// <summary>
-        /// 21102400 Значение метки (METKA_FACTOR)
+        /// 21100500 Значение метки (METKA_FACTOR)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21102400)]
+        [RegisterAttribute(AttributeID = 21100500)]
         public decimal? MetkaFactor
         {
             get

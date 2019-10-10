@@ -12,7 +12,7 @@ using OuterMarketParser.DatabaseReader;
 
 namespace OuterMarketParser.LinksGenerator
 {
-    class LinkGenerator : ILinkGenerator
+    public class LinkGenerator : ILinkGenerator
     {
         public List<string> GenerateCianLinks(OuterMarketSettings settings)
         {
