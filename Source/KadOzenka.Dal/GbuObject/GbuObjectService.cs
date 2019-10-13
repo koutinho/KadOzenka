@@ -1,5 +1,6 @@
 ﻿using Core.Register;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Web.Models.GbuObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,6 +68,15 @@ where a.object_id = {objectId}";
 				}
 			}
 			
+			return result;
+		}
+
+		public List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel)
+		{
+			List<AllDataTreeDto> result = new List<AllDataTreeDto>();
+
+
+
 			return result;
 		}
 

@@ -1,0 +1,80 @@
+﻿@using Core.Shared.Extensions;
+@using System.Data;
+
+@model DataTable
+
+
+<div style="margin-bottom: 5px;">
+    @(Html.Kendo().ToolBar()
+            .Name("ToolBar")
+            .Items(items =>
+            {
+                items.Add().Id("showHistory").Type(Kendo.Mvc.UI.CommandType.Button).Text("Открыть историю");
+            }))
+</div>
+
+<div>
+    <table id="Grid">
+        <colgroup>
+            <col style="width:300px" />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+        </colgroup>
+        <thead>
+            <tr>
+                <th data-field="NAME">Наименование показателя</th>
+                <th data-field="TEXT_VALUE">Значение</th>
+                <th data-field="S">Дата с</th>
+                <th data-field="PO">Дата по</th>
+                <th data-field="USER">Пользователь</th>
+                <th data-field="HISTORY">История изменения</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (DataRow row in Model.Rows)
+            {
+                <tr data-attributeId="@row["ATTRIBUTE_ID"]">
+                    <td>@row["NAME"]<span style="display: none;">@row["ATTRIBUTE_ID"]</span></td>
+                    <td>@row["VALUE"]</td>
+                    <td>@row["S"].ParseToDateTime().ToString("dd.MM.yyyy HH:mm:ss")</td>
+                    <td>@row["PO"].ParseToDateTime().ToString("dd.MM.yyyy HH:mm:ss")</td>
+                    <td>@row["USER"]</td>
+                    <td>@row["HISTORY"]</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+        $(function () {
+            $('#Grid').kendoGrid({
+                selectable: true
+            });
+
+            $('#showHistory').on('click', function () {
+
+                //var attributeID = $("#Grid tr.k-state-selected").data("attributeId");
+
+                var attributeID = $("#Grid tr.k-state-selected>td>span").text();
+
+                var attributeName = $("#Grid tr.k-state-selected>td:first-child").text();
+
+                $("#windowHistory").kendoWindow({
+                    width: "70%",
+                    title: "История изменения атрибута " + attributeName,
+                    visible: false,
+                    content: "/LinkedRegisterObjects/History?objectId=" + @ViewBag.ObjectId + "&registerId=" + @ViewBag.RegisterId + "&attributeId=" + attributeID,
+                    actions: [
+                        "Close"
+                    ],
+                }).data("kendoWindow").center().open().maximize();
+            });
+        });
+    </script>
+</div>
+
+<div id="windowHistory">
+
+</div>
