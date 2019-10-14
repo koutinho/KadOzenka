@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Core.Register;
+using Core.Shared.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -27,5 +29,37 @@ namespace KadOzenka.Dal.GbuObject
 		
 		public int ChangeId { get; set; }
 		public int ChangeSetId { get; set; }
+
+		public string GetAttributeName()
+		{
+			return RegisterCache.GetAttributeData(AttributeId).Name;
+		}
+
+		public string GetValueInString()
+		{
+			if(NumValue != null)
+			{
+				return NumValue.ToString();
+			}
+			else if(DtValue != null)
+			{
+				return DtValue.GetString();
+			}
+
+			return StringValue;
+		}
+
+		public string GetDocument()
+		{
+			List<string> docFacets = new List<string>();
+
+			if (DocType.IsNotEmpty()) docFacets.Add(DocType);
+
+			if (DocNumber.IsNotEmpty()) docFacets.Add($"№{DocNumber}");
+
+			if (DocDate.GetString().IsNotEmpty()) docFacets.Add($"от {DocDate.GetString()}");
+
+			return String.Join(" ", docFacets);
+		}
 	}
 }

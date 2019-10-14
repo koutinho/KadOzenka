@@ -1,16 +1,18 @@
 ﻿@using Core.Shared.Extensions;
+@using KadOzenka.Dal.GbuObject;
+@using Core.Shared.Extensions;
 @using System.Data;
 
-@model DataTable
+@model List<GbuObjectAttribute>
 
 
 <div style="margin-bottom: 5px;">
     @(Html.Kendo().ToolBar()
-            .Name("ToolBar")
-            .Items(items =>
-            {
-                items.Add().Id("showHistory").Type(Kendo.Mvc.UI.CommandType.Button).Text("Открыть историю");
-            }))
+                    .Name("ToolBar")
+                    .Items(items =>
+                    {
+                        items.Add().Id("showHistory").Type(Kendo.Mvc.UI.CommandType.Button).Text("Открыть историю");
+                    }))
 </div>
 
 <div>
@@ -27,22 +29,25 @@
             <tr>
                 <th data-field="NAME">Наименование показателя</th>
                 <th data-field="TEXT_VALUE">Значение</th>
-                <th data-field="S">Дата с</th>
-                <th data-field="PO">Дата по</th>
+                <th data-field="S">Дата С</th>
+                <th data-field="PO">Дата От</th>
+                <th data-field="PO">Дата создания</th>
                 <th data-field="USER">Пользователь</th>
-                <th data-field="HISTORY">История изменения</th>
+                <th data-field="DOCUMENT">Документ</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (DataRow row in Model.Rows)
+            @foreach (var attributeValue in Model)
             {
-                <tr data-attributeId="@row["ATTRIBUTE_ID"]">
-                    <td>@row["NAME"]<span style="display: none;">@row["ATTRIBUTE_ID"]</span></td>
-                    <td>@row["VALUE"]</td>
-                    <td>@row["S"].ParseToDateTime().ToString("dd.MM.yyyy HH:mm:ss")</td>
-                    <td>@row["PO"].ParseToDateTime().ToString("dd.MM.yyyy HH:mm:ss")</td>
-                    <td>@row["USER"]</td>
-                    <td>@row["HISTORY"]</td>
+                <tr data-attributeId="@attributeValue.AttributeId">
+                    <td>@attributeValue.GetAttributeName()<span style="display: none;">@attributeValue.AttributeId</span></td>
+                    <td>@attributeValue.GetValueInString()</td>
+                    <td>@attributeValue.S.GetString()</td>
+                    <td>@attributeValue.Ot.GetString()</td>
+                    <td>@attributeValue.ChangeDate.GetString()</td>
+                    <td>@attributeValue.UserFullname</td>
+                    <td>@attributeValue.GetDocument()</td>
+
                 </tr>
             }
         </tbody>

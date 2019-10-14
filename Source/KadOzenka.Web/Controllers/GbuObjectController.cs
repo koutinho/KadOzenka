@@ -27,5 +27,19 @@ namespace KadOzenka.Web.Controllers
 			
 			return Content(JsonConvert.SerializeObject(treeList), "application/json");
 		}
+
+		public ActionResult AllDetails(long objectId, long? registerId = null, long? attributeId = null)
+		{
+			List<long> sources = null;
+
+			if(registerId != null)
+			{
+				sources = new List<long> { registerId.Value };
+			}
+
+			var sttributesValues = _service.GetAllAttributes(objectId, sources);
+
+			return View(sttributesValues);
+		}
 	}
 }

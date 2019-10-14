@@ -1,4 +1,4 @@
-﻿@model Core.UI.Registers.Models.LinkedRegisterObjects.LinkedRegisterObjectsDto
+﻿@model long
 
 <div id="splitter" style="height: inherit; flex:1; box-sizing: border-box;">
     <div id="left-pane">
@@ -23,11 +23,10 @@
         });
 
         var linkedTreeView = $('#LinkedTree').kendoTreeView({
-            dataTextField: "ObjectText",
+            dataTextField: "NodeText",
             select: function (e) {
                 var dataItem = this.dataItem(e.node);
-                if (dataItem && dataItem.NodeType === 1
-                    && dataItem.ContentUrl && dataItem.ContentUrl.length > 0) {
+                if (dataItem.ContentUrl && dataItem.ContentUrl.length > 0) {
                     loadDetails(dataItem.ContentUrl);
                 }
             },
@@ -36,8 +35,7 @@
                     var rootItems = this.dataItems();
                     if (rootItems && rootItems.length > 0) {
                         for(var i=0; i < rootItems.length; i++) {
-                            if (rootItems[i].NodeType === 1
-                                && rootItems[i].ContentUrl && rootItems[i].ContentUrl.length > 0) {
+                            if (rootItems[i].ContentUrl && rootItems[i].ContentUrl.length > 0) {
                                 this.select(this.findByUid(rootItems[i].uid))
                                 loadDetails(rootItems[i].ContentUrl);
                                 break;
@@ -61,10 +59,8 @@
                                     var dataItem = treeView.dataItem(currentNode);
 
                                     return {
-                                       registerId: dataItem.RegisterId,
-                                       parentRegisterId: dataItem.ParentRegisterId,
-                                       objectId: dataItem.ObjectId,
-                                       nodeType: dataItem.NodeType
+                                        objectId: objectId,
+                                        parentNodeId: dataItem.NodeId,
                                     };
                                 }
                             }
@@ -78,7 +74,7 @@
                 },
                 schema: {
                     model: {
-                        id: 'Id',
+                        id: 'NodeId',
                         hasChildren: 'HasChilds',
                     }
                 }

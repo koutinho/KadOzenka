@@ -11,7 +11,7 @@ namespace KadOzenka.Web.Models.GbuObject
 
 		public string ParentNodeId { get; set; }
 
-		public long AttributeId { get; set; }
+		public long? AttributeId { get; set; }
 
 		public long RegisterId { get; set; }
 		

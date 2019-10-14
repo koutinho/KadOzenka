@@ -5,6 +5,7 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.UI.Registers.Services;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.GbuObject;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -51,9 +52,11 @@ namespace CIPJS
             services.AddTransient<CoreUiService>();
             services.AddTransient<RegistersService>();
 			services.AddTransient<DashboardService>();
-            
 
-            services.AddHttpContextAccessor();
+			services.AddTransient<GbuObjectService>();
+
+
+			services.AddHttpContextAccessor();
             services.AddSession(options =>
             {
                 options.Cookie.Name = "CIPJS.Session";

@@ -1,5 +1,7 @@
 ﻿using Core.Register;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.Models.GbuObject;
 using KadOzenka.Web.Models.GbuObject;
 using System;
 using System.Collections.Generic;
@@ -9,6 +11,8 @@ namespace KadOzenka.Dal.GbuObject
 {
     public class GbuObjectService
     {
+		public static List<string> Postfixes = new List<string> { "TXT", "NUM", "DT" };
+
 		public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null)
 		{
 			var getSources = sources;
@@ -55,6 +59,7 @@ a.change_doc_id as ChangeDocId,
 a.change_date as ChangeDate,
 
 u.fullname as UserFullname,
+
 td.regnumber as DocNumber,
 td.description as DocType,
 td.create_date as DocDate,
@@ -70,12 +75,85 @@ where a.object_id = {objectId}";
 			
 			return result;
 		}
-
+		
 		public List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel)
 		{
 			List<AllDataTreeDto> result = new List<AllDataTreeDto>();
 
+			if(parentNodeId.IsNullOrEmpty())
+			{
+				var mainRegisterData = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
+				var objectName = RegisterHelpServices.GetUserKeyString(mainRegisterData.Id, objectId);
+
+				result.Add(new AllDataTreeDto
+				{
+					NodeId = "0",
+					ParentNodeId = String.Empty,
+					AttributeId = null,
+					RegisterId = mainRegisterData.Id,
+					NodeText = $"{objectName}",
+					Level = 0,
+					ContentUrl = $"/GbuObject/AllDetails?objectId={objectId}".ResolveClientUrl(),
+					HasChilds = false
+				});
+
+				foreach (var register in RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegisterData.QuantTable && x.Id != mainRegisterData.Id).OrderBy(x => x.Description))
+				{
+					long valuesCount = 0;
+
+					foreach (var postfix in Postfixes)
+					{
+						string sql = $"select count(1) as ValuesCount from {register.AllpriTable}_{postfix} a where a.object_id = {objectId} group by a.attribute_id";
+
+						valuesCount += QSQuery.ExecuteSql(sql, () => new {
+							ValuesCount = default(long)
+						}).FirstOrDefault()?.ValuesCount ?? 0;
+					}
+
+					if (valuesCount == 0) continue;
+
+					result.Add(new AllDataTreeDto
+					{
+						NodeId = register.Id.ToString(),
+						ParentNodeId = String.Empty,
+						AttributeId = null,
+						RegisterId = register.Id,
+						NodeText = $"{register.Description} ({valuesCount})",
+						Level = 0,
+						ContentUrl = $"/GbuObject/AllDetails?objectId={objectId}&registerId={register.Id}".ResolveClientUrl(),
+						HasChilds = true
+					});
+				}
+			}
+			else
+			{
+				var parentRegisterData = RegisterCache.GetRegisterData(parentNodeId.ParseToInt());
+
+				var attributesValuesCount = new List<AttributeValuesCount>();
+
+				foreach (var postfix in Postfixes)
+				{
+					string sql = $"select a.attribute_id as AttributeId, count(1) as ValuesCount from {parentRegisterData.AllpriTable}_{postfix} a where a.object_id = {objectId} group by a.attribute_id";
+
+					attributesValuesCount.AddRange(QSQuery.ExecuteSql<AttributeValuesCount>(sql));
+				}
+				
+				foreach (var attributeValueCount in attributesValuesCount)
+				{
+					result.Add(new AllDataTreeDto
+					{
+						NodeId = $"{parentRegisterData.Id}_{attributeValueCount.AttributeId}",
+						ParentNodeId = parentRegisterData.Id.ToString(),
+						AttributeId = attributeValueCount.AttributeId,
+						RegisterId = parentRegisterData.Id,
+						NodeText = $"{RegisterCache.GetAttributeData((int)attributeValueCount.AttributeId).Name} ({attributeValueCount.ValuesCount})",
+						Level = 1,
+						ContentUrl = $"/GbuObject/AllDetails?objectId={objectId}&attributeId={attributeValueCount.AttributeId}".ResolveClientUrl(),
+						HasChilds = false
+					});
+				}
+			}			
 
 			return result;
 		}
