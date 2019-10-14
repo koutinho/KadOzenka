@@ -14,7 +14,7 @@ namespace DebugApplication.YandexFiller
         {
             int count = 10000, current_element = 0;
             List<OMCoreObject> coreObject = OMCoreObject.Where(x => true)
-                                                        .Select(x => new { x.Market, x.Url, x.Address, x.Lng, x.Lat, x.Market_Code, x.ProcessType_Code, x.FormalizedAddress })
+                                                        .Select(x => new { x.Market, x.Url, x.Address, x.Lng, x.Lat, x.Market_Code, x.ProcessType_Code/*, x.FormalizedAddress*/ })
                                                         .OrderBy(x => x.Address).Execute().Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.DoNotProcessed &&
                                                                                                       x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr).Take(count).ToList();
             List<string> addresses = new List<string>();

@@ -179,23 +179,17 @@ namespace ObjectModel.Directory
         [EnumCode("3")]
         CadastralNumberStep = 740,
         /// <summary>
-        /// Проверено наличие цены (741)
+        /// В работе (741)
         /// </summary>
-        [Description("Проверено наличие цены")]
+        [Description("В работе")]
         [EnumCode("4")]
-        PriceStep = 741,
+        InProcess = 741,
         /// <summary>
-        /// Проверено наличие площади (742)
+        /// Обработан (742)
         /// </summary>
-        [Description("Проверено наличие площади")]
+        [Description("Обработан")]
         [EnumCode("5")]
-        AreaStep = 742,
-        /// <summary>
-        /// Проверено на дублирование (743)
-        /// </summary>
-        [Description("Проверено на дублирование")]
-        [EnumCode("6")]
-        DuplicateStep = 743,
+        Dealed = 742,
     }
 
     /// <summary>
@@ -346,6 +340,50 @@ namespace ObjectModel.Directory
         [Description("В+")]
         [EnumCode("3")]
         Bplus = 762,
+    }
+
+    /// <summary>
+    /// Статус исключения (117)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 117)]
+    public enum ExclusionStatus : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// Отсутствует адрес (763)
+        /// </summary>
+        [Description("Отсутствует адрес")]
+        [EnumCode("1")]
+        NoAddress = 763,
+        /// <summary>
+        /// Отсутствует кадастровый номер (764)
+        /// </summary>
+        [Description("Отсутствует кадастровый номер")]
+        [EnumCode("2")]
+        NoCadastralNumber = 764,
+        /// <summary>
+        /// Отсутствует площадь (765)
+        /// </summary>
+        [Description("Отсутствует площадь")]
+        [EnumCode("3")]
+        NoArea = 765,
+        /// <summary>
+        /// Отсутствует цена (766)
+        /// </summary>
+        [Description("Отсутствует цена")]
+        [EnumCode("4")]
+        NoPrice = 766,
+        /// <summary>
+        /// Дубль (767)
+        /// </summary>
+        [Description("Дубль")]
+        [EnumCode("5")]
+        Duplicate = 767,
     }
 
     /// <summary>

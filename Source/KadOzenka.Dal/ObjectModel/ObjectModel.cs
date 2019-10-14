@@ -559,26 +559,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _formalizedaddress;
-        /// <summary>
-        /// 10003101 Формализованный адрес (FORMALIZED_ADDRESS)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003101)]
-        public string FormalizedAddress
-        {
-            get
-            {
-                CheckPropertyInited("FormalizedAddress");
-                return _formalizedaddress;
-            }
-            set
-            {
-                _formalizedaddress = value;
-                NotifyPropertyChanged("FormalizedAddress");
-            }
-        }
-
-
         private string _metro;
         /// <summary>
         /// 10003200 Ближайшие станции метро (METRO)
@@ -1156,7 +1136,7 @@ namespace ObjectModel.Market
 
         private string _processtype;
         /// <summary>
-        /// 10006000 Стадия проверки на дублирование (PROCESS_TYPE)
+        /// 10006000 Статус обработки (PROCESS_TYPE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10006000)]
         public string ProcessType
@@ -1176,7 +1156,7 @@ namespace ObjectModel.Market
 
         private ProcessStep _processtype_Code;
         /// <summary>
-        /// 10006000 Стадия проверки на дублирование (справочный код) (PROCESS_TYPE_CODE)
+        /// 10006000 Статус обработки (справочный код) (PROCESS_TYPE_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10006000)]
         public ProcessStep ProcessType_Code
@@ -1209,162 +1189,57 @@ namespace ObjectModel.Market
         }
 
 
-        private string _country;
+        private string _exclusionstatus;
         /// <summary>
-        /// 10006100 Страна (COUNTRY)
+        /// 10006001 Статус исключения (EXCLUSION_STATUS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10006100)]
-        public string Country
+        [RegisterAttribute(AttributeID = 10006001)]
+        public string ExclusionStatus
         {
             get
             {
-                CheckPropertyInited("Country");
-                return _country;
+                CheckPropertyInited("ExclusionStatus");
+                return _exclusionstatus;
             }
             set
             {
-                _country = value;
-                NotifyPropertyChanged("Country");
+                _exclusionstatus = value;
+                NotifyPropertyChanged("ExclusionStatus");
             }
         }
 
 
-        private string _province;
+        private ExclusionStatus _exclusionstatus_Code;
         /// <summary>
-        /// 10006200 Федеральный округ (PROVINCE)
+        /// 10006001 Статус исключения (справочный код) (EXCLUSION_STATUS_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10006200)]
-        public string Province
+        [RegisterAttribute(AttributeID = 10006001)]
+        public ExclusionStatus ExclusionStatus_Code
         {
             get
             {
-                CheckPropertyInited("Province");
-                return _province;
+                CheckPropertyInited("ExclusionStatus_Code");
+                return this._exclusionstatus_Code;
             }
             set
             {
-                _province = value;
-                NotifyPropertyChanged("Province");
-            }
-        }
+                string descr = value.GetEnumDescription();
 
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_exclusionstatus))
+                    {
+                         _exclusionstatus = descr;
+                    }
+                }
+                else
+                {
+                     _exclusionstatus = descr;
+                }
 
-        private string _areal;
-        /// <summary>
-        /// 10006300 Область (AREAL)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006300)]
-        public string Areal
-        {
-            get
-            {
-                CheckPropertyInited("Areal");
-                return _areal;
-            }
-            set
-            {
-                _areal = value;
-                NotifyPropertyChanged("Areal");
-            }
-        }
-
-
-        private string _distr;
-        /// <summary>
-        /// 10006400 Округ (DISTR)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006400)]
-        public string Distr
-        {
-            get
-            {
-                CheckPropertyInited("Distr");
-                return _distr;
-            }
-            set
-            {
-                _distr = value;
-                NotifyPropertyChanged("Distr");
-            }
-        }
-
-
-        private string _sattlement;
-        /// <summary>
-        /// 10006500 Поселение (SATTLEMENT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006500)]
-        public string Sattlement
-        {
-            get
-            {
-                CheckPropertyInited("Sattlement");
-                return _sattlement;
-            }
-            set
-            {
-                _sattlement = value;
-                NotifyPropertyChanged("Sattlement");
-            }
-        }
-
-
-        private string _locality;
-        /// <summary>
-        /// 10006600 Район (LOCALITY)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006600)]
-        public string Locality
-        {
-            get
-            {
-                CheckPropertyInited("Locality");
-                return _locality;
-            }
-            set
-            {
-                _locality = value;
-                NotifyPropertyChanged("Locality");
-            }
-        }
-
-
-        private string _street;
-        /// <summary>
-        /// 10006800 Улица (STREET)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006800)]
-        public string Street
-        {
-            get
-            {
-                CheckPropertyInited("Street");
-                return _street;
-            }
-            set
-            {
-                _street = value;
-                NotifyPropertyChanged("Street");
-            }
-        }
-
-
-        private string _house;
-        /// <summary>
-        /// 10006900 Дом (HOUSE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006900)]
-        public string House
-        {
-            get
-            {
-                CheckPropertyInited("House");
-                return _house;
-            }
-            set
-            {
-                _house = value;
-                NotifyPropertyChanged("House");
+                this._exclusionstatus_Code = value;
+                NotifyPropertyChanged("ExclusionStatus");
+                NotifyPropertyChanged("ExclusionStatus_Code");
             }
         }
 
@@ -1554,42 +1429,1186 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _regionid;
+        private long? _formalizedaddressid;
         /// <summary>
-        /// 100002701 Идентификатор региона (REGION_ID)
+        /// 10007400 Идентификатор адреса (FORMALIZED_ADDRESS_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 100002701)]
-        public long? RegionId
+        [RegisterAttribute(AttributeID = 10007400)]
+        public long? FormalizedAddressId
         {
             get
             {
-                CheckPropertyInited("RegionId");
-                return _regionid;
+                CheckPropertyInited("FormalizedAddressId");
+                return _formalizedaddressid;
             }
             set
             {
-                _regionid = value;
-                NotifyPropertyChanged("RegionId");
+                _formalizedaddressid = value;
+                NotifyPropertyChanged("FormalizedAddressId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 101 Адреса в яндек-формате (MARKET_ADDRESS_YANDEX)
+    /// </summary>
+    [RegisterInfo(RegisterID = 101)]
+    [Serializable]
+    public partial class OMYandexAddress : OMBaseClass<OMYandexAddress>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10100100 Идентификатор адреса (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
             }
         }
 
 
-        private long? _cityid;
+        private string _formalizedaddress;
         /// <summary>
-        /// 100002801 Идентификатор города (CITY_ID)
+        /// 10100200 Формализованный адрес (FORMALIZED_ADDRESS)
         /// </summary>
-        [RegisterAttribute(AttributeID = 100002801)]
-        public long? CityId
+        [RegisterAttribute(AttributeID = 10100200)]
+        public string FormalizedAddress
         {
             get
             {
-                CheckPropertyInited("CityId");
-                return _cityid;
+                CheckPropertyInited("FormalizedAddress");
+                return _formalizedaddress;
             }
             set
             {
-                _cityid = value;
-                NotifyPropertyChanged("CityId");
+                _formalizedaddress = value;
+                NotifyPropertyChanged("FormalizedAddress");
+            }
+        }
+
+
+        private string _cadastralnumber;
+        /// <summary>
+        /// 10100300 Кадастровый номер (CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100300)]
+        public string CadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("CadastralNumber");
+                return _cadastralnumber;
+            }
+            set
+            {
+                _cadastralnumber = value;
+                NotifyPropertyChanged("CadastralNumber");
+            }
+        }
+
+
+        private decimal? _lat;
+        /// <summary>
+        /// 10100400 Широта (LAT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100400)]
+        public decimal? Lat
+        {
+            get
+            {
+                CheckPropertyInited("Lat");
+                return _lat;
+            }
+            set
+            {
+                _lat = value;
+                NotifyPropertyChanged("Lat");
+            }
+        }
+
+
+        private decimal? _lng;
+        /// <summary>
+        /// 10100500 Долгота (LNG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100500)]
+        public decimal? Lng
+        {
+            get
+            {
+                CheckPropertyInited("Lng");
+                return _lng;
+            }
+            set
+            {
+                _lng = value;
+                NotifyPropertyChanged("Lng");
+            }
+        }
+
+
+        private string _country;
+        /// <summary>
+        /// 10100600 Страна (COUNTRY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100600)]
+        public string Country
+        {
+            get
+            {
+                CheckPropertyInited("Country");
+                return _country;
+            }
+            set
+            {
+                _country = value;
+                NotifyPropertyChanged("Country");
+            }
+        }
+
+
+        private string _province;
+        /// <summary>
+        /// 10100700 Федеральный округ (PROVINCE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100700)]
+        public string Province
+        {
+            get
+            {
+                CheckPropertyInited("Province");
+                return _province;
+            }
+            set
+            {
+                _province = value;
+                NotifyPropertyChanged("Province");
+            }
+        }
+
+
+        private string _province2;
+        /// <summary>
+        /// 10100800 Уточнение округа (PROVINCE_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100800)]
+        public string Province2
+        {
+            get
+            {
+                CheckPropertyInited("Province2");
+                return _province2;
+            }
+            set
+            {
+                _province2 = value;
+                NotifyPropertyChanged("Province2");
+            }
+        }
+
+
+        private string _area;
+        /// <summary>
+        /// 10100900 Область (AREA)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10100900)]
+        public string Area
+        {
+            get
+            {
+                CheckPropertyInited("Area");
+                return _area;
+            }
+            set
+            {
+                _area = value;
+                NotifyPropertyChanged("Area");
+            }
+        }
+
+
+        private string _area2;
+        /// <summary>
+        /// 10101000 Уточнение области (AREA_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101000)]
+        public string Area2
+        {
+            get
+            {
+                CheckPropertyInited("Area2");
+                return _area2;
+            }
+            set
+            {
+                _area2 = value;
+                NotifyPropertyChanged("Area2");
+            }
+        }
+
+
+        private string _locality;
+        /// <summary>
+        /// 10101100 Район (LOCALITY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101100)]
+        public string Locality
+        {
+            get
+            {
+                CheckPropertyInited("Locality");
+                return _locality;
+            }
+            set
+            {
+                _locality = value;
+                NotifyPropertyChanged("Locality");
+            }
+        }
+
+
+        private string _locality2;
+        /// <summary>
+        /// 10101200 Уточнение района (LOCALITY_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101200)]
+        public string Locality2
+        {
+            get
+            {
+                CheckPropertyInited("Locality2");
+                return _locality2;
+            }
+            set
+            {
+                _locality2 = value;
+                NotifyPropertyChanged("Locality2");
+            }
+        }
+
+
+        private string _district;
+        /// <summary>
+        /// 10101300 Округ (DISTRICT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101300)]
+        public string District
+        {
+            get
+            {
+                CheckPropertyInited("District");
+                return _district;
+            }
+            set
+            {
+                _district = value;
+                NotifyPropertyChanged("District");
+            }
+        }
+
+
+        private string _district2;
+        /// <summary>
+        /// 10101400 Уточнение округа (DISTRICT_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101400)]
+        public string District2
+        {
+            get
+            {
+                CheckPropertyInited("District2");
+                return _district2;
+            }
+            set
+            {
+                _district2 = value;
+                NotifyPropertyChanged("District2");
+            }
+        }
+
+
+        private string _district3;
+        /// <summary>
+        /// 10101500 Второе уточнение округа (DISTRICT_3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101500)]
+        public string District3
+        {
+            get
+            {
+                CheckPropertyInited("District3");
+                return _district3;
+            }
+            set
+            {
+                _district3 = value;
+                NotifyPropertyChanged("District3");
+            }
+        }
+
+
+        private string _airport;
+        /// <summary>
+        /// 10101600 Аэропорт (AIRPORT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101600)]
+        public string Airport
+        {
+            get
+            {
+                CheckPropertyInited("Airport");
+                return _airport;
+            }
+            set
+            {
+                _airport = value;
+                NotifyPropertyChanged("Airport");
+            }
+        }
+
+
+        private string _vegetation;
+        /// <summary>
+        /// 10101700 Ориентир (VEGETATION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101700)]
+        public string Vegetation
+        {
+            get
+            {
+                CheckPropertyInited("Vegetation");
+                return _vegetation;
+            }
+            set
+            {
+                _vegetation = value;
+                NotifyPropertyChanged("Vegetation");
+            }
+        }
+
+
+        private string _route;
+        /// <summary>
+        /// 10101800 Путь (ROUTE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101800)]
+        public string Route
+        {
+            get
+            {
+                CheckPropertyInited("Route");
+                return _route;
+            }
+            set
+            {
+                _route = value;
+                NotifyPropertyChanged("Route");
+            }
+        }
+
+
+        private string _railwaystation;
+        /// <summary>
+        /// 10101900 ЖД станция (RAILWAY_STATION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10101900)]
+        public string RailwayStation
+        {
+            get
+            {
+                CheckPropertyInited("RailwayStation");
+                return _railwaystation;
+            }
+            set
+            {
+                _railwaystation = value;
+                NotifyPropertyChanged("RailwayStation");
+            }
+        }
+
+
+        private string _street;
+        /// <summary>
+        /// 10102000 Улица (STREET)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10102000)]
+        public string Street
+        {
+            get
+            {
+                CheckPropertyInited("Street");
+                return _street;
+            }
+            set
+            {
+                _street = value;
+                NotifyPropertyChanged("Street");
+            }
+        }
+
+
+        private string _house;
+        /// <summary>
+        /// 10102100 Дом (HOUSE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10102100)]
+        public string House
+        {
+            get
+            {
+                CheckPropertyInited("House");
+                return _house;
+            }
+            set
+            {
+                _house = value;
+                NotifyPropertyChanged("House");
+            }
+        }
+
+
+        private string _other;
+        /// <summary>
+        /// 10102200 Другое (OTHER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10102200)]
+        public string Other
+        {
+            get
+            {
+                CheckPropertyInited("Other");
+                return _other;
+            }
+            set
+            {
+                _other = value;
+                NotifyPropertyChanged("Other");
+            }
+        }
+
+
+        private long? _initialid;
+        /// <summary>
+        /// 10102300 Идентификатор исходного объекта (INITIAL_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10102300)]
+        public long? InitialId
+        {
+            get
+            {
+                CheckPropertyInited("InitialId");
+                return _initialid;
+            }
+            set
+            {
+                _initialid = value;
+                NotifyPropertyChanged("InitialId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 102 Адреса в формате Росреестра (GBU_ADDRESS_ROSREESTR)
+    /// </summary>
+    [RegisterInfo(RegisterID = 102)]
+    [Serializable]
+    public partial class OMAddressRosreestr : OMBaseClass<OMAddressRosreestr>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _idfactor;
+        /// <summary>
+        /// 10200200 Идентификатор фактора (ID_FACTOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200200)]
+        public long? IdFactor
+        {
+            get
+            {
+                CheckPropertyInited("IdFactor");
+                return _idfactor;
+            }
+            set
+            {
+                _idfactor = value;
+                NotifyPropertyChanged("IdFactor");
+            }
+        }
+
+
+        private long? _idobject;
+        /// <summary>
+        /// 10200300 Идентификатор объекта (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200300)]
+        public long? IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private long? _iddocument;
+        /// <summary>
+        /// 10200400 Идентификатор документа (ID_DOCUMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200400)]
+        public long? IdDocument
+        {
+            get
+            {
+                CheckPropertyInited("IdDocument");
+                return _iddocument;
+            }
+            set
+            {
+                _iddocument = value;
+                NotifyPropertyChanged("IdDocument");
+            }
+        }
+
+
+        private string _okato;
+        /// <summary>
+        /// 10200500 ОКАТО (OKATO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200500)]
+        public string OKATO
+        {
+            get
+            {
+                CheckPropertyInited("OKATO");
+                return _okato;
+            }
+            set
+            {
+                _okato = value;
+                NotifyPropertyChanged("OKATO");
+            }
+        }
+
+
+        private string _kladr;
+        /// <summary>
+        /// 10200600 КЛАДР (KLADR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200600)]
+        public string KLADR
+        {
+            get
+            {
+                CheckPropertyInited("KLADR");
+                return _kladr;
+            }
+            set
+            {
+                _kladr = value;
+                NotifyPropertyChanged("KLADR");
+            }
+        }
+
+
+        private string _postalcode;
+        /// <summary>
+        /// 10200700 Почтовый индекс (POSTAL_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200700)]
+        public string PostalCode
+        {
+            get
+            {
+                CheckPropertyInited("PostalCode");
+                return _postalcode;
+            }
+            set
+            {
+                _postalcode = value;
+                NotifyPropertyChanged("PostalCode");
+            }
+        }
+
+
+        private string _region;
+        /// <summary>
+        /// 10200800 Регион (REGION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200800)]
+        public string Region
+        {
+            get
+            {
+                CheckPropertyInited("Region");
+                return _region;
+            }
+            set
+            {
+                _region = value;
+                NotifyPropertyChanged("Region");
+            }
+        }
+
+
+        private string _districtname;
+        /// <summary>
+        /// 10200900 Название подрегиона (DISTRICT_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10200900)]
+        public string DistrictName
+        {
+            get
+            {
+                CheckPropertyInited("DistrictName");
+                return _districtname;
+            }
+            set
+            {
+                _districtname = value;
+                NotifyPropertyChanged("DistrictName");
+            }
+        }
+
+
+        private string _districttype;
+        /// <summary>
+        /// 10201000 Тип подрегиона (DISTRICT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201000)]
+        public string DistrictType
+        {
+            get
+            {
+                CheckPropertyInited("DistrictType");
+                return _districttype;
+            }
+            set
+            {
+                _districttype = value;
+                NotifyPropertyChanged("DistrictType");
+            }
+        }
+
+
+        private string _cityname;
+        /// <summary>
+        /// 10201100 Название города (CITY_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201100)]
+        public string CityName
+        {
+            get
+            {
+                CheckPropertyInited("CityName");
+                return _cityname;
+            }
+            set
+            {
+                _cityname = value;
+                NotifyPropertyChanged("CityName");
+            }
+        }
+
+
+        private string _citytype;
+        /// <summary>
+        /// 10201200 Тип города (CITY_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201200)]
+        public string CityType
+        {
+            get
+            {
+                CheckPropertyInited("CityType");
+                return _citytype;
+            }
+            set
+            {
+                _citytype = value;
+                NotifyPropertyChanged("CityType");
+            }
+        }
+
+
+        private string _urbanname;
+        /// <summary>
+        /// 10201300 Название области (URBAN_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201300)]
+        public string UrbanName
+        {
+            get
+            {
+                CheckPropertyInited("UrbanName");
+                return _urbanname;
+            }
+            set
+            {
+                _urbanname = value;
+                NotifyPropertyChanged("UrbanName");
+            }
+        }
+
+
+        private string _urbantype;
+        /// <summary>
+        /// 10201400 Тип области (URBAN_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201400)]
+        public string UrbanType
+        {
+            get
+            {
+                CheckPropertyInited("UrbanType");
+                return _urbantype;
+            }
+            set
+            {
+                _urbantype = value;
+                NotifyPropertyChanged("UrbanType");
+            }
+        }
+
+
+        private string _sovietname;
+        /// <summary>
+        /// 10201500 Поселение (SOVIET_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201500)]
+        public string SovietName
+        {
+            get
+            {
+                CheckPropertyInited("SovietName");
+                return _sovietname;
+            }
+            set
+            {
+                _sovietname = value;
+                NotifyPropertyChanged("SovietName");
+            }
+        }
+
+
+        private string _soviettype;
+        /// <summary>
+        /// 10201600 Тип поселения (SOVIET_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201600)]
+        public string SovietType
+        {
+            get
+            {
+                CheckPropertyInited("SovietType");
+                return _soviettype;
+            }
+            set
+            {
+                _soviettype = value;
+                NotifyPropertyChanged("SovietType");
+            }
+        }
+
+
+        private string _localityname;
+        /// <summary>
+        /// 10201700 Район (LOCALITY_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201700)]
+        public string LocalityName
+        {
+            get
+            {
+                CheckPropertyInited("LocalityName");
+                return _localityname;
+            }
+            set
+            {
+                _localityname = value;
+                NotifyPropertyChanged("LocalityName");
+            }
+        }
+
+
+        private string _localitytype;
+        /// <summary>
+        /// 10201800 Тип рaйона (LOCALITY_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201800)]
+        public string LocalityType
+        {
+            get
+            {
+                CheckPropertyInited("LocalityType");
+                return _localitytype;
+            }
+            set
+            {
+                _localitytype = value;
+                NotifyPropertyChanged("LocalityType");
+            }
+        }
+
+
+        private string _streetname;
+        /// <summary>
+        /// 10201900 Улица (STREET_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10201900)]
+        public string StreetName
+        {
+            get
+            {
+                CheckPropertyInited("StreetName");
+                return _streetname;
+            }
+            set
+            {
+                _streetname = value;
+                NotifyPropertyChanged("StreetName");
+            }
+        }
+
+
+        private string _streettype;
+        /// <summary>
+        /// 10202000 Тип улицы (STREET_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202000)]
+        public string StreetType
+        {
+            get
+            {
+                CheckPropertyInited("StreetType");
+                return _streettype;
+            }
+            set
+            {
+                _streettype = value;
+                NotifyPropertyChanged("StreetType");
+            }
+        }
+
+
+        private string _level1name;
+        /// <summary>
+        /// 10202100 Первый ориентир (LEVEL1_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202100)]
+        public string Level1Name
+        {
+            get
+            {
+                CheckPropertyInited("Level1Name");
+                return _level1name;
+            }
+            set
+            {
+                _level1name = value;
+                NotifyPropertyChanged("Level1Name");
+            }
+        }
+
+
+        private string _level1type;
+        /// <summary>
+        /// 10202200 Тип первого ориентира (LEVEL1_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202200)]
+        public string Level1Type
+        {
+            get
+            {
+                CheckPropertyInited("Level1Type");
+                return _level1type;
+            }
+            set
+            {
+                _level1type = value;
+                NotifyPropertyChanged("Level1Type");
+            }
+        }
+
+
+        private string _level2name;
+        /// <summary>
+        /// 10202300 Второй ориентир	 (LEVEL2_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202300)]
+        public string Level2Name
+        {
+            get
+            {
+                CheckPropertyInited("Level2Name");
+                return _level2name;
+            }
+            set
+            {
+                _level2name = value;
+                NotifyPropertyChanged("Level2Name");
+            }
+        }
+
+
+        private string _level2type;
+        /// <summary>
+        /// 10202400 Тип второго ориентира (LEVEL2_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202400)]
+        public string Level2Type
+        {
+            get
+            {
+                CheckPropertyInited("Level2Type");
+                return _level2type;
+            }
+            set
+            {
+                _level2type = value;
+                NotifyPropertyChanged("Level2Type");
+            }
+        }
+
+
+        private string _level3name;
+        /// <summary>
+        /// 10202500 Третий ориентир (LEVEL3_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202500)]
+        public string Level3Name
+        {
+            get
+            {
+                CheckPropertyInited("Level3Name");
+                return _level3name;
+            }
+            set
+            {
+                _level3name = value;
+                NotifyPropertyChanged("Level3Name");
+            }
+        }
+
+
+        private string _level3type;
+        /// <summary>
+        /// 10202600 Тип третьего ориентира (LEVEL3_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202600)]
+        public string Level3Type
+        {
+            get
+            {
+                CheckPropertyInited("Level3Type");
+                return _level3type;
+            }
+            set
+            {
+                _level3type = value;
+                NotifyPropertyChanged("Level3Type");
+            }
+        }
+
+
+        private string _appartmentname;
+        /// <summary>
+        /// 10202700 Квартира (APARTMENT_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202700)]
+        public string AppartmentName
+        {
+            get
+            {
+                CheckPropertyInited("AppartmentName");
+                return _appartmentname;
+            }
+            set
+            {
+                _appartmentname = value;
+                NotifyPropertyChanged("AppartmentName");
+            }
+        }
+
+
+        private string _appartmenttype;
+        /// <summary>
+        /// 10202800 Тип квартиры (APARTMENT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202800)]
+        public string AppartmentType
+        {
+            get
+            {
+                CheckPropertyInited("AppartmentType");
+                return _appartmenttype;
+            }
+            set
+            {
+                _appartmenttype = value;
+                NotifyPropertyChanged("AppartmentType");
+            }
+        }
+
+
+        private string _other;
+        /// <summary>
+        /// 10202900 Другое (OTHER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10202900)]
+        public string Other
+        {
+            get
+            {
+                CheckPropertyInited("Other");
+                return _other;
+            }
+            set
+            {
+                _other = value;
+                NotifyPropertyChanged("Other");
+            }
+        }
+
+
+        private string _note;
+        /// <summary>
+        /// 10203000 Примечание (NOTE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10203000)]
+        public string Note
+        {
+            get
+            {
+                CheckPropertyInited("Note");
+                return _note;
+            }
+            set
+            {
+                _note = value;
+                NotifyPropertyChanged("Note");
+            }
+        }
+
+
+        private DateTime? _datevalue;
+        /// <summary>
+        /// 10203100 Дата заполнения (DATE_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10203100)]
+        public DateTime? DateValue
+        {
+            get
+            {
+                CheckPropertyInited("DateValue");
+                return _datevalue;
+            }
+            set
+            {
+                _datevalue = value;
+                NotifyPropertyChanged("DateValue");
+            }
+        }
+
+
+        private long? _statusvalue;
+        /// <summary>
+        /// 10203200 Статус (STATUS_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10203200)]
+        public long? StatusValue
+        {
+            get
+            {
+                CheckPropertyInited("StatusValue");
+                return _statusvalue;
+            }
+            set
+            {
+                _statusvalue = value;
+                NotifyPropertyChanged("StatusValue");
+            }
+        }
+
+
+        private long? _iduser;
+        /// <summary>
+        /// 10203300 Идентификатор пользователя (ID_USER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10203300)]
+        public long? IdUser
+        {
+            get
+            {
+                CheckPropertyInited("IdUser");
+                return _iduser;
+            }
+            set
+            {
+                _iduser = value;
+                NotifyPropertyChanged("IdUser");
+            }
+        }
+
+
+        private DateTime? _dateuser;
+        /// <summary>
+        /// 10203400 Дата изменения	 (DATE_USER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10203400)]
+        public DateTime? DateUser
+        {
+            get
+            {
+                CheckPropertyInited("DateUser");
+                return _dateuser;
+            }
+            set
+            {
+                _dateuser = value;
+                NotifyPropertyChanged("DateUser");
             }
         }
 
@@ -1753,42 +2772,22 @@ namespace ObjectModel.Gbu
         }
 
 
-        private string _groupid;
+        private bool? _isactive;
         /// <summary>
-        /// 20000400 Группа (KO_GROUP)
+        /// 20000400 Признак активного (IS_ACTIVE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20000400)]
-        public string GroupId
+        public bool? IsActive
         {
             get
             {
-                CheckPropertyInited("GroupId");
-                return _groupid;
+                CheckPropertyInited("IsActive");
+                return _isactive;
             }
             set
             {
-                _groupid = value;
-                NotifyPropertyChanged("GroupId");
-            }
-        }
-
-
-        private long? _groupid_Code;
-        /// <summary>
-        /// 20000400 Группа (справочный код) (KO_GROUP_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20000400)]
-        public long? GroupId_Code
-        {
-            get
-            {
-                CheckPropertyInited("GroupId_Code");
-                return _groupid_Code;
-            }
-            set
-            {
-                _groupid_Code = value;
-                NotifyPropertyChanged("GroupId_Code");
+                _isactive = value;
+                NotifyPropertyChanged("IsActive");
             }
         }
 

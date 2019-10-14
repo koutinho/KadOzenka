@@ -537,6 +537,54 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
+    /// 101 Адреса в яндек-формате
+    /// </summary>
+    public partial class OMYandexAddress
+    {
+
+        public OMYandexAddress()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMYandexAddress(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 102 Адреса в формате Росреестра
+    /// </summary>
+    public partial class OMAddressRosreestr
+    {
+
+        public OMAddressRosreestr()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMAddressRosreestr(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
     /// 103 Таблица, содержащая настройки модуля
     /// </summary>
     public partial class OMSettings

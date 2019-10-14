@@ -388,8 +388,8 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" PrivateAssets="All" />
-    <PackageReference Include="Platform.Reports" Version="1.0.14" />
-    <PackageReference Include="Platform.Web" Version="1.0.179" />
+    <PackageReference Include="Platform.Reports" Version="1.0.15" />
+    <PackageReference Include="Platform.Web" Version="1.0.193" />
   </ItemGroup>
 
   <ItemGroup>
