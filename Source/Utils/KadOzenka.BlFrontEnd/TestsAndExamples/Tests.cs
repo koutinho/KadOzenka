@@ -1,6 +1,6 @@
 ﻿using KadOzenka.Dal.GbuObject;
 
-namespace DebugApplication.TestsAndExamples
+namespace KadOzenka.BlFrontEnd.TestsAndExamples
 {
     public static class Tests
     {

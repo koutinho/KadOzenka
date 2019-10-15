@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace DebugApplication.YandexFiller
+namespace KadOzenka.BlFrontEnd.YandexFiller
 {
     class AddressesFiller
     {

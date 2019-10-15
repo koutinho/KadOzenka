@@ -10,7 +10,7 @@ using System.Configuration;
 using System.Data;
 using System.IO;
 
-namespace DebugApplication.ObjectReplicationExcel
+namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 {
     public class ObjectReplicationExcelProcess
     {

@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
-using DebugApplication.ObjectReplicationExcel;
-using DebugApplication.RosreestrParser;
-using DebugApplication.TestsAndExamples;
-using DebugApplication.YandexFiller;
+using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
+using KadOzenka.BlFrontEnd.RosreestrParser;
+using KadOzenka.BlFrontEnd.TestsAndExamples;
+using KadOzenka.BlFrontEnd.YandexFiller;
 using GemBox.Spreadsheet;
 using Platform.Shared;
 
-namespace DebugApplication
+namespace KadOzenka.BlFrontEnd
 {
     class Program
     {
