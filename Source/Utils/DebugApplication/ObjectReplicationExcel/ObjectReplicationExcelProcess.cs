@@ -1,6 +1,7 @@
 ﻿using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject;
+using ObjectModel.Core.Shared;
 using ObjectModel.Core.TD;
 using ObjectModel.Gbu;
 using System;
@@ -8,7 +9,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.IO;
-using System.Text;
 
 namespace DebugApplication.ObjectReplicationExcel
 {
@@ -22,13 +22,19 @@ namespace DebugApplication.ObjectReplicationExcel
 			}
 		}
 
-		public static void Export()
+		private static Dictionary<long, OMInstance> _documents = new Dictionary<long, OMInstance>();
+
+		private static Dictionary<long, OMReferenceItem> _refItems = new Dictionary<long, OMReferenceItem>();
+
+		public static void StartImport()
 		{
 			if (!Directory.Exists(BaseDirectory)) throw new Exception($"Директория не существует: {BaseDirectory}");
 
 			LoadDocuments();
 
 			LoadObjects();
+
+			LoadReference();
 
 			LoadAttributes();
 		}
@@ -47,8 +53,10 @@ namespace DebugApplication.ObjectReplicationExcel
 					ApproveDate = row["date_document"].ParseToDateTime(),
 					Description = row["name_document"].ToString(),
 				};
-
+				
 				document.Save();
+
+				_documents.Add(document.Id, document);
 			}
 		}
 
@@ -70,28 +78,84 @@ namespace DebugApplication.ObjectReplicationExcel
 			}
 		}
 
+		private static void LoadReference()
+		{
+			var dt = GetData($"{BaseDirectory}DICTIONARYRECORD.xlsx");
+
+			foreach (DataRow row in dt.Rows)
+			{
+				OMReferenceItem refItem = new OMReferenceItem
+				{
+					ItemId = row["ID_RECORD"].ParseToLong(),
+					Value = row["VAL_RECORD"].ToString()
+				};
+
+				//document.Save();
+
+				_refItems.Add(refItem.ItemId, refItem);
+			}
+		}
+
 		private static void LoadAttributes()
 		{
 			var dt = GetData($"{BaseDirectory}tbFactorDateValue.xlsx");
 
 			foreach (DataRow row in dt.Rows)
 			{
-				var attributeValue = new GbuObjectAttribute
-				{
-					Id = row["id_value"].ParseToInt(),
-					AttributeId = row["id_value"].ParseToInt(),
-					ObjectId = row["id_object"].ParseToInt(),
-					ChangeDocId = row["id_document"].ParseToInt(),
-					DtValue = row["value"].ParseToDateTime(),
-					S = row["date_value"].ParseToDateTime(),
-					ChangeUserId = row["id_user"].ParseToInt(),
-					ChangeDate = row["date_user"].ParseToDateTime(),
-				};
+				var attributeValue = GetAttributeValueCommon(row);
+				attributeValue.DtValue = row["value"].ParseToDateTime();
 
 				attributeValue.Save();
 			}
 
-			
+			dt = GetData($"{BaseDirectory}tbFactorDoubleValue.xlsx");
+
+			foreach (DataRow row in dt.Rows)
+			{
+				var attributeValue = GetAttributeValueCommon(row);
+				attributeValue.NumValue = row["value"].ParseToDecimal();
+				
+				attributeValue.Save();
+			}
+
+			dt = GetData($"{BaseDirectory}tbFactorTextValue.xlsx");
+
+			foreach (DataRow row in dt.Rows)
+			{
+				var attributeValue = GetAttributeValueCommon(row);
+				attributeValue.StringValue = row["value"].ToString();
+
+				attributeValue.Save();
+			}
+
+			dt = GetData($"{BaseDirectory}tbFactorLinkValue.xlsx");
+
+			foreach (DataRow row in dt.Rows)
+			{
+				var attributeValue = GetAttributeValueCommon(row);
+				attributeValue.RefItemId = row["value"].ParseToLong();
+				attributeValue.StringValue = _refItems[attributeValue.RefItemId].Value;
+
+				attributeValue.Save();
+			}
+		}
+
+		private static GbuObjectAttribute GetAttributeValueCommon(DataRow row)
+		{
+			var attributeValue = new GbuObjectAttribute
+			{
+				Id = row["id_value"].ParseToInt(),
+				AttributeId = row["id_factor"].ParseToInt(),
+				ObjectId = row["id_object"].ParseToInt(),
+				ChangeDocId = row["id_document"].ParseToInt(),
+				S = row["date_value"].ParseToDateTime(),
+				ChangeUserId = row["id_user"].ParseToInt(),
+				ChangeDate = row["date_user"].ParseToDateTime(),
+			};
+
+			attributeValue.Ot = _documents[attributeValue.ChangeDocId].CreateDate;
+
+			return attributeValue;
 		}
 
 		private static DataTable GetData(string filePath)
@@ -102,7 +166,7 @@ namespace DebugApplication.ObjectReplicationExcel
 
 			DataTable dt = new DataTable();
 
-			ExcelRow headerRow = ws.Rows[1];
+			ExcelRow headerRow = ws.Rows[0];
 			for (int i = 0; i < headerRow.AllocatedCells.Count; i++)
 			{
 				dt.Columns.Add(headerRow.Cells[i].Value != null ? headerRow.Cells[i].Value.ToString() : i.ToString());

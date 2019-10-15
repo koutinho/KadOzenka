@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.GbuObject
     {
 		public static List<string> Postfixes = new List<string> { "TXT", "NUM", "DT" };
 
-		public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null)
+		public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null, List<long> attributes = null)
 		{
 			var getSources = sources;
 
@@ -69,6 +69,11 @@ left join core_srd_user u on u.id = a.change_user_id
 left join core_td_instance td on td.id = a.change_doc_id
 where a.object_id = {objectId}";
 
+					if(attributes != null && attributes.Count > 0)
+					{
+						sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
+					}
+
 					result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 				}
 			}
@@ -104,7 +109,7 @@ where a.object_id = {objectId}";
 
 					foreach (var postfix in Postfixes)
 					{
-						string sql = $"select count(1) as ValuesCount from {register.AllpriTable}_{postfix} a where a.object_id = {objectId} group by a.attribute_id";
+						string sql = $"select count(1) as ValuesCount from {register.AllpriTable}_{postfix} a where a.object_id = {objectId}";
 
 						valuesCount += QSQuery.ExecuteSql(sql, () => new {
 							ValuesCount = default(long)
@@ -152,6 +157,8 @@ where a.object_id = {objectId}";
 						ContentUrl = $"/GbuObject/AllDetails?objectId={objectId}&attributeId={attributeValueCount.AttributeId}".ResolveClientUrl(),
 						HasChilds = false
 					});
+
+					result = result.OrderBy(x => RegisterCache.GetAttributeData((int)x.AttributeId).Name).ToList();
 				}
 			}			
 

@@ -37,7 +37,14 @@ namespace KadOzenka.Web.Controllers
 				sources = new List<long> { registerId.Value };
 			}
 
-			var sttributesValues = _service.GetAllAttributes(objectId, sources);
+			List<long> attributes = null;
+
+			if (attributeId != null)
+			{
+				attributes = new List<long> { attributeId.Value };
+			}
+
+			var sttributesValues = _service.GetAllAttributes(objectId, sources, attributes);
 
 			return View(sttributesValues);
 		}

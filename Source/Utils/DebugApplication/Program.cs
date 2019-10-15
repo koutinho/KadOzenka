@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using DebugApplication.ObjectReplicationExcel;
 using DebugApplication.RosreestrParser;
 using DebugApplication.TestsAndExamples;
 using DebugApplication.YandexFiller;
+using GemBox.Spreadsheet;
 using Platform.Shared;
 
 namespace DebugApplication
@@ -14,6 +16,8 @@ namespace DebugApplication
     {
 		static void Main(string[] args)
         {
+			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
+
 			var consoleHelper = new BlFrontEndConsoleHelper();
 
 			InitCommands(consoleHelper);
@@ -39,6 +43,8 @@ namespace DebugApplication
 			consoleHelper.AddCommand("6", "Запуск парсинга excele файла с объектами-аналогами из росреестра", () => {
 				//new OuterMarketParser.Launcher.OuterMarketParser().ParseExcele();
 			});
+
+			consoleHelper.AddCommand("7", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.StartImport);
 		}
 	}
 }
