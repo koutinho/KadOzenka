@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29230.47
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal", "KadOzenka.Dal\KadOzenka.Dal.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
 EndProject
@@ -13,9 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateDbScripts", "Utils\GenerateDbScripts\GenerateDbScripts.csproj", "{1ED61666-43A6-420B-9F1E-C587B88794A8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DebugApplication", "Utils\DebugApplication\DebugApplication.csproj", "{620E8F25-59FD-4854-A112-E34658EBDFD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.BlFrontEnd", "Utils\DebugApplication\KadOzenka.BlFrontEnd.csproj", "{620E8F25-59FD-4854-A112-E34658EBDFD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GISStandProject", "GISStandProject\GISStandProject.csproj", "{F0346EBC-9237-4802-BF75-710E00671189}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GISStandProject", "GISStandProject\GISStandProject.csproj", "{F0346EBC-9237-4802-BF75-710E00671189}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,22 +94,22 @@ Global
 		SccProjectTopLevelParentUniqueName1 = KadOzenka.sln
 		SccProjectName1 = Utils/GenerateObjectModel
 		SccLocalPath1 = Utils\\GenerateObjectModel
-		SccProjectUniqueName2 = Utils\\DebugApplication\\DebugApplication.csproj
-		SccProjectTopLevelParentUniqueName2 = KadOzenka.sln
-		SccProjectName2 = Utils/DebugApplication
-		SccLocalPath2 = Utils\\DebugApplication
-		SccProjectUniqueName3 = KadOzenka.Dal\\KadOzenka.Dal.csproj
-		SccProjectName3 = KadOzenka.Dal
-		SccLocalPath3 = KadOzenka.Dal
-		SccProjectUniqueName4 = KadOzenka.Web\\KadOzenka.Web.csproj
-		SccProjectName4 = KadOzenka.Web
-		SccLocalPath4 = KadOzenka.Web
-		SccProjectUniqueName5 = Utils\\GenerateDbScripts\\GenerateDbScripts.csproj
-		SccProjectTopLevelParentUniqueName5 = KadOzenka.sln
-		SccProjectName5 = Utils/GenerateDbScripts
-		SccLocalPath5 = Utils\\GenerateDbScripts
-		SccProjectUniqueName6 = GISStandProject\\GISStandProject.csproj
-		SccProjectName6 = GISStandProject
-		SccLocalPath6 = GISStandProject
+		SccProjectUniqueName2 = KadOzenka.Dal\\KadOzenka.Dal.csproj
+		SccProjectName2 = KadOzenka.Dal
+		SccLocalPath2 = KadOzenka.Dal
+		SccProjectUniqueName3 = KadOzenka.Web\\KadOzenka.Web.csproj
+		SccProjectName3 = KadOzenka.Web
+		SccLocalPath3 = KadOzenka.Web
+		SccProjectUniqueName4 = Utils\\GenerateDbScripts\\GenerateDbScripts.csproj
+		SccProjectTopLevelParentUniqueName4 = KadOzenka.sln
+		SccProjectName4 = Utils/GenerateDbScripts
+		SccLocalPath4 = Utils\\GenerateDbScripts
+		SccProjectUniqueName5 = GISStandProject\\GISStandProject.csproj
+		SccProjectName5 = GISStandProject
+		SccLocalPath5 = GISStandProject
+		SccProjectUniqueName6 = Utils\\DebugApplication\\KadOzenka.BlFrontEnd.csproj
+		SccProjectTopLevelParentUniqueName6 = KadOzenka.sln
+		SccProjectName6 = Utils/DebugApplication
+		SccLocalPath6 = Utils\\DebugApplication
 	EndGlobalSection
 EndGlobal
