@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateDbScripts", "Utils\GenerateDbScripts\GenerateDbScripts.csproj", "{1ED61666-43A6-420B-9F1E-C587B88794A8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.BlFrontEnd", "Utils\DebugApplication\KadOzenka.BlFrontEnd.csproj", "{620E8F25-59FD-4854-A112-E34658EBDFD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.BlFrontEnd", "Utils\KadOzenka.BlFrontEnd\KadOzenka.BlFrontEnd.csproj", "{620E8F25-59FD-4854-A112-E34658EBDFD0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GISStandProject", "GISStandProject\GISStandProject.csproj", "{F0346EBC-9237-4802-BF75-710E00671189}"
 EndProject
@@ -107,9 +107,9 @@ Global
 		SccProjectUniqueName5 = GISStandProject\\GISStandProject.csproj
 		SccProjectName5 = GISStandProject
 		SccLocalPath5 = GISStandProject
-		SccProjectUniqueName6 = Utils\\DebugApplication\\KadOzenka.BlFrontEnd.csproj
+		SccProjectUniqueName6 = Utils\\KadOzenka.BlFrontEnd\\KadOzenka.BlFrontEnd.csproj
 		SccProjectTopLevelParentUniqueName6 = KadOzenka.sln
-		SccProjectName6 = Utils/DebugApplication
-		SccLocalPath6 = Utils\\DebugApplication
+		SccProjectName6 = Utils/KadOzenka.BlFrontEnd
+		SccLocalPath6 = Utils\\KadOzenka.BlFrontEnd
 	EndGlobalSection
 EndGlobal
