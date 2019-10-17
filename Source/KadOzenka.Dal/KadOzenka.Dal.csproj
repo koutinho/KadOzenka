@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="FastReport.Web" Version="2018.4.1" />
-    <PackageReference Include="Platform" Version="1.0.111" />
+    <PackageReference Include="Platform" Version="1.0.113" />
     <PackageReference Include="Platform.Reports" Version="1.0.15" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
   </ItemGroup>

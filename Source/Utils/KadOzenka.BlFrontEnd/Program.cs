@@ -29,7 +29,7 @@ namespace KadOzenka.BlFrontEnd
 		{
 			consoleHelper.AddCommand("1", "Tests.TestGetAllAttributes", Tests.TestGetAllAttributes);
 
-			consoleHelper.AddCommand("2", "RosreestrParser.ExcelParser().LoadRosreestrDeals", () => { new RosreestrParser.ExcelParser().LoadRosreestrDeals(); });
+			consoleHelper.AddCommand("2", "Запуск парсинга excele файла с объектами-аналогами из росреестра", () => { new RosreestrParser.ExcelParser().LoadRosreestrDeals(); });
 
 			consoleHelper.AddCommand("3", "Запуск службы выполнения фоновых процессов", () => {
 				LongProcessManagementService service = new LongProcessManagementService();
@@ -38,13 +38,12 @@ namespace KadOzenka.BlFrontEnd
 
 			consoleHelper.AddCommand("4", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new OuterMarketParser.Launcher.OuterMarketParser().StartProcess(); });
 
-			consoleHelper.AddCommand("5", "Запуск выгрузки адресов из geocode-maps.yandex.ru", () => { new YandexFiller.AddressesFiller().GetAddresses(); });
+			consoleHelper.AddCommand("5", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.StartImport);
 
-			consoleHelper.AddCommand("6", "Запуск парсинга excele файла с объектами-аналогами из росреестра", () => {
-				//new OuterMarketParser.Launcher.OuterMarketParser().ParseExcele();
-			});
+            consoleHelper.AddCommand("6", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
 
-			consoleHelper.AddCommand("7", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.StartImport);
-		}
+
+
+        }
 	}
 }
