@@ -24,7 +24,7 @@ namespace OuterMarketParser.Model.DatabaseOperations
             {
                 OMCoreObject obj = new OMCoreObject
                 {
-                    Url = element.Url, //GetURL(MarketTypes.Cian, GetDealType(element.Deal_type), element.Category_Id, element.Subcategory, element.Id),
+                    Url = element.Url,
                     Market_Code = MarketTypes.Cian,
                     PropertyType_Code = element.propertyType,
                     MarketId = element.Id,
@@ -50,10 +50,10 @@ namespace OuterMarketParser.Model.DatabaseOperations
                     //DealType = element.Deal_type,
                     Category = element.Category,
                     Subcategory = element.Subcategory,
-                    CategoryId = element.Category_Id
-                    //RegionId = element.Region_Id,
-                    //CityId = element.City_Id
+                    CategoryId = element.Category_Id,
+                    ProcessType_Code = ProcessStep.DoNotProcessed
                 };
+                if (GetExclusionStatus(element.Price, element.Area) != null) obj.ExclusionStatus_Code = (ExclusionStatus)GetExclusionStatus(obj.Price, obj.Area);
                 obj.Save();
             }
         }
@@ -100,6 +100,13 @@ namespace OuterMarketParser.Model.DatabaseOperations
                     break;
             }
             return result;
+        }
+
+        private ExclusionStatus? GetExclusionStatus(long? price, decimal? area) 
+        {
+            if (price == 0 || price == null) return ExclusionStatus.NoPrice;
+            if (area == 0 || area == null) return ExclusionStatus.NoArea;
+            return null;
         }
 
     }
