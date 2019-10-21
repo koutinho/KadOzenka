@@ -156,6 +156,18 @@ namespace CIPJS.Controllers
 			return Json(analogItem);
 		}
 
+
+		[HttpGet]
+		public IActionResult YandexAddress(long? id = null)
+		{
+			var analogItem = OMYandexAddress
+				.Where(x => x.Id == id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return Json(analogItem);
+		}
+
 		[HttpGet]
 		public IActionResult UserCard(long id)
 		{
