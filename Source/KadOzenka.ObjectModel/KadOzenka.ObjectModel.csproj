@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="Globals">
     <SccProjectName>SAK</SccProjectName>
@@ -12,14 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FastReport.Web" Version="2018.4.1" />
     <PackageReference Include="Platform" Version="1.0.113" />
-    <PackageReference Include="Platform.Reports" Version="1.0.15" />
-    <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
   </ItemGroup>
 
 </Project>
