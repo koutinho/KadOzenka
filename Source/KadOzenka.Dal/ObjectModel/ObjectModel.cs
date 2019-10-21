@@ -6,7 +6,7 @@ using ObjectModel.Directory;
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 1 Неопределено (GBU_MAIN_OBJECT)
+    /// 1 Источник: Неопределено (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 1)]
     [Serializable]
@@ -18,7 +18,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 2 Росреестр (GBU_MAIN_OBJECT)
+    /// 2 Источник: Росреестр (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 2)]
     [Serializable]
@@ -30,7 +30,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 3 Департамент экономической политики и развития города Москвы (GBU_MAIN_OBJECT)
+    /// 3 Источник: Департамент экономической политики и развития города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 3)]
     [Serializable]
@@ -42,7 +42,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 4 МосгорБТИ (GBU_MAIN_OBJECT)
+    /// 4 Источник: МосгорБТИ (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 4)]
     [Serializable]
@@ -54,7 +54,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 5 Департамент городского имущества города Москвы (GBU_MAIN_OBJECT)
+    /// 5 Источник: Департамент городского имущества города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 5)]
     [Serializable]
@@ -66,7 +66,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 6 Департамент жилищно-коммунального хозяйства города Москвы (GBU_MAIN_OBJECT)
+    /// 6 Источник: Департамент жилищно-коммунального хозяйства города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 6)]
     [Serializable]
@@ -78,7 +78,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 7 Департамент культурного наследия города Москвы (GBU_MAIN_OBJECT)
+    /// 7 Источник: Департамент культурного наследия города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 7)]
     [Serializable]
@@ -90,7 +90,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 8 Департамент спорта и туризма города Москвы (GBU_MAIN_OBJECT)
+    /// 8 Источник: Департамент спорта и туризма города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 8)]
     [Serializable]
@@ -102,7 +102,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 9 Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
+    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 9)]
     [Serializable]
@@ -114,7 +114,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 10 Росавтодор (GBU_MAIN_OBJECT)
+    /// 10 Источник: Росавтодор (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 10)]
     [Serializable]
@@ -126,7 +126,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 11 Департамент капитального ремонта города Москвы (GBU_MAIN_OBJECT)
+    /// 11 Источник: Департамент капитального ремонта города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 11)]
     [Serializable]
@@ -138,7 +138,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 12 Комитет по архитектуре и градостроительству города Москвы (GBU_MAIN_OBJECT)
+    /// 12 Источник: Комитет по архитектуре и градостроительству города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 12)]
     [Serializable]
@@ -150,7 +150,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 13 Управление Росреестра по Москве (GBU_MAIN_OBJECT)
+    /// 13 Источник: Управление Росреестра по Москве (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 13)]
     [Serializable]
@@ -162,7 +162,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 14 ГБУ (ЦОД) (GBU_MAIN_OBJECT)
+    /// 14 Источник: ГБУ (ЦОД) (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 14)]
     [Serializable]
@@ -174,7 +174,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 15 ГКО 2014 (GBU_MAIN_OBJECT)
+    /// 15 Источник: ГКО 2014 (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 15)]
     [Serializable]
@@ -186,7 +186,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 16 ГКО 2016 (GBU_MAIN_OBJECT)
+    /// 16 Источник: ГКО 2016 (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 16)]
     [Serializable]
@@ -198,7 +198,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 17 Правительство города Москвы (GBU_MAIN_OBJECT)
+    /// 17 Источник: Правительство города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 17)]
     [Serializable]
@@ -210,7 +210,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 18 Сведения о судебных разбирательствах (GBU_MAIN_OBJECT)
+    /// 18 Источник: Сведения о судебных разбирательствах (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 18)]
     [Serializable]
@@ -222,7 +222,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 19 Комиссии по расмотрению споров (GBU_MAIN_OBJECT)
+    /// 19 Источник: Комиссии по расмотрению споров (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 19)]
     [Serializable]
@@ -234,7 +234,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 20 Наименование объектов по предыдущим турам (GBU_MAIN_OBJECT)
+    /// 20 Источник: Наименование объектов по предыдущим турам (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 20)]
     [Serializable]
@@ -246,7 +246,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 21 Расчет ЦФ (ГБУ) (GBU_MAIN_OBJECT)
+    /// 21 Источник: Расчет ЦФ (ГБУ) (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 21)]
     [Serializable]
@@ -258,7 +258,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 22 Наименования адресов и гаражей (GBU_MAIN_OBJECT)
+    /// 22 Источник: Наименования адресов и гаражей (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 22)]
     [Serializable]
@@ -270,7 +270,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 23 ГКО 2018 (GBU_MAIN_OBJECT)
+    /// 23 Источник: ГКО 2018 (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 23)]
     [Serializable]
@@ -1429,22 +1429,22 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _formalizedaddressid;
+        private bool? _screenshotexists;
         /// <summary>
-        /// 10007400 Идентификатор адреса (FORMALIZED_ADDRESS_ID)
+        /// 10007400 Наличие скриншота (SCREENSHOT_EXISTS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007400)]
-        public long? FormalizedAddressId
+        public bool? ScreenShotExists
         {
             get
             {
-                CheckPropertyInited("FormalizedAddressId");
-                return _formalizedaddressid;
+                CheckPropertyInited("ScreenShotExists");
+                return _screenshotexists;
             }
             set
             {
-                _formalizedaddressid = value;
-                NotifyPropertyChanged("FormalizedAddressId");
+                _screenshotexists = value;
+                NotifyPropertyChanged("ScreenShotExists");
             }
         }
 
@@ -2661,6 +2661,98 @@ namespace ObjectModel.Market
             {
                 _settingvalue = value;
                 NotifyPropertyChanged("SettingValue");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 104 Таблица, содержащая информацию о скриншотах (MARKET_SCREENSHOTS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 104)]
+    [Serializable]
+    public partial class OMScreenshots : OMBaseClass<OMScreenshots>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _initialid;
+        /// <summary>
+        /// 10400200 Идентификатор исходного объекта (INITIAL_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10400200)]
+        public long? InitialId
+        {
+            get
+            {
+                CheckPropertyInited("InitialId");
+                return _initialid;
+            }
+            set
+            {
+                _initialid = value;
+                NotifyPropertyChanged("InitialId");
+            }
+        }
+
+
+        private DateTime? _creationdate;
+        /// <summary>
+        /// 10400300 Дата записи (CREATION_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10400300)]
+        public DateTime? CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private string _type;
+        /// <summary>
+        /// 10400400 Тип записи (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10400400)]
+        public string Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
             }
         }
 

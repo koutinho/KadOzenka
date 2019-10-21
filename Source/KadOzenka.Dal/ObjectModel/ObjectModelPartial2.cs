@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 1 Неопределено
+    /// 1 Источник: Неопределено
     /// </summary>
     public partial class OMSource1
     {
@@ -27,7 +27,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 2 Росреестр
+    /// 2 Источник: Росреестр
     /// </summary>
     public partial class OMSource2
     {
@@ -45,7 +45,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 3 Департамент экономической политики и развития города Москвы
+    /// 3 Источник: Департамент экономической политики и развития города Москвы
     /// </summary>
     public partial class OMSource3
     {
@@ -63,7 +63,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 4 МосгорБТИ
+    /// 4 Источник: МосгорБТИ
     /// </summary>
     public partial class OMSource4
     {
@@ -81,7 +81,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 5 Департамент городского имущества города Москвы
+    /// 5 Источник: Департамент городского имущества города Москвы
     /// </summary>
     public partial class OMSource5
     {
@@ -99,7 +99,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 6 Департамент жилищно-коммунального хозяйства города Москвы
+    /// 6 Источник: Департамент жилищно-коммунального хозяйства города Москвы
     /// </summary>
     public partial class OMSource6
     {
@@ -117,7 +117,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 7 Департамент культурного наследия города Москвы
+    /// 7 Источник: Департамент культурного наследия города Москвы
     /// </summary>
     public partial class OMSource7
     {
@@ -135,7 +135,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 8 Департамент спорта и туризма города Москвы
+    /// 8 Источник: Департамент спорта и туризма города Москвы
     /// </summary>
     public partial class OMSource8
     {
@@ -153,7 +153,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 9 Департамент природопользования и охраны окружающей среды города Москвы
+    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
     /// </summary>
     public partial class OMSource9
     {
@@ -171,7 +171,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 10 Росавтодор
+    /// 10 Источник: Росавтодор
     /// </summary>
     public partial class OMSource10
     {
@@ -189,7 +189,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 11 Департамент капитального ремонта города Москвы
+    /// 11 Источник: Департамент капитального ремонта города Москвы
     /// </summary>
     public partial class OMSource11
     {
@@ -207,7 +207,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 12 Комитет по архитектуре и градостроительству города Москвы
+    /// 12 Источник: Комитет по архитектуре и градостроительству города Москвы
     /// </summary>
     public partial class OMSource12
     {
@@ -225,7 +225,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 13 Управление Росреестра по Москве
+    /// 13 Источник: Управление Росреестра по Москве
     /// </summary>
     public partial class OMSource13
     {
@@ -243,7 +243,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 14 ГБУ (ЦОД)
+    /// 14 Источник: ГБУ (ЦОД)
     /// </summary>
     public partial class OMSource14
     {
@@ -261,7 +261,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 15 ГКО 2014
+    /// 15 Источник: ГКО 2014
     /// </summary>
     public partial class OMSource15
     {
@@ -279,7 +279,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 16 ГКО 2016
+    /// 16 Источник: ГКО 2016
     /// </summary>
     public partial class OMSource16
     {
@@ -297,7 +297,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 17 Правительство города Москвы
+    /// 17 Источник: Правительство города Москвы
     /// </summary>
     public partial class OMSource17
     {
@@ -315,7 +315,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 18 Сведения о судебных разбирательствах
+    /// 18 Источник: Сведения о судебных разбирательствах
     /// </summary>
     public partial class OMSource18
     {
@@ -333,7 +333,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 19 Комиссии по расмотрению споров
+    /// 19 Источник: Комиссии по расмотрению споров
     /// </summary>
     public partial class OMSource19
     {
@@ -351,7 +351,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 20 Наименование объектов по предыдущим турам
+    /// 20 Источник: Наименование объектов по предыдущим турам
     /// </summary>
     public partial class OMSource20
     {
@@ -369,7 +369,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 21 Расчет ЦФ (ГБУ)
+    /// 21 Источник: Расчет ЦФ (ГБУ)
     /// </summary>
     public partial class OMSource21
     {
@@ -387,7 +387,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 22 Наименования адресов и гаражей
+    /// 22 Источник: Наименования адресов и гаражей
     /// </summary>
     public partial class OMSource22
     {
@@ -405,7 +405,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 23 ГКО 2018
+    /// 23 Источник: ГКО 2018
     /// </summary>
     public partial class OMSource23
     {
