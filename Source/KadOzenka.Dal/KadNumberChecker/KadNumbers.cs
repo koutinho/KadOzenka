@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Collections.Generic;
 
 using ObjectModel.Market;
-using KadOzenka.BlFrontEnd.Logger;
+using KadOzenka.Dal.Logger;
 
-namespace KadOzenka.BlFrontEnd.KadNumberChecker
+namespace KadOzenka.Dal.KadNumberChecker
 {
-    class ParseCadastral
+    public class KadNumbers
     {
         readonly List<OMCoreObject> AllObjects =
             OMCoreObject.Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && x.ProcessType_Code == ObjectModel.Directory.ProcessStep.AddressStep)
@@ -20,10 +20,10 @@ namespace KadOzenka.BlFrontEnd.KadNumberChecker
                            .Select(x => new { x.FormalizedAddress, x.CadastralNumber, x.Lng, x.Lat, x.InitialId })
                            .Execute();
 
-        public void Launch()
+        public void Detect()
         {
             int KCtr = AllObjects.Count, KCur = 0, KKad = 0, KErr = 0;
-            AllObjects.ForEach(x => 
+            AllObjects.ForEach(x =>
             {
                 OMYandexAddress address = YandexObjects.FirstOrDefault(y => y.FormalizedAddress.Equals(x.Address));
                 if (address != null)
@@ -44,9 +44,10 @@ namespace KadOzenka.BlFrontEnd.KadNumberChecker
                 }
                 KCur++;
                 x.Save();
-                LogData.WriteData("Получение кадастровых номеров", KCtr, KCur, KKad, KErr);
+                ConsoleLog.WriteData("Получение кадастровых номеров", KCtr, KCur, KKad, KErr);
             });
-            LogData.WriteFotter("Получение кадастровых номеров завершено");
+            ConsoleLog.WriteFotter("Получение кадастровых номеров завершено");
         }
+
     }
 }

@@ -1,37 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Configuration;
-using System.IO;
-using System.Net;
 using System.Linq;
-
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 using ObjectModel.Market;
+using Newtonsoft.Json.Linq;
 
-namespace KadOzenka.BlFrontEnd.YandexFiller
+namespace KadOzenka.Dal.JSONParser
 {
-    class YandexAddressParser
-    {
 
-        public string GetDataByGeocode(decimal? lng, decimal? lat) =>
-            new StreamReader(
-                WebRequest.Create(string.Format(ConfigurationManager.AppSettings["geocodeLink"],
-                                                ConfigurationManager.AppSettings["GeocodeTest00"],
-                                                lng.ToString().Replace(",", "."),
-                                                lat.ToString().Replace(",", ".")))
-                          .GetResponse()
-                          .GetResponseStream(), 
-                Encoding.UTF8)
-                .ReadToEnd();
+    public class YandexGeocoder
+    {
 
         public OMYandexAddress ParseYandexAddress(string JSON)
         {
             OMYandexAddress addressElement = new OMYandexAddress();
             List<string> geoData = new List<string>();
             List<string> other = new List<string>();
-            addressElement.FormalizedAddress = 
+            addressElement.FormalizedAddress =
                 JObject
                     .Parse(JSON)
                         ["response"]
@@ -57,12 +43,12 @@ namespace KadOzenka.BlFrontEnd.YandexFiller
                             ["Components"]
                         .ToString()
                     );
-            for(int i = 0; i < components.Count; i++)
+            for (int i = 0; i < components.Count; i++)
             {
                 string kind = components[i]["kind"].ToString();
                 string name = components[i]["name"].ToString();
                 kind = geoData.Count(x => x.Equals(kind)) == 0 ? kind : $"{kind}_{geoData.Count(x => x.Equals(kind)) + 1}";
-                switch(kind)
+                switch (kind)
                 {
                     case "country":
                         addressElement.Country = name;
@@ -120,26 +106,8 @@ namespace KadOzenka.BlFrontEnd.YandexFiller
             }
             addressElement.Other = string.Join(", ", other);
             return addressElement;
-            //Console.WriteLine($"Формализованный адрес: {addressElement.FormalizedAddress}\n" + 
-            //                  $"Страна: {addressElement.Country}\n" + 
-            //                  $"Федеральный округ: {addressElement.Province}\n" +
-            //                  $"Уточнение округа: {addressElement.Province2}\n" +
-            //                  $"Область: {addressElement.Area}\n" +
-            //                  $"Уточнение области: {addressElement.Area2}\n" +
-            //                  $"Район: {addressElement.Locality}\n" +
-            //                  $"Уточнение района: {addressElement.Locality2}\n" +
-            //                  $"Округ: {addressElement.District}\n" +
-            //                  $"Уточнение округа: {addressElement.District2}\n" +
-            //                  $"Второе уточнение округа: {addressElement.District3}\n" +
-            //                  $"Аэропорт: {addressElement.Airport}\n" +
-            //                  $"Ориентир: {addressElement.Vegetation}\n" +
-            //                  $"Путь: {addressElement.Route}\n" +
-            //                  $"ЖД станция: {addressElement.RailwayStation}\n" +
-            //                  $"Улица: {addressElement.Street}\n" +
-            //                  $"Дом: {addressElement.House}\n" +
-            //                  $"Другое: {addressElement.Other}");
-            //Console.WriteLine();
         }
 
     }
+
 }

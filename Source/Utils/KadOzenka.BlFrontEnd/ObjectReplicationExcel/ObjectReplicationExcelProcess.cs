@@ -1,17 +1,19 @@
-﻿using Core.Shared.Extensions;
+﻿using System;
+using System.IO;
+using System.Data;
+using System.Configuration;
+using System.Collections.Generic;
+
+using ObjectModel.Gbu;
 using GemBox.Spreadsheet;
+using ObjectModel.Core.TD;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Shared;
-using ObjectModel.Core.TD;
-using ObjectModel.Gbu;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.IO;
 
 namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 {
+
     public class ObjectReplicationExcelProcess
     {
 		public static string BaseDirectory
@@ -191,4 +193,5 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 			return dt;
 		}
 	}
+
 }

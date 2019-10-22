@@ -1,19 +1,19 @@
-﻿using ObjectModel.Core.LongProcess;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Text;
-using System.Threading;
 using System.Linq;
-
-using Core.Register.LongProcessManagment;
+using System.Threading;
+using System.Collections.Generic;
 
 using OuterMarketParser.LinksGenerator;
-using OuterMarketParser.Model.DatabaseOperations;
-using OuterMarketParser.Parser.Cian;
 using OuterMarketParser.DatabaseReader;
+using ObjectModel.Core.LongProcess;
+using OuterMarketParser.Parser.Cian;
+using Core.Register.LongProcessManagment;
+using OuterMarketParser.Model.DatabaseOperations;
 
 namespace OuterMarketParser.Launcher
 {
+
     public class OuterMarketParser : ILongProcess
     {
 
@@ -57,5 +57,7 @@ namespace OuterMarketParser.Launcher
         }
 
         public bool Test() => true;
+
     }
+
 }

@@ -1,20 +1,23 @@
-﻿using Core.Numerator;
-using Core.Register;
-using Core.Register.RegisterEntities;
-using Core.Shared.Extensions;
-using Core.Shared.Misc;
-using Microsoft.Practices.EnterpriseLibrary.Data;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Common;
-using System.Globalization;
+﻿using System;
 using System.Text;
+using System.Data;
+using System.Globalization;
+using System.Data.Common;
+using System.Collections.Generic;
+using Microsoft.Practices.EnterpriseLibrary.Data;
+
+using Core.Register;
+using Core.Numerator;
+using Core.Shared.Misc;
+using Core.Shared.Extensions;
+using Core.Register.RegisterEntities;
 
 namespace KadOzenka.Dal.GbuObject
 {
+
     public class GbuObjectAttribute
     {
+
 		public long Id { get; set; }
 		public long ObjectId { get; set; }
 		public long AttributeId { get; set; }
@@ -168,5 +171,7 @@ namespace KadOzenka.Dal.GbuObject
 
 			return Id;
 		}
+
 	}
+
 }

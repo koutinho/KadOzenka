@@ -1,19 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
-using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
-using OuterMarketParser.Model;
 using OuterMarketParser.DatabaseReader;
 
 namespace OuterMarketParser.LinksGenerator
 {
+
     public class LinkGenerator : ILinkGenerator
     {
+
         public List<string> GenerateCianLinks(OuterMarketSettings settings)
         {
             List<string> result = new List<string>();
@@ -38,5 +35,7 @@ namespace OuterMarketParser.LinksGenerator
             }
             return result.ToList();
         }
+
     }
+
 }

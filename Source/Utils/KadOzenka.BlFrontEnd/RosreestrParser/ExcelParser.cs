@@ -1,20 +1,21 @@
-﻿using Core.Shared.Extensions;
-using IronXL;
-using ObjectModel.Directory;
-using ObjectModel.Market;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+
+using IronXL;
+using ObjectModel.Market;
+using ObjectModel.Directory;
+using Core.Shared.Extensions;
 
 namespace KadOzenka.BlFrontEnd.RosreestrParser
 {
+
     class ExcelParser
     {
+
         public void LoadRosreestrDeals()
         {
             string log = String.Empty;
@@ -239,4 +240,5 @@ namespace KadOzenka.BlFrontEnd.RosreestrParser
         }
 
     }
+
 }

@@ -1,20 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Reflection;
 using System.Text;
+using System.Linq;
+using System.Reflection;
+using System.Configuration;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Core.Main.FileStorages;
-using ObjectModel.Market;
+
 using OpenQA.Selenium;
+using ObjectModel.Market;
+using Core.Main.FileStorages;
 using OpenQA.Selenium.Chrome;
 
 namespace KadOzenka.BlFrontEnd.GetSeleniumScreens
 {
+
     class Selenium
     {
 
@@ -73,4 +73,5 @@ namespace KadOzenka.BlFrontEnd.GetSeleniumScreens
             driver.Close();
         }
     }
+
 }

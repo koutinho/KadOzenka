@@ -1,19 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using System.Linq;
 using System.Globalization;
+using System.Collections.Generic;
 
-using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Market;
 using ObjectModel.Core.LongProcess;
 using Core.Register.LongProcessManagment;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 
 namespace OuterMarketParser.DatabaseReader
 {
+
     public class OuterMarketSettings
     {
+
         public DateTime LastSuccesfulUpdateDate { get; set; }
         public string InitialTimeTemplate { get; set; }
         public string Login { get; set; }
@@ -62,4 +64,5 @@ namespace OuterMarketParser.DatabaseReader
         
 
     }
+
 }

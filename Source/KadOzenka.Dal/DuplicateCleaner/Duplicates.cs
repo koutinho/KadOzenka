@@ -1,31 +1,34 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using KadOzenka.BlFrontEnd.Logger;
-using ObjectModel.Market;
+using System.Linq;
+using System.Collections.Generic;
 
-namespace KadOzenka.BlFrontEnd.ClearDuplicates
+using ObjectModel.Market;
+using KadOzenka.Dal.Logger;
+
+namespace KadOzenka.Dal.DuplicateCleaner
 {
-    class DuplicateCleaner
+
+    public class Duplicates
     {
+
         readonly List<OMCoreObject> AllObjects =
             OMCoreObject
                 .Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && (
-                            x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep || 
-                            x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess || 
+                            x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep ||
+                            x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess ||
                             x.ExclusionStatus_Code == ObjectModel.Directory.ExclusionStatus.Duplicate))
-                .Select(x => new {x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType})
+                .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
                 .Execute()
                 .ToList();
 
-        public void Launch()
+        public void Detect()
         {
-            List<List<OMCoreObject>> objs = AllObjects.GroupBy(x => new {x.CadastralNumber, x.DealType_Code, x.PropertyType_Code}).Select(grp => grp.ToList()).ToList();
+            List<List<OMCoreObject>> objs = AllObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code }).Select(grp => grp.ToList()).ToList();
             List<List<OMCoreObject>> result = new List<List<OMCoreObject>>();
             objs.ForEach(x => result.AddRange(SplitListByPersent(x.OrderBy(y => y.Area).ToList())));
             int ICur = 0, ICor = 0, IErr = 0, ICtr = result.Count;
-            result.ForEach(x => 
+            result.ForEach(x =>
             {
                 try
                 {
@@ -36,9 +39,9 @@ namespace KadOzenka.BlFrontEnd.ClearDuplicates
                 }
                 catch (Exception) { IErr++; }
                 ICur++;
-                LogData.WriteData("Проверка данных на дублинование", ICtr, ICur, ICor, IErr);
+                ConsoleLog.WriteData("Проверка данных на дублинование", ICtr, ICur, ICor, IErr);
             });
-            LogData.WriteFotter("Проверка данных на дублинование завершена");
+            ConsoleLog.WriteFotter("Проверка данных на дублинование завершена");
         }
 
         private List<List<OMCoreObject>> SplitListByPersent(List<OMCoreObject> list)
@@ -47,12 +50,12 @@ namespace KadOzenka.BlFrontEnd.ClearDuplicates
             OMCoreObject FEL = list.ElementAt(0);
             int counter = 0;
             result.Add(new List<OMCoreObject>());
-            list.ForEach(x => 
+            list.ForEach(x =>
             {
-                if (FEL.Area.GetValueOrDefault() >= x.Area.GetValueOrDefault() * 0.99m && 
-                    FEL.Price.GetValueOrDefault() >= x.Price.GetValueOrDefault() * 0.95m && 
+                if (FEL.Area.GetValueOrDefault() >= x.Area.GetValueOrDefault() * 0.99m &&
+                    FEL.Price.GetValueOrDefault() >= x.Price.GetValueOrDefault() * 0.95m &&
                     FEL.Price.GetValueOrDefault() <= x.Price.GetValueOrDefault() * 1.05m)
-                result.ElementAt(counter).Add(x);
+                    result.ElementAt(counter).Add(x);
                 else
                 {
                     FEL = x;
@@ -66,4 +69,5 @@ namespace KadOzenka.BlFrontEnd.ClearDuplicates
         }
 
     }
+
 }
