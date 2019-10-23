@@ -9,6 +9,7 @@ using KadOzenka.Dal.KadNumberChecker;
 using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.GetSeleniumScreens;
 using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
+using KadOzenka.Dal.RestAppParser;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -30,8 +31,9 @@ namespace KadOzenka.BlFrontEnd
 				LongProcessManagementService service = new LongProcessManagementService();
 				service.Start();
 			});
-			consoleHelper.AddCommand("3", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new OuterMarketParser.Launcher.OuterMarketParser().StartProcess(); });
-			consoleHelper.AddCommand("4", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.StartImport);
+            //consoleHelper.AddCommand("3", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new OuterMarketParser.Launcher.OuterMarketParser().StartProcess(); });
+            consoleHelper.AddCommand("3", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new Data().Detect(); });
+            consoleHelper.AddCommand("4", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.StartImport);
             consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
             consoleHelper.AddCommand("6", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             consoleHelper.AddCommand("7", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });

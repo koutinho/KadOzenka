@@ -33,7 +33,11 @@ namespace KadOzenka.Dal.DuplicateCleaner
                 try
                 {
                     x.First().ProcessType_Code = ObjectModel.Directory.ProcessStep.InProcess;
-                    x.Skip(1).ToList().ForEach(y => y.ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.Duplicate);
+                    x.Skip(1).ToList().ForEach(y => 
+                    {
+                        y.ProcessType_Code = ObjectModel.Directory.ProcessStep.Excluded;
+                        y.ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.Duplicate;
+                    });
                     x.ForEach(y => y.Save());
                     ICor++;
                 }

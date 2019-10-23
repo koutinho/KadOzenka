@@ -47,13 +47,16 @@ namespace OuterMarketParser.Model.DatabaseOperations
                     AreaLiving = element.Area_living,
                     AreaLand = element.Area_land,
                     BuildingYear = element.Building_year,
-                    //DealType = element.Deal_type,
                     Category = element.Category,
                     Subcategory = element.Subcategory,
                     CategoryId = element.Category_Id,
                     ProcessType_Code = ProcessStep.DoNotProcessed
                 };
-                if (GetExclusionStatus(element.Price, element.Area) != null) obj.ExclusionStatus_Code = (ExclusionStatus)GetExclusionStatus(obj.Price, obj.Area);
+                if (GetExclusionStatus(element.Price, element.Area, element.Area_land) != null)
+                {
+                    obj.ExclusionStatus_Code = (ExclusionStatus)GetExclusionStatus(obj.Price, obj.Area, element.Area_land);
+                    obj.ProcessType_Code = ProcessStep.Excluded;
+                }
                 obj.Save();
             }
         }
@@ -102,10 +105,10 @@ namespace OuterMarketParser.Model.DatabaseOperations
             return result;
         }
 
-        private ExclusionStatus? GetExclusionStatus(long? price, decimal? area) 
+        private ExclusionStatus? GetExclusionStatus(long? price, decimal? area, decimal? area_land) 
         {
             if (price == 0 || price == null) return ExclusionStatus.NoPrice;
-            if (area == 0 || area == null) return ExclusionStatus.NoArea;
+            if ((area == 0 || area == null) && (area_land == 0 || area_land == null)) return ExclusionStatus.NoArea;
             return null;
         }
 

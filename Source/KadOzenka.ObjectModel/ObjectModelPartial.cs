@@ -518,6 +518,12 @@ namespace ObjectModel.Market
     public partial class OMCoreObject
     {
 
+
+        /// <summary>
+        /// Ссылка на (105 Таблица, содержащая ретроспективу цен по объектам)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Market.OMPriceHistory> PriceHistory { get; set; }
         public OMCoreObject()
         {
 
@@ -525,6 +531,8 @@ namespace ObjectModel.Market
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            PriceHistory = new List<ObjectModel.Market.OMPriceHistory>();
 
         }
         public OMCoreObject(bool trackPropertyChanging) : this()
@@ -624,6 +632,30 @@ namespace ObjectModel.Market
 
         }
         public OMScreenshots(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 105 Таблица, содержащая ретроспективу цен по объектам
+    /// </summary>
+    public partial class OMPriceHistory
+    {
+
+        public OMPriceHistory()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMPriceHistory(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

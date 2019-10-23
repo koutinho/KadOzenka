@@ -190,6 +190,12 @@ namespace ObjectModel.Directory
         [Description("Обработан")]
         [EnumCode("5")]
         Dealed = 742,
+        /// <summary>
+        /// Исключён (743)
+        /// </summary>
+        [Description("Исключён")]
+        [EnumCode("6")]
+        Excluded = 743,
     }
 
     /// <summary>
@@ -343,7 +349,7 @@ namespace ObjectModel.Directory
     }
 
     /// <summary>
-    /// Статус исключения (117)
+    /// Причина исключения (117)
     ///</summary>
     [ReferenceInfo(ReferenceId = 117)]
     public enum ExclusionStatus : long

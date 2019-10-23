@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.AddressChecker
                 }
                 catch (Exception)
                 {
-                    x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Dealed;
+                    x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Excluded;
                     x.ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.NoAddress;
                     YErr++;
                 }

@@ -1429,11 +1429,51 @@ namespace ObjectModel.Market
         }
 
 
-        private bool? _screenshotexists;
+        private long? _regionid;
         /// <summary>
-        /// 10007400 Наличие скриншота (SCREENSHOT_EXISTS)
+        /// 10007400 Код региона (REGION_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007400)]
+        public long? RegionId
+        {
+            get
+            {
+                CheckPropertyInited("RegionId");
+                return _regionid;
+            }
+            set
+            {
+                _regionid = value;
+                NotifyPropertyChanged("RegionId");
+            }
+        }
+
+
+        private long? _cityid;
+        /// <summary>
+        /// 10007500 ID города (CITY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007500)]
+        public long? CityId
+        {
+            get
+            {
+                CheckPropertyInited("CityId");
+                return _cityid;
+            }
+            set
+            {
+                _cityid = value;
+                NotifyPropertyChanged("CityId");
+            }
+        }
+
+
+        private bool? _screenshotexists;
+        /// <summary>
+        /// 10007600 Наличие скриншота (SCREENSHOT_EXISTS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007600)]
         public bool? ScreenShotExists
         {
             get
@@ -2753,6 +2793,98 @@ namespace ObjectModel.Market
             {
                 _type = value;
                 NotifyPropertyChanged("Type");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 105 Таблица, содержащая ретроспективу цен по объектам (MARKET_PRICE_HISTORY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 105)]
+    [Serializable]
+    public partial class OMPriceHistory : OMBaseClass<OMPriceHistory>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10500100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _initialid;
+        /// <summary>
+        /// 10500200 Идентификатор объекта (INITIAL_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10500200)]
+        public long InitialId
+        {
+            get
+            {
+                CheckPropertyInited("InitialId");
+                return _initialid;
+            }
+            set
+            {
+                _initialid = value;
+                NotifyPropertyChanged("InitialId");
+            }
+        }
+
+
+        private DateTime _changingdate;
+        /// <summary>
+        /// 10500300 Время изменения цены (CHANGING_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10500300)]
+        public DateTime ChangingDate
+        {
+            get
+            {
+                CheckPropertyInited("ChangingDate");
+                return _changingdate;
+            }
+            set
+            {
+                _changingdate = value;
+                NotifyPropertyChanged("ChangingDate");
+            }
+        }
+
+
+        private long _pricevalue;
+        /// <summary>
+        /// 10500400 Значение стоимости (PRICE_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10500400)]
+        public long PriceValue
+        {
+            get
+            {
+                CheckPropertyInited("PriceValue");
+                return _pricevalue;
+            }
+            set
+            {
+                _pricevalue = value;
+                NotifyPropertyChanged("PriceValue");
             }
         }
 

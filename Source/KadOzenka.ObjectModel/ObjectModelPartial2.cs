@@ -420,6 +420,24 @@ namespace ObjectModel.Gbu
 }
 
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 105 Таблица, содержащая ретроспективу цен по объектам
+    /// </summary>
+    public partial class OMPriceHistory
+    {
+        /// <summary>
+        /// Ссылка на (100 Аналоги)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Market.OMCoreObject ParentCoreObject { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.KO
 {
     /// <summary>

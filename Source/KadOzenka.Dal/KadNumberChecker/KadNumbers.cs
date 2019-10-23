@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.KadNumberChecker
                 }
                 else
                 {
-                    x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Dealed;
+                    x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Excluded;
                     x.ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.NoCadastralNumber;
                     KErr++;
                 }
