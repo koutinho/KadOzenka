@@ -1,0 +1,155 @@
+﻿@using CIPJS.Controllers
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#searchToolbar").kendoToolBar({
+			resizable: false,
+			items: [
+				{
+					template: "<input id='marketSegmentDropdown'/>"
+				},
+				{
+					template: "<input id='dealTypeDropdown'/>"
+				},
+				{
+					template: "<input id='propertyDropdown'/>"
+				},
+				{
+					template: "<input id='priceFromInput' placeholder='от' autocomplete='off'/>"
+				},
+				{
+					template: "<input id='priceToInput' placeholder='до' autocomplete='off'/>"
+				},
+				{
+					template: "<input id='addressInput' class='k-textbox' type='text' placeholder='Метро' autocomplete='off' style='width: 100%;'/>"
+				}
+			]
+		});
+
+		$("#marketSegmentDropdown").kendoDropDownList({
+			autoBind: true,
+			optionLabel: "Сегмент рынка",
+			dataTextField: "Name",
+			dataValueField: "Id",
+			dataSource: {
+				transport: {
+					read: {
+						url: '@Url.Action("MarketSegmentList", "Prefilter")',
+						contentType: 'application/json; charset=utf-8',
+						dataType: 'json'
+					}
+				}
+			}
+		});
+
+		$("#dealTypeDropdown").kendoDropDownList({
+			value:"@Model.",
+			optionLabel: "Тип сделки",
+			dataTextField: "Name",
+			dataValueField: "Id",
+			dataSource: {
+				transport: {
+					read: {
+						url: '@Url.Action("DealTypeList", "Prefilter")',
+						contentType: 'application/json; charset=utf-8',
+						dataType: 'json'
+					}
+				}
+			}
+		});
+
+		$("#propertyDropdown").kendoDropDownList({
+			optionLabel: "Тип объекта",
+			dataTextField: "Name",
+			dataValueField: "Id",
+			dataSource: {
+				transport: {
+					read: {
+						url: '@Url.Action("PropertyTypeList", "Prefilter")',
+						contentType: 'application/json; charset=utf-8',
+						dataType: 'json'
+					}
+				}
+			}
+		});
+
+		$("#priceFromInput").kendoNumericTextBox({
+			format: "c0",
+			min: 0,
+			decimals: 0,
+			spinners: false
+		});
+		$("#priceToInput").kendoNumericTextBox({
+			format: "c0",
+			min: 0,
+			decimals: 0,
+			spinners: false
+		});
+
+		$("#mapButton").kendoButton({
+			icon: "search",
+			click: function(e) {
+				//TODO: will be implemented with the Map
+			}
+		});
+
+		$("#searchButton").kendoButton({
+			enable: $("#prefilterForm").valid,
+			click: function (e) {
+				debugger;
+				Common.ClearNotification();
+				kendo.ui.progress($('#prefilter'), true);
+
+				var marketId = $("#marketSegmentDropdown").data("kendoDropDownList").value();
+				var marketName = $("#marketSegmentDropdown").data("kendoDropDownList").text();
+				var dealTypeId = $("#dealTypeDropdown").data("kendoDropDownList").value();
+				var dealTypeName = $("#dealTypeDropdown").data("kendoDropDownList").text();
+				var propertyId = $("#propertyDropdown").data("kendoDropDownList").value();
+				var propertyName = $("#propertyDropdown").data("kendoDropDownList").text();
+				var priceFrom = $("#priceFromInput").val();
+				var priceTo = $("#priceToInput").val();
+				var metro = $("#addressInput").val();
+
+				$.ajax({
+					type: 'POST',
+					url: '@Url.Action("ConfigureSearchFilter", "Prefilter")',
+					data: {
+						propertyMarketSegmentItemId: marketId,
+						PropertyMarketSegmentValue: marketName,
+						dealTypeItemId: dealTypeId,
+						dealTypeValue: dealTypeName,
+						propertyTypeItemId: propertyId,
+						propertyTypeValue: propertyName,
+						priceFrom: priceFrom,
+						priceTo: priceTo,
+						metro: metro
+					},
+					success: function (response) {
+						kendo.ui.progress($('#prefilter'), false);
+						window.location = "/RegistersView/MarketObjects";
+					},
+					error: function (response) {
+						Common.ShowError(response.responseText);
+						kendo.ui.progress($('#prefilter'), false);
+					}
+				});
+			}
+		});
+	});
+</script>
+
+<form>
+	<div id="prefilter">
+		<div>
+			<div id="searchToolbar" style="display: flex;flex-wrap: wrap;"></div>
+		</div>
+		<div class="row">
+			<div class="col-sm-9"></div>
+			<div class="col-sm-3">
+				<button id="searchButton" type="button" style="float: right; margin-top: .4em;">Найти</button>
+				<button id="mapButton" type="button" style="float: right; margin-top: .4em; margin-right: .4em">Показать на карте</button>
+			</div>
+		</div>
+	</div>
+</form>
+

@@ -1188,3 +1188,12 @@ div.forTooltips a[href=""]:empty {
         height: 0px;
         flex: 1 1 auto;
     }
+
+#searchToolbar {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+#searchToolbar > * {
+	flex: auto;
+}
