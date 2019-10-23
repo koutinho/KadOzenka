@@ -35,6 +35,7 @@ namespace KadOzenka.Web.Controllers
 				.ReferenceId;
 			var marketSegmentList = OMReferenceItem
 				.Where(x => x.ReferenceId == marketSegmentReferenceId)
+				.OrderBy(x => x.Value)
 				.SelectAll()
 				.Execute()
 				.Select( x => new { Id = x.ItemId, Name = x.Value, Code = x.Code });
@@ -50,6 +51,7 @@ namespace KadOzenka.Web.Controllers
 				.ReferenceId;
 			var dealTypeList = OMReferenceItem
 				.Where(x => x.ReferenceId == dealTypeReferenceId)
+				.OrderBy(x => x.Value)
 				.SelectAll()
 				.Execute()
 				.Select(x => new { Id = x.ItemId, Name = x.Value, Code = x.Code });
@@ -65,6 +67,7 @@ namespace KadOzenka.Web.Controllers
 				.ReferenceId;
 			var propertyTypeList = OMReferenceItem
 				.Where(x => x.ReferenceId == propertyTypeId)
+				.OrderBy(x => x.Value)
 				.SelectAll()
 				.Execute()
 				.Select(x => new { Id = x.ItemId, Name = x.Value, Code = x.Code });
