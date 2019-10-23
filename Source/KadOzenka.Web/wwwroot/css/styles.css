@@ -1197,3 +1197,12 @@ div.forTooltips a[href=""]:empty {
 #searchToolbar > * {
 	flex: auto;
 }
+
+#loginPage .logo-title-block #imgLogin {
+	width: 350px !important;
+	height: 88px !important;
+	left: 66px !important;
+	top: -2px !important;
+	-webkit-filter: brightness(2); /* Safari 6.0 - 9.0 */
+	filter: brightness(2);
+}
