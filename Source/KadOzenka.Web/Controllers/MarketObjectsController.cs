@@ -24,6 +24,13 @@ namespace KadOzenka.Web.Controllers
 
                 if(screenList.IsNotEmpty())
                     ViewBag.ScreenShots = screenList;
+
+	            analogItem.PriceHistory = ObjectModel.Market.OMPriceHistory
+		            .Where(x => x.InitialId == id)
+		            .SelectAll()
+		            .Execute();
+
+
             }
 
             return View(analogItem);
