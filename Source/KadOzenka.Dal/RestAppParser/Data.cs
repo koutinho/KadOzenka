@@ -14,13 +14,8 @@ namespace KadOzenka.Dal.RestAppParser
     {
 
         List<OMCoreObject> AllObjects = new List<OMCoreObject>();
-        DateTime LastUpdateDate = OMCoreObject
-            .Where(x => true)
-            .Select(x => x.ParserTime)
-            .OrderByDescending(x => x.ParserTime)
-            .ExecuteFirstOrDefault()
-            .ParserTime
-            .GetValueOrDefault();
+        DateTime LastUpdateDate = 
+            OMCoreObject.Where(x => true).Select(x => x.ParserTime).OrderByDescending(x => x.ParserTime).ExecuteFirstOrDefault().ParserTime.GetValueOrDefault();
         int restData = new JSONParser.RestApp().GetRestData(new RestApp().GetMetaInfoDataValues());
 
         public void Detect()
@@ -29,7 +24,7 @@ namespace KadOzenka.Dal.RestAppParser
             string[] dealTypes = ConfigurationManager.AppSettings["restAppDealType"].Split(',');
             int delta = int.Parse(ConfigurationManager.AppSettings["restAppMinuteLimits"]);
             List<string> links = new List<string>();
-            int RACOR = 0, RAERR = 0;
+            int RACOR = 0, RAERR = 0, SCUR = 0, SCOR = 0, SERR = 0, SDUB = 0;
             bool EXCEPTION = false;
             while (LastUpdateDate < DateTime.Today)
             {
@@ -39,24 +34,39 @@ namespace KadOzenka.Dal.RestAppParser
                 {
                     foreach (string deal in dealTypes)
                     {
-                        //links.Add(new RestApp().FormLink(region, deal, currentTime, LastUpdateDate));
-                        List<OMCoreObject> coreObjs = 
-                            new JSONParser.RestApp().ParseCoreObject(
-                                new RestApp().GetDataByMultipleValues(region, deal, currentTime, LastUpdateDate), 
-                                ref RACOR, 
-                                ref RAERR, 
-                                ref EXCEPTION
-                            );
-                        if (!EXCEPTION) AllObjects.AddRange(coreObjs);
-                        else break;
-                        Logger.ConsoleLog.WriteData("Получение данных из сторонних источников", restData, AllObjects.Count, RACOR, RAERR);
+                        try
+                        {
+                            //links.Add(new RestApp().FormLink(region, deal, currentTime, LastUpdateDate));
+                            List<OMCoreObject> coreObjs = 
+                                new JSONParser.RestApp().ParseCoreObject(new RestApp().GetDataByMultipleValues(region, deal, currentTime, LastUpdateDate), ref RACOR, ref RAERR);
+                            AllObjects.AddRange(coreObjs);
+                            Logger.ConsoleLog.WriteData("Получение данных из сторонних источников", restData, AllObjects.Count, RACOR, RAERR);
+                        }
+                        catch (Exception){ EXCEPTION = true; }
                     }
                     if (EXCEPTION) break;
                 }
                 if (EXCEPTION) break;
             }
-            Logger.ConsoleLog.WriteFotter("Получение данных из сторонних завершено");
-            Console.WriteLine(AllObjects.Count);
+            Logger.ConsoleLog.WriteFotter("Получение данных из сторонних источников завершено");
+            AllObjects = AllObjects.GroupBy(x => x.Url).Select(x => x.First()).ToList();
+            Console.WriteLine($"Полученные данные проверены на дублирование. Осталось записей: {AllObjects.Count}");
+            AllObjects.ForEach(x => 
+            { 
+                try
+                {
+                    if (OMCoreObject.Where(y => y.Url == x.Url).Execute().Count == 0)
+                    {
+                        x.Save();
+                        SCOR++;
+                    }
+                    else SDUB++;
+                    SCUR++;
+                }
+                catch (Exception) { SERR++; }
+                Logger.ConsoleLog.WriteData("Запись данных в Postgres", AllObjects.Count, SCUR, SCOR, SERR, SDUB);
+            });
+            Logger.ConsoleLog.WriteFotter("Запись данных в Postgres завершена");
         }
 
     }

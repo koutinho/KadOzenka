@@ -20,81 +20,78 @@ namespace KadOzenka.Dal.JSONParser
             return of - used;
         }
 
-        public List<OMCoreObject> ParseCoreObject(string JSON, ref int CCTR, ref int ECTR, ref bool END)
+        public List<OMCoreObject> ParseCoreObject(string JSON, ref int CCTR, ref int ECTR)
         {
             List<OMCoreObject> result = new List<OMCoreObject>();
-            try
+            JArray elements = JArray.Parse(JObject.Parse(JSON)["data"].ToString());
+            for (int i = 0; i < elements.Count; i++)
             {
-                JArray elements = JArray.Parse(JObject.Parse(JSON)["data"].ToString());
-                for (int i = 0; i < elements.Count; i++)
+                try
                 {
-                    try
-                    {
-                        string subCategory = elements[i]["subcategory"].ToString();
-                        long marketId = long.Parse(elements[i]["Id"].ToString());
-                        long? price = long.TryParse(elements[i]["price"].ToString(), out var tempPrice) ? tempPrice : (long?)null;
-                        long? roomsCount = long.TryParse(elements[i]["rooms_count"].ToString(), out var tempRC) ? tempRC : (long?)null;
-                        long? floorNumber = long.TryParse(elements[i]["floor_number"].ToString(), out var tempFN) ? tempFN : (long?)null;
-                        long? floorsCount = long.TryParse(elements[i]["floors_count"].ToString(), out var tempFC) ? tempFC : (long?)null;
-                        long? buildingYear = long.TryParse(elements[i]["building_year"].ToString(), out var tempBY) ? tempBY : (long?)null;
-                        long? categoryId = long.TryParse(elements[i]["category_Id"].ToString(), out var tempCI) ? tempCI : (long?)null;
-                        decimal? lng = decimal.TryParse(elements[i]["coords"]["lng"].ToString(), out var tempLNG) ? tempLNG : (decimal?)null;
-                        decimal? lat = decimal.TryParse(elements[i]["coords"]["lat"].ToString(), out var tempLAT) ? tempLAT : (decimal?)null;
-                        decimal? area = decimal.TryParse(elements[i]["area"].ToString(), out var tempArea) ? tempArea : (decimal?)null;
-                        decimal? areaKitchen = decimal.TryParse(elements[i]["area_kitchen"].ToString(), out var tempAK) ? tempAK : (decimal?)null;
-                        decimal? areaLiving = decimal.TryParse(elements[i]["area_living"].ToString(), out var tempAL) ? tempAL : (decimal?)null;
-                        decimal? areaLand = decimal.TryParse(elements[i]["area_land"].ToString(), out var tempALA) ? tempALA : (decimal?)null;
-                        DealType dealType = GetDealType(elements[i]["deal_type"].ToString());
-                        PropertyTypes propertyType = GetPropertyObjectType(buildingYear, categoryId, subCategory);
-                        ExclusionStatus? exclusionStatus = GetExclusionStatus(price, area, areaLand);
+                    string subCategory = elements[i]["subcategory"].ToString();
+                    long marketId = long.Parse(elements[i]["Id"].ToString());
+                    //long? price = long.TryParse(elements[i]["price"].ToString(), out var tempPrice) ? tempPrice : (long?)null;
+                    long? price = 1;
+                    long? roomsCount = long.TryParse(elements[i]["rooms_count"].ToString(), out var tempRC) ? tempRC : (long?)null;
+                    long? floorNumber = long.TryParse(elements[i]["floor_number"].ToString(), out var tempFN) ? tempFN : (long?)null;
+                    long? floorsCount = long.TryParse(elements[i]["floors_count"].ToString(), out var tempFC) ? tempFC : (long?)null;
+                    long? buildingYear = long.TryParse(elements[i]["building_year"].ToString(), out var tempBY) ? tempBY : (long?)null;
+                    long? categoryId = long.TryParse(elements[i]["category_Id"].ToString(), out var tempCI) ? tempCI : (long?)null;
+                    decimal? lng = decimal.TryParse(elements[i]["coords"]["lng"].ToString(), out var tempLNG) ? tempLNG : (decimal?)null;
+                    decimal? lat = decimal.TryParse(elements[i]["coords"]["lat"].ToString(), out var tempLAT) ? tempLAT : (decimal?)null;
+                    decimal? area = decimal.TryParse(elements[i]["area"].ToString(), out var tempArea) ? tempArea : (decimal?)null;
+                    decimal? areaKitchen = decimal.TryParse(elements[i]["area_kitchen"].ToString(), out var tempAK) ? tempAK : (decimal?)null;
+                    decimal? areaLiving = decimal.TryParse(elements[i]["area_living"].ToString(), out var tempAL) ? tempAL : (decimal?)null;
+                    decimal? areaLand = decimal.TryParse(elements[i]["area_land"].ToString(), out var tempALA) ? tempALA : (decimal?)null;
+                    DealType dealType = GetDealType(elements[i]["deal_type"].ToString());
+                    PropertyTypes propertyType = GetPropertyObjectType(buildingYear, categoryId, subCategory);
+                    ExclusionStatus? exclusionStatus = GetExclusionStatus(price, area, areaLand);
 
-                        OMCoreObject CO = new OMCoreObject();
-                        CO.Url = GetURL(MarketTypes.Cian, dealType, categoryId, subCategory, marketId);
-                        CO.Market_Code = MarketTypes.Cian;
-                        CO.PropertyType_Code = propertyType;
-                        CO.MarketId = marketId;
-                        CO.Price = price;
-                        CO.ParserTime = DateTime.ParseExact(elements[i]["time"].ToString(), "yyyy-MM-dd HH:mm:ss", null);
-                        CO.Region = elements[i]["region"].ToString();
-                        CO.City = elements[i]["city"].ToString();
-                        CO.Address = elements[i]["address"].ToString();
-                        CO.Metro = elements[i]["metro"].ToString();
-                        CO.Images = elements[i]["images"].ToString();
-                        CO.Description = elements[i]["description"].ToString();
-                        CO.Lng = lng;
-                        CO.Lat = lat;
-                        CO.DealType_Code = GetDealType(elements[i]["deal_type"].ToString());
-                        CO.RoomsCount = roomsCount;
-                        CO.FloorNumber = floorNumber;
-                        CO.FloorsCount = floorsCount;
-                        CO.Area = area;
-                        CO.AreaKitchen = areaKitchen;
-                        CO.AreaLiving = areaLiving;
-                        CO.AreaLand = areaLand;
-                        CO.BuildingYear = buildingYear;
-                        CO.Category = elements[i]["category"].ToString();
-                        CO.Subcategory = subCategory;
-                        CO.CategoryId = categoryId;
-                        CO.ProcessType_Code = ProcessStep.DoNotProcessed;
-                        if (exclusionStatus != null)
-                        {
-                            CO.ExclusionStatus_Code = exclusionStatus.GetValueOrDefault();
-                            CO.ProcessType_Code = ProcessStep.Excluded;
-                        }
-                        result.Add(CO);
-                        CCTR++;
-                        //Console.WriteLine($"URL: {CO.Url}\nКод площадки: {CO.Market_Code}\nКод типа недвижимости: {CO.PropertyType_Code}\nId маркета: {CO.MarketId}\n" +
-                        //                  $"Цена: {CO.Price}\nВремя парсинга: {CO.ParserTime}\nРегион: {CO.Region}\nГород: {CO.City}\nАдрес: {CO.Address}\n" +
-                        //                  $"Метро: {CO.Metro}\nИзображения: {CO.Images}\nОписание: {CO.Description}\nДолгота: {CO.Lng}\nШирота: {CO.Lat}\n" +
-                        //                  $"Тип сделки: {CO.DealType_Code}\nКоличество комнат: {CO.RoomsCount}\nЭтаж: {CO.FloorNumber}\nКоличество этажей: {CO.FloorsCount}\n" +
-                        //                  $"Площадь: {CO.Area}\nПлощадь кухни: {CO.AreaKitchen}\nЖилая площадь: {CO.AreaLiving}\nПлощадь земли: {CO.AreaLand}\n" +
-                        //                  $"Год постройки: {CO.BuildingYear}\nКатегория: {CO.Category}\nПодкатегория: {CO.Subcategory}\nИдентификатор категории: {CO.Subcategory}\n" +
-                        //                  $"Код статуса обработки: {CO.CategoryId}\n");
+                    OMCoreObject CO = new OMCoreObject();
+                    CO.Url = GetURL(MarketTypes.Cian, dealType, categoryId, subCategory, marketId);
+                    CO.Market_Code = MarketTypes.Cian;
+                    CO.PropertyType_Code = propertyType;
+                    CO.MarketId = marketId;
+                    CO.Price = price;
+                    CO.ParserTime = DateTime.ParseExact(elements[i]["time"].ToString(), "yyyy-MM-dd HH:mm:ss", null);
+                    CO.Region = elements[i]["region"].ToString();
+                    CO.City = elements[i]["city"].ToString();
+                    CO.Address = elements[i]["address"].ToString();
+                    CO.Metro = elements[i]["metro"].ToString();
+                    CO.Images = elements[i]["images"].ToString();
+                    CO.Description = elements[i]["description"].ToString();
+                    CO.Lng = lng;
+                    CO.Lat = lat;
+                    CO.DealType_Code = GetDealType(elements[i]["deal_type"].ToString());
+                    CO.RoomsCount = roomsCount;
+                    CO.FloorNumber = floorNumber;
+                    CO.FloorsCount = floorsCount;
+                    CO.Area = area;
+                    CO.AreaKitchen = areaKitchen;
+                    CO.AreaLiving = areaLiving;
+                    CO.AreaLand = areaLand;
+                    CO.BuildingYear = buildingYear;
+                    CO.Category = elements[i]["category"].ToString();
+                    CO.Subcategory = subCategory;
+                    CO.CategoryId = categoryId;
+                    CO.ProcessType_Code = ProcessStep.DoNotProcessed;
+                    if (exclusionStatus != null)
+                    {
+                        CO.ExclusionStatus_Code = exclusionStatus.GetValueOrDefault();
+                        CO.ProcessType_Code = ProcessStep.Excluded;
                     }
-                    catch (Exception) { ECTR++; }
+                    result.Add(CO);
+                    CCTR++;
+                    //Console.WriteLine($"URL: {CO.Url}\nКод площадки: {CO.Market_Code}\nКод типа недвижимости: {CO.PropertyType_Code}\nId маркета: {CO.MarketId}\n" +
+                    //                  $"Цена: {CO.Price}\nВремя парсинга: {CO.ParserTime}\nРегион: {CO.Region}\nГород: {CO.City}\nАдрес: {CO.Address}\n" +
+                    //                  $"Метро: {CO.Metro}\nИзображения: {CO.Images}\nОписание: {CO.Description}\nДолгота: {CO.Lng}\nШирота: {CO.Lat}\n" +
+                    //                  $"Тип сделки: {CO.DealType_Code}\nКоличество комнат: {CO.RoomsCount}\nЭтаж: {CO.FloorNumber}\nКоличество этажей: {CO.FloorsCount}\n" +
+                    //                  $"Площадь: {CO.Area}\nПлощадь кухни: {CO.AreaKitchen}\nЖилая площадь: {CO.AreaLiving}\nПлощадь земли: {CO.AreaLand}\n" +
+                    //                  $"Год постройки: {CO.BuildingYear}\nКатегория: {CO.Category}\nПодкатегория: {CO.Subcategory}\nИдентификатор категории: {CO.Subcategory}\n" +
+                    //                  $"Код статуса обработки: {CO.CategoryId}\n");
                 }
+                catch (Exception) { ECTR++; }
             }
-            catch (Exception) { END = true; }
             return result;
         }
 
@@ -190,7 +187,7 @@ namespace KadOzenka.Dal.JSONParser
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //ErrorManager.LogError(ex);
                 return PropertyTypes.Other;
