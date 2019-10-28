@@ -594,6 +594,8 @@
             $(window).resize(function () {
                 modalWindow.trigger('resize');
             });
+
+            return modalWindow;
         },
         GetWindow: function (name, parentWindow) {
             var currentWindow = null;
