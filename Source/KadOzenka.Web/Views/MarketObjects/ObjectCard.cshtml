@@ -71,14 +71,28 @@
 						<div class="col-sm-1">
 							@if (@Model.PriceHistories?.Count > 0)
 							{
-								<img id="historyImg"  src="/images/Icons/24x24_Help.png" style="float: left; margin-top: .4em;" />
-								@(Html.Kendo().Tooltip()
-									  .For("#historyImg")
-									  .Name("priceHistoryTooltip")
-									  .ContentTemplateId("historyGrid")
-									  .Position(TooltipPosition.Right)
-									  .AutoHide(false)
-									  )
+								<img id="historyImg" src="/images/Icons/24x24_Help.png" style="float: left; margin-top: .4em;" />
+								if (@Model.IsRangePriceHistory)
+								{
+									@(Html.Kendo().Tooltip()
+												  .For("#historyImg")
+												  .Name("priceHistoryTooltip")
+												  .ContentTemplateId("historyRangeGrid")
+												  .Position(TooltipPosition.Right)
+												  .AutoHide(false)
+									)
+								}
+								else
+								{
+									@(Html.Kendo().Tooltip()
+												  .For("#historyImg")
+												  .Name("priceHistoryTooltip")
+												  .ContentTemplateId("historyGrid")
+												  .Position(TooltipPosition.Right)
+												  .AutoHide(false)
+									)
+								}
+
 							}
 						</div>
 					</div>
@@ -239,31 +253,58 @@
 
 <script id="historyGrid" type="text/x-kendo-template">
 	@(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
-					(Model.PriceHistories)
-					.Name("priceHistoryGrid")
-					.Columns(columns =>
-					{
-						columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}").Width("30%");
-						columns.Bound(c => c.PriceValue).Format("{0:c0}").Width("35%");
-						columns.Bound(c => c.PriceValueDiff).Format("{0:c0}").Width("35%");
-					})
-					  .ToolBar(t =>
-					  {
-						  t.ClientTemplate("История изменения цены");
-					  })
-					.Resizable(resize => resize.Columns(true))
-					.Scrollable()
-					.Events(ev => ev.DataBound("onDataBoundPriceHistory"))
-					.DataSource(dataSource => dataSource
-					.Ajax()
-					.ServerOperation(false)
-					.Model(x =>
-					{
-						x.Field(y => y.ChangingDate).Editable(false);
-						x.Field(y => y.PriceValue).Editable(false);
-						x.Field(y => y.PriceValueDiff).Editable(false);
-					})
-					).ToClientTemplate())
+		  (Model.PriceHistories)
+		  .Name("priceHistoryGrid")
+		  .Columns(columns =>
+		  {
+			  columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}");
+			  columns.Bound(c => c.PriceValueTo).Format("{0:c0}");
+		  })
+		  .ToolBar(t =>
+		  {
+			  t.ClientTemplate("История изменения цены");
+		  })
+		  .Resizable(resize => resize.Columns(true))
+		  .Scrollable()
+		  .Events(ev => ev.DataBound("onDataBoundPriceHistory"))
+		  .DataSource(dataSource => dataSource
+			  .Ajax()
+			  .ServerOperation(false)
+			  .Model(x =>
+			  {
+				  x.Field(y => y.ChangingDate).Editable(false);
+				  x.Field(y => y.PriceValueTo).Editable(false);
+			  })
+		  ).ToClientTemplate())
+
+</script>
+<script id="historyRangeGrid" type="text/x-kendo-template">
+	@(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
+		  (Model.PriceHistories)
+		  .Name("priceHistoryGrid")
+		  .Columns(columns =>
+		  {
+			  columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}").Width("30%");
+			  columns.Bound(c => c.PriceValueFrom).Format("от {0:c0}").Width("35%");
+			  columns.Bound(c => c.PriceValueTo).Format("до {0:c0}").Width("35%");
+		  })
+		  .ToolBar(t =>
+		  {
+			  t.ClientTemplate("История изменения цены");
+		  })
+		  .Resizable(resize => resize.Columns(true))
+		  .Scrollable()
+		  .Events(ev => ev.DataBound("onDataBoundPriceRangeHistory"))
+		  .DataSource(dataSource => dataSource
+			  .Ajax()
+			  .ServerOperation(false)
+			  .Model(x =>
+			  {
+				  x.Field(y => y.ChangingDate).Editable(false);
+				  x.Field(y => y.PriceValueFrom).Editable(false);
+				  x.Field(y => y.PriceValueTo).Editable(false);
+			  })
+		  ).ToClientTemplate())
 
 </script>
 
@@ -336,13 +377,28 @@
 				Array.prototype.forEach.call(this.cells, cell => {
 					cell.className += " price-grid-cell";
 				});
-				if (dataItem.PriceValueDiff) {
-					if (dataItem.PriceValueDiff >= 0) {
-						this.cells[2].className += " price-grid-cell-positive-diff";
-					} else {
-						this.cells[2].className += " price-grid-cell-negative-diff";
-					}
-				}
+				//TODO: presentation of changes between history records will be implemented later
+				//if (dataItem.PriceValueDiff) {
+				//	if (dataItem.PriceValueDiff >= 0) {
+				//		this.cells[2].className += " price-grid-cell-positive-diff";
+				//	} else {
+				//		this.cells[2].className += " price-grid-cell-negative-diff";
+				//	}
+				//}
+			});
+		}
+
+		function onDataBoundPriceRangeHistory(e) {
+			onDataBoundPriceHistory(e);
+			var items = e.sender.items();
+			var grid = $("#priceHistoryGrid").data("kendoGrid");
+			debugger;
+			items.each(function (index) {
+				const dataItem = grid.dataItem(this);
+				Array.prototype.forEach.call(this.cells, cell => {
+					cell.className += " price-grid-cell";
+				});
+				//TODO: presentation of changes between history records will be implemented later
 			});
 		}
 	</script>

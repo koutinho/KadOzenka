@@ -12,8 +12,8 @@ namespace KadOzenka.Web.Models.MarketObject
 		{
 			public long Id { get; set; }
 			public DateTime ChangingDate { get; set; }
-			public long PriceValue { get; set; }
-			public long? PriceValueDiff { get; set; }
+			public long PriceValueTo { get; set; }
+			public long? PriceValueFrom { get; set; }
 		}
 
 		public long Id { get; set; }
@@ -38,6 +38,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string Group { get; set; }
 		public string Subgroup { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
+		public bool IsRangePriceHistory { get; set; }
 
 		public static CoreObjectDto OMMap(OMCoreObject entity)
 		{
@@ -67,21 +68,35 @@ namespace KadOzenka.Web.Models.MarketObject
 			};
 			if (entity.PriceHistory?.Count > 0)
 			{
-				dto.PriceHistories = new List<PriceHistoryDto>();
-				var orderedHistories = entity.PriceHistory.OrderByDescending(x => x.ChangingDate).ToList();
-				for(var i = 0; i < orderedHistories.Count(); i++)
-				{
-					var historyDto = new PriceHistoryDto
-					{
-						Id = orderedHistories[i].Id,
-						ChangingDate = orderedHistories[i].ChangingDate,
-						PriceValue = orderedHistories[i].PriceValue,
-						PriceValueDiff = i == orderedHistories.Count() - 1
-							? (long?) null
-							: orderedHistories[i].PriceValue - orderedHistories[i + 1].PriceValue
-					};
-					dto.PriceHistories.Add(historyDto);
-				}
+				dto.PriceHistories = entity.PriceHistory
+					.OrderByDescending(x => x.ChangingDate)
+					.Select(x =>
+						new PriceHistoryDto
+						{
+							Id = x.Id,
+							ChangingDate = x.ChangingDate,
+							PriceValueTo = x.PriceValueTo,
+							PriceValueFrom = x.PriceValueFrom
+						})
+					.ToList();
+				dto.IsRangePriceHistory = dto.PriceHistories.Any(x => x.PriceValueFrom.HasValue);
+
+				//TODO: calculation of changes between history records will be implemented later
+				//dto.PriceHistories = new List<PriceHistoryDto>();
+				//var orderedHistories = entity.PriceHistory.OrderByDescending(x => x.ChangingDate).ToList();
+				//for(var i = 0; i < orderedHistories.Count(); i++)
+				//{
+				//	var historyDto = new PriceHistoryDto
+				//	{
+				//		Id = orderedHistories[i].Id,
+				//		ChangingDate = orderedHistories[i].ChangingDate,
+				//		PriceValue = orderedHistories[i].PriceValue,
+				//		PriceValueDiff = i == orderedHistories.Count() - 1
+				//			? (long?) null
+				//			: orderedHistories[i].PriceValue - orderedHistories[i + 1].PriceValue
+				//	};
+				//	dto.PriceHistories.Add(historyDto);
+				//}
 			}
 
 			return dto;

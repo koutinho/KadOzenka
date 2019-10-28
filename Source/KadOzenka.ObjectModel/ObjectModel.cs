@@ -2869,22 +2869,42 @@ namespace ObjectModel.Market
         }
 
 
-        private long _pricevalue;
+        private long? _pricevaluefrom;
         /// <summary>
-        /// 10500400 Значение стоимости (PRICE_VALUE)
+        /// 10500400 Значение стоимости от (PRICE_VALUE_FROM)
         /// </summary>
         [RegisterAttribute(AttributeID = 10500400)]
-        public long PriceValue
+        public long? PriceValueFrom
         {
             get
             {
-                CheckPropertyInited("PriceValue");
-                return _pricevalue;
+                CheckPropertyInited("PriceValueFrom");
+                return _pricevaluefrom;
             }
             set
             {
-                _pricevalue = value;
-                NotifyPropertyChanged("PriceValue");
+                _pricevaluefrom = value;
+                NotifyPropertyChanged("PriceValueFrom");
+            }
+        }
+
+
+        private long _pricevalueto;
+        /// <summary>
+        /// 10500500 Значение стоимости до (PRICE_VALUE_TO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10500500)]
+        public long PriceValueTo
+        {
+            get
+            {
+                CheckPropertyInited("PriceValueTo");
+                return _pricevalueto;
+            }
+            set
+            {
+                _pricevalueto = value;
+                NotifyPropertyChanged("PriceValueTo");
             }
         }
 
