@@ -1,245 +1,349 @@
 ﻿@using Core.Shared.Extensions
 @using ObjectModel.Market
 
-@model ObjectModel.Market.OMCoreObject
+@model KadOzenka.Web.Models.MarketObject.CoreObjectDto
 
 <form>
-    <input type="hidden" name="Id" value="@Model.Id" />
-    <ul id="ls_panelbar" class="panelbar">
-        <li id="Section_Main" data-expand>
-            <span>Основные данные</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
+	<input type="hidden" name="Id" value="@Model.Id" />
+	<ul id="ls_panelbar" class="panelbar">
+		<li id="Section_Main" data-expand>
+			<span>Основные данные</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Источник данных</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.Market" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Тип сделки</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.DealType" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Дата сделки</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.ParserTime.Value.ToString("yyyy.MM.dd")" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Адрес</label>
+						</div>
+						<div class="col-sm-10">
+							<input class="k-textbox" readonly value="@Model.Address" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Метро</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.Metro" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Площадь</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.Area" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Описание</label>
+						</div>
+						<div class="col-sm-10">
+							<textarea class="k-textbox" readonly rows="5" style="resize:none;">@Model.Description</textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Цена</label>
+						</div>
+						<div class="col-sm-2">
+							<input id="priceInput" class="k-textbox" readonly value="@Model.Price" />
+						</div>
+						<div class="col-sm-1">
+							@if (@Model.PriceHistories?.Count > 0)
+							{
+								<img id="historyImg"  src="/images/Icons/24x24_Help.png" style="float: left; margin-top: .4em;" />
+								@(Html.Kendo().Tooltip()
+									  .For("#historyImg")
+									  .Name("priceHistoryTooltip")
+									  .ContentTemplateId("historyGrid")
+									  .Position(TooltipPosition.Right)
+									  .AutoHide(false)
+									  )
+							}
+						</div>
+					</div>
+				</div>
+			</div>
+		</li>
+		<li id="Section_ScreenShots" data-expand>
+			<span>Скриншоты</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					@if (((List<(long, DateTime?)>)ViewBag.ScreenShots).IsNotEmpty())
+					{
+						<ol>
+							@foreach (var screen in (List<(long, DateTime?)>)ViewBag.ScreenShots)
+							{
+								<li>
+									<div class="form-group">
+										<div class="col-sm-2">
+											<label class="control-label">@screen.Item2.ParseToString()</label>
+										</div>
+									</div>
+									<div class="form-group">
+										<div class="col-sm-12">
+											<a href="@(Url.Action("ShowFile", "MarketObjects") + "?id=" + screen.Item1)" data-fancybox="gallery" data-caption="@screen.Item2.Value">
+												<img src="@(Url.Action("ShowFile", "MarketObjects") + "?id=" + screen.Item1)" alt="" style="height:92px; width:192px" />
+											</a>
+										</div>
+									</div>
+								</li>
+							}
+						</ol>
+					}
+				</div>
+			</div>
+		</li>
+		<li id="Section_Reestr" data-expand>
+			<span>Данные Росрестра</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Кадастровый номер</label>
+						</div>
+						<div class="col-sm-4">
+							<input class="k-textbox" readonly value="@Model.CadastralNumber" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Кадастровый район</label>
+						</div>
+						<div class="col-sm-4">
+							<input class="k-textbox" readonly value="@Model.CadastralQuartal" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Район</label>
+						</div>
+						<div class="col-sm-4">
+							<input class="k-textbox" readonly value="@Model.District" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Кадастровый номер здания</label>
+						</div>
+						<div class="col-sm-4">
+							<input class="k-textbox" readonly value="@Model.BuildingCadastralNumber" />
+						</div>
+					</div>
+				</div>
+			</div>
+		</li>
+		<li id="Section_OKS" data-expand>
+			<span>Данные ОКС</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Год постройки</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.BuildingYear" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Этажноcть</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.FloorsCount" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Номер этажа</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.FloorNumber" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Площадь кухни</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.AreaKitchen" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Площадь жилая</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.AreaLiving" />
+						</div>
 
-                        <div class="col-sm-2">
-                            <label class="control-label">Источник данных</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.Market" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Тип сделки</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.DealType" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Дата сделки</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox"  readonly value="@Model.ParserTime.Value.ToString("yyyy.MM.dd")" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Адрес</label>
-                        </div>
-                        <div class="col-sm-10">
-                            <input class="k-textbox" readonly value="@Model.Address" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Метро</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.Metro" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Площадь</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.Area" />
-                        </div>
-                    </div>
-	                <div class="form-group">
-		                <div class="col-sm-2">
-			                <label class="control-label">Описание</label>
-		                </div>
-		                <div class="col-sm-10">
-			                <textarea class="k-textbox" readonly rows="5" style="resize:none;">@Model.Description</textarea>
-		                </div>
-	                </div>
-	                <div class="form-group">
-		                <div class="col-sm-2">
-			                <label class="control-label">Цена</label>
-		                </div>
-		                <div class="col-sm-2">
-			                <input class="k-textbox" readonly value="@Model.Price" />
-		                </div>
-	                </div>
-                </div>
-            </div>
-        </li>
-        <li id="Section_ScreenShots" data-expand>
-            <span>Скриншоты</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    @if (((List<(long, DateTime?)>)ViewBag.ScreenShots).IsNotEmpty())
-                    {
-                        <ol>
-                        @foreach (var screen in (List<(long, DateTime?)>)ViewBag.ScreenShots)
-                        {
-                            <li>
-                                <div class="form-group">
-                                    <div class="col-sm-2">
-                                        <label class="control-label">@screen.Item2.ParseToString()</label>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-sm-12">
-                                        <a href="@(Url.Action("ShowFile", "MarketObjects") + "?id=" + screen.Item1)"  data-fancybox="gallery" data-caption="@screen.Item2.Value">
-	                                        <img src="@(Url.Action("ShowFile", "MarketObjects") + "?id=" + screen.Item1)" alt="" style="height:92px; width:192px" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-                        }
-                        </ol>
-                    }
-                </div>
-            </div>           
-        </li>
-        <li id="Section_Reestr" data-expand>
-            <span>Данные Росрестра</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Кадастровый номер</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@Model.CadastralNumber" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Кадастровый район</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@Model.CadastralQuartal" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Район</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@Model.District" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Кадастровый номер здания</label>
-                        </div>
-                        <div class="col-sm-4">
-                            <input class="k-textbox" readonly value="@Model.BuildingCadastralNumber" />
-                        </div>
-                    </div>
-                </div>
-            </div>           
-        </li>
-        <li id="Section_OKS" data-expand>
-            <span>Данные ОКС</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Год постройки</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.BuildingYear" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Этажноcть</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.FloorsCount" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Номер этажа</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.FloorNumber" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Площадь кухни</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.AreaKitchen" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Площадь жилая</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.AreaLiving" />
-                        </div>
-
-                    </div>
-                </div>
-                </div>
-        </li>
-        <li id="Section_Group" data-expand>
-            <span>Группировка</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Зона</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.Zone" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Группа</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.Group" />
-                        </div>
-                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Подгруппа</label>
-                        </div>
-                        <div class="col-sm-10">
-                            <textarea class="k-textbox" readonly rows="2" style="resize:none;">@Model.Subgroup</textarea>
-                        </div>
-                    </div>
-                    <div id="gu_list">
-                    </div>
-                </div>
-            </div>
-        </li>
-    </ul>
-    <div class="static-nav">
-        <nav id="navigation-menu">
-            <a href="#Section_Main">Основные данные</a>
-            <a href="#Section_Reestr">Данные Росреестра</a>
-            <a href="#Section_OKS">Данные ОКС</a>
-            <a href="#Section_Group">Группировка</a>
-        </nav>
-    </div>
+					</div>
+				</div>
+			</div>
+		</li>
+		<li id="Section_Group" data-expand>
+			<span>Группировка</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Зона</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.Zone" />
+						</div>
+						<div class="col-sm-2">
+							<label class="control-label">Группа</label>
+						</div>
+						<div class="col-sm-2">
+							<input class="k-textbox" readonly value="@Model.Group" />
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							<label class="control-label">Подгруппа</label>
+						</div>
+						<div class="col-sm-10">
+							<textarea class="k-textbox" readonly rows="2" style="resize:none;">@Model.Subgroup</textarea>
+						</div>
+					</div>
+					<div id="gu_list">
+					</div>
+				</div>
+			</div>
+		</li>
+	</ul>
+	<div class="static-nav">
+		<nav id="navigation-menu">
+			<a href="#Section_Main">Основные данные</a>
+			<a href="#Section_Reestr">Данные Росреестра</a>
+			<a href="#Section_OKS">Данные ОКС</a>
+			<a href="#Section_Group">Группировка</a>
+		</nav>
+	</div>
 </form>
 
+<script id="historyGrid" type="text/x-kendo-template">
+	@(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
+					(Model.PriceHistories)
+					.Name("priceHistoryGrid")
+					.Columns(columns =>
+					{
+						columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}").Width("30%");
+						columns.Bound(c => c.PriceValue).Format("{0:c0}").Width("35%");
+						columns.Bound(c => c.PriceValueDiff).Format("{0:c0}").Width("35%");
+					})
+					  .ToolBar(t =>
+					  {
+						  t.ClientTemplate("История изменения цены");
+					  })
+					.Resizable(resize => resize.Columns(true))
+					.Scrollable()
+					.Events(ev => ev.DataBound("onDataBoundPriceHistory"))
+					.DataSource(dataSource => dataSource
+					.Ajax()
+					.ServerOperation(false)
+					.Model(x =>
+					{
+						x.Field(y => y.ChangingDate).Editable(false);
+						x.Field(y => y.PriceValue).Editable(false);
+						x.Field(y => y.PriceValueDiff).Editable(false);
+					})
+					).ToClientTemplate())
+
+</script>
+
 @section styles {
-    <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+	<link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+	<style>
+		.price-grid-cell {
+			color: #484847;
+			cursor: inherit;
+		}
+
+		.price-grid-cell-positive-diff {
+			color: #ee161f;
+		}
+
+		.price-grid-cell-negative-diff {
+			color: #1db360;
+		}
+
+		#priceHistoryGrid .k-grid-header {
+			display: none;
+		}
+
+		#priceHistoryGrid>.k-grid-toolbar {
+			font-weight: bold;
+		}
+
+		#priceHistoryGrid .k-detail-cell .k-grid {
+			border-left: none;
+			color: gray;
+		}
+
+		#priceHistoryGrid.k-grid td {
+			border-width: 0 0 0 0;
+		}
+
+		.k-tooltip-content {
+			max-width: 600px !important;
+			max-height: 400px !important;
+			overflow: scroll !important;
+		}
+	</style>
 }
 
 @section scripts {
-    <script src="~/js/jquery.fancybox.min.js"></script>
+	<script src="~/js/jquery.fancybox.min.js"></script>
 
-    <script>
-        $(function() {
-            var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
-            panelbar.expand('li[data-expand]');
+	<script>
+		$(function() {
+			var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+			panelbar.expand('li[data-expand]');
 
-            $("#navigation-menu a").mPageScroll2id({
-                highlightSelector:"#navigation-menu a"
-            });
-         });
-    </script>
+			$("#navigation-menu a").mPageScroll2id({
+				highlightSelector: "#navigation-menu a"
+			});
+
+			$("#priceInput").kendoNumericTextBox({
+				format: "c0",
+				decimals: 0,
+				spinners: false
+			});
+		});
+
+		function onDataBoundPriceHistory(e) {
+			var items = e.sender.items();
+			var grid = $("#priceHistoryGrid").data("kendoGrid");
+			debugger;
+			items.each(function(index) {
+				const dataItem = grid.dataItem(this);
+				Array.prototype.forEach.call(this.cells, cell => {
+					cell.className += " price-grid-cell";
+				});
+				if (dataItem.PriceValueDiff) {
+					if (dataItem.PriceValueDiff >= 0) {
+						this.cells[2].className += " price-grid-cell-positive-diff";
+					} else {
+						this.cells[2].className += " price-grid-cell-negative-diff";
+					}
+				}
+			});
+		}
+	</script>
 }

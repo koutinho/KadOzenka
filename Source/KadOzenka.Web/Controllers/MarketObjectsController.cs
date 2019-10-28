@@ -3,6 +3,7 @@ using Core.Shared.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Market;
 using System.Linq;
+using KadOzenka.Web.Models.MarketObject;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -29,11 +30,9 @@ namespace KadOzenka.Web.Controllers
 		            .Where(x => x.InitialId == id)
 		            .SelectAll()
 		            .Execute();
-
-
             }
 
-            return View(analogItem);
+            return View(CoreObjectDto.OMMap(analogItem));
 		}
 
         /*private List<(DateTime, string)> GetScreenShots(long id)
