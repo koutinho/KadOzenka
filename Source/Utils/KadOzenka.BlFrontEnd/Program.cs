@@ -10,6 +10,7 @@ using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.GetSeleniumScreens;
 using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
 using KadOzenka.Dal.RestAppParser;
+using KadOzenka.BlFrontEnd.DataExport;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -39,7 +40,9 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("7", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
             consoleHelper.AddCommand("8", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
             consoleHelper.AddCommand("9", "Процедура создания тестовых скриншотов", () => { new Selenium().MakeScreenshot(); });
-        }
+
+			consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
+		}
 
 	}
 }
