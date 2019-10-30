@@ -4445,5 +4445,45 @@ namespace ObjectModel.Common
             }
         }
 
+
+        private long _mainregisterid;
+        /// <summary>
+        /// 80001100 ИД основного реестра (MAIN_REGISTER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80001100)]
+        public long MainRegisterId
+        {
+            get
+            {
+                CheckPropertyInited("MainRegisterId");
+                return _mainregisterid;
+            }
+            set
+            {
+                _mainregisterid = value;
+                NotifyPropertyChanged("MainRegisterId");
+            }
+        }
+
+
+        private string _registerviewid;
+        /// <summary>
+        /// 80001200 ИД представления реестра (REGISTER_VIEW_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80001200)]
+        public string RegisterViewId
+        {
+            get
+            {
+                CheckPropertyInited("RegisterViewId");
+                return _registerviewid;
+            }
+            set
+            {
+                _registerviewid = value;
+                NotifyPropertyChanged("RegisterViewId");
+            }
+        }
+
     }
 }
