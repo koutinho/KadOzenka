@@ -1181,3 +1181,27 @@ namespace ObjectModel.KO
         }
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 800 Журнал выгрузки по шаблону Excel
+    /// </summary>
+    public partial class OMExportByTemplates
+    {
+
+        public OMExportByTemplates()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMExportByTemplates(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}

@@ -4235,3 +4235,215 @@ namespace ObjectModel.KO
 
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 800 Журнал выгрузки по шаблону Excel (COMMON_EXPORT_BY_TEMPLATES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 800)]
+    [Serializable]
+    public partial class OMExportByTemplates : OMBaseClass<OMExportByTemplates>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 80000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 80000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 80000200 Идентификатор пользователя (USER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80000200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private long _status;
+        /// <summary>
+        /// 80000300 Статус (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80000300)]
+        public long Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private DateTime _datecreated;
+        /// <summary>
+        /// 80000400 Дата создания (DATE_CREATED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80000400)]
+        public DateTime DateCreated
+        {
+            get
+            {
+                CheckPropertyInited("DateCreated");
+                return _datecreated;
+            }
+            set
+            {
+                _datecreated = value;
+                NotifyPropertyChanged("DateCreated");
+            }
+        }
+
+
+        private DateTime? _datestarted;
+        /// <summary>
+        /// 80000500 Дата запуска (DATE_STARTED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80000500)]
+        public DateTime? DateStarted
+        {
+            get
+            {
+                CheckPropertyInited("DateStarted");
+                return _datestarted;
+            }
+            set
+            {
+                _datestarted = value;
+                NotifyPropertyChanged("DateStarted");
+            }
+        }
+
+
+        private DateTime? _datefinished;
+        /// <summary>
+        /// 80000600 Дата завершения (DATE_FINISHED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80000600)]
+        public DateTime? DateFinished
+        {
+            get
+            {
+                CheckPropertyInited("DateFinished");
+                return _datefinished;
+            }
+            set
+            {
+                _datefinished = value;
+                NotifyPropertyChanged("DateFinished");
+            }
+        }
+
+
+        private string _templatefilename;
+        /// <summary>
+        /// 80000700 Имя файла шаблона (TEMPLATE_FILE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80000700)]
+        public string TemplateFileName
+        {
+            get
+            {
+                CheckPropertyInited("TemplateFileName");
+                return _templatefilename;
+            }
+            set
+            {
+                _templatefilename = value;
+                NotifyPropertyChanged("TemplateFileName");
+            }
+        }
+
+
+        private string _columnsmapping;
+        /// <summary>
+        /// 80000800 Параметры соответствия колонок и показателей (COLUMNS_MAPPING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80000800)]
+        public string ColumnsMapping
+        {
+            get
+            {
+                CheckPropertyInited("ColumnsMapping");
+                return _columnsmapping;
+            }
+            set
+            {
+                _columnsmapping = value;
+                NotifyPropertyChanged("ColumnsMapping");
+            }
+        }
+
+
+        private long? _errorid;
+        /// <summary>
+        /// 80000900 ИД Ошибки (ERROR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80000900)]
+        public long? ErrorId
+        {
+            get
+            {
+                CheckPropertyInited("ErrorId");
+                return _errorid;
+            }
+            set
+            {
+                _errorid = value;
+                NotifyPropertyChanged("ErrorId");
+            }
+        }
+
+
+        private string _resultmessage;
+        /// <summary>
+        /// 80001000 Результирующее сообщение (RESULT_MESSAGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80001000)]
+        public string ResultMessage
+        {
+            get
+            {
+                CheckPropertyInited("ResultMessage");
+                return _resultmessage;
+            }
+            set
+            {
+                _resultmessage = value;
+                NotifyPropertyChanged("ResultMessage");
+            }
+        }
+
+    }
+}
