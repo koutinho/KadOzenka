@@ -93,7 +93,7 @@ namespace KadOzenka.Dal.DataExport
 			return true;
 		}
 
-		public static void AddExportToQueue(string templateFileName, Stream templateFile, List<DataExportColumn> columns)
+		public static void AddExportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
 		{
 			var export = new OMExportByTemplates
 			{
@@ -102,6 +102,8 @@ namespace KadOzenka.Dal.DataExport
 				Status = 0, // TODO: доработать платформу, чтоб формировался Enum
 				TemplateFileName = templateFileName,
 				ColumnsMapping = "", // columns -> сериализовать в JSON
+				MainRegisterId = mainRegisterId,
+				RegisterViewId = registerViewId
 			};
 			export.Save();
 
