@@ -120,19 +120,25 @@ namespace KadOzenka.Dal.DataExport
 			var mainWorkSheet = excelTemplate.Worksheets[0];
 			bool isFinish = false;
 
+			List<string> columnNames = new List<string>();
+			for (int i = 0; i < columns.Count; i++)
+			{
+				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+			}
+			
 			List<string> keyValues = new List<string>();
 
-			while (true)
+			while (!isFinish)
 			{
-				for(int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)
+				for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)		
 				{
-					if(i == mainWorkSheet.Rows.Count)
+					if (i == mainWorkSheet.Rows.Count - 1) //одна строка - заголовок
 					{
 						isFinish = true;
 						break;
 					}
 
-					keyValues.Add(mainWorkSheet.Rows[i].Cells[0].Value.ToString());
+					keyValues.Add(mainWorkSheet.Rows[i + 1].Cells[0].Value.ToString()); 
 				}
 				
 				// Получение данных для 1000 строк
@@ -152,46 +158,72 @@ namespace KadOzenka.Dal.DataExport
 
 				for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)
 				{
-					if (i == mainWorkSheet.Rows.Count)
+					if (i == mainWorkSheet.Rows.Count - 1)
 					{
 						break;
 					}
 
-					string keyValue = mainWorkSheet.Rows[i].Cells[0].Value.ToString();
+					string keyValue = mainWorkSheet.Rows[i + 1].Cells[0].Value.ToString();
+
+					//считаем, что ключевая колонка только одна
+					DataExportColumn key = columns.Where(x => x.IsKey).FirstOrDefault();
+
+					DataTable filtredTable = dt.FilteringAndSortingTable($"[{key.AttributrId}] = '{keyValue}'");
+					if (filtredTable.Rows.Count == 0)
+					{
+						continue;
+					}
+
+					DataRow row = filtredTable.Rows[0];    
 
 					foreach (var column in columns)
-					{
-						DataRow row = dt.FilteringAndSortingTable($"10005400 = '{keyValue}'").Rows[0];
+					{						
+						if (column.IsKey)
+						{
+							continue;
+						}						
 
 						// Заполнение данных в Excel
-						var attributeType = RegisterCache.GetAttributeData(10007100).Type;
+						
+						int cell = columnNames.IndexOf(column.ColumnName);
+						string dtColumnName = column.AttributrId.ToString();
+
+						var attributeType = RegisterCache.GetAttributeData(column.AttributrId.ParseToInt()).Type;
 
 						switch (attributeType)
 						{
 							case RegisterAttributeType.INTEGER:
-								mainWorkSheet.Rows[i].Cells[2].SetValue(row["10007100"].ParseToLong());
+								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ParseToLong());
 								break;
 							case RegisterAttributeType.DECIMAL:
-								mainWorkSheet.Rows[i].Cells[2].SetValue(row["10007100"].ParseToDouble());
+								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ParseToDouble());
 								break;
 							case RegisterAttributeType.BOOLEAN:
+								string value = row[dtColumnName].ParseToBoolean() == true ? "Да" : "Нет";
+								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(value);
 								break;
 							case RegisterAttributeType.STRING:
+								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ToString());
 								break;
 							case RegisterAttributeType.DATE:
+								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ParseToDateTime());
 								break;
 							default:
-								throw new Exception($"Не поддерживаемый тип: {attributeType}");
+								throw new Exception($"Неподдерживаемый тип: {attributeType}");
 						}
 					}
 				}
 
-				if (isFinish) break;
-
 				packageNum++;
 			}
-			
-			return excelTemplate;
+
+			//return excelTemplate;
+
+			MemoryStream stream = new MemoryStream();
+
+			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+
+			return stream;
 		}
 	}
 }
