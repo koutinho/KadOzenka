@@ -28,34 +28,39 @@ namespace KadOzenka.BlFrontEnd.DataExport
 					 ColumnName = "Test 2",
 					 IsKey = false
 				},
-				new DataExportColumn
-				{
-					 AttributrId = 10004300,
-					 ColumnName = "Test 3",
-					 IsKey = false
-				},
-				new DataExportColumn
-				{
-					 AttributrId = 10005300,
-					 ColumnName = "Test 4",
-					 IsKey = false
-				}
+				//new DataExportColumn
+				//{
+				//	 AttributrId = 10004300,
+				//	 ColumnName = "Test 3",
+				//	 IsKey = false
+				//},
+				//new DataExportColumn
+				//{
+				//	 AttributrId = 10005300,
+				//	 ColumnName = "Test 4",
+				//	 IsKey = false
+				//}
 			};
 
-			var stream = DataExporter.ExportDataToExcel(100, excelFile, settings);
+			//var stream = DataExporter.ExportDataToExcel(100, excelFile, settings);
+
+
+			FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+			
+			DataExporter.AddExportToQueue(100, "1", filePath, fs, settings);
 
 			// Сохранение результата в result xlsx
 			//stream.Save("D:\\Genix\\result.xlsx");
 
-			stream.Seek(0, SeekOrigin.Begin);
-			using (FileStream file = new FileStream("D:\\Genix\\result.xlsx", FileMode.Create, FileAccess.Write))
-			{
-				byte[] bytes = new byte[stream.Length];
-				stream.Read(bytes);
-				file.Write(bytes);
+			//stream.Seek(0, SeekOrigin.Begin);
+			//using (FileStream file = new FileStream("D:\\Genix\\result.xlsx", FileMode.Create, FileAccess.Write))
+			//{
+			//	byte[] bytes = new byte[stream.Length];
+			//	stream.Read(bytes);
+			//	file.Write(bytes);
 				
-				stream.Close();
-			}
+			//	stream.Close();
+			//}
 		}
     }
 }

@@ -5,6 +5,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using System;
@@ -57,8 +58,29 @@ namespace KadOzenka.Dal.DataExport
 			// Запустить формирование файла
 			var templateFile = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, GetTemplateName(export.Id));
 
-			ExcelFile excelTemplate = null; // TODO: получить из Stream
-			List<DataExportColumn> columns = null; // TODO: получить из JSON export.ColumnsMapping;
+
+			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
+
+			//ExcelFile excelTemplate = null; // TODO: получить из Stream
+			
+
+			List<DataExportColumn> columns = new List<DataExportColumn>();
+			JArray elements = JArray.Parse(export.ColumnsMapping);
+			for (int i = 0; i < elements.Count; i++)
+			{
+				long attributrId = elements[i]["AttributrId"].ParseToLong();
+				string columnName = elements[i]["ColumnName"].ToString();
+				bool isKey = elements[i]["IsKey"].ParseToBoolean();
+
+				DataExportColumn col = new DataExportColumn
+				{
+					AttributrId = attributrId,
+					ColumnName = columnName,
+					IsKey = isKey
+				};
+				columns.Add(col);
+			}
+
 			Stream resultFile = ExportDataToExcel((int)export.MainRegisterId, excelTemplate, columns);
 
 			// Сохранение файла
@@ -95,15 +117,19 @@ namespace KadOzenka.Dal.DataExport
 
 		public static void AddExportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
 		{
+			JArray jArray = (JArray)JToken.FromObject(columns);
+			string jsonstring = jArray.ToString();
+
 			var export = new OMExportByTemplates
 			{
-				UserId = SRDSession.GetCurrentUserId().Value,
+				UserId = 2,//SRDSession.GetCurrentUserId().Value,
 				DateCreated = DateTime.Now,
 				Status = 0, // TODO: доработать платформу, чтоб формировался Enum
 				TemplateFileName = templateFileName,
-				ColumnsMapping = "", // columns -> сериализовать в JSON
+				ColumnsMapping = jsonstring, 
 				MainRegisterId = mainRegisterId,
-				RegisterViewId = registerViewId
+				RegisterViewId = registerViewId,
+				ResultMessage = "123"
 			};
 			export.Save();
 
