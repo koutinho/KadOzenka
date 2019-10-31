@@ -13,7 +13,7 @@
       </Parameters>
     </Button>
 
-      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataUpload/DataUpload" WindowHeight="800" WindowWidth="1000" Icon="icon-contract">
+      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExport/DataExport" WindowHeight="800" WindowWidth="1000" Icon="icon-contract">
           <Parameters>
               <Parameter Key="registerViewId" Value="MarketObjects" />
               <Parameter Key="mainRegisterId" Value="100" />

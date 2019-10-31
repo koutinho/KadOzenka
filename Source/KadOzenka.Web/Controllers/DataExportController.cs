@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
 using Core.UI.Registers.Controllers;
@@ -17,12 +14,10 @@ using KadOzenka.Dal.DataExport;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class DataUploadController : BaseController
+	public class DataExportController : BaseController
 	{
-		private const string RegistersList = "RegistersList";
-
 		[HttpGet]
-		public IActionResult DataUpload(string registerViewId, long? mainRegisterId)
+		public IActionResult DataExport(string registerViewId, long? mainRegisterId)
 		{
 			if (!string.IsNullOrEmpty(registerViewId))
 			{

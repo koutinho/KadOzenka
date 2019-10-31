@@ -1,6 +1,6 @@
 ﻿
-<form>
-	<ul id="upload_panelbar" class="panelbar">
+<form class="exportForm">
+	<ul id="upload_panelbar" class="panelBar">
 		<li id="Section_UploadBuilding" data-expand>
 			<span>Формирование выгрузки</span>
 			<div>
@@ -8,17 +8,6 @@
 					<div class="form-group"></div>
 					<div class="form-group">
 						<input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx" />
-					</div>
-					<div class="form-group"></div>
-					<div class="form-group">
-						<div class="col-sm-3">
-							<div class="row">
-								<input id="backgroundDownloadCheckbox" type="checkbox" />
-								<label for="backgroundDownloadCheckbox">Фоновая Загрузка</label>
-							</div>
-						</div>
-						<div class="col-sm-10">
-						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-5">
@@ -52,8 +41,12 @@
 						</div>
 					</div>
 					<div class="form-group">
-						<div class="col-sm-1">
-							<button id="loadButton" type="button">Загрузить</button>
+						<div>
+							<span>
+								<button id="loadButton" type="button">Загрузить</button>
+								<input id="backgroundDownloadCheckbox" type="checkbox"/>
+								<label for="backgroundDownloadCheckbox">Фоновая Загрузка</label>
+							</span>
 						</div>
 					</div>
 				</div>
@@ -65,7 +58,7 @@
 				<div class="form-horizontal col-sm-12">
 					<div class="form-group"></div>
 					<div class="form-group">
-						<div class="col-sm-12 paramsContainer">
+						<div class="col-sm-12 paramsContainer matchParamsContainer">
 							<div id="listView"></div>
 						</div>
 					</div>
@@ -88,16 +81,20 @@
 		.paramsContainer {
 			overflow: auto;
 			width: 100%;
-			height: 400px;
+			height: 255px;
 			border-color: #ceced2;
 			border-radius: 6px;
 			border-style: solid;
 			border-width: 1px;
 		}
 
+		.matchParamsContainer {
+			height: 204px !important;
+		}
+
 		.filterParamsContainer {
 			width: 100%;
-			height: 400px;
+			height: 255px;
 			border-color: #ceced2;
 			border-radius: 6px;
 			border-style: solid;
@@ -111,7 +108,7 @@
 
 		.filterAttrParamsContainer {
 			width: inherit;
-			height: calc(0.9*400px);
+			height: calc(0.9*240px);
 			overflow: auto;
 		}
 
@@ -132,8 +129,8 @@
 			border: #ceced2;
 		}
 
-		.matchItem dd {
-			font-size: larger;
+		.matchItem > div {
+			white-space: nowrap;
 		}
 
 		.paramsContainer .k-listbox .k-item {
@@ -147,7 +144,7 @@
 		}
 
 		.matchButtonContainer {
-			height: 400px;
+			height: 255px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
@@ -165,6 +162,22 @@
 		.deleteButton {
 			background-color: rgba(1, 0, 0, 0);
 		}
+
+		div.k-treeview {
+			overflow: unset !important;
+		}
+
+		.exportForm {
+			height: 100%;
+		}
+
+		.panelBar {
+			height: 99%;
+		}
+
+		#Section_Matching > .k-content {
+			border-width: 0;
+		}
 	</style>
 }
 
@@ -173,16 +186,15 @@
 
 	<script type="text/x-kendo-tmpl" id="template">
 		<div class="matchItem k-widget">
-			<dl>
-				<dd>
+			<div>
+				<span>
 					<span><input type="checkbox" #=IsKey ? checked='checked' : '' # onclick="checkboxChange(this)" data-bind="checked: IsKey" /></span>
 					<span>#:ColumnName#</span>
 					<span>-</span>
 					<span>#:AttributeDescription#</span>
 					<span><a class="k-button k-delete-button deleteButton" href="\\#"><span class="k-icon k-i-close"></span></a></span>
-				</dd>
-			</dl>
-		</div>
+				</span>
+			</div>
 	</script>
 
 	<script>
@@ -259,7 +271,7 @@
 						formData.append("registerViewId", registerViewId);
 						$.ajax({
 							type: 'POST',
-							url: '@Url.Action("AddExportToQueue", "DataUpload")',
+							url: '@Url.Action("AddExportToQueue", "DataExport")',
 							data: formData,
 							contentType: false,
 							processData: false,
@@ -276,14 +288,14 @@
 					} else {
 						$.ajax({
 							type: 'POST',
-							url: '@Url.Action("ExportDataToExcel", "DataUpload")',
+							url: '@Url.Action("ExportDataToExcel", "DataExport")',
 							data: formData,
 							contentType: false,
 							processData: false,
 							success: function (data) {
 								$("#loadButton").data('kendoButton').enable(true);
 								if (data.success) {
-									window.location = '@Url.Action("DownloadExcelFile", "DataUpload")' +
+									window.location = '@Url.Action("DownloadExcelFile", "DataExport")' +
 										"?fileName=" +
 										data.fileName;
 								} else {
@@ -382,7 +394,7 @@
 				},
 				async: {
 					autoUpload: true,
-					saveUrl: '@Url.Action("ParseFileColumns", "DataUpload")'
+					saveUrl: '@Url.Action("ParseFileColumns", "DataExport")'
 				},
 				validation: {
 					allowedExtensions: ['.xls', '.xlsx']
