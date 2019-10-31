@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="100" DefaultLayoutId="1001001" LinkedRegistersList="100,101,102" AllowSearchPanelResize="false" IsBasic="false"
+<RegisterView RegisterId="100" DefaultLayoutId="1001001" LinkedRegistersList="100,101,102,104" AllowSearchPanelResize="false" IsBasic="false"
               OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true"
               JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
               ShowActualDate="false" SearchPanel="" SearchPanelWindowHeight="654">
@@ -13,14 +13,14 @@
       </Parameters>
     </Button>
 
-      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataUpload/DataUpload" Icon="icon-contract">
+      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataUpload/DataUpload" WindowHeight="800" WindowWidth="1000" Icon="icon-contract">
           <Parameters>
               <Parameter Key="registerViewId" Value="MarketObjects" />
               <Parameter Key="mainRegisterId" Value="100" />
           </Parameters>
       </Button>
 
-      <Button Caption="Выгрузить скриншоты" NavigateURL="~/MarketObjects/UnloadScreenshots" Icon="icon-contract">
+      <Button Caption="Выгрузить скриншоты" NavigateURL="~/MarketObjects/UnloadScreenshots" OpenInNewWindow="true" Icon="icon-contract" >
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
       </Parameters>
