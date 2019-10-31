@@ -13,7 +13,14 @@
       </Parameters>
     </Button>
 
-    <Button Caption="Выгрузить скриншоты" NavigateURL="~/MarketObjects/UnloadScreenshots" Icon="icon-contract">
+      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataUpload/DataUpload" Icon="icon-contract">
+          <Parameters>
+              <Parameter Key="registerViewId" Value="MarketObjects" />
+              <Parameter Key="mainRegisterId" Value="100" />
+          </Parameters>
+      </Button>
+
+      <Button Caption="Выгрузить скриншоты" NavigateURL="~/MarketObjects/UnloadScreenshots" Icon="icon-contract">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
       </Parameters>

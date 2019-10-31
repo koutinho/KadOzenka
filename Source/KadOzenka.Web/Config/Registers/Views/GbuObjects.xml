@@ -11,6 +11,13 @@
       </Parameters>
     </Button>
 
+      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataUpload/DataUpload" Icon="icon-contract">
+          <Parameters>
+              <Parameter Key="registerViewId" Value="GbuObjects" />
+              <Parameter Key="mainRegisterId" Value="200" />
+          </Parameters>
+      </Button>
+
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
   </Buttons>
   
