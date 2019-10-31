@@ -1,8 +1,8 @@
 ﻿
-<form class="exportForm">
+<form id="importForm">
 	<ul id="upload_panelbar" class="panelBar">
 		<li id="Section_UploadBuilding" data-expand>
-			<span>Формирование выгрузки</span>
+			<span>Формирование загрузки</span>
 			<div>
 				<div class="form-horizontal col-sm-12">
 					<div class="form-group"></div>
@@ -42,11 +42,7 @@
 					</div>
 					<div class="form-group">
 						<div>
-							<span>
-								<button id="loadButton" type="button">Загрузить</button>
-								<input id="backgroundDownloadCheckbox" type="checkbox"/>
-								<label for="backgroundDownloadCheckbox">Фоновая Загрузка</label>
-							</span>
+							<button id="loadButton" type="button">Загрузить</button>
 						</div>
 					</div>
 				</div>
@@ -167,7 +163,7 @@
 			overflow: unset !important;
 		}
 
-		.exportForm {
+		#importForm {
 			height: 100%;
 		}
 
@@ -246,6 +242,7 @@
 			$("#loadButton").kendoButton({
 				enable: true,
 				click: function (e) {
+					kendo.ui.progress($('#importForm'), true);
 					$("#loadButton").data('kendoButton').enable(false);
 					var listView = $("#listView").data('kendoListView');
 					var data = listView.dataSource.data();
@@ -267,48 +264,24 @@
 						formData.append("columns[" + i + "].IsKey", columns[i].IsKey);
 					}
 
-					const isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
-					if (isBackgroundDownload) {
-						formData.append("registerViewId", registerViewId);
-						$.ajax({
-							type: 'POST',
-							url: '@Url.Action("AddExportToQueue", "DataExport")',
-							data: formData,
-							contentType: false,
-							processData: false,
-							dataType: 'xml',
-							success: function (data) {
-								$("#loadButton").data('kendoButton').enable(true);
-								Common.ShowMessage('Фоновая загрузка начата.');
-							},
-							error: function (response) {
-								$("#loadButton").data('kendoButton').enable(true);
-								Common.ShowError(response.responseText);
-							}
-						});
-					} else {
-						$.ajax({
-							type: 'POST',
-							url: '@Url.Action("ExportDataToExcel", "DataExport")',
-							data: formData,
-							contentType: false,
-							processData: false,
-							success: function (data) {
-								$("#loadButton").data('kendoButton').enable(true);
-								if (data.success) {
-									window.location = '@Url.Action("DownloadExcelFile", "DataExport")' +
-										"?fileName=" +
-										data.fileName;
-								} else {
-									Common.ShowError("Не удалось загрузить выбранный файл");
-								}
-							},
-							error: function (response) {
-								$("#loadButton").data('kendoButton').enable(true);
-								Common.ShowError(response.responseText);
-							}
-						});
-					}
+					$.ajax({
+						type: 'POST',
+						url: '@Url.Action("ImportDataFromExcel", "DataImport")',
+						data: formData,
+						contentType: false,
+						processData: false,
+						dataType: 'xml',
+						success: function (data) {
+							kendo.ui.progress($('#importForm'), false);
+							$("#loadButton").data('kendoButton').enable(true);
+							Common.ShowMessage('Загрузка завершена.');
+						},
+						error: function (response) {
+							kendo.ui.progress($('#importForm'), false);
+							$("#loadButton").data('kendoButton').enable(true);
+							Common.ShowError(response.responseText);
+						}
+					});
 				}
 			});
 
@@ -395,7 +368,7 @@
 				},
 				async: {
 					autoUpload: true,
-					saveUrl: '@Url.Action("ParseFileColumns", "DataExport")'
+					saveUrl: '@Url.Action("ParseFileColumns", "DataImport")'
 				},
 				validation: {
 					allowedExtensions: ['.xls', '.xlsx']
