@@ -120,13 +120,22 @@ namespace KadOzenka.Dal.DataExport
 			var mainWorkSheet = excelTemplate.Worksheets[0];
 			bool isFinish = false;
 
+			if (mainWorkSheet.Rows.Count <= 1)  //файл пустой или в нем есть только заголовок
+			{
+				throw new Exception("В указанном файле отсутствуют данные");
+			}
+			if (columns.Where(x => x.IsKey).Count() == 0)
+			{
+				throw new Exception("Не указана ни одна ключевая колонка");
+			}
+
 			List<string> columnNames = new List<string>();
 			for (int i = 0; i < columns.Count; i++)
 			{
 				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 			}
 			
-			List<string> keyValues = new List<string>();
+			List<string> keyValues = new List<string>();			
 
 			while (!isFinish)
 			{
