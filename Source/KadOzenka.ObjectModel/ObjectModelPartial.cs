@@ -1205,3 +1205,27 @@ namespace ObjectModel.Common
         }
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 801 Журнал загрузки из шаблонов Excel
+    /// </summary>
+    public partial class OMImportFromTemplates
+    {
+
+        public OMImportFromTemplates()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMImportFromTemplates(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}

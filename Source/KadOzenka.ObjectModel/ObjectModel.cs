@@ -4487,3 +4487,255 @@ namespace ObjectModel.Common
 
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 801 Журнал загрузки из шаблонов Excel (COMMON_IMPORT_FROM_TEMPLATES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 801)]
+    [Serializable]
+    public partial class OMImportFromTemplates : OMBaseClass<OMImportFromTemplates>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 80100100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 80100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 80100200 Идентификатор пользователя (USER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private long _status;
+        /// <summary>
+        /// 80100300 Статус (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100300)]
+        public long Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private DateTime _datecreated;
+        /// <summary>
+        /// 80100400 Дата создания (DATE_CREATED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100400)]
+        public DateTime DateCreated
+        {
+            get
+            {
+                CheckPropertyInited("DateCreated");
+                return _datecreated;
+            }
+            set
+            {
+                _datecreated = value;
+                NotifyPropertyChanged("DateCreated");
+            }
+        }
+
+
+        private DateTime? _datestarted;
+        /// <summary>
+        /// 80100500 Дата запуска (DATE_STARTED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100500)]
+        public DateTime? DateStarted
+        {
+            get
+            {
+                CheckPropertyInited("DateStarted");
+                return _datestarted;
+            }
+            set
+            {
+                _datestarted = value;
+                NotifyPropertyChanged("DateStarted");
+            }
+        }
+
+
+        private DateTime? _datefinished;
+        /// <summary>
+        /// 80100600 Дата завершения (DATE_FINISHED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100600)]
+        public DateTime? DateFinished
+        {
+            get
+            {
+                CheckPropertyInited("DateFinished");
+                return _datefinished;
+            }
+            set
+            {
+                _datefinished = value;
+                NotifyPropertyChanged("DateFinished");
+            }
+        }
+
+
+        private string _templatefilename;
+        /// <summary>
+        /// 80100700 Имя файла шаблона (TEMPLATE_FILE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100700)]
+        public string TemplateFileName
+        {
+            get
+            {
+                CheckPropertyInited("TemplateFileName");
+                return _templatefilename;
+            }
+            set
+            {
+                _templatefilename = value;
+                NotifyPropertyChanged("TemplateFileName");
+            }
+        }
+
+
+        private string _columnsmapping;
+        /// <summary>
+        /// 80100800 Параметры соответствия колонок и показателей (COLUMNS_MAPPING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100800)]
+        public string ColumnsMapping
+        {
+            get
+            {
+                CheckPropertyInited("ColumnsMapping");
+                return _columnsmapping;
+            }
+            set
+            {
+                _columnsmapping = value;
+                NotifyPropertyChanged("ColumnsMapping");
+            }
+        }
+
+
+        private long? _errorid;
+        /// <summary>
+        /// 80100900 ИД Ошибки (ERROR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100900)]
+        public long? ErrorId
+        {
+            get
+            {
+                CheckPropertyInited("ErrorId");
+                return _errorid;
+            }
+            set
+            {
+                _errorid = value;
+                NotifyPropertyChanged("ErrorId");
+            }
+        }
+
+
+        private string _resultmessage;
+        /// <summary>
+        /// 80101000 Результирующее сообщение (RESULT_MESSAGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80101000)]
+        public string ResultMessage
+        {
+            get
+            {
+                CheckPropertyInited("ResultMessage");
+                return _resultmessage;
+            }
+            set
+            {
+                _resultmessage = value;
+                NotifyPropertyChanged("ResultMessage");
+            }
+        }
+
+
+        private long _mainregisterid;
+        /// <summary>
+        /// 80101100 ИД основного реестра (MAIN_REGISTER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80101100)]
+        public long MainRegisterId
+        {
+            get
+            {
+                CheckPropertyInited("MainRegisterId");
+                return _mainregisterid;
+            }
+            set
+            {
+                _mainregisterid = value;
+                NotifyPropertyChanged("MainRegisterId");
+            }
+        }
+
+
+        private string _registerviewid;
+        /// <summary>
+        /// 80101200 ИД представления реестра (REGISTER_VIEW_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80101200)]
+        public string RegisterViewId
+        {
+            get
+            {
+                CheckPropertyInited("RegisterViewId");
+                return _registerviewid;
+            }
+            set
+            {
+                _registerviewid = value;
+                NotifyPropertyChanged("RegisterViewId");
+            }
+        }
+
+    }
+}
