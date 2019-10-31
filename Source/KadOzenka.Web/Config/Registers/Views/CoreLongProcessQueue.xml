@@ -25,7 +25,8 @@
           <ConditionGroups>
             <ConditionGroup HideOrDisable="Disable">
               <Conditions>
-                <Condition Key="[97500900]" Operation="NotEqual" Value="4" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="3" />
+                <Condition Key="[97500900]" Operation="NotEqual" Value="4" AndOr="And" />
                 <Condition Key="[97500900]" Operation="NotEqual" Value="5" AndOr="And" />
                 <Condition Key="[97500900]" Operation="NotEqual" Value="6" AndOr="And" />
               </Conditions>
