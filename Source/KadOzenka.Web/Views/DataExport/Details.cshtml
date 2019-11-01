@@ -1,0 +1,103 @@
+﻿@using ObjectModel.Common;
+
+@model OMExportByTemplates
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Имя пользователя")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("userName", (string)ViewBag.User, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Статус")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("status", (string)ViewBag.StatusDescription, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Дата создания")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("dateCreated", Model.DateCreated, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Дата запуска")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("dateStarted", Model.DateStarted, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Дата завершения")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("dateFinished", Model.DateFinished, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Имя файла шаблона")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("templateFileName", Model.TemplateFileName, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем файла (КБ)")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("txtFileSizeKB", ViewBag.FileSizeKb != null ? (string)(ViewBag.FileSizeKb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Объем файла (МБ)")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("txtFileSizeMB", ViewBag.FileSizeMb != null ? (string)(ViewBag.FileSizeMb) : string.Empty, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("ИД Ошибки")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("errorId", Model.ErrorId, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("ИД основного реестра")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("mainRegisterId", Model.MainRegisterId, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("ИД представления реестра")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextBox("registerViewId", Model.RegisterViewId, new { @class = "k-textbox", @style = "width: 100%;", @readonly = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor("Результирующее сообщение")
+        </div>
+        <div class="col-sm-4">
+            @Html.TextAreaFor(m => m.ResultMessage, 10, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "true" })
+        </div>
+    </div>
+</div>

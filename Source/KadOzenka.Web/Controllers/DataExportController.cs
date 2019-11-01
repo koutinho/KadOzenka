@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 using GemBox.Spreadsheet;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
+using Core.Main.FileStorages;
+using ObjectModel.Common;
+using Core.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -106,6 +109,80 @@ namespace KadOzenka.Web.Controllers
 			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
 
 			return File(fileContent, contentType, fileName);
+		}
+
+		[HttpGet]
+		public ActionResult DownloadExcelTemplate(long objectId, string fileType)
+		{
+			OMExportByTemplates export = OMExportByTemplates
+				.Where(x => x.Id == objectId)
+				.SelectAll()
+				.Execute()
+				.FirstOrDefault();
+
+			if (export == null)
+			{
+				throw new Exception($"В журнале выгрузок не найдена запись с ИД {objectId}");
+			}
+
+			string FileStorageName = "DataExporterByTemplate";
+			string TemplateName = $"{export.Id}_{fileType}";
+			FileStream templateFile = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, TemplateName);
+
+			byte[] bytes = new byte[templateFile.Length];
+			templateFile.Read(bytes);
+
+			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
+
+			return File(bytes, contentType, TemplateName + "." + fileExtensiton);			
+		}
+
+		[HttpGet]
+		public ActionResult RepeatFormation(long objectId)
+		{
+			OMExportByTemplates export = OMExportByTemplates
+				.Where(x => x.Id == objectId)
+				.SelectAll()
+				.Execute()
+				.FirstOrDefault();
+
+			if (export == null)
+			{
+				throw new Exception($"В журнале выгрузок не найдена запись с ИД {objectId}");
+			}
+
+			string FileStorageName = "DataExporterByTemplate";
+			string TemplateName = $"{export.Id}_Template";
+			FileStream fs = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, TemplateName);
+			
+			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
+			DataExporter.AddExportToQueue(export.MainRegisterId, export.RegisterViewId, export.TemplateFileName, fs, columns);
+
+			return Ok();
+		}
+
+		[HttpGet]
+		public IActionResult Details(long objectId)
+		{
+			OMExportByTemplates export = OMExportByTemplates.Where(x => x.Id == objectId).SelectAll().Execute().FirstOrDefault();
+
+			ViewBag.User = SRDCache.Users[(int)export.UserId].FullName;
+			ViewBag.StatusDescription = ((RegistersExportStatus)export.Status).GetEnumDescription();
+
+			string FileStorageName = "DataExporterByTemplate";
+			string fileLocation = FileStorageManager.GetPathForFileFolder(FileStorageName, export.DateCreated);
+
+			fileLocation = Path.Combine(fileLocation, $"{export.Id}_Template");
+	
+			if (!string.IsNullOrEmpty(fileLocation))
+				if (System.IO.File.Exists(fileLocation))
+				{
+					long fileSize = new FileInfo(fileLocation).Length;
+					ViewBag.FileSizeKb = Convert.ToString(fileSize / 1024);
+					ViewBag.FileSizeMb = Convert.ToString(fileSize / (1024 * 1024));
+				}
+
+			return View(export);
 		}
 	}
 }
