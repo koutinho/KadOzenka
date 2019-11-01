@@ -7,6 +7,8 @@ using KadOzenka.Web.Models.MarketObject;
 using System.IO.Compression;
 using System.IO;
 using System;
+using Core.UI.Registers.CoreUI.Registers;
+using System.Collections.Generic;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -66,19 +68,22 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public FileResult UnloadScreenshots(long objectId)
 		{
-			var analogItem = OMCoreObject
-				.Where(x => x.Id == objectId)
-				.Select(x => x.CadastralNumber)
-				.ExecuteFirstOrDefault();
+			List<long?> ids = RegistersVariables.CurrentList?.Cast<long?>()?.ToList();
 
-			if (analogItem == null)
+			var screenList = new List<OMScreenshots>();
+
+			if (ids?.Count == 0)
 			{
-				throw new Exception($"Аналог с id = {objectId} не найден");
-			}
-
-			var screenList = OMScreenshots.Where(x => x.InitialId == objectId)
+				screenList = OMScreenshots.Where(x => x.InitialId == objectId)
 				.SelectAll().Execute()
 				.ToList();
+			}
+			else
+			{
+				screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId))
+				.SelectAll().Execute()
+				.ToList();				
+			}
 
 			using (MemoryStream zipStream = new MemoryStream())
 			{
@@ -87,12 +92,23 @@ namespace KadOzenka.Web.Controllers
 					int n = 1;
 					foreach (OMScreenshots screenshot in screenList)
 					{
+						OMCoreObject analogItem = OMCoreObject
+							.Where(x => x.Id == objectId)
+							.Select(x => x.CadastralNumber)
+							.ExecuteFirstOrDefault();
+
+						if (analogItem == null)
+						{
+							continue;
+						}
+
 						FileStream fileStream = FileStorageManager.GetFileStream("MarketObjectScreenShot", screenshot.CreationDate.Value, screenshot.Id.ToString());
 
+						string folderName = !analogItem.CadastralNumber.IsNullOrEmpty() ? analogItem.CadastralNumber : analogItem.Id.ToString();
 						string entryName = $"Скриншот_{n++}_{screenshot.CreationDate?.ToShortDateString().Replace(".", "")}";
 						string ext = screenshot.Type.Replace("image/", ".");
-						entryName += ext;
-
+						entryName = folderName + "/" + entryName + ext;
+						
 						ZipArchiveEntry zipEntry = zip.CreateEntry(entryName);
 						
 						using (Stream sWriter = zipEntry.Open())
@@ -104,8 +120,9 @@ namespace KadOzenka.Web.Controllers
 						}
 					}
 				}
-	
-				return File(zipStream.ToArray(), "application/zip",	analogItem.CadastralNumber + ".zip");				
+
+				int objCount = (ids?.Count == 0) ? 1 : ids.Count;
+				return File(zipStream.ToArray(), "application/zip",	$"Скриншоты по объектам ({objCount})" + ".zip");				
 			}
 		}
 
