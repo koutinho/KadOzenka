@@ -5,6 +5,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
@@ -57,29 +58,9 @@ namespace KadOzenka.Dal.DataExport
 
 			// Запустить формирование файла
 			var templateFile = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, GetTemplateName(export.Id));
-
-
-			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
-
-			//ExcelFile excelTemplate = null; // TODO: получить из Stream
 			
-
-			List<DataExportColumn> columns = new List<DataExportColumn>();
-			JArray elements = JArray.Parse(export.ColumnsMapping);
-			for (int i = 0; i < elements.Count; i++)
-			{
-				long attributrId = elements[i]["AttributrId"].ParseToLong();
-				string columnName = elements[i]["ColumnName"].ToString();
-				bool isKey = elements[i]["IsKey"].ParseToBoolean();
-
-				DataExportColumn col = new DataExportColumn
-				{
-					AttributrId = attributrId,
-					ColumnName = columnName,
-					IsKey = isKey
-				};
-				columns.Add(col);
-			}
+			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
+			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
 
 			Stream resultFile = ExportDataToExcel((int)export.MainRegisterId, excelTemplate, columns);
 
@@ -117,8 +98,7 @@ namespace KadOzenka.Dal.DataExport
 
 		public static void AddExportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
 		{
-			JArray jArray = (JArray)JToken.FromObject(columns);
-			string jsonstring = jArray.ToString();
+			string jsonstring = JsonConvert.SerializeObject(columns);
 
 			var export = new OMExportByTemplates
 			{
@@ -128,8 +108,7 @@ namespace KadOzenka.Dal.DataExport
 				TemplateFileName = templateFileName,
 				ColumnsMapping = jsonstring, 
 				MainRegisterId = mainRegisterId,
-				RegisterViewId = registerViewId,
-				ResultMessage = "123"
+				RegisterViewId = registerViewId				
 			};
 			export.Save();
 
