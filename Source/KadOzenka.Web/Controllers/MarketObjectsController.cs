@@ -85,6 +85,12 @@ namespace KadOzenka.Web.Controllers
 				.ToList();				
 			}
 
+			List<OMCoreObject> analogItems = OMCoreObject
+				.Where(x => ids.Contains(x.Id))
+				.Select(x => x.CadastralNumber)
+				.Execute()
+				.ToList();
+
 			using (MemoryStream zipStream = new MemoryStream())
 			{
 				using (ZipArchive zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
@@ -92,10 +98,7 @@ namespace KadOzenka.Web.Controllers
 					int n = 1;
 					foreach (OMScreenshots screenshot in screenList)
 					{
-						OMCoreObject analogItem = OMCoreObject
-							.Where(x => x.Id == objectId)
-							.Select(x => x.CadastralNumber)
-							.ExecuteFirstOrDefault();
+						OMCoreObject analogItem = analogItems.Where(x => x.Id == screenshot.InitialId).FirstOrDefault();
 
 						if (analogItem == null)
 						{
