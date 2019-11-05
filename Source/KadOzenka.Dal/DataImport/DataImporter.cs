@@ -65,12 +65,14 @@ namespace KadOzenka.Dal.DataImport
 			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
 			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
 			
-			ImportDataFromExcel((int)export.MainRegisterId, excelTemplate, columns);
+			Stream resultFile = ImportDataFromExcel((int)export.MainRegisterId, excelTemplate, columns);
 
 			// Сохранение файла
 			export.Status = 2;
 			export.DateFinished = DateTime.Now;
 			export.Save();
+
+			FileStorageManager.Save(resultFile, FileStorageName, export.DateFinished.Value, GetResultFileName(export.Id));
 		}
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
@@ -118,7 +120,7 @@ namespace KadOzenka.Dal.DataImport
 			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
 		}
 
-		public static void ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile, List<DataExportColumn> columns)
+		public static Stream ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile, List<DataExportColumn> columns)
 		{
 			if (!columns.Any(x => x.IsKey))
 			{
@@ -134,8 +136,10 @@ namespace KadOzenka.Dal.DataImport
 				MaxDegreeOfParallelism = 10
 			};
 
+			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+
 			List<string> columnNames = new List<string>();
-			for (int i = 0; i < mainWorkSheet.CalculateMaxUsedColumns(); i++)
+			for (int i = 0; i < maxColumns; i++)
 			{
 				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 			}
@@ -192,14 +196,22 @@ namespace KadOzenka.Dal.DataImport
 							}
 
 							RegisterStorage.Save(registerObject);
+
+							mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
 						}
 					}
 				}
 				catch (Exception ex)
 				{
 					ErrorManager.LogError(ex);
+					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue(ex.Message);
 				}
 			});
+
+			MemoryStream stream = new MemoryStream();
+			excelFile.Save(stream, SaveOptions.XlsxDefault);
+
+			return stream;
 		}
 	}
 }

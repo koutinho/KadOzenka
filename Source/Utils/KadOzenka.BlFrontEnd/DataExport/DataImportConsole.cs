@@ -3,6 +3,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace KadOzenka.BlFrontEnd.DataExport
@@ -11,7 +12,7 @@ namespace KadOzenka.BlFrontEnd.DataExport
 	{
 		public static void ImportData()
 		{
-			string filePath = "D:\\Genix\\result1.xlsx";
+			string filePath = "D:\\Genix\\result1_05111.xlsx";
 
 			ExcelFile excelFile = ExcelFile.Load(filePath, new XlsxLoadOptions());
 			List<DataExportColumn> settings = new List<DataExportColumn>()
@@ -42,7 +43,19 @@ namespace KadOzenka.BlFrontEnd.DataExport
 				}
 			};
 
-			DataImporter.ImportDataFromExcel(100, excelFile, settings);
+			//FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+			//DataImporter.AddImportToQueue(100, "1", filePath, fs, settings);
+
+			Stream stream = DataImporter.ImportDataFromExcel(100, excelFile, settings);
+			stream.Seek(0, SeekOrigin.Begin);
+			using (FileStream file = new FileStream("D:\\Genix\\result123.xlsx", FileMode.Create, FileAccess.Write))
+			{
+				byte[] bytes = new byte[stream.Length];
+				stream.Read(bytes);
+				file.Write(bytes);
+
+				stream.Close();
+			}
 		}
 	}
 }
