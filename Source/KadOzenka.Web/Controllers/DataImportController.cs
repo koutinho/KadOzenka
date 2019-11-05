@@ -76,5 +76,18 @@ namespace KadOzenka.Web.Controllers
 
 			return NoContent();
 		}
+
+		[HttpPost]
+		public IActionResult AddImportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
+		{
+			using (var stream = file.OpenReadStream())
+			{
+				DataImporter.AddImportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
+					columns.Select(x => new DataExportColumn
+						{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
+			}
+
+			return NoContent();
+		}
 	}
 }
