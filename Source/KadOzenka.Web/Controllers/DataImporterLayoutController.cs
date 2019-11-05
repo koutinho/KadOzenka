@@ -1,5 +1,9 @@
 ﻿using System.Linq;
+using Core.Register.Enums;
+using Core.Shared.Extensions;
+using Core.SRD;
 using Core.UI.Registers.Controllers;
+using KadOzenka.Web.Models.DataImporterLayout;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Common;
 
@@ -14,8 +18,10 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.Id == importId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
+			var userName = import != null ? SRDCache.Users[(int)import.UserId]?.FullName : string.Empty;
+			var status = import != null ? (RegistersExportStatus)import.Status : (RegistersExportStatus?) null;
 
-			return View(importId);
+			return View(DataImporterLayoutDto.OMMap(import, userName, status));
 		}
 
 		[HttpGet]
