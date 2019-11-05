@@ -154,11 +154,11 @@ namespace KadOzenka.Web.Controllers
 			string FileStorageName = "DataExporterByTemplate";
 			string TemplateName = $"{export.Id}_Template";
 			FileStream fs = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, TemplateName);
-			
+
 			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
 			DataExporter.AddExportToQueue(export.MainRegisterId, export.RegisterViewId, export.TemplateFileName, fs, columns);
 
-			return Ok();
+			return Content($"Выполено повторное формирование файла по шаблону {export.TemplateFileName}");				
 		}
 
 		[HttpGet]
