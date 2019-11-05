@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.DataImport
 			return $"{importDataId}_Template";
 		}
 
-		private static string GetResultFileName(long importDataId)
+		public static string GetResultFileName(long importDataId)
 		{
 			return $"{importDataId}_Result";
 		}

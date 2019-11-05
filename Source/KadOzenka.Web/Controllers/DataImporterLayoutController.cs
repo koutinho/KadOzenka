@@ -31,7 +31,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public FileContentResult Download(long importId)
+		public FileContentResult Download(long importId, bool downloadResult)
 		{
 			var import = OMImportFromTemplates
 				.Where(x => x.Id == importId)
@@ -43,14 +43,16 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception($"В журнале загрузок не найдена запись с ИД {importId}");
 			}
 
-			var templateFileName = DataImporter.GetTemplateName(importId);
+			var fileName = downloadResult
+				? DataImporter.GetResultFileName(importId)
+				: DataImporter.GetTemplateName(importId);
 			var templateFile = FileStorageManager.GetFileStream(DataImporter.FileStorageName, import.DateCreated,
-				templateFileName);
+				fileName);
 			var bytes = new byte[templateFile.Length];
 			templateFile.Read(bytes);
 			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
 
-			return File(bytes, contentType, templateFileName + "." + fileExtension);
+			return File(bytes, contentType, fileName.Replace(importId.ToString(), Path.GetFileNameWithoutExtension(import.TemplateFileName)) + "." + fileExtension);
 		}
 
 		[HttpGet]

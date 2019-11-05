@@ -4,12 +4,19 @@
               ShowActualDate="false" UseMasterPage="true" SearchPanel="CoreRegisterLayoutExportAll"
               DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT" ShowObjectCards="true">
   <Buttons>
-      <Button Caption="Скачать исходные данные" NavigateURL="~/DataImporterLayout/Download">
+      <Button Caption="Скачать исходные данные" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true">
           <Parameters>
               <Parameter Key="importId" Value="[ObjectID]" />
+              <Parameter Key="downloadResult" Value="false" />
           </Parameters>
       </Button>
-      <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart">
+      <Button Caption="Скачать результат" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true">
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+              <Parameter Key="downloadResult" Value="true" />
+          </Parameters>
+      </Button>
+      <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart" OpenInNewWindow="false" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
           <Parameters>
               <Parameter Key="importId" Value="[ObjectID]" />
           </Parameters>
