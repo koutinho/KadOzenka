@@ -102,7 +102,7 @@ namespace KadOzenka.Dal.DataExport
 
 			var export = new OMExportByTemplates
 			{
-				UserId = 2,//SRDSession.GetCurrentUserId().Value,
+				UserId = SRDSession.GetCurrentUserId().Value,
 				DateCreated = DateTime.Now,
 				Status = 0, // TODO: доработать платформу, чтоб формировался Enum
 				TemplateFileName = templateFileName,

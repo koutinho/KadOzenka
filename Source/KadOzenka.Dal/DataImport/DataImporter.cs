@@ -14,6 +14,9 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using Core.Main.FileStorages;
 using ObjectModel.Common;
+using Newtonsoft.Json;
+using System.IO;
+using Core.SRD;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -58,8 +61,9 @@ namespace KadOzenka.Dal.DataImport
 			// Запустить формирование файла
 			var templateFile = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, GetTemplateName(export.Id));
 
-			ExcelFile excelTemplate = null; // TODO: получить из Stream
-			List<DataExportColumn> columns = null; // TODO: получить из JSON export.ColumnsMapping;
+			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
+			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
+			
 			ImportDataFromExcel((int)export.MainRegisterId, excelTemplate, columns);
 
 			// Сохранение файла
@@ -90,6 +94,27 @@ namespace KadOzenka.Dal.DataImport
 		public bool Test()
 		{
 			return true;
+		}
+
+		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
+		{
+			string jsonstring = JsonConvert.SerializeObject(columns);
+
+			var export = new OMImportFromTemplates
+			{
+				UserId = SRDSession.GetCurrentUserId().Value,
+				DateCreated = DateTime.Now,
+				Status = 0, // TODO: доработать платформу, чтоб формировался Enum
+				TemplateFileName = templateFileName,
+				ColumnsMapping = jsonstring,
+				MainRegisterId = mainRegisterId,
+				RegisterViewId = registerViewId
+			};
+			export.Save();
+
+			FileStorageManager.Save(templateFile, FileStorageName, export.DateCreated, GetTemplateName(export.Id));
+
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
 		}
 
 		public static void ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile, List<DataExportColumn> columns)
