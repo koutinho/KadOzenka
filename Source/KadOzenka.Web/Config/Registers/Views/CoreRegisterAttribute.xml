@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="931" DefaultLayoutId="1000931" IsBasic="false" LinkedRegistersList="931,982" SRDFunctionTag="ADMIN.REGISTERS" 
+<RegisterView RegisterId="931" DefaultLayoutId="1000931" IsBasic="false" LinkedRegistersList="930,931,982" SRDFunctionTag="ADMIN.REGISTERS" 
               SearchPanel="CoreRegisterAttribute" ShowActualDate="false" ShowObjectCards="false">
   <Buttons>
     <Button Caption="Операции" OpenInRadWindow="false" Type="DropDown">
