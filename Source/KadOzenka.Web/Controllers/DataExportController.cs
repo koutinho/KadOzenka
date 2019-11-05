@@ -70,6 +70,11 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public IActionResult AddExportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
 		{
+			if (columns.All(x => x.IsKey == false))
+			{
+				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
+			}
+
 			using (var stream = file.OpenReadStream())
 			{
 				DataExporter.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
@@ -83,6 +88,11 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult ExportDataToExcel(int mainRegisterId, IFormFile file, List<DataColumnDto> columns)
 		{
+			if (columns.All(x => x.IsKey == false))
+			{
+				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
+			}
+
 			ExcelFile excelFile;
 			using (var stream = file.OpenReadStream())
 			{
