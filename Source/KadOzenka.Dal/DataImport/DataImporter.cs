@@ -120,6 +120,11 @@ namespace KadOzenka.Dal.DataImport
 
 		public static void ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile, List<DataExportColumn> columns)
 		{
+			if (!columns.Any(x => x.IsKey))
+			{
+				throw new Exception("Не указана ни одна ключевая колонка");
+			}
+
 			var mainWorkSheet = excelFile.Worksheets[0];
 
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -130,7 +135,7 @@ namespace KadOzenka.Dal.DataImport
 			};
 
 			List<string> columnNames = new List<string>();
-			for (int i = 0; i < columns.Count; i++)
+			for (int i = 0; i < mainWorkSheet.CalculateMaxUsedColumns(); i++)
 			{
 				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 			}

@@ -129,7 +129,7 @@ namespace KadOzenka.Dal.DataExport
 			{
 				throw new Exception("В указанном файле отсутствуют данные");
 			}
-			if (columns.Where(x => x.IsKey).Count() == 0)
+			if (!columns.Any(x => x.IsKey))
 			{
 				throw new Exception("Не указана ни одна ключевая колонка");
 			}
