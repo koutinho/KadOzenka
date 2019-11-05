@@ -144,7 +144,7 @@ namespace KadOzenka.Web.Controllers
 
 			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
 
-			return File(bytes, contentType, $"{export.TemplateFileName}_{fileType}.{fileExtensiton}");			
+			return File(bytes, contentType, $"{Path.GetFileNameWithoutExtension(export.TemplateFileName)}_{fileType}.{fileExtensiton}");			
 		}
 
 		[HttpGet]

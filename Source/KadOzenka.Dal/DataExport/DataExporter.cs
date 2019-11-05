@@ -234,8 +234,8 @@ namespace KadOzenka.Dal.DataExport
 			//return excelTemplate;
 
 			MemoryStream stream = new MemoryStream();
-
 			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
 
 			return stream;
 		}

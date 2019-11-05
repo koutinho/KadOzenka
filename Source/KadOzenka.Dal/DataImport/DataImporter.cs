@@ -71,7 +71,7 @@ namespace KadOzenka.Dal.DataImport
 			export.Status = 2;
 			export.DateFinished = DateTime.Now;
 			export.Save();
-
+			
 			FileStorageManager.Save(resultFile, FileStorageName, export.DateFinished.Value, GetResultFileName(export.Id));
 		}
 
@@ -210,6 +210,7 @@ namespace KadOzenka.Dal.DataImport
 
 			MemoryStream stream = new MemoryStream();
 			excelFile.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
 
 			return stream;
 		}
