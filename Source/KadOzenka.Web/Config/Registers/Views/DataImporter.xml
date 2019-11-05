@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView IsBasic="true" RegisterId="801" DefaultLayoutId="1008011" Description="Журнал загрузки из шаблонов Excel" 
-              LinkedRegistersList="801"
+              LinkedRegistersList="801,950"
               ShowActualDate="false" UseMasterPage="true" SearchPanel="CoreRegisterLayoutExportAll"
               DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT" ShowObjectCards="true">
   <Buttons>
@@ -24,7 +24,6 @@
     <Tab Caption="Фоновые процессы" NavigateURL="~/RegistersView/CoreLongProcessQueueCard?Transition=1">
       <Parameters>
           <Parameter Key="97500500" Value="[ObjectID]" />
-          <Parameter Key="97500400" Value="[RegisterID]" />
       </Parameters>
     </Tab>
   </Tabs>

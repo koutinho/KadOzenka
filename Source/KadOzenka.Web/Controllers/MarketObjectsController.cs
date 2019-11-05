@@ -68,22 +68,13 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public FileResult UnloadScreenshots(long objectId)
 		{
-			List<long?> ids = RegistersVariables.CurrentList?.Cast<long?>()?.ToList();
+			List<long?> ids = RegistersVariables.CurrentList != null && RegistersVariables.CurrentList.Count > 0 ? 
+				RegistersVariables.CurrentList?.Cast<long?>()?.ToList() : 
+				new List<long?> { objectId };
 
-			var screenList = new List<OMScreenshots>();
-
-			if (ids?.Count == 0)
-			{
-				screenList = OMScreenshots.Where(x => x.InitialId == objectId)
+			var screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId))
 				.SelectAll().Execute()
 				.ToList();
-			}
-			else
-			{
-				screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId))
-				.SelectAll().Execute()
-				.ToList();				
-			}
 
 			List<OMCoreObject> analogItems = OMCoreObject
 				.Where(x => ids.Contains(x.Id))

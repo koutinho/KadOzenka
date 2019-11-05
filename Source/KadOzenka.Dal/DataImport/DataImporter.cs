@@ -17,6 +17,7 @@ using ObjectModel.Common;
 using Newtonsoft.Json;
 using System.IO;
 using Core.SRD;
+using Core.ErrorManagment;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -183,14 +184,15 @@ namespace KadOzenka.Dal.DataImport
 								object value = mainWorkSheet.Rows[row.Index].Cells[cell].Value;
 
 								registerObject.SetAttributeValue((int)column.AttributrId, value);
-								RegisterStorage.Save(registerObject);
 							}
+
+							RegisterStorage.Save(registerObject);
 						}
 					}
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
-					
+					ErrorManager.LogError(ex);
 				}
 			});
 		}
