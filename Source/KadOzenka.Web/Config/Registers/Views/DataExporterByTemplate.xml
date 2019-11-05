@@ -22,7 +22,7 @@
         </ConditionGroup>
       </ConditionGroups>
     </Button>
-    <Button Caption="Повторить формирование" NavigateURL="/DataExport/RepeatFormation" OpenInNewWindow="true" SRDFunctionTag="CORE.REGISTER.EXPORT">
+    <Button Caption="Повторить формирование" NavigateURL="/DataExport/RepeatFormation" OpenInNewWindow="false" NeedRefresh="true" WindowHeight="200" WindowWidth="400" SRDFunctionTag="CORE.REGISTER.EXPORT">
       <Parameters>
         <Parameter Key="objectId" Value="[ObjectID]" />
       </Parameters>
