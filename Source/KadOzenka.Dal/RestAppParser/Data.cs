@@ -20,8 +20,8 @@ namespace KadOzenka.Dal.RestAppParser
 
         public void Detect()
         {
-            string[] regionIDs = ConfigurationManager.AppSettings["restAppRegionIDs"].Split(',');
-            string[] dealTypes = ConfigurationManager.AppSettings["restAppDealType"].Split(',');
+            string[] regionIDs = ConfigurationManager.AppSettings["restAppRegionIDsCIAN"].Split(',');
+            string[] dealTypes = ConfigurationManager.AppSettings["restAppDealTypeCIAN"].Split(',');
             int delta = int.Parse(ConfigurationManager.AppSettings["restAppMinuteLimits"]);
             List<string> links = new List<string>();
             int RACOR = 0, RAERR = 0, SCUR = 0, SCOR = 0, SERR = 0, SDUB = 0;
@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.RestAppParser
                         {
                             //links.Add(new RestApp().FormLink(region, deal, currentTime, LastUpdateDate));
                             List<OMCoreObject> coreObjs = 
-                                new JSONParser.RestApp().ParseCoreObject(new RestApp().GetDataByMultipleValues(region, deal, currentTime, LastUpdateDate), ref RACOR, ref RAERR);
+                                new JSONParser.RestApp().ParseCoreObject(new RestApp().GetCIANDataByMultipleValues(region, deal, currentTime, LastUpdateDate), ref RACOR, ref RAERR);
                             AllObjects.AddRange(coreObjs);
                             Logger.ConsoleLog.WriteData("Получение данных из сторонних источников", restData, AllObjects.Count, RACOR, RAERR);
                         }

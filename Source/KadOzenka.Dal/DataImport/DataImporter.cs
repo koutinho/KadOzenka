@@ -188,7 +188,7 @@ namespace KadOzenka.Dal.DataImport
 						}
 					}
 				}
-				catch (Exception ex)
+				catch (Exception)
 				{
 					
 				}

@@ -13,6 +13,7 @@ using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
 using KadOzenka.Dal.RestAppParser;
 using KadOzenka.Dal.Selenium.ScreenShots;
 using KadOzenka.Dal.Selenium.PriceChecker;
+using KadOzenka.BlFrontEnd.DataExport;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -45,6 +46,7 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
             consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
             consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().TakePrice(); });
+            consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
         }
 
 	}
