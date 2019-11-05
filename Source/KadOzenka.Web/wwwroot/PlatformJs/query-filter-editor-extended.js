@@ -43,12 +43,15 @@
         self.booleanTemplate = config.booleanTemplate ? config.booleanTemplate : "boolean-template";
         self.idNumerator = config.idNumerator ? config.idNumerator : 0;
         self.nameNumerator = config.nameNumerator ? config.nameNumerator : 1;
+        self.level = config.level ? config.level : 0;
         var columnNameTemplate = "Колонка_";
         // возможные варианты редактора
-        // "filter" - фильтр
-        // "column" - колонка - подзапрос 
-        // "query"  - полный запрос - редактор без ограничений
-        self.editorType = config.editorType ? config.editorType : "filter";
+        // "Filter" - фильтр
+        // "Layout" - фильтр раскладки
+        // "Column" - колонка - подзапрос 
+        // "VirtualColumn" - виртуальная колонка 
+        // "Query"  - полный запрос - редактор без ограничений
+        self.editorType = config.editorType ? config.editorType : "Filter";
 
         self.elements = {};
 
@@ -100,6 +103,18 @@
                     }
                 });
             },
+            initQueryLevelDdl: function (el) {
+                var $dataSource = [];
+
+                $dataSource.push({ id: 0, text: "Текущий уровень" });
+                for (var i = 1; i <= self.level; i++) {
+                    $dataSource.push({ id: i, text: "Уровень " + i });
+                }
+
+                methods.initDropDownList(el, {
+                    dataSource: $dataSource
+                });
+            },
             initSourceEnterTypeDdl: function (el) {
                 methods.initDropDownList(el);
             },
@@ -122,9 +137,6 @@
                         }
                     }
                 });
-            },
-            initQueryLevelDdl: function (el) {
-                methods.initDropDownList(el);
             },
             initJoinTypeDdl: function (el) {
                 methods.initDropDownList(el, {
@@ -160,41 +172,24 @@
                 if ($el.length) {
                     var $dialogColumn = $el.closest('.ex-dialog-column');
                     var container = $dialogColumn.find(".ex-modal-content");
-                    var data = $dialogColumn.data('column');
 
                     var $item = $el.kendoToolBar({
                         items: [
                             { type: "button", id: "btnSaveColumn", text: "Сохранить", click: saveColumn },
-                            { type: "button", id: "btnDeleteColumn", text: "Удалить"/*, click: saveColumn*/ },
                             {
                                 type: "buttonGroup", buttons: [
-                                    { text: "Константа", id: "QSColumnConstant", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnConstant", data) }, selected: true },
-                                    { text: "Показатель", id: "QSColumnSimple", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnSimple", data) } },
-                                    { text: "Функция", id: "QSColumnFunction", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnFunction", data) } },
-                                    { text: "Подзапрос", id: "QSColumnQuery", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnQuery", data) } },
-                                    { text: "Условие (IF)", id: "QSColumnIf", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnIf", data) } },
-                                    { text: "Условие (SWITCH)", id: "QSColumnSwitch", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnSwitch", data) } }
+                                    { text: "Константа", id: "QSColumnConstant", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnConstant", $dialogColumn.data('column')) }, selected: true },
+                                    { text: "Показатель", id: "QSColumnSimple", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnSimple", $dialogColumn.data('column')) } },
+                                    { text: "Функция", id: "QSColumnFunction", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnFunction", $dialogColumn.data('column')) } },
+                                    { text: "Подзапрос", id: "QSColumnQuery", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnQuery", $dialogColumn.data('column')) } },
+                                    { text: "Условие (IF)", id: "QSColumnIf", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnIf", $dialogColumn.data('column')) } },
+                                    { text: "Условие (SWITCH)", id: "QSColumnSwitch", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnSwitch", $dialogColumn.data('column')) } }
                                 ]
                             }
                         ]
                     }).data("kendoToolBar");
 
-                    $el.find(".k-button-group").before(" Тип колонки: ");
-                    if (self.editorType != "column")
-                        $el.find("#btnDeleteColumn").remove();
-
-                    if (data && data.ColumnType) {
-                        var toolbar = $dialogColumn.find('.ex-toolbar-column-type').data("kendoToolBar");
-                        if (toolbar)
-                            toolbar.toggle($dialogColumn.find("#" + data.ColumnType), true);
-                    }
-
-                    if (data && !data.New)
-                        ShowContent(container, data.ColumnType, data);
-                    else {
-                        $dialogColumn.data("new", true);
-                        RenderTemplate(self.ModalColumnConstantTemplate, container, data);
-                    }
+                    $el.find(".k-button-group").before(" Тип колонки: ");                    
                     
                     self.elements[el] = $item.wrapper;
                     $(el).data("type-element", "toolBar");
@@ -389,7 +384,7 @@
                         icon: "delete",
                         enable: false,
                         click: function (e) {
-                            var $el = e.item.element.closest(".k-content").find(".k-listview");
+                            var $el = e.item.element.closest(".ex-content").find(".k-listview");
                             deleteListViewItem($el, 'Вы действительно хотите удалить параметр функции?');
                         }
                     }]
@@ -441,11 +436,11 @@
                     selectable: true,
                     columns: [
                         { field: "AttributeId", hidden: true },
-                        { field: "Alias", title: "Наименование", template: '<a class="ex-edit-column" href="\\#">#: Alias ? Alias : "" #</a>' },
-                        { field: "TitleValue", title: "Значение", template: '#: TitleValue ? TitleValue : "" #' },
-                        { field: "OrderType", title: "Сортировка", template: '#: OrderType ? OrderType : "" #' },
+                        { field: "Alias", title: "Наименование", width: '15%', template: '<a class="ex-edit-column" href="\\#">#: Alias ? Alias : "" #</a>' },
+                        { field: "TitleValue", title: "Значение", template: '#: TitleValue ? TitleValue : "" #', attributes: { style: 'text-align: left' } },
+                        /*{ field: "OrderType", title: "Сортировка", template: '#: OrderType ? OrderType : "" #' },
                         { field: "Group", title: "Группировка", template: '#: Group ? Group : "" #' },
-                        { field: "Function", title: "Функция", template: '#: Function ? Function : "" #' },
+                        { field: "Function", title: "Функция", template: '#: Function ? Function : "" #' },*/
                         { command: [{ name: 'destroy', text: '' }], width: "45px", attributes: { class: 'close-command-cell', style: 'text-align: center' } }
                     ],
                     change: function (e) {
@@ -526,9 +521,9 @@
                 var $item = $(el).kendoListView({
                     selectable: true,
                     autoBind: false,
-                    template: "<li><span style='padding-left: 10px;'>#:Title#</span></li>",
+                    template: "<li><span style='padding-left: 10px;'>#:TitleValue#</span></li>",
                     dataBound: function (e) {
-                        var toolbar = e.sender.element.closest(".k-content").find(".ex-toolbar").data("kendoToolBar");
+                        var toolbar = e.sender.element.closest(".ex-content").find(".ex-toolbar").data("kendoToolBar");
                         if (toolbar) {
                             toolbar.enable("#editFuncParameter", false);
                             toolbar.enable("#deleteFuncParameter", false);
@@ -536,7 +531,7 @@
                     },
                     change: function (e) {
                         var selectedItem = e.sender.select();
-                        var toolbar = e.sender.element.closest(".k-content").find(".ex-toolbar").data("kendoToolBar");
+                        var toolbar = e.sender.element.closest(".ex-content").find(".ex-toolbar").data("kendoToolBar");
 
                         if (toolbar) {
                             toolbar.enable("#editFuncParameter", selectedItem);
@@ -730,8 +725,8 @@
                                 if (treeView) {
                                     var dataItem = treeView.dataItem(node);
                                     if (dataItem) {
-                                        dataItem.operator = btnVal;
-                                        dataItem.operatorText = node.text();
+                                        dataItem.Operator = btnVal;
+                                        dataItem.OperatorText = node.text();
                                     }
                                 }
                                 break;
@@ -812,6 +807,30 @@
                         }
                     }
                 }
+            },
+            saveUserColumn: function (el, data) {
+                if (!self.saveUrl) {
+                    Common.ShowError("Не заполнен параметр saveUrl");
+                    return;
+                }
+
+                $.ajax({
+                    url: self.saveUrl,
+                    type: "POST",
+                    data: $.extend(config.saveParams, { column: JSON.stringify(data) }),
+                    success: function (response) {
+                        if (response) {
+                            if (response.Errors)
+                                Common.ShowError(response.Errors.Message);
+                            else {
+                                Common.ShowMessage("Пользовательская  колонка сохранена");
+                            }
+                        }
+                    },
+                    error: function (request) {
+                        log("ошибка сохранения пользовательской колонки, url: " + self.saveUrl + " " + request.status + " " + request.statusText, true);
+                    }
+                });
             },
             saveFiltrColumn: function (el, data) {
                 if (el) {
@@ -1029,7 +1048,7 @@
                     data.ExternalAttributeType = secondColumnData.AttributeType;
                     data.EnterType = "REFERENCE";
                 } else {
-                    data.Type = secondColumnData.Type;
+                    data.ConstantType = secondColumnData.ConstantType;
                 }
             }
 
@@ -1070,16 +1089,34 @@
             return self.idNumerator;
         }
 
+        // очистить фильтр
+        function emptyStruct() {
+            self.$element.find("input.ex-ddl-main-register").data("kendoDropDownList").select(0);
+            self.$element.find("input.ex-ddl-join-type").data("kendoDropDownList").select(0);
+            self.$element.find("input.ex-package-size").val(0);
+            self.$element.find("input.ex-package-index").val(0);
+            self.$element.find("input.ex-cb-distinct").prop("checked", false);
+            self.$element.find('.ex-columns-grid').data('kendoGrid').dataSource.data([]);  
+            self.$element.find('.ex-tw-condition').data('kendoTreeView').dataSource.data([]);
+
+            var joinsTreeView = self.$element.find('.ex-tw-joins').data('kendoTreeView');
+            joinsTreeView.dataSource.data([]);
+            addJoin(joinsTreeView);
+
+            self.$element.find('.ex-lw-order-by').data('kendoListView').dataSource.data([]);
+            self.$element.find('.ex-lw-groupby').data('kendoListView').dataSource.data([]);
+        }
+
         // получить структуру запроса
         self.getStruct = function () {
             var struct = {
                 MainRegisterID: getKendoDropDownListValue(".ex-ddl-main-register", self.$element, "input"),
                 JoinType: getKendoDropDownListValue(".ex-ddl-join-type", self.$element, "input"),
-                PackageSize: self.$element.find('input.ex-package-size').val(),
-                PackageIndex: self.$element.find('input.ex-package-index').val(),
-                Distinct: self.$element.find('input.ex-cb-distinct').prop('checked'),
+                PackageSize: self.$element.find("input.ex-package-size").val(),
+                PackageIndex: self.$element.find("input.ex-package-index").val(),
+                Distinct: self.$element.find("input.ex-cb-distinct").prop("checked"),
                 Columns: getColumnsList(),
-                Joins: getJoinStruct(),
+                Joins: self.editorType == "Column" || "VirtualColumn" ? [] : getJoinStruct(),
                 Filter: getFilterStruct(),
                 Sort: getSortStruct(),
                 Group: getGroupStruct()
@@ -1191,7 +1228,7 @@
             }
 
             var $functionExternal = $item.find(".ex-function-external").length ? $item.find(".ex-function-external").prop("checked") : undefined;
-            //var $queryLevel = getKendoDropDownListValue(".ex-ddl-сonstant-query-level", $item);
+            var $queryLevel = getKendoDropDownListValue(".ex-ddl-query-level", $item, "input");
 
             var $subQuery = $item.find(".ex-add-query").data("item");
 
@@ -1234,7 +1271,7 @@
                     SubQuery: $subQuery ? $subQuery : undefined,
                     ConditionIf: $conditionIf ? $conditionIf : undefined,
                     ConditionSwitch: $conditionSwitch ? $conditionSwitch : undefined,
-                    //QueryLevel: $queryLevel ? $queryLevel : undefined,
+                    QueryLevel: $queryLevel ? $queryLevel : undefined,
                     OrderType: undefined,
                     Group: undefined,
                     New: $new
@@ -1263,7 +1300,7 @@
                 switch (data.ColumnType) {
                     case "QSColumnConstant":
                         if (data.EnterType == "MANUAL") {
-                            if (data.Type == "BOOLEAN")
+                            if (data.ConstantType == "BOOLEAN")
                                 text = "{0} ({1})".format(data.Alias, data.Value && data.Value == "True" ? "Да" : 'Нет');
                             else
                                 text = "{0} ({1})".format(data.Alias, data.Value ? data.Value : '');
@@ -1296,7 +1333,7 @@
                 switch (data.ColumnType) {
                     case "QSColumnConstant":
                         if (data.EnterType == "MANUAL") {
-                            if (data.Type == "BOOLEAN")
+                            if (data.ConstantType == "BOOLEAN")
                                 titleValue = data.Value == "True" ? "Да" : 'Нет';
                             else
                                 titleValue = data.Value ? data.Value : '';
@@ -1360,7 +1397,7 @@
 
         function saveListViewItem(el, funcName) {
             if (el.length) {
-                var listView = el.closest(".k-content").find(".k-listview").data("kendoListView");
+                var listView = el.closest(".ex-content").find(".k-listview").data("kendoListView");
 
                 if (listView) {
                     var selected = listView.select();
@@ -1380,6 +1417,7 @@
             }
         }
 
+        //Получить значение выделенного элемента Kendo DropDownList
         function getKendoDropDownListValue(el, container, input, type) {
             if (container && typeof container == "string")
                 container = $(container);
@@ -1432,6 +1470,7 @@
                 visible: false,
                 resizable: false,
                 close: function (e) {
+                    kendo.destroy(this.element);
                     this.destroy();
                 }
             }).data('kendoWindow');
@@ -1441,6 +1480,7 @@
             }
 
             RenderTemplate(self.ModalColumnTemplate, $dialogColumn, data);
+            InitColumnToolbarValues($dialogColumn, data);
 
             $dialogColumn.data("target", $(el));
             $dialogColumn.data("save-column", func);
@@ -1494,7 +1534,9 @@
                     filter: filterData,
                     window: true,
                     idNumerator: self.idNumerator,
-                    nameNumerator: self.nameNumerator
+                    nameNumerator: self.nameNumerator,
+                    level: self.level,
+                    editorType: "Query"
                 }).data("filterQueryBuilderExtended");
 
             var dialog = $dialogTemplate.kendoWindow({
@@ -1632,87 +1674,104 @@
         }
 
         function addJoin(treeView) {
-            if (treeView)
-                treeView.append(
+            addNode(treeView, CreateEmptyJoinElement());
+        }
+
+        function CreateEmptyJoinElement() {
+            return {
+                id: self.getNextId(), text: "Дополнительная настройка обединения", Type: "join", expanded: true, items: [
                     {
-                        id: self.getNextId(), text: "Дополнительная настройка обединения", Type: "join", expanded: true, items: [
+                        id: self.getNextId(), Type: "group", Operator: "And", OperatorText: "И", expanded: true, items: [
                             {
-                                id: self.getNextId(), Type: "group", Operator: "And", OperatorText: "И", expanded: true, items: [
-                                    {
-                                        id: self.getNextId(),
-                                        Type: "condition",
-                                        Condition: "Equal",
-                                        ConditionText: "Равно",                                        
-                                        LeftOperand: { TitleValue: '<Выберите...>', New: true },
-                                        RightOperand: { TitleValue: '<Выберите...>', New: true },
-                                        selected: false
-                                    }
-                                ]
+                                id: self.getNextId(),
+                                Type: "condition",
+                                Condition: "Equal",
+                                ConditionText: "Равно",
+                                LeftOperand: { TitleValue: '<Выберите...>', New: true },
+                                RightOperand: { TitleValue: '<Выберите...>', New: true },
+                                selected: false
                             }
                         ]
                     }
-                );
+                ]
+            };
         }
 
         function addCondition(treeView) {
-            if (treeView)
-                treeView.append(
-                    {
-                        id: self.getNextId(),
-                        Type: "condition", 
-                        Condition: "Equal", 
-                        ConditionText: "Равно", 
-                        LeftOperand: { TitleValue: '<Выберите...>', New: true }, 
-                        RightOperand: { TitleValue: '<Выберите...>', New: true }, 
-                        selected: false
-                    },
-                    getSelectedNode(treeView)
-                );
+            var dataItem = {
+                id: self.getNextId(),
+                Type: "condition",
+                Condition: "Equal",
+                ConditionText: "Равно",
+                LeftOperand: { TitleValue: '<Выберите...>', New: true },
+                RightOperand: { TitleValue: '<Выберите...>', New: true },
+                selected: false
+            };
+
+            addNode(treeView, dataItem, true);
         }
 
         function addConditionIf(treeView) {
-            if (treeView)
-                treeView.append(
-                    {
-                        id: self.getNextId(),
-                        Type: "columnIf",
-                        Condition: "Equal",
-                        ConditionText: "Равно",
-                        LeftOperand: { TitleValue: '<Выберите...>', New: true },
-                        RightOperand: { TitleValue: '<Выберите...>', New: true },
-                        ValueOperand: { TitleValue: '<Выберите...>', New: true },
-                        selected: false
-                    }
-                );
+
+            var dataItem = {
+                id: self.getNextId(),
+                Type: "columnIf",
+                Condition: "Equal",
+                ConditionText: "Равно",
+                LeftOperand: { TitleValue: '<Выберите...>', New: true },
+                RightOperand: { TitleValue: '<Выберите...>', New: true },
+                ValueOperand: { TitleValue: '<Выберите...>', New: true },
+                selected: false
+            };
+
+            addNode(treeView, dataItem);
         }
 
         function addConditionSwitch(treeView) {
-            if (treeView)
-                treeView.append(
-                    {
-                        id: self.getNextId(),
-                        Type: "columnSwitch",
-                        LeftOperand: { TitleValue: '<Выберите...>', New: true },
-                        RightOperand: { TitleValue: '<Выберите...>', New: true },
-                        selected: false
-                    },
-                    getSelectedNode(treeView)
-                );
+            var dataItem = {
+                id: self.getNextId(),
+                Type: "columnSwitch",
+                LeftOperand: { TitleValue: '<Выберите...>', New: true },
+                RightOperand: { TitleValue: '<Выберите...>', New: true },
+                selected: false
+            };
+
+            addNode(treeView, dataItem, true);
         }
 
         function addGroup(treeView) {
-            if (treeView)
-                treeView.append(
-                    {
-                        id: self.getNextId(), 
-                        Operator: "And", 
-                        OperatorText: "И", 
-                        Type: "group", 
-                        selected: false, 
-                        items: [] 
-                    },
-                    getSelectedNode(treeView)
-                );
+            addNode(treeView, CreateEmptyGroupElement(), true);
+        }
+
+        function CreateEmptyGroupElement(root) {
+            root = (typeof root !== 'undefined') ? root : false;
+
+            var group = {
+                id: self.getNextId(),
+                Operator: "And",
+                OperatorText: "И",
+                Type: "group",
+                selected: false,
+                items: []
+            };
+
+            if (root) {
+                group.root = true;
+                group.expanded = true;
+            }
+
+            return group;
+        }
+
+        function addNode(treeView, data, toSelectedNode) {
+            toSelectedNode = (typeof toSelectedNode !== 'undefined') ? toSelectedNode : false;
+
+            if (treeView) {
+                if (toSelectedNode)
+                    treeView.append(data, getSelectedNode(treeView));
+                else
+                    treeView.append(data);
+            }
         }
 
         function ShowContent(container, typeContent, data) {
@@ -1729,6 +1788,23 @@
                     break;
                 case "QSColumnSwitch": RenderTemplate(self.ModalColumnConditionCaseTemplate, container, data);
                     break;
+            }
+        }
+        
+        function InitColumnToolbarValues($dialogColumn, data) {
+            var container = $dialogColumn.find(".ex-modal-content");
+
+            if (data && data.ColumnType) {
+                var toolbar = $dialogColumn.find('.ex-toolbar-column-type').data("kendoToolBar");
+                if (toolbar)
+                    toolbar.toggle($dialogColumn.find("#" + data.ColumnType), true);
+            }
+
+            if (data && !$.isEmptyObject(data) && !data.New)
+                ShowContent(container, data.ColumnType, data);
+            else {
+                $dialogColumn.data("new", true);
+                RenderTemplate(self.ModalColumnConstantTemplate, container, data);
             }
         }
 
@@ -1825,8 +1901,10 @@
                             }
 
                             if (kendoElement) {
-                                if (dataSource) {
-                                    kendoElement.setDataSource(dataSource);
+                                if (dataSource && dataSource.length > 0) {
+                                    var $dataSource = jQuery.extend(true, [], dataSource);
+
+                                    kendoElement.setDataSource($dataSource);
                                     if ($type == "listView")
                                         kendoElement.dataSource.read();
                                 }
@@ -1960,149 +2038,158 @@
             }
         }
 
-        function InitControls() {
-            if (self.registerViewId) {
-                return $.ajax({
-                    url: self.attributesUrl,
-                    type: 'GET',
-                    dataType: 'html',
-                    data: { registerViewId: self.registerViewId },
-                    success: function (data) {
-                        if (data) {
-                            self.attributes = getAttributesDataSource(jQuery.parseJSON(data));
-
-
-                            if (self.editorType == 'column')
-                                RenderTemplate(self.ColumnEditorTemplate, self.$element, self.filter);
-                            else
-                                RenderTemplate(self.MainTemplate, self.$element, self.filter);
-
-                            /*if (!self.filter)
-                                addGroup(self.$element, {}, true);
-                            else
-                                fillStruct();*/
-
-                            if (self.window) {
-                                self.$element.find(".filter-container").prepend("<div class='ex-subquery-toolbar'><div>");
-                                self.$element.find(".ex-subquery-toolbar").kendoToolBar({
-                                    items: [
-                                        {
-                                            type: "button",
-                                            text: "Ок",
-                                            icon: "check",
-                                            click: function () {
-                                                var dialog = this.element.closest('.k-window-content').data('kendoWindow');
-
-                                                if (dialog) {
-                                                    var $target = dialog.element.data("target");
-                                                    var $saveMethod = dialog.element.data("save-query");
-                                                    methods[$saveMethod]($target, self.getStruct());
-                                                    dialog.close();
-                                                }
-                                            }
-                                        }
-                                    ]
-                                });
-                            }
-                            else if (self.editorType != 'column')
-                            {
-                                self.$element.find(".filter-container").prepend("<div class='ex-query-toolbar'><div>");
-                                self.$element.find(".ex-query-toolbar").kendoToolBar({
-                                    items: [
-                                        {
-                                            id: "btnSaveFiltr",
-                                            type: "button",
-                                            text: "Сохранить",
-                                            icon: "save",
-                                            click: function () {
-                                                if (!self.saveUrl) {
-                                                    Common.ShowError("Не заполнен параметр saveUrl");
-                                                    return;
-                                                }
-
-                                                var struct = self.getStruct();
-
-                                                $.ajax({
-                                                    url: self.saveUrl,
-                                                    type: 'POST',
-                                                    data: $.extend(config.saveParams, { filter: JSON.stringify(struct) }),
-                                                    success: function (response) {
-                                                        if (response) {
-                                                            if (response.Errors)
-                                                                Common.ShowError(response.Errors.Message);
-                                                            else
-                                                                Common.ShowMessage('Фильтр сохранен');
-                                                        }
-                                                    },
-                                                    error: function (request) {
-                                                        log('ошибка сохранения фильтра, url: ' + self.saveUrl + ' ' + request.status + ' ' + request.statusText, true);
-                                                    }
-                                                });
-                                            }
-                                        },
-                                        {
-                                            id: "btnDeleteFiltr",
-                                            type: "button",
-                                            text: "Удалить",
-                                            icon: "delete",
-                                            click: function () {
-                                                if (!self.deleteUrl) {
-                                                    Common.ShowError('Не заполнен параметр deleteUrl');
-                                                    return;
-                                                }
-
-                                                Common.UI.ShowConfirm({
-                                                    title: 'Подтверждение',
-                                                    content: 'Вы действительно хотите удалить фильтр?',
-                                                    onSuccess: function (e) {
-                                                        $.ajax({
-                                                            url: self.deleteUrl,
-                                                            type: 'POST',
-                                                            data: self.deleteParams,
-                                                            success: function (response) {
-                                                                if (response) {
-                                                                    if (response.Errors)
-                                                                        Common.ShowError(response.Errors.Message);
-                                                                    else {
-                                                                        emptyStruct();
-                                                                        Common.ShowMessage('Фильтр удален');
-                                                                    }
-                                                                }
-
-                                                                var window = $('[class=dialog-body]').closest('[data-role=window]').data('kendoWindow');
-                                                                window.close();
-                                                                window.destroy();
-                                                            },
-                                                            error: function (request) {
-                                                                log('ошибка удаления фильтра, url: ' + self.deleteUrl + ' ' + request.status + ' ' + request.statusText, true);
-                                                            }
-                                                        });
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    ]
-                                });
-                                //initQueryInput();
-                            }
-
-                            /*
-                            if (self.editorType == 'filter')
-                                hideTabs(self.$element.find('.ex-ts-options'), [0, 1, 3, 4, 5]);
-                            //else if (self.editorType == 'column')
-                            //    hideTabs(self.$element.find('.ex-ts-options'), [0, 1, 3, 4, 5]);
-                            */
-
-                            if (self.readOnly)
-                                self.$element.prepend('<div style="position: absolute;height: 97%;width: 100%;z-index: 9999"></div>');
-                        }
-                    },
-                    error: function (request) {
-                        log('ошибка загрузки данных, url: ' + self.attributesUrl + ' ' + request.status + ' ' + request.statusText, true);
-                    }
-                });
+        function log(msg, warn) {
+            if (window.console) {
+                var message = '$.fn.filterQueryBuilderExtended -> ' + msg;
+                if (warn) {
+                    console.warn(message);
+                } else {
+                    console.log(message);
+                }
             }
+        }
+
+        function InitControls() {
+            return $.ajax({
+                url: self.attributesUrl,
+                type: "GET",
+                dataType: "html",
+                data: { registerViewId: self.registerViewId },
+                success: function (data) {
+                    if (data) {
+                        self.attributes = getAttributesDataSource(jQuery.parseJSON(data));
+                        self.level++;
+
+                        if (self.editorType == "Column" || self.editorType == "VirtualColumn") {
+                            RenderTemplate(self.ColumnEditorTemplate, self.$element, self.filter);
+                            var $dialogColumn = self.$element.find('.ex-dialog-column');
+                            $dialogColumn.data("save-column", "saveUserColumn");
+                            $dialogColumn.data("target", self.$element);
+                            InitColumnToolbarValues($dialogColumn, self.filter);
+                        }
+                        else
+                            RenderTemplate(self.MainTemplate, self.$element, self.filter);
+
+                        if (self.window) {
+                            self.$element.find(".filter-container").prepend("<div class='ex-subquery-toolbar'><div>");
+                            self.$element.find(".ex-subquery-toolbar").kendoToolBar({
+                                items: [
+                                    {
+                                        type: "button",
+                                        text: "Ок",
+                                        icon: "check",
+                                        click: function () {
+                                            var dialog = this.element.closest('.k-window-content').data('kendoWindow');
+
+                                            if (dialog) {
+                                                var $target = dialog.element.data("target");
+                                                var $saveMethod = dialog.element.data("save-query");
+                                                methods[$saveMethod]($target, self.getStruct());
+                                                dialog.close();
+                                            }
+                                        }
+                                    }
+                                ]
+                            });
+                        }
+                        else if (self.editorType != "Column" && self.editorType != "VirtualColumn") {
+                            self.$element.find(".filter-container").prepend("<div class='ex-query-toolbar'><div>");
+                            self.$element.find(".ex-query-toolbar").kendoToolBar({
+                                items: [
+                                    {
+                                        id: "btnSaveFiltr",
+                                        type: "button",
+                                        text: "Сохранить",
+                                        icon: "save",
+                                        click: function () {
+                                            saveFilter();
+                                        }
+                                    },
+                                    {
+                                        id: "btnDeleteFiltr",
+                                        type: "button",
+                                        text: "Удалить",
+                                        icon: "delete",
+                                        click: function () {
+                                            deleteFilter();
+                                        }
+                                    }
+                                ]
+                            });
+                        }
+
+                        if (self.editorType == "Filter")
+                            hideTabs(self.$element.find(".ex-ts-options"), [0, 1, 3, 4, 5]);
+                        else if (self.editorType == "Layout")
+                            hideTabs(self.$element.find(".ex-ts-options"), [0, 1, 4, 5]);
+
+                        if (self.readOnly)
+                            self.$element.prepend('<div style="position: absolute;height: 97%;width: 100%;z-index: 9999"></div>');
+                    }
+                },
+                error: function (request) {
+                    log('ошибка загрузки данных, url: ' + self.attributesUrl + ' ' + request.status + ' ' + request.statusText, true);
+                }
+            });
         };
+
+        function saveFilter() {
+            if (!self.saveUrl) {
+                Common.ShowError("Не заполнен параметр saveUrl");
+                return;
+            }
+
+            var struct = self.getStruct();
+
+            $.ajax({
+                url: self.saveUrl,
+                type: "POST",
+                data: $.extend(config.saveParams, { filter: JSON.stringify(struct) }),
+                success: function (response) {
+                    if (response) {
+                        if (response.Errors)
+                            Common.ShowError(response.Errors.Message);
+                        else
+                            Common.ShowMessage("Фильтр сохранен");
+                    }
+                },
+                error: function (request) {
+                    log("ошибка сохранения фильтра, url: " + self.saveUrl + " " + request.status + " " + request.statusText, true);
+                }
+            });
+        }
+
+        function deleteFilter() {
+            if (!self.deleteUrl) {
+                Common.ShowError("Не заполнен параметр deleteUrl");
+                return;
+            }
+
+            Common.UI.ShowConfirm({
+                title: 'Подтверждение',
+                content: 'Вы действительно хотите удалить фильтр?',
+                onSuccess: function (e) {
+                    $.ajax({
+                        url: self.deleteUrl,
+                        type: 'POST',
+                        data: self.deleteParams,
+                        success: function (response) {
+                            if (response) {
+                                if (response.Errors)
+                                    Common.ShowError(response.Errors.Message);
+                                else {
+                                    emptyStruct();
+                                    Common.ShowMessage('Фильтр удален');
+                                }
+                            }
+                        },
+                        error: function (request) {
+                            log('ошибка удаления фильтра, url: ' + self.deleteUrl + ' ' + request.status + ' ' + request.statusText, true);
+                        }
+                    });
+                }
+            });
+        }
 
         function getAttributesDataSource(data) {
             var source = [];

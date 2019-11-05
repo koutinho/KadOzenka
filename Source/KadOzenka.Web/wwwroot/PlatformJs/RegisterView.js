@@ -1248,7 +1248,7 @@ var RegisterView = RegisterView || {
             var isTransition = $(sidePanelSelector + ' [name=IsTransition]').length > 0 ?
                 $(sidePanelSelector + ' [name=IsTransition]').is(':checked') : isModelTransition;
 
-            var transitionQueryString = $(gridSelector).closest('.mainContent').find('[name=TransitionQueryString]').val() || $(gridSelector).closest('.k-content').find('[name=TransitionQueryString]').val();
+            var transitionQueryString = $(gridSelector).closest('.k-content').find('[name=TransitionQueryString]').val() || $(gridSelector).closest('.mainContent').find('[name=TransitionQueryString]').val();
             var requestUrl = $(gridSelector).closest('.mainContent').find('[name=RequestUrl]').val() || $(gridSelector).closest('.k-content').find('[name=RequestUrl]').val();
 
             if (isTransition) {
@@ -1397,6 +1397,12 @@ var RegisterView = RegisterView || {
 
         grid.GetDataFunc = function () {
             var parameters = GetData();
+            if (this.dataSource.sort()) {
+                parameters.Sort = '';
+                $.each(this.dataSource.sort(), function (index, value) {
+                    parameters.Sort += (index !== 0 ? '~' : '') + value.field + '-' + value.dir;
+                });
+            }
             return parameters;
         }
     },
@@ -1952,140 +1958,155 @@ var RegisterView = RegisterView || {
             filterWindowContentClass = "filter-window-content",
             filterWindowFooter = "filter-window-footer";
 
-        var initWindow = function () {
-            var $dialogTemplate = $('<div class="' + filterWindowContentClass + '"><div class="k-window-actions"><span class="filter-window-title">Фильтры</span><a href="#" class="k-button k-bare k-button-icon k-button-close" style="float: right;"><span class="k-icon k-i-close" style="color: rgba(96, 101, 116, 0.5);"></span></a></div><div class="filter-window-grid-container"><div id="menu-filters_grid-' + registerViewSettings.CurrentRegisterId + '"></div></div><div class="' + filterWindowFooter + '"></div></div>');
-            var $dialog = $dialogTemplate.kendoWindow({
-                title: false,
-                draggable: false,
-                visible: false,
-                resizable: false,
-                width:  '430px',
-                height: '370px'
-            }).data('kendoWindow');
+        $.ajax({
+            url: registerViewSettings.RegistersGetFiltersSettingUrl,
+            type: 'GET',
+            data: {
+                UniqueSessionKey: registerViewSettings.UniqueSessionKey
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data && data.length > 0) {
+                    var initWindow = function () {
+                        var $dialogTemplate = $('<div class="' + filterWindowContentClass + '"><div class="k-window-actions"><span class="filter-window-title">Фильтры</span><a href="#" class="k-button k-bare k-button-icon k-button-close" style="float: right;"><span class="k-icon k-i-close" style="color: rgba(96, 101, 116, 0.5);"></span></a></div><div class="filter-window-grid-container"><div id="menu-filters_grid-' + registerViewSettings.CurrentRegisterId + '"></div></div><div class="' + filterWindowFooter + '"></div></div>');
+                        var $dialog = $dialogTemplate.kendoWindow({
+                            title: false,
+                            draggable: false,
+                            visible: false,
+                            resizable: false,
+                            width: '430px',
+                            height: '370px'
+                        }).data('kendoWindow');
 
-            $('.' + filterWindowFooter).append('<button type="button" class="k-button k-primary k-grid-find pull-right" style="width: 132px;">Найти</button><button type="button" class="k-button k-grid-reset pull-right" style="width: 105px;">Сбросить</button>')
+                        $('.' + filterWindowFooter).append('<button type="button" class="k-button k-primary k-grid-find pull-right" style="width: 132px;">Найти</button><button type="button" class="k-button k-grid-reset pull-right" style="width: 105px;">Сбросить</button>')
 
-            return $dialog;
-        };
+                        return $dialog;
+                    };
 
 
-        var initFilters = function () {
-            var dataSource = new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: registerViewSettings.RegistersGetFiltersSettingUrl,
-                        dataType: "json",
-                        data: {
-                            UniqueSessionKey: registerViewSettings.UniqueSessionKey
-                        },
-                        schema: {
-                            model: {
-                                id: "Id",
-                                fields: {
-                                    Name: { type: "string" }
+                    var initFilters = function () {
+                        var dataSource = new kendo.data.DataSource({
+                            transport: {
+                                read: {
+                                    url: registerViewSettings.RegistersGetFiltersSettingUrl,
+                                    dataType: "json",
+                                    data: {
+                                        UniqueSessionKey: registerViewSettings.UniqueSessionKey
+                                    },
+                                    schema: {
+                                        model: {
+                                            id: "Id",
+                                            fields: {
+                                                Name: { type: "string" }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        $(menuFiltersGridSelector).kendoGrid({
+                            columns: [
+                                { selectable: true, width: "40px" },
+                                {
+                                    field: "Name",
+                                    title: "Наименование"
+                                }
+                            ],
+                            dataBound: onFilterDataBound,
+                            dataSource: dataSource
+                        });
+
+                        //обработка кнопки "Найти"
+                        $('.' + filterWindowFooter + ' .k-button.k-grid-find').on('click', function (e) {
+                            e.preventDefault();
+                            var registerGrid = $('.register-grid').data('kendoGrid');
+                            if (registerGrid) {
+                                if (registerGrid.gridClearSelection != undefined)
+                                    registerGrid.gridClearSelection();
+                                searchAplied = true;
+                                registerGrid.dataSource.read();
+                            }
+                        });
+
+                        //обработка кнопки "Сбросить"
+                        $('.' + filterWindowFooter + ' .k-button.k-grid-reset').on('click', function (e) {
+                            e.preventDefault();
+                            clearSelectedFilterItem();
+
+                            if (!window.location.origin) {
+                                // For IE
+                                window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+                            }
+                            history.pushState(null, null, window.location.origin + window.location.pathname);
+
+                            var registerGrid = $('.register-grid').data('kendoGrid');
+                            if (registerGrid) {
+                                if (registerGrid.gridClearSelection != undefined)
+                                    registerGrid.gridClearSelection();
+                                searchAplied = true;
+                                registerGrid.dataSource.read();
+                            }
+                        });
+                    };
+
+                    function onFilterDataBound(arg) {
+                        if ($_GET["QueryId"]) {
+                            selectFilterItem(parseInt($_GET["QueryId"]));
+                        }
+                    }
+
+                    function selectFilterItem(queryId) {
+                        var filterGrid = $(menuFiltersGridSelector).data('kendoGrid');
+                        if (filterGrid) {
+                            var rows = filterGrid.dataSource.view();
+
+                            if (rows.length > 0) {
+                                for (var i = 0; i < rows.length; i++) {
+                                    if (rows[i].Id == queryId) {
+                                        filterGrid.tbody.find("tr[data-uid='" + rows[i].uid + "']").find(".k-checkbox").attr("checked", true);
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
 
-            $(menuFiltersGridSelector).kendoGrid({
-                columns: [
-                    { selectable: true, width: "40px" },
-                    {
-                        field: "Name",
-                        title: "Наименование"
-                    }
-                ],
-                dataBound: onFilterDataBound,
-                dataSource: dataSource
-            });
-
-            //обработка кнопки "Найти"
-            $('.' + filterWindowFooter + ' .k-button.k-grid-find').on('click', function (e) {
-                e.preventDefault();
-                var registerGrid = $('.register-grid').data('kendoGrid');
-                if (registerGrid) {
-                    if (registerGrid.gridClearSelection != undefined)
-                        registerGrid.gridClearSelection();
-                    searchAplied = true;
-                    registerGrid.dataSource.read();
-                }
-            });
-
-            //обработка кнопки "Сбросить"
-            $('.' + filterWindowFooter + ' .k-button.k-grid-reset').on('click', function (e) {
-                e.preventDefault();
-                clearSelectedFilterItem();
-
-                if (!window.location.origin) {
-                    // For IE
-                    window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
-                }
-                history.pushState(null, null, window.location.origin + window.location.pathname);
-
-                var registerGrid = $('.register-grid').data('kendoGrid');
-                if (registerGrid) {
-                    if (registerGrid.gridClearSelection != undefined)
-                        registerGrid.gridClearSelection();
-                    searchAplied = true;
-                    registerGrid.dataSource.read();
-                }
-            });
-        };
-
-        function onFilterDataBound(arg) {
-            if ($_GET["QueryId"]) {
-                selectFilterItem(parseInt($_GET["QueryId"]));
-            }
-        }
-
-        function selectFilterItem(queryId) {
-            var filterGrid = $(menuFiltersGridSelector).data('kendoGrid');
-            if (filterGrid) {
-                var rows = filterGrid.dataSource.view();
-
-                if (rows.length > 0) {
-                    for (var i = 0; i < rows.length; i++) {
-                        if (rows[i].Id == queryId) {
-                            filterGrid.tbody.find("tr[data-uid='" + rows[i].uid + "']").find(".k-checkbox").attr("checked", true);
+                    // отчистка выбранных элементов в таблице фильтров
+                    function clearSelectedFilterItem() {
+                        var view = $(menuFiltersGridSelector).data('kendoGrid').dataSource.view();
+                        for (var i = 0; i < view.length; i++) {
+                            if ($(menuFiltersGridSelector).data('kendoGrid').tbody.find("tr[data-uid='" + view[i].uid + "']").find(".k-checkbox").is(":checked")) {
+                                $(menuFiltersGridSelector).data('kendoGrid').tbody.find("tr[data-uid='" + view[i].uid + "']").find(".k-checkbox").attr("checked", false);
+                            }
                         }
+                        $(menuFiltersGridSelector).data('kendoGrid').clearSelection();
+                        delete $_GET.QueryId;
                     }
+
+                    var dialog = initWindow();
+                    initFilters();
+                    selectFilterItem(61);
+
+                    $(filterButtonSelector).on('click', function () {
+                        dialog.center().open();
+                    });
+
+                    $('.' + filterWindowContentClass + ' .k-button-close').on('click', function () {
+                        dialog.close();
+                    });
+
+                    $(filterWindowSelector + ' [name=IsTransition]').on('change', function (e) {
+                        e.preventDefault();
+                        var registerGrid = $(gridSelector).data('kendoGrid');
+                        if (registerGrid) {
+                            registerGrid.dataSource.read();
+                        }
+                    });
+                } else {
+                    $(filterButtonSelector).addClass("k-state-disabled");
                 }
             }
-        }
-
-        // отчистка выбранных элементов в таблице фильтров
-        function clearSelectedFilterItem() {
-            var view = $(menuFiltersGridSelector).data('kendoGrid').dataSource.view();
-            for (var i = 0; i < view.length; i++) {
-                if ($(menuFiltersGridSelector).data('kendoGrid').tbody.find("tr[data-uid='" + view[i].uid + "']").find(".k-checkbox").is(":checked")) {
-                    $(menuFiltersGridSelector).data('kendoGrid').tbody.find("tr[data-uid='" + view[i].uid + "']").find(".k-checkbox").attr("checked", false);
-                }
-            }
-            $(menuFiltersGridSelector).data('kendoGrid').clearSelection();
-            delete $_GET.QueryId;
-        }
-
-        var dialog = initWindow();
-        initFilters();
-        selectFilterItem(61);
-
-        $(filterButtonSelector).on('click', function () {
-            dialog.center().open();
         });
 
-        $('.' + filterWindowContentClass + ' .k-button-close').on('click', function () {
-            dialog.close();
-        });
-
-        $(filterWindowSelector + ' [name=IsTransition]').on('change', function (e) {
-            e.preventDefault();
-            var registerGrid = $(gridSelector).data('kendoGrid');
-            if (registerGrid) {
-                registerGrid.dataSource.read();
-            }
-        });
     }
 };

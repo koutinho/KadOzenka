@@ -21,8 +21,8 @@ namespace KadOzenka.BlFrontEnd.GetSeleniumScreens
         readonly List<OMCoreObject> AllObjects =
             OMCoreObject.Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr &&
                                     x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep &&
-                                    x.ScreenShotExists == false)
-                        .Select(x => new { x.Url, x.Price, x.ScreenShotExists })
+                                    x.LastDateUpdate == null)
+                        .Select(x => new { x.Url, x.Price, x.LastDateUpdate })
                         .Execute()
                         .ToList();
 
@@ -52,7 +52,7 @@ namespace KadOzenka.BlFrontEnd.GetSeleniumScreens
                     bool priceIsEquals = obj.Price.Equals(price);
                     if (priceIsEquals) 
                     {
-                        obj.ScreenShotExists = true;
+                        //obj.ScreenShotExists = true;
                         obj.Save();
                         screenshot.Save();
                         FileStorageManager.Save(

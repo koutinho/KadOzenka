@@ -10,7 +10,8 @@ using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.GetSeleniumScreens;
 using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
 using KadOzenka.Dal.RestAppParser;
-using KadOzenka.BlFrontEnd.DataExport;
+using KadOzenka.Dal.Selenium.ScreenShots;
+using KadOzenka.Dal.Selenium.PriceChecker;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -40,10 +41,10 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("7", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
             consoleHelper.AddCommand("8", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
             consoleHelper.AddCommand("9", "Процедура создания тестовых скриншотов", () => { new Selenium().MakeScreenshot(); });
-
-			consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
-			consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
-		}
+            consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
+            consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
+            consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().TakePrice(); });
+        }
 
 	}
 }

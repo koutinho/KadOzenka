@@ -1469,22 +1469,22 @@ namespace ObjectModel.Market
         }
 
 
-        private bool? _screenshotexists;
+        private DateTime? _lastdateupdate;
         /// <summary>
-        /// 10007600 Наличие скриншота (SCREENSHOT_EXISTS)
+        /// 10007600 Дата последнего обновления цены (LAST_DATE_UPDATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007600)]
-        public bool? ScreenShotExists
+        public DateTime? LastDateUpdate
         {
             get
             {
-                CheckPropertyInited("ScreenShotExists");
-                return _screenshotexists;
+                CheckPropertyInited("LastDateUpdate");
+                return _lastdateupdate;
             }
             set
             {
-                _screenshotexists = value;
-                NotifyPropertyChanged("ScreenShotExists");
+                _lastdateupdate = value;
+                NotifyPropertyChanged("LastDateUpdate");
             }
         }
 

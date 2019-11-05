@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.WebRequest
 
         public string GetDataByMultipleValues(string regionId, string dealId, DateTime date1, DateTime date2) => 
             new StreamReader(
-                System.Net.WebRequest.Create(string.Format( restAppLink, login, token, dealId.ToString(), regionId.ToString(), date1.ToString(restAppTimeTemplate), date2.ToString(restAppTimeTemplate)))
+                System.Net.WebRequest.Create(string.Format(restAppLink, login, token, dealId.ToString(), regionId.ToString(), date1.ToString(restAppTimeTemplate), date2.ToString(restAppTimeTemplate)))
                 .GetResponse()
                 .GetResponseStream(),Encoding.UTF8)
                 .ReadToEnd();

@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
 
         readonly List<OMCoreObject> AllObjects =
             OMCoreObject
-                .Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && (
+                .Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && x.Price > 1  && (
                             x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep ||
                             x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess ||
                             x.ExclusionStatus_Code == ObjectModel.Directory.ExclusionStatus.Duplicate))
@@ -33,6 +33,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
                 try
                 {
                     x.First().ProcessType_Code = ObjectModel.Directory.ProcessStep.InProcess;
+                    x.First().ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.None;
                     x.Skip(1).ToList().ForEach(y => 
                     {
                         y.ProcessType_Code = ObjectModel.Directory.ProcessStep.Excluded;

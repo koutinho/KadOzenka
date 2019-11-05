@@ -17,10 +17,23 @@
     <PackageReference Include="Platform" Version="1.0.122" />
     <PackageReference Include="Platform.Reports" Version="1.0.15" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
+    <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
+    
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ImageProccessor\ImageProccessor.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\html2canvas.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\screenshotScript.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
