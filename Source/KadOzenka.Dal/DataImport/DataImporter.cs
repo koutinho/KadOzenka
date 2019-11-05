@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.DataImport
 
 		public const string FileStorageName = "DataImporterFromTemplate";
 
-		private static string GetTemplateName(long importDataId)
+		public static string GetTemplateName(long importDataId)
 		{
 			return $"{importDataId}_Template";
 		}
