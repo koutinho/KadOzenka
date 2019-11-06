@@ -1,4 +1,5 @@
-﻿
+﻿@using Newtonsoft.Json;
+
 @model KadOzenka.Web.Models.DataImporterLayout.DataImporterLayoutDto
 
 <form>
@@ -95,6 +96,14 @@
 		</div>
 		<div class="form-group">
 			<div class="col-sm-2">
+				<label class="control-label">Параметры соответствия колонок и показателей</label>
+			</div>
+			<div class="col-sm-4">
+				<div id="listView"></div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
 				<label class="control-label">Результирующее сообщение</label>
 			</div>
 			<div class="col-sm-4">
@@ -103,3 +112,51 @@
 		</div>
 	</div>
 </form>
+
+@section styles {
+	<style>
+		#listView {
+			max-height: 200px;
+			overflow: auto;
+			padding: 0.4em;
+			border-color: #ceced2;
+			border-radius: 6px;
+			border-style: solid;
+			border-width: 1px;
+		}
+		.matchItem {
+			margin-top: 0.4em;
+			border: #ceced2;
+		}
+
+		.matchItem > div {
+			white-space: nowrap;
+		}
+	</style>
+}
+
+@section scripts {
+	<script type="text/x-kendo-tmpl" id="template">
+		<div class="matchItem k-widget">
+			<div>
+				<span>
+					<span><input type="checkbox" #=IsKey ? checked='checked' : '' # onclick="return false;"/></span>
+					<span>#:ColumnName#</span>
+					<span>-</span>
+					<span>#:AttributeName#</span>
+				</span>
+			</div>
+	</script>
+	<script>
+		var dataSource = new kendo.data.DataSource({
+			data: @(@Html.Raw(JsonConvert.SerializeObject(Model.ColumnsMappingDtoList)))
+		});
+
+		$(document).ready(function () {
+			$("#listView").kendoListView({
+				dataSource: dataSource,
+				template: kendo.template($("#template").html())
+			});
+		});
+	</script>
+}

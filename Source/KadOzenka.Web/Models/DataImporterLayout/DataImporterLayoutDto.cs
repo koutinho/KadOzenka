@@ -2,16 +2,25 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Core.Main.FileStorages;
+using Core.Register;
 using Core.Register.Enums;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using Newtonsoft.Json;
 using ObjectModel.Common;
 
 namespace KadOzenka.Web.Models.DataImporterLayout
 {
 	public class DataImporterLayoutDto
 	{
+		public class ColumnsMappingDto
+		{
+			public string ColumnName { get; set; }
+			public string AttributeName { get; set; }
+			public bool IsKey { get; set; }
+		}
+
 		public long? Id { get; set; }
 		public string UserName { get; set; }
 		public RegistersExportStatus? Status { get; set; }
@@ -25,6 +34,7 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 		public string ResultMessage { get; set; }
 		public string FileSizeKb { get; set; }
 		public string FileSizeMb { get; set; }
+		public List<ColumnsMappingDto> ColumnsMappingDtoList { get; set; }
 
 
 		public static DataImporterLayoutDto OMMap(OMImportFromTemplates entity, string userName, RegistersExportStatus? status)
@@ -44,6 +54,14 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 				fileSize = new FileInfo(fileLocation).Length;
 			}
 
+			var dbColumns = JsonConvert.DeserializeObject<List<DataExportColumn>>(entity.ColumnsMapping);
+			var columnsMappingDtoList = dbColumns.Select(x => new ColumnsMappingDto
+			{
+				ColumnName = x.ColumnName,
+				AttributeName = RegisterCache.GetAttributeData((int)x.AttributrId).Name,
+				IsKey = x.IsKey
+			}).ToList();
+
 			return new DataImporterLayoutDto
 			{
 				Id = entity.Id,
@@ -58,7 +76,8 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 				RegisterViewId = entity.RegisterViewId,
 				ResultMessage = entity.ResultMessage,
 				FileSizeKb = fileSize.HasValue ? Convert.ToString(fileSize / 1024) : string.Empty,
-				FileSizeMb = fileSize.HasValue ? Convert.ToString(fileSize / (1024 * 1024)) : string.Empty
+				FileSizeMb = fileSize.HasValue ? Convert.ToString(fileSize / (1024 * 1024)) : string.Empty,
+				ColumnsMappingDtoList = columnsMappingDtoList
 			};
 		}
 	}
