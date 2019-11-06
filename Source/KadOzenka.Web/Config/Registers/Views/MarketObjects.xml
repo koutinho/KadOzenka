@@ -13,21 +13,21 @@
       </Parameters>
     </Button>
 
-      <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" Icon="icon-contract">
+      <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
           <Parameters>
               <Parameter Key="registerViewId" Value="MarketObjects" />
               <Parameter Key="mainRegisterId" Value="100" />
           </Parameters>
       </Button>
 
-      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExport/DataExport" WindowHeight="800" WindowWidth="1000" Icon="icon-contract">
+      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExport/DataExport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-up">
           <Parameters>
               <Parameter Key="registerViewId" Value="MarketObjects" />
               <Parameter Key="mainRegisterId" Value="100" />
           </Parameters>
       </Button>
 
-      <Button Caption="Выгрузить скриншоты" NavigateURL="~/MarketObjects/UnloadScreenshots" OpenInNewWindow="true" Icon="icon-contract" >
+      <Button Caption="Выгрузить скриншоты" NavigateURL="~/MarketObjects/UnloadScreenshots" OpenInNewWindow="true" Icon="fas fa-images" >
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
       </Parameters>
