@@ -12,8 +12,10 @@ using GemBox.Spreadsheet;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using Core.Main.FileStorages;
+using Core.Register;
 using ObjectModel.Common;
 using Core.SRD;
+using KadOzenka.Web.Models.DataImporterLayout;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -198,6 +200,15 @@ namespace KadOzenka.Web.Controllers
 					ViewBag.FileSizeKb = Convert.ToString(fileSize / 1024);
 					ViewBag.FileSizeMb = Convert.ToString(fileSize / (1024 * 1024));
 				}
+
+			var dbColumns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
+			var columnsMappingDtoList = dbColumns.Select(x => new ColumnsMappingDto
+			{
+				ColumnName = x.ColumnName,
+				AttributeName = RegisterCache.GetAttributeData((int)x.AttributrId).Name,
+				IsKey = x.IsKey
+			}).ToList();
+			ViewBag.ColumnsMappingDtoListJson = JsonConvert.SerializeObject(columnsMappingDtoList);
 
 			return View(export);
 		}

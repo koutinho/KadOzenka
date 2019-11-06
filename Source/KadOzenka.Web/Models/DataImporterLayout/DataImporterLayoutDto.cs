@@ -14,13 +14,6 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 {
 	public class DataImporterLayoutDto
 	{
-		public class ColumnsMappingDto
-		{
-			public string ColumnName { get; set; }
-			public string AttributeName { get; set; }
-			public bool IsKey { get; set; }
-		}
-
 		public long? Id { get; set; }
 		public string UserName { get; set; }
 		public RegistersExportStatus? Status { get; set; }
@@ -34,7 +27,7 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 		public string ResultMessage { get; set; }
 		public string FileSizeKb { get; set; }
 		public string FileSizeMb { get; set; }
-		public List<ColumnsMappingDto> ColumnsMappingDtoList { get; set; }
+		public string ColumnsMappingDtoListJson { get; set; }
 
 
 		public static DataImporterLayoutDto OMMap(OMImportFromTemplates entity, string userName, RegistersExportStatus? status)
@@ -77,7 +70,7 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 				ResultMessage = entity.ResultMessage,
 				FileSizeKb = fileSize.HasValue ? Convert.ToString(fileSize / 1024) : string.Empty,
 				FileSizeMb = fileSize.HasValue ? Convert.ToString(fileSize / (1024 * 1024)) : string.Empty,
-				ColumnsMappingDtoList = columnsMappingDtoList
+				ColumnsMappingDtoListJson = JsonConvert.SerializeObject(columnsMappingDtoList)
 			};
 		}
 	}

@@ -1,5 +1,4 @@
-﻿@using Newtonsoft.Json;
-
+﻿
 @model KadOzenka.Web.Models.DataImporterLayout.DataImporterLayoutDto
 
 <form>
@@ -149,7 +148,7 @@
 	</script>
 	<script>
 		var dataSource = new kendo.data.DataSource({
-			data: @(@Html.Raw(JsonConvert.SerializeObject(Model.ColumnsMappingDtoList)))
+			data: @Html.Raw(Model.ColumnsMappingDtoListJson)
 		});
 
 		$(document).ready(function () {
