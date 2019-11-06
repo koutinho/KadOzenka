@@ -205,6 +205,7 @@
 		$(document).ready(function () {
 			const mainRegisterId = @((long)ViewBag.MainRegisterId);
 			const registerViewId = '@((string)ViewBag.RegisterViewId)';
+			const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
 
 			$("#filter").on("input", function () {
 				var query = this.value.toLowerCase();
@@ -402,8 +403,14 @@
 				},
 				success: function (e) {
 					if (e.operation === "upload") {
-						var columnNames = e.response;
+						var columnNames = e.response.ColumnsNames;
+						var dataCount = e.response.DataCount;
 						$("#columnsListBox").data("kendoListBox").setDataSource(columnNames);
+						if (dataCount > dataCountForBackgroundLoading) {
+							$("#backgroundDownloadCheckbox").prop('checked', true);
+						} else {
+							$("#backgroundDownloadCheckbox").prop('checked', false);
+						}
 						resetData();
 					}
 				},

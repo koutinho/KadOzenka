@@ -14,6 +14,8 @@ namespace KadOzenka.Web.Controllers
 {
 	public class DataImportController : BaseController
 	{
+		private readonly int _dataCountForBackgroundLoading = 1000;
+
 		[HttpGet]
 		public IActionResult DataImport(string registerViewId, long? mainRegisterId)
 		{
@@ -25,6 +27,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				ViewBag.MainRegisterId = mainRegisterId;
 			}
+			ViewBag.DataCountForBackgroundLoading = _dataCountForBackgroundLoading;
 
 			return View();
 		}
@@ -41,11 +44,13 @@ namespace KadOzenka.Web.Controllers
 			{
 				var file = files.FirstOrDefault();
 				var columnsNames = new List<object>();
+				int dataRowCount;
 				using (var stream = file.OpenReadStream())
 				{
 					var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 					var ws = excelFile.Worksheets[0];
 					var headerRow = ws.Rows[0];
+					dataRowCount = ws.Rows.Count - 1;
 					columnsNames
 						.AddRange(headerRow.AllocatedCells.Where(x => x.Value != null)
 							.Select((x, index) => new { Id = index, Name = x.Value.ToString() }));
@@ -54,7 +59,9 @@ namespace KadOzenka.Web.Controllers
 						throw new Exception("Выбран пустой файл");
 					}
 				}
-				return Content(JsonConvert.SerializeObject(columnsNames), "application/json");
+
+				return Content(JsonConvert.SerializeObject(new {DataCount = dataRowCount, ColumnsNames = columnsNames}),
+					"application/json");
 			}
 			catch (Exception ex)
 			{
