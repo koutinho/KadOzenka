@@ -1,5 +1,5 @@
 ﻿
-<form class="exportForm">
+<form id="exportForm">
 	<ul id="upload_panelbar" class="panelBar">
 		<li id="Section_UploadBuilding" data-expand>
 			<span>Формирование выгрузки</span>
@@ -167,7 +167,7 @@
 			overflow: unset !important;
 		}
 
-		.exportForm {
+		#exportForm {
 			height: 100%;
 		}
 
@@ -247,6 +247,7 @@
 			$("#loadButton").kendoButton({
 				enable: true,
 				click: function (e) {
+					kendo.ui.progress($('#exportForm'), true);
 					$("#loadButton").data('kendoButton').enable(false);
 					var listView = $("#listView").data('kendoListView');
 					var data = listView.dataSource.data();
@@ -279,10 +280,12 @@
 							processData: false,
 							dataType: 'xml',
 							success: function (data) {
+								kendo.ui.progress($('#exportForm'), false);
 								$("#loadButton").data('kendoButton').enable(true);
 								Common.ShowMessage('Фоновая загрузка начата.');
 							},
 							error: function (response) {
+								kendo.ui.progress($('#exportForm'), false);
 								$("#loadButton").data('kendoButton').enable(true);
 								Common.ShowError(response.responseText);
 							}
@@ -295,6 +298,7 @@
 							contentType: false,
 							processData: false,
 							success: function (data) {
+								kendo.ui.progress($('#exportForm'), false);
 								$("#loadButton").data('kendoButton').enable(true);
 								if (data.success) {
 									window.location = '@Url.Action("DownloadExcelFile", "DataExport")' +
@@ -305,6 +309,7 @@
 								}
 							},
 							error: function (response) {
+								kendo.ui.progress($('#exportForm'), false);
 								$("#loadButton").data('kendoButton').enable(true);
 								Common.ShowError(response.responseText);
 							}
