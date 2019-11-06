@@ -39,6 +39,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string Subgroup { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
+		public string Url { get; set; }
 
 		public static CoreObjectDto OMMap(OMCoreObject entity)
 		{
@@ -64,7 +65,8 @@ namespace KadOzenka.Web.Models.MarketObject
 				AreaLiving = entity.AreaLiving,
 				Zone = entity.Zone,
 				Group = entity.Group,
-				Subgroup = entity.Subgroup
+				Subgroup = entity.Subgroup,
+				Url = entity.Url
 			};
 			if (entity.PriceHistory?.Count > 0)
 			{
