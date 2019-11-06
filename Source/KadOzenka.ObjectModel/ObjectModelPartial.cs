@@ -1182,6 +1182,438 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 300 Экспертное заключение
+    /// </summary>
+    public partial class OMZak
+    {
+
+        public OMZak()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMZak(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 301 NULL
+    /// </summary>
+    public partial class OMLog
+    {
+
+        public OMLog()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMLog(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 302 Связь заключения с объектом
+    /// </summary>
+    public partial class OMZakLink
+    {
+
+        public OMZakLink()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMZakLink(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 303 Расчет ДРС
+    /// </summary>
+    public partial class OMDRS
+    {
+
+        public OMDRS()
+        {
+
+            IdObject = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMDRS(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 304 Связь отчета с объектом
+    /// </summary>
+    public partial class OMOtchetLink
+    {
+
+        public OMOtchetLink()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMOtchetLink(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 305 NULL
+    /// </summary>
+    public partial class OMObjectStatus
+    {
+
+        public OMObjectStatus()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMObjectStatus(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 306 NULL
+    /// </summary>
+    public partial class OMOtchetLinkStatus
+    {
+
+        public OMOtchetLinkStatus()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMOtchetLinkStatus(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 307 NULL
+    /// </summary>
+    public partial class OMOtchetStatus
+    {
+
+        public OMOtchetStatus()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMOtchetStatus(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 308 Отчеты
+    /// </summary>
+    public partial class OMOtchet
+    {
+
+        public OMOtchet()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMOtchet(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 309 NULL
+    /// </summary>
+    public partial class OMSudLinkStatus
+    {
+
+        public OMSudLinkStatus()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSudLinkStatus(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 310 NULL
+    /// </summary>
+    public partial class OMSudStatus
+    {
+
+        public OMSudStatus()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSudStatus(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 311 NULL
+    /// </summary>
+    public partial class OMZakLinkStatus
+    {
+
+        public OMZakLinkStatus()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMZakLinkStatus(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 312 NULL
+    /// </summary>
+    public partial class OMZakStatus
+    {
+
+        public OMZakStatus()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMZakStatus(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 313 Справочник ФИО, организаций, СРО
+    /// </summary>
+    public partial class OMDict
+    {
+
+        public OMDict()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMDict(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 314 Связь судебного дела и объекта
+    /// </summary>
+    public partial class OMSudLink
+    {
+
+        public OMSudLink()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSudLink(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 315 NULL
+    /// </summary>
+    public partial class OMObject
+    {
+
+        public OMObject()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMObject(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 316 Судебное заседание
+    /// </summary>
+    public partial class OMSud
+    {
+
+        public OMSud()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSud(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 317 Варианты значений полей со статусами
+    /// </summary>
+    public partial class OMParam
+    {
+
+        public OMParam()
+        {
+
+            Pid = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMParam(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

@@ -586,3 +586,39 @@ namespace ObjectModel.KO
 
     }
 }
+
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 800 Журнал выгрузки по шаблону Excel
+    /// </summary>
+    public partial class OMExportByTemplates
+    {
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 801 Журнал загрузки из шаблонов Excel
+    /// </summary>
+    public partial class OMImportFromTemplates
+    {
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}

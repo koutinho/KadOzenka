@@ -4236,6 +4236,3562 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 300 Экспертное заключение (SUD_ZAK)
+    /// </summary>
+    [RegisterInfo(RegisterID = 300)]
+    [Serializable]
+    public partial class OMZak : OMBaseClass<OMZak>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _number;
+        /// <summary>
+        /// 30000200 Номер заключения (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30000200)]
+        public string Number
+        {
+            get
+            {
+                CheckPropertyInited("Number");
+                return _number;
+            }
+            set
+            {
+                _number = value;
+                NotifyPropertyChanged("Number");
+            }
+        }
+
+
+        private DateTime? _date;
+        /// <summary>
+        /// 30000300 Дата заключения (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30000300)]
+        public DateTime? Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private string _org;
+        /// <summary>
+        /// 30000400 Организация (ORG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30000400)]
+        public string Org
+        {
+            get
+            {
+                CheckPropertyInited("Org");
+                return _org;
+            }
+            set
+            {
+                _org = value;
+                NotifyPropertyChanged("Org");
+            }
+        }
+
+
+        private string _fio;
+        /// <summary>
+        /// 30000500 ФИО эксперта (FIO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30000500)]
+        public string Fio
+        {
+            get
+            {
+                CheckPropertyInited("Fio");
+                return _fio;
+            }
+            set
+            {
+                _fio = value;
+                NotifyPropertyChanged("Fio");
+            }
+        }
+
+
+        private string _sro;
+        /// <summary>
+        /// 30000600 СРО (SRO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30000600)]
+        public string Sro
+        {
+            get
+            {
+                CheckPropertyInited("Sro");
+                return _sro;
+            }
+            set
+            {
+                _sro = value;
+                NotifyPropertyChanged("Sro");
+            }
+        }
+
+
+        private DateTime? _recdate;
+        /// <summary>
+        /// 30000700 Дата  сдачи рецензии (REC_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30000700)]
+        public DateTime? RecDate
+        {
+            get
+            {
+                CheckPropertyInited("RecDate");
+                return _recdate;
+            }
+            set
+            {
+                _recdate = value;
+                NotifyPropertyChanged("RecDate");
+            }
+        }
+
+
+        private string _recuser;
+        /// <summary>
+        /// 30000800 Исполнитель рецензии (REC_USER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30000800)]
+        public string RecUser
+        {
+            get
+            {
+                CheckPropertyInited("RecUser");
+                return _recuser;
+            }
+            set
+            {
+                _recuser = value;
+                NotifyPropertyChanged("RecUser");
+            }
+        }
+
+
+        private string _recletter;
+        /// <summary>
+        /// 30000900 Номер письма (REC_LETTER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30000900)]
+        public string RecLetter
+        {
+            get
+            {
+                CheckPropertyInited("RecLetter");
+                return _recletter;
+            }
+            set
+            {
+                _recletter = value;
+                NotifyPropertyChanged("RecLetter");
+            }
+        }
+
+
+        private long? _recbefore;
+        /// <summary>
+        /// 30001000 Предварительная рецензия (REC_BEFORE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30001000)]
+        public long? RecBefore
+        {
+            get
+            {
+                CheckPropertyInited("RecBefore");
+                return _recbefore;
+            }
+            set
+            {
+                _recbefore = value;
+                NotifyPropertyChanged("RecBefore");
+            }
+        }
+
+
+        private long? _recafter;
+        /// <summary>
+        /// 30001100 Рецензия после анализа (REC_AFTER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30001100)]
+        public long? RecAfter
+        {
+            get
+            {
+                CheckPropertyInited("RecAfter");
+                return _recafter;
+            }
+            set
+            {
+                _recafter = value;
+                NotifyPropertyChanged("RecAfter");
+            }
+        }
+
+
+        private long? _recsoglas;
+        /// <summary>
+        /// 30001200 Согласовано с руководителем (REC_SOGLAS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30001200)]
+        public long? RecSoglas
+        {
+            get
+            {
+                CheckPropertyInited("RecSoglas");
+                return _recsoglas;
+            }
+            set
+            {
+                _recsoglas = value;
+                NotifyPropertyChanged("RecSoglas");
+            }
+        }
+
+
+        private long? _idorg;
+        /// <summary>
+        /// 30001300 Идентификатор организации (ID_ORG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30001300)]
+        public long? IdOrg
+        {
+            get
+            {
+                CheckPropertyInited("IdOrg");
+                return _idorg;
+            }
+            set
+            {
+                _idorg = value;
+                NotifyPropertyChanged("IdOrg");
+            }
+        }
+
+
+        private long? _idfio;
+        /// <summary>
+        /// 30001400 Идентификатор эксперта (ID_FIO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30001400)]
+        public long? IdFio
+        {
+            get
+            {
+                CheckPropertyInited("IdFio");
+                return _idfio;
+            }
+            set
+            {
+                _idfio = value;
+                NotifyPropertyChanged("IdFio");
+            }
+        }
+
+
+        private long? _idsro;
+        /// <summary>
+        /// 30001500 Идентификатор СРО (ID_SRO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30001500)]
+        public long? IdSro
+        {
+            get
+            {
+                CheckPropertyInited("IdSro");
+                return _idsro;
+            }
+            set
+            {
+                _idsro = value;
+                NotifyPropertyChanged("IdSro");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 301 NULL (SUD_LOG)
+    /// </summary>
+    [RegisterInfo(RegisterID = 301)]
+    [Serializable]
+    public partial class OMLog : OMBaseClass<OMLog>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30100100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _iduser;
+        /// <summary>
+        /// 30100200  (ID_USER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30100200)]
+        public long? IdUser
+        {
+            get
+            {
+                CheckPropertyInited("IdUser");
+                return _iduser;
+            }
+            set
+            {
+                _iduser = value;
+                NotifyPropertyChanged("IdUser");
+            }
+        }
+
+
+        private long _idtable;
+        /// <summary>
+        /// 30100300  (ID_TABLE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30100300)]
+        public long IdTable
+        {
+            get
+            {
+                CheckPropertyInited("IdTable");
+                return _idtable;
+            }
+            set
+            {
+                _idtable = value;
+                NotifyPropertyChanged("IdTable");
+            }
+        }
+
+
+        private string _typeoper;
+        /// <summary>
+        /// 30100400  (TYPE_OPER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30100400)]
+        public string TypeOper
+        {
+            get
+            {
+                CheckPropertyInited("TypeOper");
+                return _typeoper;
+            }
+            set
+            {
+                _typeoper = value;
+                NotifyPropertyChanged("TypeOper");
+            }
+        }
+
+
+        private string _xmldata;
+        /// <summary>
+        /// 30100500  (XML_DATA)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30100500)]
+        public string XmlData
+        {
+            get
+            {
+                CheckPropertyInited("XmlData");
+                return _xmldata;
+            }
+            set
+            {
+                _xmldata = value;
+                NotifyPropertyChanged("XmlData");
+            }
+        }
+
+
+        private DateTime? _dateoper;
+        /// <summary>
+        /// 30100600  (DATE_OPER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30100600)]
+        public DateTime? DateOper
+        {
+            get
+            {
+                CheckPropertyInited("DateOper");
+                return _dateoper;
+            }
+            set
+            {
+                _dateoper = value;
+                NotifyPropertyChanged("DateOper");
+            }
+        }
+
+
+        private string _nametable;
+        /// <summary>
+        /// 30100700  (NAME_TABLE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30100700)]
+        public string NameTable
+        {
+            get
+            {
+                CheckPropertyInited("NameTable");
+                return _nametable;
+            }
+            set
+            {
+                _nametable = value;
+                NotifyPropertyChanged("NameTable");
+            }
+        }
+
+
+        private long? _idrecord;
+        /// <summary>
+        /// 30100800  (ID_RECORD)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30100800)]
+        public long? IdRecord
+        {
+            get
+            {
+                CheckPropertyInited("IdRecord");
+                return _idrecord;
+            }
+            set
+            {
+                _idrecord = value;
+                NotifyPropertyChanged("IdRecord");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 302 Связь заключения с объектом (SUD_ZAKLINK)
+    /// </summary>
+    [RegisterInfo(RegisterID = 302)]
+    [Serializable]
+    public partial class OMZakLink : OMBaseClass<OMZakLink>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _idobject;
+        /// <summary>
+        /// 30200200 Идентификатор объекта (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30200200)]
+        public long? IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private long? _idzak;
+        /// <summary>
+        /// 30200300 Идентификатор заключения (ID_ZAK)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30200300)]
+        public long? IdZak
+        {
+            get
+            {
+                CheckPropertyInited("IdZak");
+                return _idzak;
+            }
+            set
+            {
+                _idzak = value;
+                NotifyPropertyChanged("IdZak");
+            }
+        }
+
+
+        private string _use;
+        /// <summary>
+        /// 30200400 Текущее использование (USE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30200400)]
+        public string Use
+        {
+            get
+            {
+                CheckPropertyInited("Use");
+                return _use;
+            }
+            set
+            {
+                _use = value;
+                NotifyPropertyChanged("Use");
+            }
+        }
+
+
+        private decimal? _rs;
+        /// <summary>
+        /// 30200500 Рыночная стоимость (RS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30200500)]
+        public decimal? Rs
+        {
+            get
+            {
+                CheckPropertyInited("Rs");
+                return _rs;
+            }
+            set
+            {
+                _rs = value;
+                NotifyPropertyChanged("Rs");
+            }
+        }
+
+
+        private decimal? _uprs;
+        /// <summary>
+        /// 30200600 Удельная стоимость (UPRS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30200600)]
+        public decimal? Uprs
+        {
+            get
+            {
+                CheckPropertyInited("Uprs");
+                return _uprs;
+            }
+            set
+            {
+                _uprs = value;
+                NotifyPropertyChanged("Uprs");
+            }
+        }
+
+
+        private string _descr;
+        /// <summary>
+        /// 30200700 Примечание (DESCR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30200700)]
+        public string Descr
+        {
+            get
+            {
+                CheckPropertyInited("Descr");
+                return _descr;
+            }
+            set
+            {
+                _descr = value;
+                NotifyPropertyChanged("Descr");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 303 Расчет ДРС (SUD_DRS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 303)]
+    [Serializable]
+    public partial class OMDRS : OMBaseClass<OMDRS>
+    {
+
+        private long _idobject;
+        /// <summary>
+        /// 30300100 Идентификатор объекта (ID_OBJECT)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30300100)]
+        public long IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private string _drsgroup;
+        /// <summary>
+        /// 30300200 Оценочная группа (DRS_GROUP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30300200)]
+        public string DrsGroup
+        {
+            get
+            {
+                CheckPropertyInited("DrsGroup");
+                return _drsgroup;
+            }
+            set
+            {
+                _drsgroup = value;
+                NotifyPropertyChanged("DrsGroup");
+            }
+        }
+
+
+        private decimal? _drssq1;
+        /// <summary>
+        /// 30300300 Подвал (DRS_SQ1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30300300)]
+        public decimal? DrsSq1
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq1");
+                return _drssq1;
+            }
+            set
+            {
+                _drssq1 = value;
+                NotifyPropertyChanged("DrsSq1");
+            }
+        }
+
+
+        private decimal? _drssq2;
+        /// <summary>
+        /// 30300400 Цоколь (DRS_SQ2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30300400)]
+        public decimal? DrsSq2
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq2");
+                return _drssq2;
+            }
+            set
+            {
+                _drssq2 = value;
+                NotifyPropertyChanged("DrsSq2");
+            }
+        }
+
+
+        private decimal? _drssq3;
+        /// <summary>
+        /// 30300500 Торговля (DRS_SQ3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30300500)]
+        public decimal? DrsSq3
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq3");
+                return _drssq3;
+            }
+            set
+            {
+                _drssq3 = value;
+                NotifyPropertyChanged("DrsSq3");
+            }
+        }
+
+
+        private decimal? _drssq4;
+        /// <summary>
+        /// 30300600 Офис (DRS_SQ4)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30300600)]
+        public decimal? DrsSq4
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq4");
+                return _drssq4;
+            }
+            set
+            {
+                _drssq4 = value;
+                NotifyPropertyChanged("DrsSq4");
+            }
+        }
+
+
+        private decimal? _drssq5;
+        /// <summary>
+        /// 30300700 Производство (DRS_SQ5)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30300700)]
+        public decimal? DrsSq5
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq5");
+                return _drssq5;
+            }
+            set
+            {
+                _drssq5 = value;
+                NotifyPropertyChanged("DrsSq5");
+            }
+        }
+
+
+        private decimal? _drssq6;
+        /// <summary>
+        /// 30300800 Гаражи, паркинг (DRS_SQ6)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30300800)]
+        public decimal? DrsSq6
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq6");
+                return _drssq6;
+            }
+            set
+            {
+                _drssq6 = value;
+                NotifyPropertyChanged("DrsSq6");
+            }
+        }
+
+
+        private decimal? _drssq7;
+        /// <summary>
+        /// 30300900 Социальное (DRS_SQ7)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30300900)]
+        public decimal? DrsSq7
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq7");
+                return _drssq7;
+            }
+            set
+            {
+                _drssq7 = value;
+                NotifyPropertyChanged("DrsSq7");
+            }
+        }
+
+
+        private decimal? _drssq8;
+        /// <summary>
+        /// 30301000 Апартаменты (DRS_SQ8)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30301000)]
+        public decimal? DrsSq8
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq8");
+                return _drssq8;
+            }
+            set
+            {
+                _drssq8 = value;
+                NotifyPropertyChanged("DrsSq8");
+            }
+        }
+
+
+        private decimal? _drssq9;
+        /// <summary>
+        /// 30301100 Иное назначение(15.7) (DRS_SQ9)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30301100)]
+        public decimal? DrsSq9
+        {
+            get
+            {
+                CheckPropertyInited("DrsSq9");
+                return _drssq9;
+            }
+            set
+            {
+                _drssq9 = value;
+                NotifyPropertyChanged("DrsSq9");
+            }
+        }
+
+
+        private string _drssost;
+        /// <summary>
+        /// 30301200 Техническое состояние (DRS_SOST)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30301200)]
+        public string DrsSost
+        {
+            get
+            {
+                CheckPropertyInited("DrsSost");
+                return _drssost;
+            }
+            set
+            {
+                _drssost = value;
+                NotifyPropertyChanged("DrsSost");
+            }
+        }
+
+
+        private string _drsprichin;
+        /// <summary>
+        /// 30301300 Причина пересчета (DRS_PRICHIN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30301300)]
+        public string DrsPrichin
+        {
+            get
+            {
+                CheckPropertyInited("DrsPrichin");
+                return _drsprichin;
+            }
+            set
+            {
+                _drsprichin = value;
+                NotifyPropertyChanged("DrsPrichin");
+            }
+        }
+
+
+        private decimal? _drsupdrs;
+        /// <summary>
+        /// 30301400 УПДРС (DRS_UPDRS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30301400)]
+        public decimal? DrsUpdrs
+        {
+            get
+            {
+                CheckPropertyInited("DrsUpdrs");
+                return _drsupdrs;
+            }
+            set
+            {
+                _drsupdrs = value;
+                NotifyPropertyChanged("DrsUpdrs");
+            }
+        }
+
+
+        private decimal? _drsdrs;
+        /// <summary>
+        /// 30301500 ДРС (DRS_DRS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30301500)]
+        public decimal? DrsDrs
+        {
+            get
+            {
+                CheckPropertyInited("DrsDrs");
+                return _drsdrs;
+            }
+            set
+            {
+                _drsdrs = value;
+                NotifyPropertyChanged("DrsDrs");
+            }
+        }
+
+
+        private string _drsowner;
+        /// <summary>
+        /// 30301600 Источник (DRS_OWNER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30301600)]
+        public string DrsOwner
+        {
+            get
+            {
+                CheckPropertyInited("DrsOwner");
+                return _drsowner;
+            }
+            set
+            {
+                _drsowner = value;
+                NotifyPropertyChanged("DrsOwner");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 304 Связь отчета с объектом (SUD_OTCHETLINK)
+    /// </summary>
+    [RegisterInfo(RegisterID = 304)]
+    [Serializable]
+    public partial class OMOtchetLink : OMBaseClass<OMOtchetLink>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _idobject;
+        /// <summary>
+        /// 30400200 Идентификатор объекта (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30400200)]
+        public long? IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private long? _idotchet;
+        /// <summary>
+        /// 30400300 Идентификатор отчета (ID_OTCHET)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30400300)]
+        public long? IdOtchet
+        {
+            get
+            {
+                CheckPropertyInited("IdOtchet");
+                return _idotchet;
+            }
+            set
+            {
+                _idotchet = value;
+                NotifyPropertyChanged("IdOtchet");
+            }
+        }
+
+
+        private string _use;
+        /// <summary>
+        /// 30400400 Использование по отчету (USE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30400400)]
+        public string Use
+        {
+            get
+            {
+                CheckPropertyInited("Use");
+                return _use;
+            }
+            set
+            {
+                _use = value;
+                NotifyPropertyChanged("Use");
+            }
+        }
+
+
+        private decimal? _rs;
+        /// <summary>
+        /// 30400500 Рыночная стоимость по отчету (RS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30400500)]
+        public decimal? Rs
+        {
+            get
+            {
+                CheckPropertyInited("Rs");
+                return _rs;
+            }
+            set
+            {
+                _rs = value;
+                NotifyPropertyChanged("Rs");
+            }
+        }
+
+
+        private decimal? _uprs;
+        /// <summary>
+        /// 30400600 УПРС по отчету (UPRS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30400600)]
+        public decimal? Uprs
+        {
+            get
+            {
+                CheckPropertyInited("Uprs");
+                return _uprs;
+            }
+            set
+            {
+                _uprs = value;
+                NotifyPropertyChanged("Uprs");
+            }
+        }
+
+
+        private string _descr;
+        /// <summary>
+        /// 30400700 Примечание (DESCR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30400700)]
+        public string Descr
+        {
+            get
+            {
+                CheckPropertyInited("Descr");
+                return _descr;
+            }
+            set
+            {
+                _descr = value;
+                NotifyPropertyChanged("Descr");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 305 NULL (SUD_OBJECTSTATUS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 305)]
+    [Serializable]
+    public partial class OMObjectStatus : OMBaseClass<OMObjectStatus>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30500100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _kn;
+        /// <summary>
+        /// 30500200  (KN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30500200)]
+        public long Kn
+        {
+            get
+            {
+                CheckPropertyInited("Kn");
+                return _kn;
+            }
+            set
+            {
+                _kn = value;
+                NotifyPropertyChanged("Kn");
+            }
+        }
+
+
+        private long _date;
+        /// <summary>
+        /// 30500300  (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30500300)]
+        public long Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private long _square;
+        /// <summary>
+        /// 30500400  (SQUARE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30500400)]
+        public long Square
+        {
+            get
+            {
+                CheckPropertyInited("Square");
+                return _square;
+            }
+            set
+            {
+                _square = value;
+                NotifyPropertyChanged("Square");
+            }
+        }
+
+
+        private long _kc;
+        /// <summary>
+        /// 30500500  (KC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30500500)]
+        public long Kc
+        {
+            get
+            {
+                CheckPropertyInited("Kc");
+                return _kc;
+            }
+            set
+            {
+                _kc = value;
+                NotifyPropertyChanged("Kc");
+            }
+        }
+
+
+        private long _namecenter;
+        /// <summary>
+        /// 30500600  (NAME_CENTER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30500600)]
+        public long NameCenter
+        {
+            get
+            {
+                CheckPropertyInited("NameCenter");
+                return _namecenter;
+            }
+            set
+            {
+                _namecenter = value;
+                NotifyPropertyChanged("NameCenter");
+            }
+        }
+
+
+        private long _statdgi;
+        /// <summary>
+        /// 30500700  (STAT_DGI)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30500700)]
+        public long StatDgi
+        {
+            get
+            {
+                CheckPropertyInited("StatDgi");
+                return _statdgi;
+            }
+            set
+            {
+                _statdgi = value;
+                NotifyPropertyChanged("StatDgi");
+            }
+        }
+
+
+        private long _owner;
+        /// <summary>
+        /// 30500800  (OWNER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30500800)]
+        public long Owner
+        {
+            get
+            {
+                CheckPropertyInited("Owner");
+                return _owner;
+            }
+            set
+            {
+                _owner = value;
+                NotifyPropertyChanged("Owner");
+            }
+        }
+
+
+        private long _adres;
+        /// <summary>
+        /// 30500900  (ADRES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30500900)]
+        public long Adres
+        {
+            get
+            {
+                CheckPropertyInited("Adres");
+                return _adres;
+            }
+            set
+            {
+                _adres = value;
+                NotifyPropertyChanged("Adres");
+            }
+        }
+
+
+        private long _typeobj;
+        /// <summary>
+        /// 30501000  (TYPEOBJ)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30501000)]
+        public long Typeobj
+        {
+            get
+            {
+                CheckPropertyInited("Typeobj");
+                return _typeobj;
+            }
+            set
+            {
+                _typeobj = value;
+                NotifyPropertyChanged("Typeobj");
+            }
+        }
+
+
+        private long _status;
+        /// <summary>
+        /// 30501100  (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30501100)]
+        public long Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 306 NULL (SUD_OTCHETLINKSTATUS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 306)]
+    [Serializable]
+    public partial class OMOtchetLinkStatus : OMBaseClass<OMOtchetLinkStatus>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30600100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _idobject;
+        /// <summary>
+        /// 30600200  (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30600200)]
+        public long IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private long _idotchet;
+        /// <summary>
+        /// 30600300  (ID_OTCHET)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30600300)]
+        public long IdOtchet
+        {
+            get
+            {
+                CheckPropertyInited("IdOtchet");
+                return _idotchet;
+            }
+            set
+            {
+                _idotchet = value;
+                NotifyPropertyChanged("IdOtchet");
+            }
+        }
+
+
+        private long _use;
+        /// <summary>
+        /// 30600400  (USE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30600400)]
+        public long Use
+        {
+            get
+            {
+                CheckPropertyInited("Use");
+                return _use;
+            }
+            set
+            {
+                _use = value;
+                NotifyPropertyChanged("Use");
+            }
+        }
+
+
+        private long _rs;
+        /// <summary>
+        /// 30600500  (RS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30600500)]
+        public long Rs
+        {
+            get
+            {
+                CheckPropertyInited("Rs");
+                return _rs;
+            }
+            set
+            {
+                _rs = value;
+                NotifyPropertyChanged("Rs");
+            }
+        }
+
+
+        private long _uprs;
+        /// <summary>
+        /// 30600600  (UPRS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30600600)]
+        public long Uprs
+        {
+            get
+            {
+                CheckPropertyInited("Uprs");
+                return _uprs;
+            }
+            set
+            {
+                _uprs = value;
+                NotifyPropertyChanged("Uprs");
+            }
+        }
+
+
+        private long _descr;
+        /// <summary>
+        /// 30600700  (DESCR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30600700)]
+        public long Descr
+        {
+            get
+            {
+                CheckPropertyInited("Descr");
+                return _descr;
+            }
+            set
+            {
+                _descr = value;
+                NotifyPropertyChanged("Descr");
+            }
+        }
+
+
+        private long? _status;
+        /// <summary>
+        /// 30600800  (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30600800)]
+        public long? Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 307 NULL (SUD_OTCHETSTATUS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 307)]
+    [Serializable]
+    public partial class OMOtchetStatus : OMBaseClass<OMOtchetStatus>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30700100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _number;
+        /// <summary>
+        /// 30700200  (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30700200)]
+        public long Number
+        {
+            get
+            {
+                CheckPropertyInited("Number");
+                return _number;
+            }
+            set
+            {
+                _number = value;
+                NotifyPropertyChanged("Number");
+            }
+        }
+
+
+        private long _date;
+        /// <summary>
+        /// 30700300  (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30700300)]
+        public long Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private long _datein;
+        /// <summary>
+        /// 30700400  (DATE_IN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30700400)]
+        public long DateIn
+        {
+            get
+            {
+                CheckPropertyInited("DateIn");
+                return _datein;
+            }
+            set
+            {
+                _datein = value;
+                NotifyPropertyChanged("DateIn");
+            }
+        }
+
+
+        private long _jalob;
+        /// <summary>
+        /// 30700500  (JALOB)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30700500)]
+        public long Jalob
+        {
+            get
+            {
+                CheckPropertyInited("Jalob");
+                return _jalob;
+            }
+            set
+            {
+                _jalob = value;
+                NotifyPropertyChanged("Jalob");
+            }
+        }
+
+
+        private long _idorg;
+        /// <summary>
+        /// 30700600  (ID_ORG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30700600)]
+        public long IdOrg
+        {
+            get
+            {
+                CheckPropertyInited("IdOrg");
+                return _idorg;
+            }
+            set
+            {
+                _idorg = value;
+                NotifyPropertyChanged("IdOrg");
+            }
+        }
+
+
+        private long _idfio;
+        /// <summary>
+        /// 30700700  (ID_FIO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30700700)]
+        public long IdFio
+        {
+            get
+            {
+                CheckPropertyInited("IdFio");
+                return _idfio;
+            }
+            set
+            {
+                _idfio = value;
+                NotifyPropertyChanged("IdFio");
+            }
+        }
+
+
+        private long _idsro;
+        /// <summary>
+        /// 30700800  (ID_SRO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30700800)]
+        public long IdSro
+        {
+            get
+            {
+                CheckPropertyInited("IdSro");
+                return _idsro;
+            }
+            set
+            {
+                _idsro = value;
+                NotifyPropertyChanged("IdSro");
+            }
+        }
+
+
+        private long _status;
+        /// <summary>
+        /// 30700900  (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30700900)]
+        public long Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 308 Отчеты (SUD_OTCHET)
+    /// </summary>
+    [RegisterInfo(RegisterID = 308)]
+    [Serializable]
+    public partial class OMOtchet : OMBaseClass<OMOtchet>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30800100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30800100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _number;
+        /// <summary>
+        /// 30800200 Номер отчета (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30800200)]
+        public string Number
+        {
+            get
+            {
+                CheckPropertyInited("Number");
+                return _number;
+            }
+            set
+            {
+                _number = value;
+                NotifyPropertyChanged("Number");
+            }
+        }
+
+
+        private DateTime? _date;
+        /// <summary>
+        /// 30800300 Дата отчета (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30800300)]
+        public DateTime? Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private string _org;
+        /// <summary>
+        /// 30800400 Организация (ORG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30800400)]
+        public string Org
+        {
+            get
+            {
+                CheckPropertyInited("Org");
+                return _org;
+            }
+            set
+            {
+                _org = value;
+                NotifyPropertyChanged("Org");
+            }
+        }
+
+
+        private string _fio;
+        /// <summary>
+        /// 30800500 ФИО оценщика (FIO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30800500)]
+        public string Fio
+        {
+            get
+            {
+                CheckPropertyInited("Fio");
+                return _fio;
+            }
+            set
+            {
+                _fio = value;
+                NotifyPropertyChanged("Fio");
+            }
+        }
+
+
+        private string _sro;
+        /// <summary>
+        /// 30800600 СРО (SRO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30800600)]
+        public string Sro
+        {
+            get
+            {
+                CheckPropertyInited("Sro");
+                return _sro;
+            }
+            set
+            {
+                _sro = value;
+                NotifyPropertyChanged("Sro");
+            }
+        }
+
+
+        private DateTime? _datein;
+        /// <summary>
+        /// 30800700 Дата получения (DATE_IN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30800700)]
+        public DateTime? DateIn
+        {
+            get
+            {
+                CheckPropertyInited("DateIn");
+                return _datein;
+            }
+            set
+            {
+                _datein = value;
+                NotifyPropertyChanged("DateIn");
+            }
+        }
+
+
+        private long? _jalob;
+        /// <summary>
+        /// 30800800 Жалоба в СРО (JALOB)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30800800)]
+        public long? Jalob
+        {
+            get
+            {
+                CheckPropertyInited("Jalob");
+                return _jalob;
+            }
+            set
+            {
+                _jalob = value;
+                NotifyPropertyChanged("Jalob");
+            }
+        }
+
+
+        private long? _idorg;
+        /// <summary>
+        /// 30800900 Идентификатор организации (ID_ORG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30800900)]
+        public long? IdOrg
+        {
+            get
+            {
+                CheckPropertyInited("IdOrg");
+                return _idorg;
+            }
+            set
+            {
+                _idorg = value;
+                NotifyPropertyChanged("IdOrg");
+            }
+        }
+
+
+        private long? _idfio;
+        /// <summary>
+        /// 30801000 Идентификатор оценщика (ID_FIO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30801000)]
+        public long? IdFio
+        {
+            get
+            {
+                CheckPropertyInited("IdFio");
+                return _idfio;
+            }
+            set
+            {
+                _idfio = value;
+                NotifyPropertyChanged("IdFio");
+            }
+        }
+
+
+        private long? _idsro;
+        /// <summary>
+        /// 30801100 Идентификатор СРО (ID_SRO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30801100)]
+        public long? IdSro
+        {
+            get
+            {
+                CheckPropertyInited("IdSro");
+                return _idsro;
+            }
+            set
+            {
+                _idsro = value;
+                NotifyPropertyChanged("IdSro");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 309 NULL (SUD_SUDLINKSTATUS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 309)]
+    [Serializable]
+    public partial class OMSudLinkStatus : OMBaseClass<OMSudLinkStatus>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 30900100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 30900100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _idobject;
+        /// <summary>
+        /// 30900200  (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30900200)]
+        public long IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private long _idsud;
+        /// <summary>
+        /// 30900300  (ID_SUD)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30900300)]
+        public long IdSud
+        {
+            get
+            {
+                CheckPropertyInited("IdSud");
+                return _idsud;
+            }
+            set
+            {
+                _idsud = value;
+                NotifyPropertyChanged("IdSud");
+            }
+        }
+
+
+        private long _use;
+        /// <summary>
+        /// 30900400  (USE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30900400)]
+        public long Use
+        {
+            get
+            {
+                CheckPropertyInited("Use");
+                return _use;
+            }
+            set
+            {
+                _use = value;
+                NotifyPropertyChanged("Use");
+            }
+        }
+
+
+        private long _rs;
+        /// <summary>
+        /// 30900500  (RS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30900500)]
+        public long Rs
+        {
+            get
+            {
+                CheckPropertyInited("Rs");
+                return _rs;
+            }
+            set
+            {
+                _rs = value;
+                NotifyPropertyChanged("Rs");
+            }
+        }
+
+
+        private long _uprs;
+        /// <summary>
+        /// 30900600  (UPRS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30900600)]
+        public long Uprs
+        {
+            get
+            {
+                CheckPropertyInited("Uprs");
+                return _uprs;
+            }
+            set
+            {
+                _uprs = value;
+                NotifyPropertyChanged("Uprs");
+            }
+        }
+
+
+        private long _descr;
+        /// <summary>
+        /// 30900700  (DESCR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30900700)]
+        public long Descr
+        {
+            get
+            {
+                CheckPropertyInited("Descr");
+                return _descr;
+            }
+            set
+            {
+                _descr = value;
+                NotifyPropertyChanged("Descr");
+            }
+        }
+
+
+        private long? _status;
+        /// <summary>
+        /// 30900800  (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30900800)]
+        public long? Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 310 NULL (SUD_SUDSTATUS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 310)]
+    [Serializable]
+    public partial class OMSudStatus : OMBaseClass<OMSudStatus>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 31000100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _name;
+        /// <summary>
+        /// 31000200  (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31000200)]
+        public long Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private long _number;
+        /// <summary>
+        /// 31000300  (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31000300)]
+        public long Number
+        {
+            get
+            {
+                CheckPropertyInited("Number");
+                return _number;
+            }
+            set
+            {
+                _number = value;
+                NotifyPropertyChanged("Number");
+            }
+        }
+
+
+        private long _date;
+        /// <summary>
+        /// 31000400  (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31000400)]
+        public long Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private long _suddate;
+        /// <summary>
+        /// 31000500  (SUD_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31000500)]
+        public long SudDate
+        {
+            get
+            {
+                CheckPropertyInited("SudDate");
+                return _suddate;
+            }
+            set
+            {
+                _suddate = value;
+                NotifyPropertyChanged("SudDate");
+            }
+        }
+
+
+        private long _status;
+        /// <summary>
+        /// 31000600  (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31000600)]
+        public long Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private long? _astatus;
+        /// <summary>
+        /// 31000700  (ASTATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31000700)]
+        public long? Astatus
+        {
+            get
+            {
+                CheckPropertyInited("Astatus");
+                return _astatus;
+            }
+            set
+            {
+                _astatus = value;
+                NotifyPropertyChanged("Astatus");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 311 NULL (SUD_ZAKLINKSTATUS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 311)]
+    [Serializable]
+    public partial class OMZakLinkStatus : OMBaseClass<OMZakLinkStatus>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 31100100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _idobject;
+        /// <summary>
+        /// 31100200  (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31100200)]
+        public long IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private long _idzak;
+        /// <summary>
+        /// 31100300  (ID_ZAK)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31100300)]
+        public long IdZak
+        {
+            get
+            {
+                CheckPropertyInited("IdZak");
+                return _idzak;
+            }
+            set
+            {
+                _idzak = value;
+                NotifyPropertyChanged("IdZak");
+            }
+        }
+
+
+        private long _use;
+        /// <summary>
+        /// 31100400  (USE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31100400)]
+        public long Use
+        {
+            get
+            {
+                CheckPropertyInited("Use");
+                return _use;
+            }
+            set
+            {
+                _use = value;
+                NotifyPropertyChanged("Use");
+            }
+        }
+
+
+        private long _rs;
+        /// <summary>
+        /// 31100500  (RS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31100500)]
+        public long Rs
+        {
+            get
+            {
+                CheckPropertyInited("Rs");
+                return _rs;
+            }
+            set
+            {
+                _rs = value;
+                NotifyPropertyChanged("Rs");
+            }
+        }
+
+
+        private long _uprs;
+        /// <summary>
+        /// 31100600  (UPRS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31100600)]
+        public long Uprs
+        {
+            get
+            {
+                CheckPropertyInited("Uprs");
+                return _uprs;
+            }
+            set
+            {
+                _uprs = value;
+                NotifyPropertyChanged("Uprs");
+            }
+        }
+
+
+        private long _descr;
+        /// <summary>
+        /// 31100700  (DESCR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31100700)]
+        public long Descr
+        {
+            get
+            {
+                CheckPropertyInited("Descr");
+                return _descr;
+            }
+            set
+            {
+                _descr = value;
+                NotifyPropertyChanged("Descr");
+            }
+        }
+
+
+        private long? _status;
+        /// <summary>
+        /// 31100800  (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31100800)]
+        public long? Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 312 NULL (SUD_ZAKSTATUS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 312)]
+    [Serializable]
+    public partial class OMZakStatus : OMBaseClass<OMZakStatus>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 31200100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _number;
+        /// <summary>
+        /// 31200200  (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31200200)]
+        public long Number
+        {
+            get
+            {
+                CheckPropertyInited("Number");
+                return _number;
+            }
+            set
+            {
+                _number = value;
+                NotifyPropertyChanged("Number");
+            }
+        }
+
+
+        private long _date;
+        /// <summary>
+        /// 31200300  (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31200300)]
+        public long Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private long _recdate;
+        /// <summary>
+        /// 31200400  (REC_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31200400)]
+        public long RecDate
+        {
+            get
+            {
+                CheckPropertyInited("RecDate");
+                return _recdate;
+            }
+            set
+            {
+                _recdate = value;
+                NotifyPropertyChanged("RecDate");
+            }
+        }
+
+
+        private long _recuser;
+        /// <summary>
+        /// 31200500  (REC_USER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31200500)]
+        public long RecUser
+        {
+            get
+            {
+                CheckPropertyInited("RecUser");
+                return _recuser;
+            }
+            set
+            {
+                _recuser = value;
+                NotifyPropertyChanged("RecUser");
+            }
+        }
+
+
+        private long _recletter;
+        /// <summary>
+        /// 31200600  (REC_LETTER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31200600)]
+        public long RecLetter
+        {
+            get
+            {
+                CheckPropertyInited("RecLetter");
+                return _recletter;
+            }
+            set
+            {
+                _recletter = value;
+                NotifyPropertyChanged("RecLetter");
+            }
+        }
+
+
+        private long _recbefore;
+        /// <summary>
+        /// 31200700  (REC_BEFORE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31200700)]
+        public long RecBefore
+        {
+            get
+            {
+                CheckPropertyInited("RecBefore");
+                return _recbefore;
+            }
+            set
+            {
+                _recbefore = value;
+                NotifyPropertyChanged("RecBefore");
+            }
+        }
+
+
+        private long _recafter;
+        /// <summary>
+        /// 31200800  (REC_AFTER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31200800)]
+        public long RecAfter
+        {
+            get
+            {
+                CheckPropertyInited("RecAfter");
+                return _recafter;
+            }
+            set
+            {
+                _recafter = value;
+                NotifyPropertyChanged("RecAfter");
+            }
+        }
+
+
+        private long _recsoglas;
+        /// <summary>
+        /// 31200900  (REC_SOGLAS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31200900)]
+        public long RecSoglas
+        {
+            get
+            {
+                CheckPropertyInited("RecSoglas");
+                return _recsoglas;
+            }
+            set
+            {
+                _recsoglas = value;
+                NotifyPropertyChanged("RecSoglas");
+            }
+        }
+
+
+        private long _idorg;
+        /// <summary>
+        /// 31201000  (ID_ORG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31201000)]
+        public long IdOrg
+        {
+            get
+            {
+                CheckPropertyInited("IdOrg");
+                return _idorg;
+            }
+            set
+            {
+                _idorg = value;
+                NotifyPropertyChanged("IdOrg");
+            }
+        }
+
+
+        private long _idfio;
+        /// <summary>
+        /// 31201100  (ID_FIO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31201100)]
+        public long IdFio
+        {
+            get
+            {
+                CheckPropertyInited("IdFio");
+                return _idfio;
+            }
+            set
+            {
+                _idfio = value;
+                NotifyPropertyChanged("IdFio");
+            }
+        }
+
+
+        private long _idsro;
+        /// <summary>
+        /// 31201200  (ID_SRO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31201200)]
+        public long IdSro
+        {
+            get
+            {
+                CheckPropertyInited("IdSro");
+                return _idsro;
+            }
+            set
+            {
+                _idsro = value;
+                NotifyPropertyChanged("IdSro");
+            }
+        }
+
+
+        private long _status;
+        /// <summary>
+        /// 31201300  (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31201300)]
+        public long Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 313 Справочник ФИО, организаций, СРО (SUD_DICT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 313)]
+    [Serializable]
+    public partial class OMDict : OMBaseClass<OMDict>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 31300100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _type;
+        /// <summary>
+        /// 31300200 Тип справочника (Физ.лицо, Организация, СРО) (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31300200)]
+        public long Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 31300300 Наименование (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31300300)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private long? _idparent;
+        /// <summary>
+        /// 31300400 Ссылка на родительскую запись (ID_PARENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31300400)]
+        public long? IdParent
+        {
+            get
+            {
+                CheckPropertyInited("IdParent");
+                return _idparent;
+            }
+            set
+            {
+                _idparent = value;
+                NotifyPropertyChanged("IdParent");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 314 Связь судебного дела и объекта (SUD_SUDLINK)
+    /// </summary>
+    [RegisterInfo(RegisterID = 314)]
+    [Serializable]
+    public partial class OMSudLink : OMBaseClass<OMSudLink>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 31400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _idobject;
+        /// <summary>
+        /// 31400200 Идентификатор объекта (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31400200)]
+        public long? IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private long? _idsud;
+        /// <summary>
+        /// 31400300 Идентификатор судебного дела (ID_SUD)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31400300)]
+        public long? IdSud
+        {
+            get
+            {
+                CheckPropertyInited("IdSud");
+                return _idsud;
+            }
+            set
+            {
+                _idsud = value;
+                NotifyPropertyChanged("IdSud");
+            }
+        }
+
+
+        private string _use;
+        /// <summary>
+        /// 31400400 Пока не используется (USE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31400400)]
+        public string Use
+        {
+            get
+            {
+                CheckPropertyInited("Use");
+                return _use;
+            }
+            set
+            {
+                _use = value;
+                NotifyPropertyChanged("Use");
+            }
+        }
+
+
+        private decimal? _rs;
+        /// <summary>
+        /// 31400500 Рыночная стоимость по судебному решению (RS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31400500)]
+        public decimal? Rs
+        {
+            get
+            {
+                CheckPropertyInited("Rs");
+                return _rs;
+            }
+            set
+            {
+                _rs = value;
+                NotifyPropertyChanged("Rs");
+            }
+        }
+
+
+        private decimal? _uprs;
+        /// <summary>
+        /// 31400600 Удельный показатель (UPRS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31400600)]
+        public decimal? Uprs
+        {
+            get
+            {
+                CheckPropertyInited("Uprs");
+                return _uprs;
+            }
+            set
+            {
+                _uprs = value;
+                NotifyPropertyChanged("Uprs");
+            }
+        }
+
+
+        private string _descr;
+        /// <summary>
+        /// 31400700 Примечание (DESCR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31400700)]
+        public string Descr
+        {
+            get
+            {
+                CheckPropertyInited("Descr");
+                return _descr;
+            }
+            set
+            {
+                _descr = value;
+                NotifyPropertyChanged("Descr");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 315 NULL (SUD_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 315)]
+    [Serializable]
+    public partial class OMObject : OMBaseClass<OMObject>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 31500100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _kn;
+        /// <summary>
+        /// 31500200 Кадастровый номер объекта (KN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31500200)]
+        public string Kn
+        {
+            get
+            {
+                CheckPropertyInited("Kn");
+                return _kn;
+            }
+            set
+            {
+                _kn = value;
+                NotifyPropertyChanged("Kn");
+            }
+        }
+
+
+        private DateTime? _date;
+        /// <summary>
+        /// 31500300 Дата определения стоимости (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31500300)]
+        public DateTime? Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private decimal? _square;
+        /// <summary>
+        /// 31500400 Площадь, кв. (SQUARE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31500400)]
+        public decimal? Square
+        {
+            get
+            {
+                CheckPropertyInited("Square");
+                return _square;
+            }
+            set
+            {
+                _square = value;
+                NotifyPropertyChanged("Square");
+            }
+        }
+
+
+        private decimal? _kc;
+        /// <summary>
+        /// 31500500 Оспариваемая КС (KC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31500500)]
+        public decimal? Kc
+        {
+            get
+            {
+                CheckPropertyInited("Kc");
+                return _kc;
+            }
+            set
+            {
+                _kc = value;
+                NotifyPropertyChanged("Kc");
+            }
+        }
+
+
+        private string _namecenter;
+        /// <summary>
+        /// 31500600 Наименование (ТЦ, БЦ) (NAME_CENTER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31500600)]
+        public string NameCenter
+        {
+            get
+            {
+                CheckPropertyInited("NameCenter");
+                return _namecenter;
+            }
+            set
+            {
+                _namecenter = value;
+                NotifyPropertyChanged("NameCenter");
+            }
+        }
+
+
+        private string _statdgi;
+        /// <summary>
+        /// 31500700 Внесено в статистику ДГИ (STAT_DGI)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31500700)]
+        public string StatDgi
+        {
+            get
+            {
+                CheckPropertyInited("StatDgi");
+                return _statdgi;
+            }
+            set
+            {
+                _statdgi = value;
+                NotifyPropertyChanged("StatDgi");
+            }
+        }
+
+
+        private string _owner;
+        /// <summary>
+        /// 31500800 Заказчик / Административный истец (OWNER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31500800)]
+        public string Owner
+        {
+            get
+            {
+                CheckPropertyInited("Owner");
+                return _owner;
+            }
+            set
+            {
+                _owner = value;
+                NotifyPropertyChanged("Owner");
+            }
+        }
+
+
+        private string _adres;
+        /// <summary>
+        /// 31500900  (ADRES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31500900)]
+        public string Adres
+        {
+            get
+            {
+                CheckPropertyInited("Adres");
+                return _adres;
+            }
+            set
+            {
+                _adres = value;
+                NotifyPropertyChanged("Adres");
+            }
+        }
+
+
+        private long? _typeobj;
+        /// <summary>
+        /// 31501000  (TYPEOBJ)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501000)]
+        public long? Typeobj
+        {
+            get
+            {
+                CheckPropertyInited("Typeobj");
+                return _typeobj;
+            }
+            set
+            {
+                _typeobj = value;
+                NotifyPropertyChanged("Typeobj");
+            }
+        }
+
+
+        private long? _workstat;
+        /// <summary>
+        /// 31501100  (WORKSTAT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501100)]
+        public long? Workstat
+        {
+            get
+            {
+                CheckPropertyInited("Workstat");
+                return _workstat;
+            }
+            set
+            {
+                _workstat = value;
+                NotifyPropertyChanged("Workstat");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 316 Судебное заседание (SUD_SUD)
+    /// </summary>
+    [RegisterInfo(RegisterID = 316)]
+    [Serializable]
+    public partial class OMSud : OMBaseClass<OMSud>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 31600100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 31600200 Наименование суда (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private string _number;
+        /// <summary>
+        /// 31600300 Номер судебного дела (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600300)]
+        public string Number
+        {
+            get
+            {
+                CheckPropertyInited("Number");
+                return _number;
+            }
+            set
+            {
+                _number = value;
+                NotifyPropertyChanged("Number");
+            }
+        }
+
+
+        private DateTime? _date;
+        /// <summary>
+        /// 31600400 Дата заседания (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600400)]
+        public DateTime? Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private DateTime? _suddate;
+        /// <summary>
+        /// 31600500 Дата судебного акта (SUD_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600500)]
+        public DateTime? SudDate
+        {
+            get
+            {
+                CheckPropertyInited("SudDate");
+                return _suddate;
+            }
+            set
+            {
+                _suddate = value;
+                NotifyPropertyChanged("SudDate");
+            }
+        }
+
+
+        private long? _status;
+        /// <summary>
+        /// 31600600 Статус дела (Отказано, Удовлетворено, Приостановлено.....) (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600600)]
+        public long? Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 317 Варианты значений полей со статусами (SUD_PARAM)
+    /// </summary>
+    [RegisterInfo(RegisterID = 317)]
+    [Serializable]
+    public partial class OMParam : OMBaseClass<OMParam>
+    {
+
+        private long _pid;
+        /// <summary>
+        /// 31700100 Идентификатор (PID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31700100)]
+        public long Pid
+        {
+            get
+            {
+                CheckPropertyInited("Pid");
+                return _pid;
+            }
+            set
+            {
+                _pid = value;
+                NotifyPropertyChanged("Pid");
+            }
+        }
+
+
+        private long _idtable;
+        /// <summary>
+        /// 31700200 Идентификатор таблицы (ID_TABLE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31700200)]
+        public long IdTable
+        {
+            get
+            {
+                CheckPropertyInited("IdTable");
+                return _idtable;
+            }
+            set
+            {
+                _idtable = value;
+                NotifyPropertyChanged("IdTable");
+            }
+        }
+
+
+        private long _id;
+        /// <summary>
+        /// 31700300 Идентификатор записи в таблице (ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31700300)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _paramname;
+        /// <summary>
+        /// 31700400 Имя поля в таблице (PARAM_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31700400)]
+        public string ParamName
+        {
+            get
+            {
+                CheckPropertyInited("ParamName");
+                return _paramname;
+            }
+            set
+            {
+                _paramname = value;
+                NotifyPropertyChanged("ParamName");
+            }
+        }
+
+
+        private DateTime? _paramdate;
+        /// <summary>
+        /// 31700500 Значение в формате даты (PARAM_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31700500)]
+        public DateTime? ParamDate
+        {
+            get
+            {
+                CheckPropertyInited("ParamDate");
+                return _paramdate;
+            }
+            set
+            {
+                _paramdate = value;
+                NotifyPropertyChanged("ParamDate");
+            }
+        }
+
+
+        private decimal? _paramdouble;
+        /// <summary>
+        /// 31700600 Значение в формате числа (PARAM_DOUBLE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31700600)]
+        public decimal? ParamDouble
+        {
+            get
+            {
+                CheckPropertyInited("ParamDouble");
+                return _paramdouble;
+            }
+            set
+            {
+                _paramdouble = value;
+                NotifyPropertyChanged("ParamDouble");
+            }
+        }
+
+
+        private string _paramchar;
+        /// <summary>
+        /// 31700700 Значение в формате текста (PARAM_CHAR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31700700)]
+        public string ParamChar
+        {
+            get
+            {
+                CheckPropertyInited("ParamChar");
+                return _paramchar;
+            }
+            set
+            {
+                _paramchar = value;
+                NotifyPropertyChanged("ParamChar");
+            }
+        }
+
+
+        private long? _paramint;
+        /// <summary>
+        /// 31700800 Значение в формате целого (PARAM_INT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31700800)]
+        public long? ParamInt
+        {
+            get
+            {
+                CheckPropertyInited("ParamInt");
+                return _paramint;
+            }
+            set
+            {
+                _paramint = value;
+                NotifyPropertyChanged("ParamInt");
+            }
+        }
+
+
+        private long _iduser;
+        /// <summary>
+        /// 31700900 Идентификатор пользователя (ID_USER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31700900)]
+        public long IdUser
+        {
+            get
+            {
+                CheckPropertyInited("IdUser");
+                return _iduser;
+            }
+            set
+            {
+                _iduser = value;
+                NotifyPropertyChanged("IdUser");
+            }
+        }
+
+
+        private DateTime _dateuser;
+        /// <summary>
+        /// 31701000 Дата изменения (DATE_USER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31701000)]
+        public DateTime DateUser
+        {
+            get
+            {
+                CheckPropertyInited("DateUser");
+                return _dateuser;
+            }
+            set
+            {
+                _dateuser = value;
+                NotifyPropertyChanged("DateUser");
+            }
+        }
+
+
+        private long _paramstatus;
+        /// <summary>
+        /// 31701100 Статус параметра (1-актуальный, 0 - неактуальный) (PARAM_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31701100)]
+        public long ParamStatus
+        {
+            get
+            {
+                CheckPropertyInited("ParamStatus");
+                return _paramstatus;
+            }
+            set
+            {
+                _paramstatus = value;
+                NotifyPropertyChanged("ParamStatus");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

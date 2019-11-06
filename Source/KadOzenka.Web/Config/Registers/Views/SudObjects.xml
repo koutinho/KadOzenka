@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="315" DefaultLayoutId="1003151" LinkedRegistersList="300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317" AllowSearchPanelResize="false" IsBasic="false"
+              OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
+  <Buttons>
+    <Button Caption="Все данные" NavigateURL="~/GbuObject/AllDataTree" Icon="icon-contract">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectID]" />
+      </Parameters>
+    </Button>
+
+    <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
+    
+  </Buttons>
+  
+</RegisterView>
