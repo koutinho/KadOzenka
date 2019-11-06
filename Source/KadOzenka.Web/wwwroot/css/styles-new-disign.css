@@ -1198,6 +1198,27 @@ div.forTooltips a[href=""]:empty {
 	flex: auto;
 }
 
+div#searchToolbar > div {
+	margin-left: 3px;
+	margin-right: 3px;
+}
+
+div#searchToolbar > div:nth-child(5) {
+	margin-right: 6px !important;
+}
+
+input#addressInput {
+	border-color: #e8e8f0;
+}
+
+input#addressInput:hover {
+	border-color: #b5bdcb;
+}
+
+input#addressInput:focus {
+	border-color: #b5bdcb;
+}
+
 #loginPage .logo-title-block #imgLogin {
 	width: 350px !important;
 	height: 88px !important;
