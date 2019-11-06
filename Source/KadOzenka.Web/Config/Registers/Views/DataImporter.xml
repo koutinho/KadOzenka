@@ -15,6 +15,13 @@
               <Parameter Key="importId" Value="[ObjectID]" />
               <Parameter Key="downloadResult" Value="true" />
           </Parameters>
+          <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                  <Conditions>
+                      <Condition Key="[80100300]" Operation="NotEqual" Value="2" />
+                  </Conditions>
+              </ConditionGroup>
+          </ConditionGroups>
       </Button>
       <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart" OpenInNewWindow="false" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
           <Parameters>
