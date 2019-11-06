@@ -1,15 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView IsBasic="true" RegisterId="800" DefaultLayoutId="1008001" Description="Менеджер загрузки" LinkedRegistersList="956,933,930,950"
+<RegisterView IsBasic="true" RegisterId="800" DefaultLayoutId="1008001" Description="Менеджер загрузки" LinkedRegistersList="800,950"
               ShowActualDate="false" UseMasterPage="true"
               SearchPanel="CoreRegisterLayoutExportAll" DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT">
   <Buttons>
-    <Button Caption="Скачать исходный шаблон" NavigateURL="/DataExport/DownloadExcelTemplate" OpenInNewWindow="true" SRDFunctionTag="CORE.REGISTER.EXPORT">
+    <Button Caption="Скачать исходный шаблон" NavigateURL="/DataExport/DownloadExcelTemplate" OpenInNewWindow="true" Icon="fas fa-arrow-down"
+            SRDFunctionTag="CORE.REGISTER.EXPORT">
       <Parameters>
         <Parameter Key="objectId" Value="[ObjectID]" />
         <Parameter Key="fileType" Value="Template" />
       </Parameters>      
     </Button>
-    <Button Caption="Скачать результат" NavigateURL="/DataExport/DownloadExcelTemplate" OpenInNewWindow="true" SRDFunctionTag="CORE.REGISTER.EXPORT">
+    
+    <Button Caption="Скачать результат" NavigateURL="/DataExport/DownloadExcelTemplate" OpenInNewWindow="true" Icon="fas fa-file-download"
+            SRDFunctionTag="CORE.REGISTER.EXPORT">
       <Parameters>
         <Parameter Key="objectId" Value="[ObjectID]" />
         <Parameter Key="fileType" Value="Result" />
@@ -22,7 +25,9 @@
         </ConditionGroup>
       </ConditionGroups>
     </Button>
-    <Button Caption="Повторить формирование" NavigateURL="/DataExport/RepeatFormation" OpenInNewWindow="false" NeedRefresh="true" WindowHeight="200" WindowWidth="400" SRDFunctionTag="CORE.REGISTER.EXPORT">
+    
+    <Button Caption="Повторить формирование" NavigateURL="/DataExport/RepeatFormation" OpenInNewWindow="false" Icon="fas fa-undo-alt"
+            NeedRefresh="true" WindowHeight="200" WindowWidth="400" SRDFunctionTag="CORE.REGISTER.EXPORT">
       <Parameters>
         <Parameter Key="objectId" Value="[ObjectID]" />
       </Parameters>

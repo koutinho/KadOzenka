@@ -4,13 +4,14 @@
               ShowActualDate="false" UseMasterPage="true" SearchPanel="CoreRegisterLayoutExportAll"
               DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT" ShowObjectCards="true">
   <Buttons>
-      <Button Caption="Скачать исходные данные" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true">
+      <Button Caption="Скачать исходные данные" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-arrow-down">
           <Parameters>
               <Parameter Key="importId" Value="[ObjectID]" />
               <Parameter Key="downloadResult" Value="false" />
           </Parameters>
       </Button>
-      <Button Caption="Скачать результат" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true">
+    
+      <Button Caption="Скачать результат" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-file-download">
           <Parameters>
               <Parameter Key="importId" Value="[ObjectID]" />
               <Parameter Key="downloadResult" Value="true" />
@@ -23,7 +24,9 @@
               </ConditionGroup>
           </ConditionGroups>
       </Button>
-      <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart" OpenInNewWindow="false" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
+    
+      <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart" OpenInNewWindow="false" Icon="fas fa-undo-alt"
+              NeedRefresh="true" WindowHeight="200" WindowWidth="400">
           <Parameters>
               <Parameter Key="importId" Value="[ObjectID]" />
           </Parameters>

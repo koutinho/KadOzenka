@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Core.SRD;
 using Core.ErrorManagment;
+using ObjectModel.Core.Shared;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -44,54 +45,54 @@ namespace KadOzenka.Dal.DataImport
 				return;
 			}
 
-			OMImportFromTemplates export = OMImportFromTemplates
+			OMImportFromTemplates import = OMImportFromTemplates
 				.Where(x => x.Id == processQueue.ObjectId)
 				.SelectAll()
 				.Execute()
 				.FirstOrDefault();
 
-			if (export == null)
+			if (import == null)
 			{
 				return;
 			}
 
-			export.Status = 1;
-			export.DateStarted = DateTime.Now;
-			export.Save();
+			import.Status = 1;
+			import.DateStarted = DateTime.Now;
+			import.Save();
 
 			// Запустить формирование файла
-			var templateFile = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, GetTemplateName(export.Id));
+			var templateFile = FileStorageManager.GetFileStream(FileStorageName, import.DateCreated, GetTemplateName(import.Id));
 
 			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
-			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
+			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
 			
-			Stream resultFile = ImportDataFromExcel((int)export.MainRegisterId, excelTemplate, columns);
+			Stream resultFile = ImportDataFromExcel((int)import.MainRegisterId, excelTemplate, columns);
 
 			// Сохранение файла
-			export.Status = 2;
-			export.DateFinished = DateTime.Now;
-			export.Save();
+			import.Status = 2;
+			import.DateFinished = DateTime.Now;
+			import.Save();
 			
-			FileStorageManager.Save(resultFile, FileStorageName, export.DateFinished.Value, GetResultFileName(export.Id));
+			FileStorageManager.Save(resultFile, FileStorageName, import.DateFinished.Value, GetResultFileName(import.Id));
 		}
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
-			OMImportFromTemplates export = OMImportFromTemplates
+			OMImportFromTemplates import = OMImportFromTemplates
 				.Where(x => x.Id == objectId)
 				.SelectAll()
 				.Execute()
 				.FirstOrDefault();
 
-			if (export == null)
+			if (import == null)
 			{
 				return;
 			}
 
-			export.Status = 3;
-			export.DateFinished = DateTime.Now;
-			export.ResultMessage = $"{ex.Message} (журнал № {errorId})";
-			export.Save();
+			import.Status = 3;
+			import.DateFinished = DateTime.Now;
+			import.ResultMessage = $"{ex.Message}{(errorId != null ? $" (журнал № {errorId})" : String.Empty)}";
+			import.Save();
 		}
 
 		public bool Test()
@@ -133,10 +134,12 @@ namespace KadOzenka.Dal.DataImport
 			ParallelOptions options = new ParallelOptions
 			{
 				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 10
+				MaxDegreeOfParallelism = 1
 			};
 
 			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+
+			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 
 			List<string> columnNames = new List<string>();
 			for (int i = 0; i < maxColumns; i++)
@@ -153,7 +156,7 @@ namespace KadOzenka.Dal.DataImport
 						// Найти ИД объекта по ключевым полям
 												
 						List<QSCondition> conditions = new List<QSCondition>();
-					
+											
 						foreach (var keyColumn in columns.Where(x => x.IsKey))
 						{
 							int index = columnNames.IndexOf(keyColumn.ColumnName);
@@ -181,7 +184,7 @@ namespace KadOzenka.Dal.DataImport
 
 						DataTable dt = query.ExecuteQuery();
 
-						if (dt.Rows.Count > 0)
+						if (dt.Rows.Count == 1)
 						{
 							long objectId = dt.Rows[0]["ID"].ParseToLong();
 													   							 						  
@@ -192,19 +195,55 @@ namespace KadOzenka.Dal.DataImport
 								int cell = columnNames.IndexOf(column.ColumnName);
 								object value = mainWorkSheet.Rows[row.Index].Cells[cell].Value;
 
-								registerObject.SetAttributeValue((int)column.AttributrId, value);
+								var attributeData = RegisterCache.GetAttributeData((int)column.AttributrId);
+								int referenceItemId = -1;
+
+								if(attributeData.CodeField.IsNotEmpty() && attributeData.ReferenceId > 0)
+								{
+									OMReferenceItem item = OMReferenceItem.Where(x => x.ReferenceId == x.ReferenceId && x.Value == value).ExecuteFirstOrDefault();
+									if (item != null) referenceItemId = (int)item.ItemId;
+								}
+
+								switch(attributeData.Type)
+								{
+									case RegisterAttributeType.INTEGER:
+										value = value.ParseToLongNullable();
+										break;
+									case RegisterAttributeType.DECIMAL:
+										value = value.ParseToDecimalNullable();
+										break;
+									case RegisterAttributeType.BOOLEAN:
+										value = value.ParseToBooleanNullable();
+										break;
+									case RegisterAttributeType.STRING:
+										value = value.ToString();
+										break;
+									case RegisterAttributeType.DATE:
+										value = value.ParseToDateTimeNullable();
+										break;
+								}
+
+								registerObject.SetAttributeValue((int)column.AttributrId, value, referenceItemId);
 							}
 
 							RegisterStorage.Save(registerObject);
 
 							mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
 						}
+						else if(dt.Rows.Count == 0)
+						{
+							mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Не успешно: не найден объект в БД");
+						}
+						else
+						{
+							mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Не успешно: в БД найдено несколько объектов: {dt.Rows.Count}");
+						}
 					}
 				}
 				catch (Exception ex)
 				{
-					ErrorManager.LogError(ex);
-					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue(ex.Message);
+					long errorId = ErrorManager.LogError(ex);
+					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
 				}
 			});
 

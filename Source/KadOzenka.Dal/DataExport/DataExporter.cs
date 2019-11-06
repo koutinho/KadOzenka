@@ -87,7 +87,7 @@ namespace KadOzenka.Dal.DataExport
 
 			export.Status = 3;
 			export.DateFinished = DateTime.Now;
-			export.ResultMessage = $"{ex.Message} (журнал № {errorId})";
+			export.ResultMessage = $"{ex.Message}{(errorId != null ? $" (журнал № {errorId})" : String.Empty)}";
 			export.Save();
 		}
 		
