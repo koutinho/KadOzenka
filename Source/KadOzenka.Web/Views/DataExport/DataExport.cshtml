@@ -195,6 +195,7 @@
 					<span><a class="k-button k-delete-button deleteButton" href="\\#"><span class="k-icon k-i-close"></span></a></span>
 				</span>
 			</div>
+		</div>
 	</script>
 
 	<script>
@@ -475,7 +476,7 @@
 			const check = e.checked;
 			const listView = $("#listView").data('kendoListView');
 			const node = $(e).closest(".matchItem");
-			const dataItem = listView.dataItem(node).IsKey = check;
+			listView.dataItem(node).IsKey = check;
 		};
 
 		function resetData() {
