@@ -1,0 +1,120 @@
+﻿
+@model KadOzenka.Web.Models.Sud.ObjectCardModel
+
+@using (Html.BeginForm("EditObjectCard", "Sud", FormMethod.Post))
+{
+	<ul id="ls_panelbar" class="panelbar">
+		<li id="Section_Object" data-expand>
+			<span>Основные данные</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Kn)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoTextBoxFor(m => m.Kn, editMode: false)
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Date)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoDatePickerFor(m => m.Date)
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Square)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoNumericTextBoxFor(m => m.Square, editMode: false)
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Kc)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoNumericTextBoxFor(m => m.Kc, editMode: false)
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Address)
+						</div>
+						<div class="col-sm-10">
+							@Html.TextAreaFor(m => m.Address, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "readonly" })
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.NameCenter)
+						</div>
+						<div class="col-sm-10">
+							@Html.TextAreaFor(m => m.NameCenter, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "readonly" })
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.StatDgi)
+						</div>
+						<div class="col-sm-10">
+							@Html.TextAreaFor(m => m.StatDgi, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "readonly" })
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Owner)
+						</div>
+						<div class="col-sm-10">
+							@Html.TextAreaFor(m => m.Owner, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "readonly" })
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.AdditionalAnalysisRequired)
+						</div>
+						<div class="col-sm-10">
+							@Html.KendoCheckBoxFor(m => m.AdditionalAnalysisRequired, false)
+						</div>
+					</div>
+				</div>
+			</div>
+		</li>
+		<li id="Section_Reports" data-expand>
+			<span>Отчеты</span>
+		</li>
+		<li id="Section_Conclusions" data-expand>
+			<span>Заключения</span>
+		</li>
+		<li id="Section_Judgments" data-expand>
+			<span>Судебные решения</span>
+		</li>
+		<li id="Section_DrsCalculation" data-expand>
+			<span>Расчет ДРС</span>
+		</li>
+	</ul>
+	<div class="static-nav">
+		<nav id="navigation-menu">
+			<a href="#Section_Object">Основные данные</a>
+			<a href="#Section_Reports">Отчеты</a>
+			<a href="#Section_Judgments">Заключения</a>
+			<a href="#Section_Judgments">Судебные решения</a>
+			<a href="#Section_DrsCalculation">Расчет ДРС</a>
+		</nav>
+	</div>
+}
+
+@section scripts {
+<script src="~/js/jquery.fancybox.min.js"></script>
+
+<script>
+	$(document).ready(function () {
+		const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+		panelbar.expand('li[data-expand]');
+
+		$("#navigation-menu a").mPageScroll2id({
+			highlightSelector: "#navigation-menu a"
+		});
+	});
+</script>
+}
