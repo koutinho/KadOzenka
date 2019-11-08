@@ -134,8 +134,10 @@ namespace KadOzenka.Dal.DataExport
 				throw new Exception("Не указана ни одна ключевая колонка");
 			}
 
+			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+
 			List<string> columnNames = new List<string>();
-			for (int i = 0; i < columns.Count; i++)
+			for (int i = 0; i < maxColumns; i++)
 			{
 				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 			}
