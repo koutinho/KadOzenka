@@ -361,9 +361,9 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
         /// <summary>
-        /// Отсутствует адрес (763)
+        /// Некорректный адрес (763)
         /// </summary>
-        [Description("Отсутствует адрес")]
+        [Description("Некорректный адрес")]
         [EnumCode("1")]
         NoAddress = 763,
         /// <summary>

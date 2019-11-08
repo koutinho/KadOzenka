@@ -1209,7 +1209,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 301 NULL
+    /// 301 Журнал
     /// </summary>
     public partial class OMLog
     {
@@ -1305,7 +1305,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 305 NULL
+    /// 305 Статус объекта
     /// </summary>
     public partial class OMObjectStatus
     {
@@ -1329,7 +1329,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 306 NULL
+    /// 306 Связь отчета и статуса
     /// </summary>
     public partial class OMOtchetLinkStatus
     {
@@ -1353,7 +1353,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 307 NULL
+    /// 307 Статус объекта
     /// </summary>
     public partial class OMOtchetStatus
     {
@@ -1401,7 +1401,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 309 NULL
+    /// 309 Связь суда и статуса
     /// </summary>
     public partial class OMSudLinkStatus
     {
@@ -1425,7 +1425,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 310 NULL
+    /// 310 Статус
     /// </summary>
     public partial class OMSudStatus
     {
@@ -1449,7 +1449,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 311 NULL
+    /// 311 Связь заключения и статуса
     /// </summary>
     public partial class OMZakLinkStatus
     {
@@ -1473,7 +1473,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 312 NULL
+    /// 312 Статус заключения
     /// </summary>
     public partial class OMZakStatus
     {
@@ -1545,7 +1545,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 315 NULL
+    /// 315 Объект
     /// </summary>
     public partial class OMObject
     {

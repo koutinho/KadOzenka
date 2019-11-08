@@ -4551,7 +4551,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 301 NULL (SUD_LOG)
+    /// 301 Журнал (SUD_LOG)
     /// </summary>
     [RegisterInfo(RegisterID = 301)]
     [Serializable]
@@ -5359,7 +5359,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 305 NULL (SUD_OBJECTSTATUS)
+    /// 305 Статус объекта (SUD_OBJECTSTATUS)
     /// </summary>
     [RegisterInfo(RegisterID = 305)]
     [Serializable]
@@ -5591,7 +5591,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 306 NULL (SUD_OTCHETLINKSTATUS)
+    /// 306 Связь отчета и статуса (SUD_OTCHETLINKSTATUS)
     /// </summary>
     [RegisterInfo(RegisterID = 306)]
     [Serializable]
@@ -5763,7 +5763,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 307 NULL (SUD_OTCHETSTATUS)
+    /// 307 Статус объекта (SUD_OTCHETSTATUS)
     /// </summary>
     [RegisterInfo(RegisterID = 307)]
     [Serializable]
@@ -6187,7 +6187,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 309 NULL (SUD_SUDLINKSTATUS)
+    /// 309 Связь суда и статуса (SUD_SUDLINKSTATUS)
     /// </summary>
     [RegisterInfo(RegisterID = 309)]
     [Serializable]
@@ -6359,7 +6359,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 310 NULL (SUD_SUDSTATUS)
+    /// 310 Статус (SUD_SUDSTATUS)
     /// </summary>
     [RegisterInfo(RegisterID = 310)]
     [Serializable]
@@ -6511,7 +6511,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 311 NULL (SUD_ZAKLINKSTATUS)
+    /// 311 Связь заключения и статуса (SUD_ZAKLINKSTATUS)
     /// </summary>
     [RegisterInfo(RegisterID = 311)]
     [Serializable]
@@ -6683,7 +6683,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 312 NULL (SUD_ZAKSTATUS)
+    /// 312 Статус заключения (SUD_ZAKSTATUS)
     /// </summary>
     [RegisterInfo(RegisterID = 312)]
     [Serializable]
@@ -7199,7 +7199,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 315 NULL (SUD_OBJECT)
+    /// 315 Объект (SUD_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 315)]
     [Serializable]
