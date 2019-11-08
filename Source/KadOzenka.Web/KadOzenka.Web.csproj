@@ -453,6 +453,7 @@
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="Config\Reports\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\Sud\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 
