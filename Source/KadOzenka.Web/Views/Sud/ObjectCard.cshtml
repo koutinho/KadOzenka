@@ -28,7 +28,7 @@
 							@Html.CustomLabelFor(m => m.Square)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Square, editMode: false)
+							@Html.KendoNumericTextBoxFor(m => m.Square, editMode: false )
 						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Kc)
@@ -80,16 +80,16 @@
 				</div>
 			</div>
 		</li>
-        <li id="Section_Reports" data-expand>
-            <span>Отчеты</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudOtchetCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
-                    <div class="form-group"></div>
-                </div>
-            </div>
-        </li>
+		<li id="Section_Reports" data-expand>
+			<span>Отчеты</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudOtchetCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
+					<div class="form-group"></div>
+				</div>
+			</div>
+		</li>
 		<li id="Section_Conclusions" data-expand>
 			<span>Заключения</span>
 		</li>
@@ -98,6 +98,124 @@
 		</li>
 		<li id="Section_DrsCalculation" data-expand>
 			<span>Расчет ДРС</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="form-group"></div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.DrsGroup)
+						</div>
+						<div class="col-sm-10">
+							@Html.KendoTextBoxFor(m => m.DrsGroup, editMode: false)
+						</div>
+					</div>
+					<fieldset id="drsSquareFieldset">
+						<legend>Площадь</legend>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Basement)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.Basement, editMode: false)
+							</div>
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Socle)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.Socle, editMode: false)
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Trade)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.Trade, editMode: false)
+							</div>
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Office)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.Office, editMode: false)
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Production)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.Production, editMode: false)
+							</div>
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Parking)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.Parking, editMode: false)
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Social)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.Social, editMode: false)
+							</div>
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.Apartments)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.Apartments, editMode: false)
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-2">
+								@Html.CustomLabelFor(m => m.OtherPurpose)
+							</div>
+							<div class="col-sm-4">
+								@Html.KendoNumericTextBoxFor(m => m.OtherPurpose, editMode: false)
+							</div>
+						</div>
+					</fieldset>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.TechnicalCondition)
+						</div>
+						<div class="col-sm-10">
+							@Html.KendoTextBoxFor(m => m.TechnicalCondition, editMode: false)
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.RecountReason)
+						</div>
+						<div class="col-sm-10">
+							@Html.KendoTextBoxFor(m => m.RecountReason, editMode: false)
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Updrs)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoNumericTextBoxFor(m => m.Updrs, editMode: false)
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.Drs)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoNumericTextBoxFor(m => m.Drs, editMode: false)
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.DrsOwner)
+						</div>
+						<div class="col-sm-10">
+							@Html.KendoTextBoxFor(m => m.Drs, editMode: false)
+						</div>
+					</div>
+				</div>
+			</div>
 		</li>
 	</ul>
 	<div class="static-nav">
@@ -111,17 +229,31 @@
 	</div>
 }
 
+@section styles {
+	<link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+	<style>
+		fieldset#drsSquareFieldset {
+			border: 1px solid #c8c6cc;
+			border-radius: 6px;
+			margin-bottom: 10px;
+		}
+		fieldset#drsSquareFieldset legend {
+			font-size: initial;
+		}
+	</style>
+}
+
 @section scripts {
-<script src="~/js/jquery.fancybox.min.js"></script>
+	<script src="~/js/jquery.fancybox.min.js"></script>
 
-<script>
-	$(document).ready(function () {
-		const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
-		panelbar.expand('li[data-expand]');
+	<script>
+		$(document).ready(function () {
+			const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+			panelbar.expand('li[data-expand]');
 
-		$("#navigation-menu a").mPageScroll2id({
-			highlightSelector: "#navigation-menu a"
+			$("#navigation-menu a").mPageScroll2id({
+				highlightSelector: "#navigation-menu a"
+			});
 		});
-	});
-</script>
+	</script>
 }

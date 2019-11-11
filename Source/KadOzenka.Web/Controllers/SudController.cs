@@ -17,8 +17,12 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.Id == id)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
+			var drs = OMDRS
+				.Where(x => x.IdObject == id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
 
-			return View(ObjectCardModel.FromOMObject(obj));
+			return View(ObjectCardModel.FromOM(obj, drs));
 		}
 
 		[HttpPost]
