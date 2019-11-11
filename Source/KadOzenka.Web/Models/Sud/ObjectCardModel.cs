@@ -32,6 +32,7 @@ namespace KadOzenka.Web.Models.Sud
 		{
 			return new ObjectCardModel
 			{
+				Id = omObject.Id,
 				Kn = omObject.Kn,
 				Date = omObject.Date,
 				Square = omObject.Square,
