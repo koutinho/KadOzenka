@@ -36,7 +36,7 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.Id == reportLinkId)
 				.Execute().FirstOrDefault();
 
-			ReportLinkModel model = reportLinkId != 0 && reportLink != null ? ReportLinkModel.FromEntity(reportLink) : new ReportLinkModel();
+			ReportLinkModel model = reportLinkId != 0 && reportLink != null ? ReportLinkModel.FromEntity(reportLink) : ReportLinkModel.FromEntity(new OMOtchetLink());
 
 
 			return View(model);
@@ -45,21 +45,42 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult ReportLink(ReportLinkModel reportLinkViewModel)
 		{
-			var errros = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+			if (!ModelState.IsValid)
 			{
-				Control = x.Key,
-				Message = string.Join("\n", x.Value.Errors.Select(e =>
+				return Json(new
 				{
-					if (e.ErrorMessage == "The value '' is invalid.")
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
 					{
-						return $"{e.ErrorMessage} Поле {x.Key}";
-					}
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
 
-					return e.ErrorMessage;
-				}))
+							return e.ErrorMessage;
+						}))
+					})
 			});
+			}
 
-			return Json(new { });
+			OMOtchetLink reportLink = OMOtchetLink
+				.Where(x => x.Id == reportLinkViewModel.Id)
+				.Execute().FirstOrDefault(); ;
+
+			if (reportLinkViewModel.Id != -1 && reportLink == null)
+			{
+				return NotFound();
+			}
+
+			reportLinkViewModel.ToEntity(reportLink);
+
+			// вызов сервиса
+			// передать reportLink
+
+
+			return Json(new { Success = "Сохранено успешно" });
 		}
 	}
 }

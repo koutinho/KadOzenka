@@ -1313,3 +1313,31 @@ Array.prototype.remove = function (x) {
     if (i === -1) return;
     this.splice(i, 1);
 }
+
+$(function () {
+	var notificationPanel = $('#notificationPanel').data('kendoNotification');
+
+	if (notificationPanel) {
+		notificationPanel.setOptions({
+			position: {
+				pinned: true
+			},
+			stacking: 'down',
+			show: function (e) {
+				if (e.sender.getNotifications().length == 1) {
+					var element = e.element.parent(),
+						eWidth = element.width(),
+						eHeight = element.height(),
+						wWidth = $(window).width(),
+						wHeight = $(window).height(),
+						newTop, newLeft;
+
+					newLeft = Math.floor(wWidth / 2 - eWidth / 2);
+					newTop = Math.floor(10);
+
+					e.element.parent().css({ top: newTop, left: newLeft });
+				}
+			}
+		});
+	}
+});
