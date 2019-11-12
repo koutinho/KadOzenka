@@ -91,5 +91,44 @@ namespace KadOzenka.Web.Models.Sud
 				DrsOwner = omDrs.DrsOwner
 			};
 		}
+
+		public static void ToOM(ObjectCardModel model, ref OMObject omObject, ref OMDRS omDrs)
+		{
+			if (omObject == null)
+			{
+				throw new ArgumentNullException(nameof(OMObject));
+			}
+			if (omDrs == null)
+			{
+				throw new ArgumentNullException(nameof(OMDRS));
+			}
+
+			omObject.Kn = model.Kn;
+			omObject.Date = model.Date;
+			omObject.Square = model.Square;
+			omObject.Kc = model.Kc;
+			omObject.Typeobj = model.ObjectType;
+			omObject.Adres = model.Address;
+			omObject.NameCenter = model.NameCenter;
+			omObject.StatDgi = model.StatDgi;
+			omObject.Owner = model.Owner;
+			omObject.Workstat = model.AdditionalAnalysisRequired.GetValueOrDefault(false) ? 1 : 0;
+
+			omDrs.DrsGroup = model.DrsGroup;
+			omDrs.DrsSq1 = model.Basement;
+			omDrs.DrsSq2 = model.Socle;
+			omDrs.DrsSq3 = model.Trade;
+			omDrs.DrsSq4 = model.Office;
+			omDrs.DrsSq5 = model.Production;
+			omDrs.DrsSq6 = model.Parking;
+			omDrs.DrsSq7 = model.Social;
+			omDrs.DrsSq8 = model.Apartments;
+			omDrs.DrsSq9 = model.OtherPurpose;
+			omDrs.DrsSost = model.TechnicalCondition;
+			omDrs.DrsPrichin = model.RecountReason;
+			omDrs.DrsUpdrs = model.Updrs;
+			omDrs.DrsDrs = model.Drs;
+			omDrs.DrsOwner = model.DrsOwner;
+		}
 	}
 }

@@ -1,8 +1,11 @@
-﻿
+﻿@using Newtonsoft.Json;
+@using System.ComponentModel.DataAnnotations;
+
 @model KadOzenka.Web.Models.Sud.ObjectCardModel
 
 @using (Html.BeginForm("EditObjectCard", "Sud", FormMethod.Post))
 {
+	<input type="hidden" name="Id" value="@Model.Id" id="Id" />
 	<ul id="ls_panelbar" class="panelbar">
 		<li id="Section_Object" data-expand>
 			<span>Основные данные</span>
@@ -20,7 +23,7 @@
 							@Html.CustomLabelFor(m => m.Date)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoDatePickerFor(m => m.Date)
+							@Html.KendoDatePickerFor(m => m.Date, editMode: false)
 						</div>
 					</div>
 					<div class="form-group">
@@ -28,13 +31,21 @@
 							@Html.CustomLabelFor(m => m.Square)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Square, editMode: false )
+							@Html.KendoNumericTextBoxFor(m => m.Square, precision: 2, editMode: false)
 						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Kc)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Kc, editMode: false)
+							@Html.KendoNumericTextBoxFor(m => m.Kc, precision: 2, editMode: false)
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.ObjectType)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoDropDownListFor(m => m.ObjectType, "GetObjectTypes", "Sud", new { objectId = Model.Id }, "Id", "Name", editMode: false)
 						</div>
 					</div>
 					<div class="form-group">
@@ -74,7 +85,7 @@
 							@Html.CustomLabelFor(m => m.AdditionalAnalysisRequired)
 						</div>
 						<div class="col-sm-10">
-							@Html.KendoCheckBoxFor(m => m.AdditionalAnalysisRequired, false)
+							@Html.KendoCheckBoxFor(m => m.AdditionalAnalysisRequired, editMode: false)
 						</div>
 					</div>
 				</div>
@@ -116,13 +127,13 @@
 								@Html.CustomLabelFor(m => m.Basement)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Basement, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Basement, precision: 2, editMode: false)
 							</div>
 							<div class="col-sm-2">
 								@Html.CustomLabelFor(m => m.Socle)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Socle, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Socle, precision: 2, editMode: false)
 							</div>
 						</div>
 						<div class="form-group">
@@ -130,13 +141,13 @@
 								@Html.CustomLabelFor(m => m.Trade)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Trade, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Trade, precision: 2, editMode: false)
 							</div>
 							<div class="col-sm-2">
 								@Html.CustomLabelFor(m => m.Office)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Office, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Office, precision: 2, editMode: false)
 							</div>
 						</div>
 						<div class="form-group">
@@ -144,13 +155,13 @@
 								@Html.CustomLabelFor(m => m.Production)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Production, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Production, precision: 2, editMode: false)
 							</div>
 							<div class="col-sm-2">
 								@Html.CustomLabelFor(m => m.Parking)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Parking, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Parking, precision: 2, editMode: false)
 							</div>
 						</div>
 						<div class="form-group">
@@ -158,13 +169,13 @@
 								@Html.CustomLabelFor(m => m.Social)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Social, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Social, precision: 2, editMode: false)
 							</div>
 							<div class="col-sm-2">
 								@Html.CustomLabelFor(m => m.Apartments)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Apartments, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Apartments, precision: 2, editMode: false)
 							</div>
 						</div>
 						<div class="form-group">
@@ -172,7 +183,7 @@
 								@Html.CustomLabelFor(m => m.OtherPurpose)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.OtherPurpose, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.OtherPurpose, precision: 2, editMode: false)
 							</div>
 						</div>
 					</fieldset>
@@ -197,13 +208,13 @@
 							@Html.CustomLabelFor(m => m.Updrs)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Updrs, editMode: false)
+							@Html.KendoNumericTextBoxFor(m => m.Updrs, precision: 2, editMode: false)
 						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Drs)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Drs, editMode: false)
+							@Html.KendoNumericTextBoxFor(m => m.Drs, precision: 2, editMode: false)
 						</div>
 					</div>
 					<div class="form-group">
@@ -225,6 +236,7 @@
 			<a href="#Section_Judgments">Заключения</a>
 			<a href="#Section_Judgments">Судебные решения</a>
 			<a href="#Section_DrsCalculation">Расчет ДРС</a>
+			<div id="toolbar"></div>
 		</nav>
 	</div>
 }
@@ -237,8 +249,15 @@
 			border-radius: 6px;
 			margin-bottom: 10px;
 		}
-		fieldset#drsSquareFieldset legend {
-			font-size: initial;
+
+			fieldset#drsSquareFieldset legend {
+				font-size: initial;
+			}
+
+		#toolbar {
+			position: absolute;
+			bottom: 20px;
+			width: 95%;
 		}
 	</style>
 }
@@ -247,13 +266,176 @@
 	<script src="~/js/jquery.fancybox.min.js"></script>
 
 	<script>
-		$(document).ready(function () {
+		$(document).ready(function() {
 			const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
 			panelbar.expand('li[data-expand]');
 
 			$("#navigation-menu a").mPageScroll2id({
 				highlightSelector: "#navigation-menu a"
 			});
+
+			const toolbar = $("#toolbar").kendoToolBar({
+				items: [
+					{
+						type: 'button',
+						id: 'reloadCardBtn',
+						text: '',
+						click: function() {
+							updateData(() => { Common.ShowMessage('Данные успешно обновлены'); });
+						},
+						icon: 'refresh',
+						hidden: false
+					},
+					{
+						type: 'button',
+						id: 'editBtn',
+						text: '',
+						click: function () {
+							var inputsList = @Html.Raw(JsonConvert.SerializeObject(Model.GetType().GetProperties()
+								                 .Where(prop => prop.IsDefined(typeof(DisplayAttribute), true))
+								                 .Select(p => p.Name).ToList()));
+							inputsList.forEach((el) => {
+								var element = $('form').find('[name="' + el + '"]');
+								if (element) {
+									element.attr('editMode', 'true');
+								}
+							});
+							KendoExtension.ToggleEditMode(true);
+							toolbar.hide($('#editBtn'));
+							toolbar.show($('#saveBtn'));
+							toolbar.show($('#cancelBtn'));
+						},
+						icon: 'edit',
+						hidden: false
+					},
+					{
+						type: 'button',
+						id: 'saveBtn',
+						text: '',
+						click: function() {
+							kendo.ui.progress($('body'), true);
+							var form = $('form');
+							var formObject = Common.Functions.FormToObject(form);
+
+							$.ajax({
+								type: form.attr('method'),
+								url: form.attr('action'),
+								data: formObject,
+								success: function(data) {
+									kendo.ui.progress($('body'), false);
+									if (data.Errors) {
+										var errors = $.map(distinctErrors(data.Errors),
+											function(el) {
+												return el.Message;
+											});
+										Common.ShowError(errors);
+										return;
+									}
+									if (data.Success) {
+										Common.ShowMessage(data.Success);
+										updateData(() => {
+											KendoExtension.ToggleEditMode(false);
+											toolbar.show($('#editBtn'));
+											toolbar.hide($('#saveBtn'));
+											toolbar.hide($('#cancelBtn'));
+										});
+									}
+								},
+								error: function(response) {
+									kendo.ui.progress($('body'), false);
+									Common.ShowError(response.responseText);
+								}
+							});
+						},
+						icon: 'save',
+						hidden: true
+					},
+					{
+						type: 'button',
+						id: 'cancelBtn',
+						text: '',
+						click: function() {
+							kendo.ui.progress($('body'), true);
+
+							var id = $('#Id').val();
+							var rootWindow = window;
+							if (rootWindow.parent !== undefined)
+								rootWindow = rootWindow.parent;
+							rootWindow.location = '@Url.Content("~/ObjectCard?ObjId=")' +
+								id +
+								'&RegisterViewId=SudObjects&isVertical=true&useMasterPage=true';
+						},
+						icon: 'cancel',
+						hidden: true
+					}
+				]
+			}).data('kendoToolBar');
+
+			$("#toolbar").kendoTooltip({
+				filter: "a.k-button",
+				content: function(e) {
+					switch ($(e.target).attr('id')) {
+					case "reloadCardBtn":
+						return "Обновить";
+					case "editBtn":
+						return "Редактировать";
+					case "saveBtn":
+						return "Сохранить";
+					case "cancelBtn":
+						return "Отмена";
+					case "print":
+						return "Печать";
+					}
+				},
+				position: "top",
+				autoHide: true,
+				showAfter: 500
+			});
+
 		});
+
+		function distinctErrors(errors) {
+			var result = [];
+			$.each(errors,
+				function(index, event) {
+					var events = $.grep(result,
+						function(e) {
+							return event.Message === e.Message;
+						});
+					if (events.length === 0) {
+						result.push(event);
+					}
+				});
+
+			return result;
+		}
+
+		function updateData(successCallbackFunc) {
+			var id = $('#Id').val();
+			kendo.ui.progress($('body'), true);
+			$.ajax({
+				type: 'GET',
+				url: '@Url.Action("GetObjectInfo", "Sud")',
+				data: { 'id': id },
+				success: function(response) {
+					kendo.ui.progress($('body'), false);
+
+					if (response.Errors && response.Errors[0]) {
+						Common.ShowError(response.Errors);
+						return;
+					}
+					var form = $('form');
+					Common.Functions.ObjectToForm(response.Data, form);
+
+					if (successCallbackFunc) {
+						successCallbackFunc();
+					}
+				},
+				error: function(response) {
+					kendo.ui.progress($('body'), false);
+					Common.ShowError(response && response.responseText);
+				}
+			});
+		}
 	</script>
 }

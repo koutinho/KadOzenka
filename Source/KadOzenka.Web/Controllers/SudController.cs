@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Core.UI.Registers.Controllers;
-using DevExpress.DataProcessing.InMemoryDataProcessor;
 using KadOzenka.Web.Models.Sud;
 using Kendo.Mvc.Extensions;
+using Newtonsoft.Json;
 using ObjectModel.Sud;
+using System.Transactions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -25,10 +28,77 @@ namespace KadOzenka.Web.Controllers
 			return View(ObjectCardModel.FromOM(obj, drs));
 		}
 
+		[HttpGet]
+		public IActionResult GetObjectInfo(long id)
+		{
+			var obj = OMObject
+				.Where(x => x.Id == id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			var drs = OMDRS
+				.Where(x => x.IdObject == id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return JsonResponse(ObjectCardModel.FromOM(obj, drs));
+		}
+
+		[HttpGet]
+		public ContentResult GetObjectTypes(long objectId)
+		{
+			var list = new List<object>();
+			list.Add(new {Id=1, Name="Тип объекта 1"});
+			list.Add(new {Id=2, Name="Тип объекта 2"});
+			list.Add(new {Id=3, Name="Тип объекта 3"});
+
+			return Content(JsonConvert.SerializeObject(list), "application/json");
+		}
+
 		[HttpPost]
 		public ActionResult EditObjectCard(ObjectCardModel data)
 		{
-			return EmptyResponse();
+			if (data == null)
+			{
+				throw new ArgumentNullException(nameof(ObjectCardModel));
+			}
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			using (var ts = new TransactionScope())
+			{
+				var obj = OMObject
+					.Where(x => x.Id == data.Id)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+				var drs = OMDRS
+					.Where(x => x.IdObject == data.Id)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+				ObjectCardModel.ToOM(data, ref obj, ref drs);
+
+				obj.Save();
+				drs.Save();
+				ts.Complete();
+			}
+
+			return Json(new { Success = "Сохранено успешно" });
 		}
 
 		[HttpGet]
