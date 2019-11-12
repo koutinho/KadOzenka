@@ -417,7 +417,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.15" />
-    <PackageReference Include="Platform.Web" Version="1.0.211" />
+    <PackageReference Include="Platform.Web" Version="1.0.204" />
   </ItemGroup>
 
   <ItemGroup>
@@ -677,7 +677,12 @@
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudOtchetLinkCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudOtchetSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudReshLinkCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudReshSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudZakLinkCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudZakSelect.xml" />
   </ItemGroup>
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />

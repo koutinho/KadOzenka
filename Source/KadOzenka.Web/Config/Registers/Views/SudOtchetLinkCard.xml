@@ -2,10 +2,10 @@
 <RegisterView RegisterId="304" DefaultLayoutId="1003041" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
     <Buttons>
-      <Button Caption="Добавить" NavigateURL="/Sud/ReportLink" WindowHeight="300" WindowWidth="500">
+      <Button Caption="Добавить" NavigateURL="/Sud/ReportLink" WindowHeight="450" WindowWidth="800">
         <Parameters></Parameters>
       </Button>
-      <Button Caption="Редактировать" NavigateURL="/Sud/ReportLink" WindowHeight="300" WindowWidth="500">
+      <Button Caption="Редактировать" NavigateURL="/Sud/ReportLink" WindowHeight="450" WindowWidth="800">
         <Parameters>
           <Parameter Key="OtchetLinkId" Value="[ObjectID]" />
         </Parameters>

@@ -99,17 +99,31 @@
 			<div>
 				<div class="form-horizontal col-sm-12">
 					<div class="form-group"></div>
-					<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudOtchetCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
+					<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudOtchetLinkCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
 					<div class="form-group"></div>
 				</div>
 			</div>
 		</li>
-		<li id="Section_Conclusions" data-expand>
-			<span>Заключения</span>
-		</li>
-		<li id="Section_Judgments" data-expand>
-			<span>Судебные решения</span>
-		</li>
+        <li id="Section_Conclusions" data-expand>
+            <span>Заключения</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudZakLinkCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
+                    <div class="form-group"></div>
+                </div>
+             </div>
+        </li>
+        <li id="Section_Judgments" data-expand>
+            <span>Судебные решения</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudReshLinkCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
+                    <div class="form-group"></div>
+                </div>
+            </div>
+        </li>
 		<li id="Section_DrsCalculation" data-expand>
 			<span>Расчет ДРС</span>
 			<div>
