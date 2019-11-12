@@ -425,7 +425,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.15" />
-    <PackageReference Include="Platform.Web" Version="1.0.204" />
+    <PackageReference Include="Platform.Web" Version="1.0.211" />
   </ItemGroup>
 
   <ItemGroup>

@@ -53,7 +53,7 @@
 							@Html.CustomLabelFor(m => m.Address)
 						</div>
 						<div class="col-sm-10">
-							@Html.TextAreaFor(m => m.Address, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "readonly" })
+							@Html.TextAreaFor(m => m.Address, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @readonly = "readonly" })
 						</div>
 					</div>
 					<div class="form-group">
@@ -61,7 +61,7 @@
 							@Html.CustomLabelFor(m => m.NameCenter)
 						</div>
 						<div class="col-sm-10">
-							@Html.TextAreaFor(m => m.NameCenter, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "readonly" })
+							@Html.TextAreaFor(m => m.NameCenter, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px", @readonly = "readonly" })
 						</div>
 					</div>
 					<div class="form-group">
@@ -69,7 +69,7 @@
 							@Html.CustomLabelFor(m => m.StatDgi)
 						</div>
 						<div class="col-sm-10">
-							@Html.TextAreaFor(m => m.StatDgi, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "readonly" })
+							@Html.TextAreaFor(m => m.StatDgi, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px", @readonly = "readonly" })
 						</div>
 					</div>
 					<div class="form-group">
@@ -77,7 +77,7 @@
 							@Html.CustomLabelFor(m => m.Owner)
 						</div>
 						<div class="col-sm-10">
-							@Html.TextAreaFor(m => m.Owner, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;", @readonly = "readonly" })
+							@Html.TextAreaFor(m => m.Owner, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 5px", @readonly = "readonly" })
 						</div>
 					</div>
 					<div class="form-group">
@@ -93,30 +93,36 @@
 		</li>
 		<li id="Section_Reports" data-expand>
 			<span>Отчеты</span>
-			<div>
+			<div style="height: auto">
 				<div class="form-horizontal col-sm-12">
 					<div class="form-group"></div>
-					<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudOtchetLinkCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
+					<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudOtchetLinkCard")" 
+                         data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" 
+                         data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid304"></div>
 					<div class="form-group"></div>
 				</div>
 			</div>
 		</li>
         <li id="Section_Conclusions" data-expand>
             <span>Заключения</span>
-            <div>
+            <div style="height: auto">
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
-                    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudZakLinkCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
+                    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudZakLinkCard")" 
+                         data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" 
+                         data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid302"></div>
                     <div class="form-group"></div>
                 </div>
              </div>
         </li>
         <li id="Section_Judgments" data-expand>
             <span>Судебные решения</span>
-            <div>
+            <div style="height: auto">
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
-                    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudReshLinkCard")" data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" data-param-partialview="true" data-loader="true"></div>
+                    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/SudReshLinkCard")" 
+                         data-param-SudObjectId="@Model.Id" data-param-Pageable="false" data-param-Scrollable="true" 
+                         data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid314"></div>
                     <div class="form-group"></div>
                 </div>
             </div>
@@ -286,7 +292,27 @@
 
 			$("#navigation-menu a").mPageScroll2id({
 				highlightSelector: "#navigation-menu a"
-			});
+            });
+
+            $.ajaxDataLoader.addMethod('resizeGrid302', function() {
+                resizeGrid($("#Grid-302"));
+            });
+
+            $.ajaxDataLoader.addMethod('resizeGrid304', function () {
+                resizeGrid($("#Grid-304"));
+            });
+
+            $.ajaxDataLoader.addMethod('resizeGrid314', function () {
+                resizeGrid($("#Grid-314"));
+            });
+
+            function resizeGrid(grid) {
+                if (grid.length) {
+                    var dataArea = grid.find(".k-grid-content");
+                    grid.css('height', '100%');
+                    dataArea.css('height', '100%');
+                }
+            }
 
 			const toolbar = $("#toolbar").kendoToolBar({
 				items: [
