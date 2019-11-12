@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="308" LinkedRegistersList="308,307" DefaultLayoutId="1003042" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
+              ShowSettingsPanel="false" UseMasterPage="false" SearchPanel="SudOtchetSelect" SRDFunctionTag="">
+    <Buttons>
+      <Button Caption="Выбрать" NavigateURL="/" />
+      
+      <Button Caption="Добавить" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800">
+        <Parameters></Parameters>
+      </Button>
+      
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800">
+        <Parameters>
+          <Parameter Key="reportId" Value="[ObjectID]" />
+        </Parameters>
+      </Button>
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>
