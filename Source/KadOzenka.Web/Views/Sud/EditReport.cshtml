@@ -1,96 +1,101 @@
 ﻿@model KadOzenka.Web.Models.Sud.ReportModel
 
-@using (Html.BeginForm("EditReport", "Sud", FormMethod.Post))
+@using (Html.BeginForm("EditReport", "Sud", FormMethod.Post, htmlAttributes: new { @id="reportForm"}))
 {
 	@Html.HiddenFor(m => m.Id)
 	@Html.HiddenFor(m => m.IdFio)
 	@Html.HiddenFor(m => m.IdOrg)
 	@Html.HiddenFor(m => m.IdSro)
-	<div class="form-horizontal col-sm-12">
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.Number)
-			</div>
-			<div class="col-sm-10">
-				@Html.TextAreaFor(m => m.Number, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none; padding: 10px;" })
-			</div>
+<div class="form-horizontal col-sm-12">
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.Number)
 		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.ReportDate)
-			</div>
-			<div class="col-sm-4">
-				@Html.KendoDatePickerFor(m => m.ReportDate, false)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.Org)
-			</div>
-			<div class="col-sm-8">
-				@Html.TextBoxFor(m => m.Org, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
-			</div>
-			<div class="col-sm-2">
-				<a class="k-button k-button-icon">
-					<span class="k-icon k-i-close"></span>
-				</a>
-				<a class="k-button k-button-icon">
-					<span class="k-icon k-i-edit"></span>
-				</a>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.Fio)
-			</div>
-			<div class="col-sm-8">
-				@Html.TextBoxFor(m => m.Fio, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
-			</div>
-			<div class="col-sm-2">
-				<a class="k-button k-button-icon">
-					<span class="k-icon k-i-close"></span>
-				</a>
-				<a class="k-button k-button-icon">
-					<span class="k-icon k-i-edit"></span>
-				</a>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.Sro)
-			</div>
-			<div class="col-sm-8">
-				@Html.TextBoxFor(m => m.Sro, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
-			</div>
-			<div class="col-sm-2">
-				<a class="k-button k-button-icon">
-					<span class="k-icon k-i-close"></span>
-				</a>
-				<a class="k-button k-button-icon">
-					<span class="k-icon k-i-edit"></span>
-				</a>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.DateIn)
-			</div>
-			<div class="col-sm-4">
-				@Html.KendoDatePickerFor(m => m.DateIn, false)
-			</div>
-			<div class="col-sm-4">
-				@Html.KendoCheckBox("Жалоба в СРО", "Claim", Model.Claim, false)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor("Файл документа")
-			</div>
-			<div class="col-sm-10">
-				<input name="files" id="files" type="file" aria-label="files" accept="*" />
-			</div>
+		<div class="col-sm-10">
+			@Html.TextAreaFor(m => m.Number, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none; padding: 10px;" })
 		</div>
 	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.ReportDate, true)
+		</div>
+		<div class="col-sm-4">
+			@Html.KendoDatePickerFor(m => m.ReportDate, false)
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.Org)
+		</div>
+		<div class="col-sm-8">
+			@Html.TextBoxFor(m => m.Org, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
+		</div>
+		<div class="col-sm-2">
+			<a class="k-button k-button-icon">
+				<span class="k-icon k-i-close"></span>
+			</a>
+			<a class="k-button k-button-icon">
+				<span class="k-icon k-i-edit"></span>
+			</a>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.Fio)
+		</div>
+		<div class="col-sm-8">
+			@Html.TextBoxFor(m => m.Fio, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
+		</div>
+		<div class="col-sm-2">
+			<a class="k-button k-button-icon">
+				<span class="k-icon k-i-close"></span>
+			</a>
+			<a class="k-button k-button-icon">
+				<span class="k-icon k-i-edit"></span>
+			</a>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.Sro, true)
+		</div>
+		<div class="col-sm-8">
+			@Html.TextBoxFor(m => m.Sro, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
+		</div>
+		<div class="col-sm-2">
+			<a class="k-button k-button-icon">
+				<span class="k-icon k-i-close"></span>
+			</a>
+			<a class="k-button k-button-icon">
+				<span class="k-icon k-i-edit"></span>
+			</a>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.DateIn)
+		</div>
+		<div class="col-sm-4">
+			@Html.KendoDatePickerFor(m => m.DateIn, false)
+		</div>
+		<div class="col-sm-4">
+			@Html.KendoCheckBox("Жалоба в СРО", "Claim", Model.Claim, false)
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Файл документа")
+		</div>
+		<div class="col-sm-10">
+			<input name="files" id="files" type="file" aria-label="files" accept="*" />
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-12">
+			<button style="float: right" id="save" type="button">Сохранить</button>
+		</div>
+	</div>
+</div>
 }
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -104,8 +109,23 @@
 				autoUpload: false
 			},
 			validation: {
-				allowedExtensions: ['.xls', '.xlsx']
+				allowedExtensions: []
 			}
 		}).data('kendoUpload');
-	})
+	});
+	$('#save').on('click',
+		function() {
+			var form = $('form');
+			var formObject = Common.Functions.FormToObject(form);
+			$.ajax({
+				url: form.attr('action'),
+				data: formObject,
+				processData: false,
+				contentType: false,
+				type: 'POST',
+				success: function (data) {
+					console.log(data);
+				}
+			});
+		});
 </script>

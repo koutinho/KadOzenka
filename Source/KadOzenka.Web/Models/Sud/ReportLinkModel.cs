@@ -14,7 +14,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// Идентификатор отчета
 		/// </summary>
 		[Required(ErrorMessage = "Поле Отчет об оценке обязательное")]
-		[Range(1, long.MaxValue, ErrorMessage = "Недопустимый идентификатор отчета")]
+		[Range(1, long.MaxValue, ErrorMessage = "Поле Отчет об оценке обязательное")]
 		public long IdReport { get; set; }
 
 		/// <summary>
@@ -41,7 +41,12 @@ namespace KadOzenka.Web.Models.Sud
 		/// </summary>
 		public string Descr { get; set; }
 
-		public static ReportLinkModel FromEntity(OMOtchetLink entity)
+		/// <summary>
+		/// Номер отчета
+		/// </summary>
+		public string ReportNumber { get; set; }
+
+		public static ReportLinkModel FromEntity(OMOtchetLink entity, OMOtchet report)
 		{
 			var res = new ReportLinkModel
 			{
@@ -50,7 +55,8 @@ namespace KadOzenka.Web.Models.Sud
 				Descr = entity.Descr,
 				Rs = entity.Rs.GetValueOrDefault(),
 				Uprs = entity.Uprs.GetValueOrDefault(),
-				Use = entity.Use
+				Use = entity.Use,
+				ReportNumber = report.Number
 			};
 
 			return res;

@@ -6,6 +6,7 @@ using KadOzenka.Web.Models.Sud;
 using Kendo.Mvc.Extensions;
 using ObjectModel.Sud;
 using System.Transactions;
+using Microsoft.AspNetCore.Http;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -89,23 +90,32 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult ReportLink(int reportLinkId)
+		public ActionResult EditReportLink(int reportLinkId)
 		{
-			OMOtchetLink reportLink;
-
-			reportLink = OMOtchetLink
+			OMOtchetLink reportLink = OMOtchetLink
 				.Where(x => x.Id == reportLinkId)
 				.SelectAll()
 				.Execute().FirstOrDefault();
 
-			ReportLinkModel model = reportLinkId != 0 && reportLink != null ? ReportLinkModel.FromEntity(reportLink) : ReportLinkModel.FromEntity(new OMOtchetLink());
+			OMOtchet report = null;
+
+			if (reportLink != null)
+			{
+				report = OMOtchet
+					.Where(x => x.Id == reportLink.IdOtchet)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+			}
+
+			ReportLinkModel model = reportLinkId != 0 && reportLink != null && report !=null
+				? ReportLinkModel.FromEntity(reportLink, report) : ReportLinkModel.FromEntity(new OMOtchetLink(), new OMOtchet());
 
 
 			return View(model);
 		}
 
 		[HttpPost]
-		public ActionResult ReportLink(ReportLinkModel reportLinkViewModel)
+		public ActionResult EditReportLink(ReportLinkModel reportLinkViewModel)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -167,7 +177,38 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult EditReport(ReportModel reportViewModel)
 		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}"; 
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
 			return EmptyResponse();
+		}
+
+		[HttpGet]
+		public JsonResult GetReportData(int reportId)
+		{
+			OMOtchet report = OMOtchet
+				.Where(x => x.Id == reportId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return Json(new {data = report});
 		}
 	}
 }

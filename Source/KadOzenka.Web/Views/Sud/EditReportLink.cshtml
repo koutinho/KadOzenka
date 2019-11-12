@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Sud.ReportLinkModel
+﻿@using ObjectModel.Sud
+@model KadOzenka.Web.Models.Sud.ReportLinkModel
 
 @using (Html.BeginForm("ReportLink", "Sud", FormMethod.Post))
 {
@@ -10,13 +11,13 @@
 				@Html.CustomLabelFor("Отчет об оценке", true)
 			</div>
 			<div class="col-sm-8">
-				@Html.TextBoxFor(m => m.IdReport, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
+				@Html.TextBoxFor(m => m.ReportNumber, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
 			</div>
 			<div class="col-sm-2">
-				<a class="k-button k-button-icon">
+				<a class="k-button k-button-icon" id="clearReport">
 					<span class="k-icon k-i-close"></span>
 				</a>
-				<a class="k-button k-button-icon">
+				<a class="k-button k-button-icon" id="selectReport">
 					<span class="k-icon k-i-edit"></span>
 				</a>
 			</div>
@@ -95,5 +96,38 @@
 					Common.ShowMessage(response.Success);
 				}
 			});
+		});
+
+	
+	$('#selectReport').on('click', function () {
+		var contentUrl = '@Url.Action("SudOtchetSelect", "RegistersView")';
+		var title = 'Выбор отчета';
+
+		var callbackFn = function (item) {
+			console.log('test', item);
+			kendo.ui.progress($('body'), true);
+			$('[name="IdReport"]').val(item.ID);
+			$.ajax({
+				type: 'GET',
+				url: '@Url.Action("GetReportData", "Sud")',
+				data: { 'reportId': item.ID },
+				dataType: 'json',
+				success: function (response) {
+					if (response && !$.isEmptyObject(response)) {
+						console.log('response', response);
+						$('#@Html.IdFor(m => m.ReportNumber)').val(response.data.Number);
+					}
+					kendo.ui.progress($('body'), false);
+				}
+			});
+		}
+		console.log('run');
+		Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMOtchet.GetRegisterId()');
+	});
+
+	$('#clearReport').on('click',
+		function() {
+			$('#@Html.IdFor(m => m.ReportNumber)').val(null);
+			$('#@Html.IdFor(m => m.IdReport)').val(0);
 		});
 </script>
