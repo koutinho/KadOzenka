@@ -2,6 +2,9 @@
 @using System.ComponentModel.DataAnnotations;
 
 @model KadOzenka.Web.Models.Sud.ObjectCardModel
+@{
+	var cultureRu = new System.Globalization.CultureInfo("ru-Ru");
+}
 
 @using (Html.BeginForm("EditObjectCard", "Sud", FormMethod.Post))
 {
@@ -17,13 +20,13 @@
 							@Html.CustomLabelFor(m => m.Kn)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoTextBoxFor(m => m.Kn, editMode: false)
+							@Html.KendoTextBoxFor(m => m.Kn)
 						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Date)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoDatePickerFor(m => m.Date, editMode: false)
+							@Html.KendoDatePickerFor(m => m.Date, format: "dd.MM.yyyy")
 						</div>
 					</div>
 					<div class="form-group">
@@ -31,13 +34,13 @@
 							@Html.CustomLabelFor(m => m.Square)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Square, precision: 2, editMode: false)
+							@Html.KendoNumericTextBoxFor(m => m.Square, precision: 2)
 						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Kc)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Kc, precision: 2, editMode: false)
+							@Html.KendoNumericTextBoxFor(m => m.Kc, precision: 2)
 						</div>
 					</div>
 					<div class="form-group">
@@ -45,7 +48,7 @@
 							@Html.CustomLabelFor(m => m.ObjectType)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoDropDownListFor(m => m.ObjectType, "GetObjectTypes", "Sud", new { objectId = Model.Id }, "Id", "Name", editMode: false)
+							@Html.KendoDropDownListFor(m => m.ObjectType, "GetObjectTypes", "Sud", new { objectId = Model.Id }, "Id", "Name")
 						</div>
 					</div>
 					<div class="form-group">
@@ -85,7 +88,7 @@
 							@Html.CustomLabelFor(m => m.AdditionalAnalysisRequired)
 						</div>
 						<div class="col-sm-10">
-							@Html.KendoCheckBoxFor(m => m.AdditionalAnalysisRequired, editMode: false)
+							@Html.KendoCheckBoxFor(m => m.AdditionalAnalysisRequired)
 						</div>
 					</div>
 				</div>
@@ -117,7 +120,7 @@
 							@Html.CustomLabelFor(m => m.DrsGroup)
 						</div>
 						<div class="col-sm-10">
-							@Html.KendoTextBoxFor(m => m.DrsGroup, editMode: false)
+							@Html.KendoTextBoxFor(m => m.DrsGroup)
 						</div>
 					</div>
 					<fieldset id="drsSquareFieldset">
@@ -127,13 +130,13 @@
 								@Html.CustomLabelFor(m => m.Basement)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Basement, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Basement, precision: 2)
 							</div>
 							<div class="col-sm-2">
 								@Html.CustomLabelFor(m => m.Socle)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Socle, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Socle, precision: 2)
 							</div>
 						</div>
 						<div class="form-group">
@@ -141,13 +144,13 @@
 								@Html.CustomLabelFor(m => m.Trade)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Trade, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Trade, precision: 2)
 							</div>
 							<div class="col-sm-2">
 								@Html.CustomLabelFor(m => m.Office)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Office, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Office, precision: 2)
 							</div>
 						</div>
 						<div class="form-group">
@@ -155,13 +158,13 @@
 								@Html.CustomLabelFor(m => m.Production)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Production, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Production, precision: 2)
 							</div>
 							<div class="col-sm-2">
 								@Html.CustomLabelFor(m => m.Parking)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Parking, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Parking, precision: 2)
 							</div>
 						</div>
 						<div class="form-group">
@@ -169,13 +172,13 @@
 								@Html.CustomLabelFor(m => m.Social)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Social, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Social, precision: 2)
 							</div>
 							<div class="col-sm-2">
 								@Html.CustomLabelFor(m => m.Apartments)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.Apartments, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.Apartments, precision: 2)
 							</div>
 						</div>
 						<div class="form-group">
@@ -183,7 +186,7 @@
 								@Html.CustomLabelFor(m => m.OtherPurpose)
 							</div>
 							<div class="col-sm-4">
-								@Html.KendoNumericTextBoxFor(m => m.OtherPurpose, precision: 2, editMode: false)
+								@Html.KendoNumericTextBoxFor(m => m.OtherPurpose, precision: 2)
 							</div>
 						</div>
 					</fieldset>
@@ -192,7 +195,7 @@
 							@Html.CustomLabelFor(m => m.TechnicalCondition)
 						</div>
 						<div class="col-sm-10">
-							@Html.KendoTextBoxFor(m => m.TechnicalCondition, editMode: false)
+							@Html.KendoTextBoxFor(m => m.TechnicalCondition)
 						</div>
 					</div>
 					<div class="form-group">
@@ -200,7 +203,7 @@
 							@Html.CustomLabelFor(m => m.RecountReason)
 						</div>
 						<div class="col-sm-10">
-							@Html.KendoTextBoxFor(m => m.RecountReason, editMode: false)
+							@Html.KendoTextBoxFor(m => m.RecountReason)
 						</div>
 					</div>
 					<div class="form-group">
@@ -208,13 +211,13 @@
 							@Html.CustomLabelFor(m => m.Updrs)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Updrs, precision: 2, editMode: false)
+							@Html.KendoNumericTextBoxFor(m => m.Updrs, precision: 2)
 						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Drs)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Drs, precision: 2, editMode: false)
+							@Html.KendoNumericTextBoxFor(m => m.Drs, precision: 2)
 						</div>
 					</div>
 					<div class="form-group">
@@ -222,7 +225,7 @@
 							@Html.CustomLabelFor(m => m.DrsOwner)
 						</div>
 						<div class="col-sm-10">
-							@Html.KendoTextBoxFor(m => m.Drs, editMode: false)
+							@Html.KendoTextBoxFor(m => m.Drs)
 						</div>
 					</div>
 				</div>
