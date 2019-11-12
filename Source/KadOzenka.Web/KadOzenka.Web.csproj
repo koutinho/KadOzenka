@@ -686,6 +686,12 @@
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudDictOcenschik.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudDictOcenschikSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudDictOrganisations.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudDictOrganisationsSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudDictSro.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudDictSroSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudOtchetLinkCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudOtchetSelect.xml" />
