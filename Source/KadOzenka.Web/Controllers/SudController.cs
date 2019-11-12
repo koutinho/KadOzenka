@@ -108,6 +108,7 @@ namespace KadOzenka.Web.Controllers
 
 			reportLink = OMOtchetLink
 				.Where(x => x.Id == reportLinkId)
+				.SelectAll()
 				.Execute().FirstOrDefault();
 
 			ReportLinkModel model = reportLinkId != 0 && reportLink != null ? ReportLinkModel.FromEntity(reportLink) : ReportLinkModel.FromEntity(new OMOtchetLink());
@@ -141,20 +142,45 @@ namespace KadOzenka.Web.Controllers
 
 			OMOtchetLink reportLink = OMOtchetLink
 				.Where(x => x.Id == reportLinkViewModel.Id)
-				.Execute().FirstOrDefault(); ;
+				.SelectAll()
+				.Execute().FirstOrDefault();
 
 			if (reportLinkViewModel.Id != -1 && reportLink == null)
 			{
 				return NotFound();
 			}
 
-			reportLinkViewModel.ToEntity(reportLink);
+			if (reportLink == null)
+			{
+				reportLink = new OMOtchetLink();
+			}
 
-			// вызов сервиса
-			// передать reportLink
+			ReportLinkModel.ToEntity(reportLinkViewModel, ref reportLink);
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = reportLink.Save();
+				ts.Complete();
+			}
 
+			reportLinkViewModel.Id = id;
+			return Json(new { Success = "Сохранено успешно", data = reportLinkViewModel });
+		}
 
-			return Json(new { Success = "Сохранено успешно" });
+		[HttpGet]
+		public ActionResult EditReport(int reportId)
+		{
+			OMOtchet report = OMOtchet
+				.Where(x => x.Id == reportId)
+				.ExecuteFirstOrDefault();
+
+			return View(new ReportModel());
+		}
+
+		[HttpPost]
+		public ActionResult EditReport(ReportModel reportViewModel)
+		{
+			return EmptyResponse();
 		}
 	}
 }

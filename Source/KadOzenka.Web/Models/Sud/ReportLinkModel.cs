@@ -57,28 +57,14 @@ namespace KadOzenka.Web.Models.Sud
 
 		}
 
-		public OMOtchetLink ToEntity(OMOtchetLink entity)
+		public static void ToEntity(ReportLinkModel model, ref OMOtchetLink reportLink)
 		{
-			if (entity == null)
-			{
-				return new OMOtchetLink()
-				{
-					IdOtchet = IdReport,
-					Rs = Rs,
-					Uprs = Uprs,
-					Descr = Descr,
-					Use = Use
-				};
 
-			}
-
-			entity.IdOtchet = IdReport;
-			entity.Rs = Rs;
-			entity.Uprs = Uprs;
-			entity.Descr = Descr;
-			entity.Use = Use;
-
-			return entity;
+			reportLink.IdOtchet = model.IdReport;
+			reportLink.Rs = model.Rs;
+			reportLink.Uprs = model.Uprs;
+			reportLink.Descr = model.Descr;
+			reportLink.Use = model.Use;
 		}
 	}
 

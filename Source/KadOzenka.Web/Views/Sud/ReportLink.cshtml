@@ -3,13 +3,14 @@
 @using (Html.BeginForm("ReportLink", "Sud", FormMethod.Post))
 {
 	@Html.HiddenFor(m => m.Id)
+	@Html.HiddenFor(m => m.IdReport)
 	<div class="form-horizontal col-sm-12">
 		<div class="form-group">
 			<div class="col-sm-2">
 				@Html.CustomLabelFor("Отчет об оценке", true)
 			</div>
 			<div class="col-sm-8">
-				@Html.TextBoxFor(m => m.IdReport, new { @class = "k-textbox", @disabled=true, @style = "width: 100%;" })
+				@Html.TextBoxFor(m => m.IdReport, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
 			</div>
 			<div class="col-sm-2">
 				<a class="k-button k-button-icon">
@@ -73,23 +74,26 @@
 		return result;
 	}
 
-	$('#save').on('click', function () {
-		var form = $('form');
-		var formObject = Common.Functions.FormToObject(form);
-		kendo.ui.progress($('body'), true);
+	$('#save').on('click',
+		function() {
+			var form = $('form');
+			var formObject = Common.Functions.FormToObject(form);
+			kendo.ui.progress($('body'), true);
 
-		$.post(form.attr('action'), formObject).done(function(data) {
-			kendo.ui.progress($('body'), false);
-			if (data.Errors) {
-				var errors = $.map(distinctErrors(data.Errors), function (el) {
-					return el.Message;
-				});
-				Common.ShowError(errors);
-				return;
-			}
-			if (data.Success) {
-				Common.ShowMessage(data.Success);
-			}
+			$.post(form.attr('action'), formObject).done(function(response) {
+				kendo.ui.progress($('body'), false);
+				if (response.Errors) {
+					var errors = $.map(distinctErrors(response.Errors),
+						function(el) {
+							return el.Message;
+						});
+					Common.ShowError(errors);
+					return;
+				}
+				if (response.Success && response.data) {
+					$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+					Common.ShowMessage(response.Success);
+				}
+			});
 		});
-	})
 </script>
