@@ -390,6 +390,18 @@ namespace ObjectModel.Directory
         [Description("Дубль")]
         [EnumCode("5")]
         Duplicate = 767,
+        /// <summary>
+        /// Не Москва (768)
+        /// </summary>
+        [Description("Не Москва")]
+        [EnumCode("6")]
+        NoLocation = 768,
+        /// <summary>
+        /// Коридор цен (769)
+        /// </summary>
+        [Description("Коридор цен")]
+        [EnumCode("7")]
+        IncorrectPrice = 769,
     }
 
     /// <summary>
@@ -502,6 +514,56 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+    }
+
+    /// <summary>
+    /// Тип объекта судебного решения (300)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 300)]
+    public enum SudObjectType : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// Участок (770)
+        /// </summary>
+        [Description("Участок")]
+        [EnumCode("1")]
+        Site = 770,
+        /// <summary>
+        /// Здание (771)
+        /// </summary>
+        [Description("Здание")]
+        [EnumCode("2")]
+        Building = 771,
+        /// <summary>
+        /// Помещение (772)
+        /// </summary>
+        [Description("Помещение")]
+        [EnumCode("3")]
+        Room = 772,
+        /// <summary>
+        /// Сооружение (773)
+        /// </summary>
+        [Description("Сооружение")]
+        [EnumCode("4")]
+        Construction = 773,
+        /// <summary>
+        /// Онс (774)
+        /// </summary>
+        [Description("Онс")]
+        [EnumCode("5")]
+        Ons = 774,
+        /// <summary>
+        /// Машиноместо (775)
+        /// </summary>
+        [Description("Машиноместо")]
+        [EnumCode("6")]
+        ParkingPlace = 775,
     }
 
 }

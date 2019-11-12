@@ -1227,3 +1227,8 @@ input#addressInput:focus {
 	-webkit-filter: brightness(0.8);
 	filter: brightness(0.8);
 }
+
+.static-nav > nav > .k-toolbar > a {
+	padding: 3px 0;
+	display: inline-block;
+}

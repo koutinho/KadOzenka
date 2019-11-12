@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using ObjectModel.Directory;
 using ObjectModel.Sud;
+using Core.Shared.Extensions;
 
 namespace KadOzenka.Web.Models.Sud
 {
@@ -16,7 +18,7 @@ namespace KadOzenka.Web.Models.Sud
 		[Display(Name = "Оспариваемая стоимость")]
 		public decimal? Kc { get; set; }
 		[Display(Name = "Тип объекта")]
-		public long? ObjectType { get; set; }
+		public SudObjectType? ObjectType { get; set; }
 		[Display(Name = "Адрес")]
 		public string Address { get; set; }
 		[Display(Name = "Наименование (ТЦ, БЦ)")]
@@ -61,14 +63,14 @@ namespace KadOzenka.Web.Models.Sud
 
 		public static ObjectCardModel FromOM(OMObject omObject, OMDRS omDrs)
 		{
-			return new ObjectCardModel
+			var model = new ObjectCardModel
 			{
 				Id = omObject.Id,
 				Kn = omObject.Kn,
 				Date = omObject.Date,
 				Square = omObject.Square,
 				Kc = omObject.Kc,
-				ObjectType = omObject.Typeobj,
+				ObjectType = EnumExtensions.GetEnumValueByCode<SudObjectType>(omObject.Typeobj.GetValueOrDefault(0).ToString()),
 				Address = omObject.Adres,
 				NameCenter = omObject.NameCenter,
 				StatDgi = omObject.StatDgi,
@@ -90,6 +92,7 @@ namespace KadOzenka.Web.Models.Sud
 				Drs = omDrs.DrsDrs,
 				DrsOwner = omDrs.DrsOwner
 			};
+			return model;
 		}
 
 		public static void ToOM(ObjectCardModel model, ref OMObject omObject, ref OMDRS omDrs)
@@ -107,7 +110,7 @@ namespace KadOzenka.Web.Models.Sud
 			omObject.Date = model.Date;
 			omObject.Square = model.Square;
 			omObject.Kc = model.Kc;
-			omObject.Typeobj = model.ObjectType;
+			omObject.Typeobj = model.ObjectType == SudObjectType.None ? (long?) null : long.Parse(model.ObjectType.GetEnumCode());
 			omObject.Adres = model.Address;
 			omObject.NameCenter = model.NameCenter;
 			omObject.StatDgi = model.StatDgi;

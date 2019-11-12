@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Core.UI.Registers.Controllers;
 using KadOzenka.Web.Models.Sud;
 using Kendo.Mvc.Extensions;
-using Newtonsoft.Json;
 using ObjectModel.Sud;
 using System.Transactions;
 
@@ -41,17 +39,6 @@ namespace KadOzenka.Web.Controllers
 				.ExecuteFirstOrDefault();
 
 			return JsonResponse(ObjectCardModel.FromOM(obj, drs));
-		}
-
-		[HttpGet]
-		public ContentResult GetObjectTypes(long objectId)
-		{
-			var list = new List<object>();
-			list.Add(new {Id=1, Name="Тип объекта 1"});
-			list.Add(new {Id=2, Name="Тип объекта 2"});
-			list.Add(new {Id=3, Name="Тип объекта 3"});
-
-			return Content(JsonConvert.SerializeObject(list), "application/json");
 		}
 
 		[HttpPost]

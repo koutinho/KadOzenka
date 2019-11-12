@@ -1191,7 +1191,7 @@ namespace ObjectModel.Market
 
         private string _exclusionstatus;
         /// <summary>
-        /// 10006001 Статус исключения (EXCLUSION_STATUS)
+        /// 10006001 Причина исключения (EXCLUSION_STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10006001)]
         public string ExclusionStatus
@@ -1211,7 +1211,7 @@ namespace ObjectModel.Market
 
         private ExclusionStatus _exclusionstatus_Code;
         /// <summary>
-        /// 10006001 Статус исключения (справочный код) (EXCLUSION_STATUS_CODE)
+        /// 10006001 Причина исключения (справочный код) (EXCLUSION_STATUS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10006001)]
         public ExclusionStatus ExclusionStatus_Code
@@ -7208,7 +7208,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 31500100  (ID)
+        /// 31500100 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 31500100)]
         public long Id
@@ -7368,7 +7368,7 @@ namespace ObjectModel.Sud
 
         private string _adres;
         /// <summary>
-        /// 31500900  (ADRES)
+        /// 31500900 Адрес (ADRES)
         /// </summary>
         [RegisterAttribute(AttributeID = 31500900)]
         public string Adres
@@ -7388,7 +7388,7 @@ namespace ObjectModel.Sud
 
         private long? _typeobj;
         /// <summary>
-        /// 31501000  (TYPEOBJ)
+        /// 31501000 Тип объекта (TYPEOBJ)
         /// </summary>
         [RegisterAttribute(AttributeID = 31501000)]
         public long? Typeobj
@@ -7408,7 +7408,7 @@ namespace ObjectModel.Sud
 
         private long? _workstat;
         /// <summary>
-        /// 31501100  (WORKSTAT)
+        /// 31501100 Статус обработки (WORKSTAT)
         /// </summary>
         [RegisterAttribute(AttributeID = 31501100)]
         public long? Workstat
