@@ -153,6 +153,29 @@
 
             return formObject;
         },
+        ObjectToForm: function (model, $container, prefix) {
+            if (!model || model == null || !$container) return;
+
+            prefix = prefix ? (prefix + '.') : '';
+
+            $.each(model, function (key, value) {
+                var $el = $container.find('[name="' + prefix + key + '"]');
+
+                if (!$el.length) return;
+	            debugger;
+                if ($el.attr('data-role') == 'dropdownlist') {
+                    $el.data().kendoDropDownList.value(value);
+                } else if ($el.attr('data-role') == 'datepicker') {
+                    $el.data().kendoDatePicker.value(new Date(value));
+                } else if ($el.attr('data-role') == 'numerictextbox') {
+	                $el.data().kendoNumericTextBox.value(value);
+                } else if ($el.attr('type') == 'checkbox') {
+                    $el.prop('checked', value);
+                } else {
+                    $el.val(value);
+                }
+            });
+        },
         SerializeFormToJSON: function (form) {
             return JSON.stringify(Common.Functions.FormToObject(form));
         },
