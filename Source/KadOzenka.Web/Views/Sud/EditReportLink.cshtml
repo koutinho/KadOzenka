@@ -1,7 +1,7 @@
 ﻿@using ObjectModel.Sud
 @model KadOzenka.Web.Models.Sud.ReportLinkModel
 
-@using (Html.BeginForm("ReportLink", "Sud", FormMethod.Post))
+@using (Html.BeginForm("EditReportLink", "Sud", FormMethod.Post))
 {
 	@Html.HiddenFor(m => m.Id)
 	@Html.HiddenFor(m => m.IdReport)
