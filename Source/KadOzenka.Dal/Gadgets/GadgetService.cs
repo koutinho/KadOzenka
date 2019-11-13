@@ -97,17 +97,15 @@ namespace KadOzenka.Dal.Gadgets
 		public static DataTable СourtsWidget()
 		{
 			var data = new DataTable();
+			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
 			var otchetCount = OMOtchet.Where(GetQuery("SudOtchet")).ExecuteCount();
-			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 			data.Rows.Add("SudOtchet", "Отчеты", otchetCount);
 
 			var reshCount = OMOtchet.Where(GetQuery("SudResh")).ExecuteCount();
-			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 			data.Rows.Add("SudResh", "Решения", reshCount);
 
 			var zakCount = OMOtchet.Where(GetQuery("SudZak")).ExecuteCount();
-			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 			data.Rows.Add("SudZak", "Заключения", zakCount);
 
 			return data;
