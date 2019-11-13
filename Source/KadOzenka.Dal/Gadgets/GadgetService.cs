@@ -59,22 +59,22 @@ namespace KadOzenka.Dal.Gadgets
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Site.GetEnumCode()),
-				"Участок",
+				"Участки",
 				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Site.GetEnumCode()))?.Count ?? 0);
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Building.GetEnumCode()),
-				"Здание",
+				"Здания",
 				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Building.GetEnumCode()))?.Count ?? 0);
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Room.GetEnumCode()),
-				"Помещение",
+				"Помещения",
 				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Room.GetEnumCode()))?.Count ?? 0);
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Construction.GetEnumCode()),
-				"Сооружение",
+				"Сооружения",
 				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Construction.GetEnumCode()))?.Count ?? 0);
 
 			data.Rows.Add(
@@ -84,7 +84,7 @@ namespace KadOzenka.Dal.Gadgets
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.ParkingPlace.GetEnumCode()),
-				"Онс",
+				"Машиноместа",
 				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.ParkingPlace.GetEnumCode()))?.Count ?? 0);
 
 			return data;
