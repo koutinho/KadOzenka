@@ -14,6 +14,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// Номер отчета
 		/// </summary>
 		[Display(Name = "Номер отчета")]
+		[Required(ErrorMessage = "Поле номер отчета обязательное")]
 		public string Number { get; set; }
 		/// <summary>
 		/// Дата отчета
