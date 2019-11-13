@@ -108,7 +108,7 @@ namespace KadOzenka.Dal.Gadgets
 
 			var zakCount = OMOtchet.Where(GetQuery("SudZak")).ExecuteCount();
 			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
-			data.Rows.Add("SudResh", "Заключения", zakCount);
+			data.Rows.Add("SudZak", "Заключения", zakCount);
 
 			return data;
 		}
