@@ -3,8 +3,14 @@
               OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true"
               JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
   <Buttons>
-    <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
-    
+      <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+          <Parameters>
+              <Parameter Key="ObjectId" Value="[ObjectID]" />
+              <Parameter Key="RegisterId" Value="[RegisterId]" />
+          </Parameters>
+      </Button>
+
+      <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
   </Buttons>
   <Tabs>
       <Tab Caption="Основные данные" NavigateURL="/ComissionCost/ObjectCard">
