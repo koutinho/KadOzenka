@@ -693,10 +693,13 @@
     <ConfigPath Remove="Config\Registers\Views\SudDictSro.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudDictSroSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudOtchet.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudOtchetLinkCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudOtchetSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudResh.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudReshLinkCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudReshSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudZak.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudZakLinkCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudZakSelect.xml" />
   </ItemGroup>
