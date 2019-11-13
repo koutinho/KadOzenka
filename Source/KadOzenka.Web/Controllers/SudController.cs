@@ -24,7 +24,17 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
-			return View(ObjectCardModel.FromOM(obj, drs));
+			ObjectCardModel model;
+			if (id != 0 && obj != null && drs != null)
+			{
+				model = ObjectCardModel.FromOM(obj, drs);
+			}
+			else
+			{
+				model = ObjectCardModel.FromOM(new OMObject(), new OMDRS());
+			}
+
+			return View(model);
 		}
 
 		[HttpGet]
@@ -68,25 +78,38 @@ namespace KadOzenka.Web.Controllers
 					})
 				});
 			}
+			var obj = OMObject
+				.Where(x => x.Id == data.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			var drs = OMDRS
+				.Where(x => x.IdObject == data.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (data.Id != -1 && (obj == null || drs == null))
+			{
+				return NotFound();
+			}
 
+			long objId;
+			if (data.Id == -1)
+			{
+				obj = new OMObject();
+				drs = new OMDRS();
+			}
 			using (var ts = new TransactionScope())
 			{
-				var obj = OMObject
-					.Where(x => x.Id == data.Id)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
-				var drs = OMDRS
-					.Where(x => x.IdObject == data.Id)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
 				ObjectCardModel.ToOM(data, ref obj, ref drs);
-
-				obj.Save();
+				objId = obj.Save();
+				if (data.Id == -1)
+				{
+					drs.IdObject = objId;
+				}
 				drs.Save();
 				ts.Complete();
 			}
 
-			return Json(new { Success = "Сохранено успешно" });
+			return Json(new { Success = "Сохранено успешно", ObjectId = objId.ToString() });
 		}
 
 		[HttpGet]
