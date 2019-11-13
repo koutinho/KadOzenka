@@ -90,8 +90,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult EditReportLink(int reportLinkId)
+		public ActionResult EditReportLink(int reportLinkId, long sudObjectId)
 		{
+			if (sudObjectId == 0 && reportLinkId == 0)
+			{
+				throw new Exception("В указанном запросе отсутствует ИД объекта. ?sudObjectId=IdObject");
+			}
 			OMOtchetLink reportLink = OMOtchetLink
 				.Where(x => x.Id == reportLinkId)
 				.SelectAll()
@@ -110,7 +114,7 @@ namespace KadOzenka.Web.Controllers
 			ReportLinkModel model = reportLinkId != 0 && reportLink != null && report !=null
 				? ReportLinkModel.FromEntity(reportLink, report) : ReportLinkModel.FromEntity(new OMOtchetLink(), new OMOtchet());
 
-
+			model.SudObjectId = reportLink != null && reportLinkId != 0 ? reportLink.IdObject.GetValueOrDefault() : sudObjectId;
 			return View(model);
 		}
 

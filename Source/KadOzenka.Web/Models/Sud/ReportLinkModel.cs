@@ -45,6 +45,12 @@ namespace KadOzenka.Web.Models.Sud
 		/// Номер отчета
 		/// </summary>
 		public string ReportNumber { get; set; }
+		/// <summary>
+		/// Номер отчета
+		/// </summary>
+		[Required(ErrorMessage = "Ид объекта не указан")]
+		[Range(1, long.MaxValue, ErrorMessage = "Недопустимое значение ид объекта")]
+		public long SudObjectId { get; set; }
 
 		public static ReportLinkModel FromEntity(OMOtchetLink entity, OMOtchet report)
 		{
@@ -71,6 +77,7 @@ namespace KadOzenka.Web.Models.Sud
 			reportLink.Uprs = model.Uprs;
 			reportLink.Descr = model.Descr;
 			reportLink.Use = model.Use;
+			reportLink.IdObject = model.SudObjectId;
 		}
 	}
 

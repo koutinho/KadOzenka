@@ -5,6 +5,7 @@
 {
 	@Html.HiddenFor(m => m.Id)
 	@Html.HiddenFor(m => m.IdReport)
+	@Html.HiddenFor(m => m.SudObjectId)
 	<div class="form-horizontal col-sm-12">
 		<div class="form-group">
 			<div class="col-sm-2">
@@ -98,7 +99,7 @@
 			});
 		});
 
-	
+
 	$('#selectReport').on('click', function () {
 		var contentUrl = '@Url.Action("SudOtchetSelect", "RegistersView")';
 		var title = 'Выбор отчета';
