@@ -84,7 +84,11 @@
 		</div>
 	}
 	<script type="text/javascript">
-	$(document).ready(function() {
+		$(document).ready(function () {
+			var isEmptySro = "@(Model.IdSro == null)" === "True";
+			var isEmptyFio = "@(Model.IdFio == null)" === "True";
+			var isEmptyOrg = "@(Model.IdOrg == null)" === "True";
+			console.log(isEmptySro, isEmptyFio, isEmptyOrg);
 
 		$('#files').kendoUpload({
 			multiple: false,
@@ -114,6 +118,11 @@
 						dataType: 'json'
 					}
 				}
+			},
+			dataBound: function () {
+				if (isEmptyOrg) {
+					$("#IdOrg").data("kendoDropDownList").value(-1);
+				}
 			}
 		});
 
@@ -132,6 +141,11 @@
 						dataType: 'json'
 					}
 				}
+			},
+			dataBound: function () {
+				if (isEmptyFio) {
+					$("#IdFio").data("kendoDropDownList").value(-1);
+				}
 			}
 		});
 
@@ -149,6 +163,12 @@
 						contentType: 'application/json; charset=utf-8',
 						dataType: 'json'
 					}
+				}
+			},
+			dataBound: function () {
+				if (isEmptySro)
+				{
+					$("#IdSro").data("kendoDropDownList").value(-1);
 				}
 			}
 		});

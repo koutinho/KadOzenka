@@ -249,8 +249,10 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetDictionary(int type)
 		{
 			List<OMDict> dictList = OMDict
-				.Where(x => x.Type == type)
-				.SelectAll().Execute().ToList();
+				.Where(x => x.Type == type && x.Name != string.Empty)
+				.OrderBy(x => x.Name)
+				.SelectAll()
+				.Execute().ToList();
 
 			return Json(dictList);
 		}
