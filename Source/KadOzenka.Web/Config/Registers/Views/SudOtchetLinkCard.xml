@@ -3,7 +3,10 @@
               ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
     <Buttons>
       <Button Caption="Добавить" NavigateURL="/Sud/EditReportLink" WindowHeight="450" WindowWidth="800">
-        <Parameters></Parameters>
+        <Parameters>
+          <Parameter Key="sudObjectId" Value="{Get:SudObjectId}" />
+          <Parameter Key="createNew" Value="True" />
+        </Parameters>
       </Button>
       <Button Caption="Редактировать" NavigateURL="/Sud/EditReportLink" WindowHeight="450" WindowWidth="800">
         <Parameters>
