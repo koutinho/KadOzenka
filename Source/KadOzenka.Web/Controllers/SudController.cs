@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Core.UI.Registers.Controllers;
 using KadOzenka.Web.Models.Sud;
-using Kendo.Mvc.Extensions;
 using ObjectModel.Sud;
 using System.Transactions;
-using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -169,9 +169,13 @@ namespace KadOzenka.Web.Controllers
 		{
 			OMOtchet report = OMOtchet
 				.Where(x => x.Id == reportId)
+				.SelectAll()
 				.ExecuteFirstOrDefault();
 
-			return View(new ReportModel());
+			var model = reportId != 0 && report != null
+				? ReportModel.FromEntity(report)
+				: ReportModel.FromEntity(new OMOtchet());
+			return View(model);
 		}
 
 		[HttpPost]
@@ -197,7 +201,33 @@ namespace KadOzenka.Web.Controllers
 				});
 			}
 
-			return EmptyResponse();
+			OMOtchet report = OMOtchet
+				.Where(x => x.Id == reportViewModel.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (reportViewModel.Id != -1 && report == null)
+			{
+				return NotFound();
+			}
+
+			if (report == null)
+			{
+				report = new OMOtchet();
+			}
+
+			ReportModel.ToEntity(reportViewModel, ref report);
+
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = report.Save();
+				ts.Complete();
+			}
+
+			reportViewModel.Id = id;
+
+			return Json(new {Success = "Сохранено успешно", data = reportViewModel});
 		}
 
 		[HttpGet]
@@ -209,6 +239,16 @@ namespace KadOzenka.Web.Controllers
 				.ExecuteFirstOrDefault();
 
 			return Json(new {data = report});
+		}
+
+		[HttpGet]
+		public JsonResult GetDictionary(int type)
+		{
+			List<OMDict> dictList = OMDict
+				.Where(x => x.Type == type)
+				.SelectAll().Execute().ToList();
+
+			return Json(dictList);
 		}
 	}
 }

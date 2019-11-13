@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Models.Sud
 {
@@ -18,6 +19,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// Дата отчета
 		/// </summary>
 		[Display(Name = "Дата отчета")]
+		[Required(ErrorMessage = "Поле дата отчета обязательное")]
 		public DateTime? ReportDate { get; set; }
 		/// <summary>
 		/// Организация
@@ -33,6 +35,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// СРО
 		/// </summary>
 		[Display(Name = "СРО")]
+		[Required(ErrorMessage = "Поле СРО обязательное")]
 		public string Sro { get; set; }
 		/// <summary>
 		/// Дата получения
@@ -44,6 +47,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// </summary>
 		[Display(Name = "Жалоба в СРО")]
 		public bool Claim { get; set; }
+
 		/// <summary>
 		/// ИД организации
 		/// </summary>
@@ -56,5 +60,39 @@ namespace KadOzenka.Web.Models.Sud
 		/// ИД СРО
 		/// </summary>
 		public long? IdSro { get; set; }
+
+
+
+		public static ReportModel FromEntity(OMOtchet report)
+		{
+			return new ReportModel()
+			{
+				Id = report.Id,
+				Claim = Convert.ToBoolean(report.Jalob.GetValueOrDefault()),
+				DateIn = report.DateIn,
+				ReportDate = report.Date,
+				Fio = report.Fio,
+				IdFio = report.IdFio,
+				IdOrg = report.IdOrg,
+				IdSro = report.IdSro,
+				Sro = report.Sro,
+				Number = report.Number,
+				Org = report.Org
+			};
+		}
+
+		public static void ToEntity(ReportModel model, ref OMOtchet report)
+		{
+			report.Date = model.ReportDate;
+			report.DateIn = model.DateIn;
+			report.Fio = model.Fio;
+			report.IdFio = model.IdFio;
+			report.IdOrg = model.IdOrg;
+			report.Org = model.Org;
+			report.IdSro = model.IdSro;
+			report.Sro = model.Sro;
+			report.Number = model.Number;
+			report.Jalob = Convert.ToInt64(model.Claim);
+		}
 	}
 }
