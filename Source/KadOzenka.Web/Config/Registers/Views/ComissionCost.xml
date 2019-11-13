@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="400" DefaultLayoutId="1004001" AllowSearchPanelResize="false" Description="Решения комисии" IsBasic="false"
+              OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
+  <Buttons>
+    <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
+    
+  </Buttons>
+  <Tabs>
+      <Tab Caption="Основные данные" NavigateURL="/ComissionCost/ObjectCard">
+          <Parameters>
+              <Parameter Key="id" Value="[ObjectId]" />
+          </Parameters>
+      </Tab>
+  </Tabs>
+</RegisterView>

@@ -7792,6 +7792,318 @@ namespace ObjectModel.Sud
     }
 }
 
+namespace ObjectModel.Commission
+{
+    /// <summary>
+    /// 400 Решение комиссий (COMISSION_COST)
+    /// </summary>
+    [RegisterInfo(RegisterID = 400)]
+    [Serializable]
+    public partial class OMCost : OMBaseClass<OMCost>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 40000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 40000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _commissiontype;
+        /// <summary>
+        /// 40000200 Тип комиссии (TYPE_COMMISSION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000200)]
+        public long CommissionType
+        {
+            get
+            {
+                CheckPropertyInited("CommissionType");
+                return _commissiontype;
+            }
+            set
+            {
+                _commissiontype = value;
+                NotifyPropertyChanged("CommissionType");
+            }
+        }
+
+
+        private string _kn;
+        /// <summary>
+        /// 40000300 Кадастровый номер объекта (KN_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000300)]
+        public string Kn
+        {
+            get
+            {
+                CheckPropertyInited("Kn");
+                return _kn;
+            }
+            set
+            {
+                _kn = value;
+                NotifyPropertyChanged("Kn");
+            }
+        }
+
+
+        private decimal? _kc;
+        /// <summary>
+        /// 40000400 Оспариваемая кадастровая стоимость (KC_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000400)]
+        public decimal? Kc
+        {
+            get
+            {
+                CheckPropertyInited("Kc");
+                return _kc;
+            }
+            set
+            {
+                _kc = value;
+                NotifyPropertyChanged("Kc");
+            }
+        }
+
+
+        private DateTime? _datekc;
+        /// <summary>
+        /// 40000500 Дата определения кадастровой стоимости (DATE_KC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000500)]
+        public DateTime? DateKc
+        {
+            get
+            {
+                CheckPropertyInited("DateKc");
+                return _datekc;
+            }
+            set
+            {
+                _datekc = value;
+                NotifyPropertyChanged("DateKc");
+            }
+        }
+
+
+        private string _statementnumber;
+        /// <summary>
+        /// 40000600 Номер заявления (NUM_STATEMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000600)]
+        public string StatementNumber
+        {
+            get
+            {
+                CheckPropertyInited("StatementNumber");
+                return _statementnumber;
+            }
+            set
+            {
+                _statementnumber = value;
+                NotifyPropertyChanged("StatementNumber");
+            }
+        }
+
+
+        private DateTime? _statementdate;
+        /// <summary>
+        /// 40000700 Дата заявления (DATE_STATEMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000700)]
+        public DateTime? StatementDate
+        {
+            get
+            {
+                CheckPropertyInited("StatementDate");
+                return _statementdate;
+            }
+            set
+            {
+                _statementdate = value;
+                NotifyPropertyChanged("StatementDate");
+            }
+        }
+
+
+        private long? _applicantstatus;
+        /// <summary>
+        /// 40000800 Статус заявителя (STATUS_APPLICANT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000800)]
+        public long? ApplicantStatus
+        {
+            get
+            {
+                CheckPropertyInited("ApplicantStatus");
+                return _applicantstatus;
+            }
+            set
+            {
+                _applicantstatus = value;
+                NotifyPropertyChanged("ApplicantStatus");
+            }
+        }
+
+
+        private string _decisionnumber;
+        /// <summary>
+        /// 40000900 Номер решения (NUM_DECISION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000900)]
+        public string DecisionNumber
+        {
+            get
+            {
+                CheckPropertyInited("DecisionNumber");
+                return _decisionnumber;
+            }
+            set
+            {
+                _decisionnumber = value;
+                NotifyPropertyChanged("DecisionNumber");
+            }
+        }
+
+
+        private DateTime? _decisiondate;
+        /// <summary>
+        /// 40001000 Дата решения (DATE_DECISION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40001000)]
+        public DateTime? DecisionDate
+        {
+            get
+            {
+                CheckPropertyInited("DecisionDate");
+                return _decisiondate;
+            }
+            set
+            {
+                _decisiondate = value;
+                NotifyPropertyChanged("DecisionDate");
+            }
+        }
+
+
+        private long? _decisionresult;
+        /// <summary>
+        /// 40001100 Решение комиссии (RESULT_DECISION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40001100)]
+        public long? DecisionResult
+        {
+            get
+            {
+                CheckPropertyInited("DecisionResult");
+                return _decisionresult;
+            }
+            set
+            {
+                _decisionresult = value;
+                NotifyPropertyChanged("DecisionResult");
+            }
+        }
+
+
+        private decimal? _marketvalue;
+        /// <summary>
+        /// 40001200 Рыночная стоимость после оспаривания (MARKET_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40001200)]
+        public decimal? MarketValue
+        {
+            get
+            {
+                CheckPropertyInited("MarketValue");
+                return _marketvalue;
+            }
+            set
+            {
+                _marketvalue = value;
+                NotifyPropertyChanged("MarketValue");
+            }
+        }
+
+
+        private decimal? _commissionkc;
+        /// <summary>
+        /// 40001300 Кадастровая стоимость по решению (KC_COMMISSION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40001300)]
+        public decimal? CommissionKc
+        {
+            get
+            {
+                CheckPropertyInited("CommissionKc");
+                return _commissionkc;
+            }
+            set
+            {
+                _commissionkc = value;
+                NotifyPropertyChanged("CommissionKc");
+            }
+        }
+
+
+        private string _commissiongroup;
+        /// <summary>
+        /// 40001400 Группа после оспаривания (GROUP_COMMISSION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40001400)]
+        public string CommissionGroup
+        {
+            get
+            {
+                CheckPropertyInited("CommissionGroup");
+                return _commissiongroup;
+            }
+            set
+            {
+                _commissiongroup = value;
+                NotifyPropertyChanged("CommissionGroup");
+            }
+        }
+
+
+        private string _commissionchange;
+        /// <summary>
+        /// 40001500 Изменения характеристик (CHANGE_COMMISSION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40001500)]
+        public string CommissionChange
+        {
+            get
+            {
+                CheckPropertyInited("CommissionChange");
+                return _commissionchange;
+            }
+            set
+            {
+                _commissionchange = value;
+                NotifyPropertyChanged("CommissionChange");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>
