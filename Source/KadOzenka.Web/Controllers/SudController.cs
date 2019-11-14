@@ -258,6 +258,81 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		public ActionResult EditConclusionLink(int conclusionLinkId)
+		{
+			OMZakLink conclusionLink = OMZakLink
+				.Where(x => x.Id == conclusionLinkId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			OMZak conclusion = null;
+
+			if (conclusionLink != null)
+			{
+				conclusion = OMZak
+					.Where(x => x.Id == conclusionLink.IdZak)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+			}
+
+			ConclusionLinkModel model = conclusionLinkId != 0 && conclusionLink != null && conclusion != null
+				? ConclusionLinkModel.FromEntity(conclusionLink, conclusion) : ConclusionLinkModel.FromEntity(new OMZakLink(), new OMZak());
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult EditConclusionLink(ConclusionLinkModel conclusionLinkViewModel)
+		{
+
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			OMZakLink conclusionLink = OMZakLink
+				.Where(x => x.Id == conclusionLinkViewModel.Id)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+
+			if (conclusionLinkViewModel.Id != -1 && conclusionLink == null)
+			{
+				return NotFound();
+			}
+
+			if (conclusionLink == null)
+			{
+				conclusionLink = new OMZakLink();
+			}
+
+			ConclusionLinkModel.ToEntity(conclusionLinkViewModel, ref conclusionLink);
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = conclusionLink.Save();
+				ts.Complete();
+			}
+
+			conclusionLinkViewModel.Id = id;
+			return Json(new { Success = "Сохранено успешно", data = conclusionLinkViewModel });
+		}
+
+		[HttpGet]
 		public JsonResult GetReportData(int reportId)
 		{
 			OMOtchet report = OMOtchet
@@ -266,6 +341,17 @@ namespace KadOzenka.Web.Controllers
 				.ExecuteFirstOrDefault();
 
 			return Json(new {data = report});
+		}
+
+		[HttpGet]
+		public JsonResult GetConclusionData(int сonclusionId)
+		{
+			OMZak сonclusion = OMZak
+				.Where(x => x.Id == сonclusionId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return Json(new { data = сonclusion });
 		}
 
 		[HttpGet]
