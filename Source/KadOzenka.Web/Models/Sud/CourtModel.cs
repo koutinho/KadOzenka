@@ -34,7 +34,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// Статус дела
 		/// </summary>
 		[Display(Name = "Статус дела")]
-		public long Status { get; set; }
+		public long? Status { get; set; }
 
 		public static CourtModel FromEntity(OMSud entity)
 		{

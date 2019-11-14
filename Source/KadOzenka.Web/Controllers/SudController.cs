@@ -297,7 +297,50 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult EditCourt(CourtModel courtViewModel)
 		{
-			return EmptyResponse();
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			var omSud = OMSud
+				.Where(x => x.Id == courtViewModel.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (courtViewModel.Id != -1 && omSud == null)
+			{
+				return NotFound();
+			}
+
+			if (omSud == null)
+			{
+				omSud = new OMSud();
+			}
+			CourtModel.ToEntity(courtViewModel, ref omSud);
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = omSud.Save();
+				ts.Complete();
+			}
+			courtViewModel.Id = id;
+
+			return Json(new { Success = "Сохранено успешно", data = courtViewModel });
 		}
 	}
 }
