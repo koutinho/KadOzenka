@@ -4,13 +4,13 @@
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
       
-      <Button Caption="Добавить" NavigateURL="/Sud/ZakEdit" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Добавить" NavigateURL="/Sud/EditConclusion" WindowHeight="500" WindowWidth="800">
         <Parameters></Parameters>
       </Button>
       
-      <Button Caption="Редактировать" NavigateURL="/Sud/ZakEdit" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditConclusion" WindowHeight="500" WindowWidth="800">
         <Parameters>
-          <Parameter Key="zakId" Value="[ObjectID]" />
+          <Parameter Key="conclusionId" Value="[ObjectID]" />
         </Parameters>
       </Button>
     </Buttons>
