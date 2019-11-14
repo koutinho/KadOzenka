@@ -2,12 +2,14 @@
 <RegisterView RegisterId="314" LinkedRegistersList="314,309,316,310" DefaultLayoutId="1003141" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
     <Buttons>
-      <Button Caption="Добавить" NavigateURL="/Sud/ReportLink" WindowHeight="450" WindowWidth="800">
-        <Parameters></Parameters>
-      </Button>
-      <Button Caption="Редактировать" NavigateURL="/Sud/ReportLink" WindowHeight="450" WindowWidth="800">
+      <Button Caption="Добавить" NavigateURL="/Sud/EditCourtLink" WindowHeight="450" WindowWidth="800">
         <Parameters>
-          <Parameter Key="ZakLinkId" Value="[ObjectID]" />
+            <Parameter Key="sudObjectId" Value="{Get:SudObjectId}" />
+        </Parameters>
+      </Button>
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditCourtLink" WindowHeight="450" WindowWidth="800">
+        <Parameters>
+          <Parameter Key="courtLinkId" Value="[ObjectID]" />
         </Parameters>
       </Button>
     </Buttons>

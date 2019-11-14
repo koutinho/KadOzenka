@@ -344,6 +344,17 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		public JsonResult GetCourtData(int sudId)
+		{
+			var court = OMSud
+				.Where(x => x.Id == sudId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return Json(new { data = court });
+		}
+
+		[HttpGet]
 		public JsonResult GetConclusionData(int сonclusionId)
 		{
 			OMZak сonclusion = OMZak
@@ -462,7 +473,50 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult EditCourtLink(CourtLinkModel courtLinkViewModel)
 		{
-			return EmptyResponse();
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			var sudLink = OMSudLink
+				.Where(x => x.Id == courtLinkViewModel.Id)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+
+			if (courtLinkViewModel.Id != -1 && sudLink == null)
+			{
+				return NotFound();
+			}
+
+			if (sudLink == null)
+			{
+				sudLink = new OMSudLink();
+			}
+			CourtLinkModel.ToEntity(courtLinkViewModel, ref sudLink);
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = sudLink.Save();
+				ts.Complete();
+			}
+			courtLinkViewModel.Id = id;
+
+			return Json(new { Success = "Сохранено успешно", data = courtLinkViewModel });
 		}
 	}
 }

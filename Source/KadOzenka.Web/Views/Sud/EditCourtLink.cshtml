@@ -1,1 +1,130 @@
-﻿@model KadOzenka.Web.Models.Sud.CourtLinkModel
+﻿@using ObjectModel.Sud
+
+@model KadOzenka.Web.Models.Sud.CourtLinkModel
+
+@using (Html.BeginForm("EditCourtLink", "Sud", FormMethod.Post))
+{
+	@Html.HiddenFor(m => m.Id)
+	@Html.HiddenFor(m => m.SudId)
+	@Html.HiddenFor(m => m.ObjectId)
+	<div class="form-horizontal col-sm-12">
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.SudNumber)
+			</div>
+			<div class="col-sm-8">
+				@Html.TextBoxFor(m => m.SudNumber, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
+			</div>
+			<div class="col-sm-2">
+				<a class="k-button k-button-icon" id="clearCourt">
+					<span class="k-icon k-i-close"></span>
+				</a>
+				<a class="k-button k-button-icon" id="selectCourt">
+					<span class="k-icon k-i-edit"></span>
+				</a>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.Rs)
+			</div>
+			<div class="col-sm-4">
+				@Html.KendoNumericTextBoxFor(m => m.Rs, 2, isReadonly: false)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.Use)
+			</div>
+			<div class="col-sm-10">
+				@Html.TextAreaFor(m => m.Use, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none; padding: 10px;" })
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.Description)
+			</div>
+			<div class="col-sm-10">
+				@Html.TextAreaFor(m => m.Description, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none; padding: 10px;" })
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-12">
+				<button style="float: right" id="save" type="button">Сохранить</button>
+			</div>
+		</div>
+	</div>
+}
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#selectCourt').on('click', function () {
+			var contentUrl = '@Url.Action("SudReshSelect", "RegistersView")';
+			var title = 'Выбор судебных решений';
+
+			var callbackFn = function (item) {
+				console.log('test', item);
+				kendo.ui.progress($('body'), true);
+				$('[name="SudId"]').val(item.ID);
+				$.ajax({
+					type: 'GET',
+					url: '@Url.Action("GetCourtData", "Sud")',
+					data: { 'sudId': item.ID },
+					dataType: 'json',
+					success: function (response) {
+						if (response && !$.isEmptyObject(response)) {
+							console.log('response', response);
+							$('#@Html.IdFor(m => m.SudNumber)').val(response.data.Number);
+						}
+						kendo.ui.progress($('body'), false);
+					}
+				});
+			}
+			console.log('run');
+			Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMSud.GetRegisterId()');
+		});
+
+		$('#clearCourt').on('click',
+			function() {
+				$('#@Html.IdFor(m => m.SudNumber)').val(null);
+				$('#@Html.IdFor(m => m.SudId)').val(0);
+			});
+
+		$('#save').on('click',
+			function() {
+				var form = $('form');
+				var formObject = Common.Functions.FormToObject(form);
+				kendo.ui.progress($('body'), true);
+
+				$.post(form.attr('action'), formObject).done(function(response) {
+					kendo.ui.progress($('body'), false);
+					if (response.Errors) {
+						var errors = $.map(distinctErrors(response.Errors),
+							function(el) {
+								return el.Message;
+							});
+						Common.ShowError(errors);
+						return;
+					}
+					if (response.Success && response.data) {
+						$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+						Common.ShowMessage(response.Success);
+					}
+				});
+			});
+	});
+
+	function distinctErrors(errors) {
+		var result = [];
+		$.each(errors, function(index, event) {
+			var events = $.grep(result, function (e) {
+				return event.Message === e.Message;
+			});
+			if (events.length === 0) {
+				result.push(event);
+			}
+		});
+
+		return result;
+	}
+</script>
