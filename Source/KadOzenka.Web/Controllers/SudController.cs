@@ -258,8 +258,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult EditConclusionLink(int conclusionLinkId)
+		public ActionResult EditConclusionLink(int conclusionLinkId, long sudObjectId)
 		{
+			if (sudObjectId == 0 && conclusionLinkId == 0)
+			{
+				throw new Exception("В указанном запросе отсутствует ИД объекта. ?sudObjectId=IdObject");
+			}
 			OMZakLink conclusionLink = OMZakLink
 				.Where(x => x.Id == conclusionLinkId)
 				.SelectAll()
@@ -278,6 +282,7 @@ namespace KadOzenka.Web.Controllers
 			ConclusionLinkModel model = conclusionLinkId != 0 && conclusionLink != null && conclusion != null
 				? ConclusionLinkModel.FromEntity(conclusionLink, conclusion) : ConclusionLinkModel.FromEntity(new OMZakLink(), new OMZak());
 
+			model.SudObjectId = conclusionLink != null && conclusionLinkId != 0 ? conclusionLink.IdObject.GetValueOrDefault() : sudObjectId;
 			return View(model);
 		}
 
@@ -330,6 +335,73 @@ namespace KadOzenka.Web.Controllers
 
 			conclusionLinkViewModel.Id = id;
 			return Json(new { Success = "Сохранено успешно", data = conclusionLinkViewModel });
+		}
+
+
+		[HttpGet]
+		public ActionResult EditConclusion(int conclusionId)
+		{
+			OMZak conclusion = OMZak
+				.Where(x => x.Id == conclusionId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			var model = conclusionId != 0 && conclusion != null
+				? ConclusionModel.FromEntity(conclusion)
+				: ConclusionModel.FromEntity(new OMZak());
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult EditConclusion(ConclusionModel conclusionViewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			OMZak conclusion = OMZak
+				.Where(x => x.Id == conclusionViewModel.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (conclusionViewModel.Id != -1 && conclusion == null)
+			{
+				return NotFound();
+			}
+
+			if (conclusion == null)
+			{
+				conclusion = new OMZak();
+			}
+
+			ConclusionModel.ToEntity(conclusionViewModel, ref conclusion);
+
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = conclusion.Save();
+				ts.Complete();
+			}
+
+			conclusionViewModel.Id = id;
+
+			return Json(new { Success = "Сохранено успешно", data = conclusionViewModel });
 		}
 
 		[HttpGet]
