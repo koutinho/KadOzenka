@@ -279,5 +279,25 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(dictList);
 		}
+
+		[HttpGet]
+		public ActionResult EditCourt(int courtId)
+		{
+			var omSud = OMSud
+				.Where(x => x.Id == courtId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			var model = courtId != 0 && omSud != null
+				? CourtModel.FromEntity(omSud)
+				: CourtModel.FromEntity(new OMSud());
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult EditCourt(CourtModel courtViewModel)
+		{
+			return EmptyResponse();
+		}
 	}
 }
