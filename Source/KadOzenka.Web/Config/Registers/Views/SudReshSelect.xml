@@ -4,13 +4,13 @@
     <Buttons>
       <Button Caption="Выбрать" NavigateURL="/" />
       
-      <Button Caption="Добавить" NavigateURL="/Sud/ReshEdit" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
         <Parameters></Parameters>
       </Button>
       
-      <Button Caption="Редактировать" NavigateURL="/Sud/ReshEdit" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
         <Parameters>
-          <Parameter Key="reshId" Value="[ObjectID]" />
+          <Parameter Key="courtId" Value="[ObjectID]" />
         </Parameters>
       </Button>
     </Buttons>
