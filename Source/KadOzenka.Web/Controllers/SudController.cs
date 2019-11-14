@@ -428,5 +428,41 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { Success = "Сохранено успешно", data = courtViewModel });
 		}
+
+		[HttpGet]
+		public ActionResult EditCourtLink(int courtLinkId, long sudObjectId)
+		{
+			if (sudObjectId == 0 && courtLinkId == 0)
+			{
+				throw new Exception("В указанном запросе отсутствует ИД объекта. ?sudObjectId=IdObject");
+			}
+			var courtLink = OMSudLink
+				.Where(x => x.Id == courtLinkId)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+
+			OMSud court = null;
+			if (courtLink != null)
+			{
+				court = OMSud
+					.Where(x => x.Id == courtLink.IdSud)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+			}
+			var model = courtLinkId != 0 && courtLink != null && court != null
+				? CourtLinkModel.FromEntity(courtLink, court)
+				: CourtLinkModel.FromEntity(new OMSudLink(), new OMSud());
+			model.ObjectId = courtLink != null && courtLinkId != 0
+				? courtLink.IdObject.GetValueOrDefault()
+				: sudObjectId;
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult EditCourtLink(CourtLinkModel courtLinkViewModel)
+		{
+			return EmptyResponse();
+		}
 	}
 }
