@@ -1259,6 +1259,9 @@ var KendoExtension = {
 
             this.value = currentValue.substr(0, wordFirstCharPosition) + currentValue.charAt(wordFirstCharPosition).toUpperCase() + currentValue.substr(wordFirstCharPosition + 1, currentValue.length);
         }
+    },
+    FormatNuber: function (val) {
+        return new Intl.NumberFormat('ru-RU').format(val.replace(/,/, '.'));
     }
 };
 
