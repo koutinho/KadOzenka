@@ -11,7 +11,7 @@
 		<div class="form-group"></div>
 		<div class="form-group">
 			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.SudNumber)
+				@Html.CustomLabelFor("Судебное решение", true)
 			</div>
 			<div class="col-sm-8">
 				@Html.TextBoxFor(m => m.SudNumber, new {@class = "k-textbox", @disabled = true, @style = "width: 100%;"})

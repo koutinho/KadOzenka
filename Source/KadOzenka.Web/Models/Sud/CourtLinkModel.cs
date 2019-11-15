@@ -28,13 +28,13 @@ namespace KadOzenka.Web.Models.Sud
 		/// <summary>
 		/// Номер судебного решения
 		/// </summary>
-		[Display(Name = "Судебное решение")]
 		public string SudNumber { get; set; }
 
 		/// <summary>
 		/// Рыночная стоимость
 		/// </summary>
 		[Display(Name = "Рыночная стоимость")]
+		[Required(ErrorMessage = "Поле рыночная стоимость обязательное")]
 		[Range(0.00001, long.MaxValue, ErrorMessage = "Недопустимое значение рыночной стоимости")]
 		public decimal? Rs { get; set; }
 
