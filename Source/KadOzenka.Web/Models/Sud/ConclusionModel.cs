@@ -22,7 +22,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// Дата отчета
 		/// </summary>
 		[Display(Name = "Дата составления")]
-		[Required(ErrorMessage = "Поле дата ссотавления обязательное")]
+		[Required(ErrorMessage = "Поле дата составления обязательное")]
 		public DateTime? CreateDate { get; set; }
 
 		/// <summary>
