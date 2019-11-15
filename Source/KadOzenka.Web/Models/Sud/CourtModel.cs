@@ -14,11 +14,13 @@ namespace KadOzenka.Web.Models.Sud
 		/// Наименование суда
 		/// </summary>
 		[Display(Name = "Наименование суда")]
+		[Required(ErrorMessage = "Поле наименование суда обязательное")]
 		public string Name { get; set; }
 		/// <summary>
 		/// Номер судебного дела
 		/// </summary>
 		[Display(Name = "Номер дела")]
+		[Required(ErrorMessage = "Поле номер дела обязательное")]
 		public string Number { get; set; }
 		/// <summary>
 		/// Дата заседания
