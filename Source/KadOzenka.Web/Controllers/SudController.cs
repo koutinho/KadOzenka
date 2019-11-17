@@ -100,8 +100,10 @@ namespace KadOzenka.Web.Controllers
 			using (var ts = new TransactionScope())
 			{
 				ObjectCardModel.ToOM(data, ref obj, ref drs);
-				objId = obj.Save();
-				if (data.Id == -1)
+
+				objId = obj.SaveAndCheckParam();
+
+                if (data.Id == -1)
 				{
 					drs.IdObject = objId;
 				}
@@ -183,7 +185,7 @@ namespace KadOzenka.Web.Controllers
 			long id;
 			using (var ts = new TransactionScope())
 			{
-				id = reportLink.Save();
+				id = reportLink.SaveAndCheckParam();
 				ts.Complete();
 			}
 
@@ -248,7 +250,7 @@ namespace KadOzenka.Web.Controllers
 			long id;
 			using (var ts = new TransactionScope())
 			{
-				id = report.Save();
+				id = report.SaveAndCheckParam();
 				ts.Complete();
 			}
 
@@ -329,7 +331,7 @@ namespace KadOzenka.Web.Controllers
 			long id;
 			using (var ts = new TransactionScope())
 			{
-				id = conclusionLink.Save();
+				id = conclusionLink.SaveAndCheckParam();
 				ts.Complete();
 			}
 
@@ -395,7 +397,7 @@ namespace KadOzenka.Web.Controllers
 			long id;
 			using (var ts = new TransactionScope())
 			{
-				id = conclusion.Save();
+				id = conclusion.SaveAndCheckParam();
 				ts.Complete();
 			}
 
@@ -504,7 +506,7 @@ namespace KadOzenka.Web.Controllers
 			long id;
 			using (var ts = new TransactionScope())
 			{
-				id = omSud.Save();
+				id = omSud.SaveAndCheckParam();
 				ts.Complete();
 			}
 			courtViewModel.Id = id;
@@ -583,7 +585,7 @@ namespace KadOzenka.Web.Controllers
 			long id;
 			using (var ts = new TransactionScope())
 			{
-				id = sudLink.Save();
+				id = sudLink.SaveAndCheckParam();
 				ts.Complete();
 			}
 			courtLinkViewModel.Id = id;
