@@ -402,6 +402,48 @@ namespace ObjectModel.Directory
         [Description("Коридор цен")]
         [EnumCode("7")]
         IncorrectPrice = 769,
+        /// <summary>
+        /// Предложение продажы прав аренды (776)
+        /// </summary>
+        [Description("Предложение продажы прав аренды")]
+        [EnumCode("8")]
+        ContainsPPA = 776,
+        /// <summary>
+        /// Маркер: мебель (777)
+        /// </summary>
+        [Description("Маркер: мебель")]
+        [EnumCode("9")]
+        ContainsFurniture = 777,
+        /// <summary>
+        /// Является ОНС (778)
+        /// </summary>
+        [Description("Является ОНС")]
+        [EnumCode("10")]
+        IsUncompleted = 778,
+        /// <summary>
+        /// Не содержит описания (779)
+        /// </summary>
+        [Description("Не содержит описания")]
+        [EnumCode("11")]
+        DoNotHaveDescription = 779,
+        /// <summary>
+        /// Неприемлимое назначение (780)
+        /// </summary>
+        [Description("Неприемлимое назначение")]
+        [EnumCode("12")]
+        UnacceptableAssignment = 780,
+        /// <summary>
+        /// Продажа бизнеса (781)
+        /// </summary>
+        [Description("Продажа бизнеса")]
+        [EnumCode("13")]
+        BusinessSelling = 781,
+        /// <summary>
+        /// Неприемлимые условия (782)
+        /// </summary>
+        [Description("Неприемлимые условия")]
+        [EnumCode("14")]
+        UnacceptableConditions = 782,
     }
 
     /// <summary>
@@ -564,6 +606,32 @@ namespace ObjectModel.Directory
         [Description("Машиноместо")]
         [EnumCode("6")]
         ParkingPlace = 775,
+    }
+
+    /// <summary>
+    /// Статус обработки (301)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 301)]
+    public enum SudProcessingStatus : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// В работе (783)
+        /// </summary>
+        [Description("В работе")]
+        [EnumCode("0")]
+        InWork = 783,
+        /// <summary>
+        /// Актуальный (784)
+        /// </summary>
+        [Description("Актуальный")]
+        [EnumCode("1")]
+        Processed = 784,
     }
 
 }

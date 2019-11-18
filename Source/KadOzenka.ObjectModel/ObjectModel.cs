@@ -5763,7 +5763,7 @@ namespace ObjectModel.Sud
 namespace ObjectModel.Sud
 {
     /// <summary>
-    /// 307 Статус объекта (SUD_OTCHETSTATUS)
+    /// 307 Статус отчета (SUD_OTCHETSTATUS)
     /// </summary>
     [RegisterInfo(RegisterID = 307)]
     [Serializable]
@@ -7406,12 +7406,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long? _workstat;
+        private string _workstat;
         /// <summary>
         /// 31501100 Статус обработки (WORKSTAT)
         /// </summary>
         [RegisterAttribute(AttributeID = 31501100)]
-        public long? Workstat
+        public string Workstat
         {
             get
             {
@@ -7422,6 +7422,41 @@ namespace ObjectModel.Sud
             {
                 _workstat = value;
                 NotifyPropertyChanged("Workstat");
+            }
+        }
+
+
+        private SudProcessingStatus _workstat_Code;
+        /// <summary>
+        /// 31501100 Статус обработки (справочный код) (WORKSTAT_ITEM_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501100)]
+        public SudProcessingStatus Workstat_Code
+        {
+            get
+            {
+                CheckPropertyInited("Workstat_Code");
+                return this._workstat_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_workstat))
+                    {
+                         _workstat = descr;
+                    }
+                }
+                else
+                {
+                     _workstat = descr;
+                }
+
+                this._workstat_Code = value;
+                NotifyPropertyChanged("Workstat");
+                NotifyPropertyChanged("Workstat_Code");
             }
         }
 

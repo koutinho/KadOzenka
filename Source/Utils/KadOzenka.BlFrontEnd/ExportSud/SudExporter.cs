@@ -139,7 +139,9 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                     {
                         Id = id,
                         Typeobj = NullConvertor.DBToInt(myOleDbDataReader["typeobj"], 0),
-                        Workstat = NullConvertor.DBToInt(myOleDbDataReader["workstat"], 0),
+                        Workstat_Code = NullConvertor.DBToInt(myOleDbDataReader["workstat"], 0) == 0 ? 
+							ObjectModel.Directory.SudProcessingStatus.InWork : 
+							ObjectModel.Directory.SudProcessingStatus.Processed,
                         Kn = NullConvertor.ToString(myOleDbDataReader["kn"]),
                         Date = NullConvertor.DBToDateTime(myOleDbDataReader["date"]),
 

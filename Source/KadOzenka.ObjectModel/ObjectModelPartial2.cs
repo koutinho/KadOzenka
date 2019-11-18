@@ -588,6 +588,196 @@ namespace ObjectModel.KO
 }
 
 
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 302 Связь заключения с объектом
+    /// </summary>
+    public partial class OMZakLink
+    {
+        /// <summary>
+        /// Ссылка на (300 Экспертное заключение)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMZak ParentZak { get; set; }
+
+        /// <summary>
+        /// Ссылка на (315 Объект)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMObject ParentObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 303 Расчет ДРС
+    /// </summary>
+    public partial class OMDRS
+    {
+        /// <summary>
+        /// Ссылка на (315 Объект)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMObject ParentObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 304 Связь отчета с объектом
+    /// </summary>
+    public partial class OMOtchetLink
+    {
+        /// <summary>
+        /// Ссылка на (306 Связь отчета и статуса)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMOtchetLinkStatus ParentOtchetLinkStatus { get; set; }
+
+        /// <summary>
+        /// Ссылка на (308 Отчеты)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMOtchet ParentOtchet { get; set; }
+
+        /// <summary>
+        /// Ссылка на (315 Объект)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMObject ParentObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 307 Статус отчета
+    /// </summary>
+    public partial class OMOtchetStatus
+    {
+        /// <summary>
+        /// Ссылка на (308 Отчеты)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMOtchet ParentOtchet { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 309 Связь суда и статуса
+    /// </summary>
+    public partial class OMSudLinkStatus
+    {
+        /// <summary>
+        /// Ссылка на (314 Связь судебного дела и объекта)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMSudLink ParentSudLink { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 310 Статус
+    /// </summary>
+    public partial class OMSudStatus
+    {
+        /// <summary>
+        /// Ссылка на (316 Судебное заседание)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMSud ParentSud { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 311 Связь заключения и статуса
+    /// </summary>
+    public partial class OMZakLinkStatus
+    {
+        /// <summary>
+        /// Ссылка на (302 Связь заключения с объектом)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMZakLink ParentZakLink { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 312 Статус заключения
+    /// </summary>
+    public partial class OMZakStatus
+    {
+        /// <summary>
+        /// Ссылка на (300 Экспертное заключение)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMZak ParentZak { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 314 Связь судебного дела и объекта
+    /// </summary>
+    public partial class OMSudLink
+    {
+        /// <summary>
+        /// Ссылка на (315 Объект)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMObject ParentObject { get; set; }
+
+        /// <summary>
+        /// Ссылка на (316 Судебное заседание)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMSud ParentSud { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Common
 {
     /// <summary>
