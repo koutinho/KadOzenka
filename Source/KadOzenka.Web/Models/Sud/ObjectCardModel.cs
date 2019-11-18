@@ -75,7 +75,7 @@ namespace KadOzenka.Web.Models.Sud
 				NameCenter = omObject.NameCenter,
 				StatDgi = omObject.StatDgi,
 				Owner = omObject.Owner,
-				AdditionalAnalysisRequired = omObject.Workstat != null && Convert.ToBoolean(omObject.Workstat.Value),
+				AdditionalAnalysisRequired = Convert.ToBoolean(omObject.Workstat_Code),
 				DrsGroup = omDrs.DrsGroup,
 				Basement = omDrs.DrsSq1,
 				Socle = omDrs.DrsSq2,
@@ -115,7 +115,7 @@ namespace KadOzenka.Web.Models.Sud
 			omObject.NameCenter = model.NameCenter;
 			omObject.StatDgi = model.StatDgi;
 			omObject.Owner = model.Owner;
-			omObject.Workstat = model.AdditionalAnalysisRequired.GetValueOrDefault(false) ? 1 : 0;
+			omObject.Workstat = model.AdditionalAnalysisRequired.GetValueOrDefault(false) ? SudProcessingStatus.Processed.GetEnumDescription() : SudProcessingStatus.InWork.GetEnumDescription();
 
 			omDrs.DrsGroup = model.DrsGroup;
 			omDrs.DrsSq1 = model.Basement;
