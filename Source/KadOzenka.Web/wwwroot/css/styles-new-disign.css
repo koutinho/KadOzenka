@@ -1279,3 +1279,23 @@ input#addressInput {
     padding: 3px 0;
     display: inline-block;
 }
+
+.dropdown-main-menu .fas {
+	font-size: 19px !important;
+}
+
+.dropdown-main-menu .fa-balance-scale {
+	background-color: #a588cc;
+}
+
+.dropdown-main-menu .fa-tasks {
+	background-color: #009688;
+}
+
+.dropdown-main-menu .fa-sign {
+	background-color: #b5b5b5;
+}
+
+.dropdown-main-menu .fa-users {
+	background-color: #ff9899;
+}
