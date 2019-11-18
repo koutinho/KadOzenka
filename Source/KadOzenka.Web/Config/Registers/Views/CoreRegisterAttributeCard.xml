@@ -4,12 +4,12 @@
     <Buttons>
         <Button Caption="Операции" OpenInRadWindow="false" Type="DropDown">
             <DropDownButtons>
-                <Button Caption="Добавить" NavigateURL="~/CoreUI/Configurator/RegKind/AddAttribute.aspx?" WindowHeight="300" WindowWidth="500">
+                <Button Caption="Добавить" NavigateURL="~/CoreUi/EditAttributeData" NeedRefresh="true" WindowHeight="500" WindowWidth="780">
                     <Parameters>
                         <Parameter Key="RegisterID" Value="[93100300]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Редактировать" NavigateURL="~/CoreUI/Configurator/RegKind/EditAttribute.aspx?" WindowHeight="300" WindowWidth="500">
+                <Button Caption="Редактировать" NavigateURL="~/CoreUI/EditAttributeData"  NeedRefresh="true" WindowHeight="500" WindowWidth="780">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -21,7 +21,7 @@
                         <Parameter Key="AttributeId" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Настройка виртуальной колонки" NavigateURL="~/CoreUI/QSEditor/QSEditorHost.aspx?">
+                <Button Caption="Настройка виртуальной колонки" NavigateURL="~/CoreUI/EditVirtualColumn">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -30,12 +30,11 @@
                         </ConditionGroup>
                     </ConditionGroups>
                     <Parameters>
-                        <Parameter Key="QSEditorMode" Value="VirtualAttribute" />
-                        <Parameter Key="AttributeId" Value="[ObjectID]" />
-                        <Parameter Key="RegisterId" Value="[93100300]" />
+                      <Parameter Key="attributeId" Value="[ObjectID]" />
+                      <Parameter Key="registerId" Value="[93100300]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Удалить" NavigateURL="~/CoreUI/Configurator/RegKind/DeleteIndex.aspx?" WindowHeight="300" WindowWidth="500">
+                <Button Caption="Удалить" NavigateURL="~/CoreUI/DeleteAttribute" NeedRefresh="true" WindowHeight="150" WindowWidth="450">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -44,7 +43,7 @@
                         </ConditionGroup>
                     </ConditionGroups>
                     <Parameters>
-                        <Parameter Key="IDToDel" Value="[ObjectID]" />
+                        <Parameter Key="AttributeId" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
             </DropDownButtons>

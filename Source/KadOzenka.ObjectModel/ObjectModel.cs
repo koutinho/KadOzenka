@@ -3830,6 +3830,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private decimal? _a0;
+        /// <summary>
+        /// 20600700 Cвободный член в формуле (A0)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20600700)]
+        public decimal? A0
+        {
+            get
+            {
+                CheckPropertyInited("A0");
+                return _a0;
+            }
+            set
+            {
+                _a0 = value;
+                NotifyPropertyChanged("A0");
+            }
+        }
+
     }
 }
 
@@ -4118,6 +4138,106 @@ namespace ObjectModel.KO
             {
                 _markerid = value;
                 NotifyPropertyChanged("MarkerId");
+            }
+        }
+
+
+        private decimal _weight;
+        /// <summary>
+        /// 21000500 Вес фактора (WEIGHT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21000500)]
+        public decimal Weight
+        {
+            get
+            {
+                CheckPropertyInited("Weight");
+                return _weight;
+            }
+            set
+            {
+                _weight = value;
+                NotifyPropertyChanged("Weight");
+            }
+        }
+
+
+        private decimal _b0;
+        /// <summary>
+        /// 21000600 Добавочный коэффициент (B0)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21000600)]
+        public decimal B0
+        {
+            get
+            {
+                CheckPropertyInited("B0");
+                return _b0;
+            }
+            set
+            {
+                _b0 = value;
+                NotifyPropertyChanged("B0");
+            }
+        }
+
+
+        private bool _signdiv;
+        /// <summary>
+        /// 21000700 Признак деления на фактор (SIGN_DIV)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21000700)]
+        public bool SignDiv
+        {
+            get
+            {
+                CheckPropertyInited("SignDiv");
+                return _signdiv;
+            }
+            set
+            {
+                _signdiv = value;
+                NotifyPropertyChanged("SignDiv");
+            }
+        }
+
+
+        private bool _signadd;
+        /// <summary>
+        /// 21000800 Признак сложения (SIGN_ADD)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21000800)]
+        public bool SignAdd
+        {
+            get
+            {
+                CheckPropertyInited("SignAdd");
+                return _signadd;
+            }
+            set
+            {
+                _signadd = value;
+                NotifyPropertyChanged("SignAdd");
+            }
+        }
+
+
+        private bool _signmarket;
+        /// <summary>
+        /// 21000900 Признак использования метки (SIGN_MARKET)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21000900)]
+        public bool SignMarket
+        {
+            get
+            {
+                CheckPropertyInited("SignMarket");
+                return _signmarket;
+            }
+            set
+            {
+                _signmarket = value;
+                NotifyPropertyChanged("SignMarket");
             }
         }
 
@@ -5368,7 +5488,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 30500100  (ID)
+        /// 30500100 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 30500100)]
         public long Id
@@ -5388,7 +5508,7 @@ namespace ObjectModel.Sud
 
         private long _kn;
         /// <summary>
-        /// 30500200  (KN)
+        /// 30500200 Кадастровый номер (KN)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500200)]
         public long Kn
@@ -5408,7 +5528,7 @@ namespace ObjectModel.Sud
 
         private long _date;
         /// <summary>
-        /// 30500300  (DATE)
+        /// 30500300 Дата (DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500300)]
         public long Date
@@ -5428,7 +5548,7 @@ namespace ObjectModel.Sud
 
         private long _square;
         /// <summary>
-        /// 30500400  (SQUARE)
+        /// 30500400 Площадь (SQUARE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500400)]
         public long Square
@@ -5448,7 +5568,7 @@ namespace ObjectModel.Sud
 
         private long _kc;
         /// <summary>
-        /// 30500500  (KC)
+        /// 30500500 Кадастровая стоимость (KC)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500500)]
         public long Kc
@@ -5468,7 +5588,7 @@ namespace ObjectModel.Sud
 
         private long _namecenter;
         /// <summary>
-        /// 30500600  (NAME_CENTER)
+        /// 30500600 Наимеование центра (NAME_CENTER)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500600)]
         public long NameCenter
@@ -5488,7 +5608,7 @@ namespace ObjectModel.Sud
 
         private long _statdgi;
         /// <summary>
-        /// 30500700  (STAT_DGI)
+        /// 30500700 Статус ДГИ (STAT_DGI)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500700)]
         public long StatDgi
@@ -5508,7 +5628,7 @@ namespace ObjectModel.Sud
 
         private long _owner;
         /// <summary>
-        /// 30500800  (OWNER)
+        /// 30500800 Владелец (OWNER)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500800)]
         public long Owner
@@ -5528,7 +5648,7 @@ namespace ObjectModel.Sud
 
         private long _adres;
         /// <summary>
-        /// 30500900  (ADRES)
+        /// 30500900 Адрес (ADRES)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500900)]
         public long Adres
@@ -5548,7 +5668,7 @@ namespace ObjectModel.Sud
 
         private long _typeobj;
         /// <summary>
-        /// 30501000  (TYPEOBJ)
+        /// 30501000 Тип объекта (TYPEOBJ)
         /// </summary>
         [RegisterAttribute(AttributeID = 30501000)]
         public long Typeobj
@@ -5568,7 +5688,7 @@ namespace ObjectModel.Sud
 
         private long _status;
         /// <summary>
-        /// 30501100  (STATUS)
+        /// 30501100 Статус (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30501100)]
         public long Status
