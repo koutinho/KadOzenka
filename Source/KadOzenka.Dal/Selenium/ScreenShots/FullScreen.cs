@@ -24,7 +24,9 @@ namespace KadOzenka.Dal.Selenium.ScreenShots
 	        if (description != null)
 	        {
 		        var parent = driver.ExecuteScript(ConfigurationManager.AppSettings["getParentElement"], description);
-		        ((IWebElement)parent)?.FindElements(By.TagName("button")).FirstOrDefault()?.Click();
+		        (parent as IWebElement)?.FindElements(By.TagName("button")).FirstOrDefault(x =>
+			        x.Text.Contains("Показать информацию") ||
+			        x.FindElements(By.PartialLinkText("Показать информацию")).Count > 0)?.Click();
 	        }
 
 	        var metrics = new Dictionary<string, object>();
