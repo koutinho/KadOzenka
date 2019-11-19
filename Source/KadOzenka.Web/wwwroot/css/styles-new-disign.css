@@ -246,10 +246,6 @@ a {
         }
 
 /* переопределение стилей kendo */
-.k-panelbar > .k-item > .k-link {
-    font-weight: bold;
-}
-
 .form-horizontal .control-label {
     text-align: left;
     font-weight: normal;
