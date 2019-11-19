@@ -43,8 +43,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         driver.Navigate().GoToUrl(initialObject.Url);
                         if (!bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIANError"]).ToString()) && !bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIAN505Page"]).ToString()))
                         {
-                            executor.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
-                            RefreshObjectInfo(initialObject, GetData(executor, initialObject.DealType_Code, initialObject.Id), executor, wait);
+                            RefreshObjectInfo(initialObject, GetData(executor, initialObject.DealType_Code, initialObject.Id), (ChromeDriver)driver);
                             OCor++;
                         }
                         else
@@ -66,14 +65,14 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             ConsoleLog.WriteFotter("Обновление цен завершено");
         }
 
-        private void RefreshObjectInfo(OMCoreObject initialObject, List<OMPriceHistory> history, IJavaScriptExecutor executor, WebDriverWait wait)
+        private void RefreshObjectInfo(OMCoreObject initialObject, List<OMPriceHistory> history, ChromeDriver driver)
         {
             OMPriceHistory currentPrice = history.First();
             if (initialObject.LastDateUpdate == null)
             {
                 history.ForEach(x => x.Save());
                 if (initialObject.Price != currentPrice.PriceValueTo) initialObject.Price = currentPrice.PriceValueTo;
-                SaveScreenShot(executor, wait, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentDate, Type = "image/png" });
+	            SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentDate, Type = "image/png" });
             }
             else
             {
@@ -81,7 +80,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 if(initialObject.Price != currentPrice.PriceValueTo)
                 {
                     initialObject.Price = currentPrice.PriceValueTo;
-                    SaveScreenShot(executor, wait, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentDate, Type = "image/png" });
+                    SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentDate, Type = "image/png" });
                 }
                 else history = history.Skip(1).ToList();
                 history.ForEach(x => { if (OH.Count(y => y.ChangingDate == x.ChangingDate && y.PriceValueTo == x.PriceValueTo) == 0) x.Save(); });
@@ -96,12 +95,12 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             initialObject.Save();
         }
 
-        private void SaveScreenShot(IJavaScriptExecutor executor, WebDriverWait wait, OMScreenshots screenshot)
+        private void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot)
         {
             try
             {
-                byte[] screenShot = new FullScreen().TakeScreenShot(executor, wait);
-                if (screenShot != null) 
+				var screenShot = new FullScreen().TakeScreenShot(driver);
+				if (screenShot != null) 
                     FileStorageManager.Save(
                         new MemoryStream(screenShot), 
                         ConfigurationManager.AppSettings["screenShotFolder"], 
