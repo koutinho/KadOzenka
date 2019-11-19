@@ -15,7 +15,12 @@ namespace KadOzenka.Dal.RestAppParser
 
         List<OMCoreObject> AllObjects = new List<OMCoreObject>();
         DateTime LastUpdateDate = 
-            OMCoreObject.Where(x => true).Select(x => x.ParserTime).OrderByDescending(x => x.ParserTime).ExecuteFirstOrDefault().ParserTime.GetValueOrDefault();
+            OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Cian)
+                        .Select(x => x.ParserTime)
+                        .OrderByDescending(x => x.ParserTime)
+                        .ExecuteFirstOrDefault()
+                        .ParserTime
+                        .GetValueOrDefault();
         int restData = new JSONParser.RestApp().GetRestData(new RestApp().GetMetaInfoDataValues());
 
         public void Detect()
@@ -51,8 +56,8 @@ namespace KadOzenka.Dal.RestAppParser
             Logger.ConsoleLog.WriteFotter("Получение данных из сторонних источников завершено");
             AllObjects = AllObjects.GroupBy(x => x.Url).Select(x => x.First()).ToList();
             Console.WriteLine($"Полученные данные проверены на дублирование. Осталось записей: {AllObjects.Count}");
-            AllObjects.ForEach(x => 
-            { 
+            AllObjects.ForEach(x =>
+            {
                 try
                 {
                     if (OMCoreObject.Where(y => y.Url == x.Url).Execute().Count == 0)

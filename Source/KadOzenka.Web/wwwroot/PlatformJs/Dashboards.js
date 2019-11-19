@@ -14,7 +14,7 @@ function onDashboardWindowRefresh() {
         if (validator.validate()) {
             $.ajax({
                 type: 'POST',
-                url: '\\Dashboard\\SaveDashboard',
+                url: dashboardSettings.SaveDashboardUrl,
                 data: $("form").serialize(),
                 success: function (result) {
                     kendo.ui.progress($('body'), false);
@@ -35,7 +35,7 @@ function onDashboardWindowRefresh() {
                                     SetActiveLayout(result.Id);
                                 }
                                 else {
-                                    var $li = $('#dashBoardList li[data-id=' + result.Id + ']');
+                                    var $li = $('#dashBoardList li').has('a[data-id=' + result.Id + ']');
                                     $li.attr('title', result.Name);
                                     $li.find('a').text(result.Name);
                                 }
@@ -64,7 +64,7 @@ function onAddGadgetWindowClose() {
     var formData = { 'id': getCurrentDashBoard() };
     $.ajax({
         type: 'POST',
-        url: '\\Dashboard\\DashboardPanels',
+        url: dashboardSettings.DashboardPanelsUrl,
         data: formData,
         success: function (result) {
             $("#dashBoardPanels").html(result);
@@ -95,11 +95,11 @@ function SetDashBoard(selectedDashboardId) {
     kendo.ui.progress($("body"), true);
     $.ajax({
         type: 'POST',
-        url: '\\Dashboard\\DashboardPanels',
+        url: dashboardSettings.DashboardPanelsUrl,
         data: { 'id': selectedDashboardId },
         success: function (result) {
             $("#dashBoardPanels").html(result);
-            CheckForHide();
+            CheckForHide();            
             kendo.ui.progress($("body"), false);
         },
         error: function (result) {
@@ -120,7 +120,7 @@ function SetActiveLayout(dashBoard) {
 
     $.ajax({
         type: 'GET',
-        url: '\\Dashboard\\GetCurrentLayoutType',
+        url: dashboardSettings.GetCurrentLayoutTypeUrl,
         data: { id: dashBoard },
         success: function (result) {
             $("#dashBoardLayoutList a.active").removeClass('active');
@@ -222,7 +222,7 @@ $(function () {
 
         addGadget = $('#AddGadget').data('kendoWindow');
         addGadget.title('Добавить гаджет');
-        addGadget.refresh({ url: '\\Dashboard\\AddGadget' + '?Id=' + currentDashBoardId, type: "GET" });
+        addGadget.refresh({ url: dashboardSettings.AddGadgetUrl + '?Id=' + currentDashBoardId, type: "GET" });
         addGadget.maximize();
         addGadget.open();
     });
@@ -231,7 +231,7 @@ $(function () {
         e.preventDefault();
         var createDashboard = $('#Dashboard').data('kendoWindow');
         createDashboard.title('Новый Рабочий стол');
-        createDashboard.refresh({ url: '\\Dashboard\\GetDashboard', type: "GET" });
+        createDashboard.refresh({ url: dashboardSettings.GetDashboardUrl, type: "GET" });
         createDashboard.center().open();
     });
 
@@ -251,7 +251,7 @@ $(function () {
 
         editDashboard = $('#Dashboard').data('kendoWindow');
         editDashboard.title('Изменить Рабочий стол');
-        editDashboard.refresh({ url: '\\Dashboard\\GetDashboard' + '?Id=' + currentDashBoardId, type: "GET" });
+        editDashboard.refresh({ url: dashboardSettings.GetDashboardUrl + '?Id=' + currentDashBoardId, type: "GET" });
         editDashboard.center().open();
     });
 
@@ -271,7 +271,7 @@ $(function () {
 
         editDashboard = $('#Dashboard').data('kendoWindow');
         editDashboard.title('Копировать Рабочий стол');
-        editDashboard.refresh({ url: '\\Dashboard\\GetDashboard' + '?CopyId=' + currentDashBoardId, type: "GET" });
+        editDashboard.refresh({ url: dashboardSettings.GetDashboardUrl + '?CopyId=' + currentDashBoardId, type: "GET" });
         editDashboard.center().open();
     });
 
@@ -294,7 +294,7 @@ $(function () {
             content: 'Вы действительно хотите удалить Рабочий стол?',
             onSuccess: function (e) {
                 $.ajax({
-                    url: '\\Dashboard\\DeleteDashboard',
+                    url: dashboardSettings.DeleteDashboardUrl,
                     type: 'POST',
                     data: { 'id': currentDashBoardId },
                     success: function () {
@@ -340,7 +340,7 @@ $(function () {
         }
 
         $.ajax({
-            url: '\\Dashboard\\SetUserDefaultDashboard',
+            url: dashboardSettings.SetUserDefaultDashboardUrl,
             type: 'POST',
             data: { 'id': currentDashBoardId },
             success: function () {
@@ -419,7 +419,7 @@ $(function () {
             /* Кем распечатано */
             kendo.ui.progress($('body'), true);
             $.ajax({
-                url: '\\Dashboard\\GetUserName',
+                url: dashboardSettings.GetUserNameUrl,
                 type: 'GET',
                 success: function (e) {
                     var subTitleEl = $('<div></div>');
@@ -462,7 +462,7 @@ $(function () {
             return;
         }
 
-        window.location = '\\Dashboard\\ExportToExcel' + '?id=' + currentDashBoardId;
+        window.location = dashboardSettings.ExportToExcelUrl + '?id=' + currentDashBoardId;
     });
 
     // Выбор другого рабочего стола и перегрузка панелей
@@ -484,7 +484,7 @@ $(function () {
 
         $.ajax({
             type: 'POST',
-            url: '\\Dashboard\\SelectLayoutType',
+            url: dashboardSettings.SelectLayoutTypeUrl,
             data: formData,
             success: function (result) {
                 kendo.ui.progress($('body'), false);

@@ -24,17 +24,7 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
-			ObjectCardModel model;
-			if (id != 0 && obj != null && drs != null)
-			{
-				model = ObjectCardModel.FromOM(obj, drs);
-			}
-			else
-			{
-				model = ObjectCardModel.FromOM(new OMObject(), new OMDRS());
-			}
-
-			return View(model);
+			return View(ObjectCardModel.FromOM(obj, drs));
 		}
 
 		[HttpGet]

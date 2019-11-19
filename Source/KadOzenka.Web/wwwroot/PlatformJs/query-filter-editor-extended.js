@@ -175,7 +175,10 @@
 
                     var $item = $el.kendoToolBar({
                         items: [
-                            { type: "button", id: "btnSaveColumn", text: "Сохранить", click: saveColumn },
+                            {
+                                type: "button", id: "btnSaveColumn",
+                                text: (self.editorType == "Column" || self.editorType == "VirtualColumn" ? "Сохранить" : "Ок"), click: saveColumn
+                            },
                             {
                                 type: "buttonGroup", buttons: [
                                     { text: "Константа", id: "QSColumnConstant", group: "column_type_group", togglable: true, toggle: function () { ShowContent(container, "QSColumnConstant", $dialogColumn.data('column')) }, selected: true },
@@ -301,7 +304,7 @@
                 var $item = $(el).kendoToolBar({
                     items: [
                         {
-                            text: "Сохранить", type: "button", click: function (e) { methods.saveJoin(e.sender); }
+                            text: "Ок", type: "button", click: function (e) { methods.saveJoin(e.sender); }
                         },
                         {
                             type: "buttonGroup", buttons: [
@@ -612,25 +615,13 @@
                 $(el).data("type-element", "treeView");
             },
             initJoinsTree: function (el) {
-                var dataSource = [{
-                    id: self.getNextId(), text: "Дополнительная настройка обединения", Type: "join", expanded: true, items: [
-                        {
-                            id: self.getNextId(), Type: "group", Operator: "And", OperatorText: "И", expanded: true, items: [
-                                {
-                                    id: self.getNextId(),
-                                    Type: "condition",
-                                    Condition: "Equal",
-                                    ConditionText: "Равно",
-                                    LeftOperand: { TitleValue: '<Выберите...>', New: true },
-                                    RightOperand: { TitleValue: '<Выберите...>', New: true },
-                                    selected: false
-                                }
-                            ]
-                        }
-                    ]
-                }];
+                var $item = $(el).kendoTreeView({
+                    template: kendo.template($("#ex-tw-template").html()),
+                    loadOnDemand: false
+                }).data("kendoTreeView");
 
-                methods.initTree(el, dataSource);
+                self.elements[el] = $item.wrapper;
+                $(el).data("type-element", "treeView");
             },
             initReestrTree: function (el) {
                 var $item = $(el).kendoTreeView({
@@ -790,6 +781,89 @@
 
                 self.elements[el] = $item.wrapper;
             },
+            initTextQuery: function (el) {
+                var query = $(el).data("item");
+                getQueryText(query);
+            },
+            // отобразить текстовое представление запроса
+            setQueryText: function (el) {
+                var queryText = '';
+                var query = $(el).data("item");
+
+                if (query && !$.isEmptyObject(query)) {
+                    if (query.Columns.length) {
+                        queryText += '<strong>Выбрать</strong><br/>'
+                        $.each(query.Columns, function (index, val) {
+                            queryText += '<span style="margin-left:10px">' + val.TitleValue + '</span>' + (index < query.Columns.length - 1 ? ',<br/>' : '<br/>');
+                        });
+                    }
+                    if (query.Joins.length) {
+                        queryText += getJoinText(query.Joins);
+                        $.each(query.Joins, function (index, val) {
+                            queryText += getJoinText(val) + (index < query.Joins.length - 1 ? ',<br/>' : '<br/>');
+                        });
+                    }
+                    if (query.Filter.length && query.Filter[0].items.length) {
+                        queryText += '<strong>Фильтр</strong><br/>' + getGroupText(query.Filter[0], true) + '<br/>';
+                    }
+                    if (query.Group.length) {
+                        queryText += '<strong>Группировка</strong><br/>';
+                        $.each(query.Group, function (index, val) {
+                            queryText += '<span style="margin-left:10px">' + val.TitleValue + '</span>' + (index < query.Group.length - 1 ? ',<br/>' : '<br/>');
+                        });
+                    }
+                    if (query.Sort.length) {
+                        queryText += '<strong>Сортировка</strong><br/>';
+                        $.each(query.Sort, function (index, val) {
+                            queryText += '<span style="margin-left:10px">' + val.TitleValue + (!val.OrderType || val.OrderType == 'ASC' ? ' (Прямая)' : ' (Обратная)') + '</span>' + (index < query.Sort.length - 1 ? ',<br/>' : '<br/>');
+                        });
+                    }
+                    queryText += '<br/><br/>';
+                }
+
+                function getGroupText(el, parent) {
+                    var result = '';
+                    if (!$.isEmptyObject(el)) {
+                        if (el.Type == 'group') {
+                            if (!parent)
+                                result += '<strong>(</strong><br/>';
+                            if (el.items.length) {
+                                $.each(el.items, function (index, val) {
+                                    result += getGroupText(val) + (index < el.items.length - 1 ? '<br/><strong>' + el.OperatorText + '</strong><br/>' : '');
+                                });
+                            }
+                            if (!parent)
+                                result += '<br/><strong>)</strong>';
+
+                        } else {
+                            result += getConditionText(el);
+                        }
+                    }
+                    return result;
+                }
+
+                function getConditionText(condition) {
+                    var result = '';
+                    if (!$.isEmptyObject(condition) && condition.Type == 'condition')
+                        result += '<span style="margin-left:10px">{0} <strong>{1}</strong> {2}</span>'.format(condition.LeftOperand.TitleValue, condition.ConditionText, condition.RightOperand.TitleValue);
+                    return result;
+                }
+
+                function getJoinText(el) {
+                    var result = '';
+                    if (!$.isEmptyObject(el) && el.Type == 'join' && el.RegisterId) {
+                        result += '<strong>Объединение</strong> {0}{1}<strong>Условие</strong><br/>'.format(el.text, (el.ActualColumn ? '<br/><strong>Актуально на</strong> ' + el.ActualColumn.TitleValue + '<br/>' : '<br/>'));
+                        if (el.items.length) {
+                            $.each(el.items, function (index, val) {
+                                result += getGroupText(val, parent);
+                            });
+                        }
+                    }
+                    return result;
+                }
+
+                $(el).html(queryText);
+            },
             saveSelectColumn: function (el, data) {
                 if (el) {
                     var grid = self.$element.find(".ex-columns-grid").data("kendoGrid");
@@ -909,6 +983,9 @@
 
                     if (!el.data("item"))
                         el.append('<span class="k-icon k-i-check-outline" style="margin-left: 5px;"></span>');
+
+                    var $queryTextEl = el.parent().next('.query-text').data('item', data);
+                    methods.setQueryText($queryTextEl);
 
                     el.data("item", data);
                 }
@@ -1116,7 +1193,7 @@
                 PackageIndex: self.$element.find("input.ex-package-index").val(),
                 Distinct: self.$element.find("input.ex-cb-distinct").prop("checked"),
                 Columns: getColumnsList(),
-                Joins: self.editorType == "Column" || "VirtualColumn" ? [] : getJoinStruct(),
+                Joins: self.editorType == "Column" || self.editorType == "VirtualColumn" ? [] : getJoinStruct(),
                 Filter: getFilterStruct(),
                 Sort: getSortStruct(),
                 Group: getGroupStruct()
@@ -1345,7 +1422,14 @@
                         titleValue = "{0} ({1})".format(data.AttributeName, data.AttributeId);
                         break;
                     case "QSColumnFunction":
-                        titleValue = data.Function;
+                        var functionParameters = '';
+                        if (data.FunctionParameters.length) {
+                            $.each(data.FunctionParameters, function (index, value) {
+                                functionParameters += (index !== 0 ? ', ' : '') + value.TitleValue;
+                            });
+                        }
+
+                        titleValue = "функция {0}".format(data.Function) + (functionParameters ? ' ({0})'.format(functionParameters) : '');
                         break;
                     case "QSColumnQuery":
                         titleValue = "<Подзапрос>";
@@ -1823,6 +1907,9 @@
 
             SetDataSource(container, data);
             SetElementsValues(container, data);
+
+            var $actionAfterSetValues = container.find("[data-after-set-value]");
+            ExecuteMethods($actionAfterSetValues, "after-set-value");
         }
 
         function ToggleTemplate(template, container) {

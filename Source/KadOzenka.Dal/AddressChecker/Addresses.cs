@@ -2,6 +2,7 @@
 using System.Text;
 using ObjectModel.Market;
 using System.Collections.Generic;
+using System.Linq;
 
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.WebRequest;
@@ -16,7 +17,9 @@ namespace KadOzenka.Dal.AddressChecker
         List<OMCoreObject> AllObjects =
             OMCoreObject.Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && x.ProcessType_Code == ObjectModel.Directory.ProcessStep.DoNotProcessed)
                         .Select(x => new { x.Market_Code, x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code })
-                        .Execute();
+                        .Execute()
+                        .Take(25000)
+                        .ToList();
 
         public void Detect()
         {

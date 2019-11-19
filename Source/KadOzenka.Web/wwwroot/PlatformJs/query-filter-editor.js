@@ -148,7 +148,7 @@
         };
 
         function initControls() {
-            self.$element.find('.alert.alert-warning.alert-group:first').prepend('<div style="margin-bottom: 5px;"><label style="width: 60px;">Запрос:</label><input id="f_txt_query" type="text" class="k-textbox" style="width: calc(100% - 165px);margin-right: 5px;"><button class="k-button f_button_save" style="margin-right: 5px;" title="Сохранить фильтр" data-bind="saveFiltr"><span class="k-icon k-i-save"></span>&nbsp;</button><button class="k-button f_button_delete" style="margin-left: -1px;" title="Удалить фильтр" data-bind="deleteFiltr"><span class="k-icon k-i-delete"></span>&nbsp;</button></div>');
+            self.$element.find('.alert.alert-warning.alert-group:first').prepend('<div style="margin-bottom: 5px;"><label style="width: 60px;">Запрос:</label><input id="f_txt_query" type="text" class="k-textbox" style="width: calc(100% - 170px);margin-right: 5px;"><button class="k-button f_button_save" style="margin-right: 5px;" title="Сохранить фильтр" data-bind="saveFiltr"><span class="k-icon k-i-save"></span>&nbsp;</button><button class="k-button f_button_delete" style="margin-left: -1px;" title="Удалить фильтр" data-bind="deleteFiltr"><span class="k-icon k-i-delete"></span>&nbsp;</button></div>');
         }
 
         function getStruct(parent) {

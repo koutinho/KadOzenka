@@ -30,7 +30,11 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
 
         public void TakePrice() 
         {
-            using (IWebDriver driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
+            ChromeOptions options = new ChromeOptions();
+            //options.AddArgument("headless");
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            //service.HideCommandPromptWindow = true;
+            using (IWebDriver driver = new ChromeDriver(service, options))
             {
                 driver.Manage().Window.Maximize();
                 IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
@@ -43,7 +47,9 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         driver.Navigate().GoToUrl(initialObject.Url);
                         if (!bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIANError"]).ToString()) && !bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIAN505Page"]).ToString()))
                         {
-                            RefreshObjectInfo(initialObject, GetData(executor, initialObject.DealType_Code, initialObject.Id), (ChromeDriver)driver);
+                            executor.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
+                            RefreshObjectInfo(initialObject, GetData(executor, initialObject.DealType_Code, initialObject.Id), executor, wait);
+                            //GetData(executor, initialObject.DealType_Code, initialObject.Id);
                             OCor++;
                         }
                         else
@@ -56,7 +62,6 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                     { 
                         OErr++;
                         Console.WriteLine($"{ex.Message}\n");
-                        //Console.ReadLine();
                     }
                     OCur++;
                     ConsoleLog.WriteData("Обновление цен", OCtr, OCur, OCor, OErr, nspErr:NErr);
@@ -84,6 +89,11 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 }
                 else history = history.Skip(1).ToList();
                 history.ForEach(x => { if (OH.Count(y => y.ChangingDate == x.ChangingDate && y.PriceValueTo == x.PriceValueTo) == 0) x.Save(); });
+            }
+            if (history.Count(x => x.PriceValueFrom != null) > 0)
+            {
+                initialObject.ExclusionStatus_Code = ExclusionStatus.IncorrectPrice;
+                initialObject.ProcessType_Code = ProcessStep.Excluded;
             }
             initialObject.LastDateUpdate = currentDate;
             initialObject.Save();
@@ -144,7 +154,10 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                     string.Format(ConfigurationManager.AppSettings["CIANHCRScript"], ConfigurationManager.AppSettings["CIANArrVar"], ConfigurationManager.AppSettings["CIANOuterSep"]))
                     .ToString()
                     .Split(ConfigurationManager.AppSettings["CIANOuterSep"]);
-                string[] splitedArea = executor.ExecuteScript(ConfigurationManager.AppSettings["readCIANArea"]).ToString().Split(ConfigurationManager.AppSettings["CIANAreaSpliter"]);
+                string initialArea = string.Empty;
+                try { initialArea = executor.ExecuteScript(ConfigurationManager.AppSettings["readCIANArea"]).ToString(); }
+                catch { initialArea = executor.ExecuteScript(ConfigurationManager.AppSettings["readCIANAreaOld"]).ToString(); }
+                string[] splitedArea = initialArea.Split(ConfigurationManager.AppSettings["CIANAreaSpliter"]);
                 long.TryParse(NO.Replace(splitedArea[0], string.Empty), out areaFrom);
                 long.TryParse(NO.Replace(splitedArea[1], string.Empty), out areaTo);
                 history.ToList().ForEach(x =>
@@ -181,7 +194,10 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                     string.Format(ConfigurationManager.AppSettings["CIANHCRScript"], ConfigurationManager.AppSettings["CIANArrVar"], ConfigurationManager.AppSettings["CIANOuterSep"]))
                     .ToString()
                     .Split(ConfigurationManager.AppSettings["CIANOuterSep"]);
-                string[] splitedArea = executor.ExecuteScript(ConfigurationManager.AppSettings["readCIANArea"]).ToString().Split(ConfigurationManager.AppSettings["CIANAreaSpliter"]);
+                string initialArea = string.Empty;
+                try { initialArea = executor.ExecuteScript(ConfigurationManager.AppSettings["readCIANArea"]).ToString(); }
+                catch { initialArea = executor.ExecuteScript(ConfigurationManager.AppSettings["readCIANAreaOld"]).ToString(); }
+                string[] splitedArea = initialArea.Split(ConfigurationManager.AppSettings["CIANAreaSpliter"]);
                 long.TryParse(NO.Replace(splitedArea[0], string.Empty), out areaFrom);
                 long.TryParse(NO.Replace(splitedArea[1], string.Empty), out areaTo);
                 history.ToList().ForEach(x =>

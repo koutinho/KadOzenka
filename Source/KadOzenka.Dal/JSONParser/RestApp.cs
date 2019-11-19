@@ -29,6 +29,7 @@ namespace KadOzenka.Dal.JSONParser
                 try
                 {
                     string subCategory = elements[i]["subcategory"].ToString();
+                    string description = elements[i]["description"].ToString();
                     long marketId = long.Parse(elements[i]["Id"].ToString());
                     //long? price = long.TryParse(elements[i]["price"].ToString(), out var tempPrice) ? tempPrice : (long?)null;
                     long? price = 1;
@@ -39,13 +40,13 @@ namespace KadOzenka.Dal.JSONParser
                     long? categoryId = long.TryParse(elements[i]["category_Id"].ToString(), out var tempCI) ? tempCI : (long?)null;
                     decimal? lng = decimal.TryParse(elements[i]["coords"]["lng"].ToString(), out var tempLNG) ? tempLNG : (decimal?)null;
                     decimal? lat = decimal.TryParse(elements[i]["coords"]["lat"].ToString(), out var tempLAT) ? tempLAT : (decimal?)null;
-                    decimal? area = decimal.TryParse(elements[i]["area"].ToString(), out var tempArea) ? tempArea : (decimal?)null;
-                    decimal? areaKitchen = decimal.TryParse(elements[i]["area_kitchen"].ToString(), out var tempAK) ? tempAK : (decimal?)null;
-                    decimal? areaLiving = decimal.TryParse(elements[i]["area_living"].ToString(), out var tempAL) ? tempAL : (decimal?)null;
-                    decimal? areaLand = decimal.TryParse(elements[i]["area_land"].ToString(), out var tempALA) ? tempALA : (decimal?)null;
+                    decimal? area = decimal.TryParse(elements[i]["area"].ToString().Replace('.', ','), out var tempArea) ? tempArea : (decimal?)null;
+                    decimal? areaKitchen = decimal.TryParse(elements[i]["area_kitchen"].ToString().Replace('.', ','), out var tempAK) ? tempAK : (decimal?)null;
+                    decimal? areaLiving = decimal.TryParse(elements[i]["area_living"].ToString().Replace('.', ','), out var tempAL) ? tempAL : (decimal?)null;
+                    decimal? areaLand = decimal.TryParse(elements[i]["area_land"].ToString().Replace('.', ','), out var tempALA) ? tempALA : (decimal?)null;
                     DealType dealType = GetDealType(elements[i]["deal_type"].ToString());
                     PropertyTypes propertyType = GetPropertyObjectType(buildingYear, categoryId, subCategory);
-                    ExclusionStatus? exclusionStatus = GetExclusionStatus(price, area, areaLand);
+                    ExclusionStatus? exclusionStatus = GetExclusionStatus(price, area, areaLand, description);
 
                     OMCoreObject CO = new OMCoreObject();
                     CO.Url = GetURL(MarketTypes.Cian, dealType, categoryId, subCategory, marketId);
@@ -59,7 +60,7 @@ namespace KadOzenka.Dal.JSONParser
                     CO.Address = elements[i]["address"].ToString();
                     CO.Metro = elements[i]["metro"].ToString();
                     CO.Images = elements[i]["images"].ToString();
-                    CO.Description = elements[i]["description"].ToString();
+                    CO.Description = description;
                     CO.Lng = lng;
                     CO.Lat = lat;
                     CO.DealType_Code = GetDealType(elements[i]["deal_type"].ToString());
@@ -194,10 +195,13 @@ namespace KadOzenka.Dal.JSONParser
             }
         }
 
-        private ExclusionStatus? GetExclusionStatus(long? price, decimal? area, decimal? area_land)
+        private ExclusionStatus? GetExclusionStatus(long? price, decimal? area, decimal? area_land, string description)
         {
             if (price == 0 || price == null) return ExclusionStatus.NoPrice;
             if ((area == 0 || area == null) && (area_land == 0 || area_land == null)) return ExclusionStatus.NoArea;
+            if (description.Contains("мебель") || description.Contains("Мебель")) return ExclusionStatus.ContainsFurniture;
+            if (description.Contains("ППА") || description.Contains("Ппа") || description.Contains("ппа") || description.Contains("Продаются права аренды")) return ExclusionStatus.ContainsPPA;
+            if (description.Length < 100) return ExclusionStatus.DoNotHaveDescription;
             return null;
         }
 

@@ -213,7 +213,7 @@ var RegisterView = RegisterView || {
                     }
                 }
 
-                if (registerViewSettings.NeedOpenEmpty) searchWindow.center().open();
+                if (registerViewSettings.NeedOpenEmpty && !registerViewSettings.NewDisign) searchWindow.center().open();
             }
         }
 
@@ -286,6 +286,7 @@ var RegisterView = RegisterView || {
                     title: title,
                     iframe: true,
                     modal: true,
+                    //appendTo: window.parent.$('body'),
                     content: contentUrl,
                     close: function (e) {
                         if (needRefresh === true) {
@@ -298,10 +299,11 @@ var RegisterView = RegisterView || {
             config.height = height || "auto";
             config.width = width || "auto";
 
-            //прикрепляем окно к html body
+            //Нужно открывать окно в родительском фрейме !!!!!
+            //прикрепляем окно к html body родительского окна
             $('body').append(windowPlacehoder);
 
-            var window = windowPlacehoder.kendoWindow(config).data('kendoWindow');
+            var kendoWindow = windowPlacehoder.kendoWindow(config).data('kendoWindow');
 
             //события
             /*window.element.find('iframe.k-content-frame').on('load', function () {
@@ -316,15 +318,30 @@ var RegisterView = RegisterView || {
             });*/
 
             kendo.ui.progress(windowPlacehoder, true);
-            window.bind('refresh', function () {
+            kendoWindow.bind('refresh', function () {
                 kendo.ui.progress(windowPlacehoder, false);
             });
 
-            window.center();
-            window.open();
+            kendoWindow.center();
+
+            /*var documentWindow = $(window.parent);
+            kendoWindow.setOptions({
+                position: {
+                    top: documentWindow.scrollTop() + Math.max(0, (documentWindow.height() - windowPlacehoder.height()) / 2.1),
+                    left: documentWindow.scrollLeft() + Math.max(0, (documentWindow.width() - windowPlacehoder.width()) / 2)
+                }
+            });*/
+
+            kendoWindow.open();
+
+            /*var kwnd = kendoWindow.element.closest('.k-widget.k-window');
+            var overlay = kwnd.prev('.k-overlay');
+            if (kwnd.length && overlay.length) {
+                overlay.css('z-index', kwnd.css('z-index'));
+            }*/
 
             if (needMaximize) {
-                window.maximize();
+                kendoWindow.maximize();
             }
         }
 
@@ -616,7 +633,7 @@ var RegisterView = RegisterView || {
             var parameters = grid.GetDataFunc();
             parameters.CurrentLayoutId = registerViewSettings.CurrentLayoutId;
 
-            var url = registerViewSettings.RegistersShowSqlUrl + '?parametersJson=' + encodeURIComponent(JSON.stringify(parameters));
+            var url = registerViewSettings.RegistersShowSqlUrl + '?parametersJson=' + fixedEncodeURIComponent(JSON.stringify(parameters));
 
             OpenInKendoWindow(url,
                 "SQL-запрос",
@@ -916,9 +933,12 @@ var RegisterView = RegisterView || {
 
         function clearSearchElements() {
             var elementList = $('[attributenumberid]');
+
             for (var i = 0; i < elementList.length; ++i) {
                 if (elementList[i].getAttribute('data-role') == "dropdownlist") {
                     $('#' + elementList[i].id).data('kendoDropDownList').value("");
+                } else if (elementList[i].getAttribute('data-role') == 'combobox') {
+                    $('#' + elementList[i].id).data('kendoComboBox').value('');
                 } else {
                     elementList[i].value = "";
                 }
@@ -1038,7 +1058,11 @@ var RegisterView = RegisterView || {
         ////////////////////////////////////////////////////
         // Перенесено из Grid.cshtml
 
-        var gridReadRequest;
+        var gridReadRequest;        
+
+        $(window).resize(function () {
+            grid.resize();
+        });
 
         grid.bind('dataBound', function (e) {
             var view = this.dataSource.view(),
@@ -1070,6 +1094,7 @@ var RegisterView = RegisterView || {
             });
 
             setFooterStatus();
+            gridThis.content.css('height', '100%');
 
             if (view.length > 0) {
                 $.ajax({
@@ -1097,6 +1122,7 @@ var RegisterView = RegisterView || {
                 });
             }
         });
+
         grid.bind('columnResize', gridColumnResize);
         grid.bind('sort', onSorting);
         grid.bind('page', function () { pageChanged = true; });

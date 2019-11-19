@@ -291,7 +291,6 @@
 			"esri/layers/MapImageLayer",
 			"esri/widgets/DistanceMeasurement2D",
 			"esri/widgets/AreaMeasurement2D",
-			"esri/layers/FeatureLayer",
 			"dojo/domReady!"
 		], 	
 		function(
@@ -303,17 +302,16 @@
 			Basemap,
 			MapImageLayer,
 			DistanceMeasurement2D,
-			AreaMeasurement2D,
-			FeatureLayer
+			AreaMeasurement2D
 		) {
 
 			var layer_rus = new WMSLayer({
-				url: "https://cpkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer",
+				url:"https://pkk5.rosreestr.ru/arcgis/services/Cadastre/CadastreWMS/MapServer/WMSServer?",
 				title: "Межевание росреестра"
 			});
 		
 			var map = new Map({ basemap: "hybrid", layers: [layer_rus] });
-		  
+
 			var view = new MapView({
 				container: "viewDiv",
 				map: map,
@@ -327,6 +325,7 @@
 			var customBasemapWidget = document.createElement("div");
 			var measureWidget = document.createElement("div");
 			var activeWidget = null;
+			var onMeasure = false;
 			coordsWidget.id = "coordsWidget";
 			coordsWidget.className = "esri-widget esri-component";
 			coordsWidget.style.padding = "7px 15px 5px";
@@ -456,8 +455,6 @@
 				});
 				view.ui.add(end_measuring_container, "bottom-right");
 			}
-
-
 
 			view.ui.add(customBasemapWidget, "top-right");
 			view.ui.add(measureWidget, "top-right");

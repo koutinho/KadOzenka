@@ -17,6 +17,7 @@
         self.registerId = config.registerId;
         self.attributesUrl = config.attributesUrl;
         self.referencesUrl = config.referencesUrl;
+        self.needOpenEmpty = config.needOpenEmpty ? config.needOpenEmpty : false;
         self.filter = config.filter;
         self.AddMenuTemplate = "#rvs-add-menu-template";
         self.ButtonTemplate = "#rvs-button-template";
@@ -27,7 +28,8 @@
         self.StringControlTemplate = "#rvs-string-control-template";
         self.ReferenceControlTemplate = "#rvs-reference-control-template";
         self.GridSelector = "#Grid-" + config.registerId,
-            self.GridToolBar = '#GridToolBar-' + config.registerId;
+        self.SplitterSelector = "#verticalSplitter-" + config.registerId,
+        self.GridToolBar = '#GridToolBar-' + config.registerId;
         self.SearchButton = '#searchButton-' + config.registerId;
         self.ClearButton = '#clearButton-' + config.registerId;
         self.ResetSearchButton = '#resetButton-' + config.registerId;
@@ -227,6 +229,17 @@
         });
 
         $(self.GridToolBar).on('click', self.SearchButton, function () {
+            if (self.needOpenEmpty) {
+                $(self.SplitterSelector).show();
+                $(self.GridSelector).show();
+                $("#MessageClickSearch").hide();
+                self.needOpenEmpty = false;
+
+                var grid = $(self.GridSelector).data('kendoGrid');
+                if(grid)
+                    grid.dataSource.unbind("requestStart");
+            }
+
             reloadGrid();
         });
 

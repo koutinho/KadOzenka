@@ -43,9 +43,9 @@
         position: 9,        // percentage position of the handle, 0 = top, 50 = middle, 100 = bottom
         speed: 400,         // скорость анимации, мс
         site_url: "/",      // количество загружаемых сообщений сообщений,
-        load_content_url:    "/LeftPanel/LoadContent",       // url для загрузки контента панели
-        load_messages_url:   "/CoreMessages/GetMessageList", // url для загрузки непрочитанных сообщений
-        load_messages_count: "/CoreMessages/GetMessageList", // количество загружаемых сообщений сообщений,
+        load_content_url:        "/LeftPanel/LoadContent",       // url для загрузки контента панели
+        load_messages_url:       "/CoreMessages/GetMessageList", // url для загрузки непрочитанных сообщений
+        load_messages_count_url: "/CoreMessages/GetMessageList", // количество загружаемых сообщений сообщений
         frequency_load_messages: 30, // частота опросов для загрузки уведомлений, в секундах
         panelId: "",                 // идентификатор панели
         registerSettings: null,      // параметры реестра
@@ -117,6 +117,9 @@
             "speed": self.options.speed,
             "panelId": self.options.panelId,
             "site_url": self.options.site_url,
+            "load_content_url": self.options.load_content_url,
+            "load_messages_url": self.options.load_messages_url,
+            "load_messages_count_url": self.options.load_messages_count_url,
             "registerSettings": self.options.registerSettings,
             "uniqueSessionKey": self.options.uniqueSessionKey,
             "context": self.options.context,
@@ -200,7 +203,7 @@
             if (grid) {
                 var parameters = grid.GetDataFunc();
                 parameters.CurrentLayoutId = self.options.registerSettings.CurrentLayoutId;
-                var url = self.options.registerSettings.RegistersExportToExcelUrl + '?parametersJson=' + encodeURIComponent(JSON.stringify(parameters));
+                var url = self.options.registerSettings.RegistersExportToExcelUrl + '?parametersJson=' + fixedEncodeURIComponent(JSON.stringify(parameters));
                 window.open(url, '_blank');
             }
         }
@@ -236,6 +239,8 @@
             "uniqueSessionKey": function () { self.uniqueSessionKey(value); },
             "context": function () { self.context(value); },
             "load_content_url": function () { self.load_content_url(value); },
+            "load_messages_url": function () { self.load_messages_url(value); },
+            "load_messages_count_url": function () { self.load_messages_count_url(value); },
             "site_url": function () { self.site_url(value); }
         };
 
@@ -544,6 +549,22 @@
         }
 
         this.options.load_content_url = url;
+    },
+
+    load_messages_url: function (url) {
+        if (url === undefined) {
+            return this.options.load_messages_url;
+        }
+
+        this.options.load_messages_url = url;
+    },
+
+    load_messages_count_url: function (url) {
+        if (url === undefined) {
+            return this.options.load_messages_count_url;
+        }
+
+        this.options.load_messages_count_url = url;
     },
 
     // Задаем url для главного экрана сайта

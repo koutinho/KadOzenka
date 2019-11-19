@@ -76,7 +76,7 @@
     }
 
 .left-slide-panel .slide-panel-notify {
-    font-size: 16px;
+    font-size: 15px;
     line-height: 19px;
     color: rgba(255, 255, 255, 0.8);
     z-index: 9999;
@@ -95,7 +95,7 @@
     }
 
     .left-slide-panel .slide-panel-notify .notify-title {
-        font-size: 16px;
+        font-size: 15px;
         position: relative;
         top: -6px;
         margin-left: 4px;
@@ -158,20 +158,35 @@
 
 .left-slide-panel .left-panel-content .left-panel-content-icon {
     display: inline-block;
-    font-size: 28px;
     width: 28px;
     height: 28px;
-    position: relative;
+    font-size: 28px;
     top: 4px;
+    position: relative;
 }
 
-.left-slide-panel .left-panel-content .left-panel-content-title {
-    margin-left: 16px;
-}
+    .left-slide-panel .left-panel-content .group-title .left-panel-content-icon.fas,
+    .left-slide-panel .left-panel-content .group-title .left-panel-content-icon.far
+    {
+        font-size: 16px;
+        top: -1px;
+        left: 6px;
+    }
+
+    .left-slide-panel .left-panel-content li .left-panel-content-icon.fas,
+    .left-slide-panel .left-panel-content li .left-panel-content-icon.far {
+        font-size: 16px;
+        top: 2px;
+        margin-right: 6px;
+    }
+
+    .left-slide-panel .left-panel-content .left-panel-content-title {
+        margin-left: 16px;
+    }
 
 .left-slide-panel ul {
     list-style-type: none;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 19px;
     margin-top: 15px;
 }
@@ -200,9 +215,10 @@
 .left-slide-panel .switch .switch-text {
     border: none;
     position: relative;
-    font-size: 16px;
+    font-size: 15px;
     line-height: 19px;
     cursor: pointer;
+    padding-top: 2px;
 }
 
 .left-slide-panel ul a {
