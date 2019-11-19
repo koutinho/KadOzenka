@@ -48,8 +48,9 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
             consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().TakePrice(); });
             consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
+            consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(); });
 
-			consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы", SudExporter.DoLoad);
+            consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы", SudExporter.DoLoad);
         }
 
 	}

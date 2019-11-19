@@ -15,6 +15,7 @@ using Core.Main.FileStorages;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using KadOzenka.Dal.Selenium.ScreenShots;
+using System.Buffers.Text;
 
 namespace KadOzenka.Dal.Selenium.PriceChecker
 {
@@ -27,6 +28,18 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
         public List<OMScreenshots> AllScreens = OMScreenshots.Where(x => true).SelectAll().Execute();
         private DateTime currentDate = DateTime.Now;
         private DateTime lockDateTime = new DateTime(1970, 1, 1, 0, 0, 1);
+
+        public void Test()
+        {
+            ChromeOptions options = new ChromeOptions();
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            using (IWebDriver driver = new ChromeDriver(service, options))
+            {
+                driver.Manage().Window.Maximize();
+                driver.Navigate().GoToUrl("https://www.cian.ru/sale/flat/221625776/");
+                File.WriteAllBytes(@"C:\Users\silanov\Desktop\1.png", new FullScreen().TakeScreenShot((ChromeDriver)driver));
+            }
+        }
 
         public void TakePrice() 
         {
@@ -48,7 +61,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         if (!bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIANError"]).ToString()) && !bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIAN505Page"]).ToString()))
                         {
                             executor.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
-                            RefreshObjectInfo(initialObject, GetData(executor, initialObject.DealType_Code, initialObject.Id), executor, wait);
+                            RefreshObjectInfo(initialObject, GetData(executor, initialObject.DealType_Code, initialObject.Id), (ChromeDriver) driver);
                             //GetData(executor, initialObject.DealType_Code, initialObject.Id);
                             OCor++;
                         }
