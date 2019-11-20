@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Shared.Extensions;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Models.Sud
@@ -56,7 +57,7 @@ namespace KadOzenka.Web.Models.Sud
 			{
 				Id = omSudLink.Id,
 				SudId = omSudLink.IdSud.GetValueOrDefault(),
-				SudNumber = omSud.Number,
+				SudNumber = !string.IsNullOrEmpty(omSud.Number) && omSud.Date != null ? $"{omSud.Number} от {omSud.Date.GetString()}" : !string.IsNullOrEmpty(omSud.Number) ? omSud.Number : "",
 				Rs = omSudLink.Rs.GetValueOrDefault(),
 				Use = omSudLink.Use,
 				Description = omSudLink.Descr,

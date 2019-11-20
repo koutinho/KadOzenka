@@ -13,7 +13,7 @@
 				@Html.CustomLabelFor("Отчет об оценке", true)
 			</div>
 			<div class="col-sm-10">
-				@Html.AutoCompleteWithEditButton(m => m.ReportNumber, "Value", "Sud", "GetAutoComplete", "clearEvent", "editReport", "selectEvent", isReadonly: false)
+				@Html.AutoCompleteWithEditButton(m => m.ReportNumber, "Value", "Sud", "GetAutoCompleteReport", "clearEvent", "editReport", "selectEvent", isReadonly: false)
 			</div>
 		</div>
 		<div class="form-group">

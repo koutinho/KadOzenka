@@ -1,4 +1,5 @@
-﻿@using ObjectModel.Sud
+﻿@using CIPJS.Helpers
+@using ObjectModel.Sud
 @model KadOzenka.Web.Models.Sud.ConclusionLinkModel
 
 @using (Html.BeginForm("EditConclusionLink", "Sud", FormMethod.Post))
@@ -11,16 +12,8 @@
 			<div class="col-sm-2">
 				@Html.CustomLabelFor("Экспертное заключение", true)
 			</div>
-			<div class="col-sm-8">
-				@Html.TextBoxFor(m => m.ConclusionNumber, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
-			</div>
-			<div class="col-sm-2">
-				<a class="k-button k-button-icon" id="clearConclusion">
-					<span class="k-icon k-i-close"></span>
-				</a>
-				<a class="k-button k-button-icon" id="selectConclusion">
-					<span class="k-icon k-i-edit"></span>
-				</a>
+			<div class="col-sm-10">
+				@Html.AutoCompleteWithEditButton(m => m.ConclusionNumber, "Value", "Sud", "GetAutoCompleteConclusion", "clearEvent", "editConclusion", "selectEvent", isReadonly: false)
 			</div>
 		</div>
 		<div class="form-group">
@@ -62,6 +55,14 @@
 }
 <script type="text/javascript">
 
+	function selectEvent() {
+		$('#@Html.IdFor(m => m.IdConclusion)').val(this.e.dataItem.Id);
+	}
+
+	function clearEvent() {
+		$('#@Html.IdFor(m => m.IdConclusion)').val(0);
+	}
+
 	function distinctErrors(errors) {
 		var result = [];
 		$.each(errors, function(index, event) {
@@ -100,7 +101,7 @@
 		});
 
 
-	$('#selectConclusion').on('click', function () {
+	 function editConclusion () {
 		var contentUrl = '@Url.Action("SudZakSelect", "RegistersView")';
 		var title = 'Выбор Заключения';
 
@@ -114,18 +115,24 @@
 				dataType: 'json',
 				success: function (response) {
 					if (response && !$.isEmptyObject(response)) {
-						$('#@Html.IdFor(m => m.ConclusionNumber)').val(response.data.Number);
+						$('#@Html.IdFor(m => m.ConclusionNumber)').val(response.data.Value);
 					}
 					kendo.ui.progress($('body'), false);
 				}
 			});
 		}
 		Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMZak.GetRegisterId()');
+	}
+
+	$('#@Html.IdFor(m => m.ConclusionNumber)').on('blur', function () {
+		if ($('#@Html.IdFor(m => m.ConclusionNumber)').val() === "") {
+			$('#@Html.IdFor(m => m.IdConclusion)').val(0);
+			return;
+		}
+
+		if ($('#@Html.IdFor(m => m.IdConclusion)').val() === "0" || $('#@Html.IdFor(m => m.IdConclusion)').val() === "") {
+			$('#@Html.IdFor(m => m.ConclusionNumber)').val("");
+		}
 	});
 
-	$('#clearConclusion').on('click',
-		function() {
-			$('#@Html.IdFor(m => m.ConclusionNumber)').val(null);
-			$('#@Html.IdFor(m => m.IdConclusion)').val(0);
-		});
 </script>

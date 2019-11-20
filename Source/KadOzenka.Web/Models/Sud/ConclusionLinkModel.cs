@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Shared.Extensions;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Models.Sud
@@ -66,7 +67,7 @@ namespace KadOzenka.Web.Models.Sud
 				Rs = conclusionLink.Rs.GetValueOrDefault(),
 				Uprs = conclusionLink.Uprs.GetValueOrDefault(),
 				Use = conclusionLink.Use,
-				ConclusionNumber = conclusion.Number
+				ConclusionNumber = !string.IsNullOrEmpty(conclusion.Number) && conclusion.Date != null ? $"{conclusion.Number} от {conclusion.Date.GetString()}" : ""
 			};
 
 		}

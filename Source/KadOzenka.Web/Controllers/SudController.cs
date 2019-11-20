@@ -13,6 +13,8 @@ namespace KadOzenka.Web.Controllers
 {
 	public class SudController : BaseController
 	{
+		#region ObjectCard
+
 		[HttpGet]
 		public IActionResult ObjectCard(long id)
 		{
@@ -104,6 +106,9 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { Success = "Сохранено успешно", ObjectId = objId.ToString() });
 		}
+		#endregion
+
+		#region Report
 
 		[HttpGet]
 		public ActionResult EditReportLink(int reportLinkId, long sudObjectId)
@@ -249,6 +254,10 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new {Success = "Сохранено успешно", data = reportViewModel});
 		}
+
+		#endregion
+
+		#region Conclusion
 
 		[HttpGet]
 		public ActionResult EditConclusionLink(int conclusionLinkId, long sudObjectId)
@@ -396,7 +405,9 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { Success = "Сохранено успешно", data = conclusionViewModel });
 		}
+#endregion
 
+		#region OMData
 		[HttpGet]
 		public JsonResult GetReportData(int reportId)
 		{
@@ -412,13 +423,19 @@ namespace KadOzenka.Web.Controllers
 			return Json(new {data = report});
 		}
 
+
 		[HttpGet]
 		public JsonResult GetCourtData(int sudId)
 		{
 			var court = OMSud
 				.Where(x => x.Id == sudId)
 				.SelectAll()
-				.ExecuteFirstOrDefault();
+				.Execute().Select(x => new
+				{
+					x.Id,
+					Value = x.Date != null ? $"{x.Number} от {x.Date.GetString()}" : x.Number
+
+				}).FirstOrDefault();
 
 			return Json(new { data = court });
 		}
@@ -426,13 +443,18 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public JsonResult GetConclusionData(int сonclusionId)
 		{
-			OMZak сonclusion = OMZak
+			var сonclusion = OMZak
 				.Where(x => x.Id == сonclusionId)
 				.SelectAll()
-				.ExecuteFirstOrDefault();
+				.Execute().Select(x => new
+				{
+					x.Id,
+					Value = $"{x.Number} от {x.Date.GetString()}"
+				}).FirstOrDefault();
 
-			return Json(new { data = сonclusion });
+			return Json( new {data = сonclusion});
 		}
+#endregion
 
 		[HttpGet]
 		public JsonResult GetDictionary(int type)
@@ -445,8 +467,8 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(dictList);
 		}
-
-		public IQueryable GetAutoComplete(string searchText)
+		#region Autocomplite
+		public IQueryable GetAutoCompleteReport(string searchText)
 		{
 			return OMOtchet
 				.Where(x => x.Number.StartsWith(searchText))
@@ -456,6 +478,32 @@ namespace KadOzenka.Web.Controllers
 					Value = $"{x.Number} от {x.Date.GetString()}"
 				}).AsQueryable();
 		}
+
+		public IQueryable GetAutoCompleteConclusion(string searchText)
+		{
+			return OMZak
+				.Where(x => x.Number.StartsWith(searchText))
+				.SelectAll().OrderBy(x => x.Number).Execute().Select(x => new
+				{
+					x.Id,
+					Value = $"{x.Number} от {x.Date.GetString()}"
+				}).AsQueryable();
+		}
+
+		public IQueryable GetAutoCompleteCourt(string searchText)
+		{
+			return OMSud
+				.Where(x => x.Number.StartsWith(searchText))
+				.SelectAll().OrderBy(x => x.Number).Execute().Select(x => new
+				{
+					x.Id,
+					Value = x.Date != null ? $"{x.Number} от {x.Date.GetString()}" : x.Number
+				}).AsQueryable();
+		}
+
+		#endregion
+
+		#region Court 
 
 		[HttpGet]
 		public ActionResult EditCourt(int courtId)
@@ -598,5 +646,6 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { Success = "Сохранено успешно", data = courtLinkViewModel });
 		}
+#endregion
 	}
 }
