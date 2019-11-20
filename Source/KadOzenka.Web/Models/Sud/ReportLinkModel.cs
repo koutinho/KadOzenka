@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Shared.Extensions;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Models.Sud
@@ -62,7 +63,7 @@ namespace KadOzenka.Web.Models.Sud
 				Rs = entity.Rs.GetValueOrDefault(),
 				Uprs = entity.Uprs.GetValueOrDefault(),
 				Use = entity.Use,
-				ReportNumber = report.Number
+				ReportNumber = !string.IsNullOrEmpty(report.Number) && report.Date != null ?$"{report.Number} от {report.Date.GetString()}" : ""
 			};
 
 			return res;

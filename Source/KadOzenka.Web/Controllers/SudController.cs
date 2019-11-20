@@ -6,6 +6,7 @@ using Core.UI.Registers.Controllers;
 using KadOzenka.Web.Models.Sud;
 using ObjectModel.Sud;
 using System.Transactions;
+using Core.Shared.Extensions;
 using Newtonsoft.Json;
 
 namespace KadOzenka.Web.Controllers
@@ -399,10 +400,14 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public JsonResult GetReportData(int reportId)
 		{
-			OMOtchet report = OMOtchet
+			var report = OMOtchet
 				.Where(x => x.Id == reportId)
 				.SelectAll()
-				.ExecuteFirstOrDefault();
+				.Execute().Select(x => new
+				{
+					x.Id,
+					Value = $"{x.Number} от {x.Date.GetString()}"
+				}).FirstOrDefault();
 
 			return Json(new {data = report});
 		}
@@ -439,6 +444,17 @@ namespace KadOzenka.Web.Controllers
 				.Execute().ToList();
 
 			return Json(dictList);
+		}
+
+		public IQueryable GetAutoComplete(string searchText)
+		{
+			return OMOtchet
+				.Where(x => x.Number.StartsWith(searchText))
+				.SelectAll().OrderBy(x => x.Number).Execute().Select(x => new
+				{
+					x.Id,
+					Value = $"{x.Number} от {x.Date.GetString()}"
+				}).AsQueryable();
 		}
 
 		[HttpGet]

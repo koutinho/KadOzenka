@@ -1,4 +1,5 @@
-﻿@using ObjectModel.Sud
+﻿@using CIPJS.Helpers
+@using ObjectModel.Sud
 @model KadOzenka.Web.Models.Sud.ReportLinkModel
 
 @using (Html.BeginForm("EditReportLink", "Sud", FormMethod.Post))
@@ -11,16 +12,8 @@
 			<div class="col-sm-2">
 				@Html.CustomLabelFor("Отчет об оценке", true)
 			</div>
-			<div class="col-sm-8">
-				@Html.TextBoxFor(m => m.ReportNumber, new { @class = "k-textbox", @disabled = true, @style = "width: 100%;" })
-			</div>
-			<div class="col-sm-2">
-				<a class="k-button k-button-icon" id="clearReport">
-					<span class="k-icon k-i-close"></span>
-				</a>
-				<a class="k-button k-button-icon" id="selectReport">
-					<span class="k-icon k-i-edit"></span>
-				</a>
+			<div class="col-sm-10">
+				@Html.AutoCompleteWithEditButton(m => m.ReportNumber, "Value", "Sud", "GetAutoComplete", "clearEvent", "editReport", "selectEvent", isReadonly: false)
 			</div>
 		</div>
 		<div class="form-group">
@@ -62,6 +55,14 @@
 }
 <script type="text/javascript">
 
+	function selectEvent() {
+		$('#@Html.IdFor(m => m.IdReport)').val(this.e.dataItem.Id);
+	}
+
+	function clearEvent() {
+		$('#@Html.IdFor(m => m.IdReport)').val(0);
+	}
+
 	function distinctErrors(errors) {
 		var result = [];
 		$.each(errors, function(index, event) {
@@ -100,12 +101,11 @@
 		});
 
 
-	$('#selectReport').on('click', function () {
+	function editReport () {
 		var contentUrl = '@Url.Action("SudOtchetSelect", "RegistersView")';
 		var title = 'Выбор отчета';
 
 		var callbackFn = function (item) {
-			console.log('test', item);
 			kendo.ui.progress($('body'), true);
 			$('[name="IdReport"]').val(item.ID);
 			$.ajax({
@@ -115,20 +115,24 @@
 				dataType: 'json',
 				success: function (response) {
 					if (response && !$.isEmptyObject(response)) {
-						console.log('response', response);
-						$('#@Html.IdFor(m => m.ReportNumber)').val(response.data.Number);
+						console.log('response', response.data);
+						$('#@Html.IdFor(m => m.ReportNumber)').val(response.data.Value);
 					}
 					kendo.ui.progress($('body'), false);
 				}
 			});
 		}
-		console.log('run');
 		Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMOtchet.GetRegisterId()');
-	});
+	};
 
-	$('#clearReport').on('click',
-		function() {
-			$('#@Html.IdFor(m => m.ReportNumber)').val(null);
+	$('#@Html.IdFor(m => m.ReportNumber)').on('blur', function () {
+		if ($('#@Html.IdFor(m => m.ReportNumber)').val() === "") {
 			$('#@Html.IdFor(m => m.IdReport)').val(0);
-		});
+			return;
+		}
+
+		if ($('#@Html.IdFor(m => m.IdReport)').val() === "0" || $('#@Html.IdFor(m => m.IdReport)').val() === "") {
+			$('#@Html.IdFor(m => m.ReportNumber)').val("");
+		}
+	});
 </script>
