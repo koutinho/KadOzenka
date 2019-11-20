@@ -74,6 +74,7 @@
     <None Remove="Config\Registers\SearchPanels\InspectorPerson.xml" />
     <None Remove="Config\Registers\SearchPanels\PrimaryMatching.xml" />
     <None Remove="Config\Registers\SearchPanels\SignatoriesPerson.xml" />
+    <None Remove="Config\Registers\SearchPanels\SudOtchetSelect.xml" />
     <None Remove="Config\Registers\Views\BankSearch.xml" />
     <None Remove="Config\Registers\Views\CalculatePersonSelect.xml" />
     <None Remove="Config\Registers\Views\CoreAuditCommon.xml" />
@@ -267,6 +268,9 @@
     <Content Include="Config\Registers\SearchPanels\CoreSRDSession.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\Registers\SearchPanels\SudOtchetSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\Registers\SearchPanels\CoreSRDUser.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -413,7 +417,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.15" />
-    <PackageReference Include="Platform.Web" Version="1.0.217" />
+    <PackageReference Include="Platform.Web" Version="1.0.231" />
   </ItemGroup>
 
   <ItemGroup>
@@ -452,8 +456,6 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="Config\Reports\" />
-    <Folder Include="Models\" />
-    <Folder Include="Views\Sud\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 
@@ -670,10 +672,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ConfigPath Remove="Config\Registers\SearchPanels\SudOtchetSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudOtchetLinkCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudOtchetSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudReshLinkCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudReshSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudZakLinkCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudZakSelect.xml" />
   </ItemGroup>
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
