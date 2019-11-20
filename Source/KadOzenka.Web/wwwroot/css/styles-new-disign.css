@@ -821,6 +821,8 @@ label.control-label.required:after {
         border-right-style: none;
         border-bottom-style: none;
         border-color: rgb(104, 177, 210);
+        font-weight: 400 !important;
+        background-color: #F1F2F6;
     }
 
         .static-nav > fieldset > legend,
