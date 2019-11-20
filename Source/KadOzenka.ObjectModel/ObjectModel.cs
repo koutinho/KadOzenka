@@ -3856,133 +3856,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 207 Модель тура (KO_TOUR_MODEL)
-    /// </summary>
-    [RegisterInfo(RegisterID = 207)]
-    [Serializable]
-    public partial class OMTourModel : OMBaseClass<OMTourModel>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 20700100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 20700100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private long? _tourid;
-        /// <summary>
-        /// 20700200 Идентификатор тура (TOUR_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700200)]
-        public long? TourId
-        {
-            get
-            {
-                CheckPropertyInited("TourId");
-                return _tourid;
-            }
-            set
-            {
-                _tourid = value;
-                NotifyPropertyChanged("TourId");
-            }
-        }
-
-
-        private long? _modelid;
-        /// <summary>
-        /// 20700300 Идентификатор модели (MODEL_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700300)]
-        public long? ModelId
-        {
-            get
-            {
-                CheckPropertyInited("ModelId");
-                return _modelid;
-            }
-            set
-            {
-                _modelid = value;
-                NotifyPropertyChanged("ModelId");
-            }
-        }
-
-
-        private string _status;
-        /// <summary>
-        /// 20700400 Статус (STATUS)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700400)]
-        public string Status
-        {
-            get
-            {
-                CheckPropertyInited("Status");
-                return _status;
-            }
-            set
-            {
-                _status = value;
-                NotifyPropertyChanged("Status");
-            }
-        }
-
-
-        private KoModelStatus _status_Code;
-        /// <summary>
-        /// 20700400 Статус (справочный код) (STATUS_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20700400)]
-        public KoModelStatus Status_Code
-        {
-            get
-            {
-                CheckPropertyInited("Status_Code");
-                return this._status_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_status))
-                    {
-                         _status = descr;
-                    }
-                }
-                else
-                {
-                     _status = descr;
-                }
-
-                this._status_Code = value;
-                NotifyPropertyChanged("Status");
-                NotifyPropertyChanged("Status_Code");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 208 Факторы группы (KO_GROUP_FACTOR)
     /// </summary>
     [RegisterInfo(RegisterID = 208)]
@@ -4353,6 +4226,102 @@ namespace ObjectModel.KO
             }
         }
 
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 212 Группы тура (KO_TOUR_GROUPS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 212)]
+    [Serializable]
+    public partial class OMTourGroup : OMBaseClass<OMTourGroup>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 21200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _tourid;
+        /// <summary>
+        /// 21200200 Идентификатор тура (TOUR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21200200)]
+        public long TourId
+        {
+            get
+            {
+                CheckPropertyInited("TourId");
+                return _tourid;
+            }
+            set
+            {
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
+            }
+        }
+
+
+        private long _groupid;
+        /// <summary>
+        /// 21200300 Идентификатор группы (GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21200300)]
+        public long GroupId
+        {
+            get
+            {
+                CheckPropertyInited("GroupId");
+                return _groupid;
+            }
+            set
+            {
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 250 Параметры расчета для ОКС (KO_UNIT_PARAMS_OKS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 250)]
+    [Serializable]
+    public partial class OMUnitParamsOks : OMBaseClass<OMUnitParamsOks>
+    {
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 251 Параметры расчета для ЗУ (KO_UNIT_PARAMS_ZU)
+    /// </summary>
+    [RegisterInfo(RegisterID = 251)]
+    [Serializable]
+    public partial class OMUnitParamsZu : OMBaseClass<OMUnitParamsZu>
+    {
     }
 }
 

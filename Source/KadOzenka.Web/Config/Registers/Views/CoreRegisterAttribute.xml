@@ -4,7 +4,7 @@
   <Buttons>
     <Button Caption="Операции" OpenInRadWindow="false" Type="DropDown">
       <DropDownButtons>
-        <Button Caption="Настройка виртуальной колонки" NavigateURL="~/CoreUI/QSEditor/QSEditorHost.aspx?">
+        <Button Caption="Настройка виртуальной колонки" NavigateURL="~/CoreUI/EditVirtualColumn">
           <ConditionGroups>
             <ConditionGroup HideOrDisable="Disable">
               <Conditions>
@@ -13,9 +13,8 @@
             </ConditionGroup>
           </ConditionGroups>
           <Parameters>
-            <Parameter Key="QSEditorMode" Value="VirtualAttribute" />
-            <Parameter Key="AttributeId" Value="[ObjectID]" />
-            <Parameter Key="RegisterId" Value="[93100300]" />
+            <Parameter Key="attributeId" Value="[ObjectID]" />
+            <Parameter Key="registerId" Value="[93100300]" />
           </Parameters>
         </Button>
       </DropDownButtons>

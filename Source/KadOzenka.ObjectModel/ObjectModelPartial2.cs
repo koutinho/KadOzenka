@@ -523,31 +523,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 207 Модель тура
-    /// </summary>
-    public partial class OMTourModel
-    {
-        /// <summary>
-        /// Ссылка на (202 Тур оценки)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMTour ParentTour { get; set; }
-
-        /// <summary>
-        /// Ссылка на (206 Модель)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModel ParentModel { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 208 Факторы группы
     /// </summary>
     public partial class OMGroupFactor

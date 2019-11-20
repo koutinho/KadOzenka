@@ -922,12 +922,6 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMTask> Task { get; set; }
-
-        /// <summary>
-        /// Ссылка на (207 Модель тура)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMTourModel> TourModel { get; set; }
         public OMTour()
         {
 
@@ -939,8 +933,6 @@ namespace ObjectModel.KO
             Unit = new List<ObjectModel.KO.OMUnit>();
 
             Task = new List<ObjectModel.KO.OMTask>();
-
-            TourModel = new List<ObjectModel.KO.OMTourModel>();
 
         }
         public OMTour(bool trackPropertyChanging) : this()
@@ -1046,12 +1038,6 @@ namespace ObjectModel.KO
         public List<ObjectModel.KO.OMUnit> Unit { get; set; }
 
         /// <summary>
-        /// Ссылка на (207 Модель тура)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMTourModel> TourModel { get; set; }
-
-        /// <summary>
         /// Ссылка на (210 Факторы модели)
         /// </summary>
         [Reference]
@@ -1066,36 +1052,10 @@ namespace ObjectModel.KO
 
             Unit = new List<ObjectModel.KO.OMUnit>();
 
-            TourModel = new List<ObjectModel.KO.OMTourModel>();
-
             ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
 
         }
         public OMModel(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 207 Модель тура
-    /// </summary>
-    public partial class OMTourModel
-    {
-
-        public OMTourModel()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMTourModel(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -1176,6 +1136,74 @@ namespace ObjectModel.KO
 
         }
         public OMMarkCatalog(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 212 Группы тура
+    /// </summary>
+    public partial class OMTourGroup
+    {
+
+        public OMTourGroup()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMTourGroup(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 250 Параметры расчета для ОКС
+    /// </summary>
+    public partial class OMUnitParamsOks
+    {
+
+        public OMUnitParamsOks()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnitParamsOks(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 251 Параметры расчета для ЗУ
+    /// </summary>
+    public partial class OMUnitParamsZu
+    {
+
+        public OMUnitParamsZu()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnitParamsZu(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
