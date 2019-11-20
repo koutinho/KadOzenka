@@ -1297,3 +1297,35 @@ input#addressInput {
 .dropdown-main-menu .fa-users {
 	background-color: #ff9899;
 }
+
+/* для старого дизайна */
+[id^=SearchWindow-] .k-panelbar > .k-item > .k-link {
+    border-color: #f1f2f6;
+    background-position: 50% 50%;
+    background-color: #eaecf3;
+    color: black !important;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    background-clip: inherit;
+    height: inherit;
+    margin: 0;
+}
+
+    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link:hover {
+        background-color: #e0e3ec;
+    }
+
+    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link span:first-child {
+        font-weight: inherit;
+        font-size: inherit;
+        color: #0a1124;
+        position: absolute;
+        top: 16px;
+        left: 97%;
+    }
+
+    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link:before {
+        background: none;
+    }
+
+/* ------------------------------------------------------ */
