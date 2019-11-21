@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="932" Description="" LinkedRegistersList="930,931,932,993" SRDFunctionTag="ADMIN.REGISTERS" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" ShowSettingsPanel="false" UseMasterPage="false">
+    <Buttons>
+        <Button Caption="Перейти к" Type="DropDown">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <DropDownButtons>
+                <Button Caption="родительскому&amp;nbsp;реестру" NavigateURL="~/RegistersView/CoreRegisterRegister?Transition=1" OpenInNewWindow="true" Target="_top">
+                    <Parameters>
+                        <Parameter Key="93000100" Value="[93200300]" />
+                    </Parameters>
+                </Button>
+                <Button Caption="дочернему&amp;nbsp;реестру" NavigateURL="~/RegistersView/CoreRegisterRegister?Transition=1" OpenInNewWindow="true" Target="_top">
+                    <Parameters>
+                        <Parameter Key="93000100" Value="[93200400]" />
+                    </Parameters>
+                </Button>
+                <Button Caption="показателю&amp;nbsp;реестра" NavigateURL="~/RegistersView/CoreRegisterAttribute?Transition=1" OpenInNewWindow="true" Target="_top">
+                    <Parameters>
+                        <Parameter Key="93100100" Value="[93200600]" />
+                    </Parameters>
+                </Button>
+            </DropDownButtons>
+        </Button>
+        <Button CommandName="ExportToExcel" />
+        <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+                <Parameter Key="RegisterId" Value="[RegisterId]" />
+                <Parameter Key="LightMode" Value="true" />
+            </Parameters>
+        </Button>
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

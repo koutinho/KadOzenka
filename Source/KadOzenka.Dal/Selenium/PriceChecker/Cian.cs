@@ -23,8 +23,10 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
     {
 
         public List<OMPriceHistory> resultList = new List<OMPriceHistory>();
-        public List<OMCoreObject> AllObjects = 
-            OMCoreObject.Where(x => x.Market_Code == MarketTypes.Cian && x.LastDateUpdate == null).Select(x => new { x.Url, x.DealType_Code, x.Price, x.LastDateUpdate }).Execute();
+        public List<OMCoreObject> AllObjects = OMCoreObject
+            .Where(x => x.Market_Code == MarketTypes.Cian && x.LastDateUpdate == null)
+            .Select(x => new { x.Url, x.DealType_Code, x.Price, x.LastDateUpdate })
+            .Execute();
         public List<OMScreenshots> AllScreens = OMScreenshots.Where(x => true).SelectAll().Execute();
         private DateTime currentDate = DateTime.Now;
         private DateTime lockDateTime = new DateTime(1970, 1, 1, 0, 0, 1);
@@ -60,7 +62,6 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         driver.Navigate().GoToUrl(initialObject.Url);
                         if (!bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIANError"]).ToString()) && !bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIAN505Page"]).ToString()))
                         {
-                            executor.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
                             RefreshObjectInfo(initialObject, GetData(executor, initialObject.DealType_Code, initialObject.Id), (ChromeDriver) driver);
                             //GetData(executor, initialObject.DealType_Code, initialObject.Id);
                             OCor++;
@@ -123,15 +124,20 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             try
             {
 				var screenShot = new FullScreen().TakeScreenShot(driver);
-				if (screenShot != null) 
+				if (screenShot != null)
+                {
                     FileStorageManager.Save(
-                        new MemoryStream(screenShot), 
-                        ConfigurationManager.AppSettings["screenShotFolder"], 
-                        currentDate, 
+                        new MemoryStream(screenShot),
+                        ConfigurationManager.AppSettings["screenShotFolder"],
+                        currentDate,
                         screenshot.Save().ToString()
                     );
+                }
             }
-            catch(Exception){}
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private List<OMPriceHistory> GetData(IJavaScriptExecutor executor, DealType dealType, long initialId)

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SystemCommon xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ApplicationName>Управление имуществом организации</ApplicationName>
+  <ApplicationSubName>Облачный сервис по управлением имуществом ГУ, ГУП и КП АИС РСМ</ApplicationSubName>
+  <KendoTheme>silver</KendoTheme>
+  <DefaultLayout>_Layout</DefaultLayout>
+  <DesignType>Classic</DesignType>
+  <SrdSettings>
+    <UseRoleSubsystem>false</UseRoleSubsystem>
+  </SrdSettings>
+
+  <MessageSettings>
+    <!--Частота проверки наличия новых личных сообщений (в секундах). 0 - проверка отключена.-->
+    <Delay>5</Delay>
+  </MessageSettings>
+
+  <MailServer>
+    <Host>mx.genix.pro</Host>
+    <Port>25</Port>
+    <Login>rsm_cloud_support@genix.pro</Login>
+    <Password>rsm7rsm</Password>
+    <EnableSsl>false</EnableSsl>
+    <FromEmail>rsm_cloud_support@genix.pro</FromEmail>
+  </MailServer>
+
+  <ErrorManagment>
+    <Phone></Phone>
+    <Email></Email>
+  </ErrorManagment>
+
+  <OmAssemblies>
+    <string>Platform</string>
+    <string>RsmCloudService.ObjectModel</string>
+    <string>SpdIntegration</string>
+  </OmAssemblies>
+  
+</SystemCommon>

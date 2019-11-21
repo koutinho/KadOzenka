@@ -1,6 +1,6 @@
 ﻿@using CIPJS.Controllers
 
-<script type="text/javascript">
+    <script type="text/javascript">
 	$(document).ready(function () {
 		$("#searchToolbar").kendoToolBar({
 			resizable: false,
@@ -134,9 +134,10 @@
 					}
 				});
 			}
-		});
-	});
-</script>
+        });
+        $("#mapButton").kendoButton({ click: function (e) { window.location = '@Url.Action("Index", "Map")'; } });
+    });
+    </script>
 
 <form>
 	<div id="prefilter">

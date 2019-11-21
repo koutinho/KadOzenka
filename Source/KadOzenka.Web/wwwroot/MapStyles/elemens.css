@@ -1,0 +1,20 @@
+.ymaps-2-1-75-copyrights-pane {
+    display: none;
+}
+
+.ymaps-2-1-75-searchbox-button {
+    background-color: #98c2ff !important;
+}
+
+.ymaps-2-1-75-float-button.ymaps-2-1-75-_checked {
+    background-color: #98c2ff !important;
+}
+
+.ymaps-2-1-75-searchbox-input.ymaps-2-1-75-_focused {
+    box-shadow: inset 0 0 0 2px #98c2ff !important;
+}
+
+.ymaps-2-1-75-listbox__list-item:hover {
+    background-color: #98c2ff !important;
+}
+

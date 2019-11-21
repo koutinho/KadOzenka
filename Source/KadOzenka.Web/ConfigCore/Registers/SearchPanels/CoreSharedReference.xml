@@ -1,0 +1,11 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Width="0" AttributeNumber="0">
+    <children>
+
+      <ControlElement Caption="Наименование" ID="cbName" OwnType="Combo" AttributeNumber="98200100" RegisterId="982" TextFieldAttribute="98200200" ValueFieldAttribute="98200100" QueryOperation="Equal" />
+
+      <ControlElement Caption="Идентификатор" ID="number" OwnType="Text" AttributeNumber="98200100" QueryOperation="Like" />
+      
+    </children>
+  </ControlElement>
+</RootElement>

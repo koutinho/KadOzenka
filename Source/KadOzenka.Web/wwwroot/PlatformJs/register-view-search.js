@@ -138,7 +138,7 @@
             initDropDownFunctionList: function (el, config) {
                 methods.initDropDownList(el, {
                     dataSource: [
-                        { id: 'CurrentDate', text: 'Текащая дата' },
+                        { id: 'CurrentDate', text: 'Текущая дата' },
                         { id: 'BeginMonth', text: 'Начало месяца' },
                         { id: 'EndMonth', text: 'Конец месяца' },
                         { id: 'BeginQuarter', text: 'Начало квартала' },
@@ -351,7 +351,7 @@
 
         function InitFilter() {
             if (self.filter) {
-                var struct = $.parseJSON(self.filter);
+                var struct = $.parseJSON(decodeURIComponent(self.filter.replace(/\+/g, '%20')));
 
                 if (struct.length > 0) {
                     var attributes = $('input.rvs-add-menu').data('kendoDropDownTree');

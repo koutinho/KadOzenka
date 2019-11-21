@@ -1064,6 +1064,9 @@ var RegisterView = RegisterView || {
             grid.resize();
         });
 
+        if (registerViewSettings.IsPartialView !== true)
+            $(gridSelector).closest('.content').css('height', '85%');
+
         grid.bind('dataBound', function (e) {
             var view = this.dataSource.view(),
                 gridThis = this;
@@ -1094,7 +1097,14 @@ var RegisterView = RegisterView || {
             });
 
             setFooterStatus();
-            gridThis.content.css('height', '100%');
+            if (registerViewSettings.IsPartialView === true) {
+                if (gridThis && gridThis.content) {
+                    gridThis.content.css('height', '100%');
+
+                    if (!gridThis.dataSource.data().length)
+                        gridThis.content.css('overflow', 'hidden');
+                }
+            }
 
             if (view.length > 0) {
                 $.ajax({
@@ -1260,7 +1270,7 @@ var RegisterView = RegisterView || {
 
             var registerViewSearch = $('.search-filter').data('registerViewSearch');
             if (registerViewSearch) {
-                parameters.SearchDataNewDesign = registerViewSearch.filter ? registerViewSearch.filter : JSON.stringify(registerViewSearch.getStruct());
+                parameters.SearchDataNewDesign = registerViewSearch.filter ? registerViewSearch.filter : encodeURIComponent(JSON.stringify(registerViewSearch.getStruct()));
             }
 
             // фильтры

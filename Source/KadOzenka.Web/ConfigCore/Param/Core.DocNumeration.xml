@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<DocNumeration>
+    <Default NumeratorNumber="1"/>
+    <!--
+    <Item TdTemplateId="..." NumeratorNumber="..." />
+    -->
+    <Item TdTemplateId="8054" NumeratorNumber="9"/>    
+</DocNumeration>

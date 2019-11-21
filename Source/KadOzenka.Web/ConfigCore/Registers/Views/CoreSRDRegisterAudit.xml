@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="965" Description="Действия в реестрах" ShowObjectCards="false" ShowActualDate="false" LinkedRegistersList="965,964,963,950,930" 
+              SRDFunctionTag="CORE.SRD.USERS" SearchPanel="CoreSRDRegisterAudit">
+    <Buttons>
+        <Button Caption="Перейти к пользователю" NavigateURL="~/RegistersView/CoreSRDUser?Transition=1" OpenInRadWindow="false">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="95000100" Value="[96400500]" />
+            </Parameters>
+        </Button>
+        <Button Caption="Все данные объекта" NavigateURL="~/LinkedRegisterObjects">
+          <Parameters>
+            <Parameter Key="ObjectId" Value="[96500400]" />
+            <Parameter Key="RegisterId" Value="[96500300]" />
+          </Parameters>
+        </Button>
+        <Button Caption="Экспорт в Excel" CommandName="ExportToExcel" />
+        <Button Caption="Экспорт в DBF" CommandName="ExportToDBF" />
+    </Buttons>
+</RegisterView>

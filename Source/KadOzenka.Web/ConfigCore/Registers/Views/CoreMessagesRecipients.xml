@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="981" LinkedRegistersList="980, 981" DefaultLayoutId="1000981" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" 
+              ShowObjectCards="false" ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="CORE.MESSAGES.RECIPIENTS">
+    
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

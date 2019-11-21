@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="989" IsBasic="false" JoinType="Left" SRDFunctionTag="CORE.ERROR_LOG" SearchPanel="CoreSharedErrorLog" ShowActualDate="false">
+    <Buttons>
+        <Button Caption="Выгрузка уникальных сообщений" NavigateURL="~/Error/UniqueErrorsReport" WindowHeight="480" WindowWidth="400" />
+        <Button Caption="Экспорт в Excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="CORE.REGISTER.EXCELEXPORT.CORE_ERROR_LOG" />
+        <Button Caption="Экспорт в DBF" CommandName="ExportToDBF" OpenInRadWindow="false" SRDFunctionTag="CORE.REGISTER.DBFEXPORT.CORE_ERROR_LOG" />
+    </Buttons>
+    <Tabs>
+        <Tab Caption="Все данные" NavigateURL="~/CoreUi/ErrorDetails">
+            <Parameters>
+                <Parameter Key="errorId" Value="[ObjectID]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
+</RegisterView>

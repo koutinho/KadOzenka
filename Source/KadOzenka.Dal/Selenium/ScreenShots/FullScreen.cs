@@ -30,15 +30,20 @@ namespace KadOzenka.Dal.Selenium.ScreenShots
 	        }
 
 	        var metrics = new Dictionary<string, object>();
-	        metrics["width"] = driver.ExecuteScript(ConfigurationManager.AppSettings["getPageMaxWidth"]);
+            //Console.ReadLine();
+            metrics["width"] = driver.ExecuteScript(ConfigurationManager.AppSettings["getPageMaxWidth"]);
 	        metrics["height"] = driver.ExecuteScript(ConfigurationManager.AppSettings["getPageMaxHeight"]);
 	        metrics["deviceScaleFactor"] = 1;
 	        metrics["mobile"] = false;
 
 	        //Execute the emulation Chrome Command to change browser to a custom device that is the size of the entire page
 	        driver.ExecuteChromeCommand("Emulation.setDeviceMetricsOverride", metrics);
-	        driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
-	        driver.ExecuteScript(ConfigurationManager.AppSettings["hidePageScroll"]);
+
+            driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANEnterSiteScript"]);
+            driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANAboutSiteScript"]);
+            driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANRightBanerScript"]);
+            driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
+            driver.ExecuteScript(ConfigurationManager.AppSettings["hidePageScroll"]);
 
 	        var screenShot = ((ITakesScreenshot)driver).GetScreenshot().AsByteArray;
 

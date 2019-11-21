@@ -120,6 +120,15 @@
 .top-panel .main-menu .dropdown-main-menu .icon-fls {
     background-color: #66cdcc;
 }
+.top-panel .main-menu .dropdown-main-menu .icon-rent {
+    background-color: #5a9eec;
+}
+.top-panel .main-menu .dropdown-main-menu .icon-contract {
+    background-color: #66cd7f
+}
+.top-panel .main-menu .dropdown-main-menu .icon-plus {
+    background-color: #CA86D2
+}
 .top-panel .main-menu .dropdown-main-menu .icon-search_big {
     background-color: #e5e5ef;
 }
@@ -174,6 +183,6 @@
     }
 
 .top-panel {
-    padding-right: 40px;
-    padding-left: 60px;
+    padding-right: 30px;
+    padding-left: 30px;
 }

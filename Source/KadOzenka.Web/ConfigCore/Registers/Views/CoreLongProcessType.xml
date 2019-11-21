@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="976" DefaultLayoutId="1000976" Description="Типы долгих процессов" LinkedRegistersList="976,977,950,941" ShowActualDate="false"
+              SRDFunctionTag="ADMIN.LONG_PROCESS">
+    <Buttons>
+        <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" SRDFunctionTag="ADMIN.LONG_PROCESSD">
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+                <Parameter Key="RegisterId" Value="[RegisterId]" />
+                <Parameter Key="LightMode" Value="true" />
+            </Parameters>
+        </Button>
+        <Button Caption="Выполнить" NavigateURL="~/CoreUi/LpmCreateProcess" WindowHeight="300" WindowWidth="500">
+            <Parameters>
+                <Parameter Key="ProcessType" Value="[97600200]" />
+            </Parameters>
+        </Button>
+        <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
+        <Button Caption="Настроить" NavigateURL="~/CoreUi/LongProcessManagementCustomizeEdit" WindowHeight="400" WindowWidth="250">
+          <Parameters>
+            <Parameter Key="processTypeId" Value="[ObjectID]" />
+          </Parameters>
+        </Button>
+        <Button Caption="Параметры" NavigateURL="~/LongProcessManagement/Parameters" WindowHeight="350" WindowWidth="700">
+          <Parameters>
+            <Parameter Key="processTypeId" Value="[ObjectID]" />
+          </Parameters>
+        </Button>
+    </Buttons>
+    <Tabs>
+        <Tab Caption="Процессы" NavigateURL="~/RegistersView/CoreLongProcessQueueCard?Transition=1">
+            <Parameters>
+                <Parameter Key="97500300" Value="[ObjectID]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
+</RegisterView>
