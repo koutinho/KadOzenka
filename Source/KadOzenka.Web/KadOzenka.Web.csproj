@@ -677,6 +677,10 @@
     <ConfigCorePath Include="$(ProjectDir)ConfigCore\**\*.*" />
   </ItemGroup>
   
+  <ItemGroup>
+    <ConfigPath Remove="Config\Registers\Views\CommissionCost.xml" />
+  </ItemGroup>
+  
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="@(ConfigCorePath)" DestinationFolder="$(PublishDir)ConfigCore\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
