@@ -726,13 +726,49 @@ namespace ObjectModel.Directory.Commission
 		/// </summary>
 		[Description("ФЛ")]
         [EnumCode("0")]
-        Fl = 0,
+        FL = 0,
 		/// <summary>
 		/// ЮЛ (1)
 		/// </summary>
 		[Description("ЮЛ")]
         [EnumCode("1")]
-        Ul = 1,
+        UL = 1,
+		/// <summary>
+		/// ДГИ (2)
+		/// </summary>
+		[Description("ДГИ")]
+        [EnumCode("2")]
+        DGI = 2,
+		/// <summary>
+		/// ИП (3)
+		/// </summary>
+		[Description("ИП")]
+        [EnumCode("3")]
+        IP = 3,
+		/// <summary>
+		/// ОГВ (4)
+		/// </summary>
+		[Description("ОГВ")]
+        [EnumCode("4")]
+        OGV = 4,
+		/// <summary>
+		/// ФЛ, ЮЛ (5)
+		/// </summary>
+		[Description("ФЛ, ЮЛ")]
+        [EnumCode("5")]
+        FlUl = 5,
+		/// <summary>
+		/// ФЛ, ЮЛ, ИП (6)
+		/// </summary>
+		[Description("ФЛ, ЮЛ, ИП")]
+        [EnumCode("6")]
+        FlUlIp = 6,
+		/// <summary>
+		/// Нет данных (7)
+		/// </summary>
+		[Description("Нет данных")]
+        [EnumCode("7")]
+        NoData = 7,
     }
 }
 
