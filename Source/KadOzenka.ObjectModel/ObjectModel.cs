@@ -7532,7 +7532,7 @@ namespace ObjectModel.Sud
 
         private string _workstat;
         /// <summary>
-        /// 31501100 Статус обработки (WORKSTAT)
+        /// 31501100 Статус обработки ()
         /// </summary>
         [RegisterAttribute(AttributeID = 31501100)]
         public string Workstat
@@ -7552,7 +7552,7 @@ namespace ObjectModel.Sud
 
         private ObjectModel.Directory.Sud.ProcessingStatus _workstat_Code;
         /// <summary>
-        /// 31501100 Статус обработки (справочный код) (WORKSTAT_ITEM_ID)
+        /// 31501100 Статус обработки (справочный код) (WORKSTAT)
         /// </summary>
         [RegisterAttribute(AttributeID = 31501100)]
         public ObjectModel.Directory.Sud.ProcessingStatus Workstat_Code

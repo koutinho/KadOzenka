@@ -16,28 +16,29 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
-        /// <summary>
-        /// ЦИАН (1)
-        /// </summary>
-        [Description("ЦИАН")]
+
+		/// <summary>
+		/// ЦИАН (1)
+		/// </summary>
+		[Description("ЦИАН")]
         [EnumCode("1")]
         Cian = 1,
-        /// <summary>
-        /// Авито (2)
-        /// </summary>
-        [Description("Авито")]
+		/// <summary>
+		/// Авито (2)
+		/// </summary>
+		[Description("Авито")]
         [EnumCode("2")]
         Avito = 2,
-        /// <summary>
-        /// Яндекс недвижимость (3)
-        /// </summary>
-        [Description("Яндекс недвижимость")]
+		/// <summary>
+		/// Яндекс недвижимость (3)
+		/// </summary>
+		[Description("Яндекс недвижимость")]
         [EnumCode("3")]
         YandexProterty = 3,
-        /// <summary>
-        /// Росреестр (737)
-        /// </summary>
-        [Description("Росреестр")]
+		/// <summary>
+		/// Росреестр (737)
+		/// </summary>
+		[Description("Росреестр")]
         [EnumCode("4")]
         Rosreestr = 737,
     }
@@ -57,58 +58,59 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
-        /// <summary>
-        /// Земельный участок (4)
-        /// </summary>
-        [Description("Земельный участок")]
+
+		/// <summary>
+		/// Земельный участок (4)
+		/// </summary>
+		[Description("Земельный участок")]
         [EnumCode("002001001000")]
         Stead = 4,
-        /// <summary>
-        /// Здание (5)
-        /// </summary>
-        [Description("Здание")]
+		/// <summary>
+		/// Здание (5)
+		/// </summary>
+		[Description("Здание")]
         [EnumCode("002001002000")]
         Building = 5,
-        /// <summary>
-        /// Помещение (6)
-        /// </summary>
-        [Description("Помещение")]
+		/// <summary>
+		/// Помещение (6)
+		/// </summary>
+		[Description("Помещение")]
         [EnumCode("002001003000")]
         Pllacement = 6,
-        /// <summary>
-        /// Сооружение (7)
-        /// </summary>
-        [Description("Сооружение")]
+		/// <summary>
+		/// Сооружение (7)
+		/// </summary>
+		[Description("Сооружение")]
         [EnumCode("002001004000")]
         Construction = 7,
-        /// <summary>
-        /// Объект незавершённого строительства (8)
-        /// </summary>
-        [Description("Объект незавершённого строительства")]
+		/// <summary>
+		/// Объект незавершённого строительства (8)
+		/// </summary>
+		[Description("Объект незавершённого строительства")]
         [EnumCode("002001005000")]
         UncompletedBuilding = 8,
-        /// <summary>
-        /// Предприятие как имущественный комплекс (9)
-        /// </summary>
-        [Description("Предприятие как имущественный комплекс")]
+		/// <summary>
+		/// Предприятие как имущественный комплекс (9)
+		/// </summary>
+		[Description("Предприятие как имущественный комплекс")]
         [EnumCode("002001006000")]
         Company = 9,
-        /// <summary>
-        /// Единый недвижимый комплекс (10)
-        /// </summary>
-        [Description("Единый недвижимый комплекс")]
+		/// <summary>
+		/// Единый недвижимый комплекс (10)
+		/// </summary>
+		[Description("Единый недвижимый комплекс")]
         [EnumCode("002001008000")]
         UnitedPropertyComplex = 10,
-        /// <summary>
-        /// Машино-место (11)
-        /// </summary>
-        [Description("Машино-место")]
+		/// <summary>
+		/// Машино-место (11)
+		/// </summary>
+		[Description("Машино-место")]
         [EnumCode("002001009000")]
         Parking = 11,
-        /// <summary>
-        /// Иной объект недвижимости (12)
-        /// </summary>
-        [Description("Иной объект недвижимости")]
+		/// <summary>
+		/// Иной объект недвижимости (12)
+		/// </summary>
+		[Description("Иной объект недвижимости")]
         [EnumCode("002001010000")]
         Other = 12,
     }
@@ -128,28 +130,29 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
-        /// <summary>
-        /// Предложение-продажа (733)
-        /// </summary>
-        [Description("Предложение-продажа")]
+
+		/// <summary>
+		/// Предложение-продажа (733)
+		/// </summary>
+		[Description("Предложение-продажа")]
         [EnumCode("1")]
         SaleSuggestion = 733,
-        /// <summary>
-        /// Сделка купли-продажи (734)
-        /// </summary>
-        [Description("Сделка купли-продажи")]
+		/// <summary>
+		/// Сделка купли-продажи (734)
+		/// </summary>
+		[Description("Сделка купли-продажи")]
         [EnumCode("2")]
         SaleDeal = 734,
-        /// <summary>
-        /// Предложение-аренда (735)
-        /// </summary>
-        [Description("Предложение-аренда")]
+		/// <summary>
+		/// Предложение-аренда (735)
+		/// </summary>
+		[Description("Предложение-аренда")]
         [EnumCode("3")]
         RentSuggestion = 735,
-        /// <summary>
-        /// Сделка-аренда (736)
-        /// </summary>
-        [Description("Сделка-аренда")]
+		/// <summary>
+		/// Сделка-аренда (736)
+		/// </summary>
+		[Description("Сделка-аренда")]
         [EnumCode("4")]
         RentDeal = 736,
     }
@@ -169,40 +172,41 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
-        /// <summary>
-        /// Не обработан (738)
-        /// </summary>
-        [Description("Не обработан")]
+
+		/// <summary>
+		/// Не обработан (738)
+		/// </summary>
+		[Description("Не обработан")]
         [EnumCode("1")]
         DoNotProcessed = 738,
-        /// <summary>
-        /// Получен адрес (739)
-        /// </summary>
-        [Description("Получен адрес")]
+		/// <summary>
+		/// Получен адрес (739)
+		/// </summary>
+		[Description("Получен адрес")]
         [EnumCode("2")]
         AddressStep = 739,
-        /// <summary>
-        /// Получен кадастровый номер (740)
-        /// </summary>
-        [Description("Получен кадастровый номер")]
+		/// <summary>
+		/// Получен кадастровый номер (740)
+		/// </summary>
+		[Description("Получен кадастровый номер")]
         [EnumCode("3")]
         CadastralNumberStep = 740,
-        /// <summary>
-        /// В работе (741)
-        /// </summary>
-        [Description("В работе")]
+		/// <summary>
+		/// В работе (741)
+		/// </summary>
+		[Description("В работе")]
         [EnumCode("4")]
         InProcess = 741,
-        /// <summary>
-        /// Обработан (742)
-        /// </summary>
-        [Description("Обработан")]
+		/// <summary>
+		/// Обработан (742)
+		/// </summary>
+		[Description("Обработан")]
         [EnumCode("5")]
         Dealed = 742,
-        /// <summary>
-        /// Исключён (743)
-        /// </summary>
-        [Description("Исключён")]
+		/// <summary>
+		/// Исключён (743)
+		/// </summary>
+		[Description("Исключён")]
         [EnumCode("6")]
         Excluded = 743,
     }
@@ -222,70 +226,71 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
-        /// <summary>
-        /// Апартаменты (744)
-        /// </summary>
-        [Description("Апартаменты")]
+
+		/// <summary>
+		/// Апартаменты (744)
+		/// </summary>
+		[Description("Апартаменты")]
         [EnumCode("1")]
         Appartment = 744,
-        /// <summary>
-        /// Гаражи (745)
-        /// </summary>
-        [Description("Гаражи")]
+		/// <summary>
+		/// Гаражи (745)
+		/// </summary>
+		[Description("Гаражи")]
         [EnumCode("2")]
         Parking = 745,
-        /// <summary>
-        /// Гостиницы (746)
-        /// </summary>
-        [Description("Гостиницы")]
+		/// <summary>
+		/// Гостиницы (746)
+		/// </summary>
+		[Description("Гостиницы")]
         [EnumCode("3")]
         Hotel = 746,
-        /// <summary>
-        /// ИЖС (747)
-        /// </summary>
-        [Description("ИЖС")]
+		/// <summary>
+		/// ИЖС (747)
+		/// </summary>
+		[Description("ИЖС")]
         [EnumCode("4")]
         IZHS = 747,
-        /// <summary>
-        /// Машиноместа (748)
-        /// </summary>
-        [Description("Машиноместа")]
+		/// <summary>
+		/// Машиноместа (748)
+		/// </summary>
+		[Description("Машиноместа")]
         [EnumCode("5")]
         CarParking = 748,
-        /// <summary>
-        /// МЖС (749)
-        /// </summary>
-        [Description("МЖС")]
+		/// <summary>
+		/// МЖС (749)
+		/// </summary>
+		[Description("МЖС")]
         [EnumCode("6")]
         MZHS = 749,
-        /// <summary>
-        /// Офисы (750)
-        /// </summary>
-        [Description("Офисы")]
+		/// <summary>
+		/// Офисы (750)
+		/// </summary>
+		[Description("Офисы")]
         [EnumCode("7")]
         Office = 750,
-        /// <summary>
-        /// Производство и склады (751)
-        /// </summary>
-        [Description("Производство и склады")]
+		/// <summary>
+		/// Производство и склады (751)
+		/// </summary>
+		[Description("Производство и склады")]
         [EnumCode("8")]
         Factory = 751,
-        /// <summary>
-        /// Садоводческое, огородническое и дачное использование (752)
-        /// </summary>
-        [Description("Садоводческое, огородническое и дачное использование")]
+		/// <summary>
+		/// Садоводческое, огородническое и дачное использование (752)
+		/// </summary>
+		[Description("Садоводческое, огородническое и дачное использование")]
         [EnumCode("9")]
         Garden = 752,
-        /// <summary>
-        /// Санатории (753)
-        /// </summary>
-        [Description("Санатории")]
+		/// <summary>
+		/// Санатории (753)
+		/// </summary>
+		[Description("Санатории")]
         [EnumCode("10")]
         Sanatorium = 753,
-        /// <summary>
-        /// Торговля (754)
-        /// </summary>
-        [Description("Торговля")]
+		/// <summary>
+		/// Торговля (754)
+		/// </summary>
+		[Description("Торговля")]
         [EnumCode("11")]
         Trading = 754,
     }
@@ -305,28 +310,29 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
-        /// <summary>
-        /// Кирпичные (755)
-        /// </summary>
-        [Description("Кирпичные")]
+
+		/// <summary>
+		/// Кирпичные (755)
+		/// </summary>
+		[Description("Кирпичные")]
         [EnumCode("1")]
         Brick = 755,
-        /// <summary>
-        /// Монолитные (756)
-        /// </summary>
-        [Description("Монолитные")]
+		/// <summary>
+		/// Монолитные (756)
+		/// </summary>
+		[Description("Монолитные")]
         [EnumCode("2")]
         Monolit = 756,
-        /// <summary>
-        /// Панельные и блочные (757)
-        /// </summary>
-        [Description("Панельные и блочные")]
+		/// <summary>
+		/// Панельные и блочные (757)
+		/// </summary>
+		[Description("Панельные и блочные")]
         [EnumCode("3")]
         Panel = 757,
-        /// <summary>
-        /// Иное (758)
-        /// </summary>
-        [Description("Иное")]
+		/// <summary>
+		/// Иное (758)
+		/// </summary>
+		[Description("Иное")]
         [EnumCode("4")]
         Other = 758,
     }
@@ -346,22 +352,23 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
-        /// <summary>
-        /// А (760)
-        /// </summary>
-        [Description("А")]
+
+		/// <summary>
+		/// А (760)
+		/// </summary>
+		[Description("А")]
         [EnumCode("1")]
         A = 760,
-        /// <summary>
-        /// В (761)
-        /// </summary>
-        [Description("В")]
+		/// <summary>
+		/// В (761)
+		/// </summary>
+		[Description("В")]
         [EnumCode("2")]
         B = 761,
-        /// <summary>
-        /// В+ (762)
-        /// </summary>
-        [Description("В+")]
+		/// <summary>
+		/// В+ (762)
+		/// </summary>
+		[Description("В+")]
         [EnumCode("3")]
         Bplus = 762,
     }
@@ -381,88 +388,89 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
-        /// <summary>
-        /// Некорректный адрес (763)
-        /// </summary>
-        [Description("Некорректный адрес")]
+
+		/// <summary>
+		/// Некорректный адрес (763)
+		/// </summary>
+		[Description("Некорректный адрес")]
         [EnumCode("1")]
         NoAddress = 763,
-        /// <summary>
-        /// Отсутствует кадастровый номер (764)
-        /// </summary>
-        [Description("Отсутствует кадастровый номер")]
+		/// <summary>
+		/// Отсутствует кадастровый номер (764)
+		/// </summary>
+		[Description("Отсутствует кадастровый номер")]
         [EnumCode("2")]
         NoCadastralNumber = 764,
-        /// <summary>
-        /// Отсутствует площадь (765)
-        /// </summary>
-        [Description("Отсутствует площадь")]
+		/// <summary>
+		/// Отсутствует площадь (765)
+		/// </summary>
+		[Description("Отсутствует площадь")]
         [EnumCode("3")]
         NoArea = 765,
-        /// <summary>
-        /// Отсутствует цена (766)
-        /// </summary>
-        [Description("Отсутствует цена")]
+		/// <summary>
+		/// Отсутствует цена (766)
+		/// </summary>
+		[Description("Отсутствует цена")]
         [EnumCode("4")]
         NoPrice = 766,
-        /// <summary>
-        /// Дубль (767)
-        /// </summary>
-        [Description("Дубль")]
+		/// <summary>
+		/// Дубль (767)
+		/// </summary>
+		[Description("Дубль")]
         [EnumCode("5")]
         Duplicate = 767,
-        /// <summary>
-        /// Не Москва (768)
-        /// </summary>
-        [Description("Не Москва")]
+		/// <summary>
+		/// Не Москва (768)
+		/// </summary>
+		[Description("Не Москва")]
         [EnumCode("6")]
         NoLocation = 768,
-        /// <summary>
-        /// Коридор цен (769)
-        /// </summary>
-        [Description("Коридор цен")]
+		/// <summary>
+		/// Коридор цен (769)
+		/// </summary>
+		[Description("Коридор цен")]
         [EnumCode("7")]
         IncorrectPrice = 769,
-        /// <summary>
-        /// Предложение продажы прав аренды (776)
-        /// </summary>
-        [Description("Предложение продажы прав аренды")]
+		/// <summary>
+		/// Предложение продажы прав аренды (776)
+		/// </summary>
+		[Description("Предложение продажы прав аренды")]
         [EnumCode("8")]
         ContainsPPA = 776,
-        /// <summary>
-        /// Маркер: мебель (777)
-        /// </summary>
-        [Description("Маркер: мебель")]
+		/// <summary>
+		/// Маркер: мебель (777)
+		/// </summary>
+		[Description("Маркер: мебель")]
         [EnumCode("9")]
         ContainsFurniture = 777,
-        /// <summary>
-        /// Является ОНС (778)
-        /// </summary>
-        [Description("Является ОНС")]
+		/// <summary>
+		/// Является ОНС (778)
+		/// </summary>
+		[Description("Является ОНС")]
         [EnumCode("10")]
         IsUncompleted = 778,
-        /// <summary>
-        /// Не содержит описания (779)
-        /// </summary>
-        [Description("Не содержит описания")]
+		/// <summary>
+		/// Не содержит описания (779)
+		/// </summary>
+		[Description("Не содержит описания")]
         [EnumCode("11")]
         DoNotHaveDescription = 779,
-        /// <summary>
-        /// Неприемлимое назначение (780)
-        /// </summary>
-        [Description("Неприемлимое назначение")]
+		/// <summary>
+		/// Неприемлимое назначение (780)
+		/// </summary>
+		[Description("Неприемлимое назначение")]
         [EnumCode("12")]
         UnacceptableAssignment = 780,
-        /// <summary>
-        /// Продажа бизнеса (781)
-        /// </summary>
-        [Description("Продажа бизнеса")]
+		/// <summary>
+		/// Продажа бизнеса (781)
+		/// </summary>
+		[Description("Продажа бизнеса")]
         [EnumCode("13")]
         BusinessSelling = 781,
-        /// <summary>
-        /// Неприемлимые условия (782)
-        /// </summary>
-        [Description("Неприемлимые условия")]
+		/// <summary>
+		/// Неприемлимые условия (782)
+		/// </summary>
+		[Description("Неприемлимые условия")]
         [EnumCode("14")]
         UnacceptableConditions = 782,
     }
@@ -482,6 +490,7 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+
     }
 }
 
@@ -499,6 +508,7 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+
     }
 }
 
@@ -516,6 +526,7 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+
     }
 }
 
@@ -533,6 +544,7 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+
     }
 }
 
@@ -550,6 +562,7 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+
     }
 }
 
@@ -567,6 +580,7 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+
     }
 }
 
@@ -584,6 +598,7 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+
     }
 }
 
@@ -601,6 +616,7 @@ namespace ObjectModel.Directory
         [Description("Значение отсутствует")]
         [EnumCode("0")]
         None = 0,
+
     }
 }
 
@@ -612,46 +628,40 @@ namespace ObjectModel.Directory.Sud
     [ReferenceInfo(ReferenceId = 300)]
     public enum SudObjectType : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-        /// <summary>
-        /// Участок (1)
-        /// </summary>
-        [Description("Участок")]
+		/// <summary>
+		/// Участок (1)
+		/// </summary>
+		[Description("Участок")]
         [EnumCode("1")]
         Site = 1,
-        /// <summary>
-        /// Здание (2)
-        /// </summary>
-        [Description("Здание")]
+		/// <summary>
+		/// Здание (2)
+		/// </summary>
+		[Description("Здание")]
         [EnumCode("2")]
         Building = 2,
-        /// <summary>
-        /// Помещение (3)
-        /// </summary>
-        [Description("Помещение")]
+		/// <summary>
+		/// Помещение (3)
+		/// </summary>
+		[Description("Помещение")]
         [EnumCode("3")]
         Room = 3,
-        /// <summary>
-        /// Сооружение (4)
-        /// </summary>
-        [Description("Сооружение")]
+		/// <summary>
+		/// Сооружение (4)
+		/// </summary>
+		[Description("Сооружение")]
         [EnumCode("4")]
         Construction = 4,
-        /// <summary>
-        /// Онс (5)
-        /// </summary>
-        [Description("Онс")]
+		/// <summary>
+		/// Онс (5)
+		/// </summary>
+		[Description("Онс")]
         [EnumCode("5")]
         Ons = 5,
-        /// <summary>
-        /// Машиноместо (6)
-        /// </summary>
-        [Description("Машиноместо")]
+		/// <summary>
+		/// Машиноместо (6)
+		/// </summary>
+		[Description("Машиноместо")]
         [EnumCode("6")]
         ParkingPlace = 6,
     }
@@ -665,22 +675,16 @@ namespace ObjectModel.Directory.Sud
     [ReferenceInfo(ReferenceId = 301)]
     public enum ProcessingStatus : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-        /// <summary>
-        /// В работе (0)
-        /// </summary>
-        [Description("В работе")]
+		/// <summary>
+		/// В работе (0)
+		/// </summary>
+		[Description("В работе")]
         [EnumCode("0")]
         InWork = 0,
-        /// <summary>
-        /// Актуальный (1)
-        /// </summary>
-        [Description("Актуальный")]
+		/// <summary>
+		/// Актуальный (1)
+		/// </summary>
+		[Description("Актуальный")]
         [EnumCode("1")]
         Processed = 1,
     }
@@ -694,22 +698,16 @@ namespace ObjectModel.Directory.Commission
     [ReferenceInfo(ReferenceId = 400)]
     public enum CommissionType : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-        /// <summary>
-        /// По недостоверности (1)
-        /// </summary>
-        [Description("По недостоверности")]
+		/// <summary>
+		/// По недостоверности (1)
+		/// </summary>
+		[Description("По недостоверности")]
         [EnumCode("1")]
         OnUnreliability = 1,
-        /// <summary>
-        /// По установлению кадастровой стоимости (2)
-        /// </summary>
-        [Description("По установлению кадастровой стоимости")]
+		/// <summary>
+		/// По установлению кадастровой стоимости (2)
+		/// </summary>
+		[Description("По установлению кадастровой стоимости")]
         [EnumCode("2")]
         OnSetCadCost = 2,
     }
@@ -723,22 +721,16 @@ namespace ObjectModel.Directory.Commission
     [ReferenceInfo(ReferenceId = 401)]
     public enum ApplicantStatus : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-        /// <summary>
-        /// ФЛ (0)
-        /// </summary>
-        [Description("ФЛ")]
+		/// <summary>
+		/// ФЛ (0)
+		/// </summary>
+		[Description("ФЛ")]
         [EnumCode("0")]
         Fl = 0,
-        /// <summary>
-        /// ЮЛ (1)
-        /// </summary>
-        [Description("ЮЛ")]
+		/// <summary>
+		/// ЮЛ (1)
+		/// </summary>
+		[Description("ЮЛ")]
         [EnumCode("1")]
         Ul = 1,
     }
@@ -752,22 +744,16 @@ namespace ObjectModel.Directory.Commission
     [ReferenceInfo(ReferenceId = 402)]
     public enum DecisionResult : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-        /// <summary>
-        /// Отказано (1)
-        /// </summary>
-        [Description("Отказано")]
+		/// <summary>
+		/// Отказано (1)
+		/// </summary>
+		[Description("Отказано")]
         [EnumCode("1")]
         Rejected = 1,
-        /// <summary>
-        /// Положительное решение (2)
-        /// </summary>
-        [Description("Положительное решение")]
+		/// <summary>
+		/// Положительное решение (2)
+		/// </summary>
+		[Description("Положительное решение")]
         [EnumCode("2")]
         Approved = 2,
     }
