@@ -8,6 +8,7 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.UI.Registers.CoreUI.Registers;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Sud;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Dal.Gadgets
@@ -46,10 +47,10 @@ namespace KadOzenka.Dal.Gadgets
 			string linkParam = "Transition=1&31501000={Type}";
 
 			var objects = OMObject.Where(GetQuery("SudObjects"))
-				.GroupBy(x => x.Typeobj)
+				.GroupBy(x => x.Typeobj_Code)
 				.ExecuteSelect(x => new
 				{
-					x.Typeobj,
+					x.Typeobj_Code,
 					Count = QSExtensions.Count<OMObject>(y => 1)
 				});
 
@@ -60,32 +61,32 @@ namespace KadOzenka.Dal.Gadgets
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Site.GetEnumCode()),
 				"Участки",
-				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Site.GetEnumCode()))?.Count ?? 0);
+				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Site)?.Count ?? 0);
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Building.GetEnumCode()),
 				"Здания",
-				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Building.GetEnumCode()))?.Count ?? 0);
+				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Building)?.Count ?? 0);
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Room.GetEnumCode()),
 				"Помещения",
-				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Room.GetEnumCode()))?.Count ?? 0);
+				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Room)?.Count ?? 0);
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Construction.GetEnumCode()),
 				"Сооружения",
-				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Construction.GetEnumCode()))?.Count ?? 0);
+				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Construction)?.Count ?? 0);
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.Ons.GetEnumCode()),
 				"Онс",
-				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.Ons.GetEnumCode()))?.Count ?? 0);
+				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Ons)?.Count ?? 0);
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", SudObjectType.ParkingPlace.GetEnumCode()),
 				"Машиноместа",
-				objects.FirstOrDefault(x => x.Typeobj == long.Parse(SudObjectType.ParkingPlace.GetEnumCode()))?.Count ?? 0);
+				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.ParkingPlace)?.Count ?? 0);
 
 			return data;
 		}

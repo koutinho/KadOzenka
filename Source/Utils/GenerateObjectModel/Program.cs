@@ -1,6 +1,5 @@
 ﻿using Core.ObjectModelBuilder;
 using Core.Shared.Extensions;
-using Platform.Configurator;
 using System;
 using System.Configuration;
 using System.IO;
@@ -16,23 +15,24 @@ namespace GenerateObjectModel
 				string providerName = ConfigurationManager.AppSettings["ProviderName"];
 				string connectionString = ConfigurationManager.AppSettings["ConnectionString"];
 				string filter = ConfigurationManager.AppSettings["Filter"];
+				string filterReference = ConfigurationManager.AppSettings["FilterReference"];
 
 
 				string path = ConfigurationManager.AppSettings["Path"];
 
-				string objectModel = ObjectModelBuilder.BuildObjectModel(providerName, connectionString, filter);
+				string objectModel = ObjectModelBuilder.BuildObjectModel(filter);
 				File.WriteAllText(path + "ObjectModel.cs", objectModel);
 
-				string objectModelEnum = ObjectModelBuilder.BuildObjectModelEnum(providerName, connectionString);
+				string objectModelEnum = ObjectModelBuilder.BuildObjectModelEnum(filterReference);
 				File.WriteAllText(path + "ObjectModelEnum.cs", objectModelEnum);
 
-				string objectModelPartial = ObjectModelBuilder.BuildObjectModelPartial(providerName, connectionString, filter);
+				string objectModelPartial = ObjectModelBuilder.BuildObjectModelPartial(filter);
 				File.WriteAllText(path + "ObjectModelPartial.cs", objectModelPartial);
 
-				string objectModelPartial2 = ObjectModelBuilder.BuildObjectModelPartial2(providerName, connectionString, filter);
+				string objectModelPartial2 = ObjectModelBuilder.BuildObjectModelPartial2(filter);
 				File.WriteAllText(path + "ObjectModelPartial2.cs", objectModelPartial2);
 
-				string objectModelSRDFunction = ObjectModelBuilder.BuildObjectModelSRDFunction(providerName, connectionString);
+				string objectModelSRDFunction = ObjectModelBuilder.BuildObjectModelSRDFunction();
 				File.WriteAllText(path + "ObjectModelSRDFunction.cs", objectModelSRDFunction);
 			}
 			

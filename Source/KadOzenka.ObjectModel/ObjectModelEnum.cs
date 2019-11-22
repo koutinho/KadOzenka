@@ -41,7 +41,10 @@ namespace ObjectModel.Directory
         [EnumCode("4")]
         Rosreestr = 737,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Виды объектов недвижимости (102)
     ///</summary>
@@ -109,7 +112,10 @@ namespace ObjectModel.Directory
         [EnumCode("002001010000")]
         Other = 12,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Тип сделки (110)
     ///</summary>
@@ -147,7 +153,10 @@ namespace ObjectModel.Directory
         [EnumCode("4")]
         RentDeal = 736,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Процесс обработки (113)
     ///</summary>
@@ -197,7 +206,10 @@ namespace ObjectModel.Directory
         [EnumCode("6")]
         Excluded = 743,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Сегмент рынка недвижимости (114)
     ///</summary>
@@ -277,7 +289,10 @@ namespace ObjectModel.Directory
         [EnumCode("11")]
         Trading = 754,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Материал стен (115)
     ///</summary>
@@ -315,7 +330,10 @@ namespace ObjectModel.Directory
         [EnumCode("4")]
         Other = 758,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Класс качества (116)
     ///</summary>
@@ -347,7 +365,10 @@ namespace ObjectModel.Directory
         [EnumCode("3")]
         Bplus = 762,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Причина исключения (117)
     ///</summary>
@@ -445,7 +466,10 @@ namespace ObjectModel.Directory
         [EnumCode("14")]
         UnacceptableConditions = 782,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Статусы единицы оценки (200)
     ///</summary>
@@ -459,7 +483,10 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Тип статьи (201)
     ///</summary>
@@ -473,7 +500,10 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Статусы заданий на оценку (202)
     ///</summary>
@@ -487,7 +517,10 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Тип документа (203)
     ///</summary>
@@ -501,7 +534,10 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Механизм группировки (204)
     ///</summary>
@@ -515,7 +551,10 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Алгоритм рассчёта (205)
     ///</summary>
@@ -529,7 +568,10 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Статус модели тура (206)
     ///</summary>
@@ -543,7 +585,10 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
     }
+}
 
+namespace ObjectModel.Directory
+{
     /// <summary>
     /// Тип данных фактора (207)
     ///</summary>
@@ -557,7 +602,10 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
     }
+}
 
+namespace ObjectModel.Directory.Sud
+{
     /// <summary>
     /// Тип объекта судебного решения (300)
     ///</summary>
@@ -571,48 +619,51 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
         /// <summary>
-        /// Участок (770)
+        /// Участок (1)
         /// </summary>
         [Description("Участок")]
         [EnumCode("1")]
-        Site = 770,
+        Site = 1,
         /// <summary>
-        /// Здание (771)
+        /// Здание (2)
         /// </summary>
         [Description("Здание")]
         [EnumCode("2")]
-        Building = 771,
+        Building = 2,
         /// <summary>
-        /// Помещение (772)
+        /// Помещение (3)
         /// </summary>
         [Description("Помещение")]
         [EnumCode("3")]
-        Room = 772,
+        Room = 3,
         /// <summary>
-        /// Сооружение (773)
+        /// Сооружение (4)
         /// </summary>
         [Description("Сооружение")]
         [EnumCode("4")]
-        Construction = 773,
+        Construction = 4,
         /// <summary>
-        /// Онс (774)
+        /// Онс (5)
         /// </summary>
         [Description("Онс")]
         [EnumCode("5")]
-        Ons = 774,
+        Ons = 5,
         /// <summary>
-        /// Машиноместо (775)
+        /// Машиноместо (6)
         /// </summary>
         [Description("Машиноместо")]
         [EnumCode("6")]
-        ParkingPlace = 775,
+        ParkingPlace = 6,
     }
+}
 
+namespace ObjectModel.Directory.Sud
+{
     /// <summary>
     /// Статус обработки (301)
     ///</summary>
     [ReferenceInfo(ReferenceId = 301)]
-    public enum SudProcessingStatus : long
+    public enum ProcessingStatus : long
     {
         /// <summary>
         /// Значение отсутствует
@@ -633,5 +684,92 @@ namespace ObjectModel.Directory
         [EnumCode("1")]
         Processed = 784,
     }
-
 }
+
+namespace ObjectModel.Directory.Commission
+{
+    /// <summary>
+    /// Тип комиссии (400)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 400)]
+    public enum CommissionType : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// По недостоверности (1)
+        /// </summary>
+        [Description("По недостоверности")]
+        [EnumCode("1")]
+        OnUnreliability = 1,
+        /// <summary>
+        /// По установлению кадастровой стоимости (2)
+        /// </summary>
+        [Description("По установлению кадастровой стоимости")]
+        [EnumCode("2")]
+        OnSetCadCost = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Commission
+{
+    /// <summary>
+    /// Статус заявителя (401)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 401)]
+    public enum ApplicantStatus : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// ФЛ (0)
+        /// </summary>
+        [Description("ФЛ")]
+        [EnumCode("0")]
+        Fl = 0,
+        /// <summary>
+        /// ЮЛ (1)
+        /// </summary>
+        [Description("ЮЛ")]
+        [EnumCode("1")]
+        Ul = 1,
+    }
+}
+
+namespace ObjectModel.Directory.Commission
+{
+    /// <summary>
+    /// Решение комиссии (402)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 402)]
+    public enum DecisionResult : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+        /// <summary>
+        /// Отказано (0)
+        /// </summary>
+        [Description("Отказано")]
+        [EnumCode("0")]
+        Rejected = 0,
+        /// <summary>
+        /// Положительное решение (1)
+        /// </summary>
+        [Description("Положительное решение")]
+        [EnumCode("1")]
+        Approved = 1,
+    }
+}
+

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectModel.Directory.Sud;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text;
@@ -138,10 +139,10 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                     ObjectModel.Sud.OMObject sudObject = new ObjectModel.Sud.OMObject
                     {
                         Id = id,
-                        Typeobj = NullConvertor.DBToInt(myOleDbDataReader["typeobj"], 0),
+                        Typeobj_Code = (SudObjectType)NullConvertor.DBToInt(myOleDbDataReader["typeobj"], 0),
                         Workstat_Code = NullConvertor.DBToInt(myOleDbDataReader["workstat"], 0) == 0 ? 
-							ObjectModel.Directory.SudProcessingStatus.InWork : 
-							ObjectModel.Directory.SudProcessingStatus.Processed,
+							ProcessingStatus.InWork : 
+							ProcessingStatus.Processed,
                         Kn = NullConvertor.ToString(myOleDbDataReader["kn"]),
                         Date = NullConvertor.DBToDateTime(myOleDbDataReader["date"]),
 

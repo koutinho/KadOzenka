@@ -1,7 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Core.RefLib;
 using DevExpress.CodeParser;
 using ObjectModel.Commission;
+using ObjectModel.Directory.Commission;
 
 namespace CIPJS.Models.Commission
 {
@@ -99,7 +101,7 @@ namespace CIPJS.Models.Commission
 			return new CommissionModel()
 			{
 				Id = entity.Id,
-				CommissionType = entity.CommissionType,
+				CommissionType = (long)entity.CommissionType_Code,
 				CommissionKc = entity.CommissionKc,
 				CommissionChange = entity.CommissionChange,
 				CommissionGroup = entity.CommissionGroup,
@@ -107,9 +109,9 @@ namespace CIPJS.Models.Commission
 				DecisionNumber = entity.DecisionNumber,
 				DecisionDate = entity.DecisionDate,
 				DateKc = entity.DateKc,
-				DecisionResult = entity.DecisionResult,
+				DecisionResult = (long)entity.DecisionResult_Code,
 				StatementDate = entity.StatementDate,
-				ApplicantStatus = entity.ApplicantStatus,
+				ApplicantStatus = (long)entity.ApplicantStatus_Code,
 				Kn = entity.Kn,
 				Kc = entity.Kc,
 				StatementNumber = entity.StatementNumber
@@ -120,7 +122,7 @@ namespace CIPJS.Models.Commission
 		public static void ToEntity(CommissionModel commissionViewModel, ref OMCost entity)
 		{
 			entity.MarketValue = commissionViewModel.MarketValue;
-			entity.CommissionType = commissionViewModel.CommissionType;
+			entity.CommissionType_Code = (CommissionType)commissionViewModel.CommissionType;
 			entity.CommissionKc = commissionViewModel.CommissionKc;
 			entity.StatementDate = commissionViewModel.StatementDate;
 			entity.DecisionNumber = commissionViewModel.DecisionNumber;
@@ -129,11 +131,12 @@ namespace CIPJS.Models.Commission
 			entity.Kc = commissionViewModel.Kc;
 			entity.StatementNumber = commissionViewModel.StatementNumber;
 			entity.DecisionDate = commissionViewModel.DecisionDate;
-			entity.DecisionResult = commissionViewModel.DecisionResult;
-			entity.ApplicantStatus = commissionViewModel.ApplicantStatus;
+			entity.DecisionResult_Code = (DecisionResult)commissionViewModel.DecisionResult;
+			entity.ApplicantStatus_Code = (ApplicantStatus)commissionViewModel.ApplicantStatus;
 			entity.CommissionChange = commissionViewModel.CommissionChange;
 			entity.CommissionGroup = commissionViewModel.CommissionGroup;
+
+			var items = ReferencesCommon.GetItems<DecisionResult>(true);
 		}
 	}
-
 }

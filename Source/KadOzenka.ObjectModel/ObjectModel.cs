@@ -7475,12 +7475,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long? _typeobj;
+        private string _typeobj;
         /// <summary>
-        /// 31501000 Тип объекта (TYPEOBJ)
+        /// 31501000 Тип объекта ()
         /// </summary>
         [RegisterAttribute(AttributeID = 31501000)]
-        public long? Typeobj
+        public string Typeobj
         {
             get
             {
@@ -7491,6 +7491,41 @@ namespace ObjectModel.Sud
             {
                 _typeobj = value;
                 NotifyPropertyChanged("Typeobj");
+            }
+        }
+
+
+        private ObjectModel.Directory.Sud.SudObjectType _typeobj_Code;
+        /// <summary>
+        /// 31501000 Тип объекта (справочный код) (TYPEOBJ)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501000)]
+        public ObjectModel.Directory.Sud.SudObjectType Typeobj_Code
+        {
+            get
+            {
+                CheckPropertyInited("Typeobj_Code");
+                return this._typeobj_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_typeobj))
+                    {
+                         _typeobj = descr;
+                    }
+                }
+                else
+                {
+                     _typeobj = descr;
+                }
+
+                this._typeobj_Code = value;
+                NotifyPropertyChanged("Typeobj");
+                NotifyPropertyChanged("Typeobj_Code");
             }
         }
 
@@ -7515,12 +7550,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private SudProcessingStatus _workstat_Code;
+        private ObjectModel.Directory.Sud.ProcessingStatus _workstat_Code;
         /// <summary>
         /// 31501100 Статус обработки (справочный код) (WORKSTAT_ITEM_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 31501100)]
-        public SudProcessingStatus Workstat_Code
+        public ObjectModel.Directory.Sud.ProcessingStatus Workstat_Code
         {
             get
             {
@@ -7946,12 +7981,12 @@ namespace ObjectModel.Commission
         }
 
 
-        private long _commissiontype;
+        private string _commissiontype;
         /// <summary>
-        /// 40000200 Тип комиссии (TYPE_COMMISSION)
+        /// 40000200 Тип комиссии ()
         /// </summary>
         [RegisterAttribute(AttributeID = 40000200)]
-        public long CommissionType
+        public string CommissionType
         {
             get
             {
@@ -7962,6 +7997,41 @@ namespace ObjectModel.Commission
             {
                 _commissiontype = value;
                 NotifyPropertyChanged("CommissionType");
+            }
+        }
+
+
+        private ObjectModel.Directory.Commission.CommissionType _commissiontype_Code;
+        /// <summary>
+        /// 40000200 Тип комиссии (справочный код) (TYPE_COMMISSION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000200)]
+        public ObjectModel.Directory.Commission.CommissionType CommissionType_Code
+        {
+            get
+            {
+                CheckPropertyInited("CommissionType_Code");
+                return this._commissiontype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_commissiontype))
+                    {
+                         _commissiontype = descr;
+                    }
+                }
+                else
+                {
+                     _commissiontype = descr;
+                }
+
+                this._commissiontype_Code = value;
+                NotifyPropertyChanged("CommissionType");
+                NotifyPropertyChanged("CommissionType_Code");
             }
         }
 
@@ -8066,12 +8136,12 @@ namespace ObjectModel.Commission
         }
 
 
-        private long? _applicantstatus;
+        private string _applicantstatus;
         /// <summary>
-        /// 40000800 Статус заявителя (STATUS_APPLICANT)
+        /// 40000800 Статус заявителя ()
         /// </summary>
         [RegisterAttribute(AttributeID = 40000800)]
-        public long? ApplicantStatus
+        public string ApplicantStatus
         {
             get
             {
@@ -8082,6 +8152,41 @@ namespace ObjectModel.Commission
             {
                 _applicantstatus = value;
                 NotifyPropertyChanged("ApplicantStatus");
+            }
+        }
+
+
+        private ObjectModel.Directory.Commission.ApplicantStatus _applicantstatus_Code;
+        /// <summary>
+        /// 40000800 Статус заявителя (справочный код) (STATUS_APPLICANT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40000800)]
+        public ObjectModel.Directory.Commission.ApplicantStatus ApplicantStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("ApplicantStatus_Code");
+                return this._applicantstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_applicantstatus))
+                    {
+                         _applicantstatus = descr;
+                    }
+                }
+                else
+                {
+                     _applicantstatus = descr;
+                }
+
+                this._applicantstatus_Code = value;
+                NotifyPropertyChanged("ApplicantStatus");
+                NotifyPropertyChanged("ApplicantStatus_Code");
             }
         }
 
@@ -8126,12 +8231,12 @@ namespace ObjectModel.Commission
         }
 
 
-        private long? _decisionresult;
+        private string _decisionresult;
         /// <summary>
-        /// 40001100 Решение комиссии (RESULT_DECISION)
+        /// 40001100 Решение комиссии ()
         /// </summary>
         [RegisterAttribute(AttributeID = 40001100)]
-        public long? DecisionResult
+        public string DecisionResult
         {
             get
             {
@@ -8142,6 +8247,41 @@ namespace ObjectModel.Commission
             {
                 _decisionresult = value;
                 NotifyPropertyChanged("DecisionResult");
+            }
+        }
+
+
+        private ObjectModel.Directory.Commission.DecisionResult _decisionresult_Code;
+        /// <summary>
+        /// 40001100 Решение комиссии (справочный код) (RESULT_DECISION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40001100)]
+        public ObjectModel.Directory.Commission.DecisionResult DecisionResult_Code
+        {
+            get
+            {
+                CheckPropertyInited("DecisionResult_Code");
+                return this._decisionresult_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_decisionresult))
+                    {
+                         _decisionresult = descr;
+                    }
+                }
+                else
+                {
+                     _decisionresult = descr;
+                }
+
+                this._decisionresult_Code = value;
+                NotifyPropertyChanged("DecisionResult");
+                NotifyPropertyChanged("DecisionResult_Code");
             }
         }
 

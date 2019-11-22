@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectModel.Directory.Sud;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -50,7 +51,7 @@ namespace ObjectModel.Sud
 					pDate = OMParam.GetParamDate(OMTableParam.Object, Id, "date", Date, out bool aDate, out cDate);
 					pSquare = OMParam.GetParamDecimal(OMTableParam.Object, Id, "square", Square, out bool aSquare, out cSquare);
 					pKc = OMParam.GetParamDecimal(OMTableParam.Object, Id, "kc", Kc, out bool aKc, out cKc);
-					pTypeobj = OMParam.GetParamInt(OMTableParam.Object, Id, "typeobj", Typeobj, out bool aType, out cType);
+					pTypeobj = OMParam.GetParamInt(OMTableParam.Object, Id, "typeobj", (long)Typeobj_Code, out bool aType, out cType);
 
 					Kn = (pKn && !cKn && aKn) ? old.Kn : Kn;
 					NameCenter = (pNameCenter && !cNameCenter && aNameCenter) ? old.NameCenter : NameCenter;
@@ -87,7 +88,7 @@ namespace ObjectModel.Sud
 				OMParam.AddDate(OMTableParam.Object, this.Id, "date", Date, 1);
 				OMParam.AddDouble(OMTableParam.Object, this.Id, "square", Square, 1);
 				OMParam.AddDouble(OMTableParam.Object, this.Id, "kc", Kc, 1);
-				OMParam.AddInt(OMTableParam.Object, this.Id, "typeobj", Typeobj, 1);
+				OMParam.AddInt(OMTableParam.Object, this.Id, "typeobj", (long)Typeobj_Code, 1);
 			}
 			else
 			{
@@ -264,7 +265,7 @@ namespace ObjectModel.Sud
 
 			#region Обновление данных для объекта
 			Kn = pKn.ParamChar;
-			Typeobj = pType.ParamInt;
+			Typeobj_Code = (SudObjectType)pType.ParamInt;
 			Square = pSquare.ParamDouble;
 			Kc = pKc.ParamDouble;
 			Date = pDate.ParamDate;

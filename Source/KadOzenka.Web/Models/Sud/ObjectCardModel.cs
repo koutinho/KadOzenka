@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory;
 using ObjectModel.Sud;
 using Core.Shared.Extensions;
+using ObjectModel.Directory.Sud;
 
 namespace KadOzenka.Web.Models.Sud
 {
@@ -70,7 +71,7 @@ namespace KadOzenka.Web.Models.Sud
 				Date = omObject.Date,
 				Square = omObject.Square,
 				Kc = omObject.Kc,
-				ObjectType = EnumExtensions.GetEnumValueByCode<SudObjectType>(omObject.Typeobj.GetValueOrDefault(0).ToString()),
+				ObjectType = omObject.Typeobj_Code,
 				Address = omObject.Adres,
 				NameCenter = omObject.NameCenter,
 				StatDgi = omObject.StatDgi,
@@ -110,12 +111,12 @@ namespace KadOzenka.Web.Models.Sud
 			omObject.Date = model.Date;
 			omObject.Square = model.Square;
 			omObject.Kc = model.Kc;
-			omObject.Typeobj = model.ObjectType == SudObjectType.None ? (long?) null : long.Parse(model.ObjectType.GetEnumCode());
+			omObject.Typeobj_Code = model.ObjectType ?? SudObjectType.None;
 			omObject.Adres = model.Address;
 			omObject.NameCenter = model.NameCenter;
 			omObject.StatDgi = model.StatDgi;
 			omObject.Owner = model.Owner;
-			omObject.Workstat = model.AdditionalAnalysisRequired.GetValueOrDefault(false) ? SudProcessingStatus.Processed.GetEnumDescription() : SudProcessingStatus.InWork.GetEnumDescription();
+			omObject.Workstat = model.AdditionalAnalysisRequired.GetValueOrDefault(false) ? ProcessingStatus.Processed.GetEnumDescription() : ProcessingStatus.InWork.GetEnumDescription();
 
 			omDrs.DrsGroup = model.DrsGroup;
 			omDrs.DrsSq1 = model.Basement;
