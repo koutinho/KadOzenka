@@ -1133,6 +1133,10 @@ td.k-group-cell {
     background-color: #fff;
 }
 
+.k-tabstrip-items .k-item {
+    background-color: #f8f9fc
+}
+
 .k-block, .k-treemap-tile, html .km-pane-wrapper .k-header {
     background-color: #f3f3f4
 }
@@ -2058,8 +2062,25 @@ span.k-timepicker {
         border-radius: 0 0 6px 6px
     }
 
-.k-autocomplete.k-state-border-down, .k-block > .k-header, .k-calendar-container.k-state-border-down, .k-dropdown-wrap.k-state-border-down, .k-gantt-views.k-state-expanded, .k-gantt-views.k-state-expanded > .k-current-view, .k-list-container.k-state-border-down, .k-multiselect.k-state-border-down, .k-numeric-wrap.k-state-border-down, .k-panelbar .k-tabstrip-items .k-item, .k-picker-wrap.k-state-border-down, .k-tabstrip-items .k-item, .k-tabstrip-items .k-link, .k-window-titlebar {
+.k-autocomplete.k-state-border-down,
+.k-block > .k-header,
+.k-calendar-container.k-state-border-down,
+.k-dropdown-wrap.k-state-border-down,
+.k-gantt-views.k-state-expanded,
+.k-gantt-views.k-state-expanded > .k-current-view,
+.k-list-container.k-state-border-down,
+.k-multiselect.k-state-border-down,
+.k-numeric-wrap.k-state-border-down,
+.k-panelbar .k-tabstrip-items .k-item,
+.k-picker-wrap.k-state-border-down,
+.k-tabstrip-items .k-item,
+.k-tabstrip-items .k-link,
+.k-window-titlebar {
     border-radius: 6px 6px 0 0
+}
+
+.k-tabstrip-items .k-item {
+    border-radius: 0
 }
 
 .k-split-button.k-state-border-down > .k-button {
@@ -2257,7 +2278,9 @@ span.k-timepicker {
     background-color: #fff
 }
 
-.k-dropdown-wrap.k-state-hover, .k-numeric-wrap.k-state-hover, .k-picker-wrap.k-state-hover {
+.k-dropdown-wrap.k-state-hover,
+.k-numeric-wrap.k-state-hover,
+.k-picker-wrap.k-state-hover {
     background-color: #b5bdcb;
     background-image: url(textures/highlight.png);
     background-image: none,linear-gradient(to bottom,rgba(255,255,255,.2) 0,rgba(255,255,255,0) 100%);
@@ -2331,7 +2354,7 @@ span.k-timepicker {
 }
 
 .k-tabstrip-items .k-state-default {
-    border-color: #ceced2
+    border-color: #E4E5EE;
 }
 
 .k-tabstrip-items .k-state-hover {
