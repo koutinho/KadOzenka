@@ -12,10 +12,10 @@ namespace KadOzenka.Web.Controllers
 	public class CommissionController : BaseController
 	{
 		[HttpGet]
-		public ActionResult EditCommission(long commissionId)
+		public ActionResult EditCommission(long id)
 		{
 			OMCost commission = OMCost
-				.Where(x => x.Id == commissionId)
+				.Where(x => x.Id == id)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 

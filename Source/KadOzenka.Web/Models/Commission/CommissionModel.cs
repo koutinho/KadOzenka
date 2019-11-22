@@ -16,6 +16,8 @@ namespace CIPJS.Models.Commission
 		/// Тип комиссии 
 		/// </summary>
 		[Display(Name = "Тип комиссии")]
+		[Required(ErrorMessage = "Поле тип комиссии  обязательное")]
+		[Range(1, int.MaxValue, ErrorMessage = "Поле тип комиссии  обязательное")]
 		public long CommissionType { get; set; }
 		/// <summary>
 		/// Кадастровый номер объекта
@@ -26,6 +28,8 @@ namespace CIPJS.Models.Commission
 		/// Оспариваемая кадастровая стоимость
 		/// </summary>
 		[Display(Name = "Оспариваемая кадастровая стоимость")]
+		[Required(ErrorMessage = "Поле оспариваемая кадастровая стоимость  обязательное")]
+		[Range(0.001, int.MaxValue, ErrorMessage = "Поле оспариваемая кадастровая стоимость  обязательное")]
 		public decimal? Kc { get; set; }
 		/// <summary>
 		/// Дата определения кадастровой стоимости
@@ -36,16 +40,20 @@ namespace CIPJS.Models.Commission
 		/// Номер заявления
 		/// </summary>
 		[Display(Name = "Номер заявления")]
+		[Required(ErrorMessage = "Поле номер заявления  обязательное")]
 		public string StatementNumber { get; set; }
 		/// <summary>
 		/// Дата заявления
 		/// </summary>
 		[Display(Name = "Дата заявления")]
+		[Required(ErrorMessage = "Поле дата заявления  обязательное")]
 		public DateTime? StatementDate { get; set; }
 		/// <summary>
 		/// Статус заявителя
 		/// </summary>
 		[Display(Name = "Статус заявителя")]
+		[Required(ErrorMessage = "Поле статус заявителя  обязательное")]
+		[Range(1, int.MaxValue, ErrorMessage = "Поле статус заявителя  обязательное")]
 		public long? ApplicantStatus { get; set; }
 		/// <summary>
 		/// Номер решения

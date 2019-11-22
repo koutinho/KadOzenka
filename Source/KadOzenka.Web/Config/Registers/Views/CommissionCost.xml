@@ -14,9 +14,9 @@
 	  <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
   </Buttons>
   <Tabs>
-      <Tab Caption="Основные данные" NavigateURL="/Commission/editcommission">
+      <Tab Caption="Основные данные" NavigateURL="/Commission/EditCommission">
           <Parameters>
-              <Parameter Key="commissionId" Value="[ObjectId]" />
+              <Parameter Key="id" Value="[ObjectId]" />
           </Parameters>
       </Tab>
   </Tabs>
