@@ -699,17 +699,17 @@ namespace ObjectModel.Directory.Commission
     public enum CommissionType : long
     {
 		/// <summary>
-		/// По недостоверности (1)
-		/// </summary>
-		[Description("По недостоверности")]
-        [EnumCode("1")]
-        OnUnreliability = 1,
-		/// <summary>
-		/// По установлению кадастровой стоимости (2)
+		/// По установлению кадастровой стоимости (1)
 		/// </summary>
 		[Description("По установлению кадастровой стоимости")]
+        [EnumCode("1")]
+        OnSetCadCost = 1,
+		/// <summary>
+		/// По недостоверности (2)
+		/// </summary>
+		[Description("По недостоверности")]
         [EnumCode("2")]
-        OnSetCadCost = 2,
+        OnUnreliability = 2,
     }
 }
 
@@ -745,17 +745,17 @@ namespace ObjectModel.Directory.Commission
     public enum DecisionResult : long
     {
 		/// <summary>
-		/// Отказано (1)
-		/// </summary>
-		[Description("Отказано")]
-        [EnumCode("1")]
-        Rejected = 1,
-		/// <summary>
-		/// Положительное решение (2)
+		/// Положительное решение (1)
 		/// </summary>
 		[Description("Положительное решение")]
+        [EnumCode("1")]
+        Approved = 1,
+		/// <summary>
+		/// Отказано (2)
+		/// </summary>
+		[Description("Отказано")]
         [EnumCode("2")]
-        Approved = 2,
+        Rejected = 2,
     }
 }
 
