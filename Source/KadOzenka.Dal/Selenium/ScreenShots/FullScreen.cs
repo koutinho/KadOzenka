@@ -12,6 +12,7 @@ using OpenQA.Selenium.Chrome;
 using System.Drawing.Imaging;
 using OpenQA.Selenium.Support.UI;
 using Core.Shared.Extensions;
+using ImageProccessor;
 
 namespace KadOzenka.Dal.Selenium.ScreenShots
 {
@@ -45,12 +46,28 @@ namespace KadOzenka.Dal.Selenium.ScreenShots
             driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
             driver.ExecuteScript(ConfigurationManager.AppSettings["hidePageScroll"]);
 
-	        var screenShot = ((ITakesScreenshot)driver).GetScreenshot().AsByteArray;
+	        var screenShot = ((ITakesScreenshot)driver).GetScreenshot();
+			driver.ExecuteChromeCommand("Emulation.clearDeviceMetricsOverride", new Dictionary<string, object>());
 
-	        driver.ExecuteChromeCommand("Emulation.clearDeviceMetricsOverride", new Dictionary<string, object>());
+			var xBottomPoint = ConvertObjPointToInt(driver.ExecuteScript(ConfigurationManager.AppSettings["getWindowOuterWidth"]));
+			var yBottomPoint = ConvertObjPointToInt(driver.ExecuteScript(ConfigurationManager.AppSettings["getWindowOuterHeight"]));
+			driver.Manage().Window.FullScreen();
+	        var yBottomNewPoint = driver.Manage().Window.Size.Height;
+	        driver.Manage().Window.Minimize();
 
-	        return screenShot;
+			var choper = new Choper();
+	        var panelScreenShot = choper.MakeScreenShot(0,
+		        (int)yBottomPoint, (int)xBottomPoint,
+		        (int)yBottomNewPoint - (int)yBottomPoint);
+	        var res = choper.AppendImage(screenShot.AsByteArray, panelScreenShot);
+
+	        return res;
         }
+
+	    private int ConvertObjPointToInt(object point)
+	    {
+		     return (int)Math.Round(double.Parse(point.ToString().Replace('.', ',')));
+		}
 
     }
 
