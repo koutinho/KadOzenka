@@ -672,17 +672,17 @@ namespace ObjectModel.Directory.Sud
         [EnumCode("0")]
         None = 0,
         /// <summary>
-        /// В работе (783)
+        /// В работе (0)
         /// </summary>
         [Description("В работе")]
         [EnumCode("0")]
-        InWork = 783,
+        InWork = 0,
         /// <summary>
-        /// Актуальный (784)
+        /// Актуальный (1)
         /// </summary>
         [Description("Актуальный")]
         [EnumCode("1")]
-        Processed = 784,
+        Processed = 1,
     }
 }
 
@@ -759,17 +759,17 @@ namespace ObjectModel.Directory.Commission
         [EnumCode("0")]
         None = 0,
         /// <summary>
-        /// Отказано (0)
+        /// Отказано (1)
         /// </summary>
         [Description("Отказано")]
-        [EnumCode("0")]
-        Rejected = 0,
+        [EnumCode("1")]
+        Rejected = 1,
         /// <summary>
-        /// Положительное решение (1)
+        /// Положительное решение (2)
         /// </summary>
         [Description("Положительное решение")]
-        [EnumCode("1")]
-        Approved = 1,
+        [EnumCode("2")]
+        Approved = 2,
     }
 }
 
