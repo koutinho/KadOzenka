@@ -3385,4 +3385,17 @@ ul.panelbar li.k-item .contentPanel {
     background-color: #F8F9FC;
 }
 
+.filter-container .query_item {
+    background-color: inherit;
+    border-color: #d2d2d2;
+}
+
+    .filter-container .query_item label {
+        color: #646464;
+    }
+
+    .filter-container .query_item button.f_button_remove {
+        background-color: #fff;
+    }
+
 /*# sourceMappingURL=kendo.silver.genix.min.css.map */
