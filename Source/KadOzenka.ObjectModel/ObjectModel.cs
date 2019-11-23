@@ -3170,7 +3170,7 @@ namespace ObjectModel.KO
 
         private string _status;
         /// <summary>
-        /// 20100700 Статус (STATUS)
+        /// 20100700 Статус задания (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 20100700)]
         public string Status
@@ -3190,7 +3190,7 @@ namespace ObjectModel.KO
 
         private KoUnitStatus _status_Code;
         /// <summary>
-        /// 20100700 Статус (справочный код) (STATUS_CODE)
+        /// 20100700 Статус задания (справочный код) (STATUS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20100700)]
         public KoUnitStatus Status_Code
@@ -3259,6 +3259,176 @@ namespace ObjectModel.KO
             {
                 _cadastralcost = value;
                 NotifyPropertyChanged("CadastralCost");
+            }
+        }
+
+
+        private decimal? _upks;
+        /// <summary>
+        /// 20101000 Удельная кадастровая стоимость (UPKS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101000)]
+        public decimal? Upks
+        {
+            get
+            {
+                CheckPropertyInited("Upks");
+                return _upks;
+            }
+            set
+            {
+                _upks = value;
+                NotifyPropertyChanged("Upks");
+            }
+        }
+
+
+        private decimal? _cadastralcostpre;
+        /// <summary>
+        /// 20101100 Предварительная кадастровая стоимость (CADASTRAL_COST_PRE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101100)]
+        public decimal? CadastralCostPre
+        {
+            get
+            {
+                CheckPropertyInited("CadastralCostPre");
+                return _cadastralcostpre;
+            }
+            set
+            {
+                _cadastralcostpre = value;
+                NotifyPropertyChanged("CadastralCostPre");
+            }
+        }
+
+
+        private decimal? _upkspre;
+        /// <summary>
+        /// 20101200 Предварительная удельная кадастровая стоимость (UPKS_PRE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101200)]
+        public decimal? UpksPre
+        {
+            get
+            {
+                CheckPropertyInited("UpksPre");
+                return _upkspre;
+            }
+            set
+            {
+                _upkspre = value;
+                NotifyPropertyChanged("UpksPre");
+            }
+        }
+
+
+        private string _statusresultcalc;
+        /// <summary>
+        /// 20101300 Результат анализа стоимости (STATUS_RESULT_CALC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101300)]
+        public string StatusResultCalc
+        {
+            get
+            {
+                CheckPropertyInited("StatusResultCalc");
+                return _statusresultcalc;
+            }
+            set
+            {
+                _statusresultcalc = value;
+                NotifyPropertyChanged("StatusResultCalc");
+            }
+        }
+
+
+        private KoStatusResultCalc _statusresultcalc_Code;
+        /// <summary>
+        /// 20101300 Результат анализа стоимости (справочный код) (STATUS_RESULT_CALC_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101300)]
+        public KoStatusResultCalc StatusResultCalc_Code
+        {
+            get
+            {
+                CheckPropertyInited("StatusResultCalc_Code");
+                return this._statusresultcalc_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_statusresultcalc))
+                    {
+                         _statusresultcalc = descr;
+                    }
+                }
+                else
+                {
+                     _statusresultcalc = descr;
+                }
+
+                this._statusresultcalc_Code = value;
+                NotifyPropertyChanged("StatusResultCalc");
+                NotifyPropertyChanged("StatusResultCalc_Code");
+            }
+        }
+
+
+        private string _statusrepeatcalc;
+        /// <summary>
+        /// 20101400 Cтатус расчета (STATUS_REPEAT_CALC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101400)]
+        public string StatusRepeatCalc
+        {
+            get
+            {
+                CheckPropertyInited("StatusRepeatCalc");
+                return _statusrepeatcalc;
+            }
+            set
+            {
+                _statusrepeatcalc = value;
+                NotifyPropertyChanged("StatusRepeatCalc");
+            }
+        }
+
+
+        private KoStatusRepeatCalc _statusrepeatcalc_Code;
+        /// <summary>
+        /// 20101400 Cтатус расчета (справочный код) (STATUS_REPEAT_CALC_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101400)]
+        public KoStatusRepeatCalc StatusRepeatCalc_Code
+        {
+            get
+            {
+                CheckPropertyInited("StatusRepeatCalc_Code");
+                return this._statusrepeatcalc_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_statusrepeatcalc))
+                    {
+                         _statusrepeatcalc = descr;
+                    }
+                }
+                else
+                {
+                     _statusrepeatcalc = descr;
+                }
+
+                this._statusrepeatcalc_Code = value;
+                NotifyPropertyChanged("StatusRepeatCalc");
+                NotifyPropertyChanged("StatusRepeatCalc_Code");
             }
         }
 
@@ -3611,7 +3781,7 @@ namespace ObjectModel.KO
 
         private string _groupalgoritm;
         /// <summary>
-        /// 20500400 Механизм группировки (GROUP_ALGORITM)
+        /// 20500400 Механизм группировки ()
         /// </summary>
         [RegisterAttribute(AttributeID = 20500400)]
         public string GroupAlgoritm
@@ -3631,7 +3801,7 @@ namespace ObjectModel.KO
 
         private KoGroupAlgoritm _groupalgoritm_Code;
         /// <summary>
-        /// 20500400 Механизм группировки (справочный код) (GROUP_ALGORITM_CODE)
+        /// 20500400 Механизм группировки (справочный код) (GROUP_ALGORITM)
         /// </summary>
         [RegisterAttribute(AttributeID = 20500400)]
         public KoGroupAlgoritm GroupAlgoritm_Code
@@ -3778,7 +3948,7 @@ namespace ObjectModel.KO
 
         private string _algoritmtype;
         /// <summary>
-        /// 20600600 Метод рассчёта (ALGORITM_TYPE)
+        /// 20600600 Метод рассчёта ()
         /// </summary>
         [RegisterAttribute(AttributeID = 20600600)]
         public string AlgoritmType
@@ -3798,7 +3968,7 @@ namespace ObjectModel.KO
 
         private KoAlgoritmType _algoritmtype_Code;
         /// <summary>
-        /// 20600600 Метод рассчёта (справочный код) (ALGORITM_TYPE_CODE)
+        /// 20600600 Метод рассчёта (справочный код) (ALGORITM_TYPE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20600600)]
         public KoAlgoritmType AlgoritmType_Code
@@ -4304,11 +4474,83 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 250 Параметры расчета для ОКС (KO_UNIT_PARAMS_OKS)
+    /// 213 Соответствие факторов реестровой и расчетной части (KO_ATTRIBUTE_MAP)
+    /// </summary>
+    [RegisterInfo(RegisterID = 213)]
+    [Serializable]
+    public partial class OMAttributeMap : OMBaseClass<OMAttributeMap>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21300100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 21300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _gbuattributeid;
+        /// <summary>
+        /// 21300200 Идентификатор атрибута реестровой части (GBU_ATTRIBUTE_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21300200)]
+        public long GbuAttributeId
+        {
+            get
+            {
+                CheckPropertyInited("GbuAttributeId");
+                return _gbuattributeid;
+            }
+            set
+            {
+                _gbuattributeid = value;
+                NotifyPropertyChanged("GbuAttributeId");
+            }
+        }
+
+
+        private long _koattributeid;
+        /// <summary>
+        /// 21300300 Идентификатор атрибута расчетной части (KO_ATTRIBUTE_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21300300)]
+        public long KoAttributeId
+        {
+            get
+            {
+                CheckPropertyInited("KoAttributeId");
+                return _koattributeid;
+            }
+            set
+            {
+                _koattributeid = value;
+                NotifyPropertyChanged("KoAttributeId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 250 Параметры расчета для ОКС 2018 года (KO_UNIT_PARAMS_OKS_2018)
     /// </summary>
     [RegisterInfo(RegisterID = 250)]
     [Serializable]
-    public partial class OMUnitParamsOks : OMBaseClass<OMUnitParamsOks>
+    public partial class OMUnitParamsOks2018 : OMBaseClass<OMUnitParamsOks2018>
     {
     }
 }
@@ -4316,12 +4558,2556 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 251 Параметры расчета для ЗУ (KO_UNIT_PARAMS_ZU)
+    /// 251 Параметры расчета для ЗУ 2018 года (KO_UNIT_PARAMS_ZU_2018)
     /// </summary>
     [RegisterInfo(RegisterID = 251)]
     [Serializable]
-    public partial class OMUnitParamsZu : OMBaseClass<OMUnitParamsZu>
+    public partial class OMUnitParamsZu2018 : OMBaseClass<OMUnitParamsZu2018>
     {
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 252 Параметры расчета для ОКС 2016 года (KO_UNIT_PARAMS_OKS_2016)
+    /// </summary>
+    [RegisterInfo(RegisterID = 252)]
+    [Serializable]
+    public partial class OMUnitParamsOks2016 : OMBaseClass<OMUnitParamsOks2016>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 25200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 25200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _field98;
+        /// <summary>
+        /// 25209800 Здания для налога_2016 (FIELD_98)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25209800)]
+        public string Field98
+        {
+            get
+            {
+                CheckPropertyInited("Field98");
+                return _field98;
+            }
+            set
+            {
+                _field98 = value;
+                NotifyPropertyChanged("Field98");
+            }
+        }
+
+
+        private string _field99;
+        /// <summary>
+        /// 25209900 Группа здания_жил (FIELD_99)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25209900)]
+        public string Field99
+        {
+            get
+            {
+                CheckPropertyInited("Field99");
+                return _field99;
+            }
+            set
+            {
+                _field99 = value;
+                NotifyPropertyChanged("Field99");
+            }
+        }
+
+
+        private string _field100;
+        /// <summary>
+        /// 25210000 Здание для налога_2017 (FIELD_100)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210000)]
+        public string Field100
+        {
+            get
+            {
+                CheckPropertyInited("Field100");
+                return _field100;
+            }
+            set
+            {
+                _field100 = value;
+                NotifyPropertyChanged("Field100");
+            }
+        }
+
+
+        private string _field101;
+        /// <summary>
+        /// 25210100 Административный округ  (FIELD_101)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210100)]
+        public string Field101
+        {
+            get
+            {
+                CheckPropertyInited("Field101");
+                return _field101;
+            }
+            set
+            {
+                _field101 = value;
+                NotifyPropertyChanged("Field101");
+            }
+        }
+
+
+        private string _field102;
+        /// <summary>
+        /// 25210200 Расстояние до центра административного округа (FIELD_102)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210200)]
+        public string Field102
+        {
+            get
+            {
+                CheckPropertyInited("Field102");
+                return _field102;
+            }
+            set
+            {
+                _field102 = value;
+                NotifyPropertyChanged("Field102");
+            }
+        }
+
+
+        private string _field103;
+        /// <summary>
+        /// 25210300 Район г.Москвы (FIELD_103)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210300)]
+        public string Field103
+        {
+            get
+            {
+                CheckPropertyInited("Field103");
+                return _field103;
+            }
+            set
+            {
+                _field103 = value;
+                NotifyPropertyChanged("Field103");
+            }
+        }
+
+
+        private string _field104;
+        /// <summary>
+        /// 25210400 Расстояние до ближайшей ж/д станции, ж/д платформы, ж/д вокзала (FIELD_104)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210400)]
+        public string Field104
+        {
+            get
+            {
+                CheckPropertyInited("Field104");
+                return _field104;
+            }
+            set
+            {
+                _field104 = value;
+                NotifyPropertyChanged("Field104");
+            }
+        }
+
+
+        private string _field105;
+        /// <summary>
+        /// 25210500 Расстояние до исторического центра г.Москвы (FIELD_105)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210500)]
+        public string Field105
+        {
+            get
+            {
+                CheckPropertyInited("Field105");
+                return _field105;
+            }
+            set
+            {
+                _field105 = value;
+                NotifyPropertyChanged("Field105");
+            }
+        }
+
+
+        private string _field106;
+        /// <summary>
+        /// 25210600 Местоположение относительно кольцевых транпорстных магистралей города (FIELD_106)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210600)]
+        public string Field106
+        {
+            get
+            {
+                CheckPropertyInited("Field106");
+                return _field106;
+            }
+            set
+            {
+                _field106 = value;
+                NotifyPropertyChanged("Field106");
+            }
+        }
+
+
+        private string _field107;
+        /// <summary>
+        /// 25210700 Расстояние до зон рекреации (FIELD_107)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210700)]
+        public string Field107
+        {
+            get
+            {
+                CheckPropertyInited("Field107");
+                return _field107;
+            }
+            set
+            {
+                _field107 = value;
+                NotifyPropertyChanged("Field107");
+            }
+        }
+
+
+        private string _field108;
+        /// <summary>
+        /// 25210800 Расстояние до МКАД (FIELD_108)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210800)]
+        public string Field108
+        {
+            get
+            {
+                CheckPropertyInited("Field108");
+                return _field108;
+            }
+            set
+            {
+                _field108 = value;
+                NotifyPropertyChanged("Field108");
+            }
+        }
+
+
+        private string _field109;
+        /// <summary>
+        /// 25210900 Расстояние до ближайшей остановки общественного транспорта (FIELD_109)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25210900)]
+        public string Field109
+        {
+            get
+            {
+                CheckPropertyInited("Field109");
+                return _field109;
+            }
+            set
+            {
+                _field109 = value;
+                NotifyPropertyChanged("Field109");
+            }
+        }
+
+
+        private string _field110;
+        /// <summary>
+        /// 25211000 Расстояние до промышленных зон (FIELD_110)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211000)]
+        public string Field110
+        {
+            get
+            {
+                CheckPropertyInited("Field110");
+                return _field110;
+            }
+            set
+            {
+                _field110 = value;
+                NotifyPropertyChanged("Field110");
+            }
+        }
+
+
+        private string _field111;
+        /// <summary>
+        /// 25211100 Промзоны (FIELD_111)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211100)]
+        public string Field111
+        {
+            get
+            {
+                CheckPropertyInited("Field111");
+                return _field111;
+            }
+            set
+            {
+                _field111 = value;
+                NotifyPropertyChanged("Field111");
+            }
+        }
+
+
+        private string _field112;
+        /// <summary>
+        /// 25211200 Ближайшая станция метро (FIELD_112)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211200)]
+        public string Field112
+        {
+            get
+            {
+                CheckPropertyInited("Field112");
+                return _field112;
+            }
+            set
+            {
+                _field112 = value;
+                NotifyPropertyChanged("Field112");
+            }
+        }
+
+
+        private string _field113;
+        /// <summary>
+        /// 25211300 Расстояние до ближайшей станции метро (FIELD_113)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211300)]
+        public string Field113
+        {
+            get
+            {
+                CheckPropertyInited("Field113");
+                return _field113;
+            }
+            set
+            {
+                _field113 = value;
+                NotifyPropertyChanged("Field113");
+            }
+        }
+
+
+        private string _field114;
+        /// <summary>
+        /// 25211400 Расстояние до ближайщей магистрали города (FIELD_114)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211400)]
+        public string Field114
+        {
+            get
+            {
+                CheckPropertyInited("Field114");
+                return _field114;
+            }
+            set
+            {
+                _field114 = value;
+                NotifyPropertyChanged("Field114");
+            }
+        }
+
+
+        private string _field115;
+        /// <summary>
+        /// 25211500 Инфраструктура (FIELD_115)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211500)]
+        public string Field115
+        {
+            get
+            {
+                CheckPropertyInited("Field115");
+                return _field115;
+            }
+            set
+            {
+                _field115 = value;
+                NotifyPropertyChanged("Field115");
+            }
+        }
+
+
+        private string _field116;
+        /// <summary>
+        /// 25211600 Крупные торговые объекты_150 (FIELD_116)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211600)]
+        public string Field116
+        {
+            get
+            {
+                CheckPropertyInited("Field116");
+                return _field116;
+            }
+            set
+            {
+                _field116 = value;
+                NotifyPropertyChanged("Field116");
+            }
+        }
+
+
+        private string _field117;
+        /// <summary>
+        /// 25211700 Крупные торговые объекты_1500 (FIELD_117)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211700)]
+        public string Field117
+        {
+            get
+            {
+                CheckPropertyInited("Field117");
+                return _field117;
+            }
+            set
+            {
+                _field117 = value;
+                NotifyPropertyChanged("Field117");
+            }
+        }
+
+
+        private string _field118;
+        /// <summary>
+        /// 25211800 Бизнес центры  (FIELD_118)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211800)]
+        public string Field118
+        {
+            get
+            {
+                CheckPropertyInited("Field118");
+                return _field118;
+            }
+            set
+            {
+                _field118 = value;
+                NotifyPropertyChanged("Field118");
+            }
+        }
+
+
+        private string _field119;
+        /// <summary>
+        /// 25211900 Группа_ГКН (Амосов) (FIELD_119)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25211900)]
+        public string Field119
+        {
+            get
+            {
+                CheckPropertyInited("Field119");
+                return _field119;
+            }
+            set
+            {
+                _field119 = value;
+                NotifyPropertyChanged("Field119");
+            }
+        }
+
+
+        private string _field120;
+        /// <summary>
+        /// 25212000 Группа_ГКН (Пшеничкин) (FIELD_120)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212000)]
+        public string Field120
+        {
+            get
+            {
+                CheckPropertyInited("Field120");
+                return _field120;
+            }
+            set
+            {
+                _field120 = value;
+                NotifyPropertyChanged("Field120");
+            }
+        }
+
+
+        private string _field121;
+        /// <summary>
+        /// 25212100 Группа_БТИ (Никонова) (FIELD_121)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212100)]
+        public string Field121
+        {
+            get
+            {
+                CheckPropertyInited("Field121");
+                return _field121;
+            }
+            set
+            {
+                _field121 = value;
+                NotifyPropertyChanged("Field121");
+            }
+        }
+
+
+        private string _field122;
+        /// <summary>
+        /// 25212200 Группа_БТИ (Шпагина) (FIELD_122)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212200)]
+        public string Field122
+        {
+            get
+            {
+                CheckPropertyInited("Field122");
+                return _field122;
+            }
+            set
+            {
+                _field122 = value;
+                NotifyPropertyChanged("Field122");
+            }
+        }
+
+
+        private string _field123;
+        /// <summary>
+        /// 25212300 Способ расчета Графики (FIELD_123)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212300)]
+        public string Field123
+        {
+            get
+            {
+                CheckPropertyInited("Field123");
+                return _field123;
+            }
+            set
+            {
+                _field123 = value;
+                NotifyPropertyChanged("Field123");
+            }
+        }
+
+
+        private string _field124;
+        /// <summary>
+        /// 25212400 Уточненный КК (FIELD_124)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212400)]
+        public string Field124
+        {
+            get
+            {
+                CheckPropertyInited("Field124");
+                return _field124;
+            }
+            set
+            {
+                _field124 = value;
+                NotifyPropertyChanged("Field124");
+            }
+        }
+
+
+        private string _field125;
+        /// <summary>
+        /// 25212500 Группа_ГИН (FIELD_125)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212500)]
+        public string Field125
+        {
+            get
+            {
+                CheckPropertyInited("Field125");
+                return _field125;
+            }
+            set
+            {
+                _field125 = value;
+                NotifyPropertyChanged("Field125");
+            }
+        }
+
+
+        private string _field126;
+        /// <summary>
+        /// 25212600 УПКС_2014 (FIELD_126)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212600)]
+        public string Field126
+        {
+            get
+            {
+                CheckPropertyInited("Field126");
+                return _field126;
+            }
+            set
+            {
+                _field126 = value;
+                NotifyPropertyChanged("Field126");
+            }
+        }
+
+
+        private string _field127;
+        /// <summary>
+        /// 25212700 КС_2014 (FIELD_127)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212700)]
+        public string Field127
+        {
+            get
+            {
+                CheckPropertyInited("Field127");
+                return _field127;
+            }
+            set
+            {
+                _field127 = value;
+                NotifyPropertyChanged("Field127");
+            }
+        }
+
+
+        private string _field128;
+        /// <summary>
+        /// 25212800 Группа_2014 (FIELD_128)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212800)]
+        public string Field128
+        {
+            get
+            {
+                CheckPropertyInited("Field128");
+                return _field128;
+            }
+            set
+            {
+                _field128 = value;
+                NotifyPropertyChanged("Field128");
+            }
+        }
+
+
+        private string _field129;
+        /// <summary>
+        /// 25212900 Подгруппа_2014 (FIELD_129)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25212900)]
+        public string Field129
+        {
+            get
+            {
+                CheckPropertyInited("Field129");
+                return _field129;
+            }
+            set
+            {
+                _field129 = value;
+                NotifyPropertyChanged("Field129");
+            }
+        }
+
+
+        private string _field130;
+        /// <summary>
+        /// 25213000 Группа здания_нежил (FIELD_130)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213000)]
+        public string Field130
+        {
+            get
+            {
+                CheckPropertyInited("Field130");
+                return _field130;
+            }
+            set
+            {
+                _field130 = value;
+                NotifyPropertyChanged("Field130");
+            }
+        }
+
+
+        private string _field131;
+        /// <summary>
+        /// 25213100 Назначение_БТИ (FIELD_131)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213100)]
+        public string Field131
+        {
+            get
+            {
+                CheckPropertyInited("Field131");
+                return _field131;
+            }
+            set
+            {
+                _field131 = value;
+                NotifyPropertyChanged("Field131");
+            }
+        }
+
+
+        private string _field132;
+        /// <summary>
+        /// 25213200 Элитное жилье (FIELD_132)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213200)]
+        public string Field132
+        {
+            get
+            {
+                CheckPropertyInited("Field132");
+                return _field132;
+            }
+            set
+            {
+                _field132 = value;
+                NotifyPropertyChanged("Field132");
+            }
+        }
+
+
+        private string _field133;
+        /// <summary>
+        /// 25213300 Территория (осн/доп) (FIELD_133)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213300)]
+        public string Field133
+        {
+            get
+            {
+                CheckPropertyInited("Field133");
+                return _field133;
+            }
+            set
+            {
+                _field133 = value;
+                NotifyPropertyChanged("Field133");
+            }
+        }
+
+
+        private string _field134;
+        /// <summary>
+        /// 25213400 Подгруппа_жилье (FIELD_134)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213400)]
+        public string Field134
+        {
+            get
+            {
+                CheckPropertyInited("Field134");
+                return _field134;
+            }
+            set
+            {
+                _field134 = value;
+                NotifyPropertyChanged("Field134");
+            }
+        }
+
+
+        private string _field135;
+        /// <summary>
+        /// 25213500 БТИ_2012 (FIELD_135)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213500)]
+        public string Field135
+        {
+            get
+            {
+                CheckPropertyInited("Field135");
+                return _field135;
+            }
+            set
+            {
+                _field135 = value;
+                NotifyPropertyChanged("Field135");
+            }
+        }
+
+
+        private string _field136;
+        /// <summary>
+        /// 25213600 Недвижимость_2 2012 (FIELD_136)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213600)]
+        public string Field136
+        {
+            get
+            {
+                CheckPropertyInited("Field136");
+                return _field136;
+            }
+            set
+            {
+                _field136 = value;
+                NotifyPropertyChanged("Field136");
+            }
+        }
+
+
+        private string _field137;
+        /// <summary>
+        /// 25213700 Назначение_БТИ 2016 (FIELD_137)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213700)]
+        public string Field137
+        {
+            get
+            {
+                CheckPropertyInited("Field137");
+                return _field137;
+            }
+            set
+            {
+                _field137 = value;
+                NotifyPropertyChanged("Field137");
+            }
+        }
+
+
+        private string _field138;
+        /// <summary>
+        /// 25213800 Год постройки БТИ 2016 (FIELD_138)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213800)]
+        public string Field138
+        {
+            get
+            {
+                CheckPropertyInited("Field138");
+                return _field138;
+            }
+            set
+            {
+                _field138 = value;
+                NotifyPropertyChanged("Field138");
+            }
+        }
+
+
+        private string _field139;
+        /// <summary>
+        /// 25213900 Год ввода БТИ 2016 (FIELD_139)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25213900)]
+        public string Field139
+        {
+            get
+            {
+                CheckPropertyInited("Field139");
+                return _field139;
+            }
+            set
+            {
+                _field139 = value;
+                NotifyPropertyChanged("Field139");
+            }
+        }
+
+
+        private string _field140;
+        /// <summary>
+        /// 25214000 Материал стен БТИ 2016 (FIELD_140)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214000)]
+        public string Field140
+        {
+            get
+            {
+                CheckPropertyInited("Field140");
+                return _field140;
+            }
+            set
+            {
+                _field140 = value;
+                NotifyPropertyChanged("Field140");
+            }
+        }
+
+
+        private string _field141;
+        /// <summary>
+        /// 25214100 Этажность БТИ 2016 (FIELD_141)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214100)]
+        public string Field141
+        {
+            get
+            {
+                CheckPropertyInited("Field141");
+                return _field141;
+            }
+            set
+            {
+                _field141 = value;
+                NotifyPropertyChanged("Field141");
+            }
+        }
+
+
+        private string _field142;
+        /// <summary>
+        /// 25214200 Год постройки (ввода) итого (FIELD_142)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214200)]
+        public string Field142
+        {
+            get
+            {
+                CheckPropertyInited("Field142");
+                return _field142;
+            }
+            set
+            {
+                _field142 = value;
+                NotifyPropertyChanged("Field142");
+            }
+        }
+
+
+        private string _field143;
+        /// <summary>
+        /// 25214300 Материал стен (FIELD_143)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214300)]
+        public string Field143
+        {
+            get
+            {
+                CheckPropertyInited("Field143");
+                return _field143;
+            }
+            set
+            {
+                _field143 = value;
+                NotifyPropertyChanged("Field143");
+            }
+        }
+
+
+        private string _field144;
+        /// <summary>
+        /// 25214400 Вид гаража (FIELD_144)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214400)]
+        public string Field144
+        {
+            get
+            {
+                CheckPropertyInited("Field144");
+                return _field144;
+            }
+            set
+            {
+                _field144 = value;
+                NotifyPropertyChanged("Field144");
+            }
+        }
+
+
+        private string _field145;
+        /// <summary>
+        /// 25214500 Торговый коридор (FIELD_145)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214500)]
+        public string Field145
+        {
+            get
+            {
+                CheckPropertyInited("Field145");
+                return _field145;
+            }
+            set
+            {
+                _field145 = value;
+                NotifyPropertyChanged("Field145");
+            }
+        }
+
+
+        private string _field146;
+        /// <summary>
+        /// 25214600 Площадь (FIELD_146)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214600)]
+        public string Field146
+        {
+            get
+            {
+                CheckPropertyInited("Field146");
+                return _field146;
+            }
+            set
+            {
+                _field146 = value;
+                NotifyPropertyChanged("Field146");
+            }
+        }
+
+
+        private string _field147;
+        /// <summary>
+        /// 25214700 Класс элитного жилья (FIELD_147)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214700)]
+        public string Field147
+        {
+            get
+            {
+                CheckPropertyInited("Field147");
+                return _field147;
+            }
+            set
+            {
+                _field147 = value;
+                NotifyPropertyChanged("Field147");
+            }
+        }
+
+
+        private string _field148;
+        /// <summary>
+        /// 25214800 Количество квартир в здании (FIELD_148)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214800)]
+        public string Field148
+        {
+            get
+            {
+                CheckPropertyInited("Field148");
+                return _field148;
+            }
+            set
+            {
+                _field148 = value;
+                NotifyPropertyChanged("Field148");
+            }
+        }
+
+
+        private string _field149;
+        /// <summary>
+        /// 25214900 Причина переноса в группу с НХ (FIELD_149)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25214900)]
+        public string Field149
+        {
+            get
+            {
+                CheckPropertyInited("Field149");
+                return _field149;
+            }
+            set
+            {
+                _field149 = value;
+                NotifyPropertyChanged("Field149");
+            }
+        }
+
+
+        private string _field150;
+        /// <summary>
+        /// 25215000 Код аналога (FIELD_150)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215000)]
+        public string Field150
+        {
+            get
+            {
+                CheckPropertyInited("Field150");
+                return _field150;
+            }
+            set
+            {
+                _field150 = value;
+                NotifyPropertyChanged("Field150");
+            }
+        }
+
+
+        private string _field151;
+        /// <summary>
+        /// 25215100 Коэфициент перехода (FIELD_151)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215100)]
+        public string Field151
+        {
+            get
+            {
+                CheckPropertyInited("Field151");
+                return _field151;
+            }
+            set
+            {
+                _field151 = value;
+                NotifyPropertyChanged("Field151");
+            }
+        }
+
+
+        private string _field152;
+        /// <summary>
+        /// 25215200 Региональный коэффициент (FIELD_152)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215200)]
+        public string Field152
+        {
+            get
+            {
+                CheckPropertyInited("Field152");
+                return _field152;
+            }
+            set
+            {
+                _field152 = value;
+                NotifyPropertyChanged("Field152");
+            }
+        }
+
+
+        private string _field153;
+        /// <summary>
+        /// 25215300 Процент готовности (FIELD_153)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215300)]
+        public string Field153
+        {
+            get
+            {
+                CheckPropertyInited("Field153");
+                return _field153;
+            }
+            set
+            {
+                _field153 = value;
+                NotifyPropertyChanged("Field153");
+            }
+        }
+
+
+        private string _field154;
+        /// <summary>
+        /// 25215400 Прибль предпринимателя (FIELD_154)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215400)]
+        public string Field154
+        {
+            get
+            {
+                CheckPropertyInited("Field154");
+                return _field154;
+            }
+            set
+            {
+                _field154 = value;
+                NotifyPropertyChanged("Field154");
+            }
+        }
+
+
+        private string _field155;
+        /// <summary>
+        /// 25215500 НДС  (FIELD_155)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215500)]
+        public string Field155
+        {
+            get
+            {
+                CheckPropertyInited("Field155");
+                return _field155;
+            }
+            set
+            {
+                _field155 = value;
+                NotifyPropertyChanged("Field155");
+            }
+        }
+
+
+        private string _field156;
+        /// <summary>
+        /// 25215600 Износ  (FIELD_156)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215600)]
+        public string Field156
+        {
+            get
+            {
+                CheckPropertyInited("Field156");
+                return _field156;
+            }
+            set
+            {
+                _field156 = value;
+                NotifyPropertyChanged("Field156");
+            }
+        }
+
+
+        private string _field157;
+        /// <summary>
+        /// 25215700 Коэфициент различия (S или V)  (FIELD_157)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215700)]
+        public string Field157
+        {
+            get
+            {
+                CheckPropertyInited("Field157");
+                return _field157;
+            }
+            set
+            {
+                _field157 = value;
+                NotifyPropertyChanged("Field157");
+            }
+        }
+
+
+        private string _field158;
+        /// <summary>
+        /// 25215800 Высота потолка  (FIELD_158)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215800)]
+        public string Field158
+        {
+            get
+            {
+                CheckPropertyInited("Field158");
+                return _field158;
+            }
+            set
+            {
+                _field158 = value;
+                NotifyPropertyChanged("Field158");
+            }
+        }
+
+
+        private string _field159;
+        /// <summary>
+        /// 25215900 Коэф. толщины стен  (FIELD_159)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25215900)]
+        public string Field159
+        {
+            get
+            {
+                CheckPropertyInited("Field159");
+                return _field159;
+            }
+            set
+            {
+                _field159 = value;
+                NotifyPropertyChanged("Field159");
+            }
+        }
+
+
+        private string _field160;
+        /// <summary>
+        /// 25216000 Группа_2014 для сравнения (FIELD_160)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216000)]
+        public string Field160
+        {
+            get
+            {
+                CheckPropertyInited("Field160");
+                return _field160;
+            }
+            set
+            {
+                _field160 = value;
+                NotifyPropertyChanged("Field160");
+            }
+        }
+
+
+        private string _field161;
+        /// <summary>
+        /// 25216100 Группа ДЭПР (FIELD_161)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216100)]
+        public string Field161
+        {
+            get
+            {
+                CheckPropertyInited("Field161");
+                return _field161;
+            }
+            set
+            {
+                _field161 = value;
+                NotifyPropertyChanged("Field161");
+            }
+        }
+
+
+        private string _field162;
+        /// <summary>
+        /// 25216200 Группа_30.06.16 (FIELD_162)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216200)]
+        public string Field162
+        {
+            get
+            {
+                CheckPropertyInited("Field162");
+                return _field162;
+            }
+            set
+            {
+                _field162 = value;
+                NotifyPropertyChanged("Field162");
+            }
+        }
+
+
+        private string _field163;
+        /// <summary>
+        /// 25216300 Аварийность (FIELD_163)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216300)]
+        public string Field163
+        {
+            get
+            {
+                CheckPropertyInited("Field163");
+                return _field163;
+            }
+            set
+            {
+                _field163 = value;
+                NotifyPropertyChanged("Field163");
+            }
+        }
+
+
+        private string _field164;
+        /// <summary>
+        /// 25216400 УПКС жил. дома  (FIELD_164)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216400)]
+        public string Field164
+        {
+            get
+            {
+                CheckPropertyInited("Field164");
+                return _field164;
+            }
+            set
+            {
+                _field164 = value;
+                NotifyPropertyChanged("Field164");
+            }
+        }
+
+
+        private string _field165;
+        /// <summary>
+        /// 25216500 Мультипликатор  (FIELD_165)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216500)]
+        public string Field165
+        {
+            get
+            {
+                CheckPropertyInited("Field165");
+                return _field165;
+            }
+            set
+            {
+                _field165 = value;
+                NotifyPropertyChanged("Field165");
+            }
+        }
+
+
+        private string _field166;
+        /// <summary>
+        /// 25216600 Поправка на материал  (FIELD_166)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216600)]
+        public string Field166
+        {
+            get
+            {
+                CheckPropertyInited("Field166");
+                return _field166;
+            }
+            set
+            {
+                _field166 = value;
+                NotifyPropertyChanged("Field166");
+            }
+        }
+
+
+        private string _field167;
+        /// <summary>
+        /// 25216700 Высота потолка  (FIELD_167)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216700)]
+        public string Field167
+        {
+            get
+            {
+                CheckPropertyInited("Field167");
+                return _field167;
+            }
+            set
+            {
+                _field167 = value;
+                NotifyPropertyChanged("Field167");
+            }
+        }
+
+
+        private string _field169;
+        /// <summary>
+        /// 25216900 Группировка 06.07.16 (FIELD_169)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25216900)]
+        public string Field169
+        {
+            get
+            {
+                CheckPropertyInited("Field169");
+                return _field169;
+            }
+            set
+            {
+                _field169 = value;
+                NotifyPropertyChanged("Field169");
+            }
+        }
+
+
+        private string _field170;
+        /// <summary>
+        /// 25217000 Номер группы помещения ДЭПР (FIELD_170)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217000)]
+        public string Field170
+        {
+            get
+            {
+                CheckPropertyInited("Field170");
+                return _field170;
+            }
+            set
+            {
+                _field170 = value;
+                NotifyPropertyChanged("Field170");
+            }
+        }
+
+
+        private string _field171;
+        /// <summary>
+        /// 25217100 Присвоение гр нежил помещ (FIELD_171)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217100)]
+        public string Field171
+        {
+            get
+            {
+                CheckPropertyInited("Field171");
+                return _field171;
+            }
+            set
+            {
+                _field171 = value;
+                NotifyPropertyChanged("Field171");
+            }
+        }
+
+
+        private string _field172;
+        /// <summary>
+        /// 25217200 Код поселка  (FIELD_172)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217200)]
+        public string Field172
+        {
+            get
+            {
+                CheckPropertyInited("Field172");
+                return _field172;
+            }
+            set
+            {
+                _field172 = value;
+                NotifyPropertyChanged("Field172");
+            }
+        }
+
+
+        private string _field173;
+        /// <summary>
+        /// 25217300 Корректировка на физический износ  (FIELD_173)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217300)]
+        public string Field173
+        {
+            get
+            {
+                CheckPropertyInited("Field173");
+                return _field173;
+            }
+            set
+            {
+                _field173 = value;
+                NotifyPropertyChanged("Field173");
+            }
+        }
+
+
+        private string _field174;
+        /// <summary>
+        /// 25217400 Корректировка на КС  (FIELD_174)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217400)]
+        public string Field174
+        {
+            get
+            {
+                CheckPropertyInited("Field174");
+                return _field174;
+            }
+            set
+            {
+                _field174 = value;
+                NotifyPropertyChanged("Field174");
+            }
+        }
+
+
+        private string _field175;
+        /// <summary>
+        /// 25217500 Здания для налога 22.07.2016 (FIELD_175)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217500)]
+        public string Field175
+        {
+            get
+            {
+                CheckPropertyInited("Field175");
+                return _field175;
+            }
+            set
+            {
+                _field175 = value;
+                NotifyPropertyChanged("Field175");
+            }
+        }
+
+
+        private string _field176;
+        /// <summary>
+        /// 25217600 Группа 2013 (FIELD_176)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217600)]
+        public string Field176
+        {
+            get
+            {
+                CheckPropertyInited("Field176");
+                return _field176;
+            }
+            set
+            {
+                _field176 = value;
+                NotifyPropertyChanged("Field176");
+            }
+        }
+
+
+        private string _field177;
+        /// <summary>
+        /// 25217700 УПКС 2013 (FIELD_177)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217700)]
+        public string Field177
+        {
+            get
+            {
+                CheckPropertyInited("Field177");
+                return _field177;
+            }
+            set
+            {
+                _field177 = value;
+                NotifyPropertyChanged("Field177");
+            }
+        }
+
+
+        private string _field178;
+        /// <summary>
+        /// 25217800 КС 2013 (FIELD_178)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217800)]
+        public string Field178
+        {
+            get
+            {
+                CheckPropertyInited("Field178");
+                return _field178;
+            }
+            set
+            {
+                _field178 = value;
+                NotifyPropertyChanged("Field178");
+            }
+        }
+
+
+        private string _field179;
+        /// <summary>
+        /// 25217900 Акт обследования (FIELD_179)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25217900)]
+        public string Field179
+        {
+            get
+            {
+                CheckPropertyInited("Field179");
+                return _field179;
+            }
+            set
+            {
+                _field179 = value;
+                NotifyPropertyChanged("Field179");
+            }
+        }
+
+
+        private string _field180;
+        /// <summary>
+        /// 25218000 Дата акта обследования (FIELD_180)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25218000)]
+        public string Field180
+        {
+            get
+            {
+                CheckPropertyInited("Field180");
+                return _field180;
+            }
+            set
+            {
+                _field180 = value;
+                NotifyPropertyChanged("Field180");
+            }
+        }
+
+
+        private string _field181;
+        /// <summary>
+        /// 25218100 УПКС в фонде (FIELD_181)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25218100)]
+        public string Field181
+        {
+            get
+            {
+                CheckPropertyInited("Field181");
+                return _field181;
+            }
+            set
+            {
+                _field181 = value;
+                NotifyPropertyChanged("Field181");
+            }
+        }
+
+
+        private string _field182;
+        /// <summary>
+        /// 25218200 Группа в фонде (FIELD_182)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25218200)]
+        public string Field182
+        {
+            get
+            {
+                CheckPropertyInited("Field182");
+                return _field182;
+            }
+            set
+            {
+                _field182 = value;
+                NotifyPropertyChanged("Field182");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 253 Параметры расчета для ЗУ 2016 года (KO_UNIT_PARAMS_ZU_2016)
+    /// </summary>
+    [RegisterInfo(RegisterID = 253)]
+    [Serializable]
+    public partial class OMUnitParamsZu2016 : OMBaseClass<OMUnitParamsZu2016>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 25300100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 25300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _field176;
+        /// <summary>
+        /// 25317600 Расстояние до престижных магистралей (FIELD_176)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25317600)]
+        public string Field176
+        {
+            get
+            {
+                CheckPropertyInited("Field176");
+                return _field176;
+            }
+            set
+            {
+                _field176 = value;
+                NotifyPropertyChanged("Field176");
+            }
+        }
+
+
+        private string _field177;
+        /// <summary>
+        /// 25317700 Расстояние до рекреационных территорий (FIELD_177)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25317700)]
+        public string Field177
+        {
+            get
+            {
+                CheckPropertyInited("Field177");
+                return _field177;
+            }
+            set
+            {
+                _field177 = value;
+                NotifyPropertyChanged("Field177");
+            }
+        }
+
+
+        private string _field178;
+        /// <summary>
+        /// 25317800 Москва, Зеленоград или присоединенные территории (FIELD_178)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25317800)]
+        public string Field178
+        {
+            get
+            {
+                CheckPropertyInited("Field178");
+                return _field178;
+            }
+            set
+            {
+                _field178 = value;
+                NotifyPropertyChanged("Field178");
+            }
+        }
+
+
+        private string _field179;
+        /// <summary>
+        /// 25317900 Расстояние до центра Зеленограда (Крюково) (FIELD_179)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25317900)]
+        public string Field179
+        {
+            get
+            {
+                CheckPropertyInited("Field179");
+                return _field179;
+            }
+            set
+            {
+                _field179 = value;
+                NotifyPropertyChanged("Field179");
+            }
+        }
+
+
+        private string _field180;
+        /// <summary>
+        /// 25318000 Расстояние до центра Зеленограда (Префектура) (FIELD_180)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318000)]
+        public string Field180
+        {
+            get
+            {
+                CheckPropertyInited("Field180");
+                return _field180;
+            }
+            set
+            {
+                _field180 = value;
+                NotifyPropertyChanged("Field180");
+            }
+        }
+
+
+        private string _field181;
+        /// <summary>
+        /// 25318100 Расстояние до остановок общест. транспорта Зеленограда (FIELD_181)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318100)]
+        public string Field181
+        {
+            get
+            {
+                CheckPropertyInited("Field181");
+                return _field181;
+            }
+            set
+            {
+                _field181 = value;
+                NotifyPropertyChanged("Field181");
+            }
+        }
+
+
+        private string _field182;
+        /// <summary>
+        /// 25318200 Расстояние объекта до центра города (Кремль, СМ) (FIELD_182)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318200)]
+        public string Field182
+        {
+            get
+            {
+                CheckPropertyInited("Field182");
+                return _field182;
+            }
+            set
+            {
+                _field182 = value;
+                NotifyPropertyChanged("Field182");
+            }
+        }
+
+
+        private string _field183;
+        /// <summary>
+        /// 25318300 Расстояние до станций метрополитена (до 1,5 км) (FIELD_183)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318300)]
+        public string Field183
+        {
+            get
+            {
+                CheckPropertyInited("Field183");
+                return _field183;
+            }
+            set
+            {
+                _field183 = value;
+                NotifyPropertyChanged("Field183");
+            }
+        }
+
+
+        private string _field184;
+        /// <summary>
+        /// 25318400 Историческая застройка (связность, СМ) (FIELD_184)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318400)]
+        public string Field184
+        {
+            get
+            {
+                CheckPropertyInited("Field184");
+                return _field184;
+            }
+            set
+            {
+                _field184 = value;
+                NotifyPropertyChanged("Field184");
+            }
+        }
+
+
+        private string _field185;
+        /// <summary>
+        /// 25318500 Элитные жилые комплексы (связность, СМ)  (FIELD_185)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318500)]
+        public string Field185
+        {
+            get
+            {
+                CheckPropertyInited("Field185");
+                return _field185;
+            }
+            set
+            {
+                _field185 = value;
+                NotifyPropertyChanged("Field185");
+            }
+        }
+
+
+        private string _field186;
+        /// <summary>
+        /// 25318600 Производственно-научные зоны (связность) (FIELD_186)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318600)]
+        public string Field186
+        {
+            get
+            {
+                CheckPropertyInited("Field186");
+                return _field186;
+            }
+            set
+            {
+                _field186 = value;
+                NotifyPropertyChanged("Field186");
+            }
+        }
+
+
+        private string _field187;
+        /// <summary>
+        /// 25318700 Размещение в границах санитарно-защитных зон производственных предприятий (СМ) (FIELD_187)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318700)]
+        public string Field187
+        {
+            get
+            {
+                CheckPropertyInited("Field187");
+                return _field187;
+            }
+            set
+            {
+                _field187 = value;
+                NotifyPropertyChanged("Field187");
+            }
+        }
+
+
+        private string _field188;
+        /// <summary>
+        /// 25318800 Связность с центром города (Кремль) (FIELD_188)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318800)]
+        public string Field188
+        {
+            get
+            {
+                CheckPropertyInited("Field188");
+                return _field188;
+            }
+            set
+            {
+                _field188 = value;
+                NotifyPropertyChanged("Field188");
+            }
+        }
+
+
+        private string _field189;
+        /// <summary>
+        /// 25318900 Расстояние до ближайшей транспортной магистрали ведущих городских направлений, федерального и регионального значений (FIELD_189)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25318900)]
+        public string Field189
+        {
+            get
+            {
+                CheckPropertyInited("Field189");
+                return _field189;
+            }
+            set
+            {
+                _field189 = value;
+                NotifyPropertyChanged("Field189");
+            }
+        }
+
+
+        private string _field190;
+        /// <summary>
+        /// 25319000 Расстояние до МКАД (НМ) (FIELD_190)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319000)]
+        public string Field190
+        {
+            get
+            {
+                CheckPropertyInited("Field190");
+                return _field190;
+            }
+            set
+            {
+                _field190 = value;
+                NotifyPropertyChanged("Field190");
+            }
+        }
+
+
+        private string _field191;
+        /// <summary>
+        /// 25319100 Школы, детские сады (связность, НМ)  (FIELD_191)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319100)]
+        public string Field191
+        {
+            get
+            {
+                CheckPropertyInited("Field191");
+                return _field191;
+            }
+            set
+            {
+                _field191 = value;
+                NotifyPropertyChanged("Field191");
+            }
+        }
+
+
+        private string _field192;
+        /// <summary>
+        /// 25319200 Расстояние до г. Троицк, Московский, Щербинка (FIELD_192)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319200)]
+        public string Field192
+        {
+            get
+            {
+                CheckPropertyInited("Field192");
+                return _field192;
+            }
+            set
+            {
+                _field192 = value;
+                NotifyPropertyChanged("Field192");
+            }
+        }
+
+
+        private string _field193;
+        /// <summary>
+        /// 25319300 Расстояние до ближайшей школы и детского сада (НМ) (FIELD_193)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319300)]
+        public string Field193
+        {
+            get
+            {
+                CheckPropertyInited("Field193");
+                return _field193;
+            }
+            set
+            {
+                _field193 = value;
+                NotifyPropertyChanged("Field193");
+            }
+        }
+
+
+        private string _field194;
+        /// <summary>
+        /// 25319400 Элитные коттеджные поселки (связность) (FIELD_194)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319400)]
+        public string Field194
+        {
+            get
+            {
+                CheckPropertyInited("Field194");
+                return _field194;
+            }
+            set
+            {
+                _field194 = value;
+                NotifyPropertyChanged("Field194");
+            }
+        }
+
+
+        private string _field195;
+        /// <summary>
+        /// 25319500 Расстояние до ближайших 3 центров Зеленограда (Крюково, пл. Юности, Префектура) (FIELD_195)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319500)]
+        public string Field195
+        {
+            get
+            {
+                CheckPropertyInited("Field195");
+                return _field195;
+            }
+            set
+            {
+                _field195 = value;
+                NotifyPropertyChanged("Field195");
+            }
+        }
+
+
+        private string _field196;
+        /// <summary>
+        /// 25319600 Расстояние до престижных магистралей (до 2 км) (FIELD_196)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319600)]
+        public string Field196
+        {
+            get
+            {
+                CheckPropertyInited("Field196");
+                return _field196;
+            }
+            set
+            {
+                _field196 = value;
+                NotifyPropertyChanged("Field196");
+            }
+        }
+
+
+        private string _field197;
+        /// <summary>
+        /// 25319700 Расстояние до МКАД (СМ) (FIELD_197)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319700)]
+        public string Field197
+        {
+            get
+            {
+                CheckPropertyInited("Field197");
+                return _field197;
+            }
+            set
+            {
+                _field197 = value;
+                NotifyPropertyChanged("Field197");
+            }
+        }
+
+
+        private string _field198;
+        /// <summary>
+        /// 25319800 Бизнес-центры (связность, СМ) (FIELD_198)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319800)]
+        public string Field198
+        {
+            get
+            {
+                CheckPropertyInited("Field198");
+                return _field198;
+            }
+            set
+            {
+                _field198 = value;
+                NotifyPropertyChanged("Field198");
+            }
+        }
+
+
+        private string _field199;
+        /// <summary>
+        /// 25319900 Остановки общественного транспорта (связность, НМ) (FIELD_199)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25319900)]
+        public string Field199
+        {
+            get
+            {
+                CheckPropertyInited("Field199");
+                return _field199;
+            }
+            set
+            {
+                _field199 = value;
+                NotifyPropertyChanged("Field199");
+            }
+        }
+
+
+        private string _field200;
+        /// <summary>
+        /// 25320000 Расстояние до центра городов и городских округов (НМ) (FIELD_200)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320000)]
+        public string Field200
+        {
+            get
+            {
+                CheckPropertyInited("Field200");
+                return _field200;
+            }
+            set
+            {
+                _field200 = value;
+                NotifyPropertyChanged("Field200");
+            }
+        }
+
+
+        private string _field201;
+        /// <summary>
+        /// 25320100 Расстояние до водоема (FIELD_201)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320100)]
+        public string Field201
+        {
+            get
+            {
+                CheckPropertyInited("Field201");
+                return _field201;
+            }
+            set
+            {
+                _field201 = value;
+                NotifyPropertyChanged("Field201");
+            }
+        }
+
+
+        private string _field202;
+        /// <summary>
+        /// 25320200 Расположение на территории элитных коттеджных поселков (FIELD_202)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320200)]
+        public string Field202
+        {
+            get
+            {
+                CheckPropertyInited("Field202");
+                return _field202;
+            }
+            set
+            {
+                _field202 = value;
+                NotifyPropertyChanged("Field202");
+            }
+        }
+
+
+        private string _field203;
+        /// <summary>
+        /// 25320300 Остановки общественного транспорта Зеленограда (связность) (FIELD_203)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320300)]
+        public string Field203
+        {
+            get
+            {
+                CheckPropertyInited("Field203");
+                return _field203;
+            }
+            set
+            {
+                _field203 = value;
+                NotifyPropertyChanged("Field203");
+            }
+        }
+
+
+        private string _field204;
+        /// <summary>
+        /// 25320400 Объекты деловой активности Зеленограда (Связность ) (FIELD_204)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320400)]
+        public string Field204
+        {
+            get
+            {
+                CheckPropertyInited("Field204");
+                return _field204;
+            }
+            set
+            {
+                _field204 = value;
+                NotifyPropertyChanged("Field204");
+            }
+        }
+
+
+        private string _field205;
+        /// <summary>
+        /// 25320500 Объекты деловой активности (связность, СМ) (FIELD_205)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320500)]
+        public string Field205
+        {
+            get
+            {
+                CheckPropertyInited("Field205");
+                return _field205;
+            }
+            set
+            {
+                _field205 = value;
+                NotifyPropertyChanged("Field205");
+            }
+        }
+
+
+        private string _field206;
+        /// <summary>
+        /// 25320600 Производственная застройка (связность, СМ) (FIELD_206)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320600)]
+        public string Field206
+        {
+            get
+            {
+                CheckPropertyInited("Field206");
+                return _field206;
+            }
+            set
+            {
+                _field206 = value;
+                NotifyPropertyChanged("Field206");
+            }
+        }
+
+
+        private string _field207;
+        /// <summary>
+        /// 25320700 Крупные торговые объекты (связность) (FIELD_207)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320700)]
+        public string Field207
+        {
+            get
+            {
+                CheckPropertyInited("Field207");
+                return _field207;
+            }
+            set
+            {
+                _field207 = value;
+                NotifyPropertyChanged("Field207");
+            }
+        }
+
+
+        private string _field208;
+        /// <summary>
+        /// 25320800 Центр городов и городских округов (связность, НМ) (FIELD_208)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320800)]
+        public string Field208
+        {
+            get
+            {
+                CheckPropertyInited("Field208");
+                return _field208;
+            }
+            set
+            {
+                _field208 = value;
+                NotifyPropertyChanged("Field208");
+            }
+        }
+
+
+        private string _field209;
+        /// <summary>
+        /// 25320900 Лесные массивы, парки, скверы, бульвары (связность) (FIELD_209)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25320900)]
+        public string Field209
+        {
+            get
+            {
+                CheckPropertyInited("Field209");
+                return _field209;
+            }
+            set
+            {
+                _field209 = value;
+                NotifyPropertyChanged("Field209");
+            }
+        }
+
+
+        private string _field210;
+        /// <summary>
+        /// 25321000 Расстояние до станций метрополитена (FIELD_210)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25321000)]
+        public string Field210
+        {
+            get
+            {
+                CheckPropertyInited("Field210");
+                return _field210;
+            }
+            set
+            {
+                _field210 = value;
+                NotifyPropertyChanged("Field210");
+            }
+        }
+
+
+        private string _field211;
+        /// <summary>
+        /// 25321100 ТЭЦ (Зоны влияния, СМ) (FIELD_211)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25321100)]
+        public string Field211
+        {
+            get
+            {
+                CheckPropertyInited("Field211");
+                return _field211;
+            }
+            set
+            {
+                _field211 = value;
+                NotifyPropertyChanged("Field211");
+            }
+        }
+
+
+        private string _field212;
+        /// <summary>
+        /// 25321200 Направления по сторонам света (НМ) (FIELD_212)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25321200)]
+        public string Field212
+        {
+            get
+            {
+                CheckPropertyInited("Field212");
+                return _field212;
+            }
+            set
+            {
+                _field212 = value;
+                NotifyPropertyChanged("Field212");
+            }
+        }
+
+
+        private string _field213;
+        /// <summary>
+        /// 25321300 Москва или присоединенные территории (FIELD_213)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25321300)]
+        public string Field213
+        {
+            get
+            {
+                CheckPropertyInited("Field213");
+                return _field213;
+            }
+            set
+            {
+                _field213 = value;
+                NotifyPropertyChanged("Field213");
+            }
+        }
+
+
+        private string _field214;
+        /// <summary>
+        /// 25321400 Расстояние до железнодорожной грузовой станции (FIELD_214)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25321400)]
+        public string Field214
+        {
+            get
+            {
+                CheckPropertyInited("Field214");
+                return _field214;
+            }
+            set
+            {
+                _field214 = value;
+                NotifyPropertyChanged("Field214");
+            }
+        }
+
+
+        private string _field215;
+        /// <summary>
+        /// 25321500 Расстояние до речных портов (СМ) (FIELD_215)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25321500)]
+        public string Field215
+        {
+            get
+            {
+                CheckPropertyInited("Field215");
+                return _field215;
+            }
+            set
+            {
+                _field215 = value;
+                NotifyPropertyChanged("Field215");
+            }
+        }
+
     }
 }
 

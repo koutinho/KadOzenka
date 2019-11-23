@@ -491,6 +491,30 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
 
+		/// <summary>
+		/// Исходный (783)
+		/// </summary>
+		[Description("Исходный")]
+        [EnumCode("")]
+        Initial = 783,
+		/// <summary>
+		/// Новый (784)
+		/// </summary>
+		[Description("Новый")]
+        [EnumCode("")]
+        New = 784,
+		/// <summary>
+		/// Пересчитанный (785)
+		/// </summary>
+		[Description("Пересчитанный")]
+        [EnumCode("")]
+        Recalculated = 785,
+		/// <summary>
+		/// Годовой (786)
+		/// </summary>
+		[Description("Годовой")]
+        [EnumCode("")]
+        Annual = 786,
     }
 }
 
@@ -556,13 +580,72 @@ namespace ObjectModel.Directory
     [ReferenceInfo(ReferenceId = 204)]
     public enum KoGroupAlgoritm : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-
+		/// <summary>
+		/// Моделирование (1)
+		/// </summary>
+		[Description("Моделирование")]
+        [EnumCode("1")]
+        Model = 1,
+		/// <summary>
+		/// Затратный (2)
+		/// </summary>
+		[Description("Затратный")]
+        [EnumCode("2")]
+        Cost = 2,
+		/// <summary>
+		/// Нормативный (3)
+		/// </summary>
+		[Description("Нормативный")]
+        [EnumCode("3")]
+        Normative = 3,
+		/// <summary>
+		/// Здания по помещениям (8)
+		/// </summary>
+		[Description("Здания по помещениям")]
+        [EnumCode("8")]
+        BuildingOnFlat = 8,
+		/// <summary>
+		/// Помещения по зданиям (9)
+		/// </summary>
+		[Description("Помещения по зданиям")]
+        [EnumCode("9")]
+        FlatOnBuilding = 9,
+		/// <summary>
+		/// Среднее (10)
+		/// </summary>
+		[Description("Среднее")]
+        [EnumCode("10")]
+        AVG = 10,
+		/// <summary>
+		/// ОНС (11)
+		/// </summary>
+		[Description("ОНС")]
+        [EnumCode("11")]
+        UnComplited = 11,
+		/// <summary>
+		/// Минимальное (12)
+		/// </summary>
+		[Description("Минимальное")]
+        [EnumCode("12")]
+        Min = 12,
+		/// <summary>
+		/// Эталонный (13)
+		/// </summary>
+		[Description("Эталонный")]
+        [EnumCode("13")]
+        Etalon = 13,
+		/// <summary>
+		/// Основная группа ОКС (98)
+		/// </summary>
+		[Description("Основная группа ОКС")]
+        [EnumCode("98")]
+        MainOKS = 98,
+		/// <summary>
+		/// Основная группа Участки (99)
+		/// </summary>
+		[Description("Основная группа Участки")]
+        [EnumCode("99")]
+        MainParcel = 99,
     }
 }
 
@@ -574,13 +657,24 @@ namespace ObjectModel.Directory
     [ReferenceInfo(ReferenceId = 205)]
     public enum KoAlgoritmType : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-
+		/// <summary>
+		/// Экспоненциальная (1)
+		/// </summary>
+		[Description("Экспоненциальная")]
+        [EnumCode("1")]
+        Exp = 1,
+		/// <summary>
+		/// Линейная (2)
+		/// </summary>
+		[Description("Линейная")]
+        [EnumCode("2")]
+        Line = 2,
+		/// <summary>
+		/// Мультипликативная (3)
+		/// </summary>
+		[Description("Мультипликативная")]
+        [EnumCode("3")]
+        Multi = 3,
     }
 }
 
@@ -617,6 +711,90 @@ namespace ObjectModel.Directory
         [EnumCode("0")]
         None = 0,
 
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Результат анализа стоимости (208)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 208)]
+    public enum KoStatusResultCalc : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+
+		/// <summary>
+		/// Стоимость не изменилась (787)
+		/// </summary>
+		[Description("Стоимость не изменилась")]
+        [EnumCode("")]
+        CostNotChanged = 787,
+		/// <summary>
+		/// Стоимость изменилась (788)
+		/// </summary>
+		[Description("Стоимость изменилась")]
+        [EnumCode("")]
+        CostChanged = 788,
+		/// <summary>
+		/// Неверный расчет (техническая ошибка) (789)
+		/// </summary>
+		[Description("Неверный расчет (техническая ошибка)")]
+        [EnumCode("")]
+        ErrorTechnical = 789,
+		/// <summary>
+		/// Неверный расчет (ошибка в данных) (790)
+		/// </summary>
+		[Description("Неверный расчет (ошибка в данных)")]
+        [EnumCode("")]
+        ErrorInData = 790,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Cтатус расчета (209)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 209)]
+    public enum KoStatusRepeatCalc : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+
+		/// <summary>
+		/// Исходный (791)
+		/// </summary>
+		[Description("Исходный")]
+        [EnumCode("")]
+        Initial = 791,
+		/// <summary>
+		/// Новый (792)
+		/// </summary>
+		[Description("Новый")]
+        [EnumCode("")]
+        New = 792,
+		/// <summary>
+		/// Повторный (793)
+		/// </summary>
+		[Description("Повторный")]
+        [EnumCode("")]
+        Repeated = 793,
+		/// <summary>
+		/// Повторный (исходный) (794)
+		/// </summary>
+		[Description("Повторный (исходный)")]
+        [EnumCode("")]
+        RepeatedInitial = 794,
     }
 }
 

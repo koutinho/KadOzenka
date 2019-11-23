@@ -1169,19 +1169,21 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 250 Параметры расчета для ОКС
+    /// 213 Соответствие факторов реестровой и расчетной части
     /// </summary>
-    public partial class OMUnitParamsOks
+    public partial class OMAttributeMap
     {
 
-        public OMUnitParamsOks()
+        public OMAttributeMap()
         {
+
+            Id = -1;
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMUnitParamsOks(bool trackPropertyChanging) : this()
+        public OMAttributeMap(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -1191,19 +1193,89 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 251 Параметры расчета для ЗУ
+    /// 250 Параметры расчета для ОКС 2018 года
     /// </summary>
-    public partial class OMUnitParamsZu
+    public partial class OMUnitParamsOks2018
     {
 
-        public OMUnitParamsZu()
+        public OMUnitParamsOks2018()
         {
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMUnitParamsZu(bool trackPropertyChanging) : this()
+        public OMUnitParamsOks2018(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 251 Параметры расчета для ЗУ 2018 года
+    /// </summary>
+    public partial class OMUnitParamsZu2018
+    {
+
+        public OMUnitParamsZu2018()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnitParamsZu2018(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 252 Параметры расчета для ОКС 2016 года
+    /// </summary>
+    public partial class OMUnitParamsOks2016
+    {
+
+        public OMUnitParamsOks2016()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnitParamsOks2016(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 253 Параметры расчета для ЗУ 2016 года
+    /// </summary>
+    public partial class OMUnitParamsZu2016
+    {
+
+        public OMUnitParamsZu2016()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnitParamsZu2016(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
