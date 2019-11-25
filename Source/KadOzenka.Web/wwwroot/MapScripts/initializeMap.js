@@ -15,7 +15,22 @@ function init(){
 function initMap() {
     map = new ymaps.Map(MapSettings.containerId, { center: MapSettings.center , zoom: MapSettings.zoom }, {suppressMapOpenBlock: true});
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
-    changeDefaultControlPosition(map);
+	changeDefaultControlPosition(map);
+
+	map.events.add('boundschange', function (event) {
+		const params = new window.URLSearchParams(window.location.search);
+
+		const newCenter = event.get('newCenter');
+		params.set('center', newCenter);
+		const newZoom = event.get('newZoom');
+		params.set('zoom', newZoom);
+
+		if (window.history.pushState) {
+			const newUrl = new URL(window.location.href);
+			newUrl.search = params;
+			window.history.pushState({ path: newUrl.href }, '', newUrl.href);
+		}
+	});
 };
 
 function changeDefaultControlPosition(map) {
