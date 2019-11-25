@@ -19,11 +19,12 @@ namespace CIPJS.Models.Commission
 		/// </summary>
 		[Display(Name = "Тип комиссии")]
 		[Required(ErrorMessage = "Поле тип комиссии  обязательное")]
-		public CommissionType CommissionType { get; set; }
+		public CommissionType? CommissionType { get; set; }
 		/// <summary>
 		/// Кадастровый номер объекта
 		/// </summary>
 		[Display(Name = "Кадастровый номер объекта")]
+		[Required(ErrorMessage = "Поле кадастровый номер объекта  обязательное")]
 		public string Kn { get; set; }
 		/// <summary>
 		/// Оспариваемая кадастровая стоимость
@@ -54,7 +55,7 @@ namespace CIPJS.Models.Commission
 		/// </summary>
 		[Display(Name = "Статус заявителя")]
 		[Required(ErrorMessage = "Поле статус заявителя  обязательное")]
-		public ApplicantStatus ApplicantStatus { get; set; }
+		public ApplicantStatus? ApplicantStatus { get; set; }
 		/// <summary>
 		/// Номер решения
 		/// </summary>
@@ -69,7 +70,7 @@ namespace CIPJS.Models.Commission
 		/// Решение комиссии
 		/// </summary>
 		[Display(Name = "Решение комиссии")]
-		public DecisionResult DecisionResult { get; set; }
+		public DecisionResult? DecisionResult { get; set; }
 		/// <summary>
 		/// Рыночная стоимость после оспаривания
 		/// </summary>
@@ -94,7 +95,13 @@ namespace CIPJS.Models.Commission
 
 		public static CommissionModel FromEntity(OMCost entity)
 		{
-			if (entity == null) return new CommissionModel();
+			if (entity == null) return new CommissionModel()
+			{
+				ApplicantStatus = null,
+				Id = -1,
+				CommissionType = null,
+				DecisionResult = null
+			};
 
 			return new CommissionModel()
 			{
@@ -120,7 +127,7 @@ namespace CIPJS.Models.Commission
 		public static void ToEntity(CommissionModel commissionViewModel, ref OMCost entity)
 		{
 			entity.MarketValue = commissionViewModel.MarketValue;
-			entity.CommissionType_Code = commissionViewModel.CommissionType;
+			entity.CommissionType_Code = commissionViewModel.CommissionType.GetValueOrDefault();
 			entity.CommissionKc = commissionViewModel.CommissionKc;
 			entity.StatementDate = commissionViewModel.StatementDate;
 			entity.DecisionNumber = commissionViewModel.DecisionNumber;
@@ -129,8 +136,8 @@ namespace CIPJS.Models.Commission
 			entity.Kc = commissionViewModel.Kc;
 			entity.StatementNumber = commissionViewModel.StatementNumber;
 			entity.DecisionDate = commissionViewModel.DecisionDate;
-			entity.DecisionResult_Code = commissionViewModel.DecisionResult;
-			entity.ApplicantStatus_Code = commissionViewModel.ApplicantStatus;
+			entity.DecisionResult_Code = commissionViewModel.DecisionResult.GetValueOrDefault();
+			entity.ApplicantStatus_Code = commissionViewModel.ApplicantStatus.GetValueOrDefault();
 			entity.CommissionChange = commissionViewModel.CommissionChange;
 			entity.CommissionGroup = commissionViewModel.CommissionGroup;
 		}

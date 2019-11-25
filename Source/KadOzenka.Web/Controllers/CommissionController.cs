@@ -21,7 +21,7 @@ namespace KadOzenka.Web.Controllers
 
 			var model = commission != null
 				? CommissionModel.FromEntity(commission)
-				: CommissionModel.FromEntity(new OMCost());
+				: CommissionModel.FromEntity(null);
 
 			return View(model);
 		}
