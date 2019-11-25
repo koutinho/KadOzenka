@@ -76,7 +76,7 @@ namespace KadOzenka.Web.Models.Sud
 				NameCenter = omObject.NameCenter,
 				StatDgi = omObject.StatDgi,
 				Owner = omObject.Owner,
-				AdditionalAnalysisRequired = Convert.ToBoolean(omObject.Workstat_Code),
+				AdditionalAnalysisRequired = Convert.ToBoolean(omObject?.Workstat_Code),
 				DrsGroup = omDrs.DrsGroup,
 				Basement = omDrs.DrsSq1,
 				Socle = omDrs.DrsSq2,

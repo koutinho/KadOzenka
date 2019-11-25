@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="304" DefaultLayoutId="1003041" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
+<RegisterView RegisterId="304" DefaultLayoutId="1003041" LinkedRegistersList="304,306,307,308" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
     <Buttons>
       <Button Caption="Добавить" NavigateURL="/Sud/EditReportLink" WindowHeight="450" WindowWidth="800">
