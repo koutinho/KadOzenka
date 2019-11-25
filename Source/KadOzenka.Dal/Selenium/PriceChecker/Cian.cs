@@ -46,9 +46,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
         public void TakePrice() 
         {
             ChromeOptions options = new ChromeOptions();
-            //options.AddArgument("headless");
             ChromeDriverService service = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            //service.HideCommandPromptWindow = true;
             using (IWebDriver driver = new ChromeDriver(service, options))
             {
                 driver.Manage().Window.Maximize();
@@ -63,7 +61,6 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         if (!bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIANError"]).ToString()) && !bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIAN505Page"]).ToString()))
                         {
                             RefreshObjectInfo(initialObject, GetData(executor, initialObject.DealType_Code, initialObject.Id), (ChromeDriver) driver);
-                            //GetData(executor, initialObject.DealType_Code, initialObject.Id);
                             OCor++;
                         }
                         else

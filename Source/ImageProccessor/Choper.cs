@@ -36,8 +36,7 @@ namespace ImageProccessor
 	    {
 		    var image = Image.FromStream(new MemoryStream(imageMemoryStream), true);
 			var appendImage = Image.FromStream(new MemoryStream(appendImageMemoryStream), true);
-
-		    var result = new Bitmap(image.Width, image.Height + appendImage.Height);
+            var result = new Bitmap(image.Width, image.Height + appendImage.Height);
 		    var graphics = Graphics.FromImage(result);
 			graphics.DrawImage(image, 0, 0, image.Width, image.Height);
 		    graphics.DrawImage(appendImage, 0, image.Height, appendImage.Width, appendImage.Height);

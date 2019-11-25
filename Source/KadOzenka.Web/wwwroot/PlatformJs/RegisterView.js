@@ -1064,7 +1064,7 @@ var RegisterView = RegisterView || {
             grid.resize();
         });
 
-        if (registerViewSettings.IsPartialView !== true)
+        if (registerViewSettings.IsPartialView !== true && registerViewSettings.UseMasterPage === true)
             $(gridSelector).closest('.content').css('height', '85%');
 
         grid.bind('dataBound', function (e) {

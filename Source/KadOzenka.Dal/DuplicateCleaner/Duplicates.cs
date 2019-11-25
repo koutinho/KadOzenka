@@ -18,13 +18,13 @@ namespace KadOzenka.Dal.DuplicateCleaner
                             x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep ||
                             x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess ||
                             x.ExclusionStatus_Code == ObjectModel.Directory.ExclusionStatus.Duplicate))
-                .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
+                .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.Subcategory, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
                 .Execute()
                 .ToList();
 
         public void Detect()
         {
-            List<List<OMCoreObject>> objs = AllObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code }).Select(grp => grp.ToList()).ToList();
+            List<List<OMCoreObject>> objs = AllObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.Subcategory }).Select(grp => grp.ToList()).ToList();
             List<List<OMCoreObject>> result = new List<List<OMCoreObject>>();
             objs.ForEach(x => result.AddRange(SplitListByPersent(x.OrderBy(y => y.Area).ToList())));
             int ICur = 0, ICor = 0, IErr = 0, ICtr = result.Count;

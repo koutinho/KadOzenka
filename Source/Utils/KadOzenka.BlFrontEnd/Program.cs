@@ -14,6 +14,7 @@ using KadOzenka.Dal.RestAppParser;
 using KadOzenka.Dal.Selenium.ScreenShots;
 using KadOzenka.Dal.Selenium.PriceChecker;
 using KadOzenka.BlFrontEnd.DataExport;
+using KadOzenka.Dal.Test;
 using KadOzenka.BlFrontEnd.ExportSud;
 
 namespace KadOzenka.BlFrontEnd
@@ -49,6 +50,7 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().TakePrice(); });
             consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
             consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(); });
+            consoleHelper.AddCommand("15", "Тест автоматического формирования исключений", () => { new TestAutoExclusions().TryParse(); });
 
             consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы", SudExporter.DoLoad);
         }

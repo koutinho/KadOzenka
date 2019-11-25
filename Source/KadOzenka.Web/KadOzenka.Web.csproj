@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\images\magazine.png" />
+    <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,11 +51,70 @@
     <None Remove="Config\Param\Postgres.Backup.Prod.xml" />
     <None Remove="Config\ReadMe.txt" />
     <None Remove="Config\Registers\SearchPanels\CalculatePerson.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreLongProcessService.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreMessages.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterAttribute.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterLayout.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterLayoutExport.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterLayoutExportAll.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterList.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterQry.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreRegisterRegister.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedAttachment.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedDiagnostics.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedErrorLog.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedReference.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSharedReferenceItem.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDAudit.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDDepartment.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDRegisterAudit.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDRole.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDSession.xml" />
+    <None Remove="Config\Registers\SearchPanels\CoreSRDUser.xml" />
     <None Remove="Config\Registers\SearchPanels\InspectorPerson.xml" />
     <None Remove="Config\Registers\SearchPanels\PrimaryMatching.xml" />
     <None Remove="Config\Registers\SearchPanels\SignatoriesPerson.xml" />
     <None Remove="Config\Registers\Views\BankSearch.xml" />
     <None Remove="Config\Registers\Views\CalculatePersonSelect.xml" />
+    <None Remove="Config\Registers\Views\CoreAuditCommon.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessQueue.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessQueueCard.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessService.xml" />
+    <None Remove="Config\Registers\Views\CoreLongProcessType.xml" />
+    <None Remove="Config\Registers\Views\CoreMessages.xml" />
+    <None Remove="Config\Registers\Views\CoreMessagesMy.xml" />
+    <None Remove="Config\Registers\Views\CoreMessagesRecipients.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterAttribute.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterAttributeCard.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterLayout.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterLayoutExport.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterLayoutExportAll.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterList.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterListObject.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterQry.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterQrySelect.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterRegister.xml" />
+    <None Remove="Config\Registers\Views\CoreRegisterRelation.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedAttachment.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedDiagnostics.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedErrorLog.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedReference.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedReferenceItem.xml" />
+    <None Remove="Config\Registers\Views\CoreSharedReferenceRegItem.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDAudit.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDDepartment.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDFunctionRoles.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDFunctionUsers.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRegisterAudit.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRole.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRoleFilter.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRoleSelect.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDRoleUsers.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDSession.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDUser.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDUserSelect.xml" />
+    <None Remove="Config\Registers\Views\CoreSRDUserSession.xml" />
     <None Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <None Remove="Config\Registers\Views\DataImporter.xml" />
     <None Remove="Config\Registers\Views\GbuObjects.xml" />
@@ -136,6 +196,15 @@
     <Content Include="Config\ReadMe.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreMessages.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreRegisterLayoutExportAll.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSharedReferenceItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -146,6 +215,174 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Param\Core.Numeration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreLongProcessQueue.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreLongProcessService.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreRegisterAttribute.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreRegisterLayout.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreRegisterLayoutExport.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreRegisterList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreRegisterQry.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreRegisterRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSharedAttachment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSharedDiagnostics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSharedErrorLog.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSharedReference.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSRDAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSRDDepartment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSRDRegisterAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSRDRole.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSRDSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\SearchPanels\CoreSRDUser.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreAuditCommon.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreMessagesMy.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreMessages.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreMessagesRecipients.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterLayoutExportAll.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSharedReferenceRegItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDUserSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDUserSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreLongProcessQueue.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreLongProcessQueueCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreLongProcessService.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreLongProcessType.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterAttribute.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterAttributeCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterLayout.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterLayoutExport.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterListObject.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterQry.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterQrySelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreRegisterRelation.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSharedAttachment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSharedDiagnostics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSharedErrorLog.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSharedReference.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSharedReferenceItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDDepartment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDFunctionRoles.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDFunctionUsers.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDRegisterAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDRole.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDRoleFilter.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDRoleSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDRoleUsers.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\CoreSRDUser.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\DataExporterByTemplate.xml">
@@ -175,7 +412,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.4" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.15" />
     <PackageReference Include="Platform.Web" Version="1.0.239" />
   </ItemGroup>
@@ -430,24 +667,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ConfigPath Include="$(ProjectDir)Config\**\*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <ConfigPath Include="$(ProjectDir)Config\**\*.*" />
-    <ConfigCorePath Include="$(ProjectDir)ConfigCore\**\*.*" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ConfigPath Remove="Config\Registers\Views\CommissionCost.xml" />
-  </ItemGroup>
-  
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
-    <Copy SourceFiles="@(ConfigCorePath)" DestinationFolder="$(PublishDir)ConfigCore\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
 
 </Project>

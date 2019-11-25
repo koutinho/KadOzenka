@@ -11,7 +11,8 @@ namespace KadOzenka.Dal.KadNumberChecker
     public class KadNumbers
     {
         readonly List<OMCoreObject> AllObjects =
-            OMCoreObject.Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && x.ProcessType_Code == ObjectModel.Directory.ProcessStep.AddressStep)
+            OMCoreObject.Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && 
+                                    x.ProcessType_Code == ObjectModel.Directory.ProcessStep.AddressStep)
                         .Select(x => new { x.Address, x.CadastralNumber, x.Lng, x.Lat, x.ExclusionStatus_Code, x.ProcessType_Code })
                         .Execute()
                         .ToList();
@@ -38,6 +39,7 @@ namespace KadOzenka.Dal.KadNumberChecker
                 }
                 else
                 {
+                    x.CadastralNumber = null;
                     x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Excluded;
                     x.ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.NoCadastralNumber;
                     KErr++;

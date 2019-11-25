@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using ObjectModel.Market;
 using ObjectModel.Directory;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace KadOzenka.Dal.JSONParser
 {
@@ -29,6 +30,7 @@ namespace KadOzenka.Dal.JSONParser
                 try
                 {
                     string subCategory = elements[i]["subcategory"].ToString();
+                    string category = elements[i]["category"].ToString();
                     string description = elements[i]["description"].ToString();
                     long marketId = long.Parse(elements[i]["Id"].ToString());
                     //long? price = long.TryParse(elements[i]["price"].ToString(), out var tempPrice) ? tempPrice : (long?)null;
@@ -46,7 +48,7 @@ namespace KadOzenka.Dal.JSONParser
                     decimal? areaLand = decimal.TryParse(elements[i]["area_land"].ToString().Replace('.', ','), out var tempALA) ? tempALA : (decimal?)null;
                     DealType dealType = GetDealType(elements[i]["deal_type"].ToString());
                     PropertyTypes propertyType = GetPropertyObjectType(buildingYear, categoryId, subCategory);
-                    ExclusionStatus? exclusionStatus = GetExclusionStatus(price, area, areaLand, description);
+                    ExclusionStatus? exclusionStatus = GetExclusionStatus(price, area, areaLand, description, category, subCategory, dealType);
 
                     OMCoreObject CO = new OMCoreObject();
                     CO.Url = GetURL(MarketTypes.Cian, dealType, categoryId, subCategory, marketId);
@@ -72,7 +74,7 @@ namespace KadOzenka.Dal.JSONParser
                     CO.AreaLiving = areaLiving;
                     CO.AreaLand = areaLand;
                     CO.BuildingYear = buildingYear;
-                    CO.Category = elements[i]["category"].ToString();
+                    CO.Category = category;
                     CO.Subcategory = subCategory;
                     CO.CategoryId = categoryId;
                     CO.ProcessType_Code = ProcessStep.DoNotProcessed;
@@ -195,12 +197,15 @@ namespace KadOzenka.Dal.JSONParser
             }
         }
 
-        private ExclusionStatus? GetExclusionStatus(long? price, decimal? area, decimal? area_land, string description)
+        private ExclusionStatus? GetExclusionStatus(long? price, decimal? area, decimal? area_land, string description, string category, string subCategory, DealType dealType)
         {
             if (price == 0 || price == null) return ExclusionStatus.NoPrice;
             if ((area == 0 || area == null) && (area_land == 0 || area_land == null)) return ExclusionStatus.NoArea;
-            if (description.Contains("мебель") || description.Contains("Мебель")) return ExclusionStatus.ContainsFurniture;
-            if (description.Contains("ППА") || description.Contains("Ппа") || description.Contains("ппа") || description.Contains("Продаются права аренды")) return ExclusionStatus.ContainsPPA;
+            if (category == "Коммерческая недвижимость" && (subCategory == "Офисная" || subCategory == "Торговая") && dealType == DealType.SaleSuggestion)
+            {
+                if (Regex.IsMatch(description, @"(мебель[^(ный)])")) return ExclusionStatus.ContainsFurniture;
+                if (Regex.IsMatch(description, @"([^А-Яа-я]ппа)|(прав аренды)|(права аренды)")) return ExclusionStatus.ContainsPPA;
+            }
             if (description.Length < 100) return ExclusionStatus.DoNotHaveDescription;
             return null;
         }

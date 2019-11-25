@@ -48,7 +48,7 @@
         // возможные варианты редактора
         // "Filter" - фильтр
         // "Layout" - фильтр раскладки
-        // "Column" - колонка - подзапрос 
+        // "Column" - колонка - подзапрос (пользовательская колонка)
         // "VirtualColumn" - виртуальная колонка 
         // "Query"  - полный запрос - редактор без ограничений
         self.editorType = config.editorType ? config.editorType : "Filter";
@@ -897,6 +897,7 @@
                             if (response.Errors)
                                 Common.ShowError(response.Errors.Message);
                             else {
+                                config.saveParams.columnId = response;
                                 Common.ShowMessage("Пользовательская  колонка сохранена");
                             }
                         }

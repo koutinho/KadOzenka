@@ -9,7 +9,7 @@ function showMainMenu(event) {
     var t = $(document).width() - ($(element).parent().parent().offset().left + $(element).parent().parent().width()) - 80;
     $(element).parent().parent().find('.dropdown-main-menu').css('margin-right', t + 'px');
     
-    $(element).parent().parent().find('.dropdown-main-menu').slideToggle(200);
+    $(element).parent().parent().find('.dropdown-main-menu').slideToggle(300);
 }
 
 $(window).click(function (event) {

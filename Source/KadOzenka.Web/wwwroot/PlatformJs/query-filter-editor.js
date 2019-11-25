@@ -513,7 +513,7 @@
                     placeholder: "Выберите...",
                     dataTextField: "text",
                     dataValueField: "value",
-                    filter: "startswith",
+                    filter: "contains",
                     ignoreCase: true,
                     select: function (e) {
                         var item = this.dataItem(e.node);
