@@ -1,31 +1,16 @@
 ﻿@using CIPJS.Controllers
 
-@section styles {
-	<link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
-	<style>
-		.matchItem {
-		}
-
-		.matchItem dd {
-			font-size: larger;
-		}
-		.matchItem dt {
-			font-size: small;
-			font-weight: normal;
-		}
-	</style>
-}
-
 <script id="metroAutoCompleteTemplate" type="text/x-kendo-template">
-	<div class="matchItem">
-		<dl>
-			<dd>
+	<div>
+		<div class="metroAutoCompleteMetro">
+			<div style="white-space: nowrap">
+				<span class="metroAutoCompletePoint" style='background-color:#: lineColor #'></span>
 				<span>#: name #</span>
-			</dd>
-			<dt>
-				<span>#: line #</span>
-			</dt>
-		</dl>
+			</div>
+		</div>
+		<div class="metroAutoCompleteLine">
+			<span>#: lineName #</span>
+		</div>
 	</div>
 </script>
 <script type="text/javascript">
@@ -49,7 +34,7 @@
 					template: "<input id='priceToInput' placeholder='до' autocomplete='off'/>"
 				},
 				{
-					template: "<input id='addressInput' class='k-textbox' type='text' placeholder='Метро' autocomplete='off' style='width: 100%;'/>"
+					template: "<input id='addressInput' type='text' placeholder='Метро' autocomplete='off' style='width: 100%;'/>"
 				}
 			]
 		});
@@ -126,8 +111,8 @@
 								for (let i = 0; i < item.stations.length; i++) {
 									var point = {
 										name: item.stations[i].name,
-										line: item.name,
-										lineColor: item.hex_color
+										lineName: item.name,
+										lineColor: '#' + item.hex_color
 									}
 									res.push(point);
 								}
@@ -137,7 +122,6 @@
 							options.success(source);
 						},
 						error: function(result) {
-							// notify the data source that the request failed
 							options.error(result);
 						}
 					});
@@ -147,9 +131,10 @@
 
 		$("#addressInput").kendoAutoComplete({
 			enforceMinLength: true,
-			minLength: 3,
+			minLength: 1,
 			dataSource: dataSource,
 			dataTextField: "name",
+			clearButton: false,
 			template: kendo.template($("#metroAutoCompleteTemplate").html())
 		});
 

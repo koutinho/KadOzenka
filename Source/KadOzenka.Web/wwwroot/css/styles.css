@@ -1203,11 +1203,7 @@ div#searchToolbar > div {
 	margin-right: 3px;
 }
 
-div#searchToolbar > div:nth-child(5) {
-	margin-right: 6px !important;
-}
-
-/*input#addressInput {
+input#addressInput {
 	border-color: #e8e8f0;
 }
 
@@ -1217,7 +1213,23 @@ input#addressInput:hover {
 
 input#addressInput:focus {
 	border-color: #b5bdcb;
-}*/
+}
+
+.metroAutoCompleteMetro {
+	margin-bottom: -5px;
+}
+
+.metroAutoCompleteLine {
+	font-size: smaller;
+	font-weight: normal;
+}
+
+.metroAutoCompletePoint {
+	height: 10px;
+	width: 10px;
+	border-radius: 50%;
+	display: inline-block;
+}
 
 #loginPage .logo-title-block #imgLogin {
 	width: 350px !important;
