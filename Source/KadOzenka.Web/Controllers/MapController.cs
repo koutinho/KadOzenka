@@ -33,9 +33,11 @@ namespace KadOzenka.Web.Controllers
             return View(); 
         }
 
-        public JsonResult Objects()
+        public JsonResult Objects(int? maxObjectsCount)
         {
-	        QSQuery<OMCoreObject> query = OMCoreObject.Where(x => true);
+	        var query = OMCoreObject.Where(x =>
+		        x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess &&
+		        x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr);
 			var userFilter = _coreUiService.GetSearchFilter(MarketObjectsRegisterViewId);
 	        if (userFilter != null && !string.IsNullOrEmpty(userFilter.Condition))
 	        {
@@ -84,9 +86,14 @@ namespace KadOzenka.Web.Controllers
 	        }
 
 			var point = new List<object>();
-	        var analogItem = query
-				.Select(x => new { x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code })
-		        .Execute().ToList();
+
+	        var analogItem = maxObjectsCount.HasValue
+		        ? query
+					.Select(x => new {x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code})
+			        .Execute().Take(maxObjectsCount.Value).ToList()
+		        : query
+			        .Select(x => new {x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code})
+			        .Execute().ToList();
 	        Console.WriteLine(analogItem.Count);
 	        analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
 	        return Json(point);
