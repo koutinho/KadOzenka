@@ -3,37 +3,93 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Core.Register.QuerySubsystem;
 using Core.UI.Registers.Controllers;
+using Core.UI.Registers.Services;
+using KadOzenka.Web.Models.Prefilter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Market;
 using Newtonsoft.Json;
+using ObjectModel.Directory;
+using Core.Shared.Extensions;
 
 namespace KadOzenka.Web.Controllers
 {
     public class MapController : BaseController
     {
+	    private readonly CoreUiService _coreUiService;
 
+	    public string MarketObjectsRegisterViewId => "MarketObjects";
 
-        // GET: Map
-        public ActionResult Index() 
+	    public MapController(CoreUiService coreUiService)
+	    {
+		    _coreUiService = coreUiService;
+	    }
+
+		// GET: Map
+		public ActionResult Index() 
         { 
             return View(); 
         }
 
         public JsonResult Objects()
         {
-            List<object> point = new List<object>();
-            var analogItem = OMCoreObject
-                .Where(x => x.Category == "Коммерческая недвижимость" && 
-                            x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && 
-                            x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && 
-                            x.DealType_Code == ObjectModel.Directory.DealType.SaleSuggestion)
-                .Select(x => new { x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code })
-                .Execute().Take(2000).ToList();
-            Console.WriteLine(analogItem.Count);
-            analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
-            return Json(point);
+	        QSQuery<OMCoreObject> query = OMCoreObject.Where(x => true);
+			var userFilter = _coreUiService.GetSearchFilter(MarketObjectsRegisterViewId);
+	        if (userFilter != null && !string.IsNullOrEmpty(userFilter.Condition))
+	        {
+		        var filters = JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition);
+
+				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id))
+				{
+					var filter = filters.First(f =>
+						f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
+					var val = (MarketSegment)int.Parse(filter.ValueCasted);
+					query.And(x => x.PropertyMarketSegment_Code == val);
+				}
+		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id))
+		        {
+			        var filter = filters.First(f =>
+				        f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id);
+			        var val = (DealType)int.Parse(filter.ValueCasted);
+			        query.And(x => x.DealType_Code == val);
+		        }
+		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id))
+		        {
+			        var filter = filters.First(f =>
+				        f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id);
+			        var val = (PropertyTypes)int.Parse(filter.ValueCasted);
+			        query.And(x => x.PropertyType_Code == val);
+		        }
+		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id))
+		        {
+			        var filter = filters.First(f =>
+				        f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id);
+			        if (!string.IsNullOrEmpty(filter.From))
+			        {
+				        query.And(x => x.Price >= int.Parse(filter.From));
+					}
+			        if (!string.IsNullOrEmpty(filter.To))
+			        {
+				        query.And(x => x.Price <= int.Parse(filter.To));
+			        }
+		        }
+		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id))
+		        {
+			        var filter = filters.First(f =>
+				        f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id);
+					query.And(x => x.Metro.Contains(filter.ValueCasted));
+				}
+	        }
+
+			var point = new List<object>();
+	        var analogItem = query
+				.Select(x => new { x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code })
+		        .Execute().ToList();
+	        Console.WriteLine(analogItem.Count);
+	        analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
+	        return Json(point);
         }
 
         public JsonResult RequiredInfo()

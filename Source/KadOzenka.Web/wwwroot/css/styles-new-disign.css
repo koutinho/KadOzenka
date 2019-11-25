@@ -1252,7 +1252,7 @@ div#searchToolbar > div {
         margin-right: 6px !important;
     }
 
-input#addressInput {
+/*input#addressInput {
     border-color: #e8e8f0;
 }
 
@@ -1262,7 +1262,7 @@ input#addressInput {
 
     input#addressInput:focus {
         border-color: #b5bdcb;
-    }
+    }*/
 
 #loginPage .logo-title-block #imgLogin {
     width: 350px !important;

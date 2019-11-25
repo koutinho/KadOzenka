@@ -1,6 +1,34 @@
 ﻿@using CIPJS.Controllers
 
-    <script type="text/javascript">
+@section styles {
+	<link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+	<style>
+		.matchItem {
+		}
+
+		.matchItem dd {
+			font-size: larger;
+		}
+		.matchItem dt {
+			font-size: small;
+			font-weight: normal;
+		}
+	</style>
+}
+
+<script id="metroAutoCompleteTemplate" type="text/x-kendo-template">
+	<div class="matchItem">
+		<dl>
+			<dd>
+				<span>#: name #</span>
+			</dd>
+			<dt>
+				<span>#: line #</span>
+			</dt>
+		</dl>
+	</div>
+</script>
+<script type="text/javascript">
 	$(document).ready(function () {
 		$("#searchToolbar").kendoToolBar({
 			resizable: false,
@@ -86,17 +114,48 @@
 			spinners: false
 		});
 
-		$("#mapButton").kendoButton({
-			icon: "search",
-			click: function(e) {
-				//TODO: will be implemented with the Map
+		var dataSource = new kendo.data.DataSource({
+			transport: {
+				read: function(options) {
+					$.ajax({
+						url: "https://api.hh.ru/metro/1",
+						dataType: "jsonp",
+						success: function (result) {
+							var source = $.map(result.lines, function (item) {
+								var res = [];
+								for (let i = 0; i < item.stations.length; i++) {
+									var point = {
+										name: item.stations[i].name,
+										line: item.name,
+										lineColor: item.hex_color
+									}
+									res.push(point);
+								}
+								return res;
+							});
+
+							options.success(source);
+						},
+						error: function(result) {
+							// notify the data source that the request failed
+							options.error(result);
+						}
+					});
+				}
 			}
+		});
+
+		$("#addressInput").kendoAutoComplete({
+			enforceMinLength: true,
+			minLength: 3,
+			dataSource: dataSource,
+			dataTextField: "name",
+			template: kendo.template($("#metroAutoCompleteTemplate").html())
 		});
 
 		$("#searchButton").kendoButton({
 			enable: $("#prefilterForm").valid,
 			click: function (e) {
-				debugger;
 				Common.ClearNotification();
 				kendo.ui.progress($('#prefilter'), true);
 
@@ -108,7 +167,7 @@
 				var propertyName = $("#propertyDropdown").data("kendoDropDownList").text();
 				var priceFrom = $("#priceFromInput").val();
 				var priceTo = $("#priceToInput").val();
-				var metro = $("#addressInput").val();
+				var metro = $("#addressInput").data("kendoAutoComplete").value();
 
 				$.ajax({
 					type: 'POST',
@@ -134,10 +193,52 @@
 					}
 				});
 			}
-        });
-        $("#mapButton").kendoButton({ click: function (e) { window.location = '@Url.Action("Index", "Map")'; } });
+		});
+
+		$("#mapButton").kendoButton({
+			enable: $("#prefilterForm").valid,
+			icon: "search",
+			click: function (e) {
+				Common.ClearNotification();
+				kendo.ui.progress($('#prefilter'), true);
+
+				var marketId = $("#marketSegmentDropdown").data("kendoDropDownList").value();
+				var marketName = $("#marketSegmentDropdown").data("kendoDropDownList").text();
+				var dealTypeId = $("#dealTypeDropdown").data("kendoDropDownList").value();
+				var dealTypeName = $("#dealTypeDropdown").data("kendoDropDownList").text();
+				var propertyId = $("#propertyDropdown").data("kendoDropDownList").value();
+				var propertyName = $("#propertyDropdown").data("kendoDropDownList").text();
+				var priceFrom = $("#priceFromInput").val();
+				var priceTo = $("#priceToInput").val();
+				var metro = $("#addressInput").data("kendoAutoComplete").value();
+
+				$.ajax({
+					type: 'POST',
+					url: '@Url.Action("ConfigureSearchFilter", "Prefilter")',
+					data: {
+						propertyMarketSegmentItemId: marketId,
+						PropertyMarketSegmentValue: marketName,
+						dealTypeItemId: dealTypeId,
+						dealTypeValue: dealTypeName,
+						propertyTypeItemId: propertyId,
+						propertyTypeValue: propertyName,
+						priceFrom: priceFrom,
+						priceTo: priceTo,
+						metro: metro
+					},
+					success: function (response) {
+						kendo.ui.progress($('#prefilter'), false);
+						window.location = '@Url.Action("Index", "Map")';
+					},
+					error: function (response) {
+						Common.ShowError(response.responseText);
+						kendo.ui.progress($('#prefilter'), false);
+					}
+				});
+			}
+		});
     });
-    </script>
+</script>
 
 <form>
 	<div id="prefilter">

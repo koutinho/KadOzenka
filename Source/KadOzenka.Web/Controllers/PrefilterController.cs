@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.UI.Registers.Controllers;
 using Core.UI.Registers.Services;
@@ -15,6 +16,8 @@ namespace KadOzenka.Web.Controllers
 	public class PrefilterController : BaseController
 	{
 		private readonly CoreUiService _service;
+
+		public string MarketObjectsRegisterViewId => "MarketObjects";
 
 		public PrefilterController(CoreUiService service)
 		{
@@ -80,7 +83,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var filter = CreateConditionFilter(model);
 			var c = new CoreUiController(_service);
-			c.SaveSearchFilter("MarketObjects", filter);
+			c.SaveSearchFilter(MarketObjectsRegisterViewId, filter);
 
 			return NoContent();
 		}
@@ -139,6 +142,11 @@ namespace KadOzenka.Web.Controllers
 				{
 					var priceType = OMCoreObject
 						.GetAttributeData(x => x.Price);
+
+					if (model.PriceFrom.HasValue && model.PriceTo.HasValue && model.PriceFrom > model.PriceTo)
+					{
+						throw new Exception("Задан некорректный диапазон цен");
+					}
 
 					string text = null;
 					if (model.PriceFrom.HasValue && model.PriceTo.HasValue)
