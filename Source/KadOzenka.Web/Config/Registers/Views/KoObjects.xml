@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="203" DefaultLayoutId="1002031" LinkedRegistersList="203,201" AllowSearchPanelResize="false" Description="Задания на оценку" IsBasic="false"
+              OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true"
+              JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
+	<Buttons>
+		<Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+			<Parameters>
+				<Parameter Key="ObjectId" Value="[ObjectID]" />
+				<Parameter Key="RegisterId" Value="[RegisterId]" />
+			</Parameters>
+		</Button>
+		<Button Caption="Добавить" NavigateURL="/commission/editcommission" Icon="fas fa-plus">
+		</Button>
+		<Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
+	</Buttons>
+	<Tabs>
+		<Tab Caption="Основные данные" NavigateURL="/Commission/EditCommission">
+			<Parameters>
+				<Parameter Key="id" Value="[ObjectId]" />
+			</Parameters>
+		</Tab>
+	</Tabs>
+</RegisterView>
