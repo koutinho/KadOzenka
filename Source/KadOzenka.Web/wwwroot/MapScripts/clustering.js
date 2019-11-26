@@ -25,14 +25,13 @@ function initCluster(coordinates) {
             });
     }
     clusterer.add(geoObjects);
-    clusterer.events.add('click', function (e) {clickOnCluster(e);});
+	clusterer.events.add('click', function (e) { clickOnCluster(e); });
+	map.geoObjects.removeAll();
 	map.geoObjects.add(clusterer);
 
 	const url = new URL(window.location);
 	const params = new window.URLSearchParams(url.search);
-	if (params.has('center') && params.has('zoom')) {
-		map.setCenter(params.get('center').split(","), params.get('zoom'),{ checkZoomRange: true });
-	} else {
+	if (!params.has('center')) {
 		map.setBounds(clusterer.getBounds(), { checkZoomRange: true });
 	}
 }

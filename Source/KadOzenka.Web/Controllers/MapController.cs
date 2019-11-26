@@ -33,7 +33,7 @@ namespace KadOzenka.Web.Controllers
             return View(); 
         }
 
-        public JsonResult Objects(int? maxObjectsCount)
+        public JsonResult Objects(int? maxLoadedObjectsCount, decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude)
         {
 	        var query = OMCoreObject.Where(x =>
 		        x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess &&
@@ -85,12 +85,27 @@ namespace KadOzenka.Web.Controllers
 				}
 	        }
 
+	        if (topLatitude.HasValue)
+	        {
+		        query.And(x => x.Lat >= topLatitude.Value);
+	        }
+	        if (topLongitude.HasValue)
+	        {
+		        query.And(x => x.Lng >= topLongitude.Value);
+	        }
+	        if (bottomLatitude.HasValue)
+	        {
+		        query.And(x => x.Lat <= bottomLatitude.Value);
+	        }
+			if (bottomLongitude.HasValue)
+			{
+				query.And(x => x.Lng <= bottomLongitude.Value);
+			}
 			var point = new List<object>();
-
-	        var analogItem = maxObjectsCount.HasValue
+	        var analogItem = maxLoadedObjectsCount.HasValue
 		        ? query
 					.Select(x => new {x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code})
-			        .Execute().Take(maxObjectsCount.Value).ToList()
+			        .Execute().Take(maxLoadedObjectsCount.Value).ToList()
 		        : query
 			        .Select(x => new {x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code})
 			        .Execute().ToList();
@@ -102,21 +117,26 @@ namespace KadOzenka.Web.Controllers
         public JsonResult RequiredInfo()
         {
             List<long> ids = JsonConvert.DeserializeObject<List<long>>(new StreamReader(HttpContext.Request.Body).ReadToEnd());
-            List<object> allData = new List<object>();
-            OMCoreObject.Where(x => ids.Contains(x.Id)).SelectAll().Execute().Take(20).ToList().ForEach(x => {
-                allData.Add(new { 
-                    type = x.Subcategory, 
-                    price = x.Price, 
-                    area = x.Area, 
-                    link = x.Url, 
-                    metro = x.Metro, 
-                    address = x.Address,
-                    images = x.Images,
-                    id = x.Id, 
-                    parserTime = x.ParserTime?.ToString("dd.MM.yyyy"), 
-                    lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy")
-                });
-            });
+	        List<object> allData = new List<object>();
+	        if (ids.Count > 0)
+	        {
+		        OMCoreObject.Where(x => ids.Contains(x.Id)).SelectAll().Execute().Take(ids.Count <= 20 ? ids.Count : 20).ToList().ForEach(x => {
+			        allData.Add(new
+			        {
+				        type = x.Subcategory,
+				        price = x.Price,
+				        area = x.Area,
+				        link = x.Url,
+				        metro = x.Metro,
+				        address = x.Address,
+				        images = x.Images,
+				        id = x.Id,
+				        parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
+				        lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy")
+			        });
+		        });
+			}
+
             return Json(allData);
         }
 

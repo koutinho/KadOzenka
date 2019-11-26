@@ -13,22 +13,42 @@ function init(){
 };
 
 function initMap() {
-    map = new ymaps.Map(MapSettings.containerId, { center: MapSettings.center , zoom: MapSettings.zoom }, {suppressMapOpenBlock: true});
+	const url = new URL(window.location);
+	const params = new window.URLSearchParams(url.search);
+	map = new ymaps.Map(
+		MapSettings.containerId,
+		{
+			center: params.has('center') ? params.get('center').split(",") : MapSettings.center,
+			zoom: params.has('zoom') ? params.get('zoom') : MapSettings.zoom
+		},
+		{ suppressMapOpenBlock: true }
+	);
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
 	changeDefaultControlPosition(map);
 
 	map.events.add('boundschange', function (event) {
-		const params = new window.URLSearchParams(window.location.search);
+		const areParamsSet = new window.URLSearchParams((new URL(window.location)).search).has('center');
 
+		const params = new window.URLSearchParams(window.location.search);
 		const newCenter = event.get('newCenter');
 		params.set('center', newCenter);
 		const newZoom = event.get('newZoom');
 		params.set('zoom', newZoom);
-
 		if (window.history.pushState) {
 			const newUrl = new URL(window.location.href);
 			newUrl.search = params;
 			window.history.pushState({ path: newUrl.href }, '', newUrl.href);
+		}
+
+		if (areParamsSet) {
+			const newBounds = event.get('newBounds');
+			const oldBounds = event.get('oldBounds');
+			if (newBounds[0][0] !== oldBounds[0][0] ||
+				newBounds[0][1] !== oldBounds[0][1] ||
+				newBounds[1][0] !== oldBounds[1][0] ||
+				newBounds[1][1] !== oldBounds[1][1]) {
+				GetData(newBounds);
+			}
 		}
 	});
 };

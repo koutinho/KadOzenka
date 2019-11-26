@@ -9,7 +9,8 @@ var AppData = {
 var MapSettings = {
     containerId: "map",
     center: [55.76, 37.64],
-    zoom: 9
+    zoom: 9,
+    maxLoadedObjectsCount: 2000
 };
 
 var ClusterSettings = {
