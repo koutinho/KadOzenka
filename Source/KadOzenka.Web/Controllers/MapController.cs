@@ -47,22 +47,28 @@ namespace KadOzenka.Web.Controllers
 				{
 					var filter = filters.First(f =>
 						f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
-					var val = (MarketSegment)int.Parse(filter.ValueCasted);
-					query.And(x => x.PropertyMarketSegment_Code == val);
+					if(int.TryParse(filter.ValueCasted, out var val))
+					{
+						query.And(x => x.PropertyMarketSegment_Code == (MarketSegment)val);
+					}
 				}
 		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id))
 		        {
 			        var filter = filters.First(f =>
 				        f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id);
-			        var val = (DealType)int.Parse(filter.ValueCasted);
-			        query.And(x => x.DealType_Code == val);
+			        if (int.TryParse(filter.ValueCasted, out var val))
+			        {
+				        query.And(x => x.DealType_Code == (DealType)val);
+					}
 		        }
 		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id))
 		        {
 			        var filter = filters.First(f =>
 				        f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id);
-			        var val = (PropertyTypes)int.Parse(filter.ValueCasted);
-			        query.And(x => x.PropertyType_Code == val);
+			        if (int.TryParse(filter.ValueCasted, out var val))
+			        {
+				        query.And(x => x.PropertyType_Code == (PropertyTypes)val);
+					}
 		        }
 		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id))
 		        {
@@ -70,11 +76,17 @@ namespace KadOzenka.Web.Controllers
 				        f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id);
 			        if (!string.IsNullOrEmpty(filter.From))
 			        {
-				        query.And(x => x.Price >= int.Parse(filter.From));
+				        if (int.TryParse(filter.From, out var val))
+				        {
+					        query.And(x => x.Price >= val);
+				        }
 					}
 			        if (!string.IsNullOrEmpty(filter.To))
 			        {
-				        query.And(x => x.Price <= int.Parse(filter.To));
+				        if (int.TryParse(filter.To, out var val))
+				        {
+							query.And(x => x.Price <= val);
+						}
 			        }
 		        }
 		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id))
