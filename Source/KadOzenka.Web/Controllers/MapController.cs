@@ -120,7 +120,7 @@ namespace KadOzenka.Web.Controllers
 			        .Execute().Take(maxLoadedObjectsCount.Value).ToList()
 		        : query
 			        .Select(x => new {x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code})
-			        .Execute().ToList();
+			        .Execute().Take(2000).ToList();
 	        Console.WriteLine(analogItem.Count);
 	        analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
 	        return Json(point);
@@ -135,15 +135,20 @@ namespace KadOzenka.Web.Controllers
 		        OMCoreObject.Where(x => ids.Contains(x.Id)).SelectAll().Execute().Take(ids.Count <= 20 ? ids.Count : 20).ToList().ForEach(x => {
 			        allData.Add(new
 			        {
-				        type = x.Subcategory,
-				        price = x.Price,
+                        type = FormType(x.Category, x.Subcategory, x.PropertyType_Code),
+                        price = x.Price,
 				        area = x.Area,
-				        link = x.Url,
+                        areaLand = x.AreaLand,
+                        roomsCount = x.RoomsCount,
+                        link = x.Url,
 				        metro = x.Metro,
 				        address = x.Address,
 				        images = x.Images,
 				        id = x.Id,
-				        parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
+                        floor = x.FloorNumber,
+                        floorCount = x.FloorsCount,
+                        cadastralNumber = x.CadastralNumber,
+                        parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
 				        lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy")
 			        });
 		        });
@@ -155,21 +160,45 @@ namespace KadOzenka.Web.Controllers
         private int FormType(string category, string subCategory, ObjectModel.Directory.PropertyTypes propertyType)
         {
             if (propertyType == ObjectModel.Directory.PropertyTypes.UncompletedBuilding) return 7;
-            else if(category == "Коммерческая недвижимость")
+            switch (category)
             {
-                switch (subCategory)
-                {
-                    case "Складская": return 0;
-                    case "Гараж": return 1;
-                    case "Торговая": return 2;
-                    case "Свободного назначения": return 3;
-                    case "Офисная": return 4;
-                    case "Готовый бизнес": return 5;
-                    case "Производственная": return 6;
-                    case "Здание": return 8;
-                }
+                case "Коммерческая недвижимость":
+                    switch (subCategory)
+                    {
+                        case "Складская": return 0;
+                        case "Гараж": return 1;
+                        case "Торговая": return 2;
+                        case "Свободного назначения": return 3;
+                        case "Офисная": return 4;
+                        case "Готовый бизнес": return 5;
+                        case "Производственная": return 6;
+                        case "Здание": return 8;
+                        default: return 9;
+                    }
+                case "Квартиры":
+                    switch (subCategory)
+                    {
+                        case "Вторичное": return 10;
+                        default: return 11;
+                    }
+                case "Комнаты":
+                    switch (subCategory)
+                    {
+                        case "Вторичное": return 12;
+                        default: return 13;
+                    }
+                case "Загородная недвижимость":
+                    switch (subCategory)
+                    {
+                        case "Участок": return 14;
+                        case "Таунхаус": return 15;
+                        case "Дом": return 16;
+                        default: return 17;
+                    }
+                default:
+                    break;
             }
-            return 9;
+            return 18;
         }
 
     }

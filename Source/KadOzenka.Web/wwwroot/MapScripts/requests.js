@@ -29,7 +29,8 @@ function GetRequiredInfo(idsArray) {
         dataType: 'json',
         success: function (result) {
             clearCardContainer();
-            result.forEach(x => insertCard(x));
+            console.log(result.length);
+            for (var i = 0; i < result.length; i++) insertCard(result[i], i == (result.length - 1));
         }
     });
 }

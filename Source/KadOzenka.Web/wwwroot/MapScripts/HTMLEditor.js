@@ -1,17 +1,33 @@
-﻿function insertCard(cartData) {
+﻿//!(cartData.roomsCount != null && cartData.roomsCount != 0 && (cartData.type == 10 || cartData.type == 11 || cartData.type == 18))
+
+function insertCard(cartData, isLast) {
     document.getElementById("dataContentContainer").innerHTML +=`
         <div class="DataItemContainer">
             <div class="Container">
-                <div class="Header">${cartData.type}</div>
+                <div class="Header">
+                    ${!(cartData.roomsCount != null && cartData.roomsCount != 0 && (cartData.type == 10 || cartData.type == 11 || cartData.type == 18)) ? "" : `${cartData.roomsCount}-комн.&nbsp;`}${PropType[cartData.type].type}&nbsp;${getArea(cartData.type, cartData.area, cartData.areaLand)}
+                </div >
             </div>
             <div class="Container">
                 <div class="Name">Цена</div>
                 <div class="Value">${numberWithSpaces(cartData.price)}&nbsp;₽</div>
             </div>
+            ${cartData.floor == null && cartData.floorCount == null ? "" : `
+                <div class="Container">
+                    <div class="Name">${cartData.floor == null ? "Количество&nbsp;этажей" : "Этаж"}</div>
+                    <div class="Value">${getFloor(cartData.floor, cartData.floorCount)}</div>
+                </div>
+            `}
             <div class="Container">
                 <div class="Name">Площадь</div>
-                <div class="Value">${numberWithSpaces(cartData.area)}&nbsp;м²</div>
+                <div class="Value">${getArea(cartData.type, cartData.area, cartData.areaLand)}</div>
             </div>
+            ${!(cartData.areaLand != null && (cartData.type == 16 || cartData.type == 15 || cartData.type == 8)) ? "" : `
+                <div class="Container">
+                    <div class="Name">Площадь ЗУ</div>
+                    <div class="Value">${numberWithSpaces(cartData.areaLand)}&nbsp;сот.</div>
+                </div>
+            `}
             <div class="Container">
                 <div class="Name">Ссылка</div>
                 <div class="Value">
@@ -23,8 +39,9 @@
             ${cartData.metro == null ? "" : `
                 <div class="Container">
                     <div class="Name">Метро</div>
-                    <div class="Value">${cartData.metro.replace(",", ", ")}</div>
-                </div>`}
+                    <div class="Value">${cartData.metro.replace(/,/g, ", ")}</div>
+                </div>`
+            }
             <div class="Container">
                 <div class="Name">Адрес</div>
                 <div class="Value">${cartData.address}</div>
@@ -45,7 +62,11 @@
                 <div class="Name">Последнее&nbsp;обновление</div>
                 <div class="Value">${cartData.lastUpdateDate}</div>
             </div>
-            <div class="Line"></div>
+            <div class="Container">
+                <div class="Name">Кадастровый&nbsp;номер</div>
+                <div class="Value">${cartData.cadastralNumber}</div>
+            </div>
+            ${isLast ? "" : `<div class="Line"></div>`}
         </div>`;
 }
 

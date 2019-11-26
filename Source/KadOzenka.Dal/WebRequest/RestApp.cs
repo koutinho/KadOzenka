@@ -10,8 +10,8 @@ namespace KadOzenka.Dal.WebRequest
     public class RestApp
     {
 
-        private string login = ConfigurationManager.AppSettings["restAppLogin002"];
-        private string token = ConfigurationManager.AppSettings["restAppToken002"];
+        private string login = ConfigurationManager.AppSettings["restAppLogin003"];
+        private string token = ConfigurationManager.AppSettings["restAppToken003"];
         private string metaInfoLink = ConfigurationManager.AppSettings["restAppMetaLink"];
         private string restAppCIANLink = ConfigurationManager.AppSettings["restAppCIANLink"];
         private string restAppAvitoLink = ConfigurationManager.AppSettings["restAppAvitoLink"];
