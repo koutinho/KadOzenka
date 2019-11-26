@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Core.Shared.Extensions;
+using Core.SRD;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,10 +41,100 @@ namespace ObjectModel.Sud
 
 	public partial class OMParam
 	{
-		/// <summary>
-		/// Добавление значения параметра
-		/// </summary>
-		public static void Add(OMTableParam idTable, long id, string paramName, string paramChar, DateTime paramDate, decimal paramDouble, int paramInt, long idUser, DateTime dateUser, int paramStatus, OMTypeParam paramType)
+        public override string ToString()
+        {
+            switch (IdTable)
+            {
+                case 1://Object
+                    switch (ParamName)
+                    {
+                        case "kn":          return ParamChar;
+                        case "date":        return (ParamDate==null)?string.Empty:ParamDate.Value.ToShortDateString();
+                        case "square":      return (ParamDouble==null)?string.Empty:ParamDouble.ToString();
+                        case "kc":          return (ParamDouble == null) ? string.Empty : ParamDouble.ToString(); 
+                        case "stat_dgi":    return ParamChar;
+                        case "owner":       return ParamChar;
+                        case "adres":       return ParamChar;
+                        case "typeobj":     return (ParamInt==null)?string.Empty:((Directory.Sud.SudObjectType)ParamInt).GetEnumDescription();
+                        case "name_center": return ParamChar;
+                        default:            return string.Empty;
+                    }
+                case 2://Otchet
+                    switch (ParamName)
+                    {
+                        case "number":  return ParamChar;
+                        case "date":    return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
+                        case "date_in": return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
+                        case "jalob":   return (ParamInt == null) ? string.Empty : ((ParamInt==1)?"Да":"Нет");
+                        case "id_org":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_sro":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_fio":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        default:        return string.Empty;
+                    }
+                case 3://OtchetLink
+                    switch (ParamName)
+                    {
+                        case "use":       return ParamChar;
+                        case "descr":     return ParamChar;
+                        case "rs":        return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "uprs":      return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "id_otchet": return (ParamInt == null) ? string.Empty : OMOtchet.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Number;
+                        default:          return string.Empty;
+                    }
+                case 4://Zak
+                    switch (ParamName)
+                    {
+                        case "number":     return ParamChar;
+                        case "date":       return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
+                        case "rec_date":   return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
+                        case "rec_letter": return ParamChar;
+                        case "rec_user":   return ParamChar;
+                        case "id_org":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_sro":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_fio":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "rec_before": return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
+                        case "rec_after":  return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
+                        case "rec_soglas": return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
+                        default:           return string.Empty;
+                    }
+                case 5://ZakLink
+                    switch (ParamName)
+                    {
+                        case "use":     return ParamChar;
+                        case "descr":   return ParamChar;
+                        case "rs":      return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "uprs":    return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "id_zak":  return (ParamInt == null) ? string.Empty : OMZak.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Number;
+                        default:        return string.Empty;
+                    }
+                case 6://Sud
+                    switch (ParamName)
+                    {
+                        case "number": return ParamChar;
+                        case "name": return ParamChar;
+                        case "date": return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
+                        case "sud_date": return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
+                        case "status": return (ParamInt == null) ? string.Empty : ((ParamInt == 0) ? "Без статуса" : ((ParamInt == 1) ? "Удовлетворено" : ((ParamInt == 2) ? "Отказано" : ((ParamInt == 3) ? "Приостановлено" : ((ParamInt == 4) ? "Частично удовлетворено" : string.Empty)))));
+                        default: return string.Empty;
+                    }
+                case 7://SudLink
+                    switch (ParamName)
+                    {
+                        case "use": return ParamChar;
+                        case "descr": return ParamChar;
+                        case "rs": return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "uprs": return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "id_sud": return (ParamInt == null) ? string.Empty : OMSud.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Number;
+                        default: return string.Empty;
+                    }
+                default: return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Добавление значения параметра
+        /// </summary>
+        public static void Add(OMTableParam idTable, long id, string paramName, string paramChar, DateTime paramDate, decimal paramDouble, int paramInt, long idUser, DateTime dateUser, int paramStatus, OMTypeParam paramType)
 		{
 			OMParam param = new OMParam
 			{
@@ -70,7 +162,7 @@ namespace ObjectModel.Sud
 				Id = id,
 				ParamName = paramName,
 				ParamChar = paramChar,
-				IdUser = 1,
+				IdUser = SRDSession.Current.UserID,
 				DateUser = DateTime.Now,
 				ParamStatus = paramStatus,
 			};
@@ -87,7 +179,7 @@ namespace ObjectModel.Sud
 				Id = id,
 				ParamName = paramName,
 				ParamDate = paramDate,
-				IdUser = 1,
+				IdUser = SRDSession.Current.UserID,
 				DateUser = DateTime.Now,
 				ParamStatus = paramStatus,
 			};
@@ -104,7 +196,7 @@ namespace ObjectModel.Sud
 				Id = id,
 				ParamName = paramName,
 				ParamDouble = paramDouble,
-				IdUser = 1,
+				IdUser = SRDSession.Current.UserID,
 				DateUser = DateTime.Now,
 				ParamStatus = paramStatus,
 			};
@@ -121,7 +213,7 @@ namespace ObjectModel.Sud
 				Id = id,
 				ParamName = paramName,
 				ParamInt = paramInt,
-				IdUser = 1,
+				IdUser = SRDSession.Current.UserID,
 				DateUser = DateTime.Now,
 				ParamStatus = paramStatus,
 			};
