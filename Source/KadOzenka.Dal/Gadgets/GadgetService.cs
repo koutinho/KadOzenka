@@ -103,11 +103,12 @@ namespace KadOzenka.Dal.Gadgets
 			var otchetCount = OMOtchet.Where(GetQuery("SudOtchet")).ExecuteCount();
 			data.Rows.Add("SudOtchet", "Отчеты", otchetCount);
 
-			var reshCount = OMOtchet.Where(GetQuery("SudResh")).ExecuteCount();
-			data.Rows.Add("SudResh", "Решения", reshCount);
-
 			var zakCount = OMOtchet.Where(GetQuery("SudZak")).ExecuteCount();
 			data.Rows.Add("SudZak", "Заключения", zakCount);
+
+
+			var reshCount = OMOtchet.Where(GetQuery("SudResh")).ExecuteCount();
+			data.Rows.Add("SudResh", "Решения", reshCount);
 
 			return data;
 		}
