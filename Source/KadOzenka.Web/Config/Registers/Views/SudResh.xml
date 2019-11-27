@@ -3,9 +3,16 @@
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
-      <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
+	    <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
+		    <Parameters>
+			    <Parameter Key="registerViewId" Value="SudResh" />
+			    <Parameter Key="mainRegisterId" Value="316" />
+		    </Parameters>
+	    </Button>
+	    <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
         <Parameters></Parameters>
       </Button>
+
       
       <Button Caption="Редактировать" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
         <Parameters>

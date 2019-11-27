@@ -9,6 +9,12 @@
               <Parameter Key="RegisterId" Value="[RegisterId]" />
           </Parameters>
       </Button>
+	  <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
+		  <Parameters>
+			  <Parameter Key="registerViewId" Value="CommissionCost" />
+			  <Parameter Key="mainRegisterId" Value="400" />
+		  </Parameters>
+	  </Button>
 	  <Button Caption="Добавить" NavigateURL="/commission/editcommission" Icon="fas fa-plus">
 	  </Button>
 	  <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
