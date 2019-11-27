@@ -1,9 +1,15 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Transactions;
 using CIPJS.Models.Commission;
+using Core.ErrorManagment;
 using Core.UI.Registers.Controllers;
+using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataImport;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Commission;
 
@@ -90,6 +96,39 @@ namespace KadOzenka.Web.Controllers
 			commissionViewModel.Id = id;
 			return Json(new { Success = "Сохранено успешно", data = commissionViewModel });
 		}
+
+		#region Load Document
+
+		[HttpGet]
+		public ActionResult LoadDocument()
+		{
+			return View();
+		}
+
+		[HttpPost]
+		public ActionResult LoadDocument(IFormFile file)
+		{
+
+			try
+			{
+				ExcelFile excelFile;
+				using (var stream = file.OpenReadStream())
+				{
+					excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+				}
+
+				DataImporter.ImportDataCommissionFromExcel(excelFile);
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return NoContent();
+		}
+
+		#endregion
 
 	}
 }

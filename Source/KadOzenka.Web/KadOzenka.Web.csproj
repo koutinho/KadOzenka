@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Sud\LoadDocument.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
     <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
   </ItemGroup>
@@ -279,7 +280,6 @@
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="Config\Reports\" />
     <Folder Include="Models\" />
-    <Folder Include="Views\Sud\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 
@@ -505,5 +505,8 @@
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
+  <ItemGroup>
+    <None Include="Views\Sud\LoadDocument.cshtml" />
+  </ItemGroup>
 
 </Project>

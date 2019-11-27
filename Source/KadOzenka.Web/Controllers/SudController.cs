@@ -646,6 +646,16 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { Success = "Сохранено успешно", data = courtLinkViewModel });
 		}
-#endregion
+		#endregion
+
+		#region Load Document
+
+		[HttpGet]
+		public ActionResult LoadDocument()
+		{
+			return View();
+		}
+
+		#endregion
 	}
 }
