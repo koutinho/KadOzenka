@@ -81,21 +81,21 @@
 								if (@Model.IsRangePriceHistory)
 								{
 									@(Html.Kendo().Tooltip()
-														  .For("#historyImg")
-														  .Name("priceHistoryTooltip")
-														  .ContentTemplateId("historyRangeGrid")
-														  .Position(TooltipPosition.Right)
-														  .AutoHide(false)
+																								  .For("#historyImg")
+																								  .Name("priceHistoryTooltip")
+																								  .ContentTemplateId("historyRangeGrid")
+																								  .Position(TooltipPosition.Right)
+																								  .AutoHide(false)
 									)
 								}
 								else
 								{
 									@(Html.Kendo().Tooltip()
-														  .For("#historyImg")
-														  .Name("priceHistoryTooltip")
-														  .ContentTemplateId("historyGrid")
-														  .Position(TooltipPosition.Right)
-														  .AutoHide(false)
+																								  .For("#historyImg")
+																								  .Name("priceHistoryTooltip")
+																								  .ContentTemplateId("historyGrid")
+																								  .Position(TooltipPosition.Right)
+																								  .AutoHide(false)
 									)
 								}
 
@@ -254,6 +254,16 @@
 				</div>
 			</div>
 		</li>
+		<li id="Section_Map" data-expand>
+			<span>На карте</span>
+			<div>
+				<div class="form-horizontal col-sm-12">
+					<div class="MapContainer">
+						<div id="objectMap" class="Map"></div>
+					</div>
+				</div>
+			</div>
+		</li>
 	</ul>
 	<div class="static-nav">
 		<nav id="navigation-menu">
@@ -261,64 +271,65 @@
 			<a href="#Section_Reestr">Данные Росреестра</a>
 			<a href="#Section_OKS">Данные ОКС</a>
 			<a href="#Section_Group">Группировка</a>
+			<a href="#Section_Map">На карте</a>
 		</nav>
 	</div>
 </form>
 
 <script id="historyGrid" type="text/x-kendo-template">
 	@(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
-		  (Model.PriceHistories)
-		  .Name("priceHistoryGrid")
-		  .Columns(columns =>
-		  {
-			  columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}");
-			  columns.Bound(c => c.PriceValueTo).Format("{0:c0}");
-		  })
-		  .ToolBar(t =>
-		  {
-			  t.ClientTemplate("История изменения цены");
-		  })
-		  .Resizable(resize => resize.Columns(true))
-		  .Scrollable()
-		  .Events(ev => ev.DataBound("onDataBoundPriceHistory"))
-		  .DataSource(dataSource => dataSource
-			  .Ajax()
-			  .ServerOperation(false)
-			  .Model(x =>
-			  {
-				  x.Field(y => y.ChangingDate).Editable(false);
-				  x.Field(y => y.PriceValueTo).Editable(false);
-			  })
-		  ).ToClientTemplate())
+												  (Model.PriceHistories)
+												  .Name("priceHistoryGrid")
+												  .Columns(columns =>
+												  {
+													  columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}");
+													  columns.Bound(c => c.PriceValueTo).Format("{0:c0}");
+												  })
+												  .ToolBar(t =>
+												  {
+													  t.ClientTemplate("История изменения цены");
+												  })
+												  .Resizable(resize => resize.Columns(true))
+												  .Scrollable()
+												  .Events(ev => ev.DataBound("onDataBoundPriceHistory"))
+												  .DataSource(dataSource => dataSource
+													  .Ajax()
+													  .ServerOperation(false)
+													  .Model(x =>
+													  {
+														  x.Field(y => y.ChangingDate).Editable(false);
+														  x.Field(y => y.PriceValueTo).Editable(false);
+													  })
+												  ).ToClientTemplate())
 
 </script>
 <script id="historyRangeGrid" type="text/x-kendo-template">
 	@(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
-		  (Model.PriceHistories)
-		  .Name("priceHistoryGrid")
-		  .Columns(columns =>
-		  {
-			  columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}").Width("30%");
-			  columns.Bound(c => c.PriceValueFrom).Format("от {0:c0}").Width("35%");
-			  columns.Bound(c => c.PriceValueTo).Format("до {0:c0}").Width("35%");
-		  })
-		  .ToolBar(t =>
-		  {
-			  t.ClientTemplate("История изменения цены");
-		  })
-		  .Resizable(resize => resize.Columns(true))
-		  .Scrollable()
-		  .Events(ev => ev.DataBound("onDataBoundPriceRangeHistory"))
-		  .DataSource(dataSource => dataSource
-			  .Ajax()
-			  .ServerOperation(false)
-			  .Model(x =>
-			  {
-				  x.Field(y => y.ChangingDate).Editable(false);
-				  x.Field(y => y.PriceValueFrom).Editable(false);
-				  x.Field(y => y.PriceValueTo).Editable(false);
-			  })
-		  ).ToClientTemplate())
+												  (Model.PriceHistories)
+												  .Name("priceHistoryGrid")
+												  .Columns(columns =>
+												  {
+													  columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}").Width("30%");
+													  columns.Bound(c => c.PriceValueFrom).Format("от {0:c0}").Width("35%");
+													  columns.Bound(c => c.PriceValueTo).Format("до {0:c0}").Width("35%");
+												  })
+												  .ToolBar(t =>
+												  {
+													  t.ClientTemplate("История изменения цены");
+												  })
+												  .Resizable(resize => resize.Columns(true))
+												  .Scrollable()
+												  .Events(ev => ev.DataBound("onDataBoundPriceRangeHistory"))
+												  .DataSource(dataSource => dataSource
+													  .Ajax()
+													  .ServerOperation(false)
+													  .Model(x =>
+													  {
+														  x.Field(y => y.ChangingDate).Editable(false);
+														  x.Field(y => y.PriceValueFrom).Editable(false);
+														  x.Field(y => y.PriceValueTo).Editable(false);
+													  })
+												  ).ToClientTemplate())
 
 </script>
 
@@ -342,7 +353,7 @@
 			display: none;
 		}
 
-		#priceHistoryGrid>.k-grid-toolbar {
+		#priceHistoryGrid > .k-grid-toolbar {
 			font-weight: bold;
 		}
 
@@ -360,13 +371,31 @@
 			max-height: 400px !important;
 			overflow: scroll !important;
 		}
+
+		.MapContainer {
+			display: flex;
+			width: 100% !important;
+			height: 100% !important;
+			min-height: 400px;
+		}
+
+		.MapContainer .Map {
+			width: 100% !important;
+			height: 100% !important;
+			min-height: 400px;
+		}
 	</style>
 }
 
 @section scripts {
 	<script src="~/js/jquery.fancybox.min.js"></script>
+	<script src="~/MapScripts/config.js" charset="utf-8"></script>
 
 	<script>
+		var objectMap;
+		var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
+		var objectLongitude = @(Model.Longitude.HasValue ? Model.Longitude.ToString().Replace(',', '.') : "undefined");
+
 		$(function() {
 			var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
 			panelbar.expand('li[data-expand]');
@@ -380,6 +409,8 @@
 				decimals: 0,
 				spinners: false
 			});
+
+			initMap();
 		});
 
 		function onDataBoundPriceHistory(e) {
@@ -388,9 +419,10 @@
 			debugger;
 			items.each(function(index) {
 				const dataItem = grid.dataItem(this);
-				Array.prototype.forEach.call(this.cells, cell => {
-					cell.className += " price-grid-cell";
-				});
+				Array.prototype.forEach.call(this.cells,
+					cell => {
+						cell.className += " price-grid-cell";
+					});
 				//TODO: presentation of changes between history records will be implemented later
 				//if (dataItem.PriceValueDiff) {
 				//	if (dataItem.PriceValueDiff >= 0) {
@@ -407,13 +439,54 @@
 			var items = e.sender.items();
 			var grid = $("#priceHistoryGrid").data("kendoGrid");
 			debugger;
-			items.each(function (index) {
+			items.each(function(index) {
 				const dataItem = grid.dataItem(this);
-				Array.prototype.forEach.call(this.cells, cell => {
-					cell.className += " price-grid-cell";
-				});
+				Array.prototype.forEach.call(this.cells,
+					cell => {
+						cell.className += " price-grid-cell";
+					});
 				//TODO: presentation of changes between history records will be implemented later
 			});
+		}
+
+		function initMap() {
+			var script = document.createElement('script');
+			script.src =
+				`${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang
+				}`;
+			document.head.appendChild(script);
+			script.onload = function() {
+				ymaps.ready(function() {
+					if (objectLatitude && objectLongitude) {
+						objectMap = new ymaps.Map(
+							'objectMap',
+							{
+								center: [objectLatitude, objectLongitude],
+								zoom: 19
+							}
+						);
+						configureMapControls();
+						addGeoObject();
+					}
+				});
+			}
+		};
+
+		function configureMapControls() {
+			objectMap.controls.remove("trafficControl");
+			objectMap.controls.remove("geolocationControl");
+			objectMap.controls.remove("fullscreenControl");
+			objectMap.controls.remove("searchControl");
+			objectMap.controls.get("rulerControl").options.set({ position: { bottom: 10, right: 10 } });
+			objectMap.controls.get("zoomControl").options.set({ position: { top: 48, left: 10 } });
+		}
+
+		function addGeoObject() {
+			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude],
+				{
+					preset: 'islands#nightDotIcon'
+				});
+			objectMap.geoObjects.add(geoObject);
 		}
 	</script>
 }
