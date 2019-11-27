@@ -5,15 +5,7 @@ function init(){
     script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
     document.head.appendChild(script);
     script.onload = function () {
-        ymaps.ready(function() {
-			initMap();
-			const areParamsSet = new window.URLSearchParams((new URL(window.location)).search).has('center');
-			if (areParamsSet) {
-				GetData(map.getBounds());
-			} else {
-				GetData();
-			}
-        });
+        ymaps.ready(function() {initMap();});
     }
 };
 
@@ -29,33 +21,9 @@ function initMap() {
 		{ suppressMapOpenBlock: true }
 	);
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
-	changeDefaultControlPosition(map);
-
-	map.events.add('boundschange', function (event) {
-		const areParamsSet = new window.URLSearchParams((new URL(window.location)).search).has('center');
-
-		const params = new window.URLSearchParams(window.location.search);
-		const newCenter = event.get('newCenter');
-		params.set('center', newCenter);
-		const newZoom = event.get('newZoom');
-		params.set('zoom', newZoom);
-		if (window.history.pushState) {
-			const newUrl = new URL(window.location.href);
-			newUrl.search = params;
-			window.history.pushState({ path: newUrl.href }, '', newUrl.href);
-		}
-
-		if (areParamsSet) {
-			const newBounds = event.get('newBounds');
-			const oldBounds = event.get('oldBounds');
-			if (newBounds[0][0] !== oldBounds[0][0] ||
-				newBounds[0][1] !== oldBounds[0][1] ||
-				newBounds[1][0] !== oldBounds[1][0] ||
-				newBounds[1][1] !== oldBounds[1][1]) {
-				GetData(newBounds);
-			}
-		}
-	});
+    changeDefaultControlPosition(map);
+    GetData(map.getBounds(), map.getZoom());
+    map.events.add('boundschange', function (event) { ChangeBounds(event); });
 };
 
 function changeDefaultControlPosition(map) {

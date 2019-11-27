@@ -9,6 +9,14 @@
 <body>
     <div id="container" class="MapContainer">
         <div id="data" class="Data">
+            <div id="dataContentController" class="DataContentController">
+                <div id="toDashboardButton" class="Button ToDashBoard" onclick="BackTo()">
+                    <div class="ButtonContainer">
+                        <div class="Image" style="background-image:url(/MapIcons/back-arrow.svg)"></div>
+                        <div>К выбору объектов аналогов</div>
+                    </div>
+                </div>
+            </div>
             <div id="dataContentContainer" class="DataContentContainer"></div>
         </div>
         <div id="map" class="Map"></div>
@@ -17,6 +25,7 @@
 
 @section scripts {
     <script src="~/MapScripts/commonFunctions.js" charset="utf-8"></script>
+    <script src="~/MapScripts/eventListeners.js" charset="utf-8"></script>
     <script src="~/MapScripts/HTMLEditor.js" charset="utf-8"></script>
     <script src="~/MapScripts/requests.js" charset="utf-8"></script>
     <script src="~/MapScripts/config.js" charset="utf-8"></script>

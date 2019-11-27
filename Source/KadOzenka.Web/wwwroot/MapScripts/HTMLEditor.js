@@ -1,6 +1,4 @@
-﻿//!(cartData.roomsCount != null && cartData.roomsCount != 0 && (cartData.type == 10 || cartData.type == 11 || cartData.type == 18))
-
-function insertCard(cartData, isLast) {
+﻿function insertCard(cartData, isLast) {
     document.getElementById("dataContentContainer").innerHTML +=`
         <div class="DataItemContainer">
             <div class="Container">

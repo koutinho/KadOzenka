@@ -3,8 +3,36 @@ body {
     padding: 0;
 }
 
-.MapContainer{
-    display:flex;
+
+.Button {
+    background-color: #98c2ff !important;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 3px 12px;
+    margin: 15px;
+    /*width: intrinsic; 
+    width: -moz-max-content; 
+    width: -webkit-max-content;*/
+    display: flex;
+}
+
+.Button .ButtonContainer {
+    text-align: center;
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+}
+
+.Button .ButtonContainer .Image {
+    width: 12px;
+    height: 12px;
+    background-size: 12px 12px;
+    margin-right: 5px;
+}
+
+.MapContainer {
+    display: flex;
     height: 100%;
 }
 

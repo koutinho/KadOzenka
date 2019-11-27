@@ -33,8 +33,9 @@ namespace KadOzenka.Web.Controllers
             return View(); 
         }
 
-        public JsonResult Objects(int? maxLoadedObjectsCount, decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude)
+        public JsonResult Objects(int? maxLoadedObjectsCount, decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude, int? mapZoom)
         {
+            Console.WriteLine($"===========================================>{mapZoom}");
 	        var query = OMCoreObject.Where(x =>
 		        x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess &&
 		        x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr);
@@ -116,11 +117,11 @@ namespace KadOzenka.Web.Controllers
 			var point = new List<object>();
 	        var analogItem = maxLoadedObjectsCount.HasValue
 		        ? query
-					.Select(x => new {x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code})
+					.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code })
 			        .Execute().Take(maxLoadedObjectsCount.Value).ToList()
 		        : query
-			        .Select(x => new {x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code})
-			        .Execute().Take(2000).ToList();
+			        .Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code })
+			        .Execute().ToList();
 	        Console.WriteLine(analogItem.Count);
 	        analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
 	        return Json(point);

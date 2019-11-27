@@ -66,3 +66,6 @@ var geoTagSlicer = {
     startIndex: 0,
     countIndex: 20
 };
+
+
+var clusterSelected = false;
