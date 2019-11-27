@@ -6,8 +6,13 @@ function init(){
     document.head.appendChild(script);
     script.onload = function () {
         ymaps.ready(function() {
-            initMap();
-            GetData();
+			initMap();
+			const areParamsSet = new window.URLSearchParams((new URL(window.location)).search).has('center');
+			if (areParamsSet) {
+				GetData(map.getBounds());
+			} else {
+				GetData();
+			}
         });
     }
 };

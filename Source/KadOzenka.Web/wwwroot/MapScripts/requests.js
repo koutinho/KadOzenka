@@ -14,8 +14,10 @@ function GetData(bounds) {
         success: function (result) {
             ids = [];
             result.slice(0, 20).forEach(x => ids.push(x.id));
-	        initCluster(result);
-            GetRequiredInfo(ids);
+			initCluster(result);
+			if (selectedGeoObjectsIds.length === 0) {
+				GetRequiredInfo(ids);
+			}
         }
     });
 }

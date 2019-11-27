@@ -22,6 +22,19 @@ var ClusterSettings = {
     disableClickZoom: true          // Запрет зума кластера по клику
 };
 
+var SelectedClusterSettings = {
+	clusterIconHref: 'MapIcons/home.svg',
+	clusterIconSize: [40, 40],
+	clusterIconOffset: [-20, -20]
+};
+
+var SelectedGeoObjectSettings = {
+	iconLayout: 'default#image',
+	iconImageHref: 'MapIcons/home.svg',
+	iconImageSize: [30, 30],
+	iconImageOffset: [-15, -15]
+};
+
 var PropType = [
     { id: 0, name: 'warehouse', color: '#5206af', type: 'Склад' }, 
     { id: 1, name: 'parking', color: '#0d2db0', type: 'Гараж' }, 
