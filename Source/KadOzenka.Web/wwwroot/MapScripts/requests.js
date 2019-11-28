@@ -1,22 +1,26 @@
-function GetData(bounds, zoom) {
+function GetClusterData(bounds, zoom, token) {
 	$.ajax({
-		type: "GET",
+        type: "GET",
 		url: "Map/Objects",
 		contentType: 'application/json; charset=utf-8',
 		data: {
-			//maxLoadedObjectsCount: MapSettings.maxLoadedObjectsCount,
 			topLatitude: bounds ? bounds[0][0] : null,
 			topLongitude: bounds ? bounds[0][1] : null,
 			bottomLatitude: bounds ? bounds[1][0] : null,
             bottomLongitude: bounds ? bounds[1][1] : null,
-            mapZoom: zoom
+            mapZoom: zoom,
+            minClusterZoom: MapSettings.minClusterZoom,
+            maxLoadedObjectsCount: MapSettings.maxLoadedObjectsCount,
+            token: token
 		},
         dataType: 'json',
         success: function (result) {
-            ids = [];
-            result.slice(0, 20).forEach(x => ids.push(x.id));
-	        initCluster(result);
-            GetRequiredInfo(ids);
+            if (result.token == currentToken) {
+                ids = [];
+                result.arr.slice(0, MapSettings.leftMenuMaxValues).forEach(x => { if (x.id != undefined) ids.push(x.id); });
+                initCluster(result.arr, zoom);
+                if (ids.length > 0) GetRequiredInfo(ids);
+            }
         }
     });
 }

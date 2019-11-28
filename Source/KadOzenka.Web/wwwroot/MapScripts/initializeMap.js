@@ -4,9 +4,7 @@ function init(){
     var script = document.createElement('script');
     script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
     document.head.appendChild(script);
-    script.onload = function () {
-        ymaps.ready(function() {initMap();});
-    }
+    script.onload = function () { ymaps.ready(function() {initMap();}); }
 };
 
 function initMap() {
@@ -22,7 +20,7 @@ function initMap() {
 	);
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
     changeDefaultControlPosition(map);
-    GetData(map.getBounds(), map.getZoom());
+    GetClusterData(map.getBounds(), map.getZoom(), currentToken);
     map.events.add('boundschange', function (event) { ChangeBounds(event); });
 };
 

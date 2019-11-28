@@ -22,23 +22,13 @@ namespace KadOzenka.Web.Controllers
 
 	    public string MarketObjectsRegisterViewId => "MarketObjects";
 
-	    public MapController(CoreUiService coreUiService)
-	    {
-		    _coreUiService = coreUiService;
-	    }
+	    public MapController(CoreUiService coreUiService) => _coreUiService = coreUiService;
+	    
+		public ActionResult Index() => View(); 
 
-		// GET: Map
-		public ActionResult Index() 
-        { 
-            return View(); 
-        }
-
-        public JsonResult Objects(int? maxLoadedObjectsCount, decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude, int? mapZoom)
+        public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude, int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, string token)
         {
-            Console.WriteLine($"===========================================>{mapZoom}");
-	        var query = OMCoreObject.Where(x =>
-		        x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess &&
-		        x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr);
+	        var query = OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr);
 			var userFilter = _coreUiService.GetSearchFilter(MarketObjectsRegisterViewId);
 	        if (userFilter != null && !string.IsNullOrEmpty(userFilter.Condition))
 	        {
@@ -46,85 +36,45 @@ namespace KadOzenka.Web.Controllers
 
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id))
 				{
-					var filter = filters.First(f =>
-						f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
-					if(int.TryParse(filter.ValueCasted, out var val))
-					{
-						query.And(x => x.PropertyMarketSegment_Code == (MarketSegment)val);
-					}
+					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
+					if(int.TryParse(filter.ValueCasted, out var val)) query.And(x => x.PropertyMarketSegment_Code == (MarketSegment)val);
 				}
 		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id))
 		        {
-			        var filter = filters.First(f =>
-				        f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id);
-			        if (int.TryParse(filter.ValueCasted, out var val))
-			        {
-				        query.And(x => x.DealType_Code == (DealType)val);
-					}
+			        var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id);
+			        if (int.TryParse(filter.ValueCasted, out var val)) query.And(x => x.DealType_Code == (DealType)val);
 		        }
 		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id))
 		        {
-			        var filter = filters.First(f =>
-				        f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id);
-			        if (int.TryParse(filter.ValueCasted, out var val))
-			        {
-				        query.And(x => x.PropertyType_Code == (PropertyTypes)val);
-					}
+			        var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id);
+			        if (int.TryParse(filter.ValueCasted, out var val)) query.And(x => x.PropertyType_Code == (PropertyTypes)val);
 		        }
 		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id))
 		        {
-			        var filter = filters.First(f =>
-				        f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id);
-			        if (!string.IsNullOrEmpty(filter.From))
-			        {
-				        if (int.TryParse(filter.From, out var val))
-				        {
-					        query.And(x => x.Price >= val);
-				        }
-					}
-			        if (!string.IsNullOrEmpty(filter.To))
-			        {
-				        if (int.TryParse(filter.To, out var val))
-				        {
-							query.And(x => x.Price <= val);
-						}
-			        }
+			        var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id);
+			        if (!string.IsNullOrEmpty(filter.From)) if (int.TryParse(filter.From, out var val)) query.And(x => x.Price >= val);
+			        if (!string.IsNullOrEmpty(filter.To)) if (int.TryParse(filter.To, out var val)) query.And(x => x.Price <= val);
 		        }
 		        if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id))
 		        {
-			        var filter = filters.First(f =>
-				        f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id);
+			        var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id);
 					query.And(x => x.Metro.Contains(filter.ValueCasted));
 				}
 	        }
+	        if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
+	        if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
+	        if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
+			if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
+            if (mapZoom >= minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount);
+            var point = new List<object>();
+            var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code }).Execute().ToList();
+            analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
 
-	        if (topLatitude.HasValue)
-	        {
-		        query.And(x => x.Lat >= topLatitude.Value);
-	        }
-	        if (topLongitude.HasValue)
-	        {
-		        query.And(x => x.Lng >= topLongitude.Value);
-	        }
-	        if (bottomLatitude.HasValue)
-	        {
-		        query.And(x => x.Lat <= bottomLatitude.Value);
-	        }
-			if (bottomLongitude.HasValue)
-			{
-				query.And(x => x.Lng <= bottomLongitude.Value);
-			}
-			var point = new List<object>();
-	        var analogItem = maxLoadedObjectsCount.HasValue
-		        ? query
-					.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code })
-			        .Execute().Take(maxLoadedObjectsCount.Value).ToList()
-		        : query
-			        .Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code })
-			        .Execute().ToList();
-	        Console.WriteLine(analogItem.Count);
-	        analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
-	        return Json(point);
+            //  query.SetPackageSize(700).GroupBy(x => new { x.Lat.Round(2), x.Lng.Round(2) });//.ExecuteSelect(x => new{ x.Lat, x.Lng });
+            //  var analogItem = query.ExecuteSelect(x => new{ x.Lat.Avg(), x.Lng }).ToList();
+            //  analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng } }));
+
+            return Json( new { token=token, arr=point });
         }
 
         public JsonResult RequiredInfo()

@@ -10,7 +10,9 @@ var MapSettings = {
     containerId: "map",
     center: [55.76, 37.64],
     zoom: 9,
-    maxLoadedObjectsCount: 2000
+    minClusterZoom: 15,
+    maxLoadedObjectsCount: 700,
+    leftMenuMaxValues: 20
 };
 
 var ClusterSettings = {
@@ -20,6 +22,13 @@ var ClusterSettings = {
     pieChartStrokeWidth: 2,         // Ширина линий-разделителей секторов и внешней обводки диаграммы.
     balloon: false,                 // Определяет наличие поля balloon.
     disableClickZoom: true          // Запрет зума кластера по клику
+};
+
+var GeoDotSettings = {
+    layout: 'default#image',
+    imageHref: 'mapIcons/mapDot.svg',
+    imageSize: [6, 6],
+    imageOffset: [0, 0]
 };
 
 var SelectedClusterSettings = {
@@ -69,3 +78,4 @@ var geoTagSlicer = {
 
 
 var clusterSelected = false;
+var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

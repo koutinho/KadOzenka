@@ -1,8 +1,5 @@
 function initCluster(coordinates, zoom) {
-	map.geoObjects.removeAll();
-
-    console.log(coordinates.length);
-    if (zoom >= 15) {
+    if (zoom >= MapSettings.minClusterZoom) {
         clusterer = new ymaps.Clusterer({
             clusterIconLayout: ClusterSettings.layout,
             clusterIconPieChartRadius: ClusterSettings.pieChartRadius,
@@ -11,8 +8,8 @@ function initCluster(coordinates, zoom) {
             hasBalloon: ClusterSettings.balloon,
             clusterDisableClickZoom: ClusterSettings.disableClickZoom
         }),
-            AllControllersData = coordinates,
-            geoObjects = [];
+        AllControllersData = coordinates,
+        geoObjects = [];
 
         for (var i = 0, len = AllControllersData.length; i < len; i++) {
             var color = PropType[AllControllersData[i].type].color;
@@ -32,9 +29,18 @@ function initCluster(coordinates, zoom) {
         map.geoObjects.removeAll();
         map.geoObjects.add(clusterer);
     }
-    else
-    {
-        console.log(coordinates.length);
+    else {
+        AllControllersData = coordinates.splice(0, MapSettings.maxLoadedObjectsCount);
         map.geoObjects.removeAll();
+        for (var i = 0, len = AllControllersData.length; i < len; i++) {
+            map.geoObjects.add(new ymaps.Placemark(AllControllersData[i].points,
+            {},
+            {
+                iconLayout: GeoDotSettings.layout,
+                iconImageHref: GeoDotSettings.imageHref,
+                iconImageSize: GeoDotSettings.imageSize,
+                iconImageOffset: GeoDotSettings.imageOffset
+            }));
+        }
     }
 }

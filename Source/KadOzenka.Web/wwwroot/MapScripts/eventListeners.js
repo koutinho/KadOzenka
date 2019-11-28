@@ -1,6 +1,4 @@
-﻿function BackTo(event) {
-    window.location.href = "/";
-}
+﻿function BackTo(event) { window.location.href = "/"; }
 
 function ChangeBounds(event) {
     const params = new window.URLSearchParams(window.location.search);
@@ -14,7 +12,8 @@ function ChangeBounds(event) {
         window.history.pushState({ path: newUrl.href }, '', newUrl.href);
     }
     const newBounds = event.get('newBounds');
-    GetData(newBounds, newZoom);
+    refreshCurrentToken();
+    GetClusterData(newBounds, newZoom, currentToken);
 }
 
 function clickOnCluster(event) {

@@ -9,6 +9,6 @@ function getArea(type, area, area_land) {
     else return `${numberWithSpaces(area)}&nbsp;м²`;
 }
 
-function getFloor(floor, floorCount) {
-    return floor == null ? `${floorCount}` : `${floor}&nbsp;из&nbsp;${floorCount}`;
-}
+function getFloor(floor, floorCount) { return floor == null ? `${floorCount}` : `${floor}&nbsp;из&nbsp;${floorCount}`; }
+
+function refreshCurrentToken() { currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); }
