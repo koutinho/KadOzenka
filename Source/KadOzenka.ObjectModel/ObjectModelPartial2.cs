@@ -614,13 +614,6 @@ namespace ObjectModel.Sud
     public partial class OMOtchetLink
     {
         /// <summary>
-        /// Ссылка на (306 Связь отчета и статуса)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Sud.OMOtchetLinkStatus ParentOtchetLinkStatus { get; set; }
-
-        /// <summary>
         /// Ссылка на (308 Отчеты)
         /// </summary>
         [ParentRegister]
@@ -633,6 +626,42 @@ namespace ObjectModel.Sud
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.Sud.OMObject ParentObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 305 Статус объекта
+    /// </summary>
+    public partial class OMObjectStatus
+    {
+        /// <summary>
+        /// Ссылка на (315 Объект)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMObject ParentObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 306 Связь отчета и статуса
+    /// </summary>
+    public partial class OMOtchetLinkStatus
+    {
+        /// <summary>
+        /// Ссылка на (304 Связь отчета с объектом)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Sud.OMOtchetLink ParentOtchetLink { get; set; }
 
     }
 }

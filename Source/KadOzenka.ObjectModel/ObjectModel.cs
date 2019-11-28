@@ -8475,7 +8475,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 30600100  (ID)
+        /// 30600100 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 30600100)]
         public long Id
@@ -8495,7 +8495,7 @@ namespace ObjectModel.Sud
 
         private long _idobject;
         /// <summary>
-        /// 30600200  (ID_OBJECT)
+        /// 30600200 ID_OBJECT (ID_OBJECT)
         /// </summary>
         [RegisterAttribute(AttributeID = 30600200)]
         public long IdObject
@@ -8515,7 +8515,7 @@ namespace ObjectModel.Sud
 
         private long _idotchet;
         /// <summary>
-        /// 30600300  (ID_OTCHET)
+        /// 30600300 ID_OTCHET (ID_OTCHET)
         /// </summary>
         [RegisterAttribute(AttributeID = 30600300)]
         public long IdOtchet
@@ -8535,7 +8535,7 @@ namespace ObjectModel.Sud
 
         private long _use;
         /// <summary>
-        /// 30600400  (USE)
+        /// 30600400 USE (USE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30600400)]
         public long Use
@@ -8555,7 +8555,7 @@ namespace ObjectModel.Sud
 
         private long _rs;
         /// <summary>
-        /// 30600500  (RS)
+        /// 30600500 RS (RS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30600500)]
         public long Rs
@@ -8575,7 +8575,7 @@ namespace ObjectModel.Sud
 
         private long _uprs;
         /// <summary>
-        /// 30600600  (UPRS)
+        /// 30600600 UPRS (UPRS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30600600)]
         public long Uprs
@@ -8595,7 +8595,7 @@ namespace ObjectModel.Sud
 
         private long _descr;
         /// <summary>
-        /// 30600700  (DESCR)
+        /// 30600700 DESCR (DESCR)
         /// </summary>
         [RegisterAttribute(AttributeID = 30600700)]
         public long Descr
@@ -8615,7 +8615,7 @@ namespace ObjectModel.Sud
 
         private long? _status;
         /// <summary>
-        /// 30600800  (STATUS)
+        /// 30600800 Статус (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30600800)]
         public long? Status
@@ -8647,7 +8647,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 30700100  (ID)
+        /// 30700100 ID (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 30700100)]
         public long Id
@@ -8667,7 +8667,7 @@ namespace ObjectModel.Sud
 
         private long _number;
         /// <summary>
-        /// 30700200  (NUMBER)
+        /// 30700200 NUMBER (NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 30700200)]
         public long Number
@@ -8687,7 +8687,7 @@ namespace ObjectModel.Sud
 
         private long _date;
         /// <summary>
-        /// 30700300  (DATE)
+        /// 30700300 DATE (DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30700300)]
         public long Date
@@ -8707,7 +8707,7 @@ namespace ObjectModel.Sud
 
         private long _datein;
         /// <summary>
-        /// 30700400  (DATE_IN)
+        /// 30700400 DATE_IN (DATE_IN)
         /// </summary>
         [RegisterAttribute(AttributeID = 30700400)]
         public long DateIn
@@ -8727,7 +8727,7 @@ namespace ObjectModel.Sud
 
         private long _jalob;
         /// <summary>
-        /// 30700500  (JALOB)
+        /// 30700500 JALOB (JALOB)
         /// </summary>
         [RegisterAttribute(AttributeID = 30700500)]
         public long Jalob
@@ -8747,7 +8747,7 @@ namespace ObjectModel.Sud
 
         private long _idorg;
         /// <summary>
-        /// 30700600  (ID_ORG)
+        /// 30700600 ID_ORG (ID_ORG)
         /// </summary>
         [RegisterAttribute(AttributeID = 30700600)]
         public long IdOrg
@@ -8767,7 +8767,7 @@ namespace ObjectModel.Sud
 
         private long _idfio;
         /// <summary>
-        /// 30700700  (ID_FIO)
+        /// 30700700 ID_FIO (ID_FIO)
         /// </summary>
         [RegisterAttribute(AttributeID = 30700700)]
         public long IdFio
@@ -8787,7 +8787,7 @@ namespace ObjectModel.Sud
 
         private long _idsro;
         /// <summary>
-        /// 30700800  (ID_SRO)
+        /// 30700800 ID_SRO (ID_SRO)
         /// </summary>
         [RegisterAttribute(AttributeID = 30700800)]
         public long IdSro
@@ -8807,7 +8807,7 @@ namespace ObjectModel.Sud
 
         private long _status;
         /// <summary>
-        /// 30700900  (STATUS)
+        /// 30700900 Статус (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30700900)]
         public long Status
@@ -9071,7 +9071,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 30900100  (ID)
+        /// 30900100 ID (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 30900100)]
         public long Id
@@ -9091,7 +9091,7 @@ namespace ObjectModel.Sud
 
         private long _idobject;
         /// <summary>
-        /// 30900200  (ID_OBJECT)
+        /// 30900200 ID_OBJECT (ID_OBJECT)
         /// </summary>
         [RegisterAttribute(AttributeID = 30900200)]
         public long IdObject
@@ -9111,7 +9111,7 @@ namespace ObjectModel.Sud
 
         private long _idsud;
         /// <summary>
-        /// 30900300  (ID_SUD)
+        /// 30900300 ID_SUD (ID_SUD)
         /// </summary>
         [RegisterAttribute(AttributeID = 30900300)]
         public long IdSud
@@ -9131,7 +9131,7 @@ namespace ObjectModel.Sud
 
         private long _use;
         /// <summary>
-        /// 30900400  (USE)
+        /// 30900400 USE (USE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30900400)]
         public long Use
@@ -9151,7 +9151,7 @@ namespace ObjectModel.Sud
 
         private long _rs;
         /// <summary>
-        /// 30900500  (RS)
+        /// 30900500 RS (RS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30900500)]
         public long Rs
@@ -9171,7 +9171,7 @@ namespace ObjectModel.Sud
 
         private long _uprs;
         /// <summary>
-        /// 30900600  (UPRS)
+        /// 30900600 UPRS (UPRS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30900600)]
         public long Uprs
@@ -9191,7 +9191,7 @@ namespace ObjectModel.Sud
 
         private long _descr;
         /// <summary>
-        /// 30900700  (DESCR)
+        /// 30900700 DESCR (DESCR)
         /// </summary>
         [RegisterAttribute(AttributeID = 30900700)]
         public long Descr
@@ -9211,7 +9211,7 @@ namespace ObjectModel.Sud
 
         private long? _status;
         /// <summary>
-        /// 30900800  (STATUS)
+        /// 30900800 Статус (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30900800)]
         public long? Status
@@ -9243,7 +9243,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 31000100  (ID)
+        /// 31000100 ID (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 31000100)]
         public long Id
@@ -9263,7 +9263,7 @@ namespace ObjectModel.Sud
 
         private long _name;
         /// <summary>
-        /// 31000200  (NAME)
+        /// 31000200 NAME (NAME)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000200)]
         public long Name
@@ -9283,7 +9283,7 @@ namespace ObjectModel.Sud
 
         private long _number;
         /// <summary>
-        /// 31000300  (NUMBER)
+        /// 31000300 NUMBER (NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000300)]
         public long Number
@@ -9303,7 +9303,7 @@ namespace ObjectModel.Sud
 
         private long _date;
         /// <summary>
-        /// 31000400  (DATE)
+        /// 31000400 DATE (DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000400)]
         public long Date
@@ -9323,7 +9323,7 @@ namespace ObjectModel.Sud
 
         private long _suddate;
         /// <summary>
-        /// 31000500  (SUD_DATE)
+        /// 31000500 SUD_DATE (SUD_DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000500)]
         public long SudDate
@@ -9343,7 +9343,7 @@ namespace ObjectModel.Sud
 
         private long _status;
         /// <summary>
-        /// 31000600  (STATUS)
+        /// 31000600 Статус (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000600)]
         public long Status
@@ -9363,7 +9363,7 @@ namespace ObjectModel.Sud
 
         private long? _astatus;
         /// <summary>
-        /// 31000700  (ASTATUS)
+        /// 31000700 ASTATUS (ASTATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000700)]
         public long? Astatus
@@ -9395,7 +9395,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 31100100  (ID)
+        /// 31100100 ID (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 31100100)]
         public long Id
@@ -9415,7 +9415,7 @@ namespace ObjectModel.Sud
 
         private long _idobject;
         /// <summary>
-        /// 31100200  (ID_OBJECT)
+        /// 31100200 ID_OBJECT (ID_OBJECT)
         /// </summary>
         [RegisterAttribute(AttributeID = 31100200)]
         public long IdObject
@@ -9435,7 +9435,7 @@ namespace ObjectModel.Sud
 
         private long _idzak;
         /// <summary>
-        /// 31100300  (ID_ZAK)
+        /// 31100300 ID_ZAK (ID_ZAK)
         /// </summary>
         [RegisterAttribute(AttributeID = 31100300)]
         public long IdZak
@@ -9455,7 +9455,7 @@ namespace ObjectModel.Sud
 
         private long _use;
         /// <summary>
-        /// 31100400  (USE)
+        /// 31100400 USE (USE)
         /// </summary>
         [RegisterAttribute(AttributeID = 31100400)]
         public long Use
@@ -9475,7 +9475,7 @@ namespace ObjectModel.Sud
 
         private long _rs;
         /// <summary>
-        /// 31100500  (RS)
+        /// 31100500 RS (RS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31100500)]
         public long Rs
@@ -9495,7 +9495,7 @@ namespace ObjectModel.Sud
 
         private long _uprs;
         /// <summary>
-        /// 31100600  (UPRS)
+        /// 31100600 UPRS (UPRS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31100600)]
         public long Uprs
@@ -9515,7 +9515,7 @@ namespace ObjectModel.Sud
 
         private long _descr;
         /// <summary>
-        /// 31100700  (DESCR)
+        /// 31100700 DESCR (DESCR)
         /// </summary>
         [RegisterAttribute(AttributeID = 31100700)]
         public long Descr
@@ -9535,7 +9535,7 @@ namespace ObjectModel.Sud
 
         private long? _status;
         /// <summary>
-        /// 31100800  (STATUS)
+        /// 31100800 Статус (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31100800)]
         public long? Status
@@ -9567,7 +9567,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 31200100  (ID)
+        /// 31200100 ID (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 31200100)]
         public long Id
@@ -9587,7 +9587,7 @@ namespace ObjectModel.Sud
 
         private long _number;
         /// <summary>
-        /// 31200200  (NUMBER)
+        /// 31200200 NUMBER (NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 31200200)]
         public long Number
@@ -9607,7 +9607,7 @@ namespace ObjectModel.Sud
 
         private long _date;
         /// <summary>
-        /// 31200300  (DATE)
+        /// 31200300 DATE (DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 31200300)]
         public long Date
@@ -9627,7 +9627,7 @@ namespace ObjectModel.Sud
 
         private long _recdate;
         /// <summary>
-        /// 31200400  (REC_DATE)
+        /// 31200400 REC_DATE (REC_DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 31200400)]
         public long RecDate
@@ -9647,7 +9647,7 @@ namespace ObjectModel.Sud
 
         private long _recuser;
         /// <summary>
-        /// 31200500  (REC_USER)
+        /// 31200500 REC_USER (REC_USER)
         /// </summary>
         [RegisterAttribute(AttributeID = 31200500)]
         public long RecUser
@@ -9667,7 +9667,7 @@ namespace ObjectModel.Sud
 
         private long _recletter;
         /// <summary>
-        /// 31200600  (REC_LETTER)
+        /// 31200600 REC_LETTER (REC_LETTER)
         /// </summary>
         [RegisterAttribute(AttributeID = 31200600)]
         public long RecLetter
@@ -9687,7 +9687,7 @@ namespace ObjectModel.Sud
 
         private long _recbefore;
         /// <summary>
-        /// 31200700  (REC_BEFORE)
+        /// 31200700 REC_BEFORE (REC_BEFORE)
         /// </summary>
         [RegisterAttribute(AttributeID = 31200700)]
         public long RecBefore
@@ -9707,7 +9707,7 @@ namespace ObjectModel.Sud
 
         private long _recafter;
         /// <summary>
-        /// 31200800  (REC_AFTER)
+        /// 31200800 REC_AFTER (REC_AFTER)
         /// </summary>
         [RegisterAttribute(AttributeID = 31200800)]
         public long RecAfter
@@ -9727,7 +9727,7 @@ namespace ObjectModel.Sud
 
         private long _recsoglas;
         /// <summary>
-        /// 31200900  (REC_SOGLAS)
+        /// 31200900 REC_SOGLAS (REC_SOGLAS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31200900)]
         public long RecSoglas
@@ -9747,7 +9747,7 @@ namespace ObjectModel.Sud
 
         private long _idorg;
         /// <summary>
-        /// 31201000  (ID_ORG)
+        /// 31201000 ID_ORG (ID_ORG)
         /// </summary>
         [RegisterAttribute(AttributeID = 31201000)]
         public long IdOrg
@@ -9767,7 +9767,7 @@ namespace ObjectModel.Sud
 
         private long _idfio;
         /// <summary>
-        /// 31201100  (ID_FIO)
+        /// 31201100 ID_FIO (ID_FIO)
         /// </summary>
         [RegisterAttribute(AttributeID = 31201100)]
         public long IdFio
@@ -9787,7 +9787,7 @@ namespace ObjectModel.Sud
 
         private long _idsro;
         /// <summary>
-        /// 31201200  (ID_SRO)
+        /// 31201200 ID_SRO (ID_SRO)
         /// </summary>
         [RegisterAttribute(AttributeID = 31201200)]
         public long IdSro
@@ -9807,7 +9807,7 @@ namespace ObjectModel.Sud
 
         private long _status;
         /// <summary>
-        /// 31201300  (STATUS)
+        /// 31201300 Статус (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31201300)]
         public long Status
@@ -11148,6 +11148,78 @@ namespace ObjectModel.Commission
             {
                 _commissionchange = value;
                 NotifyPropertyChanged("CommissionChange");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Commission
+{
+    /// <summary>
+    /// 401 Хранилище файлов для комиссий (COMMISSION_COST_FILE_STORAGE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 401)]
+    [Serializable]
+    public partial class OMFileStorage : OMBaseClass<OMFileStorage>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 40100100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 40100100)]
+        public long id
+        {
+            get
+            {
+                CheckPropertyInited("id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("id");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 40100200 Имя файла (FILE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40100200)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+
+        private DateTime _datestarted;
+        /// <summary>
+        /// 40100300 Дата начала (DATE_STARTED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 40100300)]
+        public DateTime DateStarted
+        {
+            get
+            {
+                CheckPropertyInited("DateStarted");
+                return _datestarted;
+            }
+            set
+            {
+                _datestarted = value;
+                NotifyPropertyChanged("DateStarted");
             }
         }
 

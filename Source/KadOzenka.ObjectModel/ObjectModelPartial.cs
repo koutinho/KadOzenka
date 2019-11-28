@@ -1410,6 +1410,12 @@ namespace ObjectModel.Sud
     public partial class OMOtchetLink
     {
 
+
+        /// <summary>
+        /// Ссылка на (306 Связь отчета и статуса)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Sud.OMOtchetLinkStatus> OtchetLinkStatus { get; set; }
         public OMOtchetLink()
         {
 
@@ -1417,6 +1423,8 @@ namespace ObjectModel.Sud
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            OtchetLinkStatus = new List<ObjectModel.Sud.OMOtchetLinkStatus>();
 
         }
         public OMOtchetLink(bool trackPropertyChanging) : this()
@@ -1458,12 +1466,6 @@ namespace ObjectModel.Sud
     public partial class OMOtchetLinkStatus
     {
 
-
-        /// <summary>
-        /// Ссылка на (304 Связь отчета с объектом)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Sud.OMOtchetLink> OtchetLink { get; set; }
         public OMOtchetLinkStatus()
         {
 
@@ -1471,8 +1473,6 @@ namespace ObjectModel.Sud
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
-
-            OtchetLink = new List<ObjectModel.Sud.OMOtchetLink>();
 
         }
         public OMOtchetLinkStatus(bool trackPropertyChanging) : this()
@@ -1726,6 +1726,12 @@ namespace ObjectModel.Sud
         public List<ObjectModel.Sud.OMOtchetLink> OtchetLink { get; set; }
 
         /// <summary>
+        /// Ссылка на (305 Статус объекта)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Sud.OMObjectStatus> ObjectStatus { get; set; }
+
+        /// <summary>
         /// Ссылка на (314 Связь судебного дела и объекта)
         /// </summary>
         [Reference]
@@ -1743,6 +1749,8 @@ namespace ObjectModel.Sud
             DRS = new List<ObjectModel.Sud.OMDRS>();
 
             OtchetLink = new List<ObjectModel.Sud.OMOtchetLink>();
+
+            ObjectStatus = new List<ObjectModel.Sud.OMObjectStatus>();
 
             SudLink = new List<ObjectModel.Sud.OMSudLink>();
 
@@ -1836,6 +1844,30 @@ namespace ObjectModel.Commission
 
         }
         public OMCost(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Commission
+{
+    /// <summary>
+    /// 401 Хранилище файлов для комиссий
+    /// </summary>
+    public partial class OMFileStorage
+    {
+
+        public OMFileStorage()
+        {
+
+            id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMFileStorage(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
