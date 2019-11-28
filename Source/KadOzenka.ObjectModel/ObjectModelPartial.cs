@@ -1855,10 +1855,10 @@ namespace ObjectModel.Commission
     /// <summary>
     /// 401 Хранилище файлов для комиссий
     /// </summary>
-    public partial class OMFileStorage
+    public partial class OMCommissionFileStorage
     {
 
-        public OMFileStorage()
+        public OMCommissionFileStorage()
         {
 
             id = -1;
@@ -1867,7 +1867,7 @@ namespace ObjectModel.Commission
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMFileStorage(bool trackPropertyChanging) : this()
+        public OMCommissionFileStorage(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

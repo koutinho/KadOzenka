@@ -11161,7 +11161,7 @@ namespace ObjectModel.Commission
     /// </summary>
     [RegisterInfo(RegisterID = 401)]
     [Serializable]
-    public partial class OMFileStorage : OMBaseClass<OMFileStorage>
+    public partial class OMCommissionFileStorage : OMBaseClass<OMCommissionFileStorage>
     {
 
         private long _id;
