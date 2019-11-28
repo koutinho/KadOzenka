@@ -115,6 +115,7 @@ namespace KadOzenka.Web.Controllers
 				using (var stream = file.OpenReadStream())
 				{
 					excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+					excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
 				}
 
 				DataImporter.ImportDataCommissionFromExcel(excelFile);

@@ -4,6 +4,7 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Core.SRD;
 using Core.ErrorManagment;
+using ObjectModel.Commission;
 using ObjectModel.Core.Shared;
 
 namespace KadOzenka.Dal.DataImport
@@ -344,7 +346,31 @@ namespace KadOzenka.Dal.DataImport
             MemoryStream stream = new MemoryStream();
             excelFile.Save(stream, SaveOptions.XlsxDefault);
             stream.Seek(0, SeekOrigin.Begin);
-            return stream;
+
+
+
+            var dateStarted = DateTime.Now; 
+            var fileName = excelFile.DocumentProperties.Custom["FileName"].ToString();
+			var file = new OMCommissionFileStorage
+			{
+	            FileName = string.IsNullOrEmpty(fileName) ? excelFile.Worksheets[0].Name : fileName,
+	            DateStarted = dateStarted
+			};
+			try
+			{
+				FileStorageManager.Save(
+					stream,
+					"CommissionFilesStorage",
+					dateStarted,
+					file.Save().ToString()
+				);
+			}
+			catch (Exception ex)
+			{
+				ErrorManager.LogError(ex);
+			}
+
+			return stream;
         }
 
     }
