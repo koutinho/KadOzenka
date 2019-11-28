@@ -30,7 +30,7 @@ function initCluster(coordinates, zoom) {
         map.geoObjects.add(clusterer);
     }
     else {
-        AllControllersData = coordinates.splice(0, MapSettings.maxLoadedObjectsCount);
+        AllControllersData = coordinates;
         map.geoObjects.removeAll();
         for (var i = 0, len = AllControllersData.length; i < len; i++) {
             map.geoObjects.add(new ymaps.Placemark(AllControllersData[i].points,

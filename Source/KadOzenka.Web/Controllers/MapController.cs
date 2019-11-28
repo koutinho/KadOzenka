@@ -65,7 +65,7 @@ namespace KadOzenka.Web.Controllers
 	        if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
 	        if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
 			if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
-            if (mapZoom >= minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount);
+            if (mapZoom < minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount);
             var point = new List<object>();
             var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code }).Execute().ToList();
             analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
