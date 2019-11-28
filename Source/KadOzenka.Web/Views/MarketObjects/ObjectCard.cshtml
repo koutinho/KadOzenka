@@ -482,9 +482,12 @@
 		}
 
 		function addGeoObject() {
-			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude],
+			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude], {},
 				{
-					preset: 'islands#nightDotIcon'
+					iconLayout: 'default#image',
+					iconImageHref: '../images/mapObjectLogo.png',
+					iconImageSize: [50, 50],
+					iconImageOffset: [-25, -25]
 				});
 			objectMap.geoObjects.add(geoObject);
 		}
