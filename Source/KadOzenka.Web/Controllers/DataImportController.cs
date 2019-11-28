@@ -83,7 +83,7 @@ namespace KadOzenka.Web.Controllers
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
 
-			DataImporter.ImportDataFromExcel(mainRegisterId, excelFile, columns.Select(x => new DataExportColumn
+			DataImporterCommon.ImportDataFromExcel(mainRegisterId, excelFile, columns.Select(x => new DataExportColumn
 				{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 
 			return NoContent();
@@ -99,7 +99,7 @@ namespace KadOzenka.Web.Controllers
 
 			using (var stream = file.OpenReadStream())
 			{
-				DataImporter.AddImportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
+				DataImporterCommon.AddImportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
 					columns.Select(x => new DataExportColumn
 						{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 			}

@@ -118,7 +118,7 @@ namespace KadOzenka.Web.Controllers
 					excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
 				}
 
-				DataImporter.ImportDataCommissionFromExcel(excelFile);
+				DataImporterCommission.ImportDataCommissionFromExcel(excelFile);
 			}
 			catch (Exception e)
 			{

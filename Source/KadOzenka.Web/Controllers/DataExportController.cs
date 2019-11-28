@@ -86,7 +86,7 @@ namespace KadOzenka.Web.Controllers
 
 			using (var stream = file.OpenReadStream())
 			{
-				DataExporter.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
+				DataExporterCommon.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
 					columns.Select(x => new DataExportColumn
 					{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 			}
@@ -107,7 +107,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
-			var resultStream = (MemoryStream)DataExporter.ExportDataToExcel(mainRegisterId, excelFile,
+			var resultStream = (MemoryStream)DataExporterCommon.ExportDataToExcel(mainRegisterId, excelFile,
 				columns.Select(x => new DataExportColumn
 				{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 
@@ -175,7 +175,7 @@ namespace KadOzenka.Web.Controllers
 			FileStream fs = FileStorageManager.GetFileStream(FileStorageName, export.DateCreated, TemplateName);
 			
 			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
-			DataExporter.AddExportToQueue(export.MainRegisterId, export.RegisterViewId, export.TemplateFileName, fs, columns);
+			DataExporterCommon.AddExportToQueue(export.MainRegisterId, export.RegisterViewId, export.TemplateFileName, fs, columns);
 
 			return Content($"Выполнено повторное формирование файла по шаблону {export.TemplateFileName}");				
 		}

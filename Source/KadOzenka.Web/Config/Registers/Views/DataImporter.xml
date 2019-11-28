@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView IsBasic="true" RegisterId="801" DefaultLayoutId="1008011" Description="Журнал загрузки из шаблонов Excel" 
-              LinkedRegistersList="801,950"
-              ShowActualDate="false" UseMasterPage="true" SearchPanel="CoreRegisterLayoutExportAll"
+              LinkedRegistersList="801,950,930"
+              ShowActualDate="false" UseMasterPage="true" 
               DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT" ShowObjectCards="true">
   <Buttons>
       <Button Caption="Скачать исходные данные" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-arrow-down">

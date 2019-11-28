@@ -842,6 +842,12 @@ namespace ObjectModel.Directory.Sud
 		[Description("Машиноместо")]
         [EnumCode("6")]
         ParkingPlace = 6,
+		/// <summary>
+		/// Нет данных (7)
+		/// </summary>
+		[Description("Нет данных")]
+        [EnumCode("7")]
+        None = 7,
     }
 }
 
@@ -970,6 +976,41 @@ namespace ObjectModel.Directory.Commission
 		[Description("Отказано")]
         [EnumCode("2")]
         Rejected = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Common
+{
+    /// <summary>
+    /// Статус импорта данных (800)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 800)]
+    public enum ImportStatus : long
+    {
+		/// <summary>
+		/// Создана (0)
+		/// </summary>
+		[Description("Создана")]
+        [EnumCode("0")]
+        Added = 0,
+		/// <summary>
+		/// В работе (1)
+		/// </summary>
+		[Description("В работе")]
+        [EnumCode("1")]
+        Running = 1,
+		/// <summary>
+		/// Завершено (2)
+		/// </summary>
+		[Description("Завершено")]
+        [EnumCode("2")]
+        Completed = 2,
+		/// <summary>
+		/// Ошибка (3)
+		/// </summary>
+		[Description("Ошибка")]
+        [EnumCode("3")]
+        Faulted = 3,
     }
 }
 

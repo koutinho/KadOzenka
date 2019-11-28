@@ -9,6 +9,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Newtonsoft.Json;
 using ObjectModel.Common;
+using ObjectModel.Directory.Common;
 
 namespace KadOzenka.Web.Models.DataImporterLayout
 {
@@ -16,7 +17,7 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 	{
 		public long? Id { get; set; }
 		public string UserName { get; set; }
-		public RegistersExportStatus? Status { get; set; }
+		public ImportStatus? Status { get; set; }
 		public DateTime? DateCreated { get; set; }
 		public DateTime? DateStarted { get; set; }
 		public DateTime? DateFinished { get; set; }
@@ -30,7 +31,7 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 		public string ColumnsMappingDtoListJson { get; set; }
 
 
-		public static DataImporterLayoutDto OMMap(OMImportFromTemplates entity, string userName, RegistersExportStatus? status)
+		public static DataImporterLayoutDto OMMap(OMImportDataLog entity, string userName, ImportStatus? status)
 		{
 			if (entity == null)
 			{
@@ -39,8 +40,8 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 
 			var fileLocation =
 				Path.Combine(
-					FileStorageManager.GetPathForFileFolder(DataImporter.FileStorageName, entity.DateCreated),
-					DataImporter.GetTemplateName(entity.Id));
+					FileStorageManager.GetPathForFileFolder(DataImporterCommon.FileStorageName, entity.DateCreated),
+					DataImporterCommon.GetTemplateName(entity.Id));
 			long? fileSize = null;
 			if (!string.IsNullOrEmpty(fileLocation) && System.IO.File.Exists(fileLocation))
 			{
@@ -59,11 +60,11 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 			{
 				Id = entity.Id,
 				UserName = userName,
-				Status = status.GetValueOrDefault(),
+				Status = status,
 				DateCreated = entity.DateCreated,
 				DateStarted = entity.DateStarted,
 				DateFinished = entity.DateFinished,
-				TemplateFileName = entity.TemplateFileName,
+				TemplateFileName = entity.DataFileName,
 				ErrorId = entity.ErrorId,
 				MainRegisterId = entity.MainRegisterId,
 				RegisterViewId = entity.RegisterViewId,

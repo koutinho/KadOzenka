@@ -18,7 +18,7 @@ using System.Threading;
 
 namespace KadOzenka.Dal.DataExport
 {
-    public class DataExporter : ILongProcess
+    public class DataExporterCommon : ILongProcess
     {
 		public const string LongProcessName = "DataExporterByTemplate";
 

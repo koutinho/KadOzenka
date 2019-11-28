@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView IsBasic="true" RegisterId="800" DefaultLayoutId="1008001" Description="Менеджер загрузки" LinkedRegistersList="800,950"
-              ShowActualDate="false" UseMasterPage="true"
-              SearchPanel="CoreRegisterLayoutExportAll" DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT">
+              ShowActualDate="false" UseMasterPage="true" DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT">
   <Buttons>
     <Button Caption="Скачать исходный шаблон" NavigateURL="/DataExport/DownloadExcelTemplate" OpenInNewWindow="true" Icon="fas fa-arrow-down"
             SRDFunctionTag="CORE.REGISTER.EXPORT">

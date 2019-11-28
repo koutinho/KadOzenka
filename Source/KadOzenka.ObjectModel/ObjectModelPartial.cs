@@ -1901,12 +1901,12 @@ namespace ObjectModel.Common
 namespace ObjectModel.Common
 {
     /// <summary>
-    /// 801 Журнал загрузки из шаблонов Excel
+    /// 801 Журнал загрузки данных
     /// </summary>
-    public partial class OMImportFromTemplates
+    public partial class OMImportDataLog
     {
 
-        public OMImportFromTemplates()
+        public OMImportDataLog()
         {
 
             Id = -1;
@@ -1915,7 +1915,7 @@ namespace ObjectModel.Common
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMImportFromTemplates(bool trackPropertyChanging) : this()
+        public OMImportDataLog(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

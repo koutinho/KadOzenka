@@ -11481,11 +11481,11 @@ namespace ObjectModel.Common
 namespace ObjectModel.Common
 {
     /// <summary>
-    /// 801 Журнал загрузки из шаблонов Excel (COMMON_IMPORT_FROM_TEMPLATES)
+    /// 801 Журнал загрузки данных (COMMON_IMPORT_DATA_LOG)
     /// </summary>
     [RegisterInfo(RegisterID = 801)]
     [Serializable]
-    public partial class OMImportFromTemplates : OMBaseClass<OMImportFromTemplates>
+    public partial class OMImportDataLog : OMBaseClass<OMImportDataLog>
     {
 
         private long _id;
@@ -11528,12 +11528,12 @@ namespace ObjectModel.Common
         }
 
 
-        private long _status;
+        private string _status;
         /// <summary>
-        /// 80100300 Статус (STATUS)
+        /// 80100300 Статус ()
         /// </summary>
         [RegisterAttribute(AttributeID = 80100300)]
-        public long Status
+        public string Status
         {
             get
             {
@@ -11544,6 +11544,41 @@ namespace ObjectModel.Common
             {
                 _status = value;
                 NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Common.ImportStatus _status_Code;
+        /// <summary>
+        /// 80100300 Статус (справочный код) (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80100300)]
+        public ObjectModel.Directory.Common.ImportStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
             }
         }
 
@@ -11608,22 +11643,22 @@ namespace ObjectModel.Common
         }
 
 
-        private string _templatefilename;
+        private string _datafilename;
         /// <summary>
-        /// 80100700 Имя файла шаблона (TEMPLATE_FILE_NAME)
+        /// 80100700 Имя файла данных (DATA_FILE_NAME)
         /// </summary>
         [RegisterAttribute(AttributeID = 80100700)]
-        public string TemplateFileName
+        public string DataFileName
         {
             get
             {
-                CheckPropertyInited("TemplateFileName");
-                return _templatefilename;
+                CheckPropertyInited("DataFileName");
+                return _datafilename;
             }
             set
             {
-                _templatefilename = value;
-                NotifyPropertyChanged("TemplateFileName");
+                _datafilename = value;
+                NotifyPropertyChanged("DataFileName");
             }
         }
 

@@ -803,9 +803,9 @@ namespace ObjectModel.Common
 namespace ObjectModel.Common
 {
     /// <summary>
-    /// 801 Журнал загрузки из шаблонов Excel
+    /// 801 Журнал загрузки данных
     /// </summary>
-    public partial class OMImportFromTemplates
+    public partial class OMImportDataLog
     {
         /// <summary>
         /// Ссылка на (950 Пользователи системы)

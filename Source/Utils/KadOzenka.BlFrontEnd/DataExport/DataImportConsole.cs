@@ -46,7 +46,7 @@ namespace KadOzenka.BlFrontEnd.DataExport
 			//FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 			//DataImporter.AddImportToQueue(100, "1", filePath, fs, settings);
 
-			Stream stream = DataImporter.ImportDataFromExcel(100, excelFile, settings);
+			Stream stream = DataImporterCommon.ImportDataFromExcel(100, excelFile, settings);
 			stream.Seek(0, SeekOrigin.Begin);
 			using (FileStream file = new FileStream("D:\\Genix\\result123.xlsx", FileMode.Create, FileAccess.Write))
 			{

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using System.IO;
+using ObjectModel.Directory.Common;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -20,12 +21,12 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult MainData(long importId)
 		{
-			var import = OMImportFromTemplates
+			var import = OMImportDataLog
 				.Where(x => x.Id == importId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 			var userName = import != null ? SRDCache.Users[(int)import.UserId]?.FullName : string.Empty;
-			var status = import != null ? (RegistersExportStatus)import.Status : (RegistersExportStatus?) null;
+			var status = import != null ? import.Status_Code : (ImportStatus?) null;
 
 			return View(DataImporterLayoutDto.OMMap(import, userName, status));
 		}
@@ -33,7 +34,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public FileContentResult Download(long importId, bool downloadResult)
 		{
-			var import = OMImportFromTemplates
+			var import = OMImportDataLog
 				.Where(x => x.Id == importId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
@@ -44,21 +45,21 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var fileName = downloadResult
-				? DataImporter.GetResultFileName(importId)
-				: DataImporter.GetTemplateName(importId);
-			var templateFile = FileStorageManager.GetFileStream(DataImporter.FileStorageName, import.DateCreated,
+				? DataImporterCommon.GetResultFileName(importId)
+				: DataImporterCommon.GetTemplateName(importId);
+			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
 				fileName);
 			var bytes = new byte[templateFile.Length];
 			templateFile.Read(bytes);
 			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
 
-			return File(bytes, contentType, fileName.Replace(importId.ToString(), Path.GetFileNameWithoutExtension(import.TemplateFileName)) + "." + fileExtension);
+			return File(bytes, contentType, fileName.Replace(importId.ToString(), Path.GetFileNameWithoutExtension(import.DataFileName)) + "." + fileExtension);
 		}
 
 		[HttpGet]
 		public ActionResult ImportReStart(long importId)
 		{
-			var import = OMImportFromTemplates
+			var import = OMImportDataLog
 				.Where(x => x.Id == importId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
@@ -68,12 +69,12 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception($"В журнале загрузок не найдена запись с ИД {importId}");
 			}
 
-			var fileStream = FileStorageManager.GetFileStream(DataImporter.FileStorageName, import.DateCreated,
-				DataImporter.GetTemplateName(importId));
+			var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
+				DataImporterCommon.GetTemplateName(importId));
 			var columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
-			DataImporter.AddImportToQueue(import.MainRegisterId, import.RegisterViewId, import.TemplateFileName, fileStream, columns);
+			DataImporterCommon.AddImportToQueue(import.MainRegisterId, import.RegisterViewId, import.DataFileName, fileStream, columns);
 
-			return Content($"Выполнено повторное формирование файла по шаблону {import.TemplateFileName}");
+			return Content($"Выполнено повторное формирование файла по шаблону {import.DataFileName}");
 		}
 	}
 }
