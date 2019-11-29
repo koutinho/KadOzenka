@@ -9,14 +9,15 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.SRD;
+using ObjectModel.Common;
 
 namespace KadOzenka.Dal.DataImport
 {
     public static class DataImporterCommission
     {
-		public static Stream ImportDataCommissionFromExcel(ExcelFile excelFile)
+		public static Stream ImportDataCommissionFromExcel(ExcelFile excelFile, string registerViewId, int mainRegisterId)
 		{
-
 			var mainWorkSheet = excelFile.Worksheets[0];
 
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -124,11 +125,49 @@ namespace KadOzenka.Dal.DataImport
 					mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 				}
 			});
+			MemoryStream streamResult = new MemoryStream();
+			excelFile.Save(streamResult, SaveOptions.XlsxDefault);
+			streamResult.Seek(0, SeekOrigin.Begin);
 
-			MemoryStream stream = new MemoryStream();
-			excelFile.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-			return stream;
+			SaveImportFile(streamResult, excelFile, registerViewId, mainRegisterId, true);
+			return streamResult;
+		}
+
+		public static void SaveImportFile(Stream stream, ExcelFile excelFile, string registerViewId, int mainRegisterId, bool isResultFile = false)
+		{
+			var fileName = excelFile.DocumentProperties.Custom["FileName"].ToString();
+
+			var dateStarted = DateTime.Now;
+			var importResult = new OMImportDataLog()
+			{
+				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+				DateStarted = dateStarted,
+				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+				DataFileName = fileName,
+				DateCreated = dateStarted,
+				RegisterViewId = registerViewId,
+				MainRegisterId = mainRegisterId
+			};
+			try
+			{
+				FileStorageManager.Save(
+					stream,
+					"CommissionFilesStorage",
+					dateStarted,
+					isResultFile ? importResult.Save() + "_result" : importResult.Save().ToString()
+				);
+				importResult.DateFinished = DateTime.Now;
+				importResult.Save();
+			}
+			catch (Exception ex)
+			{
+				long errorId = ErrorManager.LogError(ex);
+				importResult.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
+				importResult.DateFinished = DateTime.Now;
+				importResult.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
+				importResult.Save();
+			}
 		}
 	}
 }
+

@@ -1850,30 +1850,6 @@ namespace ObjectModel.Commission
     }
 }
 
-namespace ObjectModel.Commission
-{
-    /// <summary>
-    /// 401 Хранилище файлов для комиссий
-    /// </summary>
-    public partial class OMCommissionFileStorage
-    {
-
-        public OMCommissionFileStorage()
-        {
-
-            id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMCommissionFileStorage(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
 namespace ObjectModel.Common
 {
     /// <summary>

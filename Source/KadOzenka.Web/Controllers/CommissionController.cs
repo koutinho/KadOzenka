@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Transactions;
@@ -118,7 +119,14 @@ namespace KadOzenka.Web.Controllers
 					excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
 				}
 
-				DataImporterCommission.ImportDataCommissionFromExcel(excelFile);
+				string registerViewId = "CommissionCost";
+				int mainRegisterId = 400;
+
+				MemoryStream str = new MemoryStream();
+				excelFile.Save(str, SaveOptions.XlsxDefault);
+				str.Seek(0, SeekOrigin.Begin);
+				DataImporterCommission.SaveImportFile(str, excelFile, registerViewId, mainRegisterId);
+				DataImporterCommission.ImportDataCommissionFromExcel(excelFile, registerViewId, mainRegisterId);
 			}
 			catch (Exception e)
 			{

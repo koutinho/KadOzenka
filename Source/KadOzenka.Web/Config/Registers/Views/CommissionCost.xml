@@ -9,7 +9,7 @@
               <Parameter Key="RegisterId" Value="[RegisterId]" />
           </Parameters>
       </Button>
-	  <Button Caption="Экспорт данных" NavigateURL="~/Commission/LoadDocument" WindowHeight="200" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
+	  <Button Caption="Загрузка данных" NavigateURL="~/Commission/LoadDocument" WindowHeight="200" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
 		  <Parameters>
 		  </Parameters>
 	  </Button>
