@@ -486,7 +486,7 @@
 							'objectMap',
 							{
 								center: [objectLatitude, objectLongitude],
-								zoom: 17
+								zoom: MapWithDefinedObjectSettings.zoom
 							}
 						);
 						configureMapControls();
@@ -565,10 +565,10 @@
 			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude],
 				{},
 				{
-					iconLayout: 'default#image',
-					iconImageHref: '../images/mapObjectLogoWithPin.png',
-					iconImageSize: [50, 50],
-					iconImageOffset: [-25, -50]
+					iconLayout: MapWithDefinedObjectSettings.iconLayout,
+					iconImageHref: MapWithDefinedObjectSettings.iconImageHref,
+					iconImageSize: MapWithDefinedObjectSettings.iconImageSize,
+					iconImageOffset: MapWithDefinedObjectSettings.iconImageOffset
 				});
 			objectMap.geoObjects.add(geoObject);
 		}

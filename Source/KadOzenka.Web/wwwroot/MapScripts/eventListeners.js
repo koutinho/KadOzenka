@@ -13,7 +13,7 @@ function ChangeBounds(event) {
     }
     const newBounds = event.get('newBounds');
     refreshCurrentToken();
-    GetClusterData(newBounds, newZoom, currentToken);
+    GetClusterData(newBounds, newZoom, currentToken, params.has('objectId') ? params.get('objectId') : null);
 }
 
 function clickOnCluster(event) {

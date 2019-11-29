@@ -1,4 +1,4 @@
-function GetClusterData(bounds, zoom, token) {
+function GetClusterData(bounds, zoom, token, objectId) {
     zd = zoomData[zoom];
     accuracy = zd ? zd.accurancy : null;
     redrawWaiting();
@@ -15,7 +15,8 @@ function GetClusterData(bounds, zoom, token) {
             accuracy: accuracy,
             minClusterZoom: MapSettings.minClusterZoom,
             maxLoadedObjectsCount: MapSettings.maxLoadedObjectsCount,
-            token: token
+            token: token,
+            objectId: objectId
 		},
         dataType: 'json',
         success: function (result) {

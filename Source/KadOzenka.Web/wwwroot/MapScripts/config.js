@@ -96,3 +96,11 @@ var geoTagSlicer = {
 
 var clusterSelected = false;
 var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+var MapWithDefinedObjectSettings = {
+    zoom: 17,
+    iconLayout: 'default#image',
+    iconImageHref: '../images/mapObjectLogoWithPin.png',
+    iconImageSize: [50, 50],
+    iconImageOffset: [-25, -50]
+}

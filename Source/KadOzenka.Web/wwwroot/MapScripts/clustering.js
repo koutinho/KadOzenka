@@ -11,6 +11,27 @@ function initCluster(coordinates, zoom, dotSize) {
         AllControllersData = coordinates,
         geoObjects = [];
 
+        const url = new URL(window.location);
+        const params = new window.URLSearchParams(url.search);
+        let geoObject = null;
+        if (params.has('objectId')) {
+            var id = params.get('objectId');
+            AllControllersData = AllControllersData.filter(function (item) {
+                if (item.id == id) {
+                    geoObject = new ymaps.Placemark(item.points,
+                        { data: [{ id: item.id }]},
+                        {
+                            iconLayout: MapWithDefinedObjectSettings.iconLayout,
+                            iconImageHref: MapWithDefinedObjectSettings.iconImageHref,
+                            iconImageSize: MapWithDefinedObjectSettings.iconImageSize,
+                            iconImageOffset: MapWithDefinedObjectSettings.iconImageOffset
+                        });
+                    geoObject.events.add('click', function (event) { clickOnCluster(event); });
+                }
+
+                return item.id != id;
+            });
+        }
         for (var i = 0, len = AllControllersData.length; i < len; i++) {
             var color = PropType[AllControllersData[i].type].color;
             geoObjects[i] = new ymaps.Placemark(
@@ -28,6 +49,9 @@ function initCluster(coordinates, zoom, dotSize) {
         clusterer.events.add('click', function (event) { clickOnCluster(event); });
         map.geoObjects.removeAll();
         map.geoObjects.add(clusterer);
+        if (geoObject) {
+            map.geoObjects.add(geoObject);
+        }
     }
     else {
         AllControllersData = coordinates;
