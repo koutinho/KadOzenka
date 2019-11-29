@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using ObjectModel.Directory;
 using ObjectModel.Market;
 
 namespace KadOzenka.Web.Models.MarketObject
@@ -43,6 +43,8 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string Status { get; set; }
 		public decimal? Latitude { get; set; }
 		public decimal? Longitude { get; set; }
+		public ProcessStep ProcessType { get; set; }
+		public MarketTypes MarketType { get; set; }
 
 	public static CoreObjectDto OMMap(OMCoreObject entity)
 		{
@@ -72,7 +74,9 @@ namespace KadOzenka.Web.Models.MarketObject
 				Url = entity.Url, 
 				Status = entity.ProcessType,
 				Latitude = entity.Lat,
-				Longitude = entity.Lng
+				Longitude = entity.Lng,
+				ProcessType = entity.ProcessType_Code,
+				MarketType = entity.Market_Code
 			};
 			if (entity.PriceHistory?.Count > 0)
 			{

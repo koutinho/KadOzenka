@@ -23,8 +23,11 @@ namespace KadOzenka.Web.Controllers
 	    public string MarketObjectsRegisterViewId => "MarketObjects";
 
 	    public MapController(CoreUiService coreUiService) => _coreUiService = coreUiService;
-	    
-		public ActionResult Index() => View(); 
+
+	    public ActionResult Index(long? objectId)
+	    {
+			return View();
+	    }  
 
         public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude, int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, string token)
         {
