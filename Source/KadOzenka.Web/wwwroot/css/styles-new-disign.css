@@ -1290,7 +1290,7 @@ input#addressInput:focus {
     display: inline-block;
 }
 
-.dropdown-main-menu .fas {
+.dropdown-main-menu .fas, .dropdown-main-menu .far {
 	font-size: 19px !important;
 }
 
@@ -1308,6 +1308,10 @@ input#addressInput:focus {
 
 .dropdown-main-menu .fa-users {
 	background-color: #ff9899;
+}
+
+.dropdown-main-menu .fa-file-alt {
+	background-color: #a588cc;
 }
 
 /* для старого дизайна */
