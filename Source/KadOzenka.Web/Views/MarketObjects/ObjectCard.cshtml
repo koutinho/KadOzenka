@@ -396,6 +396,14 @@
 			background-color: #f1f2f6;
 			border-color: #ceced2;
 		}
+		.customControl {
+			background-color: #fff;
+			padding: 10px;
+			border-radius: 5px;
+			border-color: #ceced2;
+			-webkit-box-shadow: 0 4px 10px 0 rgba(0,0,0,.2);
+			box-shadow: 0 4px 10px 0 rgba(0,0,0,.2);
+		}
 	</style>
 }
 
@@ -407,6 +415,8 @@
 		var objectMap;
 		var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
 		var objectLongitude = @(Model.Longitude.HasValue ? Model.Longitude.ToString().Replace(',', '.') : "undefined");
+		var objectPricePerSquareMeter =
+			'@(Model.PricePerSquareMeter.HasValue ? Math.Round(Model.PricePerSquareMeter.Value).ToString("#,0") : "")';
 
 		$(function() {
 			var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -491,40 +501,69 @@
 			objectMap.controls.remove("geolocationControl");
 			objectMap.controls.remove("fullscreenControl");
 			objectMap.controls.remove("searchControl");
-			objectMap.controls.get("rulerControl").options.set({ position: { bottom: 10, right: 10 } });
+			objectMap.controls.get("rulerControl").options.set({ position: { bottom: 15, right: 10 } });
 			objectMap.controls.get("zoomControl").options.set({ position: { top: 80, left: 10 } });
 
-			var buttonLayout = ymaps.templateLayoutFactory.createClass([
-					'<div class="k-button mapButton" title="{{ data.title }}"> ',
-						'<img style="width:16px;" src="{{ data.image }}" alt="{{ data.title }}">',
-						'<span>&nbsp</span>',
-						'<span>{{ data.content }}</span>',
-					'</div>'
-				].join('')),
+			if (objectPricePerSquareMeter) {
+				var CustomControl = function (options) {
+					CustomControl.superclass.constructor.call(this, options);
+				};
+				ymaps.util.defineClass(CustomControl,
+					ymaps.collection.Item,
+					{
+						onAddToMap: function (map) {
+							CustomControl.superclass.onAddToMap.call(this, map);
+							this.getParent().getChildElement(this).then(this._onChildElementGet, this);
+						},
+						onRemoveFromMap: function (oldMap) {
+							if (this._$content) {
+								this._$content.remove();
+							}
+							CustomControl.superclass.onRemoveFromMap.call(this, oldMap);
+						},
+						_onChildElementGet: function (parentElementContainer) {
+							this._$content = $('<div class="customControl">Стоимость за 1м²: <strong>' + objectPricePerSquareMeter + ' &#x20bd;</strong></div>')
+								.appendTo(parentElementContainer);
+						}
+					});
 
-			button = new ymaps.control.Button({
-				data: {
-					content: "На карту",
-					image: '../images/mapIcon.png',
-					title: 'Нажмите, чтобы перейти на карту'
-				},
-				options: {
-					layout: buttonLayout,
-					maxWidth: [170, 190, 220]
-				}
+				var customControl = new CustomControl();
+				objectMap.controls.add(customControl, { position: { top: 10, left: 140 } });
+			}
+
+			var buttonLayout = ymaps.templateLayoutFactory.createClass([
+				    '<div class="k-button mapButton" title="{{ data.title }}"> ',
+				    '<img style="width:16px;" src="{{ data.image }}" alt="{{ data.title }}">',
+				    '<span>&nbsp</span>',
+				    '<span>{{ data.content }}</span>',
+				    '</div>'
+			    ].join('')),
+
+				button = new ymaps.control.Button({
+					data: {
+						content: "На карту",
+						image: '../images/mapIcon.png',
+						title: 'Нажмите, чтобы перейти на карту'
+					},
+					options: {
+						layout: buttonLayout,
+						maxWidth: [170, 190, 220]
+					}
 				});
-			button.events.add('click', function () {
-				if (window.parent !== undefined)
-					window.parent.location = '@Url.Action("Index", "Map", new{objectId = Model.Id})';
-				else {
-					window.location = '@Url.Action("Index", "Map", new{objectId = Model.Id})';
-				}
-			});
-			objectMap.controls.add(button, { position: { top: 10, left: 15 }});
+			button.events.add('click',
+				function() {
+					if (window.parent !== undefined)
+						window.parent.location = '@Url.Action("Index", "Map", new {objectId = Model.Id})';
+					else {
+						window.location = '@Url.Action("Index", "Map", new {objectId = Model.Id})';
+					}
+				});
+			objectMap.controls.add(button, { position: { top: 10, left: 15 } });
 		}
 
 		function addGeoObject() {
-			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude], {},
+			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude],
+				{},
 				{
 					iconLayout: 'default#image',
 					iconImageHref: '../images/mapObjectLogoWithPin.png',

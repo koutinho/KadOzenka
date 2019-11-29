@@ -45,8 +45,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		public decimal? Longitude { get; set; }
 		public ProcessStep ProcessType { get; set; }
 		public MarketTypes MarketType { get; set; }
+		public decimal? PricePerSquareMeter { get; set; }
 
-	public static CoreObjectDto OMMap(OMCoreObject entity)
+		public static CoreObjectDto OMMap(OMCoreObject entity)
 		{
 			var dto = new CoreObjectDto
 			{
@@ -71,12 +72,15 @@ namespace KadOzenka.Web.Models.MarketObject
 				Zone = entity.Zone,
 				Group = entity.Group,
 				Subgroup = entity.Subgroup,
-				Url = entity.Url, 
+				Url = entity.Url,
 				Status = entity.ProcessType,
 				Latitude = entity.Lat,
 				Longitude = entity.Lng,
 				ProcessType = entity.ProcessType_Code,
-				MarketType = entity.Market_Code
+				MarketType = entity.Market_Code,
+				PricePerSquareMeter = entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0
+					? entity.Price / entity.Area
+					: (decimal?)null
 			};
 			if (entity.PriceHistory?.Count > 0)
 			{
