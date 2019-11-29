@@ -19,19 +19,25 @@
 						<div class="col-sm-4">
 							@Html.KendoEnumDropDownListFor(m => m.ApplicantStatus, false)
 						</div>
-					</div>
-					<div class="form-group">
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Kn)
 						</div>
 						<div class="col-sm-4">
 							@Html.KendoTextBoxFor(m => m.Kn, false)
 						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.DateKc)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoDatePickerFor(m => m.DateKc, false)
+						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Kc)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.Kc,2, false)
+							@Html.KendoNumericTextBoxFor(m => m.Kc, 2, false)
 						</div>
 					</div>
 					<div class="form-group">
@@ -48,20 +54,6 @@
 							@Html.KendoTextBoxFor(m => m.StatementNumber, false)
 						</div>
 					</div>
-					<div class="form-group">
-						<div class="col-sm-2">
-							@Html.CustomLabelFor(m => m.CommissionGroup)
-						</div>
-						<div class="col-sm-4">
-							@Html.KendoTextBoxFor(m => m.CommissionGroup, isReadonly: false)
-						</div>
-						<div class="col-sm-2">
-							@Html.CustomLabelFor(m => m.DateKc)
-						</div>
-						<div class="col-sm-4">
-							@Html.KendoDatePickerFor(m => m.DateKc, false)
-						</div>
-					</div>
 				</div>
 			</div>
 		</li>
@@ -71,24 +63,24 @@
 				<div class="form-horizontal col-sm-12">
 					<div class="form-group">
 						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.CommissionType)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoEnumDropDownListFor(m => m.CommissionType, false)
+						</div>
+						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.DecisionResult)
 						</div>
 						<div class="col-sm-4">
 							@Html.KendoEnumDropDownListFor(m => m.DecisionResult, false)
 						</div>
+					</div>
+					<div class="form-group">
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.DecisionNumber)
 						</div>
 						<div class="col-sm-4">
 							@Html.KendoTextBoxFor(m => m.DecisionNumber, false)
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-2">
-							@Html.CustomLabelFor(m => m.CommissionKc)
-						</div>
-						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.CommissionKc, 2, false)
 						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.DecisionDate)
@@ -99,24 +91,30 @@
 					</div>
 					<div class="form-group">
 						<div class="col-sm-2">
-							@Html.CustomLabelFor(m => m.CommissionType)
+							@Html.CustomLabelFor(m => m.MarketValue)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoEnumDropDownListFor(m => m.CommissionType, false)
+							@Html.KendoNumericTextBoxFor(m => m.MarketValue,2, false)
 						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor(m => m.CommissionKc)
+						</div>
+						<div class="col-sm-4">
+							@Html.KendoNumericTextBoxFor(m => m.CommissionKc, 2, false)
+						</div>
+					</div>
+					<div class="form-group">
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.CommissionChange)
 						</div>
 						<div class="col-sm-4">
 							@Html.KendoTextBoxFor(m => m.CommissionChange, false)
 						</div>
-					</div>
-					<div class="form-group">
 						<div class="col-sm-2">
-							@Html.CustomLabelFor(m => m.MarketValue)
+							@Html.CustomLabelFor(m => m.CommissionGroup)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.MarketValue,2, false)
+							@Html.KendoTextBoxFor(m => m.CommissionGroup, isReadonly: false)
 						</div>
 					</div>
 				</div>
