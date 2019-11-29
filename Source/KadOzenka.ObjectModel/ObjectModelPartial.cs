@@ -1850,6 +1850,174 @@ namespace ObjectModel.Commission
     }
 }
 
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 500 Книги
+    /// </summary>
+    public partial class OMBook
+    {
+
+        public OMBook()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMBook(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 501 Декларация
+    /// </summary>
+    public partial class OMDeclaration
+    {
+
+        public OMDeclaration()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMDeclaration(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 502 Характеристики ОКС
+    /// </summary>
+    public partial class OMHarOKS
+    {
+
+        public OMHarOKS()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMHarOKS(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 503 Характеристики ЗУ
+    /// </summary>
+    public partial class OMHarParcel
+    {
+
+        public OMHarParcel()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMHarParcel(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 504 Результаты
+    /// </summary>
+    public partial class OMResult
+    {
+
+        public OMResult()
+        {
+
+            Declaration_Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMResult(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 505 Субъекты
+    /// </summary>
+    public partial class OMSubject
+    {
+
+        public OMSubject()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSubject(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 506 Уведомления
+    /// </summary>
+    public partial class OMUved
+    {
+
+        public OMUved()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUved(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

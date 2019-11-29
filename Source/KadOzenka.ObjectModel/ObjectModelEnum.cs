@@ -979,6 +979,343 @@ namespace ObjectModel.Directory.Commission
     }
 }
 
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Наличие характеристики (500)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 500)]
+    public enum HarAvailability : long
+    {
+		/// <summary>
+		/// отсутствует (1)
+		/// </summary>
+		[Description("отсутствует")]
+        [EnumCode("1")]
+        NotExists = 1,
+		/// <summary>
+		/// имеется (2)
+		/// </summary>
+		[Description("имеется")]
+        [EnumCode("2")]
+        Exists = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Статус книги (501)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 501)]
+    public enum BookStatus : long
+    {
+		/// <summary>
+		/// В работе (1)
+		/// </summary>
+		[Description("В работе")]
+        [EnumCode("1")]
+        InWork = 1,
+		/// <summary>
+		/// Закрыто (2)
+		/// </summary>
+		[Description("Закрыто")]
+        [EnumCode("2")]
+        Closed = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Тип книги (502)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 502)]
+    public enum BookType : long
+    {
+		/// <summary>
+		/// Книга деклараций (1)
+		/// </summary>
+		[Description("Книга деклараций")]
+        [EnumCode("1")]
+        Declarations = 1,
+		/// <summary>
+		/// Книга уведомлений (2)
+		/// </summary>
+		[Description("Книга уведомлений")]
+        [EnumCode("2")]
+        Notifications = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Тип субъекта деклараций (503)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 503)]
+    public enum SubjectType : long
+    {
+		/// <summary>
+		/// Физлицо (1)
+		/// </summary>
+		[Description("Физлицо")]
+        [EnumCode("1")]
+        Fl = 1,
+		/// <summary>
+		/// Юрлицо (2)
+		/// </summary>
+		[Description("Юрлицо")]
+        [EnumCode("2")]
+        Ul = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Тип уведомления (504)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 504)]
+    public enum UvedType : long
+    {
+		/// <summary>
+		/// Уведомление о принятии декларации (1)
+		/// </summary>
+		[Description("Уведомление о принятии декларации")]
+        [EnumCode("1")]
+        Item1 = 1,
+		/// <summary>
+		/// Уведомление об отрицательной формальной проверке (2)
+		/// </summary>
+		[Description("Уведомление об отрицательной формальной проверке")]
+        [EnumCode("2")]
+        Item2 = 2,
+		/// <summary>
+		/// Уведомление об учете информации из декларации (3)
+		/// </summary>
+		[Description("Уведомление об учете информации из декларации")]
+        [EnumCode("3")]
+        Item3 = 3,
+		/// <summary>
+		/// Уведомление об отказе в учете информации из декларации (4)
+		/// </summary>
+		[Description("Уведомление об отказе в учете информации из декларации")]
+        [EnumCode("4")]
+        Item4 = 4,
+		/// <summary>
+		/// Уведомление об отказе в рассмотрении декларации и возврате документов (5)
+		/// </summary>
+		[Description("Уведомление об отказе в рассмотрении декларации и возврате документов")]
+        [EnumCode("5")]
+        Item5 = 5,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Статус результата (505)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 505)]
+    public enum StatusDec : long
+    {
+		/// <summary>
+		/// Отказ в рассмотрении (1)
+		/// </summary>
+		[Description("Отказ в рассмотрении")]
+        [EnumCode("1")]
+        Rejection = 1,
+		/// <summary>
+		/// Принято на рассмотрение (2)
+		/// </summary>
+		[Description("Принято на рассмотрение")]
+        [EnumCode("2")]
+        Accepted = 2,
+		/// <summary>
+		/// Рассмотрено (3)
+		/// </summary>
+		[Description("Рассмотрено")]
+        [EnumCode("3")]
+        Considered = 3,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Тип объекта декларации (506)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 506)]
+    public enum ObjectType : long
+    {
+		/// <summary>
+		/// Участок (0)
+		/// </summary>
+		[Description("Участок")]
+        [EnumCode("0")]
+        Site = 0,
+		/// <summary>
+		/// Здание (1)
+		/// </summary>
+		[Description("Здание")]
+        [EnumCode("1")]
+        Building = 1,
+		/// <summary>
+		/// Помещение (2)
+		/// </summary>
+		[Description("Помещение")]
+        [EnumCode("2")]
+        Room = 2,
+		/// <summary>
+		/// Сооружение (3)
+		/// </summary>
+		[Description("Сооружение")]
+        [EnumCode("3")]
+        Construction = 3,
+		/// <summary>
+		/// Машиноместо (4)
+		/// </summary>
+		[Description("Машиноместо")]
+        [EnumCode("4")]
+        ParkingPlace = 4,
+		/// <summary>
+		/// Онс (5)
+		/// </summary>
+		[Description("Онс")]
+        [EnumCode("5")]
+        Ons = 5,
+		/// <summary>
+		/// Единый недвижимый комплекс (6)
+		/// </summary>
+		[Description("Единый недвижимый комплекс")]
+        [EnumCode("6")]
+        Ens = 6,
+		/// <summary>
+		/// Производственно имущественный комплекс (7)
+		/// </summary>
+		[Description("Производственно имущественный комплекс")]
+        [EnumCode("7")]
+        Pik = 7,
+		/// <summary>
+		/// Иное (8)
+		/// </summary>
+		[Description("Иное")]
+        [EnumCode("8")]
+        Other = 8,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Статус проверки (507)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 507)]
+    public enum CheckStatus : long
+    {
+		/// <summary>
+		/// В работе (0)
+		/// </summary>
+		[Description("В работе")]
+        [EnumCode("0")]
+        InWork = 0,
+		/// <summary>
+		/// Да (1)
+		/// </summary>
+		[Description("Да")]
+        [EnumCode("1")]
+        Yes = 1,
+		/// <summary>
+		/// Нет (2)
+		/// </summary>
+		[Description("Нет")]
+        [EnumCode("2")]
+        No = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Цель декларации (508)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 508)]
+    public enum DeclarationPurpose : long
+    {
+		/// <summary>
+		/// Декларация подается с целью доведения информации о характеристиках объекта недвижимости (1)
+		/// </summary>
+		[Description("Декларация подается с целью доведения информации о характеристиках объекта недвижимости")]
+        [EnumCode("1")]
+        Item1 = 1,
+		/// <summary>
+		/// Декларация подается с целью предоставления отчета об определении рыночной стоимости объекта недвижимости (2)
+		/// </summary>
+		[Description("Декларация подается с целью предоставления отчета об определении рыночной стоимости объекта недвижимости")]
+        [EnumCode("2")]
+        Item2 = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Тип отправки уведомления (509)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 509)]
+    public enum SendUvedType : long
+    {
+		/// <summary>
+		/// нет (0)
+		/// </summary>
+		[Description("нет")]
+        [EnumCode("0")]
+        No = 0,
+		/// <summary>
+		/// на почтовый адрес (1)
+		/// </summary>
+		[Description("на почтовый адрес")]
+        [EnumCode("1")]
+        Post = 1,
+		/// <summary>
+		/// на электронный адрес (2)
+		/// </summary>
+		[Description("на электронный адрес")]
+        [EnumCode("2")]
+        Email = 2,
+		/// <summary>
+		/// в руки (3)
+		/// </summary>
+		[Description("в руки")]
+        [EnumCode("3")]
+        OnHands = 3,
+    }
+}
+
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Тип владельца (510)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 510)]
+    public enum OwnerType : long
+    {
+		/// <summary>
+		/// Заявитель (он же собственник) (1)
+		/// </summary>
+		[Description("Заявитель (он же собственник)")]
+        [EnumCode("1")]
+        Item1 = 1,
+		/// <summary>
+		/// Представитель заявителя (2)
+		/// </summary>
+		[Description("Представитель заявителя")]
+        [EnumCode("2")]
+        Item2 = 2,
+    }
+}
+
 namespace ObjectModel.Directory.Common
 {
     /// <summary>

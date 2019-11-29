@@ -11154,6 +11154,3915 @@ namespace ObjectModel.Commission
     }
 }
 
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 500 Книги (DECLARATIONS_BOOK)
+    /// </summary>
+    [RegisterInfo(RegisterID = 500)]
+    [Serializable]
+    public partial class OMBook : OMBaseClass<OMBook>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50000100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _prefics;
+        /// <summary>
+        /// 50000200 Префикс (PREFICS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50000200)]
+        public string Prefics
+        {
+            get
+            {
+                CheckPropertyInited("Prefics");
+                return _prefics;
+            }
+            set
+            {
+                _prefics = value;
+                NotifyPropertyChanged("Prefics");
+            }
+        }
+
+
+        private DateTime _datebegin;
+        /// <summary>
+        /// 50000300 Дата начала (DATE_BEGIN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50000300)]
+        public DateTime DateBegin
+        {
+            get
+            {
+                CheckPropertyInited("DateBegin");
+                return _datebegin;
+            }
+            set
+            {
+                _datebegin = value;
+                NotifyPropertyChanged("DateBegin");
+            }
+        }
+
+
+        private DateTime _dateend;
+        /// <summary>
+        /// 50000400 Дата окончания (DATE_END)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50000400)]
+        public DateTime DateEnd
+        {
+            get
+            {
+                CheckPropertyInited("DateEnd");
+                return _dateend;
+            }
+            set
+            {
+                _dateend = value;
+                NotifyPropertyChanged("DateEnd");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 50000500 Статус ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50000500)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.BookStatus _status_Code;
+        /// <summary>
+        /// 50000500 Статус (справочный код) (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50000500)]
+        public ObjectModel.Directory.Declarations.BookStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+
+        private string _type;
+        /// <summary>
+        /// 50000600 Тип ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50000600)]
+        public string Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.BookType _type_Code;
+        /// <summary>
+        /// 50000600 Тип (справочный код) (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50000600)]
+        public ObjectModel.Directory.Declarations.BookType Type_Code
+        {
+            get
+            {
+                CheckPropertyInited("Type_Code");
+                return this._type_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_type))
+                    {
+                         _type = descr;
+                    }
+                }
+                else
+                {
+                     _type = descr;
+                }
+
+                this._type_Code = value;
+                NotifyPropertyChanged("Type");
+                NotifyPropertyChanged("Type_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 501 Декларация (DECLARATIONS_DECLARATION)
+    /// </summary>
+    [RegisterInfo(RegisterID = 501)]
+    [Serializable]
+    public partial class OMDeclaration : OMBaseClass<OMDeclaration>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50100100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _book_id;
+        /// <summary>
+        /// 50100200 Идентификатор книги (BOOK_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50100200)]
+        public long Book_Id
+        {
+            get
+            {
+                CheckPropertyInited("Book_Id");
+                return _book_id;
+            }
+            set
+            {
+                _book_id = value;
+                NotifyPropertyChanged("Book_Id");
+            }
+        }
+
+
+        private long? _owner_id;
+        /// <summary>
+        /// 50100300 Идентификатор заявителя (он же собственник) (OWNER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50100300)]
+        public long? Owner_Id
+        {
+            get
+            {
+                CheckPropertyInited("Owner_Id");
+                return _owner_id;
+            }
+            set
+            {
+                _owner_id = value;
+                NotifyPropertyChanged("Owner_Id");
+            }
+        }
+
+
+        private long? _agent_id;
+        /// <summary>
+        /// 50100400 Идентификатор представителя заявителя (AGENT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50100400)]
+        public long? Agent_Id
+        {
+            get
+            {
+                CheckPropertyInited("Agent_Id");
+                return _agent_id;
+            }
+            set
+            {
+                _agent_id = value;
+                NotifyPropertyChanged("Agent_Id");
+            }
+        }
+
+
+        private long? _userisp_id;
+        /// <summary>
+        /// 50100500 Идентификатор исполнителя (USER_ISP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50100500)]
+        public long? UserIsp_Id
+        {
+            get
+            {
+                CheckPropertyInited("UserIsp_Id");
+                return _userisp_id;
+            }
+            set
+            {
+                _userisp_id = value;
+                NotifyPropertyChanged("UserIsp_Id");
+            }
+        }
+
+
+        private long? _userreg_id;
+        /// <summary>
+        /// 50100600 Идентификатор регистратора (USER_REG_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50100600)]
+        public long? UserReg_Id
+        {
+            get
+            {
+                CheckPropertyInited("UserReg_Id");
+                return _userreg_id;
+            }
+            set
+            {
+                _userreg_id = value;
+                NotifyPropertyChanged("UserReg_Id");
+            }
+        }
+
+
+        private string _numin;
+        /// <summary>
+        /// 50100700 Входящий номер (NUM_IN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50100700)]
+        public string NumIn
+        {
+            get
+            {
+                CheckPropertyInited("NumIn");
+                return _numin;
+            }
+            set
+            {
+                _numin = value;
+                NotifyPropertyChanged("NumIn");
+            }
+        }
+
+
+        private DateTime? _datein;
+        /// <summary>
+        /// 50100800 Входящая дата ГБУ (DATE_IN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50100800)]
+        public DateTime? DateIn
+        {
+            get
+            {
+                CheckPropertyInited("DateIn");
+                return _datein;
+            }
+            set
+            {
+                _datein = value;
+                NotifyPropertyChanged("DateIn");
+            }
+        }
+
+
+        private DateTime? _durationin;
+        /// <summary>
+        /// 50100900 Срок рассмотрения декларации (DURATION_IN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50100900)]
+        public DateTime? DurationIn
+        {
+            get
+            {
+                CheckPropertyInited("DurationIn");
+                return _durationin;
+            }
+            set
+            {
+                _durationin = value;
+                NotifyPropertyChanged("DurationIn");
+            }
+        }
+
+
+        private long? _status;
+        /// <summary>
+        /// 50101000 Статус декларации (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101000)]
+        public long? Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private string _cadastralnumobj;
+        /// <summary>
+        /// 50101100 Кадастровый номер объекта (CADASTRAL_NUM_OBJ)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101100)]
+        public string CadastralNumObj
+        {
+            get
+            {
+                CheckPropertyInited("CadastralNumObj");
+                return _cadastralnumobj;
+            }
+            set
+            {
+                _cadastralnumobj = value;
+                NotifyPropertyChanged("CadastralNumObj");
+            }
+        }
+
+
+        private string _typeobj;
+        /// <summary>
+        /// 50101200 Тип объекта ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101200)]
+        public string TypeObj
+        {
+            get
+            {
+                CheckPropertyInited("TypeObj");
+                return _typeobj;
+            }
+            set
+            {
+                _typeobj = value;
+                NotifyPropertyChanged("TypeObj");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.ObjectType _typeobj_Code;
+        /// <summary>
+        /// 50101200 Тип объекта (справочный код) (TYPE_OBJ)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101200)]
+        public ObjectModel.Directory.Declarations.ObjectType TypeObj_Code
+        {
+            get
+            {
+                CheckPropertyInited("TypeObj_Code");
+                return this._typeobj_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_typeobj))
+                    {
+                         _typeobj = descr;
+                    }
+                }
+                else
+                {
+                     _typeobj = descr;
+                }
+
+                this._typeobj_Code = value;
+                NotifyPropertyChanged("TypeObj");
+                NotifyPropertyChanged("TypeObj_Code");
+            }
+        }
+
+
+        private DateTime? _dateinisp;
+        /// <summary>
+        /// 50101300 Дата выдачи исполнителю (DATE_IN_ISP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101300)]
+        public DateTime? DateInIsp
+        {
+            get
+            {
+                CheckPropertyInited("DateInIsp");
+                return _dateinisp;
+            }
+            set
+            {
+                _dateinisp = value;
+                NotifyPropertyChanged("DateInIsp");
+            }
+        }
+
+
+        private DateTime? _dateinplan;
+        /// <summary>
+        /// 50101400 Плановая дата внесения (DATE_IN_PLAN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101400)]
+        public DateTime? DateInPlan
+        {
+            get
+            {
+                CheckPropertyInited("DateInPlan");
+                return _dateinplan;
+            }
+            set
+            {
+                _dateinplan = value;
+                NotifyPropertyChanged("DateInPlan");
+            }
+        }
+
+
+        private DateTime? _dateinfact;
+        /// <summary>
+        /// 50101500 Фактическая дата внесения (DATE_IN_FACT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101500)]
+        public DateTime? DateInFact
+        {
+            get
+            {
+                CheckPropertyInited("DateInFact");
+                return _dateinfact;
+            }
+            set
+            {
+                _dateinfact = value;
+                NotifyPropertyChanged("DateInFact");
+            }
+        }
+
+
+        private string _checkpoint1;
+        /// <summary>
+        /// 50101600 Проверка декларации на соответствии утвержденной форме Приказа № 846 от 27.12.2016 ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101600)]
+        public string CheckPoint1
+        {
+            get
+            {
+                CheckPropertyInited("CheckPoint1");
+                return _checkpoint1;
+            }
+            set
+            {
+                _checkpoint1 = value;
+                NotifyPropertyChanged("CheckPoint1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.CheckStatus _checkpoint1_Code;
+        /// <summary>
+        /// 50101600 Проверка декларации на соответствии утвержденной форме Приказа № 846 от 27.12.2016 (справочный код) (CHECK_POINT1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101600)]
+        public ObjectModel.Directory.Declarations.CheckStatus CheckPoint1_Code
+        {
+            get
+            {
+                CheckPropertyInited("CheckPoint1_Code");
+                return this._checkpoint1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_checkpoint1))
+                    {
+                         _checkpoint1 = descr;
+                    }
+                }
+                else
+                {
+                     _checkpoint1 = descr;
+                }
+
+                this._checkpoint1_Code = value;
+                NotifyPropertyChanged("CheckPoint1");
+                NotifyPropertyChanged("CheckPoint1_Code");
+            }
+        }
+
+
+        private string _checkpoint2;
+        /// <summary>
+        /// 50101700 Проверка декларации на наличие основных данных, позволяющих идентифицировать объект ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101700)]
+        public string CheckPoint2
+        {
+            get
+            {
+                CheckPropertyInited("CheckPoint2");
+                return _checkpoint2;
+            }
+            set
+            {
+                _checkpoint2 = value;
+                NotifyPropertyChanged("CheckPoint2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.CheckStatus _checkpoint2_Code;
+        /// <summary>
+        /// 50101700 Проверка декларации на наличие основных данных, позволяющих идентифицировать объект (справочный код) (CHECK_POINT2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101700)]
+        public ObjectModel.Directory.Declarations.CheckStatus CheckPoint2_Code
+        {
+            get
+            {
+                CheckPropertyInited("CheckPoint2_Code");
+                return this._checkpoint2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_checkpoint2))
+                    {
+                         _checkpoint2 = descr;
+                    }
+                }
+                else
+                {
+                     _checkpoint2 = descr;
+                }
+
+                this._checkpoint2_Code = value;
+                NotifyPropertyChanged("CheckPoint2");
+                NotifyPropertyChanged("CheckPoint2_Code");
+            }
+        }
+
+
+        private string _checkpoint3;
+        /// <summary>
+        /// 50101800 Уведомление о продлении сроков рассмотрения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101800)]
+        public string CheckPoint3
+        {
+            get
+            {
+                CheckPropertyInited("CheckPoint3");
+                return _checkpoint3;
+            }
+            set
+            {
+                _checkpoint3 = value;
+                NotifyPropertyChanged("CheckPoint3");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.CheckStatus _checkpoint3_Code;
+        /// <summary>
+        /// 50101800 Уведомление о продлении сроков рассмотрения (справочный код) (CHECK_POINT3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101800)]
+        public ObjectModel.Directory.Declarations.CheckStatus CheckPoint3_Code
+        {
+            get
+            {
+                CheckPropertyInited("CheckPoint3_Code");
+                return this._checkpoint3_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_checkpoint3))
+                    {
+                         _checkpoint3 = descr;
+                    }
+                }
+                else
+                {
+                     _checkpoint3 = descr;
+                }
+
+                this._checkpoint3_Code = value;
+                NotifyPropertyChanged("CheckPoint3");
+                NotifyPropertyChanged("CheckPoint3_Code");
+            }
+        }
+
+
+        private string _checkpoint4;
+        /// <summary>
+        /// 50101900 Декларация, прошедшая формальную проверку, подлежит дальнейшей проверке ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101900)]
+        public string CheckPoint4
+        {
+            get
+            {
+                CheckPropertyInited("CheckPoint4");
+                return _checkpoint4;
+            }
+            set
+            {
+                _checkpoint4 = value;
+                NotifyPropertyChanged("CheckPoint4");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.CheckStatus _checkpoint4_Code;
+        /// <summary>
+        /// 50101900 Декларация, прошедшая формальную проверку, подлежит дальнейшей проверке (справочный код) (CHECK_POINT4)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101900)]
+        public ObjectModel.Directory.Declarations.CheckStatus CheckPoint4_Code
+        {
+            get
+            {
+                CheckPropertyInited("CheckPoint4_Code");
+                return this._checkpoint4_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_checkpoint4))
+                    {
+                         _checkpoint4 = descr;
+                    }
+                }
+                else
+                {
+                     _checkpoint4 = descr;
+                }
+
+                this._checkpoint4_Code = value;
+                NotifyPropertyChanged("CheckPoint4");
+                NotifyPropertyChanged("CheckPoint4_Code");
+            }
+        }
+
+
+        private DateTime? _datecheckplan;
+        /// <summary>
+        /// 50102000 Плановая дата рассмотрения (DATE_CHECK_PLAN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102000)]
+        public DateTime? DateCheckPlan
+        {
+            get
+            {
+                CheckPropertyInited("DateCheckPlan");
+                return _datecheckplan;
+            }
+            set
+            {
+                _datecheckplan = value;
+                NotifyPropertyChanged("DateCheckPlan");
+            }
+        }
+
+
+        private DateTime? _datecheckfact;
+        /// <summary>
+        /// 50102100 Фактическая дата рассмотрения (DATE_CHECK_FACT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102100)]
+        public DateTime? DateCheckFact
+        {
+            get
+            {
+                CheckPropertyInited("DateCheckFact");
+                return _datecheckfact;
+            }
+            set
+            {
+                _datecheckfact = value;
+                NotifyPropertyChanged("DateCheckFact");
+            }
+        }
+
+
+        private string _checkuved;
+        /// <summary>
+        /// 50102200 Подготовка уведомления ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102200)]
+        public string CheckUved
+        {
+            get
+            {
+                CheckPropertyInited("CheckUved");
+                return _checkuved;
+            }
+            set
+            {
+                _checkuved = value;
+                NotifyPropertyChanged("CheckUved");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.CheckStatus _checkuved_Code;
+        /// <summary>
+        /// 50102200 Подготовка уведомления (справочный код) (CHECK_UVED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102200)]
+        public ObjectModel.Directory.Declarations.CheckStatus CheckUved_Code
+        {
+            get
+            {
+                CheckPropertyInited("CheckUved_Code");
+                return this._checkuved_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_checkuved))
+                    {
+                         _checkuved = descr;
+                    }
+                }
+                else
+                {
+                     _checkuved = descr;
+                }
+
+                this._checkuved_Code = value;
+                NotifyPropertyChanged("CheckUved");
+                NotifyPropertyChanged("CheckUved_Code");
+            }
+        }
+
+
+        private DateTime? _dateuvedplan;
+        /// <summary>
+        /// 50102300 Плановая дата уведомления (DATE_UVED_PLAN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102300)]
+        public DateTime? DateUvedPlan
+        {
+            get
+            {
+                CheckPropertyInited("DateUvedPlan");
+                return _dateuvedplan;
+            }
+            set
+            {
+                _dateuvedplan = value;
+                NotifyPropertyChanged("DateUvedPlan");
+            }
+        }
+
+
+        private DateTime? _dateuvedfact;
+        /// <summary>
+        /// 50102400 Фактическая дата уведомления (DATE_UVED_FACT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102400)]
+        public DateTime? DateUvedFact
+        {
+            get
+            {
+                CheckPropertyInited("DateUvedFact");
+                return _dateuvedfact;
+            }
+            set
+            {
+                _dateuvedfact = value;
+                NotifyPropertyChanged("DateUvedFact");
+            }
+        }
+
+
+        private DateTime? _dateend;
+        /// <summary>
+        /// 50102500 Фактическая дата завершения (DATE_END)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102500)]
+        public DateTime? DateEnd
+        {
+            get
+            {
+                CheckPropertyInited("DateEnd");
+                return _dateend;
+            }
+            set
+            {
+                _dateend = value;
+                NotifyPropertyChanged("DateEnd");
+            }
+        }
+
+
+        private string _ownertype;
+        /// <summary>
+        /// 50102600 Податель декларации ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102600)]
+        public string OwnerType
+        {
+            get
+            {
+                CheckPropertyInited("OwnerType");
+                return _ownertype;
+            }
+            set
+            {
+                _ownertype = value;
+                NotifyPropertyChanged("OwnerType");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.OwnerType _ownertype_Code;
+        /// <summary>
+        /// 50102600 Податель декларации (справочный код) (OWNER_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102600)]
+        public ObjectModel.Directory.Declarations.OwnerType OwnerType_Code
+        {
+            get
+            {
+                CheckPropertyInited("OwnerType_Code");
+                return this._ownertype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_ownertype))
+                    {
+                         _ownertype = descr;
+                    }
+                }
+                else
+                {
+                     _ownertype = descr;
+                }
+
+                this._ownertype_Code = value;
+                NotifyPropertyChanged("OwnerType");
+                NotifyPropertyChanged("OwnerType_Code");
+            }
+        }
+
+
+        private string _uvedtypeowner;
+        /// <summary>
+        /// 50102700 Тип уведомления заявителя ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102700)]
+        public string UvedTypeOwner
+        {
+            get
+            {
+                CheckPropertyInited("UvedTypeOwner");
+                return _uvedtypeowner;
+            }
+            set
+            {
+                _uvedtypeowner = value;
+                NotifyPropertyChanged("UvedTypeOwner");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.SendUvedType _uvedtypeowner_Code;
+        /// <summary>
+        /// 50102700 Тип уведомления заявителя (справочный код) (UVED_TYPE_OWNER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102700)]
+        public ObjectModel.Directory.Declarations.SendUvedType UvedTypeOwner_Code
+        {
+            get
+            {
+                CheckPropertyInited("UvedTypeOwner_Code");
+                return this._uvedtypeowner_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_uvedtypeowner))
+                    {
+                         _uvedtypeowner = descr;
+                    }
+                }
+                else
+                {
+                     _uvedtypeowner = descr;
+                }
+
+                this._uvedtypeowner_Code = value;
+                NotifyPropertyChanged("UvedTypeOwner");
+                NotifyPropertyChanged("UvedTypeOwner_Code");
+            }
+        }
+
+
+        private string _uvedtypeagent;
+        /// <summary>
+        /// 50102800 Тип уведомления представителя заявителя ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102800)]
+        public string UvedTypeAgent
+        {
+            get
+            {
+                CheckPropertyInited("UvedTypeAgent");
+                return _uvedtypeagent;
+            }
+            set
+            {
+                _uvedtypeagent = value;
+                NotifyPropertyChanged("UvedTypeAgent");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.SendUvedType _uvedtypeagent_Code;
+        /// <summary>
+        /// 50102800 Тип уведомления представителя заявителя (справочный код) (UVED_TYPE_AGENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102800)]
+        public ObjectModel.Directory.Declarations.SendUvedType UvedTypeAgent_Code
+        {
+            get
+            {
+                CheckPropertyInited("UvedTypeAgent_Code");
+                return this._uvedtypeagent_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_uvedtypeagent))
+                    {
+                         _uvedtypeagent = descr;
+                    }
+                }
+                else
+                {
+                     _uvedtypeagent = descr;
+                }
+
+                this._uvedtypeagent_Code = value;
+                NotifyPropertyChanged("UvedTypeAgent");
+                NotifyPropertyChanged("UvedTypeAgent_Code");
+            }
+        }
+
+
+        private string _сertificatenum;
+        /// <summary>
+        /// 50102900 Номер документа, удостоверяющего полномочия  представителя заявителя  (СERTIFICATE_NUM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50102900)]
+        public string СertificateNum
+        {
+            get
+            {
+                CheckPropertyInited("СertificateNum");
+                return _сertificatenum;
+            }
+            set
+            {
+                _сertificatenum = value;
+                NotifyPropertyChanged("СertificateNum");
+            }
+        }
+
+
+        private DateTime? _сertificatedate;
+        /// <summary>
+        /// 50103000 Дата документа, удостоверяющего полномочия представителя заявителя  (СERTIFICATE_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50103000)]
+        public DateTime? СertificateDate
+        {
+            get
+            {
+                CheckPropertyInited("СertificateDate");
+                return _сertificatedate;
+            }
+            set
+            {
+                _сertificatedate = value;
+                NotifyPropertyChanged("СertificateDate");
+            }
+        }
+
+
+        private string _сertificatename;
+        /// <summary>
+        /// 50103100 Название документа, удостоверяющего полномочия представителя заявителя  (СERTIFICATE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50103100)]
+        public string СertificateName
+        {
+            get
+            {
+                CheckPropertyInited("СertificateName");
+                return _сertificatename;
+            }
+            set
+            {
+                _сertificatename = value;
+                NotifyPropertyChanged("СertificateName");
+            }
+        }
+
+
+        private string _purposedec;
+        /// <summary>
+        /// 50103200 Цель предоставления декларации ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50103200)]
+        public string PurposeDec
+        {
+            get
+            {
+                CheckPropertyInited("PurposeDec");
+                return _purposedec;
+            }
+            set
+            {
+                _purposedec = value;
+                NotifyPropertyChanged("PurposeDec");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.DeclarationPurpose _purposedec_Code;
+        /// <summary>
+        /// 50103200 Цель предоставления декларации (справочный код) (PURPOSE_DEC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50103200)]
+        public ObjectModel.Directory.Declarations.DeclarationPurpose PurposeDec_Code
+        {
+            get
+            {
+                CheckPropertyInited("PurposeDec_Code");
+                return this._purposedec_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_purposedec))
+                    {
+                         _purposedec = descr;
+                    }
+                }
+                else
+                {
+                     _purposedec = descr;
+                }
+
+                this._purposedec_Code = value;
+                NotifyPropertyChanged("PurposeDec");
+                NotifyPropertyChanged("PurposeDec_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 502 Характеристики ОКС (DECLARATIONS_HAR_OKS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 502)]
+    [Serializable]
+    public partial class OMHarOKS : OMBaseClass<OMHarOKS>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50200100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _declaration_id;
+        /// <summary>
+        /// 50200200  (DECLARATION_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50200200)]
+        public long? Declaration_Id
+        {
+            get
+            {
+                CheckPropertyInited("Declaration_Id");
+                return _declaration_id;
+            }
+            set
+            {
+                _declaration_id = value;
+                NotifyPropertyChanged("Declaration_Id");
+            }
+        }
+
+
+        private string _har_1;
+        /// <summary>
+        /// 50200300 Вид объекта недвижимости  (HAR_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50200300)]
+        public string Har_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_1");
+                return _har_1;
+            }
+            set
+            {
+                _har_1 = value;
+                NotifyPropertyChanged("Har_1");
+            }
+        }
+
+
+        private string _har_2;
+        /// <summary>
+        /// 50200400 Адрес (описание местоположения)  (HAR_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50200400)]
+        public string Har_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_2");
+                return _har_2;
+            }
+            set
+            {
+                _har_2 = value;
+                NotifyPropertyChanged("Har_2");
+            }
+        }
+
+
+        private decimal? _har_3;
+        /// <summary>
+        /// 50200500 Площадь  (HAR_3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50200500)]
+        public decimal? Har_3
+        {
+            get
+            {
+                CheckPropertyInited("Har_3");
+                return _har_3;
+            }
+            set
+            {
+                _har_3 = value;
+                NotifyPropertyChanged("Har_3");
+            }
+        }
+
+
+        private string _har_4;
+        /// <summary>
+        /// 50200600 Тип и значение основной характеристики сооружения  (HAR_4)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50200600)]
+        public string Har_4
+        {
+            get
+            {
+                CheckPropertyInited("Har_4");
+                return _har_4;
+            }
+            set
+            {
+                _har_4 = value;
+                NotifyPropertyChanged("Har_4");
+            }
+        }
+
+
+        private string _har_5;
+        /// <summary>
+        /// 50200700 Степень готовности объекта незавершенного строительства  (HAR_5)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50200700)]
+        public string Har_5
+        {
+            get
+            {
+                CheckPropertyInited("Har_5");
+                return _har_5;
+            }
+            set
+            {
+                _har_5 = value;
+                NotifyPropertyChanged("Har_5");
+            }
+        }
+
+
+        private string _har_6;
+        /// <summary>
+        /// 50200800 Проектируемый тип и значение основной характеристики объекта незавершенного строительства  (HAR_6)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50200800)]
+        public string Har_6
+        {
+            get
+            {
+                CheckPropertyInited("Har_6");
+                return _har_6;
+            }
+            set
+            {
+                _har_6 = value;
+                NotifyPropertyChanged("Har_6");
+            }
+        }
+
+
+        private string _har_7;
+        /// <summary>
+        /// 50200900 Проектируемое назначение здания, сооружения, строительство которых не завершено (для объектов незавершенного строительства) (HAR_7)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50200900)]
+        public string Har_7
+        {
+            get
+            {
+                CheckPropertyInited("Har_7");
+                return _har_7;
+            }
+            set
+            {
+                _har_7 = value;
+                NotifyPropertyChanged("Har_7");
+            }
+        }
+
+
+        private long? _har_8;
+        /// <summary>
+        /// 50201000 Количество этажей  (HAR_8)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201000)]
+        public long? Har_8
+        {
+            get
+            {
+                CheckPropertyInited("Har_8");
+                return _har_8;
+            }
+            set
+            {
+                _har_8 = value;
+                NotifyPropertyChanged("Har_8");
+            }
+        }
+
+
+        private long? _har_9;
+        /// <summary>
+        /// 50201100 Номер этажа здания или сооружения, на котором расположено помещение или машино-место (HAR_9)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201100)]
+        public long? Har_9
+        {
+            get
+            {
+                CheckPropertyInited("Har_9");
+                return _har_9;
+            }
+            set
+            {
+                _har_9 = value;
+                NotifyPropertyChanged("Har_9");
+            }
+        }
+
+
+        private string _har_10;
+        /// <summary>
+        /// 50201200 Материал наружных стен, если объектом недвижимости является здание (HAR_10)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201200)]
+        public string Har_10
+        {
+            get
+            {
+                CheckPropertyInited("Har_10");
+                return _har_10;
+            }
+            set
+            {
+                _har_10 = value;
+                NotifyPropertyChanged("Har_10");
+            }
+        }
+
+
+        private string _har_11;
+        /// <summary>
+        /// 50201300 Материал основных несущих конструкций, перекрытий (HAR_11)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201300)]
+        public string Har_11
+        {
+            get
+            {
+                CheckPropertyInited("Har_11");
+                return _har_11;
+            }
+            set
+            {
+                _har_11 = value;
+                NotifyPropertyChanged("Har_11");
+            }
+        }
+
+
+        private string _har_12;
+        /// <summary>
+        /// 50201400 Материал кровли (HAR_12)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201400)]
+        public string Har_12
+        {
+            get
+            {
+                CheckPropertyInited("Har_12");
+                return _har_12;
+            }
+            set
+            {
+                _har_12 = value;
+                NotifyPropertyChanged("Har_12");
+            }
+        }
+
+
+        private DateTime? _har_13;
+        /// <summary>
+        /// 50201500 Год ввода в эксплуатацию объекта недвижимости  (HAR_13)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201500)]
+        public DateTime? Har_13
+        {
+            get
+            {
+                CheckPropertyInited("Har_13");
+                return _har_13;
+            }
+            set
+            {
+                _har_13 = value;
+                NotifyPropertyChanged("Har_13");
+            }
+        }
+
+
+        private DateTime? _har_14;
+        /// <summary>
+        /// 50201600 Год завершения строительства объекта недвижимости  (HAR_14)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201600)]
+        public DateTime? Har_14
+        {
+            get
+            {
+                CheckPropertyInited("Har_14");
+                return _har_14;
+            }
+            set
+            {
+                _har_14 = value;
+                NotifyPropertyChanged("Har_14");
+            }
+        }
+
+
+        private DateTime? _har_15;
+        /// <summary>
+        /// 50201700 Дата окончания проведения капитального ремонта (HAR_15)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201700)]
+        public DateTime? Har_15
+        {
+            get
+            {
+                CheckPropertyInited("Har_15");
+                return _har_15;
+            }
+            set
+            {
+                _har_15 = value;
+                NotifyPropertyChanged("Har_15");
+            }
+        }
+
+
+        private DateTime? _har_16;
+        /// <summary>
+        /// 50201800 Дата окончания проведения реконструкции (HAR_16)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201800)]
+        public DateTime? Har_16
+        {
+            get
+            {
+                CheckPropertyInited("Har_16");
+                return _har_16;
+            }
+            set
+            {
+                _har_16 = value;
+                NotifyPropertyChanged("Har_16");
+            }
+        }
+
+
+        private string _har_17;
+        /// <summary>
+        /// 50201900 Вид жилого помещения  (HAR_17)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50201900)]
+        public string Har_17
+        {
+            get
+            {
+                CheckPropertyInited("Har_17");
+                return _har_17;
+            }
+            set
+            {
+                _har_17 = value;
+                NotifyPropertyChanged("Har_17");
+            }
+        }
+
+
+        private string _har_18;
+        /// <summary>
+        /// 50202000 Вид или виды разрешенного использования  (HAR_18)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202000)]
+        public string Har_18
+        {
+            get
+            {
+                CheckPropertyInited("Har_18");
+                return _har_18;
+            }
+            set
+            {
+                _har_18 = value;
+                NotifyPropertyChanged("Har_18");
+            }
+        }
+
+
+        private string _har_19;
+        /// <summary>
+        /// 50202100 Сведения о включении объекта недвижимости в единый государственный реестр объектов культурного наследия  (HAR_19)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202100)]
+        public string Har_19
+        {
+            get
+            {
+                CheckPropertyInited("Har_19");
+                return _har_19;
+            }
+            set
+            {
+                _har_19 = value;
+                NotifyPropertyChanged("Har_19");
+            }
+        }
+
+
+        private string _har_20;
+        /// <summary>
+        /// 50202200 Физический износ  (HAR_20)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202200)]
+        public string Har_20
+        {
+            get
+            {
+                CheckPropertyInited("Har_20");
+                return _har_20;
+            }
+            set
+            {
+                _har_20 = value;
+                NotifyPropertyChanged("Har_20");
+            }
+        }
+
+
+        private string _har_21;
+        /// <summary>
+        /// 50202300 Описание коммуникаций, в том числе их удаленность  (HAR_21)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202300)]
+        public string Har_21
+        {
+            get
+            {
+                CheckPropertyInited("Har_21");
+                return _har_21;
+            }
+            set
+            {
+                _har_21 = value;
+                NotifyPropertyChanged("Har_21");
+            }
+        }
+
+
+        private string _har_21_1_1;
+        /// <summary>
+        /// 50202400 Наличие/отсутствие подключения к электрическим сетям  ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202400)]
+        public string Har_21_1_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_1_1");
+                return _har_21_1_1;
+            }
+            set
+            {
+                _har_21_1_1 = value;
+                NotifyPropertyChanged("Har_21_1_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_1_1_Code;
+        /// <summary>
+        /// 50202400 Наличие/отсутствие подключения к электрическим сетям  (справочный код) (HAR_21_1_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202400)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_1_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_1_1_Code");
+                return this._har_21_1_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_1_1))
+                    {
+                         _har_21_1_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_1_1 = descr;
+                }
+
+                this._har_21_1_1_Code = value;
+                NotifyPropertyChanged("Har_21_1_1");
+                NotifyPropertyChanged("Har_21_1_1_Code");
+            }
+        }
+
+
+        private string _har_21_1_2;
+        /// <summary>
+        /// 50202500 Возможность/отсутствие возможности подключения к сетям инженерно-технического обеспечения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202500)]
+        public string Har_21_1_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_1_2");
+                return _har_21_1_2;
+            }
+            set
+            {
+                _har_21_1_2 = value;
+                NotifyPropertyChanged("Har_21_1_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_1_2_Code;
+        /// <summary>
+        /// 50202500 Возможность/отсутствие возможности подключения к сетям инженерно-технического обеспечения (справочный код) (HAR_21_1_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202500)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_1_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_1_2_Code");
+                return this._har_21_1_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_1_2))
+                    {
+                         _har_21_1_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_1_2 = descr;
+                }
+
+                this._har_21_1_2_Code = value;
+                NotifyPropertyChanged("Har_21_1_2");
+                NotifyPropertyChanged("Har_21_1_2_Code");
+            }
+        }
+
+
+        private string _har_21_1_3;
+        /// <summary>
+        /// 50202600 Мощность электрической сети  (HAR_21_1_3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202600)]
+        public string Har_21_1_3
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_1_3");
+                return _har_21_1_3;
+            }
+            set
+            {
+                _har_21_1_3 = value;
+                NotifyPropertyChanged("Har_21_1_3");
+            }
+        }
+
+
+        private string _har_21_2_1;
+        /// <summary>
+        /// 50202700 Наличие/отсутствие подключения к сетям газораспределения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202700)]
+        public string Har_21_2_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_2_1");
+                return _har_21_2_1;
+            }
+            set
+            {
+                _har_21_2_1 = value;
+                NotifyPropertyChanged("Har_21_2_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_2_1_Code;
+        /// <summary>
+        /// 50202700 Наличие/отсутствие подключения к сетям газораспределения (справочный код) (HAR_21_2_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202700)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_2_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_2_1_Code");
+                return this._har_21_2_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_2_1))
+                    {
+                         _har_21_2_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_2_1 = descr;
+                }
+
+                this._har_21_2_1_Code = value;
+                NotifyPropertyChanged("Har_21_2_1");
+                NotifyPropertyChanged("Har_21_2_1_Code");
+            }
+        }
+
+
+        private string _har_21_2_2;
+        /// <summary>
+        /// 50202800 Возможность/отсутствие возможности подключения к сетям газораспределения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202800)]
+        public string Har_21_2_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_2_2");
+                return _har_21_2_2;
+            }
+            set
+            {
+                _har_21_2_2 = value;
+                NotifyPropertyChanged("Har_21_2_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_2_2_Code;
+        /// <summary>
+        /// 50202800 Возможность/отсутствие возможности подключения к сетям газораспределения (справочный код) (HAR_21_2_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202800)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_2_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_2_2_Code");
+                return this._har_21_2_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_2_2))
+                    {
+                         _har_21_2_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_2_2 = descr;
+                }
+
+                this._har_21_2_2_Code = value;
+                NotifyPropertyChanged("Har_21_2_2");
+                NotifyPropertyChanged("Har_21_2_2_Code");
+            }
+        }
+
+
+        private string _har_21_2_3;
+        /// <summary>
+        /// 50202900 Мощность сетей газораспределения  (HAR_21_2_3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50202900)]
+        public string Har_21_2_3
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_2_3");
+                return _har_21_2_3;
+            }
+            set
+            {
+                _har_21_2_3 = value;
+                NotifyPropertyChanged("Har_21_2_3");
+            }
+        }
+
+
+        private string _har_21_3_1;
+        /// <summary>
+        /// 50203000 Наличие/отсутствие централизованного подключения к системе водоснабжения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203000)]
+        public string Har_21_3_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_3_1");
+                return _har_21_3_1;
+            }
+            set
+            {
+                _har_21_3_1 = value;
+                NotifyPropertyChanged("Har_21_3_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_3_1_Code;
+        /// <summary>
+        /// 50203000 Наличие/отсутствие централизованного подключения к системе водоснабжения (справочный код) (HAR_21_3_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203000)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_3_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_3_1_Code");
+                return this._har_21_3_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_3_1))
+                    {
+                         _har_21_3_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_3_1 = descr;
+                }
+
+                this._har_21_3_1_Code = value;
+                NotifyPropertyChanged("Har_21_3_1");
+                NotifyPropertyChanged("Har_21_3_1_Code");
+            }
+        }
+
+
+        private string _har_21_3_2;
+        /// <summary>
+        /// 50203100 Возможность/отсутствие возможности подключения к системе водоснабжения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203100)]
+        public string Har_21_3_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_3_2");
+                return _har_21_3_2;
+            }
+            set
+            {
+                _har_21_3_2 = value;
+                NotifyPropertyChanged("Har_21_3_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_3_2_Code;
+        /// <summary>
+        /// 50203100 Возможность/отсутствие возможности подключения к системе водоснабжения (справочный код) (HAR_21_3_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203100)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_3_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_3_2_Code");
+                return this._har_21_3_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_3_2))
+                    {
+                         _har_21_3_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_3_2 = descr;
+                }
+
+                this._har_21_3_2_Code = value;
+                NotifyPropertyChanged("Har_21_3_2");
+                NotifyPropertyChanged("Har_21_3_2_Code");
+            }
+        }
+
+
+        private string _har_21_4_1;
+        /// <summary>
+        /// 50203200 Наличие/отсутствие централизованного подключения к системе теплоснабжения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203200)]
+        public string Har_21_4_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_4_1");
+                return _har_21_4_1;
+            }
+            set
+            {
+                _har_21_4_1 = value;
+                NotifyPropertyChanged("Har_21_4_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_4_1_Code;
+        /// <summary>
+        /// 50203200 Наличие/отсутствие централизованного подключения к системе теплоснабжения (справочный код) (HAR_21_4_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203200)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_4_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_4_1_Code");
+                return this._har_21_4_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_4_1))
+                    {
+                         _har_21_4_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_4_1 = descr;
+                }
+
+                this._har_21_4_1_Code = value;
+                NotifyPropertyChanged("Har_21_4_1");
+                NotifyPropertyChanged("Har_21_4_1_Code");
+            }
+        }
+
+
+        private string _har_21_4_2;
+        /// <summary>
+        /// 50203300 Возможность/отсутствие возможности подключения к системе теплоснабжения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203300)]
+        public string Har_21_4_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_4_2");
+                return _har_21_4_2;
+            }
+            set
+            {
+                _har_21_4_2 = value;
+                NotifyPropertyChanged("Har_21_4_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_4_2_Code;
+        /// <summary>
+        /// 50203300 Возможность/отсутствие возможности подключения к системе теплоснабжения (справочный код) (HAR_21_4_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203300)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_4_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_4_2_Code");
+                return this._har_21_4_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_4_2))
+                    {
+                         _har_21_4_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_4_2 = descr;
+                }
+
+                this._har_21_4_2_Code = value;
+                NotifyPropertyChanged("Har_21_4_2");
+                NotifyPropertyChanged("Har_21_4_2_Code");
+            }
+        }
+
+
+        private string _har_21_5_1;
+        /// <summary>
+        /// 50203400 Наличие/отсутствие централизованного подключения к системе водоотведения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203400)]
+        public string Har_21_5_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_5_1");
+                return _har_21_5_1;
+            }
+            set
+            {
+                _har_21_5_1 = value;
+                NotifyPropertyChanged("Har_21_5_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_5_1_Code;
+        /// <summary>
+        /// 50203400 Наличие/отсутствие централизованного подключения к системе водоотведения (справочный код) (HAR_21_5_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203400)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_5_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_5_1_Code");
+                return this._har_21_5_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_5_1))
+                    {
+                         _har_21_5_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_5_1 = descr;
+                }
+
+                this._har_21_5_1_Code = value;
+                NotifyPropertyChanged("Har_21_5_1");
+                NotifyPropertyChanged("Har_21_5_1_Code");
+            }
+        }
+
+
+        private string _har_21_5_2;
+        /// <summary>
+        /// 50203500 Возможность/отсутствие возможности подключения к системе водоотведения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203500)]
+        public string Har_21_5_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_5_2");
+                return _har_21_5_2;
+            }
+            set
+            {
+                _har_21_5_2 = value;
+                NotifyPropertyChanged("Har_21_5_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_21_5_2_Code;
+        /// <summary>
+        /// 50203500 Возможность/отсутствие возможности подключения к системе водоотведения (справочный код) (HAR_21_5_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50203500)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_21_5_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_21_5_2_Code");
+                return this._har_21_5_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_21_5_2))
+                    {
+                         _har_21_5_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_21_5_2 = descr;
+                }
+
+                this._har_21_5_2_Code = value;
+                NotifyPropertyChanged("Har_21_5_2");
+                NotifyPropertyChanged("Har_21_5_2_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 503 Характеристики ЗУ (DECLARATIONS_HAR_PARCEL)
+    /// </summary>
+    [RegisterInfo(RegisterID = 503)]
+    [Serializable]
+    public partial class OMHarParcel : OMBaseClass<OMHarParcel>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50300100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _declaration_id;
+        /// <summary>
+        /// 50300200  (DECLARATION_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50300200)]
+        public long? Declaration_Id
+        {
+            get
+            {
+                CheckPropertyInited("Declaration_Id");
+                return _declaration_id;
+            }
+            set
+            {
+                _declaration_id = value;
+                NotifyPropertyChanged("Declaration_Id");
+            }
+        }
+
+
+        private string _har_1;
+        /// <summary>
+        /// 50300300 Адрес земельного участка (HAR_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50300300)]
+        public string Har_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_1");
+                return _har_1;
+            }
+            set
+            {
+                _har_1 = value;
+                NotifyPropertyChanged("Har_1");
+            }
+        }
+
+
+        private decimal? _har_2;
+        /// <summary>
+        /// 50300400 Площадь  (HAR_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50300400)]
+        public decimal? Har_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_2");
+                return _har_2;
+            }
+            set
+            {
+                _har_2 = value;
+                NotifyPropertyChanged("Har_2");
+            }
+        }
+
+
+        private string _har_3;
+        /// <summary>
+        /// 50300500 Категория земель  (HAR_3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50300500)]
+        public string Har_3
+        {
+            get
+            {
+                CheckPropertyInited("Har_3");
+                return _har_3;
+            }
+            set
+            {
+                _har_3 = value;
+                NotifyPropertyChanged("Har_3");
+            }
+        }
+
+
+        private string _har_4;
+        /// <summary>
+        /// 50300600 Вид разрешенного использования  (HAR_4)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50300600)]
+        public string Har_4
+        {
+            get
+            {
+                CheckPropertyInited("Har_4");
+                return _har_4;
+            }
+            set
+            {
+                _har_4 = value;
+                NotifyPropertyChanged("Har_4");
+            }
+        }
+
+
+        private string _har_5;
+        /// <summary>
+        /// 50300700 Фактическое использование земельного участка (HAR_5)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50300700)]
+        public string Har_5
+        {
+            get
+            {
+                CheckPropertyInited("Har_5");
+                return _har_5;
+            }
+            set
+            {
+                _har_5 = value;
+                NotifyPropertyChanged("Har_5");
+            }
+        }
+
+
+        private string _har_6;
+        /// <summary>
+        /// 50300800 Сведения о лесах, водных объектах и об иных природных объектах (HAR_6)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50300800)]
+        public string Har_6
+        {
+            get
+            {
+                CheckPropertyInited("Har_6");
+                return _har_6;
+            }
+            set
+            {
+                _har_6 = value;
+                NotifyPropertyChanged("Har_6");
+            }
+        }
+
+
+        private string _har_7;
+        /// <summary>
+        /// 50300900 Сведения о том, что земельный участок полностью или частично расположен в границах зоны с особыми условиями  (HAR_7)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50300900)]
+        public string Har_7
+        {
+            get
+            {
+                CheckPropertyInited("Har_7");
+                return _har_7;
+            }
+            set
+            {
+                _har_7 = value;
+                NotifyPropertyChanged("Har_7");
+            }
+        }
+
+
+        private string _har_8;
+        /// <summary>
+        /// 50301000 Сведения о том, что земельный участок расположен в границах особо охраняемой природной территории (HAR_8)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301000)]
+        public string Har_8
+        {
+            get
+            {
+                CheckPropertyInited("Har_8");
+                return _har_8;
+            }
+            set
+            {
+                _har_8 = value;
+                NotifyPropertyChanged("Har_8");
+            }
+        }
+
+
+        private string _har_9;
+        /// <summary>
+        /// 50301100 Сведения о том, что земельный участок расположен в границах особой экономической зоны (HAR_9)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301100)]
+        public string Har_9
+        {
+            get
+            {
+                CheckPropertyInited("Har_9");
+                return _har_9;
+            }
+            set
+            {
+                _har_9 = value;
+                NotifyPropertyChanged("Har_9");
+            }
+        }
+
+
+        private string _har_10;
+        /// <summary>
+        /// 50301200 Сведения об установленных сервитутах (HAR_10)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301200)]
+        public string Har_10
+        {
+            get
+            {
+                CheckPropertyInited("Har_10");
+                return _har_10;
+            }
+            set
+            {
+                _har_10 = value;
+                NotifyPropertyChanged("Har_10");
+            }
+        }
+
+
+        private string _har_11;
+        /// <summary>
+        /// 50301300 Удаленность от автомобильных дорог с твердым покрытием (HAR_11)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301300)]
+        public string Har_11
+        {
+            get
+            {
+                CheckPropertyInited("Har_11");
+                return _har_11;
+            }
+            set
+            {
+                _har_11 = value;
+                NotifyPropertyChanged("Har_11");
+            }
+        }
+
+
+        private string _har_12;
+        /// <summary>
+        /// 50301400 Сведения о наличии/отсутствии подъездных путей  (HAR_12)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301400)]
+        public string Har_12
+        {
+            get
+            {
+                CheckPropertyInited("Har_12");
+                return _har_12;
+            }
+            set
+            {
+                _har_12 = value;
+                NotifyPropertyChanged("Har_12");
+            }
+        }
+
+
+        private string _har_13;
+        /// <summary>
+        /// 50301500 Описание коммуникаций, в том числе их удаленность  (HAR_13)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301500)]
+        public string Har_13
+        {
+            get
+            {
+                CheckPropertyInited("Har_13");
+                return _har_13;
+            }
+            set
+            {
+                _har_13 = value;
+                NotifyPropertyChanged("Har_13");
+            }
+        }
+
+
+        private string _har_13_1_1;
+        /// <summary>
+        /// 50301600 Наличие/отсутствие подключения к электрическим сетям  ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301600)]
+        public string Har_13_1_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_1_1");
+                return _har_13_1_1;
+            }
+            set
+            {
+                _har_13_1_1 = value;
+                NotifyPropertyChanged("Har_13_1_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_1_1_Code;
+        /// <summary>
+        /// 50301600 Наличие/отсутствие подключения к электрическим сетям  (справочный код) (HAR_13_1_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301600)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_1_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_1_1_Code");
+                return this._har_13_1_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_1_1))
+                    {
+                         _har_13_1_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_1_1 = descr;
+                }
+
+                this._har_13_1_1_Code = value;
+                NotifyPropertyChanged("Har_13_1_1");
+                NotifyPropertyChanged("Har_13_1_1_Code");
+            }
+        }
+
+
+        private string _har_13_1_2;
+        /// <summary>
+        /// 50301700 Возможность/отсутствие возможности подключения к сетям ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301700)]
+        public string Har_13_1_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_1_2");
+                return _har_13_1_2;
+            }
+            set
+            {
+                _har_13_1_2 = value;
+                NotifyPropertyChanged("Har_13_1_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_1_2_Code;
+        /// <summary>
+        /// 50301700 Возможность/отсутствие возможности подключения к сетям (справочный код) (HAR_13_1_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301700)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_1_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_1_2_Code");
+                return this._har_13_1_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_1_2))
+                    {
+                         _har_13_1_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_1_2 = descr;
+                }
+
+                this._har_13_1_2_Code = value;
+                NotifyPropertyChanged("Har_13_1_2");
+                NotifyPropertyChanged("Har_13_1_2_Code");
+            }
+        }
+
+
+        private string _har_13_1_3;
+        /// <summary>
+        /// 50301800 Мощность электрической сети  (HAR_13_1_3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301800)]
+        public string Har_13_1_3
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_1_3");
+                return _har_13_1_3;
+            }
+            set
+            {
+                _har_13_1_3 = value;
+                NotifyPropertyChanged("Har_13_1_3");
+            }
+        }
+
+
+        private string _har_13_2_1;
+        /// <summary>
+        /// 50301900 Наличие/отсутствие подключения к сетям газораспределения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301900)]
+        public string Har_13_2_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_2_1");
+                return _har_13_2_1;
+            }
+            set
+            {
+                _har_13_2_1 = value;
+                NotifyPropertyChanged("Har_13_2_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_2_1_Code;
+        /// <summary>
+        /// 50301900 Наличие/отсутствие подключения к сетям газораспределения (справочный код) (HAR_13_2_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50301900)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_2_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_2_1_Code");
+                return this._har_13_2_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_2_1))
+                    {
+                         _har_13_2_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_2_1 = descr;
+                }
+
+                this._har_13_2_1_Code = value;
+                NotifyPropertyChanged("Har_13_2_1");
+                NotifyPropertyChanged("Har_13_2_1_Code");
+            }
+        }
+
+
+        private string _har_13_2_2;
+        /// <summary>
+        /// 50302000 Возможность/отсутствие возможности подключения к сетям газораспределения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302000)]
+        public string Har_13_2_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_2_2");
+                return _har_13_2_2;
+            }
+            set
+            {
+                _har_13_2_2 = value;
+                NotifyPropertyChanged("Har_13_2_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_2_2_Code;
+        /// <summary>
+        /// 50302000 Возможность/отсутствие возможности подключения к сетям газораспределения (справочный код) (HAR_13_2_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302000)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_2_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_2_2_Code");
+                return this._har_13_2_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_2_2))
+                    {
+                         _har_13_2_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_2_2 = descr;
+                }
+
+                this._har_13_2_2_Code = value;
+                NotifyPropertyChanged("Har_13_2_2");
+                NotifyPropertyChanged("Har_13_2_2_Code");
+            }
+        }
+
+
+        private string _har_13_2_3;
+        /// <summary>
+        /// 50302100 Мощность сетей газораспределения  (HAR_13_2_3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302100)]
+        public string Har_13_2_3
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_2_3");
+                return _har_13_2_3;
+            }
+            set
+            {
+                _har_13_2_3 = value;
+                NotifyPropertyChanged("Har_13_2_3");
+            }
+        }
+
+
+        private string _har_13_3_1;
+        /// <summary>
+        /// 50302200 Наличие/отсутствие централизованного подключения к системе водоснабжения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302200)]
+        public string Har_13_3_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_3_1");
+                return _har_13_3_1;
+            }
+            set
+            {
+                _har_13_3_1 = value;
+                NotifyPropertyChanged("Har_13_3_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_3_1_Code;
+        /// <summary>
+        /// 50302200 Наличие/отсутствие централизованного подключения к системе водоснабжения (справочный код) (HAR_13_3_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302200)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_3_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_3_1_Code");
+                return this._har_13_3_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_3_1))
+                    {
+                         _har_13_3_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_3_1 = descr;
+                }
+
+                this._har_13_3_1_Code = value;
+                NotifyPropertyChanged("Har_13_3_1");
+                NotifyPropertyChanged("Har_13_3_1_Code");
+            }
+        }
+
+
+        private string _har_13_3_2;
+        /// <summary>
+        /// 50302300 Возможность/отсутствие возможности подключения к системе водоснабжения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302300)]
+        public string Har_13_3_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_3_2");
+                return _har_13_3_2;
+            }
+            set
+            {
+                _har_13_3_2 = value;
+                NotifyPropertyChanged("Har_13_3_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_3_2_Code;
+        /// <summary>
+        /// 50302300 Возможность/отсутствие возможности подключения к системе водоснабжения (справочный код) (HAR_13_3_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302300)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_3_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_3_2_Code");
+                return this._har_13_3_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_3_2))
+                    {
+                         _har_13_3_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_3_2 = descr;
+                }
+
+                this._har_13_3_2_Code = value;
+                NotifyPropertyChanged("Har_13_3_2");
+                NotifyPropertyChanged("Har_13_3_2_Code");
+            }
+        }
+
+
+        private string _har_13_4_1;
+        /// <summary>
+        /// 50302400 Наличие/отсутствие централизованного подключения к системе теплоснабжения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302400)]
+        public string Har_13_4_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_4_1");
+                return _har_13_4_1;
+            }
+            set
+            {
+                _har_13_4_1 = value;
+                NotifyPropertyChanged("Har_13_4_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_4_1_Code;
+        /// <summary>
+        /// 50302400 Наличие/отсутствие централизованного подключения к системе теплоснабжения (справочный код) (HAR_13_4_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302400)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_4_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_4_1_Code");
+                return this._har_13_4_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_4_1))
+                    {
+                         _har_13_4_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_4_1 = descr;
+                }
+
+                this._har_13_4_1_Code = value;
+                NotifyPropertyChanged("Har_13_4_1");
+                NotifyPropertyChanged("Har_13_4_1_Code");
+            }
+        }
+
+
+        private string _har_13_4_2;
+        /// <summary>
+        /// 50302500 Возможность/отсутствие возможности подключения к системе теплоснабжения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302500)]
+        public string Har_13_4_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_4_2");
+                return _har_13_4_2;
+            }
+            set
+            {
+                _har_13_4_2 = value;
+                NotifyPropertyChanged("Har_13_4_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_4_2_Code;
+        /// <summary>
+        /// 50302500 Возможность/отсутствие возможности подключения к системе теплоснабжения (справочный код) (HAR_13_4_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302500)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_4_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_4_2_Code");
+                return this._har_13_4_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_4_2))
+                    {
+                         _har_13_4_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_4_2 = descr;
+                }
+
+                this._har_13_4_2_Code = value;
+                NotifyPropertyChanged("Har_13_4_2");
+                NotifyPropertyChanged("Har_13_4_2_Code");
+            }
+        }
+
+
+        private string _har_13_5_1;
+        /// <summary>
+        /// 50302600 Наличие/отсутствие централизованного подключения к системе водоотведения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302600)]
+        public string Har_13_5_1
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_5_1");
+                return _har_13_5_1;
+            }
+            set
+            {
+                _har_13_5_1 = value;
+                NotifyPropertyChanged("Har_13_5_1");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_5_1_Code;
+        /// <summary>
+        /// 50302600 Наличие/отсутствие централизованного подключения к системе водоотведения (справочный код) (HAR_13_5_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302600)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_5_1_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_5_1_Code");
+                return this._har_13_5_1_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_5_1))
+                    {
+                         _har_13_5_1 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_5_1 = descr;
+                }
+
+                this._har_13_5_1_Code = value;
+                NotifyPropertyChanged("Har_13_5_1");
+                NotifyPropertyChanged("Har_13_5_1_Code");
+            }
+        }
+
+
+        private string _har_13_5_2;
+        /// <summary>
+        /// 50302700 Возможность/отсутствие возможности подключения к системе водоотведения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302700)]
+        public string Har_13_5_2
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_5_2");
+                return _har_13_5_2;
+            }
+            set
+            {
+                _har_13_5_2 = value;
+                NotifyPropertyChanged("Har_13_5_2");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarAvailability _har_13_5_2_Code;
+        /// <summary>
+        /// 50302700 Возможность/отсутствие возможности подключения к системе водоотведения (справочный код) (HAR_13_5_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302700)]
+        public ObjectModel.Directory.Declarations.HarAvailability Har_13_5_2_Code
+        {
+            get
+            {
+                CheckPropertyInited("Har_13_5_2_Code");
+                return this._har_13_5_2_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_har_13_5_2))
+                    {
+                         _har_13_5_2 = descr;
+                    }
+                }
+                else
+                {
+                     _har_13_5_2 = descr;
+                }
+
+                this._har_13_5_2_Code = value;
+                NotifyPropertyChanged("Har_13_5_2");
+                NotifyPropertyChanged("Har_13_5_2_Code");
+            }
+        }
+
+
+        private string _har_14;
+        /// <summary>
+        /// 50302800 Удаленность относительно ближайшего водного объекта  (HAR_14)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302800)]
+        public string Har_14
+        {
+            get
+            {
+                CheckPropertyInited("Har_14");
+                return _har_14;
+            }
+            set
+            {
+                _har_14 = value;
+                NotifyPropertyChanged("Har_14");
+            }
+        }
+
+
+        private string _har_15;
+        /// <summary>
+        /// 50302900 Удаленность относительно ближайшей рекреационной зоны  (HAR_15)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50302900)]
+        public string Har_15
+        {
+            get
+            {
+                CheckPropertyInited("Har_15");
+                return _har_15;
+            }
+            set
+            {
+                _har_15 = value;
+                NotifyPropertyChanged("Har_15");
+            }
+        }
+
+
+        private string _har_16;
+        /// <summary>
+        /// 50303000 Удаленность относительно железных дорог  (HAR_16)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50303000)]
+        public string Har_16
+        {
+            get
+            {
+                CheckPropertyInited("Har_16");
+                return _har_16;
+            }
+            set
+            {
+                _har_16 = value;
+                NotifyPropertyChanged("Har_16");
+            }
+        }
+
+
+        private string _har_17;
+        /// <summary>
+        /// 50303100 Удаленность относительно железнодорожных вокзалов (станций) (HAR_17)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50303100)]
+        public string Har_17
+        {
+            get
+            {
+                CheckPropertyInited("Har_17");
+                return _har_17;
+            }
+            set
+            {
+                _har_17 = value;
+                NotifyPropertyChanged("Har_17");
+            }
+        }
+
+
+        private string _har_18;
+        /// <summary>
+        /// 50303200 Удаленность от зоны разработки полезных ископаемых (HAR_18)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50303200)]
+        public string Har_18
+        {
+            get
+            {
+                CheckPropertyInited("Har_18");
+                return _har_18;
+            }
+            set
+            {
+                _har_18 = value;
+                NotifyPropertyChanged("Har_18");
+            }
+        }
+
+
+        private string _har_19;
+        /// <summary>
+        /// 50303300 Вид угодий  (HAR_19)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50303300)]
+        public string Har_19
+        {
+            get
+            {
+                CheckPropertyInited("Har_19");
+                return _har_19;
+            }
+            set
+            {
+                _har_19 = value;
+                NotifyPropertyChanged("Har_19");
+            }
+        }
+
+
+        private string _har_20;
+        /// <summary>
+        /// 50303400 Показатели состояния почв  (HAR_20)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50303400)]
+        public string Har_20
+        {
+            get
+            {
+                CheckPropertyInited("Har_20");
+                return _har_20;
+            }
+            set
+            {
+                _har_20 = value;
+                NotifyPropertyChanged("Har_20");
+            }
+        }
+
+
+        private string _har_21;
+        /// <summary>
+        /// 50303500 Наличие недостатков, препятствующих рациональному использованию и охране земель (HAR_21)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50303500)]
+        public string Har_21
+        {
+            get
+            {
+                CheckPropertyInited("Har_21");
+                return _har_21;
+            }
+            set
+            {
+                _har_21 = value;
+                NotifyPropertyChanged("Har_21");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 504 Результаты (DECLARATIONS_RESULT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 504)]
+    [Serializable]
+    public partial class OMResult : OMBaseClass<OMResult>
+    {
+
+        private long _declaration_id;
+        /// <summary>
+        /// 50400100  (DECLARATION_ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50400100)]
+        public long Declaration_Id
+        {
+            get
+            {
+                CheckPropertyInited("Declaration_Id");
+                return _declaration_id;
+            }
+            set
+            {
+                _declaration_id = value;
+                NotifyPropertyChanged("Declaration_Id");
+            }
+        }
+
+
+        private string _textyes;
+        /// <summary>
+        /// 50400200 Положительный отзыв по декларации (TEXT_YES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50400200)]
+        public string TextYes
+        {
+            get
+            {
+                CheckPropertyInited("TextYes");
+                return _textyes;
+            }
+            set
+            {
+                _textyes = value;
+                NotifyPropertyChanged("TextYes");
+            }
+        }
+
+
+        private string _textno;
+        /// <summary>
+        /// 50400300 Отрицательный отзыв по декларации (TEXT_NO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50400300)]
+        public string TextNo
+        {
+            get
+            {
+                CheckPropertyInited("TextNo");
+                return _textno;
+            }
+            set
+            {
+                _textno = value;
+                NotifyPropertyChanged("TextNo");
+            }
+        }
+
+
+        private string _statusdec;
+        /// <summary>
+        /// 50400400 Статус декларации ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50400400)]
+        public string StatusDec
+        {
+            get
+            {
+                CheckPropertyInited("StatusDec");
+                return _statusdec;
+            }
+            set
+            {
+                _statusdec = value;
+                NotifyPropertyChanged("StatusDec");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.StatusDec _statusdec_Code;
+        /// <summary>
+        /// 50400400 Статус декларации (справочный код) (STATUS_DEC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50400400)]
+        public ObjectModel.Directory.Declarations.StatusDec StatusDec_Code
+        {
+            get
+            {
+                CheckPropertyInited("StatusDec_Code");
+                return this._statusdec_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_statusdec))
+                    {
+                         _statusdec = descr;
+                    }
+                }
+                else
+                {
+                     _statusdec = descr;
+                }
+
+                this._statusdec_Code = value;
+                NotifyPropertyChanged("StatusDec");
+                NotifyPropertyChanged("StatusDec_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 505 Субъекты (DECLARATIONS_SUBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 505)]
+    [Serializable]
+    public partial class OMSubject : OMBaseClass<OMSubject>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50500100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 50500200 Наименование юридического лица  (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50500200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private string _f_name;
+        /// <summary>
+        /// 50500300 Фамилия физического лица/представителя заявителя (F_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50500300)]
+        public string F_Name
+        {
+            get
+            {
+                CheckPropertyInited("F_Name");
+                return _f_name;
+            }
+            set
+            {
+                _f_name = value;
+                NotifyPropertyChanged("F_Name");
+            }
+        }
+
+
+        private string _i_name;
+        /// <summary>
+        /// 50500400 Имя, отчество физического лица/представителя заявителя (I_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50500400)]
+        public string I_Name
+        {
+            get
+            {
+                CheckPropertyInited("I_Name");
+                return _i_name;
+            }
+            set
+            {
+                _i_name = value;
+                NotifyPropertyChanged("I_Name");
+            }
+        }
+
+
+        private string _o_name;
+        /// <summary>
+        /// 50500500 Отчество физического лица/представителя заявителя (O_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50500500)]
+        public string O_Name
+        {
+            get
+            {
+                CheckPropertyInited("O_Name");
+                return _o_name;
+            }
+            set
+            {
+                _o_name = value;
+                NotifyPropertyChanged("O_Name");
+            }
+        }
+
+
+        private string _address;
+        /// <summary>
+        /// 50500600 Почтовый адрес  (ADDRESS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50500600)]
+        public string Address
+        {
+            get
+            {
+                CheckPropertyInited("Address");
+                return _address;
+            }
+            set
+            {
+                _address = value;
+                NotifyPropertyChanged("Address");
+            }
+        }
+
+
+        private string _mail;
+        /// <summary>
+        /// 50500700 Адрес электронной почты (MAIL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50500700)]
+        public string Mail
+        {
+            get
+            {
+                CheckPropertyInited("Mail");
+                return _mail;
+            }
+            set
+            {
+                _mail = value;
+                NotifyPropertyChanged("Mail");
+            }
+        }
+
+
+        private string _telefon;
+        /// <summary>
+        /// 50500800 Телефон для связи  (TELEFON)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50500800)]
+        public string Telefon
+        {
+            get
+            {
+                CheckPropertyInited("Telefon");
+                return _telefon;
+            }
+            set
+            {
+                _telefon = value;
+                NotifyPropertyChanged("Telefon");
+            }
+        }
+
+
+        private string _job;
+        /// <summary>
+        /// 50500900 Должность представителя заявителя (JOB)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50500900)]
+        public string Job
+        {
+            get
+            {
+                CheckPropertyInited("Job");
+                return _job;
+            }
+            set
+            {
+                _job = value;
+                NotifyPropertyChanged("Job");
+            }
+        }
+
+
+        private string _type;
+        /// <summary>
+        /// 50501000 Тип субъекта ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501000)]
+        public string Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.SubjectType _type_Code;
+        /// <summary>
+        /// 50501000 Тип субъекта (справочный код) (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501000)]
+        public ObjectModel.Directory.Declarations.SubjectType Type_Code
+        {
+            get
+            {
+                CheckPropertyInited("Type_Code");
+                return this._type_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_type))
+                    {
+                         _type = descr;
+                    }
+                }
+                else
+                {
+                     _type = descr;
+                }
+
+                this._type_Code = value;
+                NotifyPropertyChanged("Type");
+                NotifyPropertyChanged("Type_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 506 Уведомления (DECLARATIONS_UVED)
+    /// </summary>
+    [RegisterInfo(RegisterID = 506)]
+    [Serializable]
+    public partial class OMUved : OMBaseClass<OMUved>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50600100  (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _declaration_id;
+        /// <summary>
+        /// 50600200  (DECLARATION_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600200)]
+        public long Declaration_Id
+        {
+            get
+            {
+                CheckPropertyInited("Declaration_Id");
+                return _declaration_id;
+            }
+            set
+            {
+                _declaration_id = value;
+                NotifyPropertyChanged("Declaration_Id");
+            }
+        }
+
+
+        private long _book_id;
+        /// <summary>
+        /// 50600300  (BOOK_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600300)]
+        public long Book_Id
+        {
+            get
+            {
+                CheckPropertyInited("Book_Id");
+                return _book_id;
+            }
+            set
+            {
+                _book_id = value;
+                NotifyPropertyChanged("Book_Id");
+            }
+        }
+
+
+        private string _num;
+        /// <summary>
+        /// 50600400 Номер (NUM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600400)]
+        public string Num
+        {
+            get
+            {
+                CheckPropertyInited("Num");
+                return _num;
+            }
+            set
+            {
+                _num = value;
+                NotifyPropertyChanged("Num");
+            }
+        }
+
+
+        private DateTime? _date;
+        /// <summary>
+        /// 50600500 Дата (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600500)]
+        public DateTime? Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private string _type;
+        /// <summary>
+        /// 50600600 Тип уведомления ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600600)]
+        public string Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.UvedType _type_Code;
+        /// <summary>
+        /// 50600600 Тип уведомления (справочный код) (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600600)]
+        public ObjectModel.Directory.Declarations.UvedType Type_Code
+        {
+            get
+            {
+                CheckPropertyInited("Type_Code");
+                return this._type_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_type))
+                    {
+                         _type = descr;
+                    }
+                }
+                else
+                {
+                     _type = descr;
+                }
+
+                this._type_Code = value;
+                NotifyPropertyChanged("Type");
+                NotifyPropertyChanged("Type_Code");
+            }
+        }
+
+
+        private string _mailnum;
+        /// <summary>
+        /// 50600700 Номер почтового уведомления (MAIL_NUM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600700)]
+        public string MailNum
+        {
+            get
+            {
+                CheckPropertyInited("MailNum");
+                return _mailnum;
+            }
+            set
+            {
+                _mailnum = value;
+                NotifyPropertyChanged("MailNum");
+            }
+        }
+
+
+        private DateTime? _maildate;
+        /// <summary>
+        /// 50600800 Дата почтового уведомления (MAIL_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600800)]
+        public DateTime? MailDate
+        {
+            get
+            {
+                CheckPropertyInited("MailDate");
+                return _maildate;
+            }
+            set
+            {
+                _maildate = value;
+                NotifyPropertyChanged("MailDate");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>
