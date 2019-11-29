@@ -57,7 +57,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				ParserTime = entity.ParserTime,
 				Address = entity.Address,
 				Metro = entity.Metro,
-				Area = entity.Area,
+				Area = entity.PropertyType_Code == PropertyTypes.Stead ? entity.AreaLand * 100 : entity.Area,
 				Description = entity.Description,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
@@ -78,9 +78,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				Longitude = entity.Lng,
 				ProcessType = entity.ProcessType_Code,
 				MarketType = entity.Market_Code,
-				PricePerSquareMeter = entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0
-					? entity.Price / entity.Area
-					: (decimal?)null
+				PricePerSquareMeter = GetPricePerSquareMeter(entity)
 			};
 			if (entity.PriceHistory?.Count > 0)
 			{
@@ -116,6 +114,26 @@ namespace KadOzenka.Web.Models.MarketObject
 			}
 
 			return dto;
+		}
+
+		private static decimal? GetPricePerSquareMeter(OMCoreObject entity)
+		{
+			decimal? result;
+			if (entity.PropertyType_Code == PropertyTypes.Stead && entity.Price.HasValue && entity.AreaLand.HasValue &&
+			    entity.AreaLand != 0)
+			{
+				result = entity.Price / (entity.AreaLand * 100);
+			}
+			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
+			{
+				result = entity.Price / entity.Area;
+			}
+			else
+			{
+				result = (decimal?) null;
+			}
+
+			return result;
 		}
 	}
 }
