@@ -1,4 +1,7 @@
 function GetClusterData(bounds, zoom, token) {
+    zd = zoomData[zoom];
+    accuracy = zd ? zd.accurancy : null;
+    redrawWaiting();
 	$.ajax({
         type: "GET",
 		url: "Map/Objects",
@@ -9,6 +12,7 @@ function GetClusterData(bounds, zoom, token) {
 			bottomLatitude: bounds ? bounds[1][0] : null,
             bottomLongitude: bounds ? bounds[1][1] : null,
             mapZoom: zoom,
+            accuracy: accuracy,
             minClusterZoom: MapSettings.minClusterZoom,
             maxLoadedObjectsCount: MapSettings.maxLoadedObjectsCount,
             token: token
@@ -18,7 +22,8 @@ function GetClusterData(bounds, zoom, token) {
             if (result.token == currentToken) {
                 ids = [];
                 result.arr.slice(0, MapSettings.leftMenuMaxValues).forEach(x => { if (x.id != undefined) ids.push(x.id); });
-                initCluster(result.arr, zoom);
+                initCluster(result.arr, zoom, zd ? zd.dotSize : null);
+                changeObjectsCount(zoom, result.allCount);
                 if (ids.length > 0) GetRequiredInfo(ids);
             }
         }

@@ -1,4 +1,5 @@
 ﻿function insertCard(cartData, isLast) {
+    console.log(cartData.dealType);
     document.getElementById("dataContentContainer").innerHTML +=`
         <div class="DataItemContainer">
             <div class="Container">
@@ -7,9 +8,15 @@
                 </div >
             </div>
             <div class="Container">
-                <div class="Name">Цена</div>
-                <div class="Value">${numberWithSpaces(cartData.price)}&nbsp;₽</div>
+                <div class="Name">Цена${(cartData.dealType != 'Предложение-продажа' && cartData.dealType != 'Сделка купли-продажи') ? "&nbsp;аренды" : ""}</div>
+                <div class="Value">${numberWithSpaces(cartData.price)}&nbsp;₽${(cartData.dealType != 'Предложение-продажа' && cartData.dealType != 'Сделка купли-продажи') ? "/мес." : ""}</div>
             </div>
+            ${(cartData.dealType != 'Предложение-продажа' && cartData.dealType != 'Сделка купли-продажи') ? "" : `
+                <div class="Container">
+                    <div class="Name">Цена за ${getAreaType(cartData.type, cartData.area, cartData.areaLand)}</div>
+                    <div class="Value">${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.type, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.type, cartData.area, cartData.areaLand)}</div>
+                </div>
+            `}
             ${cartData.floor == null && cartData.floorCount == null ? "" : `
                 <div class="Container">
                     <div class="Name">${cartData.floor == null ? "Количество&nbsp;этажей" : "Этаж"}</div>

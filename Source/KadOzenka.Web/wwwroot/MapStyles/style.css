@@ -5,14 +5,12 @@ body {
 
 
 .Button {
-    background-color: #98c2ff !important;
+    background-color: #4590ff !important;
     cursor: pointer;
     border-radius: 3px;
     padding: 3px 12px;
     margin: 15px;
-    /*width: intrinsic; 
-    width: -moz-max-content; 
-    width: -webkit-max-content;*/
+    color: #fff;
     display: flex;
 }
 
@@ -82,4 +80,28 @@ body {
 .MapContainer .Map {
     width: 100%;
     height: 100%;
+}
+
+.displayCountControl {
+    background: #4590ff;
+    padding: 0px 12px;
+    min-height: 26px;
+    border-radius: 13px;
+    border: solid 1px #5c9eff;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    cursor: default;
+}
+
+.displayCountControl .preloaderImage{
+    background: url(/MapIcons/preloaderWhite.svg);
+    background-size: 19px;
+    width: 19px;
+    height: 19px;
+    margin-left: 7px;
+}
+
+.displayCountControl.loaded .preloaderImage {
+    display: none;
 }

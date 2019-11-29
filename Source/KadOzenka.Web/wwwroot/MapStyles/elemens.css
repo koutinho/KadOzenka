@@ -3,11 +3,17 @@
 }
 
 .ymaps-2-1-75-searchbox-button {
-    background-color: #98c2ff !important;
+    background-color: #4590ff !important;
+    color: #fff !important;
 }
 
 .ymaps-2-1-75-float-button.ymaps-2-1-75-_checked {
-    background-color: #98c2ff !important;
+    background-color: #4590ff !important;
+    color: #fff !important;
+}
+
+.ymaps-2-1-75-float-button.ymaps-2-1-75-_checked .ymaps-2-1-75-float-button-icon_icon_ruler {
+    background-image: url(/MapIcons/roulette.svg);
 }
 
 .ymaps-2-1-75-searchbox-input.ymaps-2-1-75-_focused {
@@ -15,6 +21,24 @@
 }
 
 .ymaps-2-1-75-listbox__list-item:hover {
-    background-color: #98c2ff !important;
+    background-color: #4590ff !important;
+    color: #fff !important;
 }
 
+.ymaps-2-1-75-listbox__list-item_selected_yes .ymaps-2-1-75-listbox__list-item-text:hover::before {
+    background-image: url(/MapIcons/checked.svg);
+    color: #fff !important;
+}
+
+.ymaps-2-1-75-islets_serp-item.ymaps-2-1-75-islets__selected {
+    background-color: #8cbaff !important;
+}
+
+.ymaps-2-1-75-islets_serp-item.ymaps-2-1-75-islets__selected .ymaps-2-1-75-islets_card__description {
+    color: #fff !important;
+}
+
+.ymaps-2-1-75-search__suggest.ymaps-2-1-75-popup .ymaps-2-1-75-search__suggest-item_selected_yes {
+    background: #61a0ff !important;
+    color: #fff !important;
+}

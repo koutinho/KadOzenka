@@ -27,7 +27,6 @@ var ClusterSettings = {
 var GeoDotSettings = {
     layout: 'default#image',
     imageHref: 'mapIcons/mapDot.svg',
-    imageSize: [6, 6],
     imageOffset: [0, 0]
 };
 
@@ -64,6 +63,24 @@ var PropType = [
     { id: 16, name: 'house', color: '#ff7d00', type: 'Загородный дом' }, 
     { id: 17, name: 'otherSubarban', color: '#ffb874', type: 'Иной вид недвижимости' }, 
     { id: 18, name: 'studio', color: '#62db98', type: 'Квартира' }
+];
+
+var zoomData = [
+    { accurancy: 0, dotSize: [3, 3] }, 
+    { accurancy: 0, dotSize: [3, 3] }, 
+    { accurancy: 0, dotSize: [3, 3] }, 
+    { accurancy: 0, dotSize: [3, 3] }, 
+    { accurancy: 0, dotSize: [3, 3] }, 
+    { accurancy: 1, dotSize: [3, 3] }, 
+    { accurancy: 1, dotSize: [6, 6] }, 
+    { accurancy: 1, dotSize: [8, 8] }, 
+    { accurancy: 2, dotSize: [5, 5] }, 
+    { accurancy: 2, dotSize: [5, 5] }, 
+    { accurancy: 2, dotSize: [6, 6] }, 
+    { accurancy: 2, dotSize: [8, 8] }, 
+    { accurancy: 2, dotSize: [8, 8] }, 
+    { accurancy: 3, dotSize: [8, 8] }, 
+    { accurancy: 3, dotSize: [8, 8] }, 
 ];
 
 var ObjectTypes = {

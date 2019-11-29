@@ -1,4 +1,4 @@
-function initCluster(coordinates, zoom) {
+function initCluster(coordinates, zoom, dotSize) {
     if (zoom >= MapSettings.minClusterZoom) {
         clusterer = new ymaps.Clusterer({
             clusterIconLayout: ClusterSettings.layout,
@@ -38,7 +38,7 @@ function initCluster(coordinates, zoom) {
             {
                 iconLayout: GeoDotSettings.layout,
                 iconImageHref: GeoDotSettings.imageHref,
-                iconImageSize: GeoDotSettings.imageSize,
+                iconImageSize: dotSize,
                 iconImageOffset: GeoDotSettings.imageOffset
             }));
         }

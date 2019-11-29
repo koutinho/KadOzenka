@@ -28,3 +28,15 @@ function clickOnCluster(event) {
     }
     GetRequiredInfo(ids);
 }
+
+function changeObjectsCount(zoom, count) {
+    document.getElementById("CountControl").classList.add("loaded");
+    document.getElementById("CountControlText").innerHTML = `Объектов в видимой области ${count}`;
+}
+
+function redrawWaiting() {
+    if (document.getElementById("CountControl")) {
+        document.getElementById("CountControl").classList.remove("loaded");
+        document.getElementById("CountControlText").innerHTML = `Загрузка объектов`;
+    }
+}

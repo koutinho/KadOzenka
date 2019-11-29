@@ -17,9 +17,11 @@ function initMap() {
 			zoom: params.has('zoom') ? params.get('zoom') : MapSettings.zoom
 		},
 		{ suppressMapOpenBlock: true }
-	);
+    );
+    createDisplayCountWidget();
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
     changeDefaultControlPosition(map);
+    addDisplayCountWidget({ bottom: 10, left: 10 });
     GetClusterData(map.getBounds(), map.getZoom(), currentToken);
     map.events.add('boundschange', function (event) { ChangeBounds(event); });
 };
