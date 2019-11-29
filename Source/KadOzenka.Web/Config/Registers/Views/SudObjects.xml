@@ -9,6 +9,10 @@
         <Parameter Key="RegisterId" Value="[RegisterId]" />
       </Parameters>
     </Button>
+	  <Button Caption="Загрузка данных" NavigateURL="~/Sud/LoadDocument" WindowHeight="200" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
+		  <Parameters>
+		  </Parameters>
+	  </Button>
 
       <Button Caption="Добавить" NavigateURL="/Sud/ObjectCard" Icon="fas fa-plus">
           <Parameters>

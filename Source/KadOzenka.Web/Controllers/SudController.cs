@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Core.UI.Registers.Controllers;
 using KadOzenka.Web.Models.Sud;
 using ObjectModel.Sud;
 using System.Transactions;
+using Core.ErrorManagment;
 using Core.Shared.Extensions;
+using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataImport;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
 namespace KadOzenka.Web.Controllers
@@ -654,6 +659,37 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult LoadDocument()
 		{
 			return View();
+		}
+
+		[HttpPost]
+		public ActionResult LoadDocument(IFormFile file)
+		{
+
+			try
+			{
+				ExcelFile excelFile;
+				using (var stream = file.OpenReadStream())
+				{
+					excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+					excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
+				}
+
+				string registerViewId = "SudObjects";
+				int mainRegisterId = 315;
+
+				MemoryStream str = new MemoryStream();
+				excelFile.Save(str, SaveOptions.XlsxDefault);
+				str.Seek(0, SeekOrigin.Begin);
+				DataImporterSud.SaveImportFile(str, excelFile, registerViewId, mainRegisterId);
+				DataImporterSud.ImportDataSudFromExcel(excelFile, registerViewId, mainRegisterId);
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return NoContent();
 		}
 
 		#endregion

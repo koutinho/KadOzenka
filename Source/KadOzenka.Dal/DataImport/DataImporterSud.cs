@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.SRD;
+using ObjectModel.Common;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -25,7 +27,7 @@ namespace KadOzenka.Dal.DataImport
 			}
 		}
 
-		public static Stream ImportDataSudFromExcel(ExcelFile excelFile)
+		public static Stream ImportDataSudFromExcel(ExcelFile excelFile,  string registerViewId, int mainRegisterId)
 		{
 			List<ErrorRow> errorrowMain = new List<ErrorRow>();
 			List<ErrorRow> errorrowOtcher = new List<ErrorRow>();
@@ -847,30 +849,45 @@ namespace KadOzenka.Dal.DataImport
 			excelFile.Save(stream, SaveOptions.XlsxDefault);
 			stream.Seek(0, SeekOrigin.Begin);
 
+			SaveImportFile(stream, excelFile, registerViewId, mainRegisterId, true);
 
+			return stream;
+		}
+
+		public static void SaveImportFile(Stream stream, ExcelFile excelFile, string registerViewId, int mainRegisterId, bool isResultFile = false)
+		{
+			var fileName = excelFile.DocumentProperties.Custom["FileName"].ToString();
 
 			var dateStarted = DateTime.Now;
-			var fileName = excelFile.DocumentProperties.Custom["FileName"].ToString();
-			var file = new OMCommissionFileStorage
+			var importResult = new OMImportDataLog()
 			{
-				FileName = string.IsNullOrEmpty(fileName) ? excelFile.Worksheets[0].Name : fileName,
-				DateStarted = dateStarted
+				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+				DateStarted = dateStarted,
+				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+				DataFileName = fileName,
+				DateCreated = dateStarted,
+				RegisterViewId = registerViewId,
+				MainRegisterId = mainRegisterId
 			};
 			try
 			{
 				FileStorageManager.Save(
 					stream,
-					"CommissionFilesStorage",
+					"SudFilesStorage",
 					dateStarted,
-					file.Save().ToString()
+					isResultFile ? importResult.Save() + "_result" : importResult.Save().ToString()
 				);
+				importResult.DateFinished = DateTime.Now;
+				importResult.Save();
 			}
 			catch (Exception ex)
 			{
-				ErrorManager.LogError(ex);
+				long errorId = ErrorManager.LogError(ex);
+				importResult.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
+				importResult.DateFinished = DateTime.Now;
+				importResult.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
+				importResult.Save();
 			}
-
-			return stream;
 		}
 	}
 }
