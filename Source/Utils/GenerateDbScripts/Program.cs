@@ -28,8 +28,7 @@ namespace GenerateDbScripts
 			string providerName = ConfigurationManager.AppSettings["DbExporterProviderName"];
 
 			string baseFolder = ConfigurationManager.AppSettings["DbExporterBaseFolder"];
-
-
+			
 			//var command = DBMngr.Realty.GetStoredProcCommand("Core_Register_PKG.CorrectSystemLayoutsAndFilters");
 			//DBMngr.Realty.ExecuteNonQuery(command);
 
