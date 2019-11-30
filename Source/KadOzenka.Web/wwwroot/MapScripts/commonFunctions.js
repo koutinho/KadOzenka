@@ -16,3 +16,10 @@ function getAreaType(type, area, area_land) { return type == 14 ? "сот." : "�
 function getFloor(floor, floorCount) { return floor == null ? `${floorCount}` : `${floor}&nbsp;из&nbsp;${floorCount}`; }
 
 function refreshCurrentToken() { currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); }
+
+function getPropertyType(source) {
+    switch (source) {
+        case "ЦИАН": return "Cian";
+        case "Росреестр": return "Rosreestr";
+    }
+}

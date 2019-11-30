@@ -1,7 +1,6 @@
 ﻿function insertCard(cartData, isLast) {
-    console.log(cartData.dealType);
-    document.getElementById("dataContentContainer").innerHTML +=`
-        <div class="DataItemContainer">
+    document.getElementById("dataContentContainer").innerHTML += `
+        <div class="DataItemContainer ${getPropertyType(cartData.source)}">
             <div class="Container">
                 <div class="Header">
                     ${!(cartData.roomsCount != null && cartData.roomsCount != 0 && (cartData.type == 10 || cartData.type == 11 || cartData.type == 18)) ? "" : `${cartData.roomsCount}-комн.&nbsp;`}${PropType[cartData.type].type}&nbsp;${getArea(cartData.type, cartData.area, cartData.areaLand)}
@@ -71,6 +70,7 @@
                 <div class="Name">Кадастровый&nbsp;номер</div>
                 <div class="Value">${cartData.cadastralNumber}</div>
             </div>
+            <div class="Logo"></div>
             ${isLast ? "" : `<div class="Line"></div>`}
         </div>`;
 }
