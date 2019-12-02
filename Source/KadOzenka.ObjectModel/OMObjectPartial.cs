@@ -81,14 +81,14 @@ namespace ObjectModel.Sud
 					Status = 1
 				};
 				objStatus.Save();
-				OMParam.AddChar(OMTableParam.Object, this.Id, "kn", Kn, 1);
-				OMParam.AddChar(OMTableParam.Object, this.Id, "name_center", NameCenter, 1);
-				OMParam.AddChar(OMTableParam.Object, this.Id, "stat_dgi", StatDgi, 1);
-				OMParam.AddChar(OMTableParam.Object, this.Id, "adres", Adres, 1);
-				OMParam.AddDate(OMTableParam.Object, this.Id, "date", Date, 1);
-				OMParam.AddDouble(OMTableParam.Object, this.Id, "square", Square, 1);
-				OMParam.AddDouble(OMTableParam.Object, this.Id, "kc", Kc, 1);
-				OMParam.AddInt(OMTableParam.Object, this.Id, "typeobj", (long)Typeobj_Code, 1);
+				OMParam.AddChar(OMTableParam.Object, this.Id, "kn", Kn, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Object, this.Id, "name_center", NameCenter, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Object, this.Id, "stat_dgi", StatDgi, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Object, this.Id, "adres", Adres, ProcessingStatus.Processed);
+				OMParam.AddDate(OMTableParam.Object, this.Id, "date", Date, ProcessingStatus.Processed);
+				OMParam.AddDouble(OMTableParam.Object, this.Id, "square", Square, ProcessingStatus.Processed);
+				OMParam.AddDouble(OMTableParam.Object, this.Id, "kc", Kc, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Object, this.Id, "typeobj", (long)Typeobj_Code, ProcessingStatus.Processed);
 			}
 			else
 			{
@@ -252,15 +252,15 @@ namespace ObjectModel.Sud
 			}
 
 			#region Утверждение выбранных параметров
-			pKn.UpdateStatus(1);
-			pType.UpdateStatus(1);
-			pSquare.UpdateStatus(1);
-			pKc.UpdateStatus(1);
-			pDate.UpdateStatus(1);
-			pNameCenter.UpdateStatus(1);
-			pStatDgi.UpdateStatus(1);
-			pAdres.UpdateStatus(1);
-			pOwner.UpdateStatus(1);
+			pKn.UpdateStatus(ProcessingStatus.Processed);
+			pType.UpdateStatus(ProcessingStatus.Processed);
+			pSquare.UpdateStatus(ProcessingStatus.Processed);
+			pKc.UpdateStatus(ProcessingStatus.Processed);
+			pDate.UpdateStatus(ProcessingStatus.Processed);
+			pNameCenter.UpdateStatus(ProcessingStatus.Processed);
+			pStatDgi.UpdateStatus(ProcessingStatus.Processed);
+			pAdres.UpdateStatus(ProcessingStatus.Processed);
+			pOwner.UpdateStatus(ProcessingStatus.Processed);
 			#endregion
 
 			#region Обновление данных для объекта

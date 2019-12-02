@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectModel.Directory.Sud;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -61,11 +62,11 @@ namespace ObjectModel.Sud
 					Status = 1,
 				};
 				objStatus.Save();
-				OMParam.AddChar(OMTableParam.ZakLink, this.Id, "use", Use, 1);
-				OMParam.AddChar(OMTableParam.ZakLink, this.Id, "descr", Descr, 1);
-				OMParam.AddDouble(OMTableParam.ZakLink, this.Id, "rs", Rs, 1);
-				OMParam.AddDouble(OMTableParam.ZakLink, this.Id, "uprs", Uprs, 1);
-				OMParam.AddInt(OMTableParam.ZakLink, this.Id, "id_zak", IdZak, 1);
+				OMParam.AddChar(OMTableParam.ZakLink, this.Id, "use", Use, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.ZakLink, this.Id, "descr", Descr, ProcessingStatus.Processed);
+				OMParam.AddDouble(OMTableParam.ZakLink, this.Id, "rs", Rs, ProcessingStatus.Processed);
+				OMParam.AddDouble(OMTableParam.ZakLink, this.Id, "uprs", Uprs, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.ZakLink, this.Id, "id_zak", IdZak, ProcessingStatus.Processed);
 			}
 			else
 			{
@@ -173,11 +174,11 @@ namespace ObjectModel.Sud
 			}
 
 			#region Утверждение выбранных параметров
-			pUse.UpdateStatus(1);
-			pDescr.UpdateStatus(1);
-			pRs.UpdateStatus(1);
-			pUprs.UpdateStatus(1);
-			pIdZak.UpdateStatus(1);
+			pUse.UpdateStatus(ProcessingStatus.Processed);
+			pDescr.UpdateStatus(ProcessingStatus.Processed);
+			pRs.UpdateStatus(ProcessingStatus.Processed);
+			pUprs.UpdateStatus(ProcessingStatus.Processed);
+			pIdZak.UpdateStatus(ProcessingStatus.Processed);
 			#endregion
 
 			#region Обновление данных для объекта

@@ -1,4 +1,5 @@
-﻿using ObjectModel.Sud;
+﻿using ObjectModel.Directory.Sud;
+using ObjectModel.Sud;
 using System;
 using System.Collections.Generic;
 
@@ -89,17 +90,17 @@ namespace ObjectModel.Sud
 				};
 				objStatus.Save();
 
-				OMParam.AddChar(OMTableParam.Zak, this.Id, "number", Number, 1);
-				OMParam.AddDate(OMTableParam.Zak, this.Id, "date", Date, 1);
-				OMParam.AddDate(OMTableParam.Zak, this.Id, "rec_date", RecDate, 1);
-				OMParam.AddChar(OMTableParam.Zak, this.Id, "rec_letter", RecLetter, 1);
-				OMParam.AddChar(OMTableParam.Zak, this.Id, "rec_user", RecUser, 1);
-				OMParam.AddInt(OMTableParam.Zak, this.Id, "id_org", IdOrg, 1);
-				OMParam.AddInt(OMTableParam.Zak, this.Id, "id_sro", IdSro, 1);
-				OMParam.AddInt(OMTableParam.Zak, this.Id, "id_fio", IdFio, 1);
-				OMParam.AddInt(OMTableParam.Zak, this.Id, "rec_before", RecBefore, 1);
-				OMParam.AddInt(OMTableParam.Zak, this.Id, "rec_after", RecAfter, 1);
-				OMParam.AddInt(OMTableParam.Zak, this.Id, "rec_soglas", RecSoglas, 1);
+				OMParam.AddChar(OMTableParam.Zak, this.Id, "number", Number, ProcessingStatus.Processed);
+				OMParam.AddDate(OMTableParam.Zak, this.Id, "date", Date, ProcessingStatus.Processed);
+				OMParam.AddDate(OMTableParam.Zak, this.Id, "rec_date", RecDate, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Zak, this.Id, "rec_letter", RecLetter, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Zak, this.Id, "rec_user", RecUser, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Zak, this.Id, "id_org", IdOrg, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Zak, this.Id, "id_sro", IdSro, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Zak, this.Id, "id_fio", IdFio, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Zak, this.Id, "rec_before", RecBefore, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Zak, this.Id, "rec_after", RecAfter, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Zak, this.Id, "rec_soglas", RecSoglas, ProcessingStatus.Processed);
 			}
 			else
 			{
@@ -298,17 +299,17 @@ namespace ObjectModel.Sud
 			}
 
 			#region Утверждение выбранных параметров
-			pNumber.UpdateStatus(1);
-			pDate.UpdateStatus(1);
-			pRecDate.UpdateStatus(1);
-			pRecLetter.UpdateStatus(1);
-			pRecUser.UpdateStatus(1);
-			pOrg.UpdateStatus(1);
-			pFio.UpdateStatus(1);
-			pSro.UpdateStatus(1);
-			pRecBefore.UpdateStatus(1);
-			pRecAfter.UpdateStatus(1);
-			pRecSoglas.UpdateStatus(1);
+			pNumber.UpdateStatus(ProcessingStatus.Processed);
+			pDate.UpdateStatus(ProcessingStatus.Processed);
+			pRecDate.UpdateStatus(ProcessingStatus.Processed);
+			pRecLetter.UpdateStatus(ProcessingStatus.Processed);
+			pRecUser.UpdateStatus(ProcessingStatus.Processed);
+			pOrg.UpdateStatus(ProcessingStatus.Processed);
+			pFio.UpdateStatus(ProcessingStatus.Processed);
+			pSro.UpdateStatus(ProcessingStatus.Processed);
+			pRecBefore.UpdateStatus(ProcessingStatus.Processed);
+			pRecAfter.UpdateStatus(ProcessingStatus.Processed);
+			pRecSoglas.UpdateStatus(ProcessingStatus.Processed);
 			#endregion
 
 			#region Обновление данных для объекта

@@ -30,6 +30,9 @@
     <Reference Include="Ionic.Zip">
       <HintPath>..\..\..\Core\Source\Ionic.Zip.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNetCore.Mvc.ViewFeatures">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.mvc.viewfeatures\2.1.1\lib\netstandard2.0\Microsoft.AspNetCore.Mvc.ViewFeatures.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

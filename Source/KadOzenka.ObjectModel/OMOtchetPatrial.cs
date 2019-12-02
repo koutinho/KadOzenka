@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectModel.Directory.Sud;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -76,13 +77,13 @@ namespace ObjectModel.Sud
 				};
 				objStatus.Save();
 
-				OMParam.AddChar(OMTableParam.Otchet, this.Id, "number", Number, 1);
-				OMParam.AddDate(OMTableParam.Otchet, this.Id, "date", Date, 1);
-				OMParam.AddDate(OMTableParam.Otchet, this.Id, "date_in", DateIn, 1);
-				OMParam.AddInt(OMTableParam.Otchet, this.Id, "jalob", Jalob, 1);
-				OMParam.AddInt(OMTableParam.Otchet, this.Id, "id_org", IdOrg, 1);
-				OMParam.AddInt(OMTableParam.Otchet, this.Id, "id_sro", IdSro, 1);
-				OMParam.AddInt(OMTableParam.Otchet, this.Id, "id_fio", IdFio, 1);
+				OMParam.AddChar(OMTableParam.Otchet, this.Id, "number", Number, ProcessingStatus.Processed);
+				OMParam.AddDate(OMTableParam.Otchet, this.Id, "date", Date, ProcessingStatus.Processed);
+				OMParam.AddDate(OMTableParam.Otchet, this.Id, "date_in", DateIn, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Otchet, this.Id, "jalob", Jalob, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Otchet, this.Id, "id_org", IdOrg, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Otchet, this.Id, "id_sro", IdSro, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Otchet, this.Id, "id_fio", IdFio, ProcessingStatus.Processed);
 			}
 			else
 			{
@@ -218,13 +219,13 @@ namespace ObjectModel.Sud
 			}
 
 			#region Утверждение выбранных параметров
-			pNumber.UpdateStatus(1);
-			pDate.UpdateStatus(1);
-			pDateIn.UpdateStatus(1);
-			pJalob.UpdateStatus(1);
-			pOrg.UpdateStatus(1);
-			pFio.UpdateStatus(1);
-			pSro.UpdateStatus(1);
+			pNumber.UpdateStatus(ProcessingStatus.Processed);
+			pDate.UpdateStatus(ProcessingStatus.Processed);
+			pDateIn.UpdateStatus(ProcessingStatus.Processed);
+			pJalob.UpdateStatus(ProcessingStatus.Processed);
+			pOrg.UpdateStatus(ProcessingStatus.Processed);
+			pFio.UpdateStatus(ProcessingStatus.Processed);
+			pSro.UpdateStatus(ProcessingStatus.Processed);
 			#endregion
 
 			#region Обновление данных для объекта

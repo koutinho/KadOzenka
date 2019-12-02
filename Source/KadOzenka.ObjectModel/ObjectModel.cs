@@ -11151,12 +11151,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _paramstatus;
+        private string _paramstatus;
         /// <summary>
-        /// 31701100 Статус параметра (1-актуальный, 0 - неактуальный) (PARAM_STATUS)
+        /// 31701100 Статус параметра ()
         /// </summary>
         [RegisterAttribute(AttributeID = 31701100)]
-        public long ParamStatus
+        public string ParamStatus
         {
             get
             {
@@ -11167,6 +11167,41 @@ namespace ObjectModel.Sud
             {
                 _paramstatus = value;
                 NotifyPropertyChanged("ParamStatus");
+            }
+        }
+
+
+        private ObjectModel.Directory.Sud.ProcessingStatus _paramstatus_Code;
+        /// <summary>
+        /// 31701100 Статус параметра (справочный код) (PARAM_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31701100)]
+        public ObjectModel.Directory.Sud.ProcessingStatus ParamStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("ParamStatus_Code");
+                return this._paramstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_paramstatus))
+                    {
+                         _paramstatus = descr;
+                    }
+                }
+                else
+                {
+                     _paramstatus = descr;
+                }
+
+                this._paramstatus_Code = value;
+                NotifyPropertyChanged("ParamStatus");
+                NotifyPropertyChanged("ParamStatus_Code");
             }
         }
 

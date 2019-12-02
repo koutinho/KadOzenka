@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectModel.Directory.Sud;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -62,11 +63,11 @@ namespace ObjectModel.Sud
 					Astatus = 1
 				};
 				objStatus.Save();
-				OMParam.AddChar(OMTableParam.Sud, this.Id, "number", Number, 1);
-				OMParam.AddChar(OMTableParam.Sud, this.Id, "name", Name, 1);
-				OMParam.AddDate(OMTableParam.Sud, this.Id, "date", Date, 1);
-				OMParam.AddDate(OMTableParam.Sud, this.Id, "sud_date", SudDate, 1);
-				OMParam.AddInt(OMTableParam.Sud, this.Id, "status", Status, 1);
+				OMParam.AddChar(OMTableParam.Sud, this.Id, "number", Number, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Sud, this.Id, "name", Name, ProcessingStatus.Processed);
+				OMParam.AddDate(OMTableParam.Sud, this.Id, "date", Date, ProcessingStatus.Processed);
+				OMParam.AddDate(OMTableParam.Sud, this.Id, "sud_date", SudDate, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Sud, this.Id, "status", Status, ProcessingStatus.Processed);
 			}
 			else
 			{
@@ -173,11 +174,11 @@ namespace ObjectModel.Sud
 			}
 
 			#region Утверждение выбранных параметров
-			pNumber.UpdateStatus(1);
-			pName.UpdateStatus(1);
-			pDate.UpdateStatus(1);
-			pSudDate.UpdateStatus(1);
-			pStatus.UpdateStatus(1);
+			pNumber.UpdateStatus(ProcessingStatus.Processed);
+			pName.UpdateStatus(ProcessingStatus.Processed);
+			pDate.UpdateStatus(ProcessingStatus.Processed);
+			pSudDate.UpdateStatus(ProcessingStatus.Processed);
+			pStatus.UpdateStatus(ProcessingStatus.Processed);
 			#endregion
 
 			#region Обновление данных для объекта

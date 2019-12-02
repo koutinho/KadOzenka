@@ -872,7 +872,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
 
                         IdUser = NullConvertor.DBToInt64(myOleDbDataReader["id_user"]),
                         DateUser = NullConvertor.DBToDateTime(myOleDbDataReader["date_user"]),
-                        ParamStatus = NullConvertor.DBToInt(myOleDbDataReader["param_status"])
+                        ParamStatus_Code = (ProcessingStatus)NullConvertor.DBToInt(myOleDbDataReader["param_status"])
                     };
 
                     if (NullConvertor.DBToDecimal(myOleDbDataReader["param_double"], out decimal paramDouble)) sudObject.ParamDouble = paramDouble;

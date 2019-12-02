@@ -1,5 +1,6 @@
 ﻿using Core.Shared.Extensions;
 using Core.SRD;
+using ObjectModel.Directory.Sud;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,7 +135,7 @@ namespace ObjectModel.Sud
         /// <summary>
         /// Добавление значения параметра
         /// </summary>
-        public static void Add(OMTableParam idTable, long id, string paramName, string paramChar, DateTime paramDate, decimal paramDouble, int paramInt, long idUser, DateTime dateUser, int paramStatus, OMTypeParam paramType)
+        public static void Add(OMTableParam idTable, long id, string paramName, string paramChar, DateTime paramDate, decimal paramDouble, int paramInt, long idUser, DateTime dateUser, ProcessingStatus paramStatus, OMTypeParam paramType)
 		{
 			OMParam param = new OMParam
 			{
@@ -147,14 +148,14 @@ namespace ObjectModel.Sud
 				ParamInt = paramInt,
 				IdUser = idUser,
 				DateUser = dateUser,
-				ParamStatus = paramStatus,
+				ParamStatus_Code = paramStatus,
 			};
 			param.Save();
 		}
 		/// <summary>
 		/// Добавление строкового параметра
 		/// </summary>
-		public static void AddChar(OMTableParam idTable, long id, string paramName, string paramChar, int paramStatus)
+		public static void AddChar(OMTableParam idTable, long id, string paramName, string paramChar, ProcessingStatus paramStatus)
 		{
 			OMParam param = new OMParam
 			{
@@ -164,14 +165,14 @@ namespace ObjectModel.Sud
 				ParamChar = paramChar,
 				IdUser = SRDSession.Current.UserID,
 				DateUser = DateTime.Now,
-				ParamStatus = paramStatus,
+				ParamStatus_Code = paramStatus,
 			};
 			param.Save();
 		}
 		/// <summary>
 		/// Добавление параметра даты
 		/// </summary>
-		public static void AddDate(OMTableParam idTable, long id, string paramName, DateTime? paramDate, int paramStatus)
+		public static void AddDate(OMTableParam idTable, long id, string paramName, DateTime? paramDate, ProcessingStatus paramStatus)
 		{
 			OMParam param = new OMParam
 			{
@@ -181,14 +182,14 @@ namespace ObjectModel.Sud
 				ParamDate = paramDate,
 				IdUser = SRDSession.Current.UserID,
 				DateUser = DateTime.Now,
-				ParamStatus = paramStatus,
+				ParamStatus_Code = paramStatus,
 			};
 			param.Save();
 		}
 		/// <summary>
 		/// Добавление дробного параметра
 		/// </summary>
-		public static void AddDouble(OMTableParam idTable, long id, string paramName, decimal? paramDouble, int paramStatus)
+		public static void AddDouble(OMTableParam idTable, long id, string paramName, decimal? paramDouble, ProcessingStatus paramStatus)
 		{
 			OMParam param = new OMParam
 			{
@@ -198,14 +199,14 @@ namespace ObjectModel.Sud
 				ParamDouble = paramDouble,
 				IdUser = SRDSession.Current.UserID,
 				DateUser = DateTime.Now,
-				ParamStatus = paramStatus,
+				ParamStatus_Code = paramStatus,
 			};
 			param.Save();
 		}
 		/// <summary>
 		/// Добавление целочисленного параметра
 		/// </summary>
-		public static void AddInt(OMTableParam idTable, long id, string paramName, long? paramInt, int paramStatus)
+		public static void AddInt(OMTableParam idTable, long id, string paramName, long? paramInt, ProcessingStatus paramStatus)
 		{
 			OMParam param = new OMParam
 			{
@@ -215,7 +216,7 @@ namespace ObjectModel.Sud
 				ParamInt = paramInt,
 				IdUser = SRDSession.Current.UserID,
 				DateUser = DateTime.Now,
-				ParamStatus = paramStatus,
+				ParamStatus_Code = paramStatus,
 			};
 			param.Save();
 		}
@@ -237,12 +238,12 @@ namespace ObjectModel.Sud
 				if (item.ParamChar == paramChar)
 				{
 					find = true;
-					if (item.ParamStatus == 1)
+					if (item.ParamStatus_Code == ProcessingStatus.Processed)
 					{
 						current = true;
 					}
 				}
-				if (item.ParamStatus == 1)
+				if (item.ParamStatus_Code == ProcessingStatus.Processed)
 				{
 					actual = true;
 				}
@@ -275,12 +276,12 @@ namespace ObjectModel.Sud
 				if (item.ParamDate == paramDate)
 				{
 					find = true;
-					if (item.ParamStatus == 1)
+					if (item.ParamStatus_Code == ProcessingStatus.Processed)
 					{
 						current = true;
 					}
 				}
-				if (item.ParamStatus == 1)
+				if (item.ParamStatus_Code == ProcessingStatus.Processed)
 				{
 					actual = true;
 				}
@@ -313,12 +314,12 @@ namespace ObjectModel.Sud
 				if (item.ParamDouble == paramDouble)
 				{
 					find = true;
-					if (item.ParamStatus == 1)
+					if (item.ParamStatus_Code == ProcessingStatus.Processed)
 					{
 						current = true;
 					}
 				}
-				if (item.ParamStatus == 1)
+				if (item.ParamStatus_Code == ProcessingStatus.Processed)
 				{
 					actual = true;
 				}
@@ -351,12 +352,12 @@ namespace ObjectModel.Sud
 				if (item.ParamInt == paramInt)
 				{
 					find = true;
-					if (item.ParamStatus == 1)
+					if (item.ParamStatus_Code == ProcessingStatus.Processed)
 					{
 						current = true;
 					}
 				}
-				if (item.ParamStatus == 1)
+				if (item.ParamStatus_Code == ProcessingStatus.Processed)
 				{
 					actual = true;
 				}
@@ -391,9 +392,9 @@ namespace ObjectModel.Sud
 					if (item.ParamInt == paramInt)
 					{
 						find = true;
-						if (item.ParamStatus == 1) actual = true;
+						if (item.ParamStatus_Code == ProcessingStatus.Processed) actual = true;
 					}
-					if (item.ParamStatus == 1)
+					if (item.ParamStatus_Code == ProcessingStatus.Processed)
 					{
 						current = true;
 					}
@@ -405,12 +406,12 @@ namespace ObjectModel.Sud
 						item.UpdateStatus(0);
 					}
 
-					int newstatus = 0;
+					var newstatus = ProcessingStatus.InWork;
 					if (Items.Count == 1)
 					{
 						if (Items[0].ParamInt == 0)
 						{
-							newstatus = 1;
+							newstatus = ProcessingStatus.Processed;
 							setactual = true;
 						}
 					}
@@ -434,9 +435,9 @@ namespace ObjectModel.Sud
 					if (item.ParamInt == paramInt)
 					{
 						find = true;
-						if (item.ParamStatus == 1) actual = true;
+						if (item.ParamStatus_Code == ProcessingStatus.Processed) actual = true;
 					}
-					if (item.ParamStatus == 1)
+					if (item.ParamStatus_Code == ProcessingStatus.Processed)
 					{
 						current = true;
 					}
@@ -472,12 +473,12 @@ namespace ObjectModel.Sud
 				if (item.ParamChar == paramChar)
 				{
 					find = true;
-					item.UpdateStatus(1);
+					item.UpdateStatus(ProcessingStatus.Processed);
 				}
 			}
 			if (!find)
 			{
-				AddChar(table, id, paramName, paramChar, 1);
+				AddChar(table, id, paramName, paramChar, ProcessingStatus.Processed);
 			}
 			return true;
 		}
@@ -501,12 +502,12 @@ namespace ObjectModel.Sud
 				if (item.ParamDouble == paramDouble)
 				{
 					find = true;
-					item.UpdateStatus(1);
+					item.UpdateStatus(ProcessingStatus.Processed);
 				}
 			}
 			if (!find)
 			{
-				AddDouble(table, id, paramName, paramDouble, 1);
+				AddDouble(table, id, paramName, paramDouble, ProcessingStatus.Processed);
 			}
 			return true;
 		}
@@ -530,12 +531,12 @@ namespace ObjectModel.Sud
 				if (item.ParamDate == paramDate)
 				{
 					find = true;
-					item.UpdateStatus(1);
+					item.UpdateStatus(ProcessingStatus.Processed);
 				}
 			}
 			if (!find)
 			{
-				AddDate(table, id, paramName, paramDate, 1);
+				AddDate(table, id, paramName, paramDate, ProcessingStatus.Processed);
 			}
 			return true;
 		}
@@ -559,21 +560,21 @@ namespace ObjectModel.Sud
 				if (item.ParamInt == paramInt)
 				{
 					find = true;
-					item.UpdateStatus(1);
+					item.UpdateStatus(ProcessingStatus.Processed);
 				}
 			}
 			if (!find)
 			{
-				AddInt(table, id, paramName, paramInt, 1);
+				AddInt(table, id, paramName, paramInt, ProcessingStatus.Processed);
 			}
 			return true;
 		}
 		/// <summary>
 		/// Обновление статуса параметра
 		/// </summary>
-		public void UpdateStatus(long status)
+		public void UpdateStatus(ProcessingStatus status)
 		{
-			ParamStatus = status;
+			ParamStatus_Code = status;
 			Save();
 		}
 		/// <summary>
@@ -592,7 +593,7 @@ namespace ObjectModel.Sud
 		public static OMParam GetActual(OMTableParam table, long id, string paramName)
 		{
 			return OMParam
-				.Where(x => x.IdTable == (long)table && x.Id == id && x.ParamName == paramName && x.ParamStatus == 1)
+				.Where(x => x.IdTable == (long)table && x.Id == id && x.ParamName == paramName && x.ParamStatus_Code == ProcessingStatus.Processed)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 		}
