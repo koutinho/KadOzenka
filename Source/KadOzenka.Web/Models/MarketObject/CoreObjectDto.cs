@@ -78,7 +78,11 @@ namespace KadOzenka.Web.Models.MarketObject
 				Longitude = entity.Lng,
 				ProcessType = entity.ProcessType_Code,
 				MarketType = entity.Market_Code,
-				PricePerSquareMeter = GetPricePerSquareMeter(entity)
+				PricePerSquareMeter =
+					entity.DealType_Code != ObjectModel.Directory.DealType.RentDeal &&
+					entity.DealType_Code != ObjectModel.Directory.DealType.RentSuggestion
+						? GetPricePerSquareMeter(entity)
+						: (decimal?) null
 			};
 			if (entity.PriceHistory?.Count > 0)
 			{
