@@ -36,23 +36,35 @@
     <script src="~/MapScripts/clustering.js" charset="utf-8"></script>
 
     <script>
-		var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
-		var objectLongitude = @(Model.Longitude.HasValue ? Model.Longitude.ToString().Replace(',', '.') : "undefined");
-		if (objectLatitude && objectLongitude) {
-			const params = new window.URLSearchParams(window.location.search);
-			if (!params.has('center')) {
-				params.set('center', [objectLatitude, objectLongitude]);
-			}
-			if (!params.has('zoom')) {
-				params.set('zoom', MapWithDefinedObjectSettings.zoom);
-			}
+        var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
+        var objectLongitude = @(Model.Longitude.HasValue ? Model.Longitude.ToString().Replace(',', '.') : "undefined");
+        if (objectLatitude && objectLongitude) {
+            const params = new window.URLSearchParams(window.location.search);
+            if (!params.has('center')) {
+                params.set('center', [objectLatitude, objectLongitude]);
+            }
+            if (!params.has('zoom')) {
+                params.set('zoom', MapWithDefinedObjectSettings.zoom);
+            }
 
-			if (window.history.pushState) {
-				const newUrl = new URL(window.location.href);
-				newUrl.search = params;
-				window.history.pushState({ path: newUrl.href }, '', newUrl.href);
-			}
-		}
+            if (window.history.pushState) {
+                const newUrl = new URL(window.location.href);
+                newUrl.search = params;
+                window.history.pushState({ path: newUrl.href }, '', newUrl.href);
+            }
+        }
+
+        window.onpopstate = function (event) {
+            debugger;
+            const params = new window.URLSearchParams(window.location.search);
+            if (params.has('center') && params.has('zoom') && map) {
+                map.setCenter(params.get('center').split(","),
+                    params.get('zoom'),
+                    {
+                        checkZoomRange: false
+                    });
+            }
+        };
     </script>
 }
 
