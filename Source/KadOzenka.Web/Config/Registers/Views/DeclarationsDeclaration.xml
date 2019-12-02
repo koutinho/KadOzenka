@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="501" DefaultLayoutId="1005011" LinkedRegistersList="500,501,502,503,504,505,506" AllowSearchPanelResize="false" IsBasic="false"
-              OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true"
-              JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
+              OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
   <Buttons>
     <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
       <Parameters>

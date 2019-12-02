@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="203" DefaultLayoutId="1002031" LinkedRegistersList="203,201" AllowSearchPanelResize="false" Description="Задания на оценку" IsBasic="false"
-              OpenEmpty="false" UseSubMap="true" AllowMultiColumnSorting="true"
-              JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
+              OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
 	<Buttons>
 		<Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
 			<Parameters>
