@@ -2,7 +2,7 @@ var AppData = {
     protocol: "https",
     version: "2.1",
     lang: "ru_RU",
-    key: "059c0fdb-a157-414f-bfbf-64ae681bfd73",
+    key: "5400667f-f671-4f5b-a680-1296945f82e5",
     defaultRemoveElements: ["trafficControl", "geolocationControl", "fullscreenControl"]
 };
 
@@ -24,6 +24,14 @@ var ClusterSettings = {
     disableClickZoom: true          // Запрет зума кластера по клику
 };
 
+var MapWithDefinedObjectSettings = {
+    zoom: 17,
+    iconLayout: 'default#image',
+    iconImageHref: '../images/mapObjectLogoWithPin.png',
+    iconImageSize: [50, 50],
+    iconImageOffset: [-25, -50]
+}
+
 var GeoDotSettings = {
     layout: 'default#image',
     imageHref: 'mapIcons/mapDot.svg',
@@ -42,6 +50,13 @@ var SelectedGeoObjectSettings = {
 	iconImageSize: [30, 30],
 	iconImageOffset: [-15, -15]
 };
+
+var SelectedTargetWidget = {
+    iconLayout: 'default#image',
+    iconImageHref: 'images/mapObjectLogo.png',
+    iconImageSize: [50, 50],
+    iconImageOffset: [-25, -25]
+}
 
 var PropType = [
     { id: 0, name: 'warehouse', color: '#5206af', type: 'Склад' }, 
@@ -80,7 +95,7 @@ var zoomData = [
     { accurancy: 2, dotSize: [8, 8] }, 
     { accurancy: 2, dotSize: [8, 8] }, 
     { accurancy: 3, dotSize: [8, 8] }, 
-    { accurancy: 3, dotSize: [8, 8] }, 
+    { accurancy: 3, dotSize: [8, 8] }
 ];
 
 var ObjectTypes = {
@@ -93,14 +108,17 @@ var geoTagSlicer = {
     countIndex: 20
 };
 
-
-var clusterSelected = false;
-var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
-var MapWithDefinedObjectSettings = {
-    zoom: 17,
-    iconLayout: 'default#image',
-    iconImageHref: '../images/mapObjectLogoWithPin.png',
-    iconImageSize: [50, 50],
-    iconImageOffset: [-25, -50]
+var countWidgetPosition = {
+    bottom: 10,
+    left: 10
 }
+
+var targetWidgetPosition = {
+    bottom: 48,
+    left: 10
+}
+
+
+var targetWidget = null;
+var clusterSelected = null;
+var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

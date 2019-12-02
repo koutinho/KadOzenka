@@ -73,6 +73,6 @@
             <div class="Logo"></div>
             ${isLast ? "" : `<div class="Line"></div>`}
         </div>`;
-}
+};
 
-function clearCardContainer() { document.getElementById("dataContentContainer").innerHTML = ""; }
+function clearCardContainer() { document.getElementById("dataContentContainer").innerHTML = ""; };

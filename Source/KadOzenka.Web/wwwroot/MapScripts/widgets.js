@@ -24,4 +24,32 @@
     });
 };
 
+function createTargetWidget() {
+    targetWidgetClass = function (options) {
+        targetWidgetClass.superclass.constructor.call(this, options);
+        this._$content = null;
+        this._geocoderDeferred = null;
+    };
+    ymaps.util.augment(targetWidgetClass, ymaps.collection.Item, {
+        onAddToMap: function (map) {
+            targetWidgetClass.superclass.onAddToMap.call(this, map);
+            this._lastCenter = null;
+            this.getParent().getChildElement(this).then(this._onGetChildElement, this);
+        },
+        _onGetChildElement: function (parentDomContainer) {
+            this._$content = $(`<div id="targetControl" onclick="toTarget()" class="targetControl"></div>`).appendTo(parentDomContainer);
+            this._createRequest();
+        }
+    });
+};
+
 function addDisplayCountWidget(position) { map.controls.add(new countWidgetClass(), { float: 'none', position }) };
+
+function addTargetWidget(position) {
+    if (!document.getElementById("targetControl")) {
+        targetWidget = new targetWidgetClass();
+        map.controls.add(targetWidget, { float: 'none', position });
+    }
+};
+
+function removeTargetWidget() { map.controls.remove(targetWidget); };

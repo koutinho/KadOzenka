@@ -19,9 +19,10 @@ function initMap() {
 		{ suppressMapOpenBlock: true }
     );
     createDisplayCountWidget();
+    createTargetWidget();
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
     changeDefaultControlPosition(map);
-    addDisplayCountWidget({ bottom: 10, left: 10 });
+    addDisplayCountWidget(countWidgetPosition);
     GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
     map.events.add('boundschange', function (event) { ChangeBounds(event); });
 };

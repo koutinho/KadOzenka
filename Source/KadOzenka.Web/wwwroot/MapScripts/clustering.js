@@ -10,7 +10,6 @@ function initCluster(coordinates, zoom, dotSize) {
         }),
         AllControllersData = coordinates,
         geoObjects = [];
-
         const url = new URL(window.location);
         const params = new window.URLSearchParams(url.search);
         let geoObject = null;
@@ -19,7 +18,7 @@ function initCluster(coordinates, zoom, dotSize) {
             AllControllersData = AllControllersData.filter(function (item) {
                 if (item.id == id) {
                     geoObject = new ymaps.Placemark(item.points,
-                        { data: [{ id: item.id }]},
+                        { data: [{ id: item.id }] },
                         {
                             iconLayout: MapWithDefinedObjectSettings.iconLayout,
                             iconImageHref: MapWithDefinedObjectSettings.iconImageHref,
@@ -28,7 +27,6 @@ function initCluster(coordinates, zoom, dotSize) {
                         });
                     geoObject.events.add('click', function (event) { clickOnCluster(event); });
                 }
-
                 return item.id != id;
             });
         }
@@ -49,9 +47,7 @@ function initCluster(coordinates, zoom, dotSize) {
         clusterer.events.add('click', function (event) { clickOnCluster(event); });
         map.geoObjects.removeAll();
         map.geoObjects.add(clusterer);
-        if (geoObject) {
-            map.geoObjects.add(geoObject);
-        }
+        if (geoObject) map.geoObjects.add(geoObject);
     }
     else {
         AllControllersData = coordinates;
@@ -67,4 +63,19 @@ function initCluster(coordinates, zoom, dotSize) {
             }));
         }
     }
-}
+    if (clusterSelected) map.geoObjects.add(clusterSelected.geoObject);
+};
+
+function createTargetMarker(coords, zoom, ids) {
+    geoObject = new ymaps.Placemark(coords, { data: [{ id: ids }] }, SelectedTargetWidget);
+    clusterSelected = { geoObject: geoObject, coords: coords, zoom: zoom };
+    geoObject.events.add('click', function (event) { removeTarget(geoObject); });
+    addTargetWidget(targetWidgetPosition);
+    map.geoObjects.add(geoObject);
+    map.setCenter(coords, zoom, "map");
+};
+
+function removeTargetMarker(placemark) {
+    map.geoObjects.remove(placemark);
+    placemark = null;
+};
