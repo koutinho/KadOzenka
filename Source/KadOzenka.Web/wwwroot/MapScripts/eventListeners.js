@@ -3,30 +3,18 @@
 function ChangeBounds(event) {
     const params = new window.URLSearchParams(window.location.search);
 
-    let browserCenter = null, browserZoom = null;
-    if (params.has('center') && params.has('zoom')) {
-        browserCenter = params.get('center').split(",");
-        browserZoom = params.get('zoom');
-    }
-
     const newCenter = event.get('newCenter');
     params.set('center', newCenter);
     const newZoom = event.get('newZoom');
     params.set('zoom', newZoom);
+    if (params.has('stateCount')) {
+        let stateCount = parseInt(params.get('stateCount')) + 1;
+        params.set('stateCount', stateCount);
+    }
     if (window.history.pushState) {
-        if (browserCenter && browserZoom) {
-            if ((+browserCenter[0]).toFixed(10) !== newCenter[0].toFixed(10) ||
-                (+browserCenter[1]).toFixed(10) !== newCenter[1].toFixed(10) ||
-                (+browserZoom) !== newZoom) {
-                const newUrl = new URL(window.location.href);
-                newUrl.search = params;
-                window.history.pushState({ path: newUrl.href }, '', newUrl.href);
-            }
-        } else {
-            const newUrl = new URL(window.location.href);
-            newUrl.search = params;
-            window.history.pushState({ path: newUrl.href }, '', newUrl.href);
-        }
+        const newUrl = new URL(window.location.href);
+        newUrl.search = params;
+        window.history.pushState({ path: newUrl.href }, '', newUrl.href);
     }
     const newBounds = event.get('newBounds');
     refreshCurrentToken();
