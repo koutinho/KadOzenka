@@ -4546,6 +4546,210 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 214 Справочник ЦОД (KO_COD_DICTIONARY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 214)]
+    [Serializable]
+    public partial class OMCodDictionary : OMBaseClass<OMCodDictionary>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 21400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _idcodjob;
+        /// <summary>
+        /// 21400200 Идентификатор задания ЦОД (ID_CODJOB)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21400200)]
+        public long IdCodjob
+        {
+            get
+            {
+                CheckPropertyInited("IdCodjob");
+                return _idcodjob;
+            }
+            set
+            {
+                _idcodjob = value;
+                NotifyPropertyChanged("IdCodjob");
+            }
+        }
+
+
+        private string _value;
+        /// <summary>
+        /// 21400300 Значение (VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21400300)]
+        public string Value
+        {
+            get
+            {
+                CheckPropertyInited("Value");
+                return _value;
+            }
+            set
+            {
+                _value = value;
+                NotifyPropertyChanged("Value");
+            }
+        }
+
+
+        private string _code;
+        /// <summary>
+        /// 21400400 Код (CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21400400)]
+        public string Code
+        {
+            get
+            {
+                CheckPropertyInited("Code");
+                return _code;
+            }
+            set
+            {
+                _code = value;
+                NotifyPropertyChanged("Code");
+            }
+        }
+
+
+        private string _source;
+        /// <summary>
+        /// 21400500  Источник (SOURCE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21400500)]
+        public string Source
+        {
+            get
+            {
+                CheckPropertyInited("Source");
+                return _source;
+            }
+            set
+            {
+                _source = value;
+                NotifyPropertyChanged("Source");
+            }
+        }
+
+
+        private string _expert;
+        /// <summary>
+        /// 21400600 ФИО эксперта (EXPERT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21400600)]
+        public string Expert
+        {
+            get
+            {
+                CheckPropertyInited("Expert");
+                return _expert;
+            }
+            set
+            {
+                _expert = value;
+                NotifyPropertyChanged("Expert");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 215 Задания ЦОД (KO_COD_JOB)
+    /// </summary>
+    [RegisterInfo(RegisterID = 215)]
+    [Serializable]
+    public partial class OMCodJob : OMBaseClass<OMCodJob>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21500100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 21500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _namejob;
+        /// <summary>
+        /// 21500200 Задание ЦОД (NAME_JOB)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21500200)]
+        public string NameJob
+        {
+            get
+            {
+                CheckPropertyInited("NameJob");
+                return _namejob;
+            }
+            set
+            {
+                _namejob = value;
+                NotifyPropertyChanged("NameJob");
+            }
+        }
+
+
+        private string _resultjob;
+        /// <summary>
+        /// 21500300 Результат (RESULT_JOB)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21500300)]
+        public string ResultJob
+        {
+            get
+            {
+                CheckPropertyInited("ResultJob");
+                return _resultjob;
+            }
+            set
+            {
+                _resultjob = value;
+                NotifyPropertyChanged("ResultJob");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года (KO_UNIT_PARAMS_OKS_2018)
     /// </summary>
     [RegisterInfo(RegisterID = 250)]

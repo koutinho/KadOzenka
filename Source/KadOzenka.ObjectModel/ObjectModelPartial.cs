@@ -1193,6 +1193,54 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 214 Справочник ЦОД
+    /// </summary>
+    public partial class OMCodDictionary
+    {
+
+        public OMCodDictionary()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMCodDictionary(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 215 Задания ЦОД
+    /// </summary>
+    public partial class OMCodJob
+    {
+
+        public OMCodJob()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMCodJob(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года
     /// </summary>
     public partial class OMUnitParamsOks2018
