@@ -20,5 +20,10 @@ namespace KadOzenka.Dal.WebRequest
                 Encoding.UTF8
             ).ReadToEnd();
 
+        public string GetDataByAddress(string address) =>
+            new StreamReader(System.Net.WebRequest.Create(string.Format(ConfigurationManager.AppSettings["geocodeLinkAddress"], ConfigurationManager.AppSettings["GeocodeTest000"], address))
+                                     .GetResponse()
+                                     .GetResponseStream(),
+                Encoding.UTF8).ReadToEnd();
     }
 }

@@ -192,9 +192,9 @@ namespace ObjectModel.Directory
         [EnumCode("3")]
         CadastralNumberStep = 740,
 		/// <summary>
-		/// В работе (741)
+		/// В работу (741)
 		/// </summary>
-		[Description("В работе")]
+		[Description("В работу")]
         [EnumCode("4")]
         InProcess = 741,
 		/// <summary>

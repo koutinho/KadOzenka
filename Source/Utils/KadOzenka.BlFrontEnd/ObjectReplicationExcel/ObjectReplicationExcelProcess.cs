@@ -10,6 +10,9 @@ using ObjectModel.Core.TD;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Shared;
+using KadOzenka.Dal.WebRequest;
+using ObjectModel.Market;
+using System.Net;
 
 namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 {
@@ -192,6 +195,34 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 
 			return dt;
 		}
+
+        public static void GAF()
+        {
+            ExcelFile excelFile = ExcelFile.Load(@"C:\Users\silanov\Desktop\Rent.xlsx", new XlsxLoadOptions());
+            ExcelWorksheet ws = excelFile.Worksheets[0];
+            DataTable dt = new DataTable();
+            var workbook = new ExcelFile();
+            var worksheet = workbook.Worksheets.Add("1");
+            for (int i = 1; i < ws.Rows.Count; i++)
+            {
+                OMYandexAddress address = new OMYandexAddress();
+                string cadastralNumber = null;
+                try { address = new Dal.JSONParser.YandexGeocoder().ParseYandexAddress(new YandexGeocoder().GetDataByAddress(ws.Rows[i].AllocatedCells[0].Value.ToString())); }
+                catch (Exception) { }
+                try { cadastralNumber = OMYandexAddress.Where(x => x.FormalizedAddress == address.FormalizedAddress).Select(x => x.CadastralNumber).ExecuteFirstOrDefault().CadastralNumber; }
+                catch (Exception) { }
+
+                worksheet.Cells[$"A{i}"].Value = ws.Rows[i].AllocatedCells[0].Value;
+                worksheet.Cells[$"B{i}"].Value = address.FormalizedAddress != null ? address.FormalizedAddress : "-";
+                worksheet.Cells[$"C{i}"].Value = cadastralNumber != null ? cadastralNumber : "-";
+
+                Console.Write($"\r{Math.Round(((double) i + 1) / ws.Rows.Count * 100, 2)}%");
+            }
+            Console.WriteLine();
+
+            workbook.Save(@"C:\Users\silanov\Desktop\Test.xlsx");
+        }
+
 	}
 
 }

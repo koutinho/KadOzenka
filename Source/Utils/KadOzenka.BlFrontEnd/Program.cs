@@ -52,7 +52,8 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("15", "Тест автоматического формирования исключений", () => { new TestAutoExclusions().TryParse(); });
 			consoleHelper.AddCommand("16", "Тест API судебной подсистемы", SudTestApi.TestAll);
 
-			consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы", SudExporter.DoLoad);
+            consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы", SudExporter.DoLoad);
+            consoleHelper.AddCommand("400", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.GAF(); });
         }
 	}
 }
