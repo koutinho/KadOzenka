@@ -3,12 +3,12 @@
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
-	    <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
+	    <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
         <Parameters></Parameters>
       </Button>
 
       
-      <Button Caption="Редактировать" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit">
         <Parameters>
           <Parameter Key="courtId" Value="[ObjectID]" />
         </Parameters>
