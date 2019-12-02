@@ -4750,6 +4750,238 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 216 Данные о кадастровой стоимости из Росреестра (KO_COST_ROSREESTR)
+    /// </summary>
+    [RegisterInfo(RegisterID = 216)]
+    [Serializable]
+    public partial class OMCostRosreestr : OMBaseClass<OMCostRosreestr>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21600100  (ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _idobject;
+        /// <summary>
+        /// 21600200  (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600200)]
+        public long IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private DateTime? _datevaluation;
+        /// <summary>
+        /// 21600300  (DATEVALUATION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600300)]
+        public DateTime? Datevaluation
+        {
+            get
+            {
+                CheckPropertyInited("Datevaluation");
+                return _datevaluation;
+            }
+            set
+            {
+                _datevaluation = value;
+                NotifyPropertyChanged("Datevaluation");
+            }
+        }
+
+
+        private DateTime? _dateentering;
+        /// <summary>
+        /// 21600400  (DATEENTERING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600400)]
+        public DateTime? Dateentering
+        {
+            get
+            {
+                CheckPropertyInited("Dateentering");
+                return _dateentering;
+            }
+            set
+            {
+                _dateentering = value;
+                NotifyPropertyChanged("Dateentering");
+            }
+        }
+
+
+        private string _docnumber;
+        /// <summary>
+        /// 21600500  (DOCNUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600500)]
+        public string Docnumber
+        {
+            get
+            {
+                CheckPropertyInited("Docnumber");
+                return _docnumber;
+            }
+            set
+            {
+                _docnumber = value;
+                NotifyPropertyChanged("Docnumber");
+            }
+        }
+
+
+        private DateTime? _docdate;
+        /// <summary>
+        /// 21600600  (DOCDATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600600)]
+        public DateTime? Docdate
+        {
+            get
+            {
+                CheckPropertyInited("Docdate");
+                return _docdate;
+            }
+            set
+            {
+                _docdate = value;
+                NotifyPropertyChanged("Docdate");
+            }
+        }
+
+
+        private DateTime? _applicationdate;
+        /// <summary>
+        /// 21600700  (APPLICATIONDATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600700)]
+        public DateTime? Applicationdate
+        {
+            get
+            {
+                CheckPropertyInited("Applicationdate");
+                return _applicationdate;
+            }
+            set
+            {
+                _applicationdate = value;
+                NotifyPropertyChanged("Applicationdate");
+            }
+        }
+
+
+        private string _docname;
+        /// <summary>
+        /// 21600800  (DOCNAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600800)]
+        public string Docname
+        {
+            get
+            {
+                CheckPropertyInited("Docname");
+                return _docname;
+            }
+            set
+            {
+                _docname = value;
+                NotifyPropertyChanged("Docname");
+            }
+        }
+
+
+        private decimal? _costvalue;
+        /// <summary>
+        /// 21600900  (COSTVALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21600900)]
+        public decimal? Costvalue
+        {
+            get
+            {
+                CheckPropertyInited("Costvalue");
+                return _costvalue;
+            }
+            set
+            {
+                _costvalue = value;
+                NotifyPropertyChanged("Costvalue");
+            }
+        }
+
+
+        private DateTime? _dateapproval;
+        /// <summary>
+        /// 21601000  (DATEAPPROVAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21601000)]
+        public DateTime? Dateapproval
+        {
+            get
+            {
+                CheckPropertyInited("Dateapproval");
+                return _dateapproval;
+            }
+            set
+            {
+                _dateapproval = value;
+                NotifyPropertyChanged("Dateapproval");
+            }
+        }
+
+
+        private DateTime? _revisalstatementdate;
+        /// <summary>
+        /// 21601100  (REVISALSTATEMENTDATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21601100)]
+        public DateTime? Revisalstatementdate
+        {
+            get
+            {
+                CheckPropertyInited("Revisalstatementdate");
+                return _revisalstatementdate;
+            }
+            set
+            {
+                _revisalstatementdate = value;
+                NotifyPropertyChanged("Revisalstatementdate");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года (KO_UNIT_PARAMS_OKS_2018)
     /// </summary>
     [RegisterInfo(RegisterID = 250)]
