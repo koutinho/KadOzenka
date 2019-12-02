@@ -7,15 +7,12 @@ function ChangeBounds(event) {
     params.set('center', newCenter);
     const newZoom = event.get('newZoom');
     params.set('zoom', newZoom);
-    if (params.has('stateCount')) {
-        let stateCount = parseInt(params.get('stateCount')) + 1;
-        params.set('stateCount', stateCount);
-    }
-    if (window.history.pushState) {
+    if (window.history.replaceState) {
         const newUrl = new URL(window.location.href);
         newUrl.search = params;
-        window.history.pushState({ path: newUrl.href }, '', newUrl.href);
+        window.history.replaceState({ path: newUrl.href }, '', newUrl.href);
     }
+    
     const newBounds = event.get('newBounds');
     refreshCurrentToken();
     GetClusterData(newBounds, newZoom, currentToken, params.has('objectId') ? params.get('objectId') : null);

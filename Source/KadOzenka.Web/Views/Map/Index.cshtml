@@ -39,9 +39,6 @@
         var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
         var objectLongitude = @(Model.Longitude.HasValue ? Model.Longitude.ToString().Replace(',', '.') : "undefined");
         const params = new window.URLSearchParams(window.location.search);
-        if (!params.has('stateCount')) {
-            params.set('stateCount', 1);
-        }
         if (objectLatitude && objectLongitude) {
             if (!params.has('center')) {
                 params.set('center', [objectLatitude, objectLongitude]);
@@ -55,14 +52,6 @@
             newUrl.search = params;
             window.history.replaceState({ path: newUrl.href }, '', newUrl.href);
         }
-
-        window.onpopstate = function (event) {
-            const params = new window.URLSearchParams(window.location.search);
-            if (params.has('stateCount')) {
-                let stateCount = -parseInt(params.get('stateCount'));
-                window.history.go(stateCount);
-            }
-        };
     </script>
 }
 
