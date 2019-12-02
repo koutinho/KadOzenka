@@ -1,10 +1,14 @@
-﻿using Core.SRD;
+﻿using Core.Register;
+using Core.Shared.Extensions;
+using Core.SRD;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Sud;
 using Platform.RefLib;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace KadOzenka.BlFrontEnd.SudTests
@@ -15,8 +19,8 @@ namespace KadOzenka.BlFrontEnd.SudTests
 		public long Id { get; set; }
 	}
 
-    public static class SudTestApi
-    {
+	public static class SudTestApi
+	{
 		public static void TestAll()
 		{
 			var table = OMTableParam.Object;
@@ -26,23 +30,23 @@ namespace KadOzenka.BlFrontEnd.SudTests
 
 			List<SelectListItem> items = new List<SelectListItem>();
 			bool comboBoxDisabled = false;
-			
+
 			var param = OMParam.GetActual(table, objectId, paramName);
 
-			if(param != null)
+			if (param != null)
 			{
 				// Блокируем комбобокс и выводим в нем одну строку
 				comboBoxDisabled = true;
 				items.Add(new SelectListItem
 				{
-					Value = $"0",
+					Value = $"{param.Pid}",
 					Text = $"({(SRDCache.Users.ContainsKey((int)param.IdUser) ? SRDCache.Users[(int)param.IdUser].FullName : String.Empty)}, {param.DateUser.ToString("dd.MM.yyyy")}) {param}"
 				});
 			}
 			else
 			{
 				var paramValues = OMParam.GetParams(table, objectId, paramName);
-				
+
 				items = paramValues.Select(x => new SelectListItem
 				{
 					Value = $"{x.Pid}",
@@ -71,8 +75,10 @@ namespace KadOzenka.BlFrontEnd.SudTests
 
 			OMObject sudObject = OMObject.Where(x => x.Id == objectId).ExecuteFirstOrDefault();
 
-			OMParam pKn = OMParam.Where(x => x.Id == paramsToApply.FirstOrDefault(y => y.Name == "kn").Id).ExecuteFirstOrDefault();
-			OMParam pType = OMParam.Where(x => x.Id == paramsToApply.FirstOrDefault(y => y.Name == "type").Id).ExecuteFirstOrDefault();
+
+
+			OMParam pKn = OMParam.Where(x => x.Id == paramsToApply.FirstOrDefault(y => y.Name == GetObjectFieldName(z => z.Kn)).Id).ExecuteFirstOrDefault();
+			OMParam pType = OMParam.Where(x => x.Id == paramsToApply.FirstOrDefault(y => y.Name == ParamName.TypeObj.GetEnumDescription()).Id).ExecuteFirstOrDefault();
 			OMParam pSquare = null;
 			OMParam pKc = null;
 			OMParam pDate = null;
@@ -83,5 +89,19 @@ namespace KadOzenka.BlFrontEnd.SudTests
 
 			sudObject.UpdateAndCheckParam(pKn, pType, pSquare, pKc, pDate, pNameCenter, pStatDgi, pAdres, pOwner);
 		}
+
+		public static string GetObjectFieldName<TResult>(Expression<Func<OMObject, TResult>> expr)
+		{
+			return RegisterCache.GetAttributeData(OMObject.GetColumnAttributeId(expr)).ValueField.ToLower();
+		}
     }
+
+	public enum ParamName
+	{
+		[Description("kn")]
+		Kn,
+
+		[Description("typeobj")]
+		TypeObj,
+	}
 }
