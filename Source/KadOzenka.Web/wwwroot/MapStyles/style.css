@@ -68,8 +68,50 @@ body {
 }
 
 .MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header {
-    font-size: 22px;
+    font-size: 19px;
+    line-height: 31px;
     margin-bottom: 10px;
+    width: 100%;
+    display: flex;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Text {
+    width: 80%;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content {
+    width: 20%;
+    display: flex;
+    vertical-align: middle;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Card {
+     background-image: url(/MapIcons/card.svg);
+     background-size: 26px 30px;
+     background-position: 1px 2px;
+     width: 28px;
+     height: 31px;
+     cursor:pointer;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Link.Cian {
+    background-image: url(/MapIcons/CIANLogoOnly.png);
+    background-size: 22px 31px;
+    background-repeat: no-repeat;
+    background-position: center right;
+    width: 22px;
+    height: 31px;
+    cursor:pointer;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Link.Rosreestr {
+    background-image: url(/MapIcons/rosreestrLogoOnly.png);
+    background-size: 22px 31px;
+    background-repeat: no-repeat;
+    background-position: center right;
+    width: 22px;
+    height: 31px;
+    cursor:pointer;
 }
 
 .MapContainer .Data .DataContentContainer .DataItemContainer .Container .Name {
@@ -135,4 +177,24 @@ body {
     background-size: 22px 22px;
     background-repeat: no-repeat;
     background-position: 7px 7px;
+}
+
+.filterControl .filterContainer {
+    display: flex;
+}
+
+.filterControl .filterContainer .filterButton {
+    min-height: 26px;
+    line-height: 26px;
+    border-radius: 13px;
+    border: solid 1px #5c9eff;
+    background: #fff;
+    color: #4590ff;
+    padding: 0px 12px;
+    align-items: center;
+    cursor: pointer;
+}
+
+.filterControl .filterContainer div:not(:first-child) {
+    margin-left: 10px;
 }

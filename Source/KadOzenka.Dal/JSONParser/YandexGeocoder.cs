@@ -105,6 +105,15 @@ namespace KadOzenka.Dal.JSONParser
                 geoData.Add(kind);
             }
             addressElement.Other = string.Join(", ", other);
+            decimal lng = 0, lat = 0;
+            try
+            {
+                decimal.TryParse(JObject.Parse(JSON)["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"].ToString().Split(' ')[0].Replace('.', ','), out lng);
+                decimal.TryParse(JObject.Parse(JSON)["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]["Point"]["pos"].ToString().Split(' ')[1].Replace('.', ','), out lat);
+            }
+            catch (Exception) { }
+            addressElement.Lng = lng;
+            addressElement.Lat = lat;
             return addressElement;
         }
 

@@ -11,7 +11,9 @@
 		public string From { get; set; }
 		public string To { get; set; }
 
-		public string ValueCasted
+        public override string ToString() => $"ID:{Id}\nReferenceId:{ReferenceId}\nTypeControl:{TypeControl}\nType:{Type}\nText:{Text}\nValue:{Value}\nFrom:{From}\nTo:{To}\n\n\n";
+
+        public string ValueCasted
 		{
 			get
 			{

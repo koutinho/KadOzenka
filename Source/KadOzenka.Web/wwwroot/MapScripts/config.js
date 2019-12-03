@@ -113,6 +113,11 @@ var countWidgetPosition = {
     left: 10
 }
 
+var filterWidgetPosition = {
+    top: 48,
+    left: 48
+}
+
 var targetWidgetPosition = {
     bottom: 48,
     left: 10

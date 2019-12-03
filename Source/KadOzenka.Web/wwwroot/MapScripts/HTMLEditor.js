@@ -1,10 +1,24 @@
 ﻿function insertCard(cartData, isLast) {
+    if (cartData.images != '' && cartData.images != null) console.log(cartData.images.split(',')[0]);
     document.getElementById("dataContentContainer").innerHTML += `
-        <div class="DataItemContainer ${getPropertyType(cartData.source)}">
+        <!--<div class="DataItemContainer ${getPropertyType(cartData.source)}">-->
+        <div class="DataItemContainer">
             <div class="Container">
                 <div class="Header">
-                    ${!(cartData.roomsCount != null && cartData.roomsCount != 0 && (cartData.type == 10 || cartData.type == 11 || cartData.type == 18)) ? "" : `${cartData.roomsCount}-комн.&nbsp;`}${PropType[cartData.type].type}&nbsp;${getArea(cartData.type, cartData.area, cartData.areaLand)}
-                </div >
+                    <div class="Text">
+                        ${!(cartData.roomsCount != null && cartData.roomsCount != 0 && (cartData.type == 10 || cartData.type == 11 || cartData.type == 18)) ? "" : `${cartData.roomsCount}-комн.&nbsp;`}${PropType[cartData.type].type}&nbsp;${getArea(cartData.type, cartData.area, cartData.areaLand)}
+                    </div>
+                    <div class="Content">
+                        <a style="margin-left: auto;" href="/ObjectCard?ObjId=${cartData.id}&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true" target="_blank">
+                            <div class="Card"></div>
+                        </a>
+                        ${cartData.source != "Росреестр" ? `
+                            <a style="margin-left: 3px;" href="${cartData.link}" target="_blank">
+                                <div class="Link ${getPropertyType(cartData.source)}"></div>
+                            </a>
+                        ` : `<div style="margin-left: 3px;" class="Link ${getPropertyType(cartData.source)}"></div>`}
+                    </div>
+                </div>
             </div>
             <div class="Container">
                 <div class="Name">Цена${(cartData.dealType != 'Предложение-продажа' && cartData.dealType != 'Сделка купли-продажи') ? "&nbsp;аренды" : ""}</div>
@@ -32,14 +46,6 @@
                     <div class="Value">${numberWithSpaces(cartData.areaLand)}&nbsp;сот.</div>
                 </div>
             `}
-            <div class="Container">
-                <div class="Name">Ссылка</div>
-                <div class="Value">
-                    <a href="${cartData.link}" target="_blank">
-                        <img  height="20" width="20" src="/MapIcons/link.svg" />
-                    </a>
-                </div>
-            </div>
             ${cartData.metro == null ? "" : `
                 <div class="Container">
                     <div class="Name">Метро</div>
@@ -49,14 +55,6 @@
             <div class="Container">
                 <div class="Name">Адрес</div>
                 <div class="Value">${cartData.address}</div>
-            </div>
-            <div class="Container">
-                <div class="Name">Карточка</div>
-                <div class="Value">
-                    <a href="/ObjectCard?ObjId=${cartData.id}&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true" target="_blank">
-                        <img  height="20" width="20" src="/MapIcons/card.svg" />
-                    </a>
-                </div>
             </div>
             <div class="Container">
                 <div class="Name">Дата&nbsp;внесения</div>

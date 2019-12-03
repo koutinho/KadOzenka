@@ -20,9 +20,11 @@ function initMap() {
     );
     createDisplayCountWidget();
     createTargetWidget();
+    creatFilterWidget();
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
     changeDefaultControlPosition(map);
     addDisplayCountWidget(countWidgetPosition);
+    addFilterWidget(filterWidgetPosition);
     GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
     map.events.add('boundschange', function (event) { ChangeBounds(event); });
 };

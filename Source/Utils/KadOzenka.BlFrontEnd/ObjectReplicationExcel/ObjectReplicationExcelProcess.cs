@@ -13,6 +13,7 @@ using ObjectModel.Core.Shared;
 using KadOzenka.Dal.WebRequest;
 using ObjectModel.Market;
 using System.Net;
+using System.Linq;
 
 namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 {
@@ -198,29 +199,29 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 
         public static void GAF()
         {
-            ExcelFile excelFile = ExcelFile.Load(@"C:\Users\silanov\Desktop\Rent.xlsx", new XlsxLoadOptions());
-            ExcelWorksheet ws = excelFile.Worksheets[0];
-            DataTable dt = new DataTable();
-            var workbook = new ExcelFile();
-            var worksheet = workbook.Worksheets.Add("1");
-            for (int i = 1; i < ws.Rows.Count; i++)
-            {
+            List<OMCoreObject> initial = 
+                OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr && x.Lat == null && x.Lng == null)
+                            .Select(x => new { x.Address, x.Lng, x.Lat })
+                            .Execute()
+                            .Take(25000)
+                            .ToList();
+            Console.WriteLine(OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr && x.Lat == null && x.Lng == null).ExecuteCount());
+            int counterCorrect = 0, counterError = 0;
+            initial.ForEach(x => {
                 OMYandexAddress address = new OMYandexAddress();
-                string cadastralNumber = null;
-                try { address = new Dal.JSONParser.YandexGeocoder().ParseYandexAddress(new YandexGeocoder().GetDataByAddress(ws.Rows[i].AllocatedCells[0].Value.ToString())); }
+                try { address = new Dal.JSONParser.YandexGeocoder().ParseYandexAddress(new YandexGeocoder().GetDataByAddress(x.Address)); }
                 catch (Exception) { }
-                try { cadastralNumber = OMYandexAddress.Where(x => x.FormalizedAddress == address.FormalizedAddress).Select(x => x.CadastralNumber).ExecuteFirstOrDefault().CadastralNumber; }
-                catch (Exception) { }
-
-                worksheet.Cells[$"A{i}"].Value = ws.Rows[i].AllocatedCells[0].Value;
-                worksheet.Cells[$"B{i}"].Value = address.FormalizedAddress != null ? address.FormalizedAddress : "-";
-                worksheet.Cells[$"C{i}"].Value = cadastralNumber != null ? cadastralNumber : "-";
-
-                Console.Write($"\r{Math.Round(((double) i + 1) / ws.Rows.Count * 100, 2)}%");
-            }
+                if ((x.Lat == null || x.Lng == null) && address.Lat != 0 && address.Lng != 0)
+                {
+                    x.Lat = address.Lat;
+                    x.Lng = address.Lng;
+                    x.Save();
+                    counterCorrect++;
+                }
+                else counterError++;
+                Console.Write($"\r{Math.Round(((double)counterCorrect) / initial.Count * 100, 2)}% {Math.Round(((double)counterError) / initial.Count * 100, 2)}%");
+            });
             Console.WriteLine();
-
-            workbook.Save(@"C:\Users\silanov\Desktop\Test.xlsx");
         }
 
 	}
