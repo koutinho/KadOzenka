@@ -143,9 +143,9 @@ namespace KadOzenka.Web.Controllers
 			}
 		}
 
-		private int FormType(string category, string subCategory, ObjectModel.Directory.PropertyTypes propertyType)
+		private int FormType(string category, string subCategory, PropertyTypes propertyType)
         {
-            if (propertyType == ObjectModel.Directory.PropertyTypes.UncompletedBuilding) return 7;
+            if (propertyType == PropertyTypes.UncompletedBuilding) return 7;
             switch (category)
             {
                 case "Коммерческая недвижимость":

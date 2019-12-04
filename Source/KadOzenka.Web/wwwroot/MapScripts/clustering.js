@@ -21,7 +21,7 @@ function initCluster(coordinates, zoom, dotSize) {
                     arr = [id];
                     geoObject = new ymaps.Placemark(item.points, { data: [{ id: item.id }] }, SelectedTargetWidget);
                     clusterSelected = { geoObject: geoObject, coords: item.points, zoom: MapSettings.minClusterZoom };
-                    createTargetMarker(item.points, MapSettings.minClusterZoom, arr);
+                    createTargetMarker(item.points, MapWithDefinedObjectSettings.zoom, arr);
                     GetRequiredInfo(arr);
                     geoObject.events.add('click', function (event) { removeTarget(geoObject); });
                 }
