@@ -1,6 +1,4 @@
-﻿function BackTo(event) { window.location.href = "/"; };
-
-function ChangeBounds(event) {
+﻿function ChangeBounds(event) {
     const params = new window.URLSearchParams(window.location.search);
 
     const newCenter = event.get('newCenter');
@@ -45,6 +43,7 @@ function redrawWaiting() {
 };
 
 function removeTarget(placemark) {
+    clearCardContainer();
     removeTargetWidget();
     removeTargetMarker(placemark);
     clusterSelected = null;

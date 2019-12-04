@@ -3,6 +3,9 @@ body {
     padding: 0;
 }
 
+.Hidden {
+    display: none;
+}
 
 .Button {
     background-color: #4590ff !important;
@@ -12,6 +15,28 @@ body {
     margin: 15px;
     color: #fff;
     display: flex;
+}
+
+.ButtonMap {
+    background-color: #4590ff !important;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 4px 12px 3px 12px;
+    border: solid 1px #5c9eff;
+    color: #fff;
+    display: flex;
+}
+
+.Lable {
+    min-height: 26px;
+    line-height: 26px;
+    border-radius: 13px;
+    border: solid 1px #5c9eff;
+    background: #4590ff;
+    color: #fff;
+    padding: 0px 7px;
+    align-items: center;
+    cursor: default;
 }
 
 .Button .ButtonContainer {
@@ -35,9 +60,14 @@ body {
 }
 
 .MapContainer .Data {
-    min-width:350px;
+    min-width: 350px;
     overflow-y: scroll;
 }
+
+.MapContainer .Map.Card{
+    width: calc(100%-350px);
+}
+
 
 .MapContainer .Data .DataContentContainer {
     margin: 5px;
@@ -88,7 +118,8 @@ body {
 .MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Card {
      background-image: url(/MapIcons/card.svg);
      background-size: 26px 30px;
-     background-position: 1px 2px;
+     background-position: 1px 1px;
+     background-repeat: no-repeat;
      width: 28px;
      height: 31px;
      cursor:pointer;

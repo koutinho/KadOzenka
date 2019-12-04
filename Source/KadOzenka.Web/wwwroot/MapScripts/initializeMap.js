@@ -31,7 +31,6 @@ function initMap() {
 
 function changeDefaultControlPosition(map) {
     map.controls.get("rulerControl").options.set({position:{bottom: 10, right: 10}});
-    map.controls.get("zoomControl").options.set({position:{top: 48, left: 10}});
 };
 
 init();

@@ -17,15 +17,13 @@ function initCluster(coordinates, zoom, dotSize) {
             var id = params.get('objectId');
             AllControllersData = AllControllersData.filter(function (item) {
                 if (item.id == id) {
-                    geoObject = new ymaps.Placemark(item.points,
-                        { data: [{ id: item.id }] },
-                        {
-                            iconLayout: MapWithDefinedObjectSettings.iconLayout,
-                            iconImageHref: MapWithDefinedObjectSettings.iconImageHref,
-                            iconImageSize: MapWithDefinedObjectSettings.iconImageSize,
-                            iconImageOffset: MapWithDefinedObjectSettings.iconImageOffset
-                        });
-                    geoObject.events.add('click', function (event) { clickOnCluster(event); });
+                    window.history.replaceState({}, document.title, "/Map?" + window.location.href.split('?')[1].replace(/objectId=.*?&/, ''));
+                    arr = [id];
+                    geoObject = new ymaps.Placemark(item.points, { data: [{ id: item.id }] }, SelectedTargetWidget);
+                    clusterSelected = { geoObject: geoObject, coords: item.points, zoom: MapSettings.minClusterZoom };
+                    createTargetMarker(item.points, MapSettings.minClusterZoom, arr);
+                    GetRequiredInfo(arr);
+                    geoObject.events.add('click', function (event) { removeTarget(geoObject); });
                 }
                 return item.id != id;
             });
@@ -47,7 +45,6 @@ function initCluster(coordinates, zoom, dotSize) {
         clusterer.events.add('click', function (event) { clickOnCluster(event); });
         map.geoObjects.removeAll();
         map.geoObjects.add(clusterer);
-        if (geoObject) map.geoObjects.add(geoObject);
     }
     else {
         AllControllersData = coordinates;
@@ -67,6 +64,7 @@ function initCluster(coordinates, zoom, dotSize) {
 };
 
 function createTargetMarker(coords, zoom, ids) {
+    if (clusterSelected) map.geoObjects.remove(clusterSelected.geoObject);
     geoObject = new ymaps.Placemark(coords, { data: [{ id: ids }] }, SelectedTargetWidget);
     clusterSelected = { geoObject: geoObject, coords: coords, zoom: zoom };
     geoObject.events.add('click', function (event) { removeTarget(geoObject); });

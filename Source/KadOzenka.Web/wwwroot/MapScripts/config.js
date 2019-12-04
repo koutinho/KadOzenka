@@ -3,7 +3,7 @@ var AppData = {
     version: "2.1",
     lang: "ru_RU",
     key: "5400667f-f671-4f5b-a680-1296945f82e5",
-    defaultRemoveElements: ["trafficControl", "geolocationControl", "fullscreenControl"]
+    defaultRemoveElements: ["trafficControl", "geolocationControl", "fullscreenControl", "zoomControl"]
 };
 
 var MapSettings = {
@@ -54,6 +54,13 @@ var SelectedGeoObjectSettings = {
 var SelectedTargetWidget = {
     iconLayout: 'default#image',
     iconImageHref: 'images/mapObjectLogo.png',
+    iconImageSize: [50, 50],
+    iconImageOffset: [-25, -25]
+}
+
+var SelectedTargetOnCard = {
+    iconLayout: 'default#image',
+    iconImageHref: '../images/mapObjectLogo.png',
     iconImageSize: [50, 50],
     iconImageOffset: [-25, -25]
 }
@@ -115,7 +122,7 @@ var countWidgetPosition = {
 
 var filterWidgetPosition = {
     top: 48,
-    left: 48
+    left: 10
 }
 
 var targetWidgetPosition = {
