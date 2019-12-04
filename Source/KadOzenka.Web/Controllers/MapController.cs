@@ -29,52 +29,32 @@ namespace KadOzenka.Web.Controllers
 	    {
 		    if (objectId.HasValue)
 		    {
-			    var marketObject = OMCoreObject
-				    .Where(x => x.Id == objectId)
-				    .SelectAll()
-				    .ExecuteFirstOrDefault();
-
+			    var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
 			    return View(MapObjectDto.OMMap(marketObject));
 			}
-
 		    return View(new MapObjectDto());
 	    }
 
 	    public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude,
-		    decimal? bottomLongitude, int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, string token,
-		    long? objectId)
+		    decimal? bottomLongitude, int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, string token, long? objectId)
 	    {
-		    var query = OMCoreObject.Where(x =>
-			    x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess &&
-			    x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr);
-		    if (objectId.HasValue)
-		    {
-				PrepareQueryByObject(query, objectId.Value);
-			}
-		    else
-		    {
-			    PrepareQueryByUserFilter(query);
-		    }
-
+		    var query = OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && x.Lng != null && x.Lat != null);
+		    if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
+		    else PrepareQueryByUserFilter(query);
 		    if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
 		    if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
 		    if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
 		    if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
-		    if (mapZoom < minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount);
+		    if (mapZoom < minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
 		    var point = new List<object>();
-		    var analogItem = query.Select(x => new {x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code})
-			    .Execute().ToList();
-		    analogItem.ForEach(x => point.Add(new
-		    {
-			    points = new[] {x.Lat, x.Lng}, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code),
-			    id = x.Id
-		    }));
+		    var analogItem = query.Select(x => new {x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code}).Execute().ToList();
+		    analogItem.ForEach(x => point.Add(new { points = new[] {x.Lat, x.Lng}, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
 
-		    //  query.SetPackageSize(700).GroupBy(x => new { x.Lat.Round(2), x.Lng.Round(2) });//.ExecuteSelect(x => new{ x.Lat, x.Lng });
-		    //  var analogItem = query.ExecuteSelect(x => new{ x.Lat.Avg(), x.Lng }).ToList();
-		    //  analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng } }));
+            //  query.SetPackageSize(700).GroupBy(x => new { x.Lat.Round(2), x.Lng.Round(2) });//.ExecuteSelect(x => new{ x.Lat, x.Lng });
+            //  var analogItem = query.ExecuteSelect(x => new{ x.Lat.Avg(), x.Lng }).ToList();
+            //  analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng } }));
 
-		    return Json(new {token = token, arr = point});
+            return Json(new { token=token, arr=point, allCount=query.ExecuteCount() });
 	    }
 
 	    public JsonResult RequiredInfo()
@@ -87,6 +67,8 @@ namespace KadOzenka.Web.Controllers
 			        allData.Add(new
 			        {
                         type = FormType(x.Category, x.Subcategory, x.PropertyType_Code),
+                        dealType = x.DealType,
+                        source = x.Market,
                         price = x.Price,
 				        area = x.Area,
                         areaLand = x.AreaLand,
@@ -104,24 +86,14 @@ namespace KadOzenka.Web.Controllers
 			        });
 		        });
 			}
-
             return Json(allData);
         }
 
 	    private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)
 	    {
-		    var marketObject = OMCoreObject
-			    .Where(x => x.Id == objectId)
-			    .SelectAll()
-			    .ExecuteFirstOrDefault();
-
-		    if (marketObject == null)
-		    {
-			    throw new Exception($"Ошибка! Объекта аналога с идентификатором {objectId} не существует!");
-		    }
-
-			query.And(x =>
-			    x.DealType_Code == marketObject.DealType_Code && x.PropertyType_Code == marketObject.PropertyType_Code);
+		    var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
+            if (marketObject == null)throw new Exception($"Ошибка! Объекта аналога с идентификатором {objectId} не существует!");
+            query.And(x => x.DealType_Code == marketObject.DealType_Code && x.PropertyType_Code == marketObject.PropertyType_Code);
 	    }
 
 		private void PrepareQueryByUserFilter(QSQuery<OMCoreObject> query)
@@ -130,18 +102,15 @@ namespace KadOzenka.Web.Controllers
 			if (userFilter != null && !string.IsNullOrEmpty(userFilter.Condition))
 			{
 				var filters = JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition);
-
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id))
 				{
-					var filter = filters.First(f =>
-						f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
+					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
 					if (filter.ValueLongArrayCasted != null)
 					{
 						var list = filter.ValueLongArrayCasted.Select(y => ((MarketSegment)y).GetEnumDescription()).ToList();
 						query.And(x => list.Contains(x.PropertyMarketSegment));
 					}
 				}
-
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id);
@@ -151,7 +120,6 @@ namespace KadOzenka.Web.Controllers
 						query.And(x => list.Contains(x.DealType));
 					}
 				}
-
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id);
@@ -161,16 +129,12 @@ namespace KadOzenka.Web.Controllers
 						query.And(x => list.Contains(x.PropertyType));
 					}
 				}
-
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id);
-					if (filter.From.HasValue)
-							query.And(x => x.Price >= filter.From.Value);
-					if (filter.To.HasValue)
-							query.And(x => x.Price <= filter.To.Value);
+					if (filter.From.HasValue) query.And(x => x.Price >= filter.From.Value);
+					if (filter.To.HasValue) query.And(x => x.Price <= filter.To.Value);
 				}
-
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id);
