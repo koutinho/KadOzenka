@@ -587,10 +587,21 @@ namespace ObjectModel.Sud
 		   .SelectAll()
 		   .Execute().ToList();
 		}
-		/// <summary>
-		/// Получение утвержденного параметров по объекту и полю
-		/// </summary>
-		public static OMParam GetActual(OMTableParam table, long id, string paramName)
+
+        /// <summary>
+        /// Получение списка параметров по ид
+        /// </summary>
+        public static List<OMParam> GetAllParamsById(OMTableParam table, long id)
+        {
+            return OMParam
+                .Where(x => x.IdTable == (long)table && x.Id == id)
+                .SelectAll()
+                .Execute().ToList();
+        }
+        /// <summary>
+        /// Получение утвержденного параметров по объекту и полю
+        /// </summary>
+        public static OMParam GetActual(OMTableParam table, long id, string paramName)
 		{
 			return OMParam
 				.Where(x => x.IdTable == (long)table && x.Id == id && x.ParamName == paramName && x.ParamStatus_Code == ProcessingStatus.Processed)

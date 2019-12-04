@@ -1,0 +1,51 @@
+﻿@using KadOzenka.Dal.Enum
+@model List<KadOzenka.Web.Models.Sud.EditApprovalReportLinkModel>
+@{ 
+    int i = 0;
+}
+@using (Html.BeginForm("EditApprovalObject", "Sud", FormMethod.Post))
+{
+    <div id="tabstrip">
+        <ul>
+
+            @{
+                foreach (var m in Model)
+                {
+                    <li class="@(i == 0 ? "k-state-active" : "")">@($"Отчет {m.Report.Number} от 123")</li>
+                    i++;
+                }
+                i = 0;
+            }
+        </ul>
+        @foreach (var m in Model)
+            { 
+                int j = i;
+            
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(r => r[j].IdReport)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoDropDownListFor(r => r[j].IdReport, "GetApprovalFieldData", "Sud", 
+                                new { objectId = m.Id, paramName = ParamNameEnum.IdReport.GetEnumDescription(), isActual = m.IdReport != null }
+                                , isReadonly: m.IdReport != null)
+                        </div>
+                    </div>
+                </div>
+                i++;
+            }
+        </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#tabstrip").kendoTabStrip({
+            animation:  {
+                open: {
+                    effects: "fadeIn"
+                }
+            }
+        });
+    });
+</script>

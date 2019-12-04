@@ -9,10 +9,13 @@ using ObjectModel.Sud;
 using System.Transactions;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
+using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using ObjectModel.Directory.Sud;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -459,9 +462,27 @@ namespace KadOzenka.Web.Controllers
 
 			return Json( new {data = сonclusion});
 		}
-#endregion
 
-		[HttpGet]
+        [HttpGet]
+        public JsonResult GetApprovalFieldData(int objectId, string paramName, bool isActual)
+        {
+            objectId = 14674;
+            var act = isActual ? OMParam.GetActual(OMTableParam.Object, objectId, paramName) : null;
+            var paramValues = isActual ? act != null ? new List<OMParam>{ OMParam.GetActual(OMTableParam.Object, objectId, paramName)} : new List<OMParam>() :
+                OMParam.GetParams(OMTableParam.Object, objectId, paramName);
+
+            List<SelectListItem> res =  paramValues.Select(x => new SelectListItem
+                {
+                    Value = $"{x.Pid}",
+                    Text = $"({(SRDCache.Users.ContainsKey((int)x.IdUser) ? SRDCache.Users[(int)x.IdUser].FullName : String.Empty)}, {x.DateUser.ToString("dd.MM.yyyy")}) {x}"
+                }).ToList();
+
+            return Json(res);
+        }
+
+        #endregion
+
+        [HttpGet]
 		public JsonResult GetDictionary(int type)
 		{
 			List<OMDict> dictList = OMDict
@@ -692,6 +713,59 @@ namespace KadOzenka.Web.Controllers
 			return NoContent();
 		}
 
-		#endregion
-	}
+        #endregion
+
+        #region ApprovalCard
+        public ActionResult EditApprovalObject()
+        {
+            var objectId = 14674;
+
+            List<OMParam> paramValues = OMParam.GetAllParamsById(OMTableParam.Object, objectId)
+                .Where(x => x.ParamStatus_Code == ProcessingStatus.Processed).ToList();
+
+            var model = EditApprovalObjectModel.FromEntity(paramValues);
+            model.ObjectId = objectId;
+            
+            return View(model);
+        }
+
+        public ActionResult GetReportContent(int idObject)
+        {
+            var objectId = 14674;
+            idObject = objectId;
+            List<OMOtchetLink> reportLinks = OMOtchetLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
+
+            List<long> idLinks = reportLinks.Select(x => x.Id).ToList();
+            List<long?> idReports = reportLinks.Select(x => x.IdOtchet).Where(x => x != null).ToList();
+
+            List<OMParam> param =  OMParam.Where(x => (x.IdTable == (long) OMTableParam.OtchetLink || x.IdTable == (long) OMTableParam.Otchet)
+                               && (idLinks.Contains(x.Id) || idReports.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
+
+            List<OMParam> forModel = new List<OMParam>();
+
+            List<EditApprovalReportLinkModel> model = new List<EditApprovalReportLinkModel>();
+
+            foreach (var reportLink in reportLinks)
+            {
+                forModel.AddRange(param.Where(x => x.Id == reportLink.Id));
+                forModel.AddRange(param.Where(x => x.Id == reportLink.IdOtchet));
+
+                model.Add(EditApprovalReportLinkModel.FromEntity(forModel));
+                forModel.Clear();
+            }
+
+            return View("~/Views/Sud/TabContent/ReportContent.cshtml", model);
+        }
+
+        public ActionResult GetCourtContent()
+        {
+            return View("~/Views/Sud/TabContent/ReportContent.cshtml");
+        }
+
+        public ActionResult GetConclusionContent()
+        {
+            return View("~/Views/Sud/TabContent/ReportContent.cshtml");
+        }
+        #endregion
+    }
 }

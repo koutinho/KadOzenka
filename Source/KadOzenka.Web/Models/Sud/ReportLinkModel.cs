@@ -7,7 +7,7 @@ namespace KadOzenka.Web.Models.Sud
 	public class ReportLinkModel
 	{
 		/// <summary>
-		/// Ид отчета
+		/// Ид
 		/// </summary>
 		public long Id { get; set; }
 
