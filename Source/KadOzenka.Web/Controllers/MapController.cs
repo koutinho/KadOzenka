@@ -135,39 +135,46 @@ namespace KadOzenka.Web.Controllers
 				{
 					var filter = filters.First(f =>
 						f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
-					if (int.TryParse(filter.ValueCasted, out var val))
-						query.And(x => x.PropertyMarketSegment_Code == (MarketSegment)val);
+					if (filter.ValueLongArrayCasted != null)
+					{
+						var list = filter.ValueLongArrayCasted.Select(y => ((MarketSegment)y).GetEnumDescription()).ToList();
+						query.And(x => list.Contains(x.PropertyMarketSegment));
+					}
 				}
 
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id);
-					if (int.TryParse(filter.ValueCasted, out var val))
-						query.And(x => x.DealType_Code == (DealType)val);
+					if (filter.ValueLongArrayCasted != null)
+					{
+						var list = filter.ValueLongArrayCasted.Select(y => ((DealType)y).GetEnumDescription()).ToList();
+						query.And(x => list.Contains(x.DealType));
+					}
 				}
 
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id);
-					if (int.TryParse(filter.ValueCasted, out var val))
-						query.And(x => x.PropertyType_Code == (PropertyTypes)val);
+					if (filter.ValueLongArrayCasted != null)
+					{
+						var list = filter.ValueLongArrayCasted.Select(y => ((PropertyTypes)y).GetEnumDescription()).ToList();
+						query.And(x => list.Contains(x.PropertyType));
+					}
 				}
 
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id);
-					if (!string.IsNullOrEmpty(filter.From))
-						if (int.TryParse(filter.From, out var val))
-							query.And(x => x.Price >= val);
-					if (!string.IsNullOrEmpty(filter.To))
-						if (int.TryParse(filter.To, out var val))
-							query.And(x => x.Price <= val);
+					if (filter.From.HasValue)
+							query.And(x => x.Price >= filter.From.Value);
+					if (filter.To.HasValue)
+							query.And(x => x.Price <= filter.To.Value);
 				}
 
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id);
-					query.And(x => x.Metro.Contains(filter.ValueCasted));
+					query.And(x => x.Metro.Contains(filter.ValueStringCasted));
 				}
 			}
 		}

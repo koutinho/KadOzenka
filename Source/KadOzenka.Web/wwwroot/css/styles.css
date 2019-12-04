@@ -1201,6 +1201,16 @@ div.forTooltips a[href=""]:empty {
 div#searchToolbar > div {
 	margin-left: 3px;
 	margin-right: 3px;
+	max-width: 260px;
+	margin-bottom: 2px;
+	margin-top: 2px;
+}
+
+div#searchToolbar > div > span > span > span.k-input {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	padding-right: 10px;
 }
 
 input#addressInput {
@@ -1229,6 +1239,27 @@ input#addressInput:focus {
 	width: 10px;
 	border-radius: 50%;
 	display: inline-block;
+}
+
+.prefilterDropdownfirstItem {
+	color: #6699FF;
+}
+
+.prefilterDropdownfirstItem:hover {
+	color: #484848;
+}
+
+#dealTypeDropdown-list,
+#marketSegmentDropdown-list,
+#propertyTypeDropdown-list {
+	height: auto !important;
+}
+
+#dealTypeDropdown-list > .k-list-scroller,
+#marketSegmentDropdown-list > .k-list-scroller,
+#propertyTypeDropdown-list > .k-list-scroller
+{
+	height: auto !important;
 }
 
 #loginPage .logo-title-block #imgLogin {

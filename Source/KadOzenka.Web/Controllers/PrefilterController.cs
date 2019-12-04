@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Register.RegisterEntities;
 using Core.UI.Registers.Controllers;
 using Core.UI.Registers.Services;
 using KadOzenka.Web.Models.Prefilter;
@@ -8,7 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Core.Shared;
+using ObjectModel.Directory;
 using ObjectModel.Market;
+using Core.Shared.Extensions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -90,8 +93,7 @@ namespace KadOzenka.Web.Controllers
 
 		private string CreateConditionFilter(PrefilterDto model)
 		{
-			if(model == null || (!model.PropertyMarketSegmentItemId.HasValue && !model.DealTypeItemId.HasValue && !model.PropertyTypeItemId.HasValue
-			                     && !model.PriceTo.HasValue && !model.PriceFrom.HasValue && string.IsNullOrEmpty(model.Metro)))
+			if (IsFilterEmpty(model))
 			{
 				return null;
 			}
@@ -99,93 +101,121 @@ namespace KadOzenka.Web.Controllers
 			{
 				var subFilters = new List<string>();
 
-				if (model.PropertyMarketSegmentItemId.HasValue)
+				if (model.MarketSegmentItemIds?.Length > 0)
 				{
 					var marketSegment = OMCoreObject
 						.GetAttributeData(x => x.PropertyMarketSegment);
-					subFilters.Add("{" +
-					               $"\"typeControl\":\"value\"," +
-					               $"\"type\":\"REFERENCE\"," +
-					               $"\"text\":\"{marketSegment.Name}: {model.PropertyMarketSegmentValue}\"," +
-					               $"\"value\":[{model.PropertyMarketSegmentItemId.Value}]," +
-					               $"\"referenceId\":{marketSegment.ReferenceId}," +
-					               $"\"id\":{marketSegment.Id}" +
-					               "}");
+					var filterModel = new FilterModel
+					{
+						TypeControl = "value",
+						Type = "REFERENCE",
+						Text =
+							$"{marketSegment.Name}: {string.Join(", ", model.MarketSegmentItemIds.Select(x => ((MarketSegment)x).GetEnumDescription()))}",
+						Value = model.MarketSegmentItemIds,
+						ReferenceId = marketSegment.ReferenceId,
+						Id = marketSegment.Id,
+					};
+					subFilters.Add(filterModel.ConvertToString());
 				}
-				if (model.DealTypeItemId.HasValue)
+				if (model.DealTypeItemIds?.Length > 0)
 				{
 					var dealType = OMCoreObject
 						.GetAttributeData(x => x.DealType);
-					subFilters.Add("{" +
-					               $"\"typeControl\":\"value\"," +
-					               $"\"type\":\"REFERENCE\"," +
-					               $"\"text\":\"{dealType.Name}: {model.DealTypeValue}\"," +
-					               $"\"value\":[{model.DealTypeItemId.Value}]," +
-					               $"\"referenceId\":{dealType.ReferenceId}," +
-					               $"\"id\":{dealType.Id}" +
-					               "}");
+					var filterModel = new FilterModel
+					{
+						TypeControl = "value",
+						Type = "REFERENCE",
+						Text =
+							$"{dealType.Name}: {string.Join(", ", model.DealTypeItemIds.Select(x => ((DealType) x).GetEnumDescription()))}",
+						Value = model.DealTypeItemIds,
+						ReferenceId = dealType.ReferenceId,
+						Id = dealType.Id,
+					};
+					subFilters.Add(filterModel.ConvertToString());
 				}
-				if (model.PropertyTypeItemId.HasValue)
+				if (model.PropertyTypeItemIds?.Length > 0)
 				{
 					var propertyType = OMCoreObject
 						.GetAttributeData(x => x.PropertyType);
-					subFilters.Add("{" +
-					               $"\"typeControl\":\"value\"," +
-					               $"\"type\":\"REFERENCE\"," +
-					               $"\"text\":\"{propertyType.Name}: {model.PropertyTypeValue}\"," +
-					               $"\"value\":[{model.PropertyTypeItemId.Value}]," +
-					               $"\"referenceId\":{propertyType.ReferenceId}," +
-					               $"\"id\":{propertyType.Id}" +
-					               "}");
+					var filterModel = new FilterModel
+					{
+						TypeControl = "value",
+						Type = "REFERENCE",
+						Text =
+							$"{propertyType.Name}: {string.Join(", ", model.PropertyTypeItemIds.Select(x => ((PropertyTypes)x).GetEnumDescription()))}",
+						Value = model.PropertyTypeItemIds,
+						ReferenceId = propertyType.ReferenceId,
+						Id = propertyType.Id,
+					};
+					subFilters.Add(filterModel.ConvertToString());
 				}
 				if (model.PriceTo.HasValue || model.PriceFrom.HasValue)
 				{
-					var priceType = OMCoreObject
-						.GetAttributeData(x => x.Price);
-
 					if (model.PriceFrom.HasValue && model.PriceTo.HasValue && model.PriceFrom > model.PriceTo)
 					{
 						throw new Exception("Задан некорректный диапазон цен");
 					}
 
-					string text = null;
-					if (model.PriceFrom.HasValue && model.PriceTo.HasValue)
+					var priceType = OMCoreObject
+						.GetAttributeData(x => x.Price);
+					var filterModel = new FilterModel
 					{
-						text = $"{priceType.Name}: с {model.PriceFrom.ToString()} до {model.PriceTo.ToString()}";
-					}else if (model.PriceFrom.HasValue)
-					{
-						text = $"{priceType.Name}: Больше или равно {model.PriceFrom.ToString()}";
-					}
-					else
-					{
-						text = $"{priceType.Name}: Меньше или равно {model.PriceTo.ToString()}";
-					}
-
-					subFilters.Add("{" +
-					               $"\"typeControl\":\"range\"," +
-					               $"\"type\":\"INTEGER\"," +
-					               $"\"text\":\"{text}\"," +
-					               $"\"from\":\"{(model.PriceFrom.HasValue ? model.PriceFrom.Value.ToString() : string.Empty)}\"," +
-					               $"\"to\":\"{(model.PriceTo.HasValue ? model.PriceTo.Value.ToString() : string.Empty)}\"," +
-					               $"\"id\":{priceType.Id}" +
-					               "}");
+						TypeControl = "range",
+						Type = "INTEGER",
+						Text = GetTextForPriceFilter(model, priceType),
+						From = model.PriceFrom,
+						To = model.PriceTo,
+						Id = priceType.Id,
+					};
+					subFilters.Add(filterModel.ConvertToString());
 				}
-
 				if (!string.IsNullOrEmpty(model.Metro))
 				{
 					var metroType = OMCoreObject
 						.GetAttributeData(x => x.Metro);
-					subFilters.Add("{" +
-					               $"\"typeControl\":\"value\"," +
-					               $"\"type\":\"STRING\"," +
-					               $"\"text\":\"{metroType.Name}: Содержит {model.Metro} \"," +
-					               $"\"value\":\"{model.Metro}\"," +
-					               $"\"id\":{metroType.Id}" +
-					               "}");
+
+					var filterModel = new FilterModel
+					{
+						TypeControl = "value",
+						Type = "STRING",
+						Text = $"{metroType.Name}: Содержит {model.Metro} ",
+						Value = model.Metro,
+						Id = metroType.Id,
+					};
+					subFilters.Add(filterModel.ConvertToString());
 				}
 
 				return "[" + string.Join(",", subFilters) + "]";
 			}
+		}
+
+		private bool IsFilterEmpty(PrefilterDto model)
+		{
+			return model == null || (model.MarketSegmentItemIds?.Length == 0
+			                         && model.DealTypeItemIds?.Length == 0
+			                         && model.PropertyTypeItemIds?.Length == 0
+			                         && !model.PriceTo.HasValue
+			                         && !model.PriceFrom.HasValue
+			                         && string.IsNullOrEmpty(model.Metro));
+		}
+
+		private string GetTextForPriceFilter(PrefilterDto model, RegisterAttribute priceType)
+		{
+			string text;
+			if (model.PriceFrom.HasValue && model.PriceTo.HasValue)
+			{
+				text = $"{priceType.Name}: с {model.PriceFrom.ToString()} до {model.PriceTo.ToString()}";
+			}
+			else if (model.PriceFrom.HasValue)
+			{
+				text = $"{priceType.Name}: Больше или равно {model.PriceFrom.ToString()}";
+			}
+			else
+			{
+				text = $"{priceType.Name}: Меньше или равно {model.PriceTo.ToString()}";
+			}
+
+			return text;
 		}
 	}
 }
