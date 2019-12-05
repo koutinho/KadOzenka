@@ -464,12 +464,11 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [HttpGet]
-        public JsonResult GetApprovalFieldData(int objectId, string paramName, bool isActual)
+        public JsonResult GetApprovalFieldData(OMTableParam idTable, int objectId, string paramName, bool isActual)
         {
-            objectId = 14674;
-            var act = isActual ? OMParam.GetActual(OMTableParam.Object, objectId, paramName) : null;
-            var paramValues = isActual ? act != null ? new List<OMParam>{ OMParam.GetActual(OMTableParam.Object, objectId, paramName)} : new List<OMParam>() :
-                OMParam.GetParams(OMTableParam.Object, objectId, paramName);
+            var act = isActual ? OMParam.GetActual(idTable, objectId, paramName) : null;
+            var paramValues = isActual ? act != null ? new List<OMParam>{ OMParam.GetActual(idTable, objectId, paramName)} : new List<OMParam>() :
+                OMParam.GetParams(idTable, objectId, paramName);
 
             List<SelectListItem> res =  paramValues.Select(x => new SelectListItem
                 {
@@ -477,9 +476,17 @@ namespace KadOzenka.Web.Controllers
                     Text = $"({(SRDCache.Users.ContainsKey((int)x.IdUser) ? SRDCache.Users[(int)x.IdUser].FullName : String.Empty)}, {x.DateUser.ToString("dd.MM.yyyy")}) {x}"
                 }).ToList();
 
+            if (!isActual)
+            {
+                res.Insert(0, new SelectListItem("-", ""));
+            }
             return Json(res);
         }
 
+        public JsonResult GetApprovalReportFieldData(int objectId, string paramName, bool isActual)
+        {
+            return Json(new {});
+        }
         #endregion
 
         [HttpGet]
@@ -716,30 +723,72 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
         #region ApprovalCard
-        public ActionResult EditApprovalObject()
+        [HttpGet]
+        public ActionResult EditApprovalObject(int idObject)
         {
-            var objectId = 14674;
-
-            List<OMParam> paramValues = OMParam.GetAllParamsById(OMTableParam.Object, objectId)
+            List<OMParam> paramValues = OMParam.GetAllParamsById(OMTableParam.Object, idObject)
                 .Where(x => x.ParamStatus_Code == ProcessingStatus.Processed).ToList();
 
             var model = EditApprovalObjectModel.FromEntity(paramValues);
-            model.ObjectId = objectId;
+            model.Id = idObject;
             
             return View(model);
         }
 
+        [HttpPost]
+        public ActionResult EditApprovalObject(EditApprovalObjectModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                    {
+                        Control = x.Key,
+                        Message = string.Join("\n", x.Value.Errors.Select(e =>
+                        {
+                            if (e.ErrorMessage == "The value '' is invalid.")
+                            {
+                                return $"{e.ErrorMessage} Поле {x.Key}";
+                            }
+
+                            return e.ErrorMessage;
+                        }))
+                    })
+                });
+            }
+
+            OMObject sudObject = OMObject.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+            if(sudObject == null)
+            {
+                return NotFound();
+            }
+
+            OMParam pKn = OMParam.Where(x => x.Pid == long.Parse(model.Kn)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pType = OMParam.Where(x => x.Pid == long.Parse(model.TypeObj)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pSquare = OMParam.Where(x => x.Pid == long.Parse(model.Square)).SelectAll().ExecuteFirstOrDefault(); 
+            OMParam pKc = OMParam.Where(x => x.Pid == long.Parse(model.Kc)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.Date)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pNameCenter = OMParam.Where(x => x.Pid == long.Parse(model.NameCenter)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pStatDgi = OMParam.Where(x => x.Pid == long.Parse(model.StatDgi)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pAdres = OMParam.Where(x => x.Pid == long.Parse(model.Adres)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pOwner = OMParam.Where(x => x.Pid == long.Parse(model.Owner)).SelectAll().ExecuteFirstOrDefault();
+
+            sudObject.UpdateAndCheckParam(pKn, pType, pSquare, pKc, pDate, pNameCenter, pStatDgi, pAdres, pOwner);
+
+            return Json(new { Success = "Утверждено успешно" });
+        }
+
         public ActionResult GetReportContent(int idObject)
         {
-            var objectId = 14674;
-            idObject = objectId;
             List<OMOtchetLink> reportLinks = OMOtchetLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
 
             List<long> idLinks = reportLinks.Select(x => x.Id).ToList();
             List<long?> idReports = reportLinks.Select(x => x.IdOtchet).Where(x => x != null).ToList();
 
-            List<OMParam> param =  OMParam.Where(x => (x.IdTable == (long) OMTableParam.OtchetLink || x.IdTable == (long) OMTableParam.Otchet)
-                               && (idLinks.Contains(x.Id) || idReports.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
+            List<OMParam> param =  OMParam.Where(x => (x.IdTable == (long) OMTableParam.OtchetLink  && idLinks.Contains(x.Id)) || (x.IdTable == (long) OMTableParam.Otchet
+                               && idReports.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
+
 
             List<OMParam> forModel = new List<OMParam>();
 
@@ -750,22 +799,317 @@ namespace KadOzenka.Web.Controllers
                 forModel.AddRange(param.Where(x => x.Id == reportLink.Id));
                 forModel.AddRange(param.Where(x => x.Id == reportLink.IdOtchet));
 
-                model.Add(EditApprovalReportLinkModel.FromEntity(forModel));
+                var tempModel = EditApprovalReportLinkModel.FromEntity(forModel);
+                tempModel.Id = reportLink.Id;
+                tempModel.Report.Id = reportLink.IdOtchet;
+
+                model.Add(tempModel);
                 forModel.Clear();
             }
 
             return View("~/Views/Sud/TabContent/ReportContent.cshtml", model);
         }
 
-        public ActionResult GetCourtContent()
+        public ActionResult EditApprovalReportLink(EditApprovalReportLinkModel model)
         {
-            return View("~/Views/Sud/TabContent/ReportContent.cshtml");
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                    {
+                        Control = x.Key,
+                        Message = string.Join("\n", x.Value.Errors.Select(e =>
+                        {
+                            if (e.ErrorMessage == "The value '' is invalid.")
+                            {
+                                return $"{e.ErrorMessage} Поле {x.Key}";
+                            }
+
+                            return e.ErrorMessage;
+                        }))
+                    })
+                });
+            }
+
+            OMOtchetLink reportLink = OMOtchetLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+            if (reportLink == null)
+            {
+                return NotFound();
+            }
+
+            OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Descr)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pIdOtchet = OMParam.Where(x => x.Pid == long.Parse(model.IdReport)).SelectAll().ExecuteFirstOrDefault();
+
+            reportLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdOtchet);
+
+            return Json(new { Success = "Утверждено успешно" });
+        }
+        public ActionResult EditApprovalReport(EditApprovalReportModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                    {
+                        Control = x.Key,
+                        Message = string.Join("\n", x.Value.Errors.Select(e =>
+                        {
+                            if (e.ErrorMessage == "The value '' is invalid.")
+                            {
+                                return $"{e.ErrorMessage} Поле {x.Key}";
+                            }
+
+                            return e.ErrorMessage;
+                        }))
+                    })
+                });
+            }
+
+            OMOtchet report = OMOtchet.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+            if (report == null)
+            {
+                return NotFound();
+            }
+
+            OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.ReportDate)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pDateIn = OMParam.Where(x => x.Pid == long.Parse(model.DateIn)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pJalob = OMParam.Where(x => x.Pid == long.Parse(model.Claim)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pOrg = OMParam.Where(x => x.Pid == long.Parse(model.Org)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pFio = OMParam.Where(x => x.Pid == long.Parse(model.Fio)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pSro = OMParam.Where(x => x.Pid == long.Parse(model.Sro)).SelectAll().ExecuteFirstOrDefault();
+
+            report.UpdateAndCheckParam(pNumber, pDate, pDateIn, pJalob, pOrg, pFio, pSro);
+
+            return Json(new { Success = "Утверждено успешно" });
         }
 
-        public ActionResult GetConclusionContent()
+        public ActionResult GetCourtContent(int idObject)
         {
-            return View("~/Views/Sud/TabContent/ReportContent.cshtml");
+            List<OMSudLink> courtLinks = OMSudLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
+
+            List<long> idLinks = courtLinks.Select(x => x.Id).ToList();
+            List<long?> idCourts = courtLinks.Select(x => x.IdSud).Where(x => x != null).ToList();
+
+            List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.SudLink && idLinks.Contains(x.Id)) || (x.IdTable == (long)OMTableParam.Sud
+                                                                                                                                && idCourts.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
+
+
+            List<OMParam> forModel = new List<OMParam>();
+
+            List<EditApprovalCourtLinkModel> model = new List<EditApprovalCourtLinkModel>();
+
+            foreach (var courtLink in courtLinks)
+            {
+                forModel.AddRange(param.Where(x => x.Id == courtLink.Id));
+                forModel.AddRange(param.Where(x => x.Id == courtLink.IdSud));
+
+                var tempModel = EditApprovalCourtLinkModel.FromEntity(forModel);
+                tempModel.Id = courtLink.Id;
+                tempModel.Court.Id = courtLink.IdSud;
+
+                model.Add(tempModel);
+                forModel.Clear();
+            }
+            return View("~/Views/Sud/TabContent/CourtContent.cshtml", model);
         }
+        public ActionResult EditApprovalCourt(EditApprovalCourtModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                    {
+                        Control = x.Key,
+                        Message = string.Join("\n", x.Value.Errors.Select(e =>
+                        {
+                            if (e.ErrorMessage == "The value '' is invalid.")
+                            {
+                                return $"{e.ErrorMessage} Поле {x.Key}";
+                            }
+
+                            return e.ErrorMessage;
+                        }))
+                    })
+                });
+            }
+
+            OMSud court = OMSud.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+            if (court == null)
+            {
+                return NotFound();
+            }
+
+            OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pName = OMParam.Where(x => x.Pid == long.Parse(model.Name)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.Date)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pSudDate = OMParam.Where(x => x.Pid == long.Parse(model.SudDate)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pStatus = OMParam.Where(x => x.Pid == long.Parse(model.Status)).SelectAll().ExecuteFirstOrDefault();
+
+            court.UpdateAndCheckParam(pNumber, pName, pDate, pSudDate, pStatus);
+
+            return Json(new { Success = "Утверждено успешно" });
+        }
+
+        public ActionResult EditApprovalCourtLink(EditApprovalCourtLinkModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                    {
+                        Control = x.Key,
+                        Message = string.Join("\n", x.Value.Errors.Select(e =>
+                        {
+                            if (e.ErrorMessage == "The value '' is invalid.")
+                            {
+                                return $"{e.ErrorMessage} Поле {x.Key}";
+                            }
+
+                            return e.ErrorMessage;
+                        }))
+                    })
+                });
+            }
+
+            OMSudLink courtLink = OMSudLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+            if (courtLink == null)
+            {
+                return NotFound();
+            }
+
+            OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Description)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pIdSud = OMParam.Where(x => x.Pid == long.Parse(model.SudId)).SelectAll().ExecuteFirstOrDefault();
+
+            courtLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdSud);
+
+            return Json(new { Success = "Утверждено успешно" });
+        }
+        public ActionResult GetConclusionContent(int idObject)
+        {
+
+            List<OMZakLink> conclusionLinks = OMZakLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
+
+            List<long> idLinks = conclusionLinks.Select(x => x.Id).ToList();
+            List<long?> idConclusions = conclusionLinks.Select(x => x.IdZak).Where(x => x != null).ToList();
+
+            List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.ZakLink && idLinks.Contains(x.Id)) || (x.IdTable == (long)OMTableParam.Zak
+                                                                                                                             && idConclusions.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
+
+
+            List<OMParam> forModel = new List<OMParam>();
+
+            List<EditApprovalConclusionLinkModel> model = new List<EditApprovalConclusionLinkModel>();
+
+            foreach (var conclusionLink in conclusionLinks)
+            {
+                forModel.AddRange(param.Where(x => x.Id == conclusionLink.Id));
+                forModel.AddRange(param.Where(x => x.Id == conclusionLink.IdZak));
+
+                var tempModel = EditApprovalConclusionLinkModel.FromEntity(forModel);
+                tempModel.Id = conclusionLink.Id;
+                tempModel.Conclusion.Id = conclusionLink.IdZak;
+
+                model.Add(tempModel);
+                forModel.Clear();
+            }
+            return View("~/Views/Sud/TabContent/ConclusionContent.cshtml", model);
+        }
+
+        public ActionResult EditApprovalConclusion(EditApprovalConclusionModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                    {
+                        Control = x.Key,
+                        Message = string.Join("\n", x.Value.Errors.Select(e =>
+                        {
+                            if (e.ErrorMessage == "The value '' is invalid.")
+                            {
+                                return $"{e.ErrorMessage} Поле {x.Key}";
+                            }
+
+                            return e.ErrorMessage;
+                        }))
+                    })
+                });
+            }
+
+            OMZak conclusion = OMZak.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+            if (conclusion == null)
+            {
+                return NotFound();
+            }
+
+            OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.CreateDate)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRecDate = OMParam.Where(x => x.Pid == long.Parse(model.RecDate)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRecLetter = OMParam.Where(x => x.Pid == long.Parse(model.RecLetter)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRecUser = OMParam.Where(x => x.Pid == long.Parse(model.RecUser)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pOrg = OMParam.Where(x => x.Pid == long.Parse(model.Org)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pFio = OMParam.Where(x => x.Pid == long.Parse(model.Fio)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pSro = OMParam.Where(x => x.Pid == long.Parse(model.Sro)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRecBefore = OMParam.Where(x => x.Pid == long.Parse(model.RecBefore)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRecAfter = OMParam.Where(x => x.Pid == long.Parse(model.RecAfter)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRecSoglas = OMParam.Where(x => x.Pid == long.Parse(model.RecSoglas)).SelectAll().ExecuteFirstOrDefault();
+
+            conclusion.UpdateAndCheckParam(pNumber, pDate, pRecDate, pRecLetter, pRecUser, pOrg, pFio, pSro, pRecBefore, pRecAfter, pRecSoglas);
+
+            return Json(new { Success = "Утверждено успешно" });
+        }
+
+        public ActionResult EditApprovalConclusionLink(EditApprovalConclusionLinkModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return Json(new
+                {
+                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                    {
+                        Control = x.Key,
+                        Message = string.Join("\n", x.Value.Errors.Select(e =>
+                        {
+                            if (e.ErrorMessage == "The value '' is invalid.")
+                            {
+                                return $"{e.ErrorMessage} Поле {x.Key}";
+                            }
+
+                            return e.ErrorMessage;
+                        }))
+                    })
+                });
+            }
+
+            OMZakLink conclusionLink = OMZakLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+            if (conclusionLink == null)
+            {
+                return NotFound();
+            }
+
+            OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Descr)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pIdZak = OMParam.Where(x => x.Pid == long.Parse(model.IdConclusion)).SelectAll().ExecuteFirstOrDefault();
+
+            conclusionLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdZak);
+
+            return Json(new { Success = "Утверждено успешно" });
+        }
+
         #endregion
-    }
+        }
 }

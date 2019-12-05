@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Shared.Extensions;
@@ -12,32 +13,39 @@ namespace KadOzenka.Web.Models.Sud
     {
         public int Id { get; set; }
 
-        public long ObjectId { get; set; }
-
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите кадастровый номер")]
         [Display(Name = "Кадастровый номер")]
         public string Kn { get; set; }
 
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите дату определения")]
         [Display(Name = "Дата определения")]
         public string Date { get; set; }
 
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите площадь")]
         [Display(Name = "Площадь")]
         public string Square { get; set; }
 
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите оспариваемую площадь")]
         [Display(Name = "Оспариваемая стоимость")]
         public string Kc { get; set; }
 
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите тип объекта")]
         [Display(Name = "Тип объекта")]
         public string TypeObj { get; set; }
 
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите адрес")]
         [Display(Name = "Адрес")]
         public string Adres { get; set; }
 
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите наименование")]
         [Display(Name = "Наименование (ТЦ, БЦ)")]
         public string NameCenter { get; set; }
 
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите статистику ДГИ")]
         [Display(Name = "Внесено в статистику ДГИ")]
         public string StatDgi { get; set; }
 
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите заказчика")]
         [Display(Name = "Заказчик / Истец")]
         public string Owner { get; set; }
 

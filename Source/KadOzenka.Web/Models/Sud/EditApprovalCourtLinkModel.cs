@@ -2,49 +2,47 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Shared.Extensions;
-using DevExpress.DataAccess.Native.Sql.ConnectionProviders;
 using KadOzenka.Dal.Enum;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Models.Sud
 {
-    public class EditApprovalReportLinkModel
+    public class EditApprovalCourtLinkModel
     {
         public long Id { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите отчет")]
-        [Display(Name = "Отчет об оценке")]
-        public string IdReport { get; set; }
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите судебное решение")]
+        [Display(Name = "Судебное решение")]
+        public string SudId { get; set; }
 
         [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите рыночную стоимость")]
         [Display(Name = "Рыночная стоимость")]
         public string Rs { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите удельную стоимость")]
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите удельную стоимосоть")]
         [Display(Name = "Удельная стоимость")]
         public string Uprs { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите текущее использование")]
-        [Display(Name = "Текущее использование")]
+        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите источник информации")]
+        [Display(Name = "Источник информации")]
         public string Use { get; set; }
 
         [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите примечание")]
         [Display(Name = "Примечание")]
-        public string Descr { get; set; }
+        public string Description { get; set; }
 
-       
-        public EditApprovalReportModel Report { get; set; }
+        public EditApprovalCourtModel Court { get; set; }
 
-        public static EditApprovalReportLinkModel FromEntity(List<OMParam> param)
+        public static EditApprovalCourtLinkModel FromEntity(List<OMParam> param)
         {
-            return new EditApprovalReportLinkModel
+            return new EditApprovalCourtLinkModel
             {
-                IdReport = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.IdReport.GetEnumDescription())?.Pid.ToString(),
+                SudId = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.SudId.GetEnumDescription())?.Pid.ToString(),
                 Rs = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Rs.GetEnumDescription())?.Pid.ToString(),
                 Uprs = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Uprs.GetEnumDescription())?.Pid.ToString(),
                 Use = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Use.GetEnumDescription())?.Pid.ToString(),
-                Descr = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Uprs.GetEnumDescription())?.Pid.ToString(),
-                Report = EditApprovalReportModel.FromEntity(param)
+                Description = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Descr.GetEnumDescription())?.Pid.ToString(),
+                Court = EditApprovalCourtModel.FromEntity(param)
             };
         }
     }

@@ -508,8 +508,8 @@
 						icon: 'refresh',
 						hidden: false
 					}," +
-					
-					@"{
+
+                    @"{
 						type: 'button',
 						id: 'editBtn',
 						text: '',
@@ -521,8 +521,8 @@
 					},
 					icon: 'edit',
 					hidden: false
-					}," + 
-					@"{
+					}," +
+                    @"{
 						type: 'button',
 						id: 'saveBtn',
 						text: '',
@@ -563,7 +563,7 @@
 						icon: 'save',
 						hidden: true
 					}," +
-					@"{
+                    @"{
 						type: 'button',
 						id: 'cancelBtn',
 						text: '',
@@ -577,7 +577,18 @@
 						},
 						icon: 'cancel',
 					hidden: true
-					}");
+					},"+ @"{
+                        type: 'button',
+                        id: 'approveBtn',
+						text: '',
+						click: function() {
+							var contentUrl = '" + @Url.Action("EditApprovalObject", "Sud", new { idObject  = @Model.Id}) + @"';
+					        var title = 'Утверждение данных';
+                            Common.UI.ChooseWindow(title, contentUrl);
+                                 },
+						icon: 'check',
+                        hidden: false
+                        }");
 				}
 				else
 				{

@@ -26,7 +26,47 @@ namespace KadOzenka.Dal.Enum
         IdReport,
         [Description("rs")]
         Rs,
+        [Description("uprs")]
+        Uprs,
+        [Description("use")]
+        Use,
+        [Description("descr")]
+        Descr,
         [Description("number")]
         Number,
+        [Description("date")]
+        ReportDate,
+        [Description("id_org")]
+        Org,
+        [Description("id_fio")]
+        Fio,
+        [Description("id_sro")]
+        Sro,
+        [Description("date_in")]
+        DateIn,
+        [Description("jalob")]
+        Claim,
+        [Description("name")]
+        Name,
+        [Description("sud_date")]
+        SudDate,
+        [Description("status")]
+        Status,
+        [Description("id_sud")]
+        SudId,
+        [Description("rec_date")]
+        RecDate,
+        [Description("rec_user")]
+        RecUser,
+        [Description("rec_letter")]
+        RecLetter,
+        [Description("rec_before")]
+        RecBefore,
+        [Description("rec_after")]
+        RecAfter,
+        [Description("rec_soglas")]
+        RecSoglas,
+        [Description("id_zak")]
+        IdConclusion,
     }
 }

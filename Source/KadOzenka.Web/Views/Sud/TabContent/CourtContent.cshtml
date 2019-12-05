@@ -1,1 +1,231 @@
-﻿
+﻿@using KadOzenka.Dal.Enum
+@using ObjectModel.Sud
+@model List<KadOzenka.Web.Models.Sud.EditApprovalCourtLinkModel>
+
+@{
+    int i = 0;
+}
+<div id="courtTabstrip">
+        <ul>
+
+            @{
+                foreach (var m in Model)
+                {
+                    <li class="@(i == 0 ? "k-state-active" : "")">@($"Отчет {m.Court.NumberForTab} от {m.Court.DateForTab}. {m.Court.NameForTab}")</li>
+                    i++;
+                }
+                i = 0;
+            }
+        </ul>
+        @foreach (var m in Model)
+        {
+            int j = i;
+            @using (Html.BeginForm("EditApprovalCourtLink", "Sud", FormMethod.Post, new {@class = "court-link-content", @Id = $"{m.Id}"}))
+            {
+                @Html.HiddenFor(r => r[j].Id)
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(r => r[j].SudId)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoDropDownListFor(r => r[j].SudId, "GetApprovalFieldData", "Sud",
+                                new {idTable = OMTableParam.SudLink, objectId = m.Id, paramName = ParamNameEnum.SudId.GetEnumDescription(), isActual = m.SudId != null}
+                                , isReadonly: m.SudId != null)
+                        </div>
+                    </div>
+                    <fieldset id="reportData">
+                        <legend>Данные о судебном решении</legend>
+                        @using (Html.BeginForm("EditApprovalCourt", "Sud", FormMethod.Post, new {@class = "court-content", @Id = $"{m.Court.Id}" }))
+                        {
+                            @Html.HiddenFor(r => r[j].Court.Id)
+                            <div class="form-horizontal col-sm-12">
+                                <div class="form-group">
+                                    <div class="col-sm-2">
+                                        @Html.CustomLabelFor(r => r[j].Court.Name)
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.KendoDropDownListFor(r => r[j].Court.Name, "GetApprovalFieldData", "Sud",
+                                            new {idTable = OMTableParam.Sud, objectId = m.Court.Id, paramName = ParamNameEnum.Name.GetEnumDescription(), isActual = m.Court.Name != null}
+                                            , isReadonly: m.Court.Name != null)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-2">
+                                        @Html.CustomLabelFor(r => r[j].Court.Number)
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.KendoDropDownListFor(r => r[j].Court.Number, "GetApprovalFieldData", "Sud",
+                                            new {idTable = OMTableParam.Sud, objectId = m.Court.Id, paramName = ParamNameEnum.Number.GetEnumDescription(), isActual = m.Court.Number != null}
+                                            , isReadonly: m.Court.Number != null)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-2">
+                                        @Html.CustomLabelFor(r => r[j].Court.Date)
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.KendoDropDownListFor(r => r[j].Court.Date, "GetApprovalFieldData", "Sud",
+                                            new {idTable = OMTableParam.Sud, objectId = m.Court.Id, paramName = ParamNameEnum.Date.GetEnumDescription(), isActual = m.Court.Date != null}
+                                            , isReadonly: m.Court.Date != null)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-2">
+                                        @Html.CustomLabelFor(r => r[j].Court.SudDate)
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.KendoDropDownListFor(r => r[j].Court.SudDate, "GetApprovalFieldData", "Sud",
+                                            new {idTable = OMTableParam.Sud, objectId = m.Court.Id, paramName = ParamNameEnum.SudDate.GetEnumDescription(), isActual = m.Court.SudDate != null}
+                                            , isReadonly: m.Court.SudDate != null)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-2">
+                                        @Html.CustomLabelFor(r => r[j].Court.Status)
+                                    </div>
+                                    <div class="col-sm-10">
+                                        @Html.KendoDropDownListFor(r => r[j].Court.Status, "GetApprovalFieldData", "Sud",
+                                            new {idTable = OMTableParam.Sud, objectId = m.Court.Id, paramName = ParamNameEnum.Status.GetEnumDescription(), isActual = m.Court.Status != null}
+                                            , isReadonly: m.Court.Status != null)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <button style="float: right" id="saveCourt" data-id="@m.Court.Id" class="k-button" type="button">Утвердить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </fieldset>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(r => r[j].Rs)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoDropDownListFor(r => r[j].Rs, "GetApprovalFieldData", "Sud",
+                                new {idTable = OMTableParam.SudLink, objectId = m.Id, paramName = ParamNameEnum.Rs.GetEnumDescription(), isActual = m.Rs != null}
+                                , isReadonly: m.Rs != null)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(r => r[j].Uprs)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoDropDownListFor(r => r[j].Uprs, "GetApprovalFieldData", "Sud",
+                                new {idTable = OMTableParam.SudLink, objectId = m.Id, paramName = ParamNameEnum.Uprs.GetEnumDescription(), isActual = m.Uprs != null}
+                                , isReadonly: m.Uprs != null)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(r => r[j].Use)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoDropDownListFor(r => r[j].Use, "GetApprovalFieldData", "Sud",
+                                new {idTable = OMTableParam.SudLink, objectId = m.Id, paramName = ParamNameEnum.Use.GetEnumDescription(), isActual = m.Use != null}
+                                , isReadonly: m.Use != null)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(r => r[j].Description)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoDropDownListFor(r => r[j].Description, "GetApprovalFieldData", "Sud",
+                                new {idTable = OMTableParam.SudLink, objectId = m.Id, paramName = ParamNameEnum.Descr.GetEnumDescription(), isActual = m.Description != null}
+                                , isReadonly: m.Description != null)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <button style="float: right" id="saveCourtLink" data-id="@m.Id" class="k-button" type="button">Утвердить</button>
+                        </div>
+                    </div>
+                </div>
+            }
+            i++;
+        }
+        </div>
+
+
+@section styles{
+    <style>
+        .court-link-content .k-content {
+            padding: 10px !important;
+        }
+    </style>
+}
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#courtTabstrip").kendoTabStrip();
+
+        function distinctErrors(errors) {
+            var result = [];
+            $.each(errors, function (index, event) {
+                var events = $.grep(result, function (e) {
+                    return event.Message === e.Message;
+                });
+                if (events.length === 0) {
+                    result.push(event);
+                }
+            });
+
+            return result;
+        }
+
+        $("#saveCourtLink").on('click', function () {
+            var id = $(this).data("id");
+            var form = $(`form.court-link-content#${id}`);
+
+            var formObject = Common.Functions.FormToObject(form);
+            console.log('formObject', formObject);
+
+            kendo.ui.progress($('body'), true);
+            $.post(form.attr('action'), formObject).done(function (response) {
+                kendo.ui.progress($('body'), false);
+                if (response.Errors) {
+                    var errors = $.map(distinctErrors(response.Errors),
+                        function (el) {
+                            return el.Message;
+                        });
+                    Common.ShowError(errors);
+                    return;
+                }
+
+                if (response.Success) {
+                    form.attr("disabled", true);
+                    Common.ShowMessage(response.Success);
+                }
+            });
+        });
+
+        $("#saveCourt").on('click', function () {
+            var id = $(this).data("id");
+            var form = $(`form.court-content#${id}`);
+
+            var formObject = Common.Functions.FormToObject(form);
+            console.log('formObject', formObject);
+
+            kendo.ui.progress($('body'), true);
+            $.post(form.attr('action'), formObject).done(function (response) {
+                kendo.ui.progress($('body'), false);
+                if (response.Errors) {
+                    var errors = $.map(distinctErrors(response.Errors),
+                        function (el) {
+                            return el.Message;
+                        });
+                    Common.ShowError(errors);
+                    return;
+                }
+
+                if (response.Success) {
+                    form.attr("disabled", true);
+                    Common.ShowMessage(response.Success);
+                }
+            });
+        });
+    });
+</script>
