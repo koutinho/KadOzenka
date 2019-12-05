@@ -25,6 +25,7 @@
     @foreach (var m in Model)
     {
         int j = i;
+        <div>
         @using (Html.BeginForm("EditApprovalReportLink", "Sud", FormMethod.Post, new { @class = "report-link-content", @Id = $"{m.Id}" }))
         {
             @Html.HiddenFor(r => r[j].Id)
@@ -169,7 +170,8 @@
                 </div>
             </div>
         </div>
-    }
+        }
+        </div>
         i++;
     }
 </div>

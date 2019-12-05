@@ -26,6 +26,7 @@
     </ul>
     @foreach (var m in Model)
     {
+        <div>
         @using (Html.BeginForm("EditApprovalConclusionLink", "Sud", FormMethod.Post, new { @class = "conclusion-link-content", @Id = $"{m.Id}" }))
         {
             int j = i;
@@ -213,6 +214,7 @@
             </div>
 
         }
+        </div>
         i++;
     }
 </div>
