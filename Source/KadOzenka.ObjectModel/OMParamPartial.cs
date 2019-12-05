@@ -44,7 +44,9 @@ namespace ObjectModel.Sud
 	{
         public override string ToString()
         {
-            switch (IdTable)
+			long? localParamInt = ParamInt;
+
+			switch (IdTable)
             {
                 case 1://Object
                     switch (ParamName)
@@ -67,9 +69,9 @@ namespace ObjectModel.Sud
                         case "date":    return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
                         case "date_in": return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
                         case "jalob":   return (ParamInt == null) ? string.Empty : ((ParamInt==1)?"Да":"Нет");
-                        case "id_org":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
-                        case "id_sro":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
-                        case "id_fio":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_org":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_sro":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_fio":  return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Name;
                         default:        return string.Empty;
                     }
                 case 3://OtchetLink
@@ -79,7 +81,7 @@ namespace ObjectModel.Sud
                         case "descr":     return ParamChar;
                         case "rs":        return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
                         case "uprs":      return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
-                        case "id_otchet": return (ParamInt == null) ? string.Empty : OMOtchet.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Number;
+                        case "id_otchet": return (ParamInt == null) ? string.Empty : OMOtchet.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Number;
                         default:          return string.Empty;
                     }
                 case 4://Zak
@@ -90,9 +92,9 @@ namespace ObjectModel.Sud
                         case "rec_date":   return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
                         case "rec_letter": return ParamChar;
                         case "rec_user":   return ParamChar;
-                        case "id_org":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
-                        case "id_sro":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
-                        case "id_fio":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_org":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_sro":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Name;
+                        case "id_fio":     return (ParamInt == null) ? string.Empty : OMDict.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Name;
                         case "rec_before": return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
                         case "rec_after":  return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
                         case "rec_soglas": return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
@@ -105,7 +107,7 @@ namespace ObjectModel.Sud
                         case "descr":   return ParamChar;
                         case "rs":      return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
                         case "uprs":    return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
-                        case "id_zak":  return (ParamInt == null) ? string.Empty : OMZak.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Number;
+                        case "id_zak":	return (ParamInt == null) ? string.Empty : OMZak.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Number;
                         default:        return string.Empty;
                     }
                 case 6://Sud
@@ -125,7 +127,7 @@ namespace ObjectModel.Sud
                         case "descr": return ParamChar;
                         case "rs": return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
                         case "uprs": return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
-                        case "id_sud": return (ParamInt == null) ? string.Empty : OMSud.Where(x => x.Id == ParamInt).SelectAll().ExecuteFirstOrDefault().Number;
+                        case "id_sud": return (ParamInt == null) ? string.Empty : OMSud.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Number;
                         default: return string.Empty;
                     }
                 default: return string.Empty;

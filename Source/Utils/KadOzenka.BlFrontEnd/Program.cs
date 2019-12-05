@@ -13,18 +13,16 @@ using KadOzenka.Dal.Test;
 using KadOzenka.BlFrontEnd.ExportSud;
 using KadOzenka.BlFrontEnd.ExportMSSQL;
 using KadOzenka.BlFrontEnd.ExportCommission;
-using KadOzenka.Dal.DataExport;
 using KadOzenka.BlFrontEnd.SudTests;
-using KadOzenka.BlFrontEnd.DetectDuplicatesTest;
 
 namespace KadOzenka.BlFrontEnd
 {
-    class Program
+	class Program
     {
 
         static void Main(string[] args)
         {
-            SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
+			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
             var consoleHelper = new BlFrontEndConsoleHelper();
             InitCommands(consoleHelper);
             consoleHelper.Run();
