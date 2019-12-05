@@ -3,6 +3,8 @@ using GemBox.Spreadsheet;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Market;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.DuplicateCleaner;
+using ObjectModel.Directory;
 
 namespace KadOzenka.BlFrontEnd.DetectDuplicatesTest
 {
@@ -49,7 +51,12 @@ namespace KadOzenka.BlFrontEnd.DetectDuplicatesTest
 						Description = ws.Rows[i].Cells[3].Value?.ToString(),
 						Area = ws.Rows[i].Cells[4].Value?.ParseToDecimalNullable(),
 						Price = ws.Rows[i].Cells[5].Value?.ParseToLongNullable(),
-						PricePerMeter = ws.Rows[i].Cells[6].Value?.ParseToDecimalNullable()
+						PricePerMeter = ws.Rows[i].Cells[6].Value?.ParseToDecimalNullable(),
+						DealType = DealType.RentDeal.GetEnumDescription(),
+						DealType_Code = DealType.RentDeal,
+						PropertyType = PropertyTypes.Building.GetEnumDescription(),
+						PropertyType_Code = PropertyTypes.Building,
+						Subcategory = "Тест"
 					};
 					@object.Save();
 				}
@@ -65,7 +72,7 @@ namespace KadOzenka.BlFrontEnd.DetectDuplicatesTest
 		private void PerformDuplicatesSearch()
 		{
 			Console.WriteLine($"Начато выполнение процедуры поиска дубликатов.");
-			//TODO: Perform Duplicates Search
+			new Duplicates().Detect(true);
 			Console.WriteLine($"Процедура поиска дубликатов завершена.");
 		}
 
@@ -74,10 +81,17 @@ namespace KadOzenka.BlFrontEnd.DetectDuplicatesTest
 			Console.WriteLine($"Начата выгрузка объектов в результирующий файл.");
 			var objects = OMCoreObjectTest
 				.Where(x => true)
+				.OrderBy(x => x.Id)
 				.SelectAll()
 				.Execute();
 			var resultWorkbook = new ExcelFile();
 			var worksheet = resultWorkbook.Worksheets.Add("1");
+
+			for (var j = 0; j < 10; j++)
+			{
+				worksheet.Columns[j].Width = 20 * 256;
+			}
+			worksheet.Rows[0].Style.Font.Weight = ExcelFont.BoldWeight;
 
 			worksheet.Cells[$"A1"].Value = OMCoreObjectTest.GetAttributeData(x => x.Id).Name;
 			worksheet.Cells[$"B1"].Value = OMCoreObjectTest.GetAttributeData(x => x.CadastralNumber).Name;

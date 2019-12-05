@@ -3210,6 +3210,136 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _dealtype;
+        /// <summary>
+        /// 11001100 Тип сделки (DEAL_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11001100)]
+        public string DealType
+        {
+            get
+            {
+                CheckPropertyInited("DealType");
+                return _dealtype;
+            }
+            set
+            {
+                _dealtype = value;
+                NotifyPropertyChanged("DealType");
+            }
+        }
+
+
+        private DealType _dealtype_Code;
+        /// <summary>
+        /// 11001100 Тип сделки (справочный код) (DEAL_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11001100)]
+        public DealType DealType_Code
+        {
+            get
+            {
+                CheckPropertyInited("DealType_Code");
+                return this._dealtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_dealtype))
+                    {
+                         _dealtype = descr;
+                    }
+                }
+                else
+                {
+                     _dealtype = descr;
+                }
+
+                this._dealtype_Code = value;
+                NotifyPropertyChanged("DealType");
+                NotifyPropertyChanged("DealType_Code");
+            }
+        }
+
+
+        private string _propertytype;
+        /// <summary>
+        /// 11001200 Тип объекта недвижимости (PROPERTY_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11001200)]
+        public string PropertyType
+        {
+            get
+            {
+                CheckPropertyInited("PropertyType");
+                return _propertytype;
+            }
+            set
+            {
+                _propertytype = value;
+                NotifyPropertyChanged("PropertyType");
+            }
+        }
+
+
+        private PropertyTypes _propertytype_Code;
+        /// <summary>
+        /// 11001200 Тип объекта недвижимости (справочный код) (PROPERTY_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11001200)]
+        public PropertyTypes PropertyType_Code
+        {
+            get
+            {
+                CheckPropertyInited("PropertyType_Code");
+                return this._propertytype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_propertytype))
+                    {
+                         _propertytype = descr;
+                    }
+                }
+                else
+                {
+                     _propertytype = descr;
+                }
+
+                this._propertytype_Code = value;
+                NotifyPropertyChanged("PropertyType");
+                NotifyPropertyChanged("PropertyType_Code");
+            }
+        }
+
+
+        private string _subcategory;
+        /// <summary>
+        /// 11001300 Подкатегория (SUBCATEGORY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11001300)]
+        public string Subcategory
+        {
+            get
+            {
+                CheckPropertyInited("Subcategory");
+                return _subcategory;
+            }
+            set
+            {
+                _subcategory = value;
+                NotifyPropertyChanged("Subcategory");
+            }
+        }
+
     }
 }
 
