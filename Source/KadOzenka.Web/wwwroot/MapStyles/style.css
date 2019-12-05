@@ -4,7 +4,7 @@ body {
 }
 
 .Hidden {
-    display: none;
+    display: none !important;
 }
 
 .Button {
@@ -210,22 +210,149 @@ body {
     background-position: 7px 7px;
 }
 
+.filterControl {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filterControl .filterImage {
+    background: #4590ff;
+    height: 36px;
+    width: 36px;
+    border-radius: 22px;
+    border: solid 1px #5c9eff;
+    color: #fff;
+    cursor: pointer;
+    background-image: url("/MapIcons/filterWhite.svg");
+    background-size: 22px 22px;
+    background-repeat: no-repeat;
+    background-position: 7px 9px;
+    z-index: 2;
+}
+
 .filterControl .filterContainer {
+    border: solid 1px #5c9eff;
+    color: #4590ff;
+    min-height: 26px;
+    background: #fff;
+    margin-left: -7px;
+    z-index: 1;
+    border-radius: 0px 14px 14px 0px;
+    display: flex;
+    display: none; /*Закомментировать тут*/
+    align-items: center;
+    justify-content: center;
+}
+
+.filterControl .filterContainer .filterMainButton {
+    height: 26px;
+    line-height: 26px;
+    cursor: pointer;
+    min-width: 208px;
+}
+
+.filterControl .filterContainer .filterMainButton .filterHeader {
+    /*border-left: solid 1px #5c9eff;*/
+    width: 100%;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
     display: flex;
 }
 
-.filterControl .filterContainer .filterButton {
-    min-height: 26px;
-    line-height: 26px;
-    border-radius: 13px;
-    border: solid 1px #5c9eff;
-    background: #fff;
-    color: #4590ff;
-    padding: 0px 12px;
-    align-items: center;
-    cursor: pointer;
+.filterControl .filterContainer .filterMainButton .filterHeader .filterCounter {
+    background: red;
+    font-size: 12px;
+    height: 16px;
+    width: 16px;
+    border-radius: 8px;
+    color: #fff;
+    text-align:center;
+    line-height: 16px;
+    margin-left: 6px;
 }
 
-.filterControl .filterContainer div:not(:first-child) {
-    margin-left: 10px;
+.filterControl .filterContainer .filterMainButton .filterBody {
+    background: #fff;
+    border: solid 1px #5c9eff;
+    border-radius: 0px 0px 13px 13px;
+    display: none; /*Закомментировать тут*/
+    max-width: 208px;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody .filterBodyTextBox {
+    width: 182px;
+    border: none;
+    margin-left: 13px;
+    margin-right: 13px;
+    margin-top: 5px;
+    border-bottom: solid 1px  #4590ff;
+    color: #4590ff;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody .filterBodyRealButton {
+    border-radius: 3px;
+    width: 120px;
+    text-align: center;
+    background: #fff;
+    color: #4590ff;
+    border: solid 1px #5c9eff;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody .filterBodyRealButton:hover {
+    color: #fff;
+    background: #4590ff;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody .filterBodyTextBox:last-child {
+    margin-bottom: 5px;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody input:focus.filterBodyTextBox {
+    outline: none;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody .filterBodyTextBox::placeholder {
+    color: #4590ff;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody .filterBodyButton {
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody .filterBodyButton:last-child {
+    border-radius: 0px 0px 13px 13px;
+}
+
+.filterControl .filterContainer .filterMainButton .filterBody .filterBodyButton:hover {
+    color: #fff;
+    background: #4590ff;
+}
+
+.filterControl .filterContainer .filterMainButton:first-child .filterHeader {
+    padding-left: 7px;
+    width: 200px;
+}
+
+.filterControl .filterContainer .filterMainButton:last-child .filterHeader {
+    border-radius: 0px 14px 14px 0px;
+}
+
+.filterControl .filterContainer .filterMainButton .filterHeader:hover {
+    color: #fff;
+    background: #4590ff;
+}
+
+.filterControl .filterContainer .filterMainButton:hover .filterBody{
+    display: block;
+}
+
+.filterControl:hover .filterContainer{
+    display: flex;
 }

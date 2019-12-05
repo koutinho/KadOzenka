@@ -72,17 +72,17 @@ namespace ObjectModel.Sud
 				OMObjectStatus objStatus = new OMObjectStatus
 				{
 					Id = this.Id,
-					Kn = 1,
-					Date = 1,
-					Square = 1,
-					Kc = 1,
-					NameCenter = 1,
-					StatDgi = 1,
-					Owner = 1,
-					Adres = 1,
-					Typeobj = 1,
-					Status = 1
-				};
+					Kn = true,
+					Date = true,
+					Square = true,
+					Kc = true,
+					NameCenter = true,
+					StatDgi = true,
+					Owner = true,
+					Adres = true,
+					Typeobj = true,
+					Status = true
+                };
 				objStatus.Save();
 				OMParam.AddChar(OMTableParam.Object, this.Id, "kn", Kn, ProcessingStatus.Processed);
 				OMParam.AddChar(OMTableParam.Object, this.Id, "name_center", NameCenter, ProcessingStatus.Processed);
@@ -101,17 +101,17 @@ namespace ObjectModel.Sud
 				.ExecuteFirstOrDefault();
 				if (objStatus != null)
 				{
-					objStatus.Kn = (pKn && cKn) ? 1 : 0;
-					objStatus.Date = (pDate && cDate) ? 1 : 0;
-					objStatus.Square = (pSquare && cSquare) ? 1 : 0;
-					objStatus.Kc = (pKc && cKc) ? 1 : 0;
-					objStatus.NameCenter = (pNameCenter && cNameCenter) ? 1 : 0;
-					objStatus.StatDgi = (pStatDgi && cStatDgi) ? 1 : 0;
-					objStatus.Owner = (pOwner) ? 1 : 0;
-					objStatus.Adres = (pAdres && cAdres) ? 1 : 0;
-					objStatus.Typeobj = (pTypeobj && cType) ? 1 : 0;
-					objStatus.Status = (pKn && pDate && pSquare && pKc && pNameCenter && pStatDgi && pOwner && pAdres && pTypeobj && cKn && cDate && cSquare && cKc && cNameCenter && cStatDgi && cAdres && cType) ? 1 : 0;
-					objStatus.Save();
+					objStatus.Kn = (pKn && cKn) ? true : false;
+					objStatus.Date = (pDate && cDate) ? true : false;
+                    objStatus.Square = (pSquare && cSquare) ? true : false;
+                    objStatus.Kc = (pKc && cKc) ? true : false;
+                    objStatus.NameCenter = (pNameCenter && cNameCenter) ? true : false;
+                    objStatus.StatDgi = (pStatDgi && cStatDgi) ? true : false;
+                    objStatus.Owner = (pOwner) ? true : false;
+                    objStatus.Adres = (pAdres && cAdres) ? true : false;
+                    objStatus.Typeobj = (pTypeobj && cType) ? true : false;
+                    objStatus.Status = (pKn && pDate && pSquare && pKc && pNameCenter && pStatDgi && pOwner && pAdres && pTypeobj && cKn && cDate && cSquare && cKc && cNameCenter && cStatDgi && cAdres && cType) ? true : false;
+                    objStatus.Save();
 				}
 			}
 			return res;
@@ -286,16 +286,16 @@ namespace ObjectModel.Sud
 			.ExecuteFirstOrDefault();
 			if (objStatus != null)
 			{
-				objStatus.Kn = 1;
-				objStatus.Date = 1;
-				objStatus.Square = 1;
-				objStatus.Kc = 1;
-				objStatus.NameCenter = 1;
-				objStatus.StatDgi = 1;
-				objStatus.Owner = 1;
-				objStatus.Adres = 1;
-				objStatus.Typeobj = 1;
-				objStatus.Status = 1;
+				objStatus.Kn = true;
+				objStatus.Date = true;
+				objStatus.Square = true;
+				objStatus.Kc = true;
+				objStatus.NameCenter = true;
+				objStatus.StatDgi = true;
+				objStatus.Owner = true;
+				objStatus.Adres = true;
+				objStatus.Typeobj = true;
+				objStatus.Status = true;
 				objStatus.Save();
 			}
 			#endregion

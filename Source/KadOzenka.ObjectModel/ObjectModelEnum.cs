@@ -293,6 +293,30 @@ namespace ObjectModel.Directory
 		[Description("Торговля")]
         [EnumCode("11")]
         Trading = 754,
+		/// <summary>
+		/// Общепит (795)
+		/// </summary>
+		[Description("Общепит")]
+        [EnumCode("12")]
+        PublicCatering = 795,
+		/// <summary>
+		/// Земельные участки (796)
+		/// </summary>
+		[Description("Земельные участки")]
+        [EnumCode("13")]
+        Land = 796,
+		/// <summary>
+		/// Коммерческая земля (797)
+		/// </summary>
+		[Description("Коммерческая земля")]
+        [EnumCode("14")]
+        CommertialLand = 797,
+		/// <summary>
+		/// Без сегмента (798)
+		/// </summary>
+		[Description("Без сегмента")]
+        [EnumCode("15")]
+        NoSegment = 798,
     }
 }
 

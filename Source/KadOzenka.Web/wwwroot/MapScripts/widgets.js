@@ -58,11 +58,52 @@ function creatFilterWidget() {
         _onGetChildElement: function (parentDomContainer) {
             this._$content = $(`
                 <div id="filterControl" class="filterControl">
-                    <div id="filterDeatTypeContainer" class="filterContainer">
-                        <div id="rentSuggestionFilter" class="filterButton">Предложение-аренда</div>
-                        <div id="saleSuggestionFilter" class="filterButton">Предложение-продажа</div>
-                        <div id="rentDealFilter" class="filterButton">Сделка-аренда</div>
-                        <div id="saleDealFilter" class="filterButton">Сделка-продажа</div>
+                    <div id="filterImage" class="filterImage"></div>
+                    <div id="filterContainer" class="filterContainer">
+                        <div id="dealTypeFilter" class="filterMainButton">
+                            <div class="filterHeader">
+                                Тип сделки
+                                <div id="DealTypeFilterCounter" class="filterCounter Hidden">99</div>
+                            </div>
+                            <div class="filterBody">
+                                <div id="RentSuggestionFilterButton" class="filterBodyButton">Предложение-аренда</div>
+                                <div id="SaleSuggestionFilterButton" class="filterBodyButton">Предложение-продажа</div>
+                                <div id="RentDealFilterButton" class="filterBodyButton">Сделка-аренда</div>
+                                <div id="SaleDealFilterButton" class="filterBodyButton">Сделка купли-продажи</div>
+                            </div>
+                        </div>
+                        <div id="marketSegmentFilter" class="filterMainButton">
+                            <div class="filterHeader">
+                                Сегмент рынка
+                                <div id="DealTypeFilterCounter" class="filterCounter Hidden">99</div>
+                            </div>
+                            <div class="filterBody">
+                                <div id="AppartmentFilterButton" class="filterBodyButton">Апартаменты</div>
+                                <div id="ParkingFilterButton" class="filterBodyButton">Гаражи</div>
+                                <div id="HotelFilterButton" class="filterBodyButton">Гостиницы</div>
+                                <div id="IZHSFilterButton" class="filterBodyButton">ИЖС</div>
+                                <div id="MMFilterButton" class="filterBodyButton">Машиноместа</div>
+                                <div id="MZHSFilterButton" class="filterBodyButton">МЖС</div>
+                                <div id="OfficesFilterButton" class="filterBodyButton">Офисы</div>
+                                <div id="SkladFilterButton" class="filterBodyButton">Производство&nbsp;и&nbsp;склады</div>\
+                                <div id="GardenFilterButton" class="filterBodyButton">Садоводческое,&nbsp;огородническое&nbsp;и&nbsp;дачное&nbsp;использование</div>
+                                <div id="SanatoriumFilterButton" class="filterBodyButton">Санатории</div>
+                                <div id="TraidingFilterButton" class="filterBodyButton">Торговля</div>
+                            </div>
+                        </div>
+                        <div id="priceFilter" class="filterMainButton">
+                            <div class="filterHeader">Цена</div>
+                            <div class="filterBody">
+                                <input id="PriceFromFilterTextBox" class="filterBodyTextBox" type="text" placeholder="Цена от">
+                                <input id="PriceToFilterTextBox" class="filterBodyTextBox" type="text" placeholder="Цена до">
+                                <div id="SearchPriceFilterButton" class="filterBodyRealButton">Применить</div>
+                            </div>
+                        </div>
+                        <div id="metroFilter" class="filterMainButton">
+                            <div class="filterHeader">Метро</div>
+                            <div class="filterBody">
+                            </div>
+                        </div>
                     </div>
                 </div>
             `).appendTo(parentDomContainer);

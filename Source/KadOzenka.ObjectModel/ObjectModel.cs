@@ -9129,12 +9129,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _kn;
+        private bool _kn;
         /// <summary>
         /// 30500200 Кадастровый номер (KN)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500200)]
-        public long Kn
+        public bool Kn
         {
             get
             {
@@ -9149,12 +9149,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _date;
+        private bool _date;
         /// <summary>
         /// 30500300 Дата (DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500300)]
-        public long Date
+        public bool Date
         {
             get
             {
@@ -9169,12 +9169,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _square;
+        private bool _square;
         /// <summary>
         /// 30500400 Площадь (SQUARE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500400)]
-        public long Square
+        public bool Square
         {
             get
             {
@@ -9189,12 +9189,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _kc;
+        private bool _kc;
         /// <summary>
         /// 30500500 Кадастровая стоимость (KC)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500500)]
-        public long Kc
+        public bool Kc
         {
             get
             {
@@ -9209,12 +9209,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _namecenter;
+        private bool _namecenter;
         /// <summary>
         /// 30500600 Наимеование центра (NAME_CENTER)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500600)]
-        public long NameCenter
+        public bool NameCenter
         {
             get
             {
@@ -9229,12 +9229,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _statdgi;
+        private bool _statdgi;
         /// <summary>
         /// 30500700 Статус ДГИ (STAT_DGI)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500700)]
-        public long StatDgi
+        public bool StatDgi
         {
             get
             {
@@ -9249,12 +9249,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _owner;
+        private bool _owner;
         /// <summary>
         /// 30500800 Владелец (OWNER)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500800)]
-        public long Owner
+        public bool Owner
         {
             get
             {
@@ -9269,12 +9269,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _adres;
+        private bool _adres;
         /// <summary>
         /// 30500900 Адрес (ADRES)
         /// </summary>
         [RegisterAttribute(AttributeID = 30500900)]
-        public long Adres
+        public bool Adres
         {
             get
             {
@@ -9289,12 +9289,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _typeobj;
+        private bool _typeobj;
         /// <summary>
         /// 30501000 Тип объекта (TYPEOBJ)
         /// </summary>
         [RegisterAttribute(AttributeID = 30501000)]
-        public long Typeobj
+        public bool Typeobj
         {
             get
             {
@@ -9309,12 +9309,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long _status;
+        private bool _status;
         /// <summary>
         /// 30501100 Статус (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 30501100)]
-        public long Status
+        public bool Status
         {
             get
             {

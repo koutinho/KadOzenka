@@ -77,6 +77,7 @@ namespace KadOzenka.Dal.JSONParser
                     CO.Category = category;
                     CO.Subcategory = subCategory;
                     CO.CategoryId = categoryId;
+                    CO.PropertyMarketSegment_Code = GetMarketSegment(category, subCategory);
                     CO.ProcessType_Code = ProcessStep.DoNotProcessed;
                     if (exclusionStatus != null)
                     {
@@ -195,6 +196,32 @@ namespace KadOzenka.Dal.JSONParser
                 //ErrorManager.LogError(ex);
                 return PropertyTypes.Other;
             }
+        }
+
+        private MarketSegment GetMarketSegment(string category, string subCategory)
+        {
+            switch (category)
+            {
+                case "Коммерческая недвижимость":
+                    switch (subCategory)
+                    {
+                        case "Гараж": return MarketSegment.Parking;
+                        case "Офисная": return MarketSegment.Office;
+                        case "Складская":
+                        case "Производственная": return MarketSegment.Factory;
+                        case "Торговая": return MarketSegment.Trading;
+                        default: return MarketSegment.NoSegment;
+                    }
+                case "Загородная недвижимость":
+                    switch (subCategory)
+                    {
+                        case "Дом": 
+                        case "Таунхаус": return MarketSegment.IZHS;
+                        case "Участок": return MarketSegment.Land;
+                    }
+                    break;
+            }
+            return MarketSegment.MZHS;
         }
 
         private ExclusionStatus? GetExclusionStatus(long? price, decimal? area, decimal? area_land, string description, string category, string subCategory, DealType dealType)
