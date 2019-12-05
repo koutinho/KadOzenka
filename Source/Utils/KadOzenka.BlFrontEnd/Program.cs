@@ -15,6 +15,7 @@ using KadOzenka.BlFrontEnd.ExportMSSQL;
 using KadOzenka.BlFrontEnd.ExportCommission;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.BlFrontEnd.SudTests;
+using KadOzenka.BlFrontEnd.DetectDuplicatesTest;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -68,7 +69,8 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("351", "Импорт данных решений комиссий (Excel)", CommissionExporter.DoLoadExcel);
 
             consoleHelper.AddCommand("400", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.GAF(); });
-        }
+	        consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
+		}
 
     }
 }

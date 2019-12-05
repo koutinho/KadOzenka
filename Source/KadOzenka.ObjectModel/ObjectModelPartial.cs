@@ -662,6 +662,30 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 110 Временная таблица для проведения проверки механизма отбора дублей
+    /// </summary>
+    public partial class OMCoreObjectTest
+    {
+
+        public OMCoreObjectTest()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMCoreObjectTest(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -1169,7 +1193,7 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 213 Соответствие факторов реестровой и расчетной части
+    /// 213 Соответствие факторов учетной и расчетной части
     /// </summary>
     public partial class OMAttributeMap
     {

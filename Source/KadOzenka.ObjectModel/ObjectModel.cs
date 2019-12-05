@@ -479,6 +479,26 @@ namespace ObjectModel.Market
         }
 
 
+        private decimal _pricepermeter;
+        /// <summary>
+        /// 10002701 Цена за кв. м ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10002701)]
+        public decimal PricePerMeter
+        {
+            get
+            {
+                CheckPropertyInited("PricePerMeter");
+                return _pricepermeter;
+            }
+            set
+            {
+                _pricepermeter = value;
+                NotifyPropertyChanged("PricePerMeter");
+            }
+        }
+
+
         private DateTime? _parsertime;
         /// <summary>
         /// 10002800 Дата сделки (PARSER_TIME)
@@ -2911,6 +2931,288 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 110 Временная таблица для проведения проверки механизма отбора дублей (MARKET_CORE_OBJECT_TEST)
+    /// </summary>
+    [RegisterInfo(RegisterID = 110)]
+    [Serializable]
+    public partial class OMCoreObjectTest : OMBaseClass<OMCoreObjectTest>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _cadastralnumber;
+        /// <summary>
+        /// 11000200 Кадастровый номер (CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000200)]
+        public string CadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("CadastralNumber");
+                return _cadastralnumber;
+            }
+            set
+            {
+                _cadastralnumber = value;
+                NotifyPropertyChanged("CadastralNumber");
+            }
+        }
+
+
+        private string _address;
+        /// <summary>
+        /// 11000300 Адрес (ADDRESS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000300)]
+        public string Address
+        {
+            get
+            {
+                CheckPropertyInited("Address");
+                return _address;
+            }
+            set
+            {
+                _address = value;
+                NotifyPropertyChanged("Address");
+            }
+        }
+
+
+        private DateTime? _parsertime;
+        /// <summary>
+        /// 11000400 Дата сделки (PARSER_TIME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000400)]
+        public DateTime? ParserTime
+        {
+            get
+            {
+                CheckPropertyInited("ParserTime");
+                return _parsertime;
+            }
+            set
+            {
+                _parsertime = value;
+                NotifyPropertyChanged("ParserTime");
+            }
+        }
+
+
+        private string _description;
+        /// <summary>
+        /// 11000500 Описание (DESCRIPTION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000500)]
+        public string Description
+        {
+            get
+            {
+                CheckPropertyInited("Description");
+                return _description;
+            }
+            set
+            {
+                _description = value;
+                NotifyPropertyChanged("Description");
+            }
+        }
+
+
+        private decimal? _area;
+        /// <summary>
+        /// 11000600 Общая площадь (AREA)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000600)]
+        public decimal? Area
+        {
+            get
+            {
+                CheckPropertyInited("Area");
+                return _area;
+            }
+            set
+            {
+                _area = value;
+                NotifyPropertyChanged("Area");
+            }
+        }
+
+
+        private long? _price;
+        /// <summary>
+        /// 11000700 Цена (PRICE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000700)]
+        public long? Price
+        {
+            get
+            {
+                CheckPropertyInited("Price");
+                return _price;
+            }
+            set
+            {
+                _price = value;
+                NotifyPropertyChanged("Price");
+            }
+        }
+
+
+        private decimal? _pricepermeter;
+        /// <summary>
+        /// 11000800 Цена за кв. м (PRICE_PER_METER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000800)]
+        public decimal? PricePerMeter
+        {
+            get
+            {
+                CheckPropertyInited("PricePerMeter");
+                return _pricepermeter;
+            }
+            set
+            {
+                _pricepermeter = value;
+                NotifyPropertyChanged("PricePerMeter");
+            }
+        }
+
+
+        private string _processtype;
+        /// <summary>
+        /// 11000900 Статус обработки (PROCESS_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000900)]
+        public string ProcessType
+        {
+            get
+            {
+                CheckPropertyInited("ProcessType");
+                return _processtype;
+            }
+            set
+            {
+                _processtype = value;
+                NotifyPropertyChanged("ProcessType");
+            }
+        }
+
+
+        private ProcessStep _processtype_Code;
+        /// <summary>
+        /// 11000900 Статус обработки (справочный код) (PROCESS_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11000900)]
+        public ProcessStep ProcessType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ProcessType_Code");
+                return this._processtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_processtype))
+                    {
+                         _processtype = descr;
+                    }
+                }
+                else
+                {
+                     _processtype = descr;
+                }
+
+                this._processtype_Code = value;
+                NotifyPropertyChanged("ProcessType");
+                NotifyPropertyChanged("ProcessType_Code");
+            }
+        }
+
+
+        private string _exclusionstatus;
+        /// <summary>
+        /// 11001000 Причина исключения (EXCLUSION_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11001000)]
+        public string ExclusionStatus
+        {
+            get
+            {
+                CheckPropertyInited("ExclusionStatus");
+                return _exclusionstatus;
+            }
+            set
+            {
+                _exclusionstatus = value;
+                NotifyPropertyChanged("ExclusionStatus");
+            }
+        }
+
+
+        private ExclusionStatus _exclusionstatus_Code;
+        /// <summary>
+        /// 11001000 Причина исключения (справочный код) (EXCLUSION_STATUS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11001000)]
+        public ExclusionStatus ExclusionStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("ExclusionStatus_Code");
+                return this._exclusionstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_exclusionstatus))
+                    {
+                         _exclusionstatus = descr;
+                    }
+                }
+                else
+                {
+                     _exclusionstatus = descr;
+                }
+
+                this._exclusionstatus_Code = value;
+                NotifyPropertyChanged("ExclusionStatus");
+                NotifyPropertyChanged("ExclusionStatus_Code");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -4474,7 +4776,7 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 213 Соответствие факторов реестровой и расчетной части (KO_ATTRIBUTE_MAP)
+    /// 213 Соответствие факторов учетной и расчетной части (KO_ATTRIBUTE_MAP)
     /// </summary>
     [RegisterInfo(RegisterID = 213)]
     [Serializable]
