@@ -786,7 +786,12 @@ namespace KadOzenka.Web.Controllers
             List<long> idLinks = reportLinks.Select(x => x.Id).ToList();
             List<long?> idReports = reportLinks.Select(x => x.IdOtchet).Where(x => x != null).ToList();
 
-            List<OMParam> param =  OMParam.Where(x => (x.IdTable == (long) OMTableParam.OtchetLink  && idLinks.Contains(x.Id)) || (x.IdTable == (long) OMTableParam.Otchet
+            if (idReports.Count == 0)
+            {
+                return View("~/Views/Sud/TabContent/ReportContent.cshtml", new List<EditApprovalReportLinkModel>());
+
+            }
+            List<OMParam> param =  OMParam.Where(x => (x.IdTable == (long) OMTableParam.OtchetLink  && idLinks.Contains(x.Id) || x.IdTable == (long) OMTableParam.Otchet
                                && idReports.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
 
 
@@ -896,7 +901,12 @@ namespace KadOzenka.Web.Controllers
             List<long> idLinks = courtLinks.Select(x => x.Id).ToList();
             List<long?> idCourts = courtLinks.Select(x => x.IdSud).Where(x => x != null).ToList();
 
-            List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.SudLink && idLinks.Contains(x.Id)) || (x.IdTable == (long)OMTableParam.Sud
+            if (idCourts.Count == 0)
+            {
+                return View("~/Views/Sud/TabContent/CourtContent.cshtml", new List<EditApprovalCourtLinkModel>());
+            }
+
+            List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.SudLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Sud
                                                                                                                                 && idCourts.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
 
 
@@ -1003,7 +1013,12 @@ namespace KadOzenka.Web.Controllers
             List<long> idLinks = conclusionLinks.Select(x => x.Id).ToList();
             List<long?> idConclusions = conclusionLinks.Select(x => x.IdZak).Where(x => x != null).ToList();
 
-            List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.ZakLink && idLinks.Contains(x.Id)) || (x.IdTable == (long)OMTableParam.Zak
+            if (idConclusions.Count == 0)
+            {
+                return View("~/Views/Sud/TabContent/ConclusionContent.cshtml", new List<EditApprovalConclusionLinkModel>());
+            }
+
+            List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.ZakLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Zak
                                                                                                                              && idConclusions.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
 
 
