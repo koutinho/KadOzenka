@@ -189,9 +189,9 @@
     cursor: url('../../../images/Cursors/cursor_col_resize.png') 10 0, col-resize;
 }
 
-[id^="GridToolBar-"] .k-split-button {
+/*[id^="GridToolBar-"] .k-split-button {
     float: right;
-}
+}*/
 
 [id^="verticalSplitter-"] {
     border: none;
@@ -1301,17 +1301,17 @@ td.k-group-cell {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     background-clip: padding-box;
-    height: 50px;
+    height: 40px;
     margin: 0 15px 0 15px;
 }
 
     .k-panelbar > .k-item > .k-link span:first-child {
         font-weight: 300;
-        font-size: 22px;
-        line-height: 22px;
+        font-size: 18px;
+        line-height: 18px;
         color: #0a1124;
         position: relative;
-        top: 10px;
+        top: 5px;
         left: 22px;
     }
 
@@ -1324,7 +1324,7 @@ td.k-group-cell {
         content: "";
         display: block;
         background: url(/images/section-top-before.png) no-repeat;
-        width: 67.5px;
+        width: 40px;
         height: 44px;
         background-size: contain;
         position: absolute;
@@ -3352,6 +3352,20 @@ span.k-timepicker {
     display: none;
 }
 
+.filter-container .query_item {
+    background-color: inherit;
+    border-color: #d2d2d2;
+}
+
+    .filter-container .query_item label {
+        color: #646464;
+    }
+
+    .filter-container .query_item button.f_button_remove {
+        background-color: #fff;
+    }
+
+
 .content {
     display: flex;
 }
@@ -3385,17 +3399,20 @@ ul.panelbar li.k-item .contentPanel {
     background-color: #F8F9FC;
 }
 
-.filter-container .query_item {
-    background-color: inherit;
-    border-color: #d2d2d2;
+.k-window .panelbar {
+    background-color: #F8F9FC;
 }
 
-    .filter-container .query_item label {
-        color: #646464;
-    }
+.k-toolbar.grid-toolbar {
+    min-height: auto;
+    overflow: visible;
+    /*height: auto;*/
+    margin: 0px 20px 0 20px;
+}
 
-    .filter-container .query_item button.f_button_remove {
-        background-color: #fff;
-    }
+.k-button.no-button {
+    padding: 0px 10px 0px 10px;
+    border: none;
+}
 
 /*# sourceMappingURL=kendo.silver.genix.min.css.map */

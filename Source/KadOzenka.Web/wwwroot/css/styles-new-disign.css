@@ -1216,13 +1216,6 @@ div.forTooltips a[href=""]:empty {
         background: url('../images/View 5 active.png') no-repeat;
     }
 
-.k-toolbar.grid-toolbar {
-    min-height: auto;
-    overflow: visible;
-    /*height: auto;*/
-    margin: 0px 30px 0 30px;
-}
-
 .register-grid {
     flex: 1 1 auto;
     display: flex;
