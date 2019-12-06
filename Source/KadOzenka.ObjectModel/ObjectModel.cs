@@ -3341,7 +3341,7 @@ namespace ObjectModel.Market
         }
 
 
-        private string _resultFromSourceFile;
+        private string _resultfromsourcefile;
         /// <summary>
         /// 11001400 Результат из исходного файла (RESULT_FROM_SOURCE_FILE)
         /// </summary>
@@ -3351,14 +3351,15 @@ namespace ObjectModel.Market
             get
             {
                 CheckPropertyInited("ResultFromSourceFile");
-                return _resultFromSourceFile;
+                return _resultfromsourcefile;
             }
             set
             {
-                _resultFromSourceFile = value;
+                _resultfromsourcefile = value;
                 NotifyPropertyChanged("ResultFromSourceFile");
             }
         }
+
     }
 }
 
@@ -5212,7 +5213,7 @@ namespace ObjectModel.KO
         /// <summary>
         /// 21600100  (ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21600100)]
+        [PrimaryKey(AttributeID = 21600100)]
         public long Id
         {
             get

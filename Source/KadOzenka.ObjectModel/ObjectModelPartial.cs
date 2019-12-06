@@ -1265,6 +1265,30 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 216 Данные о кадастровой стоимости из Росреестра
+    /// </summary>
+    public partial class OMCostRosreestr
+    {
+
+        public OMCostRosreestr()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMCostRosreestr(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года
     /// </summary>
     public partial class OMUnitParamsOks2018
