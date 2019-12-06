@@ -33,9 +33,10 @@ namespace KadOzenka.Web.Models.Sud
 
         public EditApprovalCourtModel Court { get; set; }
 
+        public bool IsDisableButton { get; set; }
         public static EditApprovalCourtLinkModel FromEntity(List<OMParam> param)
         {
-            return new EditApprovalCourtLinkModel
+            var model = new EditApprovalCourtLinkModel
             {
                 SudId = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.SudId.GetEnumDescription())?.Pid.ToString(),
                 Rs = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Rs.GetEnumDescription())?.Pid.ToString(),
@@ -44,6 +45,11 @@ namespace KadOzenka.Web.Models.Sud
                 Description = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Descr.GetEnumDescription())?.Pid.ToString(),
                 Court = EditApprovalCourtModel.FromEntity(param)
             };
+
+            model.IsDisableButton = model.SudId != null && model.Rs != null && model.Uprs != null &&
+                                    model.Use != null && model.Description != null && model.Court != null;
+
+            return model;
         }
     }
 }

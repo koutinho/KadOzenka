@@ -90,7 +90,7 @@
         </div>
         <div class="form-group">
             <div class="col-sm-12">
-                <button style="float: right" id="save" class="k-button" type="button">Утвердить</button>
+                <button style="float: right" disabled="@Model.IsDisableButton" id="save" class="k-button" type="button">Утвердить</button>
             </div>
         </div>
         <div class="form-group">
@@ -103,8 +103,10 @@
 
 }
 <script type="text/javascript">
+
     $(document).ready(function () {
-        $("#tabstrip-wrap").kendoTabStrip({
+      
+      var tabs =  $("#tabstrip-wrap").kendoTabStrip({
             value: "Отчеты",
             dataTextField: "Name",
             dataContentField: "Content",
@@ -115,7 +117,7 @@
                 { Name: "Решения", ContentUrl: "@Url.Action("GetCourtContent", "Sud", new { idObject = Model.Id })"}
             ]
         });
-
+       
         function distinctErrors(errors) {
             var result = [];
             $.each(errors, function(index, event) {

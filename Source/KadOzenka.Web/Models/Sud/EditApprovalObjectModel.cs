@@ -49,10 +49,10 @@ namespace KadOzenka.Web.Models.Sud
         [Display(Name = "Заказчик / Истец")]
         public string Owner { get; set; }
 
+        public bool IsDisableButton { get; set; }
         public static EditApprovalObjectModel FromEntity(List<OMParam> param)
         {
-            //OMObject
-            return new EditApprovalObjectModel
+            var model = new EditApprovalObjectModel
             {
                 Kn = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Kn.GetEnumDescription())?.Pid.ToString(),
                 Date = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Date.GetEnumDescription())?.Pid.ToString(),
@@ -64,6 +64,12 @@ namespace KadOzenka.Web.Models.Sud
                 StatDgi = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.StatDgi.GetEnumDescription())?.Pid.ToString(),
                 Owner = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.StatDgi.GetEnumDescription())?.Pid.ToString()
             };
+
+            model.IsDisableButton = model.Kn != null && model.Date != null && model.Square != null &&
+                                    model.Kc != null && model.TypeObj != null && model.Adres != null
+                                    && model.NameCenter != null && model.StatDgi != null && model.Owner != null;
+
+            return model;
         }
     }
 

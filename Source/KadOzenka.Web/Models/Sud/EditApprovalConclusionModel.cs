@@ -59,9 +59,10 @@ namespace KadOzenka.Web.Models.Sud
 
         public string DateForTab { get; set; }
 
+        public bool IsDisableButton { get; set; }
         public static EditApprovalConclusionModel FromEntity(List<OMParam> param)
         {
-            return new EditApprovalConclusionModel
+            var model =  new EditApprovalConclusionModel
             {
                 Number = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Number.GetEnumDescription())?.Pid.ToString(),
                 NumberForTab = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Number.GetEnumDescription())?.ToString(),
@@ -77,6 +78,13 @@ namespace KadOzenka.Web.Models.Sud
                 RecAfter = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.RecAfter.GetEnumDescription())?.Pid.ToString(),
                 RecSoglas = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.RecSoglas.GetEnumDescription())?.Pid.ToString()
             };
+
+            model.IsDisableButton = model.Number != null && model.CreateDate != null && model.Org != null &&
+                                    model.Fio != null && model.Sro != null && model.RecDate != null
+                                    && model.RecUser != null && model.RecLetter != null && model.RecBefore != null &&
+                                    model.RecAfter != null && model.RecSoglas != null;
+
+            return model;
         }
     }
 }

@@ -37,9 +37,10 @@ namespace KadOzenka.Web.Models.Sud
 
         public string DateForTab { get; set; }
 
+        public bool IsDisableButton { get; set; }
         public static EditApprovalConclusionLinkModel FromEntity(List<OMParam> param)
         {
-            return new EditApprovalConclusionLinkModel
+            var model = new EditApprovalConclusionLinkModel
             {
                 IdConclusion = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.IdConclusion.GetEnumDescription())?.Pid.ToString(),
                 Use = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Use.GetEnumDescription())?.Pid.ToString(),
@@ -48,6 +49,11 @@ namespace KadOzenka.Web.Models.Sud
                 Descr = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Descr.GetEnumDescription())?.Pid.ToString(),
                 Conclusion = EditApprovalConclusionModel.FromEntity(param)
             };
+
+            model.IsDisableButton = model.IdConclusion != null && model.Use != null && model.Rs != null &&
+                                    model.Uprs != null && model.Descr != null;
+
+            return model;
         }
     }
 }

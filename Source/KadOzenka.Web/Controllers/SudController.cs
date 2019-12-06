@@ -807,6 +807,7 @@ namespace KadOzenka.Web.Controllers
                 var tempModel = EditApprovalReportLinkModel.FromEntity(forModel);
                 tempModel.Id = reportLink.Id;
                 tempModel.Report.Id = reportLink.IdOtchet;
+                
 
                 model.Add(tempModel);
                 forModel.Clear();

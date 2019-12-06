@@ -32,20 +32,26 @@ namespace KadOzenka.Web.Models.Sud
         [Display(Name = "Примечание")]
         public string Descr { get; set; }
 
+        public bool IsDisableButton { get; set; }
+
        
         public EditApprovalReportModel Report { get; set; }
 
         public static EditApprovalReportLinkModel FromEntity(List<OMParam> param)
         {
-            return new EditApprovalReportLinkModel
+            var  model = new EditApprovalReportLinkModel
             {
                 IdReport = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.IdReport.GetEnumDescription())?.Pid.ToString(),
                 Rs = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Rs.GetEnumDescription())?.Pid.ToString(),
                 Uprs = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Uprs.GetEnumDescription())?.Pid.ToString(),
                 Use = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Use.GetEnumDescription())?.Pid.ToString(),
                 Descr = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Uprs.GetEnumDescription())?.Pid.ToString(),
-                Report = EditApprovalReportModel.FromEntity(param)
+                Report = EditApprovalReportModel.FromEntity(param),
             };
+            model.IsDisableButton = model.IdReport != null && model.Rs != null && model.Uprs != null &&
+                                    model.Use != null && model.Descr != null;
+
+            return model;
         }
     }
 }
