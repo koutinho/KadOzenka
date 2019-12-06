@@ -3407,7 +3407,7 @@ ul.panelbar li.k-item .contentPanel {
     min-height: auto;
     overflow: visible;
     /*height: auto;*/
-    margin: 0px 20px 0 20px;
+    margin: 0px 20px 0 12px;
 }
 
 .k-button.no-button {
