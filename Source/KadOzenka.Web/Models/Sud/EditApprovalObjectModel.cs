@@ -13,39 +13,39 @@ namespace KadOzenka.Web.Models.Sud
     {
         public int Id { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите кадастровый номер")]
+        [Required(ErrorMessage = "Выбирите кадастровый номер")]
         [Display(Name = "Кадастровый номер")]
         public string Kn { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите дату определения")]
+        [Required(ErrorMessage = "Выбирите дату определения")]
         [Display(Name = "Дата определения")]
         public string Date { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите площадь")]
+        [Required(ErrorMessage = "Выбирите площадь")]
         [Display(Name = "Площадь")]
         public string Square { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите оспариваемую площадь")]
+        [Required(ErrorMessage = "Выбирите оспариваемую площадь")]
         [Display(Name = "Оспариваемая стоимость")]
         public string Kc { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите тип объекта")]
+        [Required(ErrorMessage = "Выбирите тип объекта")]
         [Display(Name = "Тип объекта")]
         public string TypeObj { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите адрес")]
+        [Required(ErrorMessage = "Выбирите адрес")]
         [Display(Name = "Адрес")]
         public string Adres { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите наименование")]
+        [Required(ErrorMessage = "Выбирите наименование")]
         [Display(Name = "Наименование (ТЦ, БЦ)")]
         public string NameCenter { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите статистику ДГИ")]
+        [Required(ErrorMessage = "Выбирите статистику ДГИ")]
         [Display(Name = "Внесено в статистику ДГИ")]
         public string StatDgi { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выбирите заказчика")]
+        [Required(ErrorMessage = "Выбирите заказчика")]
         [Display(Name = "Заказчик / Истец")]
         public string Owner { get; set; }
 

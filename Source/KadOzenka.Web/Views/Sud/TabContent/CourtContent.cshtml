@@ -17,7 +17,7 @@
         @{
             foreach (var m in Model)
             {
-                <li class="@(i == 0 ? "k-state-active" : "")">@($"Отчет {m.Court.NumberForTab} от {m.Court.DateForTab}. {m.Court.NameForTab}")</li>
+                <li class="@(i == 0 ? "k-state-active" : "")">@($"{m.Court.NumberForTab} от {m.Court.DateForTab}. {m.Court.NameForTab}")</li>
                 i++;
             }
             i = 0;
@@ -43,9 +43,7 @@
                 </div>
                 <fieldset id="reportData">
                     <legend>Данные о судебном решении</legend>
-                    @using (Html.BeginForm("EditApprovalCourt", "Sud", FormMethod.Post, new { @class = "court-content", @Id = $"{m.Court.Id}" }))
-                    {
-                        @Html.HiddenFor(r => r[j].Court.Id)
+                    @Html.HiddenFor(r => r[j].Court.Id)
                         <div class="form-horizontal col-sm-12">
                             <div class="form-group">
                                 <div class="col-sm-2">
@@ -99,11 +97,10 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-12">
-                                    <button style="float: right" id="saveCourt" data-id="@m.Court.Id" class="k-button" type="button">Утвердить</button>
+                                    <button style="float: right"  data-action="@Url.Action("EditApprovalCourt","Sud")" data-id-tab="@j" data-id="@m.Id" class="k-button saveCourt" type="button">Утвердить</button>
                                 </div>
                             </div>
                         </div>
-                    }
                 </fieldset>
                 <div class="form-group">
                     <div class="col-sm-2">
@@ -147,7 +144,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-12">
-                        <button style="float: right" id="saveCourtLink" data-id="@m.Id" class="k-button" type="button">Утвердить</button>
+                        <button style="float: right" data-id-tab="@j" data-id="@m.Id" class="k-button saveCourtLink" type="button">Утвердить</button>
                     </div>
                 </div>
             </div>
@@ -188,43 +185,64 @@
             });
 
             return result;
-        }
+        };
 
-        $("#saveCourtLink").on('click', function () {
+        $(".saveCourtLink").on('click',
+            function () {
+                var id = $(this).data("id");
+                var idTab = $(this).data("id-tab");
+                var form = $(`form.court-link-content#${id}`);
+             
+                var formObject = Common.Functions.FormToObject(form);
+           
+
+                var data = {
+                    SudId: formObject[`[${idTab}].SudId`],
+                    Use: formObject[`[${idTab}].Use`],
+                    Rs: formObject[`[${idTab}].Rs`],
+                    Uprs: formObject[`[${idTab}].Uprs`],
+                    Description: formObject[`[${idTab}].Description`],
+                    Id: formObject[`[${idTab}].Id`]
+                }
+
+                kendo.ui.progress($('body'), true);
+                $.post(form.attr('action'), data).done(function(response) {
+                    kendo.ui.progress($('body'), false);
+                    if (response.Errors) {
+                        var errors = $.map(distinctErrors(response.Errors),
+                            function(el) {
+                                return el.Message;
+                            });
+                        Common.ShowError(errors);
+                        return;
+                    }
+
+                    if (response.Success) {
+                        form.attr("disabled", true);
+                        Common.ShowMessage(response.Success);
+                    }
+                });
+            });
+    
+        $(".saveCourt").on('click', function () {
             var id = $(this).data("id");
+            var idTab = $(this).data("id-tab");
+            var action = $(this).data("action");
             var form = $(`form.court-link-content#${id}`);
 
             var formObject = Common.Functions.FormToObject(form);
-            console.log('formObject', formObject);
+
+            var data = {
+                Name: formObject[`[${idTab}].Court.Name`],
+                Number: formObject[`[${idTab}].Court.Number`],
+                Date: formObject[`[${idTab}].Court.Date`],
+                SudDate: formObject[`[${idTab}].Court.SudDate`],
+                Status: formObject[`[${idTab}].Court.Status`],
+                Id: formObject[`[${idTab}].Court.Id`]
+            }
 
             kendo.ui.progress($('body'), true);
-            $.post(form.attr('action'), formObject).done(function (response) {
-                kendo.ui.progress($('body'), false);
-                if (response.Errors) {
-                    var errors = $.map(distinctErrors(response.Errors),
-                        function (el) {
-                            return el.Message;
-                        });
-                    Common.ShowError(errors);
-                    return;
-                }
-
-                if (response.Success) {
-                    form.attr("disabled", true);
-                    Common.ShowMessage(response.Success);
-                }
-            });
-        });
-
-        $("#saveCourt").on('click', function () {
-            var id = $(this).data("id");
-            var form = $(`form.court-content#${id}`);
-
-            var formObject = Common.Functions.FormToObject(form);
-            console.log('formObject', formObject);
-
-            kendo.ui.progress($('body'), true);
-            $.post(form.attr('action'), formObject).done(function (response) {
+            $.post(action, data).done(function (response) {
                 kendo.ui.progress($('body'), false);
                 if (response.Errors) {
                     var errors = $.map(distinctErrors(response.Errors),

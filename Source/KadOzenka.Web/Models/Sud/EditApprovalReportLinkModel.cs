@@ -12,23 +12,23 @@ namespace KadOzenka.Web.Models.Sud
     {
         public long Id { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите отчет")]
+        [Required(ErrorMessage = "Выберите отчет")]
         [Display(Name = "Отчет об оценке")]
         public string IdReport { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите рыночную стоимость")]
+        [Required(ErrorMessage = "Выберите рыночную стоимость")]
         [Display(Name = "Рыночная стоимость")]
         public string Rs { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите удельную стоимость")]
+        [Required(ErrorMessage = "Выберите удельную стоимость")]
         [Display(Name = "Удельная стоимость")]
         public string Uprs { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите текущее использование")]
+        [Required(ErrorMessage = "Выберите текущее использование")]
         [Display(Name = "Текущее использование")]
         public string Use { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите примечание")]
+        [Required(ErrorMessage = "Выберите примечание")]
         [Display(Name = "Примечание")]
         public string Descr { get; set; }
 

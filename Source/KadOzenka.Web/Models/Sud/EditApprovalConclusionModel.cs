@@ -11,47 +11,47 @@ namespace KadOzenka.Web.Models.Sud
     {
         public long? Id { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите номер заключения")]
+        [Required(ErrorMessage = "Выберите номер заключения")]
         [Display(Name = "Номер заключения")]
         public string Number { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите дату составления")]
+        [Required(ErrorMessage = "Выберите номер заключения")]
         [Display(Name = "Дата составления")]
         public string CreateDate { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите организацию")]
+        [Required(ErrorMessage = "Выберите организацию")]
         [Display(Name = "Организация")]
         public string Org { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите эксперта")]
+        [Required(ErrorMessage = "Выберите эксперта")]
         [Display(Name = "Эксперт")]
         public string Fio { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите СРО")]
+        [Required(ErrorMessage = "Выберите СРО")]
         [Display(Name = "СРО")]
         public string Sro { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите дату сдачи рецензии")]
+        [Required(ErrorMessage = "Выберите дату сдачи рецензии")]
         [Display(Name = "Дата сдачи рецензии")]
         public string RecDate { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите исполнителя")]
+        [Required(ErrorMessage = "ыберите исполнителя")]
         [Display(Name = "Исполнитель рецензии")]
         public string RecUser { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите номер письма")]
+        [Required(ErrorMessage = "Выберите номер письма")]
         [Display(Name = "Номер письма")]
         public string RecLetter { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите предварительную рецензию")]
+        [Required(ErrorMessage = "Выберите предварительную рецензию")]
         [Display(Name = "Предварительная рецензия")]
         public string RecBefore { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите рецензию после анализа")]
+        [Required(ErrorMessage = "Выберите рецензию после анализа")]
         [Display(Name = "Рецензия после анализа")]
         public string RecAfter { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите поле рассмотрено")]
+        [Required(ErrorMessage = "Выберите поле рассмотрено")]
         [Display(Name = "Рассмотрено с Ковалевым")]
         public string RecSoglas { get; set; }
 

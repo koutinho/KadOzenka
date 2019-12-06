@@ -840,7 +840,7 @@ namespace KadOzenka.Web.Controllers
             OMOtchetLink reportLink = OMOtchetLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
             if (reportLink == null)
             {
-                return NotFound();
+                throw new Exception("Не надена модель по указанному ИД");
             }
 
             OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
@@ -878,7 +878,7 @@ namespace KadOzenka.Web.Controllers
             OMOtchet report = OMOtchet.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
             if (report == null)
             {
-                return NotFound();
+                throw new Exception("Не надена модель по указанному ИД");
             }
 
             OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
@@ -953,7 +953,7 @@ namespace KadOzenka.Web.Controllers
             OMSud court = OMSud.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
             if (court == null)
             {
-                return NotFound();
+                throw new Exception("Не надена модель по указанному ИД");
             }
 
             OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
@@ -992,7 +992,7 @@ namespace KadOzenka.Web.Controllers
             OMSudLink courtLink = OMSudLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
             if (courtLink == null)
             {
-                return NotFound();
+                throw new Exception("Не надена модель по указанному ИД");
             }
 
             OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();

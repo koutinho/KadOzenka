@@ -11,31 +11,31 @@ namespace KadOzenka.Web.Models.Sud
     {
         public long? Id { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите номер отчета")]
+        [Required(ErrorMessage = "Выберите номер отчета")]
         [Display(Name = "Номер отчета")]
         public string Number { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите дату отчета")]
+        [Required(ErrorMessage = "Выберите дату отчета")]
         [Display(Name = "Дата отчета")]
         public string ReportDate { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите организацию")]
+        [Required(ErrorMessage = "Выберите организацию")]
         [Display(Name = "Организация")]
         public string Org { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите оценщика")]
+        [Required(ErrorMessage = "Выберите оценщика")]
         [Display(Name = "Оценщик")]
         public string Fio { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите СРО")]
+        [Required(ErrorMessage = "Выберите СРО")]
         [Display(Name = "СРО")]
         public string Sro { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите дату получения")]
+        [Required(ErrorMessage = "Выберите дату получения")]
         [Display(Name = "Дата получения")]
         public string DateIn { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите жалобу")]
+        [Required(ErrorMessage = "Выберите жалобу")]
         [Display(Name = "Жалоба в СРО")]
         public string Claim { get; set; }
 

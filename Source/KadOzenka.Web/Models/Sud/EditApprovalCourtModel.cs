@@ -11,23 +11,23 @@ namespace KadOzenka.Web.Models.Sud
     {
         public long? Id { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите наименование суда")]
+        [Required(ErrorMessage = "Выберите наименование суда")]
         [Display(Name = "Наименование суда")]
         public string Name { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите номер дела")]
+        [Required(ErrorMessage = "Выберите номер дела")]
         [Display(Name = "Номер дела")]
         public string Number { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите дату заседания")]
+        [Required(ErrorMessage = "Выберите дату заседания")]
         [Display(Name = "Дата заседания")]
         public string Date { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите дату получения")]
+        [Required(ErrorMessage = "Выберите дату получения")]
         [Display(Name = "Дата получения")]
         public string SudDate { get; set; }
 
-        [StringLength(int.MaxValue, MinimumLength = 1, ErrorMessage = "Выберите статус")]
+        [Required(ErrorMessage = "Выберите статус")]
         [Display(Name = "Статус")]
         public string Status { get; set; }
 
