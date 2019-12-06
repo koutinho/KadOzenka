@@ -56,7 +56,8 @@ namespace KadOzenka.BlFrontEnd.DetectDuplicatesTest
 						DealType_Code = DealType.RentDeal,
 						PropertyType = PropertyTypes.Building.GetEnumDescription(),
 						PropertyType_Code = PropertyTypes.Building,
-						Subcategory = "Тест"
+						Subcategory = "Тест",
+						ResultFromSourceFile = ws.Rows[i].Cells[7].Value?.ToString()
 					};
 					@object.Save();
 				}

@@ -3340,6 +3340,25 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _resultFromSourceFile;
+        /// <summary>
+        /// 11001400 Результат из исходного файла (RESULT_FROM_SOURCE_FILE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11001400)]
+        public string ResultFromSourceFile
+        {
+            get
+            {
+                CheckPropertyInited("ResultFromSourceFile");
+                return _resultFromSourceFile;
+            }
+            set
+            {
+                _resultFromSourceFile = value;
+                NotifyPropertyChanged("ResultFromSourceFile");
+            }
+        }
     }
 }
 
