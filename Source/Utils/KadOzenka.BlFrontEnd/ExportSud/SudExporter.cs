@@ -226,19 +226,19 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                     ObjectModel.Sud.OMObjectStatus sudObject = new ObjectModel.Sud.OMObjectStatus
                     {
                         Id = id,
-                        Typeobj = NullConvertor.DBToInt(myOleDbDataReader["typeobj"], 0)
+                        Typeobj = NullConvertor.DBToInt(myOleDbDataReader["typeobj"], 0) > 0
                     };
 
-                    if (NullConvertor.DBToInt(myOleDbDataReader["kn"], out int kn)) sudObject.Kn = kn;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["date"], out int date)) sudObject.Date = date;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["square"], out int square)) sudObject.Square = square;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["kc"], out int kc)) sudObject.Kc = kc;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["kn"], out int kn)) sudObject.Kn = kn != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["date"], out int date)) sudObject.Date = date != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["square"], out int square)) sudObject.Square = square != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["kc"], out int kc)) sudObject.Kc = kc != int.MinValue;
 
-                    if (NullConvertor.DBToInt(myOleDbDataReader["name_center"], out int nameCenter)) sudObject.NameCenter = nameCenter;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["stat_dgi"], out int statDgi)) sudObject.StatDgi = statDgi;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["owner"], out int owner)) sudObject.Owner = owner;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["adres"], out int adres)) sudObject.Adres = adres;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["status"], out int status)) sudObject.Status = status;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["name_center"], out int nameCenter)) sudObject.NameCenter = nameCenter != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["stat_dgi"], out int statDgi)) sudObject.StatDgi = statDgi != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["owner"], out int owner)) sudObject.Owner = owner != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["adres"], out int adres)) sudObject.Adres = adres != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["status"], out int status)) sudObject.Status = status != int.MinValue;
 
 
 
