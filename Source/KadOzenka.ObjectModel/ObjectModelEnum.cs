@@ -497,6 +497,18 @@ namespace ObjectModel.Directory
 		[Description("Неприемлимые условия")]
         [EnumCode("14")]
         UnacceptableConditions = 782,
+		/// <summary>
+		/// Удалено (799)
+		/// </summary>
+		[Description("Удалено")]
+        [EnumCode("15")]
+        Deleted = 799,
+		/// <summary>
+		/// Снято с публикации (800)
+		/// </summary>
+		[Description("Снято с публикации")]
+        [EnumCode("16")]
+        Unpublished = 800,
     }
 }
 
@@ -819,6 +831,41 @@ namespace ObjectModel.Directory
 		[Description("Повторный (исходный)")]
         [EnumCode("")]
         RepeatedInitial = 794,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип объекта, по которому было рассчитано среднее/минимальное значение (210)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 210)]
+    public enum KoParentCalcType : long
+    {
+		/// <summary>
+		/// значение отсутствует (0)
+		/// </summary>
+		[Description("значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
+		/// кадастровый квартал (1)
+		/// </summary>
+		[Description("кадастровый квартал")]
+        [EnumCode("1")]
+        CadastralBlock = 1,
+		/// <summary>
+		/// кадастровый район (2)
+		/// </summary>
+		[Description("кадастровый район")]
+        [EnumCode("2")]
+        CadastralRegion = 2,
+		/// <summary>
+		/// субъект РФ (3)
+		/// </summary>
+		[Description("субъект РФ")]
+        [EnumCode("3")]
+        RfSubject = 3,
     }
 }
 

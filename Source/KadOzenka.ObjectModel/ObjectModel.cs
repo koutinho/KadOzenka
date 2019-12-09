@@ -3884,6 +3884,216 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private decimal? _square;
+        /// <summary>
+        /// 20101500 Площадь (SQUARE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101500)]
+        public decimal? Square
+        {
+            get
+            {
+                CheckPropertyInited("Square");
+                return _square;
+            }
+            set
+            {
+                _square = value;
+                NotifyPropertyChanged("Square");
+            }
+        }
+
+
+        private string _cadastralnumber;
+        /// <summary>
+        /// 20101600 Кадастровый номер (CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101600)]
+        public string CadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("CadastralNumber");
+                return _cadastralnumber;
+            }
+            set
+            {
+                _cadastralnumber = value;
+                NotifyPropertyChanged("CadastralNumber");
+            }
+        }
+
+
+        private string _cadastralblock;
+        /// <summary>
+        /// 20101700 Кадастровый квартал (CADASTRAL_BLOCK)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101700)]
+        public string CadastralBlock
+        {
+            get
+            {
+                CheckPropertyInited("CadastralBlock");
+                return _cadastralblock;
+            }
+            set
+            {
+                _cadastralblock = value;
+                NotifyPropertyChanged("CadastralBlock");
+            }
+        }
+
+
+        private string _propertytype;
+        /// <summary>
+        /// 20101800 Тип объекта (PROPERTY_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101800)]
+        public string PropertyType
+        {
+            get
+            {
+                CheckPropertyInited("PropertyType");
+                return _propertytype;
+            }
+            set
+            {
+                _propertytype = value;
+                NotifyPropertyChanged("PropertyType");
+            }
+        }
+
+
+        private PropertyTypes _propertytype_Code;
+        /// <summary>
+        /// 20101800 Тип объекта (справочный код) (PROPERTY_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101800)]
+        public PropertyTypes PropertyType_Code
+        {
+            get
+            {
+                CheckPropertyInited("PropertyType_Code");
+                return this._propertytype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_propertytype))
+                    {
+                         _propertytype = descr;
+                    }
+                }
+                else
+                {
+                     _propertytype = descr;
+                }
+
+                this._propertytype_Code = value;
+                NotifyPropertyChanged("PropertyType");
+                NotifyPropertyChanged("PropertyType_Code");
+            }
+        }
+
+
+        private long? _degreereadiness;
+        /// <summary>
+        /// 20101900 Степень готовности в процента (DEGREE_READINESS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20101900)]
+        public long? DegreeReadiness
+        {
+            get
+            {
+                CheckPropertyInited("DegreeReadiness");
+                return _degreereadiness;
+            }
+            set
+            {
+                _degreereadiness = value;
+                NotifyPropertyChanged("DegreeReadiness");
+            }
+        }
+
+
+        private string _parentcalcnumber;
+        /// <summary>
+        /// 20102000 Объект, по которому было рассчитано среднее/минимальное значение (PARENT_CALC_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102000)]
+        public string ParentCalcNumber
+        {
+            get
+            {
+                CheckPropertyInited("ParentCalcNumber");
+                return _parentcalcnumber;
+            }
+            set
+            {
+                _parentcalcnumber = value;
+                NotifyPropertyChanged("ParentCalcNumber");
+            }
+        }
+
+
+        private string _parentcalctype;
+        /// <summary>
+        /// 20102100 Тип объекта, по которому было рассчитано среднее/минимальное значение ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102100)]
+        public string ParentCalcType
+        {
+            get
+            {
+                CheckPropertyInited("ParentCalcType");
+                return _parentcalctype;
+            }
+            set
+            {
+                _parentcalctype = value;
+                NotifyPropertyChanged("ParentCalcType");
+            }
+        }
+
+
+        private KoParentCalcType _parentcalctype_Code;
+        /// <summary>
+        /// 20102100 Тип объекта, по которому было рассчитано среднее/минимальное значение (справочный код) (PARENT_CALC_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102100)]
+        public KoParentCalcType ParentCalcType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ParentCalcType_Code");
+                return this._parentcalctype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_parentcalctype))
+                    {
+                         _parentcalctype = descr;
+                    }
+                }
+                else
+                {
+                     _parentcalctype = descr;
+                }
+
+                this._parentcalctype_Code = value;
+                NotifyPropertyChanged("ParentCalcType");
+                NotifyPropertyChanged("ParentCalcType_Code");
+            }
+        }
+
     }
 }
 
