@@ -4,7 +4,16 @@ function init(){
     var script = document.createElement('script');
     script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
     document.head.appendChild(script);
-    script.onload = function () { ymaps.ready(function() {initMap();}); }
+    script.onload = function () {
+        var heatmapScript = document.createElement('script');
+        heatmapScript.src = `${AppData.protocol}://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js`;
+        document.head.appendChild(heatmapScript);
+        heatmapScript.onload = function () {
+            ymaps.ready(['Heatmap']).then(() => GetHeatmapData(currentToken));
+        };
+
+        ymaps.ready(function() {initMap();});
+    }
 };
 
 function initMap() {

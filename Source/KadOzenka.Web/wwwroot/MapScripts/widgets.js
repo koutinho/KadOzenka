@@ -134,10 +134,55 @@ function addTargetWidget(position) {
 
 function removeTargetWidget() { map.controls.remove(targetWidget); };
 
+function createToggleHeatmapWidget() {
+    toggleHeatmapClass = function (options) {
+        toggleHeatmapClass.superclass.constructor.call(this, options);
+        this._$content = null;
+        this._geocoderDeferred = null;
+    };
+    ymaps.util.augment(toggleHeatmapClass, ymaps.collection.Item, {
+        onAddToMap: function (map) {
+            toggleHeatmapClass.superclass.onAddToMap.call(this, map);
+            this._lastCenter = null;
+            this.getParent().getChildElement(this).then(this._onGetChildElement, this);
+            
+        },
+        _onGetChildElement: function (parentDomContainer) {
+            this._$content = $(`
+                <div id="ToggleHeatmap" class="toggleHeatmap">
+                    <div id="ToggleHeatmapText" class="content">Отобразить тепловую карту</div>
+                </div>
+            `).appendTo(parentDomContainer);
+
+            this._eventsGroup = ymaps.domEvent.manager.group(this._$content[0]);
+            this._eventsGroup.add('click', function () {
+                this.events.fire('click');
+            }, this);
+            this._createRequest();
+        }
+    });
+};
+
+function addToggleHeatmapWidget() {
+    let toggleHeatmapControl = new toggleHeatmapClass();
+    toggleHeatmapControl.events.add('click', () => {
+        toggleHeatmap();
+    });
+    map.controls.add(toggleHeatmapControl, { float: 'left' });
+};
+
 function refreshFilterWidget(filterInfo) {
     var dealTypeData = '', marketSegmentData = '';
     filterInfo.dealTypeList.forEach(x => { dealTypeData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
     filterInfo.marketSegmentList.forEach(x => { marketSegmentData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
     document.getElementById('dealTypefilterBody').innerHTML = dealTypeData;
     document.getElementById('marketSegmentfilterBody').innerHTML = marketSegmentData;
+}
+
+function refreshToggleHeatmapWidget(isHeatmapWidgetVisible) {
+    if (isHeatmapWidgetVisible) {
+        document.getElementById('ToggleHeatmapText').innerHTML = "Скрыть тепловую карту";
+    } else {
+        document.getElementById('ToggleHeatmapText').innerHTML = "Отобразить тепловую карту";
+    }
 }

@@ -55,3 +55,20 @@ function GetFilterData() {
         }
     });
 };
+
+function GetHeatmapData(token) {
+    $.ajax({
+        type: "GET",
+        url: "Map/HeatmapData",
+        data: {
+            token: token
+        },
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8',
+        success: function (result) {
+            if (result.token == currentToken) {
+                initHeatmap(result.arr);
+            }
+        }
+    });
+};

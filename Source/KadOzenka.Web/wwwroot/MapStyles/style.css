@@ -455,3 +455,15 @@ body {
 	padding: 2px;
 	font-weight: normal;
 }
+
+.toggleHeatmap {
+	background: #4590ff;
+	padding: 0px 12px;
+	min-height: 26px;
+	border-radius: 13px;
+	border: solid 1px #5c9eff;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
