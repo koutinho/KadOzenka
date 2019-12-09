@@ -11,6 +11,7 @@ using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -1127,5 +1128,29 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion
+
+        #region Load Files
+
+        public FileResult GetExportDataToExcelGbu()
+        {
+           var file = DataExporterSud.ExportDataToExcelGbu();
+           return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+               "Выгрузка судебных решений для ГБУ" + ".xlsx");
         }
+
+        public FileResult GetExportDataToXml()
+        {
+            var file = DataExporterSud.ExportDataToXml();
+            return File(file, "application/xml",
+                "Выгрузка судебных решений на сайт в формате XML" + ".xml");
+        }
+
+        public FileResult GetExportAllDataToExcel()
+        {
+            var file = DataExporterSud.ExportAllDataToExcel();
+            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Полная выгрузка" + ".xlsx");
+        }
+        #endregion
+    }
 }

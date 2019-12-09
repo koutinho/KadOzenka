@@ -18,8 +18,15 @@
           </Parameters>
       </Button>
 
-    <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
-    
+	  <Button Caption="Выгрузка в Excel" Icon="icon-excel" OpenInRadWindow="false" Type="DropDown">
+		  <DropDownButtons>
+			  <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" />
+
+			  <Button Caption="Выгрузка судебных решений для ГБУ" NavigateURL="~/Sud/GetExportDataToExcelGbu"  OpenInRadWindow="false" />
+			  <Button Caption="Полная выгрузка в Excel" NavigateURL="~/Sud/GetExportAllDataToExcel" OpenInRadWindow="false" />
+		  </DropDownButtons>
+	  </Button>
+	  <Button Caption="Выгрузка в Xml" NavigateURL="~/Sud/GetExportDataToXml" Icon="fas fa-code"  OpenInRadWindow="false" />
   </Buttons>
   <Tabs>
       <Tab Caption="Основные данные" NavigateURL="/Sud/ObjectCard">
