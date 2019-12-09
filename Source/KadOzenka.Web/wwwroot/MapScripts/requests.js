@@ -44,3 +44,14 @@ function GetRequiredInfo(idsArray) {
         }
     });
 };
+
+function GetFilterData() {
+    $.ajax({
+        type: "POST",
+        url: "Map/FindFilters",
+        contentType: 'application/json; charset=utf-8',
+        success: function (filterInfo) {
+            refreshFilterWidget(filterInfo);
+        }
+    });
+};

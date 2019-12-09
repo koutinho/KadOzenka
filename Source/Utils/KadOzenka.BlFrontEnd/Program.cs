@@ -46,7 +46,8 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("9", "Процедура создания тестовых скриншотов", () => { new Selenium().MakeScreenshot(); });
             consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
             consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
-            consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().TakePrice(); });
+            //consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().TakePrice(); });
+            consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().RefreshAllData(); });
             consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
             consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(); });
             consoleHelper.AddCommand("15", "Тест автоматического формирования исключений", () => { new TestAutoExclusions().TryParse(); });

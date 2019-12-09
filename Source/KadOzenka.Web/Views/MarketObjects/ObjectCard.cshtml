@@ -114,7 +114,7 @@
                 </div>
             </div>
         </li>
-        @if (Model.MarketType != MarketTypes.Rosreestr && Model.ProcessType == ProcessStep.InProcess)
+        @if (Model.MarketType != MarketTypes.Rosreestr /*&& Model.ProcessType == ProcessStep.InProcess*/)
         {
             <li id="Section_ScreenShots" data-expand>
                 <span>Скриншоты</span>

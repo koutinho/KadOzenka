@@ -65,11 +65,13 @@ function creatFilterWidget() {
                                 Тип сделки
                                 <div id="DealTypeFilterCounter" class="filterCounter Hidden">99</div>
                             </div>
-                            <div class="filterBody">
-                                <div id="RentSuggestionFilterButton" class="filterBodyButton">Предложение-аренда</div>
-                                <div id="SaleSuggestionFilterButton" class="filterBodyButton">Предложение-продажа</div>
-                                <div id="RentDealFilterButton" class="filterBodyButton">Сделка-аренда</div>
-                                <div id="SaleDealFilterButton" class="filterBodyButton">Сделка купли-продажи</div>
+                            <div id="dealTypefilterBody" class="filterBody">
+                                <!--
+                                    <div id="RentSuggestionFilterButton" class="filterBodyButton">Предложение-аренда</div>
+                                    <div id="SaleSuggestionFilterButton" class="filterBodyButton">Предложение-продажа</div>
+                                    <div id="RentDealFilterButton" class="filterBodyButton">Сделка-аренда</div>
+                                    <div id="SaleDealFilterButton" class="filterBodyButton">Сделка купли-продажи</div>
+                                -->
                             </div>
                         </div>
                         <div id="marketSegmentFilter" class="filterMainButton">
@@ -77,18 +79,20 @@ function creatFilterWidget() {
                                 Сегмент рынка
                                 <div id="DealTypeFilterCounter" class="filterCounter Hidden">99</div>
                             </div>
-                            <div class="filterBody">
-                                <div id="AppartmentFilterButton" class="filterBodyButton">Апартаменты</div>
-                                <div id="ParkingFilterButton" class="filterBodyButton">Гаражи</div>
-                                <div id="HotelFilterButton" class="filterBodyButton">Гостиницы</div>
-                                <div id="IZHSFilterButton" class="filterBodyButton">ИЖС</div>
-                                <div id="MMFilterButton" class="filterBodyButton">Машиноместа</div>
-                                <div id="MZHSFilterButton" class="filterBodyButton">МЖС</div>
-                                <div id="OfficesFilterButton" class="filterBodyButton">Офисы</div>
-                                <div id="SkladFilterButton" class="filterBodyButton">Производство&nbsp;и&nbsp;склады</div>\
-                                <div id="GardenFilterButton" class="filterBodyButton">Садоводческое,&nbsp;огородническое&nbsp;и&nbsp;дачное&nbsp;использование</div>
-                                <div id="SanatoriumFilterButton" class="filterBodyButton">Санатории</div>
-                                <div id="TraidingFilterButton" class="filterBodyButton">Торговля</div>
+                            <div id="marketSegmentfilterBody" class="filterBody">
+                                <!--
+                                    <div id="AppartmentFilterButton" class="filterBodyButton">Апартаменты</div>
+                                    <div id="ParkingFilterButton" class="filterBodyButton">Гаражи</div>
+                                    <div id="HotelFilterButton" class="filterBodyButton">Гостиницы</div>
+                                    <div id="IZHSFilterButton" class="filterBodyButton">ИЖС</div>
+                                    <div id="MMFilterButton" class="filterBodyButton">Машиноместа</div>
+                                    <div id="MZHSFilterButton" class="filterBodyButton">МЖС</div>
+                                    <div id="OfficesFilterButton" class="filterBodyButton">Офисы</div>
+                                    <div id="SkladFilterButton" class="filterBodyButton">Производство&nbsp;и&nbsp;склады</div>\
+                                    <div id="GardenFilterButton" class="filterBodyButton">Садоводческое,&nbsp;огородническое&nbsp;и&nbsp;дачное&nbsp;использование</div>
+                                    <div id="SanatoriumFilterButton" class="filterBodyButton">Санатории</div>
+                                    <div id="TraidingFilterButton" class="filterBodyButton">Торговля</div>
+                                -->
                             </div>
                         </div>
                         <div id="priceFilter" class="filterMainButton">
@@ -112,8 +116,15 @@ function creatFilterWidget() {
     });
 };
 
-function addDisplayCountWidget(position) { map.controls.add(new countWidgetClass(), { float: 'none', position }) };
-function addFilterWidget(position) { map.controls.add(new filterWidgetClass(), { float: 'none', position }) };
+function addDisplayCountWidget(position) {
+    map.controls.add(new countWidgetClass(), { float: 'none', position });
+};
+
+function addFilterWidget(position) {
+    map.controls.add(new filterWidgetClass(), { float: 'none', position });
+    GetFilterData();
+};
+
 function addTargetWidget(position) {
     if (!document.getElementById("targetControl")) {
         targetWidget = new targetWidgetClass();
@@ -122,3 +133,11 @@ function addTargetWidget(position) {
 };
 
 function removeTargetWidget() { map.controls.remove(targetWidget); };
+
+function refreshFilterWidget(filterInfo) {
+    var dealTypeData = '', marketSegmentData = '';
+    filterInfo.dealTypeList.forEach(x => { dealTypeData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
+    filterInfo.marketSegmentList.forEach(x => { marketSegmentData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
+    document.getElementById('dealTypefilterBody').innerHTML = dealTypeData;
+    document.getElementById('marketSegmentfilterBody').innerHTML = marketSegmentData;
+}

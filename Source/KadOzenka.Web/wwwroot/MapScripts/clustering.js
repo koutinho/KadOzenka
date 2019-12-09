@@ -29,7 +29,7 @@ function initCluster(coordinates, zoom, dotSize) {
             });
         }
         for (var i = 0, len = AllControllersData.length; i < len; i++) {
-            var color = PropType[AllControllersData[i].type].color;
+            var color = SegmentType[AllControllersData[i].segment].color;
             geoObjects[i] = new ymaps.Placemark(
                 AllControllersData[i].points, {
                 data: [{ weight: 1, color: color, id: AllControllersData[i].id }]

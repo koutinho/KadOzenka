@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using ObjectModel.Directory;
 using Core.Shared.Extensions;
 using KadOzenka.Web.Models.MarketObject;
+using ObjectModel.Core.Shared;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -47,8 +48,16 @@ namespace KadOzenka.Web.Controllers
 		    if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
 		    if (mapZoom < minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
 		    var point = new List<object>();
-		    var analogItem = query.Select(x => new {x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code}).Execute().ToList();
-		    analogItem.ForEach(x => point.Add(new { points = new[] {x.Lat, x.Lng}, type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), id = x.Id }));
+		    var analogItem = query.Select(x => new {x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code, x.PropertyMarketSegment}).Execute().ToList();
+		    analogItem.ForEach(x => 
+                point.Add(new 
+                { 
+                    points = new[] {x.Lat, x.Lng}, 
+                    type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), 
+                    id = x.Id, 
+                    segment=FormSegment(x.PropertyMarketSegment) 
+                })
+            );
 
             //  query.SetPackageSize(700).GroupBy(x => new { x.Lat.Round(2), x.Lng.Round(2) });//.ExecuteSelect(x => new{ x.Lat, x.Lng });
             //  var analogItem = query.ExecuteSelect(x => new{ x.Lat.Avg(), x.Lng }).ToList();
@@ -89,7 +98,24 @@ namespace KadOzenka.Web.Controllers
             return Json(allData);
         }
 
-	    private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)
+        public JsonResult FindFilters()
+        {
+            var marketSegmentList = OMReferenceItem.Where(x => x.ReferenceId == 114)
+                                                   .OrderBy(x => x.Value)
+                                                   .SelectAll()
+                                                   .Execute()
+                                                   .OrderBy(x => x.ItemId)
+                                                   .Select(x => new { Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name });
+            var dealTypeList = OMReferenceItem.Where(x => x.ReferenceId == 110)
+                                              .OrderBy(x => x.Value)
+                                              .SelectAll()
+                                              .Execute()
+                                              .OrderBy(x => x.ItemId)
+                                              .Select(x => new { Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name });
+            return Json(new { marketSegmentList = marketSegmentList, dealTypeList = dealTypeList});
+        }
+
+        private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)
 	    {
 		    var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
             if (marketObject == null)throw new Exception($"Ошибка! Объекта аналога с идентификатором {objectId} не существует!");
@@ -185,6 +211,28 @@ namespace KadOzenka.Web.Controllers
                     break;
             }
             return 18;
+        }
+
+        private int FormSegment(string marketSegment)
+        {
+            switch (marketSegment)
+            {
+                case "Апартаменты": return 0;
+                case "Гаражи": return 1;
+                case "Гостиницы": return 2;
+                case "ИЖС": return 3;
+                case "Машиноместа": return 4;
+                case "МЖС": return 5;
+                case "Офисы": return 6;
+                case "Производство и склады": return 7;
+                case "Садоводческое, огородническое и дачное использование": return 8;
+                case "Санатории": return 9;
+                case "Торговля": return 10;
+                case "Общепит": return 11;
+                case "Земельные участки": return 12;
+                case "Коммерческая земля": return 13;
+            }
+            return 14;
         }
 
     }

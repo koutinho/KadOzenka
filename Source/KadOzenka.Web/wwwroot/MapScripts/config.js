@@ -87,6 +87,24 @@ var PropType = [
     { id: 18, name: 'studio', color: '#62db98', type: 'Квартира' }
 ];
 
+var SegmentType = [
+    { id: 0, name: 'appartment', color: '#a68a90', type: 'Апартаменты' },
+    { id: 1, name: 'box', color: '#d95891', type: 'Гаражи' },
+    { id: 2, name: 'hotel', color: '#54f5db', type: 'Гостиницы' },
+    { id: 3, name: 'IZHS', color: '#417c55', type: 'ИЖС' },
+    { id: 4, name: 'parking', color: '#872187', type: 'Машиноместа' },
+    { id: 5, name: 'MZHS', color: '#cb9d2c', type: 'МЖС' },
+    { id: 6, name: 'Offices', color: '#471942', type: 'Офисы' },
+    { id: 7, name: 'Warehouse', color: '#dcc209', type: 'Производство и склады' },
+    { id: 8, name: 'Gardens', color: '#b40495', type: 'Садоводческое, огородническое и дачное использование' },
+    { id: 9, name: 'Sanatorium', color: '#b6b369', type: 'Санатории' },
+    { id: 10, name: 'Traiding', color: '#d27f4d', type: 'Торговля' },
+    { id: 11, name: 'publicCatering', color: '#1b62da', type: 'Общепит' },
+    { id: 12, name: 'OrdinarLand', color: '#e997ae', type: 'Земельные участки' },
+    { id: 13, name: 'CommercialLand', color: '#67a3a0', type: 'Коммерческая земля' },
+    { id: 14, name: 'NoSegment', color: '#c4dc66', type: 'Без сегмента' }
+];
+
 var zoomData = [
     { accurancy: 0, dotSize: [3, 3] }, 
     { accurancy: 0, dotSize: [3, 3] }, 
