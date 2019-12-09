@@ -6326,6 +6326,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('DASHBOARDS_USER_SETTINGS', 'subsystem')) then
+        execute 'alter table DASHBOARDS_USER_SETTINGS add "subsystem" VARCHAR(250)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_853_quant_pk')) then
     execute 'alter table DASHBOARDS_USER_SETTINGS add constraint reg_853_quant_pk primary key (id)';
   end if;
@@ -9292,6 +9301,234 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_COD_DICTIONARY')) then
+		execute 'create table KO_COD_DICTIONARY ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'id')) then
+        execute 'alter table KO_COD_DICTIONARY add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'id_codjob')) then
+        execute 'alter table KO_COD_DICTIONARY add "id_codjob" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'value')) then
+        execute 'alter table KO_COD_DICTIONARY add "value" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'code')) then
+        execute 'alter table KO_COD_DICTIONARY add "code" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'source')) then
+        execute 'alter table KO_COD_DICTIONARY add "source" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'expert')) then
+        execute 'alter table KO_COD_DICTIONARY add "expert" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_214_q_pk')) then
+    execute 'alter table KO_COD_DICTIONARY add constraint reg_214_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_COD_JOB')) then
+		execute 'create table KO_COD_JOB ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_JOB', 'id')) then
+        execute 'alter table KO_COD_JOB add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_JOB', 'name_job')) then
+        execute 'alter table KO_COD_JOB add "name_job" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COD_JOB', 'result_job')) then
+        execute 'alter table KO_COD_JOB add "result_job" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_215_q_pk')) then
+    execute 'alter table KO_COD_JOB add constraint reg_215_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_COST_ROSREESTR')) then
+		execute 'create table KO_COST_ROSREESTR ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'id')) then
+        execute 'alter table KO_COST_ROSREESTR add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'id_object')) then
+        execute 'alter table KO_COST_ROSREESTR add "id_object" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'datevaluation')) then
+        execute 'alter table KO_COST_ROSREESTR add "datevaluation" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'dateentering')) then
+        execute 'alter table KO_COST_ROSREESTR add "dateentering" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'docnumber')) then
+        execute 'alter table KO_COST_ROSREESTR add "docnumber" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'docdate')) then
+        execute 'alter table KO_COST_ROSREESTR add "docdate" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'applicationdate')) then
+        execute 'alter table KO_COST_ROSREESTR add "applicationdate" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'docname')) then
+        execute 'alter table KO_COST_ROSREESTR add "docname" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'costvalue')) then
+        execute 'alter table KO_COST_ROSREESTR add "costvalue" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'dateapproval')) then
+        execute 'alter table KO_COST_ROSREESTR add "dateapproval" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'revisalstatementdate')) then
+        execute 'alter table KO_COST_ROSREESTR add "revisalstatementdate" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_216_q_pk')) then
+    execute 'alter table KO_COST_ROSREESTR add constraint reg_216_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_GROUP')) then
 		execute 'create table KO_GROUP ("id" BIGINT NOT NULL)';
 	end if;
@@ -9952,6 +10189,78 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT', 'status_repeat_calc_code')) then
         execute 'alter table KO_UNIT add "status_repeat_calc_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'parent_calc_type_code')) then
+        execute 'alter table KO_UNIT add "parent_calc_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'square')) then
+        execute 'alter table KO_UNIT add "square" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'cadastral_number')) then
+        execute 'alter table KO_UNIT add "cadastral_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'cadastral_block')) then
+        execute 'alter table KO_UNIT add "cadastral_block" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'property_type')) then
+        execute 'alter table KO_UNIT add "property_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'property_type_code')) then
+        execute 'alter table KO_UNIT add "property_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'degree_readiness')) then
+        execute 'alter table KO_UNIT add "degree_readiness" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'parent_calc_number')) then
+        execute 'alter table KO_UNIT add "parent_calc_number" VARCHAR(255)';
     end if;
 end $$;
 
@@ -13119,6 +13428,184 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_CORE_OBJECT_TEST')) then
+		execute 'create table MARKET_CORE_OBJECT_TEST ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'id')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'cadastral_number')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "cadastral_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'address')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "address" VARCHAR(20000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'parser_time')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "parser_time" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'description')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "description" VARCHAR(10000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'area')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "area" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'price')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "price" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'price_per_meter')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "price_per_meter" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'process_type')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "process_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'process_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "process_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'exclusion_status')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "exclusion_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'exclusion_status_code')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "exclusion_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'deal_type')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "deal_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'deal_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "deal_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'property_type')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "property_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'property_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "property_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'subcategory')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "subcategory" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT_TEST', 'result_from_source_file')) then
+        execute 'alter table MARKET_CORE_OBJECT_TEST add "result_from_source_file" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_110_q_pk')) then
+    execute 'alter table MARKET_CORE_OBJECT_TEST add constraint reg_110_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_HISTORY')) then
 		execute 'create table MARKET_PRICE_HISTORY ("id" BIGINT NOT NULL)';
 	end if;
@@ -14292,6 +14779,14 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_317_q_pk')) then
     execute 'alter table SUD_PARAM add constraint reg_317_q_pk primary key (pid)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg317_q_id_idx')) then
+	execute 'CREATE  INDEX reg317_q_id_idx on SUD_PARAM (id)';
   end if;
 end $$;
 --<DO>--
