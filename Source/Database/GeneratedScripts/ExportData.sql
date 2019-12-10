@@ -34327,6 +34327,96 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(500, 'Объекты аналоги', 'MARKET', NULL, NULL)
+on conflict (id) do update set
+"functionname"='Объекты аналоги', "functiontag"='MARKET', "parent_id"=NULL, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(501, 'Объекты оценки', 'GBU', NULL, NULL)
+on conflict (id) do update set
+"functionname"='Объекты оценки', "functiontag"='GBU', "parent_id"=NULL, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(502, 'Задания на оценку', 'KO', NULL, NULL)
+on conflict (id) do update set
+"functionname"='Задания на оценку', "functiontag"='KO', "parent_id"=NULL, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(503, 'Судебные решения', 'SUD', NULL, NULL)
+on conflict (id) do update set
+"functionname"='Судебные решения', "functiontag"='SUD', "parent_id"=NULL, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(504, 'Комиссии', 'COMMISSION', NULL, NULL)
+on conflict (id) do update set
+"functionname"='Комиссии', "functiontag"='COMMISSION', "parent_id"=NULL, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(505, 'Декларации', 'DECLARATIONS', NULL, NULL)
+on conflict (id) do update set
+"functionname"='Декларации', "functiontag"='DECLARATIONS', "parent_id"=NULL, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(506, 'Отчеты', 'SUD.OTCHET', 503, NULL)
+on conflict (id) do update set
+"functionname"='Отчеты', "functiontag"='SUD.OTCHET', "parent_id"=503, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(507, 'Создание/Редактирование', 'SUD.OTCHET.EDIT', 506, NULL)
+on conflict (id) do update set
+"functionname"='Создание/Редактирование', "functiontag"='SUD.OTCHET.EDIT', "parent_id"=506, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(508, 'Заключения', 'SUD.ZAK', 503, NULL)
+on conflict (id) do update set
+"functionname"='Заключения', "functiontag"='SUD.ZAK', "parent_id"=503, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(509, 'Создание/Редактирование', 'SUD.ZAK.EDIT', 508, NULL)
+on conflict (id) do update set
+"functionname"='Создание/Редактирование', "functiontag"='SUD.ZAK.EDIT', "parent_id"=508, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(510, 'Решения', 'SUD.RESH', 503, NULL)
+on conflict (id) do update set
+"functionname"='Решения', "functiontag"='SUD.RESH', "parent_id"=503, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(511, 'Создание/Редактирование', 'SUD.RESH.EDIT', 510, NULL)
+on conflict (id) do update set
+"functionname"='Создание/Редактирование', "functiontag"='SUD.RESH.EDIT', "parent_id"=510, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(512, 'Объекты', 'SUD.OBJECTS', 503, NULL)
+on conflict (id) do update set
+"functionname"='Объекты', "functiontag"='SUD.OBJECTS', "parent_id"=503, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(513, 'Создание/Редактирование', 'SUD.OBJECTS.EDIT', 512, NULL)
+on conflict (id) do update set
+"functionname"='Создание/Редактирование', "functiontag"='SUD.OBJECTS.EDIT', "parent_id"=512, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(514, 'Утверждение', 'SUD.OBJECTS.APPROVE', 512, NULL)
+on conflict (id) do update set
+"functionname"='Утверждение', "functiontag"='SUD.OBJECTS.APPROVE', "parent_id"=512, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
 (12344, 'Доступ к веб-интерфейсу', 'CORE.WEB.INTERFACE', 1, NULL)
 on conflict (id) do update set
 "functionname"='Доступ к веб-интерфейсу', "functiontag"='CORE.WEB.INTERFACE', "parent_id"=1, "description"=NULL;
