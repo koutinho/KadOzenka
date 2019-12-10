@@ -1,11 +1,12 @@
 ﻿function insertCard(cartData, isLast) {
+    console.log(cartData);
     document.getElementById("dataContentContainer").innerHTML += `
         <!--<div class="DataItemContainer ${getPropertyType(cartData.source)}">-->
         <div class="DataItemContainer">
             <div class="Container">
                 <div class="Header">
                     <div class="Text">
-                        ${!(cartData.roomsCount != null && cartData.roomsCount != 0 && (cartData.type == 10 || cartData.type == 11 || cartData.type == 18)) ? "" : `${cartData.roomsCount}-комн.&nbsp;`}${PropType[cartData.type].type}&nbsp;${getArea(cartData.type, cartData.area, cartData.areaLand)}
+                        ${SegmentType[cartData.segment].type}&nbsp;${getArea(cartData.segment, cartData.area, cartData.areaLand)}
                     </div>
                     <div class="Content">
                         <a style="margin-left: auto;" href="/ObjectCard?ObjId=${cartData.id}&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true">
@@ -19,9 +20,7 @@
                     </div>
                 </div>
             </div>
-            <div class="Container">
-                    ${getImageGallery(cartData)}
-            </div>
+            ${cartData.source != "Росреестр" ? `<div class="Container">${getImageGallery(cartData)}</div>` : ``}
             <div class="Container">
                 <div class="Name">Тип сделки</div>
                 <div class="Value">${cartData.dealType}</div>
@@ -32,8 +31,8 @@
             </div>
             ${(cartData.dealType != 'Предложение-продажа' && cartData.dealType != 'Сделка купли-продажи') ? "" : `
                 <div class="Container">
-                    <div class="Name">Цена за ${getAreaType(cartData.type, cartData.area, cartData.areaLand)}</div>
-                    <div class="Value">${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.type, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.type, cartData.area, cartData.areaLand)}</div>
+                    <div class="Name">Цена за ${getAreaType(cartData.segment, cartData.area, cartData.areaLand)}</div>
+                    <div class="Value">${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.segment, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.segment, cartData.area, cartData.areaLand)}</div>
                 </div>
             `}
             ${cartData.floor == null && cartData.floorCount == null ? "" : `
@@ -44,9 +43,9 @@
             `}
             <div class="Container">
                 <div class="Name">Площадь</div>
-                <div class="Value">${getArea(cartData.type, cartData.area, cartData.areaLand)}</div>
+                <div class="Value">${getArea(cartData.segment, cartData.area, cartData.areaLand)}</div>
             </div>
-            ${!(cartData.areaLand != null && (cartData.type == 16 || cartData.type == 15 || cartData.type == 8)) ? "" : `
+            ${!(cartData.areaLand != null && (cartData.segment == 3 || cartData.segment == 14)) ? "" : `
                 <div class="Container">
                     <div class="Name">Площадь ЗУ</div>
                     <div class="Value">${numberWithSpaces(cartData.areaLand)}&nbsp;сот.</div>
@@ -64,9 +63,9 @@
             </div>
             <div class="Container">
                 <div class="Name">Дата&nbsp;актуального&nbsp;обновления</div>
-                <div class="Value">${cartData.parserTime}</div>
+                <div class="Value">${cartData.lastUpdateDate == null ? cartData.parserTime : cartData.lastUpdateDate}</div >
             </div>
-            ${cartData.type == 14 ? "" : `
+            ${(cartData.segment == 12 || cartData.segment == 13) ? "" : `
                 <div class="Container">
                     <div class="Name">Кадастровый&nbsp;номер${cartData.source == "Росреестр" ? "" : "&nbsp;здания" }</div>
                     <div class="Value">${cartData.cadastralNumber}</div>

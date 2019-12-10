@@ -4,14 +4,14 @@
     return parts.join(".");
 };
 
-function getArea(type, area, area_land) {
-    if (type == 14) return `${numberWithSpaces(area_land)}&nbsp;сот.`;
+function getArea(segment, area, area_land) {
+    if (segment == 12 || segment == 13) return `${numberWithSpaces(area_land)}&nbsp;сот.`;
     else return `${numberWithSpaces(area)}&nbsp;м²`;
 };
 
-function getAreaNumber(type, area, area_land) { return type == 14 ? area_land : area; };
+function getAreaNumber(segment, area, area_land) { return (segment == 12 || segment == 13) ? area_land : area; };
 
-function getAreaType(type, area, area_land) { return type == 14 ? "сот." : "м²"; };
+function getAreaType(segment, area, area_land) { return (segment == 12 || segment == 13) ? "сот." : "м²"; };
 
 function getFloor(floor, floorCount) { return floor == null ? `${floorCount}` : `${floor}&nbsp;из&nbsp;${floorCount}`; };
 

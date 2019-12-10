@@ -113,6 +113,7 @@ body {
     width: 20%;
     display: flex;
     vertical-align: middle;
+    align-items: center;
 }
 
 .MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Card {

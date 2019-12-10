@@ -52,8 +52,7 @@ namespace KadOzenka.Web.Controllers
 		    analogItem.ForEach(x => 
                 point.Add(new 
                 { 
-                    points = new[] {x.Lat, x.Lng}, 
-                    type = FormType(x.Category, x.Subcategory, x.PropertyType_Code), 
+                    points = new[] {x.Lat, x.Lng},
                     id = x.Id, 
                     segment=FormSegment(x.PropertyMarketSegment) 
                 })
@@ -88,7 +87,7 @@ namespace KadOzenka.Web.Controllers
 		        OMCoreObject.Where(x => ids.Contains(x.Id)).SelectAll().Execute().Take(ids.Count <= 20 ? ids.Count : 20).ToList().ForEach(x => {
 			        allData.Add(new
 			        {
-                        type = FormType(x.Category, x.Subcategory, x.PropertyType_Code),
+                        segment = FormSegment(x.PropertyMarketSegment),
                         dealType = x.DealType,
                         source = x.Market,
                         price = x.Price,

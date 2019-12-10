@@ -83,7 +83,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                     if (lastPrice == null || highPrice != lastPrice.PriceValueTo)
                                     {
                                         new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueFrom = lowPrice, PriceValueTo = highPrice }.Save();
-                                        SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" });
+                                        SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime);
                                         initialObject.Price = highPrice;
                                         initialObject.LastDateUpdate = currentTime;
                                         initialObject.ExclusionStatus_Code = ExclusionStatus.IncorrectPrice;
@@ -107,7 +107,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                     if (lastPrice == null || price != lastPrice.PriceValueTo)
                                     {
                                         new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueTo = price }.Save();
-                                        SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" });
+                                        SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime);
                                         initialObject.Price = price;
                                         initialObject.LastDateUpdate = currentTime;
                                         initialObject.Save();
@@ -190,7 +190,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             {
                 history.ForEach(x => x.Save());
                 if (initialObject.Price != currentPrice.PriceValueTo) initialObject.Price = currentPrice.PriceValueTo;
-	            SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentDate, Type = "image/png" });
+	            SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentDate, Type = "image/png" }, currentDate);
             }
             else
             {
@@ -198,7 +198,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 if(initialObject.Price != currentPrice.PriceValueTo)
                 {
                     initialObject.Price = currentPrice.PriceValueTo;
-                    SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentDate, Type = "image/png" });
+                    SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentDate, Type = "image/png" }, currentDate);
                 }
                 else history = history.Skip(1).ToList();
                 history.ForEach(x => { if (OH.Count(y => y.ChangingDate == x.ChangingDate && y.PriceValueTo == x.PriceValueTo) == 0) x.Save(); });
@@ -218,17 +218,14 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             initialObject.Save();
         }
 
-        private void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot)
+        private void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot, DateTime screenShotData)
         {
             try
             {
 				var screenShot = new FullScreen().TakeScreenShot(driver);
-				if (screenShot != null) FileStorageManager.Save(new MemoryStream(screenShot), ConfigurationManager.AppSettings["screenShotFolder"], currentDate, screenshot.Save().ToString());
+				if (screenShot != null) FileStorageManager.Save(new MemoryStream(screenShot), ConfigurationManager.AppSettings["screenShotFolder"], screenShotData, screenshot.Save().ToString());
             }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            catch(Exception ex) { Console.WriteLine(ex.Message); }
         }
 
         private List<OMPriceHistory> GetData(IJavaScriptExecutor executor, DealType dealType, long initialId)
