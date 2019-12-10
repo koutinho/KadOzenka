@@ -68,7 +68,7 @@ namespace KadOzenka.Web.Controllers
 	    public JsonResult HeatmapData(string token)
 	    {
 		    var query = OMCoreObject
-			    .Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && x.Lng != null && x.Lat != null);
+                .Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && x.Lng != null && x.Lat != null);
 			PrepareQueryByUserFilter(query);
 		    var coordinates = query.Select(x => new {x.Lat, x.Lng})
 			    .Execute()
