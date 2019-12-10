@@ -9,6 +9,7 @@ using System.IO;
 using System;
 using Core.UI.Registers.CoreUI.Registers;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -64,6 +65,26 @@ namespace KadOzenka.Web.Controllers
             var fileStream = FileStorageManager.GetFileStream("MarketObjectScreenShot", screen.CreationDate.Value, id.ToString());
             return File(fileStream, screen.Type, id.ToString());
         }
+
+		[HttpGet]
+		public ActionResult GetChartData(long? id)
+		{
+			if (!id.HasValue)
+			{
+				throw new Exception("Не передан идентификатор объекта.");
+			}
+
+			var priceHistories = ObjectModel.Market.OMPriceHistory
+				.Where(x => x.InitialId == id.Value)
+				.SelectAll()
+				.Execute();
+			var screenshots = OMScreenshots.Where(x => x.InitialId == id.Value)
+				.SelectAll()
+				.Execute()
+				.ToList();
+
+			return Content(JsonConvert.SerializeObject(PriceHistoryChartModel.FromEntities(priceHistories, screenshots)), "application/json");
+		}
 
 		[HttpGet]
 		public FileResult UnloadScreenshots(long objectId)

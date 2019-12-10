@@ -82,21 +82,21 @@
                                 if (@Model.IsRangePriceHistory)
                                 {
                                     @(Html.Kendo().Tooltip()
-                                                                                                  .For("#historyImg")
-                                                                                                  .Name("priceHistoryTooltip")
-                                                                                                  .ContentTemplateId("historyRangeGrid")
-                                                                                                  .Position(TooltipPosition.Right)
-                                                                                                  .AutoHide(false)
+                                                  .For("#historyImg")
+                                                  .Name("priceHistoryTooltip")
+                                                  .ContentTemplateId("historyRangeGrid")
+                                                  .Position(TooltipPosition.Right)
+                                                  .AutoHide(false)
                                     )
                                 }
                                 else
                                 {
                                     @(Html.Kendo().Tooltip()
-                                                                                                  .For("#historyImg")
-                                                                                                  .Name("priceHistoryTooltip")
-                                                                                                  .ContentTemplateId("historyGrid")
-                                                                                                  .Position(TooltipPosition.Right)
-                                                                                                  .AutoHide(false)
+                                                  .For("#historyImg")
+                                                  .Name("priceHistoryTooltip")
+                                                  .ContentTemplateId("historyGrid")
+                                                  .Position(TooltipPosition.Right)
+                                                  .AutoHide(false)
                                     )
                                 }
 
@@ -114,6 +114,19 @@
                 </div>
             </div>
         </li>
+        @if (@Model.PriceHistories?.Count > 0)
+        {
+            <li id="Section_PriceHistoryChart" data-expand>
+                <span>График истории изменения цены</span>
+                <div>
+                    <div class="col-sm-12">
+                        <div class="priceHistoryChartContainer">
+                            <div id="priceHistoryChart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        }
         @if (Model.MarketType != MarketTypes.Rosreestr /*&& Model.ProcessType == ProcessStep.InProcess*/)
         {
             <li id="Section_ScreenShots" data-expand>
@@ -275,6 +288,10 @@
     <div class="static-nav">
         <nav id="navigation-menu">
             <a href="#Section_Main">Основные данные</a>
+            @if (@Model.PriceHistories?.Count > 0)
+            {
+                <a href="#Section_PriceHistoryChart">График истории изменения цены</a>
+            }
             <a href="#Section_Reestr">Данные Росреестра</a>
             <a href="#Section_OKS">Данные ОКС</a>
             <a href="#Section_Group">Группировка</a>
@@ -288,59 +305,71 @@
 
 <script id="historyGrid" type="text/x-kendo-template">
     @(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
-                                                  (Model.PriceHistories)
-                                                  .Name("priceHistoryGrid")
-                                                  .Columns(columns =>
-                                                  {
-                                                      columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}");
-                                                      columns.Bound(c => c.PriceValueTo).Format("{0:c0}");
-                                                  })
-                                                  .ToolBar(t =>
-                                                  {
-                                                      t.ClientTemplate("История изменения цены");
-                                                  })
-                                                  .Resizable(resize => resize.Columns(true))
-                                                  .Scrollable()
-                                                  .Events(ev => ev.DataBound("onDataBoundPriceHistory"))
-                                                  .DataSource(dataSource => dataSource
-                                                      .Ajax()
-                                                      .ServerOperation(false)
-                                                      .Model(x =>
-                                                      {
-                                                          x.Field(y => y.ChangingDate).Editable(false);
-                                                          x.Field(y => y.PriceValueTo).Editable(false);
-                                                      })
-                                                  ).ToClientTemplate())
+                                                          (Model.PriceHistories)
+                                                          .Name("priceHistoryGrid")
+                                                          .Columns(columns =>
+                                                          {
+                                                              columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}");
+                                                              columns.Bound(c => c.PriceValueTo).Format("{0:c0}");
+                                                          })
+                                                          .ToolBar(t =>
+                                                          {
+                                                              t.ClientTemplate("История изменения цены");
+                                                          })
+                                                          .Resizable(resize => resize.Columns(true))
+                                                          .Scrollable()
+                                                          .Events(ev => ev.DataBound("onDataBoundPriceHistory"))
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .ServerOperation(false)
+                                                              .Model(x =>
+                                                              {
+                                                                  x.Field(y => y.ChangingDate).Editable(false);
+                                                                  x.Field(y => y.PriceValueTo).Editable(false);
+                                                              })
+                                                          ).ToClientTemplate())
 
 </script>
 <script id="historyRangeGrid" type="text/x-kendo-template">
     @(Html.Kendo().Grid<KadOzenka.Web.Models.MarketObject.CoreObjectDto.PriceHistoryDto>
-                                                  (Model.PriceHistories)
-                                                  .Name("priceHistoryGrid")
-                                                  .Columns(columns =>
-                                                  {
-                                                      columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}").Width("30%");
-                                                      columns.Bound(c => c.PriceValueFrom).Format("от {0:c0}").Width("35%");
-                                                      columns.Bound(c => c.PriceValueTo).Format("до {0:c0}").Width("35%");
-                                                  })
-                                                  .ToolBar(t =>
-                                                  {
-                                                      t.ClientTemplate("История изменения цены");
-                                                  })
-                                                  .Resizable(resize => resize.Columns(true))
-                                                  .Scrollable()
-                                                  .Events(ev => ev.DataBound("onDataBoundPriceRangeHistory"))
-                                                  .DataSource(dataSource => dataSource
-                                                      .Ajax()
-                                                      .ServerOperation(false)
-                                                      .Model(x =>
-                                                      {
-                                                          x.Field(y => y.ChangingDate).Editable(false);
-                                                          x.Field(y => y.PriceValueFrom).Editable(false);
-                                                          x.Field(y => y.PriceValueTo).Editable(false);
-                                                      })
-                                                  ).ToClientTemplate())
+                                                          (Model.PriceHistories)
+                                                          .Name("priceHistoryGrid")
+                                                          .Columns(columns =>
+                                                          {
+                                                              columns.Bound(c => c.ChangingDate).Format("{0:dd.MM.yyyy HH:mm}").Width("30%");
+                                                              columns.Bound(c => c.PriceValueFrom).Format("от {0:c0}").Width("35%");
+                                                              columns.Bound(c => c.PriceValueTo).Format("до {0:c0}").Width("35%");
+                                                          })
+                                                          .ToolBar(t =>
+                                                          {
+                                                              t.ClientTemplate("История изменения цены");
+                                                          })
+                                                          .Resizable(resize => resize.Columns(true))
+                                                          .Scrollable()
+                                                          .Events(ev => ev.DataBound("onDataBoundPriceRangeHistory"))
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .ServerOperation(false)
+                                                              .Model(x =>
+                                                              {
+                                                                  x.Field(y => y.ChangingDate).Editable(false);
+                                                                  x.Field(y => y.PriceValueFrom).Editable(false);
+                                                                  x.Field(y => y.PriceValueTo).Editable(false);
+                                                              })
+                                                          ).ToClientTemplate())
 
+</script>
+<script id="priceHistoryChartTooltip" type="text/x-kendo-template">
+    <div>
+        <div style="white-space: nowrap;">
+            <span>Цена: </span>
+            <span style="font-weight: bold;">#= kendo.toString(value, "c0") #</span>
+        </div>
+        <div style="white-space: nowrap;">
+            <span>Дата: </span>
+            <span style="font-weight: bold;">#= kendo.toString(new Date(category), "dd.MM.yyyy HH:mm:ss") #</span>
+        </div>
+    </div>
 </script>
 
 @section styles {
@@ -405,8 +434,16 @@
             padding: 10px;
             border-radius: 5px;
             border-color: #ceced2;
-            -webkit-box-shadow: 0 4px 10px 0 rgba(0,0,0,.2);
-            box-shadow: 0 4px 10px 0 rgba(0,0,0,.2);
+            -webkit-box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .2);
+            box-shadow: 0 4px 10px 0 rgba(0, 0, 0, .2);
+        }
+
+        .priceHistoryChartContainer {
+            border: 1px solid #7ea700;
+            padding: 5px;
+            margin: 5px 0 5px 0;
+            background-color: white;
+            max-height: 300px;
         }
     </style>
     <link rel="stylesheet" href="~/MapStyles/style.css" />
@@ -421,8 +458,7 @@
 		var objectMap;
 		var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
 		var objectLongitude = @(Model.Longitude.HasValue ? Model.Longitude.ToString().Replace(',', '.') : "undefined");
-		var objectPricePerSquareMeter =
-			'@(Model.PricePerSquareMeter.HasValue ? Math.Round(Model.PricePerSquareMeter.Value).ToString("#,0") : "")';
+		var objectPricePerSquareMeter = '@(Model.PricePerSquareMeter.HasValue ? Math.Round(Model.PricePerSquareMeter.Value).ToString("#,0") : "")';
 
 		$(function() {
 			var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -491,10 +527,10 @@
 							{
 								center: [objectLatitude, objectLongitude],
 								zoom: MapWithDefinedObjectSettings.zoom
-                            },
-                            {suppressMapOpenBlock: true}
-                        );
-                        AppData.defaultRemoveElements.forEach(x => objectMap.controls.remove(x));
+							},
+							{ suppressMapOpenBlock: true }
+						);
+						AppData.defaultRemoveElements.forEach(x => objectMap.controls.remove(x));
 						configureMapControls();
 						addGeoObject();
 					}
@@ -507,24 +543,26 @@
 			objectMap.controls.get("rulerControl").options.set({ position: { bottom: 10, right: 10 } });
 
 			if (objectPricePerSquareMeter) {
-				var CustomControl = function (options) {
+				var CustomControl = function(options) {
 					CustomControl.superclass.constructor.call(this, options);
 				};
 				ymaps.util.defineClass(CustomControl,
 					ymaps.collection.Item,
 					{
-						onAddToMap: function (map) {
+						onAddToMap: function(map) {
 							CustomControl.superclass.onAddToMap.call(this, map);
 							this.getParent().getChildElement(this).then(this._onChildElementGet, this);
 						},
-						onRemoveFromMap: function (oldMap) {
+						onRemoveFromMap: function(oldMap) {
 							if (this._$content) {
 								this._$content.remove();
 							}
 							CustomControl.superclass.onRemoveFromMap.call(this, oldMap);
 						},
-						_onChildElementGet: function (parentElementContainer) {
-							this._$content = $('<div class="Lable">Стоимость за 1м²: <strong>' + objectPricePerSquareMeter + ' &#x20bd;</strong></div>')
+						_onChildElementGet: function(parentElementContainer) {
+							this._$content = $('<div class="Lable">Стоимость за 1м²: <strong>' +
+									objectPricePerSquareMeter +
+									' &#x20bd;</strong></div>')
 								.appendTo(parentElementContainer);
 						}
 					});
@@ -534,25 +572,169 @@
 			}
 
 			var buttonLayout = ymaps.templateLayoutFactory.createClass([
-				    '<div class="ButtonMap" title="{{ data.title }}"> ',
-				    '<img style="width:19px; height: 19px;" src="{{ data.image }}" alt="{{ data.title }}">',
-				    '<span>&nbsp</span>',
-				    '<span>{{ data.content }}</span>',
-				    '</div>'
-            ].join('')),
-            button = new ymaps.control.Button({ data: { content: "На карту", image: '../images/mapIconWhite.png', title: 'Нажмите, чтобы перейти на карту' }, options: { layout: buttonLayout, maxWidth: [170, 190, 220] } });
-			button.events.add('click', function() { window.parent !== undefined ? window.parent.location = '@Url.Action("Index", "Map", new {objectId = Model.Id})' : window.location = '@Url.Action("Index", "Map", new {objectId = Model.Id})'; });
-            objectMap.controls.add(button, { position: { top: 10, left: 10 } });
+					'<div class="ButtonMap" title="{{ data.title }}"> ',
+					'<img style="width:19px; height: 19px;" src="{{ data.image }}" alt="{{ data.title }}">',
+					'<span>&nbsp</span>',
+					'<span>{{ data.content }}</span>',
+					'</div>'
+				].join('')),
+				button = new ymaps.control.Button({
+					data: {
+						content: "На карту",
+						image: '../images/mapIconWhite.png',
+						title: 'Нажмите, чтобы перейти на карту'
+					},
+					options: { layout: buttonLayout, maxWidth: [170, 190, 220] }
+				});
+			button.events.add('click',
+				function() {
+					window.parent !== undefined
+						? window.parent.location = '@Url.Action("Index", "Map", new {objectId = Model.Id})'
+						: window.location = '@Url.Action("Index", "Map", new {objectId = Model.Id})';
+				});
+			objectMap.controls.add(button, { position: { top: 10, left: 10 } });
 
-            var placemarkLayout = ymaps.templateLayoutFactory.createClass(`<div class="targetControl"></div>`), placemark = new ymaps.control.Button({ data: { title: 'Нажмите, чтобы перейти к метке' }, options: { layout: placemarkLayout } });
-            placemark.events.add('click', function () { objectMap.setCenter([objectLatitude, objectLongitude], MapWithDefinedObjectSettings.zoom, "map") });
-            objectMap.controls.add(placemark, { position: { bottom: 10, left: 10 } });
+			var placemarkLayout = ymaps.templateLayoutFactory.createClass(`<div class="targetControl"></div>`),
+				placemark = new ymaps.control.Button({
+					data: { title: 'Нажмите, чтобы перейти к метке' },
+					options: { layout: placemarkLayout }
+				});
+			placemark.events.add('click',
+				function() {
+					objectMap.setCenter([objectLatitude, objectLongitude], MapWithDefinedObjectSettings.zoom, "map")
+				});
+			objectMap.controls.add(placemark, { position: { bottom: 10, left: 10 } });
 		}
 
-        function addGeoObject() {
-            console.log(SelectedTargetOnCard);
+		function addGeoObject() {
+			console.log(SelectedTargetOnCard);
 			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude], {}, SelectedTargetOnCard);
 			objectMap.geoObjects.add(geoObject);
 		}
+
+		function createPriceHistoryChart() {
+			$("#priceHistoryChart").kendoChart({
+				render: function(e) {
+					var currentMin;
+					var currentMax;
+					var deviation;
+					var data = e.sender.options.series[0].data;
+					if (data.length === 1) {
+						deviation = Math.trunc(data[0].PriceValue * 0.1);
+						currentMin = data[0].PriceValue - deviation;
+						currentMax = data[0].PriceValue + deviation;
+					} else {
+						currentMin = Number.MAX_SAFE_INTEGER;
+						currentMax = Number.MIN_SAFE_INTEGER;
+						for (let i = 0; i < data.length; i++) {
+							if (data[i].PriceValue < currentMin) {
+								currentMin = data[i].PriceValue;
+							}
+							if (data[i].PriceValue > currentMax) {
+								currentMax = data[i].PriceValue;
+							}
+						}
+						deviation = Math.trunc((currentMax - currentMin) * 0.1);
+						currentMin -= deviation;
+						currentMax += deviation;
+					}
+
+					var oldMin = e.sender.options.valueAxis.min;
+					var oldMax = e.sender.options.valueAxis.max;
+					if (oldMin !== currentMin || oldMax !== currentMax) {
+						e.sender.options.valueAxis.min = currentMin;
+						e.sender.options.valueAxis.max = currentMax;
+						e.sender.redraw();
+					}
+				},
+				dataSource: {
+					transport: {
+						read: {
+							type: 'GET',
+							url: '@Url.Action("GetChartData", "MarketObjects")',
+							dataType: "json",
+							data: { id: @Model.Id }
+						}
+					}
+				},
+				legend: {
+					visible: false
+				},
+				series: [
+					{
+						type: "line",
+						highlight: {
+							toggle: function (e) {
+								var transform = null;
+								if (e.show) {
+									e.visual.opacity(0.5);
+									var center = e.visual._geometry.center;
+									transform = kendo.geometry.transform().scale(1.5, 1.5, center);
+								} else {
+									e.visual.opacity(1);
+								}
+								e.visual.transform(transform);
+							}
+						},
+						markers: {
+							visible: true,
+							size: function(point) {
+								if (point.dataItem.ScreenshotId) {
+									return 18;
+								}
+								return 6;
+							},
+							//background: function (point) {
+							//	if (!point.dataItem.ScreenshotId) {
+							//		return getPointColor(point);
+							//	}
+							//	return null;
+							//}
+						},
+						color: function (point) {
+							return getPointColor(point);
+						},
+						field: "PriceValue",
+						categoryField: "ChangingDate"
+					}
+				],
+				seriesColors: ["#b3b3b4"],
+				valueAxis: {
+					visible: false
+				},
+				categoryAxis: {
+					visible: false,
+					baseUnit: "fit"
+				},
+				tooltip: {
+					visible: true,
+					template: kendo.template($("#priceHistoryChartTooltip").html())
+				},
+				seriesClick: function(e) {
+					if (!e.dataItem.ScreenshotId) {
+						return;
+					}
+					$.fancybox.open({
+						src: '@(Url.Action("ShowFile", "MarketObjects") + "?id=")' + e.dataItem.ScreenshotId,
+						opts : {
+							caption: kendo.toString(new Date(e.dataItem.ChangingDate), "dd.MM.yyyy HH:mm:ss")
+						}
+					});
+				}
+			});
+		}
+
+		function getPointColor(point) {
+			if (point.dataItem.IsPriceUp) {
+				return "red";
+			}
+			if (point.dataItem.IsPriceDown) {
+				return "green";
+			}
+			return "gray";
+		}
+
+	$(document).ready(createPriceHistoryChart);
+	$(document).bind("kendo:skinChange", createPriceHistoryChart);
     </script>
 }
