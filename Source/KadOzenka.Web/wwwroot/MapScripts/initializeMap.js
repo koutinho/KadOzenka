@@ -9,7 +9,7 @@ function init(){
         heatmapScript.src = `${AppData.protocol}://yastatic.net/s3/mapsapi-jslibs/heatmap/0.0.1/heatmap.min.js`;
         document.head.appendChild(heatmapScript);
         heatmapScript.onload = function () {
-            ymaps.ready(['Heatmap']).then(() => GetHeatmapData(currentToken));
+            ymaps.ready(['Heatmap']).then(() => GetHeatmapData());
         };
 
         ymaps.ready(function() {initMap();});

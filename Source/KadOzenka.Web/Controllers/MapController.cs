@@ -65,7 +65,7 @@ namespace KadOzenka.Web.Controllers
             return Json(new { token=token, arr=point, allCount=query.ExecuteCount() });
 	    }
 
-	    public JsonResult HeatmapData(string token)
+	    public JsonResult HeatmapData()
 	    {
 		    var query = OMCoreObject
                 .Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && x.Lng != null && x.Lat != null);
@@ -75,7 +75,7 @@ namespace KadOzenka.Web.Controllers
 			    .Select(x => new[] { x.Lat, x.Lng })
 				.ToList();
 
-		    return Json(new {token = token, arr = coordinates});
+		    return Json(new {arr = coordinates});
 	    }
 
 		public JsonResult RequiredInfo()
