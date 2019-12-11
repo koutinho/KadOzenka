@@ -1041,6 +1041,171 @@ namespace KadOzenka.Dal.DataExport
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
         }
+        /// <summary>
+        /// Статистика по положительным судебным решениям
+        /// </summary>
+        public static Stream ExportStatisticCheck()
+        {
+            ExcelFile excelTemplate = new ExcelFile();
+            var mainWorkSheet = excelTemplate.Worksheets.Add("Статистика по положительным");
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where().SelectAll().Execute();
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 20
+            };
+            int curIndex = 0;
+            Parallel.ForEach(objs, options, obj =>
+            {
+                curIndex++;
+                if (curIndex % 40 == 0) Console.WriteLine(curIndex);
+                obj.SudLink = ObjectModel.Sud.OMSudLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+                foreach (ObjectModel.Sud.OMSudLink link in obj.SudLink)
+                {
+                    link.Sud = ObjectModel.Sud.OMSud.Where(x => x.Id == link.IdSud).SelectAll().ExecuteFirstOrDefault();
+                }
+                obj.ZakLink = ObjectModel.Sud.OMZakLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+                obj.OtchetLink = ObjectModel.Sud.OMOtchetLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+            });
+
+            decimal zu_kc = 0;
+            decimal zu_rs = 0;
+            decimal zu_exp = 0;
+            decimal zu_sud = 0;
+            int zu_count = 0;
+            decimal oks_kc = 0;
+            decimal oks_rs = 0;
+            decimal oks_exp = 0;
+            decimal oks_sud = 0;
+            int oks_count = 0;
+            decimal bld_kc = 0;
+            decimal bld_rs = 0;
+            decimal bld_exp = 0;
+            decimal bld_sud = 0;
+            int bld_count = 0;
+            decimal flt_kc = 0;
+            decimal flt_rs = 0;
+            decimal flt_exp = 0;
+            decimal flt_sud = 0;
+            int flt_count = 0;
+
+
+
+            int cc = 0;
+            foreach (ObjectModel.Sud.OMObject obj in objs)
+            {
+                cc++;
+                if (cc % 40 == 0) Console.WriteLine(cc);
+
+                ObjectModel.Sud.OMSudLink sud = null;
+                if (obj.SudLink.Count > 0) sud = obj.SudLink[obj.SudLink.Count - 1];
+                decimal? exp = 0;
+                decimal? rs = 0;
+
+                if (sud != null)
+                {
+                    if (sud.Sud.Status == 1)
+                    {
+                        switch (obj.Typeobj_Code)
+                        {
+                            case ObjectModel.Directory.Sud.SudObjectType.None:
+                                break;
+                            case ObjectModel.Directory.Sud.SudObjectType.Site:
+                                zu_kc += ((obj.Kc==null)?0:obj.Kc.ParseToDecimal());
+                                rs = 0;
+                                if (obj.OtchetLink.Count > 0) rs = obj.OtchetLink[obj.OtchetLink.Count - 1].Rs;
+                                zu_rs += ((rs==null)?0:rs.ParseToDecimal());
+                                exp = 0;
+
+                                if (obj.ZakLink.Count > 0) exp = obj.ZakLink[obj.ZakLink.Count - 1].Rs;
+                                zu_exp += ((exp == null) ? 0 : exp.ParseToDecimal());
+                                zu_sud += ((sud.Rs == null) ? 0 : sud.Rs.ParseToDecimal()); 
+                                zu_count++;
+                                break;
+                            case ObjectModel.Directory.Sud.SudObjectType.Building:
+                                bld_kc += ((obj.Kc == null) ? 0 : obj.Kc.ParseToDecimal());
+                                oks_kc += ((obj.Kc == null) ? 0 : obj.Kc.ParseToDecimal());
+                                rs = 0;
+                                if (obj.OtchetLink.Count > 0) rs = obj.OtchetLink[obj.OtchetLink.Count - 1].Rs;
+                                bld_rs += ((rs == null) ? 0 : rs.ParseToDecimal());
+                                oks_rs += ((rs == null) ? 0 : rs.ParseToDecimal());
+                                exp = 0;
+                                if (obj.ZakLink.Count > 0) exp = obj.ZakLink[obj.ZakLink.Count - 1].Rs;
+                                bld_exp += ((exp == null) ? 0 : exp.ParseToDecimal());
+                                bld_sud += ((sud.Rs == null) ? 0 : sud.Rs.ParseToDecimal());
+                                bld_count++;
+                                oks_exp += ((exp == null) ? 0 : exp.ParseToDecimal());
+                                oks_sud += ((sud.Rs == null) ? 0 : sud.Rs.ParseToDecimal());
+                                oks_count++;
+                                break;
+                            case ObjectModel.Directory.Sud.SudObjectType.Room:
+                                flt_kc += ((obj.Kc == null) ? 0 : obj.Kc.ParseToDecimal());
+                                oks_kc += ((obj.Kc == null) ? 0 : obj.Kc.ParseToDecimal());
+                                rs = 0;
+                                if (obj.OtchetLink.Count > 0) rs = obj.OtchetLink[obj.OtchetLink.Count - 1].Rs;
+                                flt_rs += ((rs == null) ? 0 : rs.ParseToDecimal());
+                                oks_rs += ((rs == null) ? 0 : rs.ParseToDecimal());
+                                exp = 0;
+                                if (obj.ZakLink.Count > 0) exp = obj.ZakLink[obj.ZakLink.Count - 1].Rs;
+                                flt_exp += ((exp == null) ? 0 : exp.ParseToDecimal());
+                                flt_sud += ((sud.Rs == null) ? 0 : sud.Rs.ParseToDecimal());
+                                flt_count++;
+                                oks_exp += ((exp == null) ? 0 : exp.ParseToDecimal());
+                                oks_sud += ((sud.Rs == null) ? 0 : sud.Rs.ParseToDecimal());
+                                oks_count++;
+                                break;
+                            case ObjectModel.Directory.Sud.SudObjectType.Construction:
+                                oks_kc += ((obj.Kc == null) ? 0 : obj.Kc.ParseToDecimal());
+                                rs = 0;
+                                if (obj.OtchetLink.Count > 0) rs = obj.OtchetLink[obj.OtchetLink.Count - 1].Rs;
+                                oks_rs += ((rs == null) ? 0 : rs.ParseToDecimal());
+                                exp = 0;
+                                if (obj.ZakLink.Count > 0) exp = obj.ZakLink[obj.ZakLink.Count - 1].Rs;
+                                oks_exp += ((exp == null) ? 0 : exp.ParseToDecimal());
+                                oks_sud += ((sud.Rs == null) ? 0 : sud.Rs.ParseToDecimal());
+                                oks_count++;
+                                break;
+                            case ObjectModel.Directory.Sud.SudObjectType.Ons:
+                                oks_kc += ((obj.Kc == null) ? 0 : obj.Kc.ParseToDecimal());
+                                rs = 0;
+                                if (obj.OtchetLink.Count > 0) rs = obj.OtchetLink[obj.OtchetLink.Count - 1].Rs;
+                                oks_rs += ((rs == null) ? 0 : rs.ParseToDecimal());
+                                exp = 0;
+                                if (obj.ZakLink.Count > 0) exp = obj.ZakLink[obj.ZakLink.Count - 1].Rs;
+                                oks_exp += ((exp == null) ? 0 : exp.ParseToDecimal());
+                                oks_sud += ((sud.Rs == null) ? 0 : sud.Rs.ParseToDecimal());
+                                oks_count++;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+
+
+
+            object[] captions = new string[] { "Тип Объекта недвижимости", "Оспариваемая кадастровая стоимость", "Рыночная стоимость по отчету", "Рыночная стоимость по судебной экспертизе", "Рыночная стоимость, установленная судом", "Уменьшение итоговой КС", "Разница в процентах", "Количество ОН" };
+            object[] row1 = new object[] { "Земельный участок", zu_kc, zu_rs, zu_exp, zu_sud, zu_kc - zu_sud, (zu_kc > 0) ? (100 - (zu_sud * 100 / zu_kc)) : 0, zu_count };
+            object[] row2 = new object[] { "ОКС", oks_kc, oks_rs, oks_exp, oks_sud, oks_kc - oks_sud, (oks_kc > 0) ? (100 - (oks_sud * 100 / oks_kc)) : 0, oks_count };
+            object[] row3 = new object[] { "в т.ч. Здание", bld_kc, bld_rs, bld_exp, bld_sud, bld_kc - bld_sud, (bld_kc > 0) ? (100 - (bld_sud * 100 / bld_kc)) : 0, bld_count };
+            object[] row4 = new object[] { "в т.ч. Помещение", flt_kc, flt_rs, flt_exp, flt_sud, flt_kc - flt_sud, (flt_kc > 0) ? (100 - (flt_sud * 100 / flt_kc)) : 0, flt_count };
+            object[] row5 = new object[] { "ВСЕГО", zu_kc + oks_kc, zu_rs + oks_rs, zu_exp + oks_exp, zu_sud + oks_sud, zu_kc + oks_kc - zu_sud - oks_sud, (zu_kc + oks_kc > 0) ? (100 - ((zu_sud + oks_sud) * 100 / (zu_kc + oks_kc))) : 0, zu_count + oks_count };
+
+            AddRow(mainWorkSheet, 0, captions, new int[] { 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600 }, true, true, true);
+            AddRow(mainWorkSheet, 1, row1);
+            AddRow(mainWorkSheet, 2, row2);
+            AddRow(mainWorkSheet, 3, row3);
+            AddRow(mainWorkSheet, 4, row4);
+            AddRow(mainWorkSheet, 5, row5);
+
+            MemoryStream stream = new MemoryStream();
+            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
 
 
     }

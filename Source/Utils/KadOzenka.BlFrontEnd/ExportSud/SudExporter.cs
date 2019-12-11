@@ -139,6 +139,15 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                 resultFile.CopyTo(output);
             }
         }
+        public static void ExportStatCheckExcel()
+        {
+            string filename = @"C:\Work\12345.xlsx";
+            Stream resultFile = KadOzenka.Dal.DataExport.DataExporterSud.ExportStatisticCheck();
+            using (System.IO.FileStream output = new System.IO.FileStream(filename, FileMode.Create))
+            {
+                resultFile.CopyTo(output);
+            }
+        }
 
         public static long GetNewIdUser(long oldId)
         {

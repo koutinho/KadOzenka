@@ -209,5 +209,11 @@ namespace ObjectModel.Sud
 
 			return true;
 		}
-	}
+
+        /// <summary>
+        /// Ссылка на OMOtchet
+        /// </summary>
+        public ObjectModel.Sud.OMOtchet Otchet { get; set; }
+
+    }
 }
