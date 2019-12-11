@@ -106,7 +106,7 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Добавление в Excel данных в строку с индексом Row и установка ширины столбцов
         /// </summary>
-        private static void AddRow(ExcelWorksheet sheet, int Row, object[] values, int[] widths)
+        private static void AddRow(ExcelWorksheet sheet, int Row, object[] values, int[] widths, bool wrap, bool center, bool bold)
         {
             int Col = 0;
             foreach (object value in values)
@@ -173,6 +173,22 @@ namespace KadOzenka.Dal.DataExport
                 }
 
                 sheet.Rows[Row].Cells[Col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                if (wrap)
+                {
+                    sheet.Rows[Row].Cells[Col].Style.WrapText = wrap;
+                }
+
+                if (center)
+                {
+                    sheet.Rows[Row].Cells[Col].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+                    sheet.Rows[Row].Cells[Col].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+                }
+
+                if (bold)
+                {
+                    sheet.Rows[Row].Cells[Col].Style.Font.Weight = ExcelFont.BoldWeight;
+                }
+
                 sheet.Columns[Col].Width = widths[Col];
                 Col++;
             }
@@ -727,5 +743,305 @@ namespace KadOzenka.Dal.DataExport
 
             return value;
         }
+
+        /// <summary>
+        /// Статистика сводная
+        /// </summary>
+        public static Stream ExportStatistic()
+        {
+            ExcelFile excelTemplate = new ExcelFile();
+            var mainWorkSheet = excelTemplate.Worksheets.Add("Статистика сводная");
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where().SelectAll().Execute();
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 20
+            };
+            int curIndex = 0;
+            Parallel.ForEach(objs, options, obj =>
+            {
+                curIndex++;
+                if (curIndex % 40 == 0) Console.WriteLine(curIndex);
+                obj.ZakLink = ObjectModel.Sud.OMZakLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+                foreach (ObjectModel.Sud.OMZakLink zak in obj.ZakLink)
+                {
+                    zak.Zak= ObjectModel.Sud.OMZak.Where(x => x.Id == zak.IdZak).SelectAll().ExecuteFirstOrDefault();
+                }
+                obj.OtchetLink = ObjectModel.Sud.OMOtchetLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+            });
+
+
+
+
+            int count1_old = 0;
+            int count1_new = 0;
+            int count2_old = 0;
+            int count2_new = 0;
+            int count3_old = 0;
+            int count3_new = 0;
+            int count4_old = 0;
+            int count4_new = 0;
+            int count5_old = 0;
+            int count5_new = 0;
+            int count6_old = 0;
+            int count6_new = 0;
+            int count7_old = 0;
+            int count7_new = 0;
+            int count8_old = 0;
+            int count8_new = 0;
+            int count9_old = 0;
+            int count9_new = 0;
+            List<long> id_otchets = new List<long>();
+            List<long> id_zaks = new List<long>();
+
+            int cc = 0;
+            foreach (ObjectModel.Sud.OMObject obj in objs)
+            {
+                cc++;
+                if (cc % 40 == 0) Console.WriteLine(cc);
+                if (obj.Date.ParseToDateTime().Date == new DateTime(2018, 1, 1).Date || obj.Date.ParseToDateTime().Date >= new DateTime(2019, 1, 1).Date)
+                {
+                    count1_new++;
+
+
+                    foreach (ObjectModel.Sud.OMOtchetLink otch in obj.OtchetLink)
+                    {
+                        if (otch.IdOtchet != null)
+                            if (id_otchets.IndexOf(otch.IdOtchet.ParseToLong()) < 0)
+                            {
+                                id_otchets.Add(otch.IdOtchet.ParseToLong());
+                                count2_new++;
+                            }
+                    }
+
+
+                    foreach (ObjectModel.Sud.OMZakLink zak in obj.ZakLink)
+                    {
+                        if (zak.IdZak != null)
+                            if (id_zaks.IndexOf(zak.IdZak.ParseToLong()) < 0)
+                            {
+                                id_zaks.Add(zak.IdZak.ParseToLong());
+                                count3_new++;
+
+                                if (zak.Zak != null)
+                                {
+                                    if (zak.Zak.RecSoglas==1) count4_new++; else count5_new++;
+                                    if (zak.Zak.RecBefore==1) count6_new++; else count7_new++;
+                                    if (zak.Zak.RecAfter==1) count8_new++; else count9_new++;
+                                }
+
+                            }
+                    }
+                }
+                else
+                {
+                    count1_old++;
+
+                    foreach (ObjectModel.Sud.OMOtchetLink otch in obj.OtchetLink)
+                    {
+                        if (otch.IdOtchet != null)
+                            if (id_otchets.IndexOf(otch.IdOtchet.ParseToLong()) < 0)
+                            {
+                                id_otchets.Add(otch.IdOtchet.ParseToLong());
+                                count2_old++;
+                            }
+                    }
+
+
+                    foreach (ObjectModel.Sud.OMZakLink zak in obj.ZakLink)
+                    {
+                        if (zak.IdZak != null)
+                            if (id_zaks.IndexOf(zak.IdZak.ParseToLong()) < 0)
+                            {
+                                id_zaks.Add(zak.IdZak.ParseToLong());
+                                count3_old++;
+
+                                if (zak.Zak != null)
+                                {
+                                    if (zak.Zak.RecSoglas == 1) count4_old++; else count5_old++;
+                                    if (zak.Zak.RecBefore == 1) count6_old++; else count7_old++;
+                                    if (zak.Zak.RecAfter == 1) count8_old++; else count9_old++;
+                                }
+
+                            }
+                    }
+
+
+                }
+            }
+
+            object[] captions = new string[] { "Статистика СПО СУДЫ", "Всего", "Дата определения стоимости: все, кроме 01.01.2018, 01.01.2019 и позднее", "Дата определения стоимости: 01.01.2018, 01.01.2019 и позднее" };
+            AddRow(mainWorkSheet, 0, captions, new int[] { 5600, 5600, 5600, 5600}, true, true, true);
+
+
+            object[] row1 = new object[] { "Количество объектов недвижимости", count1_new + count1_old, count1_old, count1_new };
+            object[] row2 = new object[] { "Количество отчетов об оценке", count2_new + count2_old, count2_old, count2_new };
+            object[] row3 = new object[] { "Количество заключений", count3_new + count3_old, count3_old, count3_new };
+            object[] row4 = new object[] { "Рассмотренно с Ковалевым Д.В. (ДА)", count4_new + count4_old, count4_old, count4_new };
+            object[] row5 = new object[] { "Рассмотренно с Ковалевым Д.В. (НЕТ)", count5_new + count5_old, count5_old, count5_new };
+            object[] row6 = new object[] { "Предварительная рецензия (ДА)", count6_new + count6_old, count6_old, count6_new };
+            object[] row7 = new object[] { "Предварительная рецензия (НЕТ)", count7_new + count7_old, count7_old, count7_new };
+            object[] row8 = new object[] { "Рецензия после анализа (ДА)", count8_new + count8_old, count8_old, count8_new };
+            object[] row9 = new object[] { "Рецензия после анализа (НЕТ)", count9_new + count9_old, count9_old, count9_new };
+
+            AddRow(mainWorkSheet, 1, row1);
+            AddRow(mainWorkSheet, 2, row2);
+            AddRow(mainWorkSheet, 3, row3);
+            AddRow(mainWorkSheet, 4, row4);
+            AddRow(mainWorkSheet, 5, row5);
+            AddRow(mainWorkSheet, 6, row6);
+            AddRow(mainWorkSheet, 7, row7);
+            AddRow(mainWorkSheet, 8, row8);
+            AddRow(mainWorkSheet, 9, row9);
+
+            MemoryStream stream = new MemoryStream();
+            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+        /// <summary>
+        /// Статискика по объектам недвидимости
+        /// </summary>
+        public static Stream ExportStatisticObject()
+        {
+            ExcelFile excelTemplate = new ExcelFile();
+            var mainWorkSheet = excelTemplate.Worksheets.Add("Статискика по объектам");
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where().SelectAll().Execute();
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 20
+            };
+            int curIndex = 0;
+            Parallel.ForEach(objs, options, obj =>
+            {
+                curIndex++;
+                if (curIndex % 40 == 0) Console.WriteLine(curIndex);
+                obj.SudLink = ObjectModel.Sud.OMSudLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+                foreach (ObjectModel.Sud.OMSudLink link in obj.SudLink)
+                {
+                   link.Sud = ObjectModel.Sud.OMSud.Where(x => x.Id == link.IdSud).SelectAll().ExecuteFirstOrDefault();
+                }
+
+            });
+
+
+
+
+            int zu_stop = 0;
+            int zu_no = 0;
+            int zu_yes = 0;
+            int zu_none = 0;
+            int oks_stop = 0;
+            int oks_no = 0;
+            int oks_yes = 0;
+            int oks_none = 0;
+            int bld_stop = 0;
+            int bld_no = 0;
+            int bld_yes = 0;
+            int bld_none = 0;
+            int flt_stop = 0;
+            int flt_no = 0;
+            int flt_yes = 0;
+            int flt_none = 0;
+
+
+
+            int cc = 0;
+            foreach (ObjectModel.Sud.OMObject obj in objs)
+            {
+                cc++;
+                if (cc % 40 == 0) Console.WriteLine(cc);
+
+                switch (obj.Typeobj_Code)
+                {
+                    case ObjectModel.Directory.Sud.SudObjectType.None:
+                        break;
+                    case ObjectModel.Directory.Sud.SudObjectType.Site:
+                        foreach (ObjectModel.Sud.OMSudLink link in obj.SudLink)
+                        {
+                            if (link.Sud != null)
+                            {
+                                if (link.Sud.Status == 0) zu_none++;
+                                if (link.Sud.Status == 1) zu_yes++;
+                                if (link.Sud.Status == 2) zu_no++;
+                                if (link.Sud.Status == 3) zu_stop++;
+                            }
+                        }
+                        break;
+                    case ObjectModel.Directory.Sud.SudObjectType.Building:
+                        foreach (ObjectModel.Sud.OMSudLink link in obj.SudLink)
+                        {
+                            if (link.Sud != null)
+                            {
+                                if (link.Sud.Status == 0) bld_none++;
+                                if (link.Sud.Status == 1) bld_yes++;
+                                if (link.Sud.Status == 2) bld_no++;
+                                if (link.Sud.Status == 3) bld_stop++;
+                            }
+                        }
+                        break;
+                    case ObjectModel.Directory.Sud.SudObjectType.Room:
+                        foreach (ObjectModel.Sud.OMSudLink link in obj.SudLink)
+                        {
+                            if (link.Sud != null)
+                            {
+                                if (link.Sud.Status == 0) flt_none++;
+                                if (link.Sud.Status == 1) flt_yes++;
+                                if (link.Sud.Status == 2) flt_no++;
+                                if (link.Sud.Status == 3) flt_stop++;
+                            }
+                        }
+                        break;
+                    case ObjectModel.Directory.Sud.SudObjectType.Construction:
+                    case ObjectModel.Directory.Sud.SudObjectType.Ons:
+                    case ObjectModel.Directory.Sud.SudObjectType.ParkingPlace:
+                        foreach (ObjectModel.Sud.OMSudLink link in obj.SudLink)
+                        {
+                            if (link.Sud != null)
+                            {
+                                if (link.Sud.Status == 0) oks_none++;
+                                if (link.Sud.Status == 1) oks_yes++;
+                                if (link.Sud.Status == 2) oks_no++;
+                                if (link.Sud.Status == 3) oks_stop++;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            oks_none += (flt_none + bld_none);
+            oks_yes += (flt_yes + bld_yes);
+            oks_no += (flt_no + bld_no);
+            oks_stop += (flt_stop + bld_stop);
+
+
+            object[] captions = new string[] { "Тип Объекта недвижимости", "Приостановлено", "Отказано", "Удовлетворено", "Без статуса", "ИТОГО рассмотренных" };
+            object[] row1 = new object[] { "Земельный участок", zu_stop, zu_no, zu_yes, zu_none, zu_no + zu_yes };
+            object[] row2 = new object[] { "ОКС", oks_stop, oks_no, oks_yes, oks_none, oks_no + oks_yes };
+            object[] row3 = new object[] { "в т.ч. Здание", bld_stop, bld_no, bld_yes, bld_none, bld_no + bld_yes };
+            object[] row4 = new object[] { "в т.ч. Помещение", flt_stop, flt_no, flt_yes, flt_none, flt_no + flt_yes };
+            object[] row5 = new object[] { "ВСЕГО", zu_stop + oks_stop, zu_no + oks_no, zu_yes + oks_yes, zu_none + oks_none, zu_no + zu_yes + oks_no + oks_yes };
+
+            AddRow(mainWorkSheet, 0, captions);
+            AddRow(mainWorkSheet, 1, row1);
+            AddRow(mainWorkSheet, 2, row2);
+            AddRow(mainWorkSheet, 3, row3);
+            AddRow(mainWorkSheet, 4, row4);
+            AddRow(mainWorkSheet, 5, row5);
+
+            MemoryStream stream = new MemoryStream();
+            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+
+
     }
 }

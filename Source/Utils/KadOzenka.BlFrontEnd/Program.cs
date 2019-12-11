@@ -13,16 +13,17 @@ using KadOzenka.Dal.Test;
 using KadOzenka.BlFrontEnd.ExportSud;
 using KadOzenka.BlFrontEnd.ExportMSSQL;
 using KadOzenka.BlFrontEnd.ExportCommission;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.BlFrontEnd.SudTests;
 
 namespace KadOzenka.BlFrontEnd
 {
-	class Program
+    class Program
     {
 
         static void Main(string[] args)
         {
-			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
+            SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
             var consoleHelper = new BlFrontEndConsoleHelper();
             InitCommands(consoleHelper);
             consoleHelper.Run();
@@ -53,23 +54,38 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("15", "Тест автоматического формирования исключений", () => { new TestAutoExclusions().TryParse(); });
             consoleHelper.AddCommand("16", "Тест API судебной подсистемы", SudTestApi.TestAll);
 
-            consoleHelper.AddCommand("200", "Импорт данных KO (БД)", MSExporter.DoLoadBd);
-            consoleHelper.AddCommand("201", "Импорт данных KO (XML)", () =>
-            {
-                MSExporter.XML_Path = "C:\\WORK\\Перечень 2018\\List_77_20\\КадОценка2018\\ЗУ1";
-                MSExporter.Schema_Path = "C:\\WORK";
-                MSExporter.ImportXml(2018, 1);
-            });
+            consoleHelper.AddCommand("200", "Импорт данных KO (БД) Модель 2016", MSExporter.DoLoadBd2016Model);
+            consoleHelper.AddCommand("201", "Импорт данных KO (БД) Объекты и факторы 2016 ОНС", MSExporter.DoLoadBd2016Unit_Uncomplited);
+            consoleHelper.AddCommand("202", "Импорт данных KO (БД) Объекты и факторы 2016 Сооружения", MSExporter.DoLoadBd2016Unit_Construction);
+            consoleHelper.AddCommand("203", "Импорт данных KO (БД) Объекты и факторы 2016 Здания", MSExporter.DoLoadBd2016Unit_Building);
+            consoleHelper.AddCommand("204", "Импорт данных KO (БД) Объекты и факторы 2016 Помещения", MSExporter.DoLoadBd2016Unit_Flat);
+            consoleHelper.AddCommand("205", "Импорт данных KO (БД) Объекты и факторы 2016 Участки", MSExporter.DoLoadBd2016Unit_Parcel);
+            consoleHelper.AddCommand("206", "Импорт данных KO (XML) 2016", MSExporter.DoLoadXml2016);
+
+            consoleHelper.AddCommand("210", "Импорт данных KO (БД) Модель 2018", MSExporter.DoLoadBd2018Model);
+            consoleHelper.AddCommand("211", "Импорт данных KO (БД) Объекты и факторы 2018 ОНС", MSExporter.DoLoadBd2018Unit_Uncomplited);
+            consoleHelper.AddCommand("212", "Импорт данных KO (БД) Объекты и факторы 2018 Сооружения", MSExporter.DoLoadBd2018Unit_Construction);
+            consoleHelper.AddCommand("213", "Импорт данных KO (БД) Объекты и факторы 2018 Здания", MSExporter.DoLoadBd2018Unit_Building);
+            consoleHelper.AddCommand("214", "Импорт данных KO (БД) Объекты и факторы 2018 Помещения", MSExporter.DoLoadBd2018Unit_Flat);
+            consoleHelper.AddCommand("215", "Импорт данных KO (БД) Объекты и факторы 2018 Участки", MSExporter.DoLoadBd2018Unit_Parcel);
+            consoleHelper.AddCommand("216", "Импорт данных KO (XML) 2018", MSExporter.DoLoadXml2018);
+
+            consoleHelper.AddCommand("220", "Формула 2016", MSExporter.GetFormulaText);
+            consoleHelper.AddCommand("221", "Рассчет", MSExporter.GetCalcGroup);
+
+
             consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы", SudExporter.DoLoadBd);
             consoleHelper.AddCommand("301", "Импорт данных судебной подсистемы", SudExporter.DoLoadExcel);
             consoleHelper.AddCommand("302", "Экспорт данных судебной подсистемы в Xml", SudExporter.ExportXml);
             consoleHelper.AddCommand("303", "Экспорт данных судебной подсистемы в Excel", SudExporter.ExportExcel);
+            consoleHelper.AddCommand("304", "Статистика сводная в Excel", SudExporter.ExportStatExcel);
+            consoleHelper.AddCommand("305", "Статискика по объектам недвидимости в Excel", SudExporter.ExportStatObjectExcel);
             consoleHelper.AddCommand("350", "Импорт данных решений комиссий (БД)", CommissionExporter.DoLoadBd);
             consoleHelper.AddCommand("351", "Импорт данных решений комиссий (Excel)", CommissionExporter.DoLoadExcel);
 
             consoleHelper.AddCommand("400", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.GAF(); });
-	        consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
-		}
+            consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
+        }
 
     }
 }

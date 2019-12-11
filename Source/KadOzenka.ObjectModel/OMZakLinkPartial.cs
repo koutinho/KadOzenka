@@ -209,5 +209,11 @@ namespace ObjectModel.Sud
 
 			return true;
 		}
-	}
+
+        /// <summary>
+        /// Ссылка на OMZak
+        /// </summary>
+        public ObjectModel.Sud.OMZak Zak { get; set; }
+
+    }
 }

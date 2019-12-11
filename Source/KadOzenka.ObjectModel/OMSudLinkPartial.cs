@@ -209,5 +209,10 @@ namespace ObjectModel.Sud
 
 			return true;
 		}
-	}
+
+        /// <summary>
+        /// Ссылка на OMSud
+        /// </summary>
+        public ObjectModel.Sud.OMSud Sud { get; set; }
+    }
 }

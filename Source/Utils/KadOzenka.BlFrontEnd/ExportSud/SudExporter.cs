@@ -4,6 +4,7 @@ using GemBox.Spreadsheet;
 using ObjectModel.Directory.Sud;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text;
@@ -74,12 +75,12 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         public static bool DBToInt(object value, out int result)
         {
             result = DBToInt(value);
-            return (result != int.MinValue);
+            return (result >= 0);
         }
         public static bool DBToInt64(object value, out long result)
         {
             result = DBToInt64(value);
-            return (result != int.MinValue);
+            return (result >= 0);
         }
         public static bool DBToDouble(object value, out double result)
         {
@@ -100,7 +101,6 @@ namespace KadOzenka.BlFrontEnd.ExportSud
 
     public static class SudExporter
     {
-        private static string SQL_connection = "server= x1carbon; user id=srodoc; password=Eavp9QcHfFZD4fl6gmznaQ==; database=SUDGBU; connection timeout=30";
         private static string FilePath = "C:\\Work\\Загрузка (рассмотренные).xlsx";
 
         public static void ExportExcel()
@@ -121,7 +121,67 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                 resultFile.CopyTo(output);
             }
         }
+        public static void ExportStatExcel()
+        {
+            string filename = @"C:\Work\12345.xlsx";
+            Stream resultFile = KadOzenka.Dal.DataExport.DataExporterSud.ExportStatistic();
+            using (System.IO.FileStream output = new System.IO.FileStream(filename, FileMode.Create))
+            {
+                resultFile.CopyTo(output);
+            }
+        }
+        public static void ExportStatObjectExcel()
+        {
+            string filename = @"C:\Work\12345.xlsx";
+            Stream resultFile = KadOzenka.Dal.DataExport.DataExporterSud.ExportStatisticObject();
+            using (System.IO.FileStream output = new System.IO.FileStream(filename, FileMode.Create))
+            {
+                resultFile.CopyTo(output);
+            }
+        }
 
+        public static long GetNewIdUser(long oldId)
+        {
+            switch (oldId)
+            {
+                case 1: return 2;
+                case 2: return 7110;
+                case 3: return 7113;
+                case 4: return 7116;
+                case 5: return 7119;
+                case 6: return 7122;
+                case 7: return 7125;
+                case 8: return 7128;
+                case 9: return 7131;
+                case 10: return 7134;
+                case 11: return 7137;
+                case 12: return 7140;
+                case 13: return 7143;
+                case 14: return 7146;
+                case 15: return 7149;
+                case 16: return 7152;
+                case 17: return 7155;
+                case 18: return 7158;
+                case 19: return 7161;
+                case 20: return 7164;
+                case 21: return 7167;
+                case 22: return 7170;
+                case 23: return 7173;
+                case 24: return 7176;
+                case 25: return 7179;
+                case 26: return 7182;
+                case 27: return 7185;
+                case 28: return 7188;
+                case 29: return 7191;
+                case 30: return 7194;
+                case 31: return 7197;
+                case 32: return 7200;
+                case 33: return 7203;
+                case 34: return 7206;
+                case 35: return 7209;
+                default: return oldId;
+            }
+        }
 
 
         public static void DoLoadBd()
@@ -152,7 +212,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
 
         public static void LoadObject()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -208,7 +268,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadObjectStatus()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -226,19 +286,19 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                     ObjectModel.Sud.OMObjectStatus sudObject = new ObjectModel.Sud.OMObjectStatus
                     {
                         Id = id,
-                        Typeobj = NullConvertor.DBToInt(myOleDbDataReader["typeobj"], 0) > 0
+                        Typeobj = NullConvertor.DBToInt(myOleDbDataReader["typeobj"], 0)==1
                     };
 
-                    if (NullConvertor.DBToInt(myOleDbDataReader["kn"], out int kn)) sudObject.Kn = kn != int.MinValue;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["date"], out int date)) sudObject.Date = date != int.MinValue;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["square"], out int square)) sudObject.Square = square != int.MinValue;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["kc"], out int kc)) sudObject.Kc = kc != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["kn"], out int kn)) sudObject.Kn = kn==1;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["date"], out int date)) sudObject.Date = date==1;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["square"], out int square)) sudObject.Square = square == 1;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["kc"], out int kc)) sudObject.Kc = kc == 1;
 
-                    if (NullConvertor.DBToInt(myOleDbDataReader["name_center"], out int nameCenter)) sudObject.NameCenter = nameCenter != int.MinValue;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["stat_dgi"], out int statDgi)) sudObject.StatDgi = statDgi != int.MinValue;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["owner"], out int owner)) sudObject.Owner = owner != int.MinValue;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["adres"], out int adres)) sudObject.Adres = adres != int.MinValue;
-                    if (NullConvertor.DBToInt(myOleDbDataReader["status"], out int status)) sudObject.Status = status != int.MinValue;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["name_center"], out int nameCenter)) sudObject.NameCenter = nameCenter == 1;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["stat_dgi"], out int statDgi)) sudObject.StatDgi = statDgi == 1;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["owner"], out int owner)) sudObject.Owner = owner == 1;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["adres"], out int adres)) sudObject.Adres = adres == 1;
+                    if (NullConvertor.DBToInt(myOleDbDataReader["status"], out int status)) sudObject.Status = status == 1;
 
 
 
@@ -259,7 +319,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadDRS()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -315,7 +375,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         public static void LoadDict()
         {
             int i = 1;
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -332,7 +392,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                     long id_parent = NullConvertor.DBToInt64(myOleDbDataReader["id_parent"]);
                     string name = NullConvertor.ToString(myOleDbDataReader["name"]);
                     long type = NullConvertor.DBToInt(myOleDbDataReader["type"]);
-
+                    if (name == string.Empty) name = "-";
                     ObjectModel.Sud.OMDict sudObject = new ObjectModel.Sud.OMDict
                     {
                         Id = id,
@@ -357,7 +417,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadSud()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -398,7 +458,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadSudStatus()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -438,7 +498,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadSudLink()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -480,7 +540,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadSudLinkStatus()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -521,7 +581,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadOtchet()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -568,7 +628,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadOtchetStatus()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -611,7 +671,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadOtchetLink()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -653,7 +713,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadOtchetLinkStatus()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -695,7 +755,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadZak()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -747,7 +807,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadZakStatus()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -796,7 +856,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadZakLink()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -838,7 +898,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadZakLinkStatus()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -881,7 +941,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadParam()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -901,7 +961,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                         Id = NullConvertor.DBToInt64(myOleDbDataReader["id"]),
                         ParamName = NullConvertor.ToString(myOleDbDataReader["param_name"]),
 
-                        IdUser = NullConvertor.DBToInt64(myOleDbDataReader["id_user"]),
+                        IdUser = GetNewIdUser(NullConvertor.DBToInt64(myOleDbDataReader["id_user"])),
                         DateUser = NullConvertor.DBToDateTime(myOleDbDataReader["date_user"]),
                         ParamStatus_Code = (NullConvertor.DBToInt(myOleDbDataReader["param_status"]) == 1) ? ProcessingStatus.Processed : ProcessingStatus.InWork
                     };
@@ -928,7 +988,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
         }
         public static void LoadLog()
         {
-            using (SqlConnection connection = new SqlConnection(SQL_connection))
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_SUD"]))
             {
                 connection.Open();
 
@@ -950,7 +1010,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                         TypeOper = NullConvertor.ToString(myOleDbDataReader["type_oper"]),
                         XmlData = NullConvertor.ToString(myOleDbDataReader["xml_data"]),
 
-                        IdUser = NullConvertor.DBToInt64(myOleDbDataReader["id_user"]),
+                        IdUser = GetNewIdUser(NullConvertor.DBToInt64(myOleDbDataReader["id_user"])),
                         DateOper = NullConvertor.DBToDateTime(myOleDbDataReader["date_oper"]),
                     };
 

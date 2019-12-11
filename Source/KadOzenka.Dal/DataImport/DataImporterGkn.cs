@@ -309,8 +309,10 @@ namespace KadOzenka.Dal.DataImport
                         Status_Code = KoUnitStatus.Initial,
                         ObjectId = gbuObject.Id,
                         CreationDate = unitDate,
-                        Kn = current.CadastralNumber,
-                        ObjectType = PropertyTypes.Building,
+                        CadastralNumber = current.CadastralNumber,
+                        CadastralBlock = current.CadastralNumberBlock,
+                        Square = current.Area.ParseToDecimal(),
+                        PropertyType_Code = PropertyTypes.Building,
                         StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
                         StatusResultCalc_Code = KoStatusResultCalc.None,
                         CadastralCost = 0,
@@ -324,6 +326,7 @@ namespace KadOzenka.Dal.DataImport
                 {
                     ObjectModel.KO.OMCostRosreestr cost = new ObjectModel.KO.OMCostRosreestr
                     {
+                        Id=-1,
                         Applicationdate = (current.CadastralCost.ApplicationDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.ApplicationDate,
                         Dateapproval = (current.CadastralCost.DateApproval == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateApproval,
                         Dateentering = (current.CadastralCost.DateEntering == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateEntering,
@@ -502,8 +505,10 @@ namespace KadOzenka.Dal.DataImport
                         Status_Code = KoUnitStatus.Initial,
                         ObjectId = gbuObject.Id,
                         CreationDate = unitDate,
-                        Kn = current.CadastralNumber,
-                        ObjectType = PropertyTypes.Stead,
+                        CadastralNumber = current.CadastralNumber,
+                        CadastralBlock = current.CadastralNumberBlock,
+                        Square=current.Area.ParseToDecimal(),
+                        PropertyType_Code = PropertyTypes.Stead,
                         StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
                         StatusResultCalc_Code = KoStatusResultCalc.None,
                         CadastralCost = 0,
@@ -518,6 +523,7 @@ namespace KadOzenka.Dal.DataImport
                 {
                     ObjectModel.KO.OMCostRosreestr cost = new ObjectModel.KO.OMCostRosreestr
                     {
+                        Id=-1,
                         Applicationdate = (current.CadastralCost.ApplicationDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.ApplicationDate,
                         Dateapproval = (current.CadastralCost.DateApproval == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateApproval,
                         Dateentering = (current.CadastralCost.DateEntering == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateEntering,
@@ -703,8 +709,9 @@ namespace KadOzenka.Dal.DataImport
                         Status_Code = KoUnitStatus.Initial,
                         ObjectId = gbuObject.Id,
                         CreationDate = unitDate,
-                        Kn = current.CadastralNumber,
-                        ObjectType = PropertyTypes.Building,
+                        CadastralNumber = current.CadastralNumber,
+                        CadastralBlock = current.CadastralNumberBlock,
+                        PropertyType_Code = PropertyTypes.Building,
                         StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
                         StatusResultCalc_Code = KoStatusResultCalc.None,
                         CadastralCost = 0,
@@ -718,6 +725,7 @@ namespace KadOzenka.Dal.DataImport
                 {
                     ObjectModel.KO.OMCostRosreestr cost = new ObjectModel.KO.OMCostRosreestr
                     {
+                        Id=-1,
                         Applicationdate = (current.CadastralCost.ApplicationDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.ApplicationDate,
                         Dateapproval = (current.CadastralCost.DateApproval == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateApproval,
                         Dateentering = (current.CadastralCost.DateEntering == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateEntering,
@@ -848,8 +856,9 @@ namespace KadOzenka.Dal.DataImport
                         Status_Code = KoUnitStatus.Initial,
                         ObjectId = gbuObject.Id,
                         CreationDate = unitDate,
-                        Kn = current.CadastralNumber,
-                        ObjectType = PropertyTypes.UncompletedBuilding,
+                        CadastralNumber = current.CadastralNumber,
+                        CadastralBlock = current.CadastralNumberBlock,
+                        PropertyType_Code = PropertyTypes.UncompletedBuilding,
                         StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
                         StatusResultCalc_Code = KoStatusResultCalc.None,
                         CadastralCost = 0,
@@ -863,6 +872,7 @@ namespace KadOzenka.Dal.DataImport
                 {
                     ObjectModel.KO.OMCostRosreestr cost = new ObjectModel.KO.OMCostRosreestr
                     {
+                        Id = -1,
                         Applicationdate = (current.CadastralCost.ApplicationDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.ApplicationDate,
                         Dateapproval = (current.CadastralCost.DateApproval == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateApproval,
                         Dateentering = (current.CadastralCost.DateEntering == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateEntering,
