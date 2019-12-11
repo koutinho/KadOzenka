@@ -166,6 +166,11 @@ var HeatmapSettings = {
     }
 };
 
+var toggleHeatmapWidgetPosition = {
+    top: 10,
+    left: 335
+}
+
 var targetWidget = null;
 var clusterSelected = null;
 var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

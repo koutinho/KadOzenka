@@ -163,12 +163,12 @@ function createToggleHeatmapWidget() {
     });
 };
 
-function addToggleHeatmapWidget() {
+function addToggleHeatmapWidget(position) {
     let toggleHeatmapControl = new toggleHeatmapClass();
     toggleHeatmapControl.events.add('click', () => {
         toggleHeatmap();
     });
-    map.controls.add(toggleHeatmapControl, { float: 'left' });
+    map.controls.add(toggleHeatmapControl, { float: 'none', position });
 };
 
 function refreshFilterWidget(filterInfo) {

@@ -7,7 +7,7 @@
         gradient: HeatmapSettings.gradient
     });
     createToggleHeatmapWidget();
-    addToggleHeatmapWidget();
+    addToggleHeatmapWidget(toggleHeatmapWidgetPosition);
 }
 
 function toggleHeatmap() {
