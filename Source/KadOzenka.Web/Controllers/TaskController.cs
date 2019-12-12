@@ -12,70 +12,94 @@ namespace KadOzenka.Web.Controllers
 {
 	public class TaskController : Controller
     {
-	    [HttpGet]
+		#region Туры
+
+		[HttpGet]
 		public IActionResult TourEstimates()
-        {
-            return View();
-        }
+		{
+			return View();
+		}
 
-        [HttpPost]
-        public IActionResult TourEstimates([FromForm]int id, [FromForm]string year)
-        {
-	        if (string.IsNullOrEmpty(year))
-	        {
-		        return Json(new {Error = "Поле не должно быть пустым"});
-	        }
+		[HttpPost]
+		public IActionResult TourEstimates([FromForm]int id, [FromForm]string year)
+		{
+			if (string.IsNullOrEmpty(year))
+			{
+				return Json(new { Error = "Поле не должно быть пустым" });
+			}
 
-	        var tour = OMTour.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			var tour = OMTour.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
 
-	        if (tour == null)
-	        {
-		        tour = new OMTour();
-	        }
+			if (tour == null)
+			{
+				tour = new OMTour();
+			}
 
-	        tour.Year = int.Parse(year);
+			tour.Year = int.Parse(year);
 
-	        int idSave; 
+			int idSave;
 			using (var ts = new TransactionScope())
-	        {
-		        idSave = tour.Save();
-		        ts.Complete();
-	        }
+			{
+				idSave = tour.Save();
+				ts.Complete();
+			}
 
-			return Json(new {Success = "Сохранение выполненно", Id = idSave });
-        }
+			return Json(new { Success = "Сохранение выполненно", Id = idSave });
+		}
 
 
-        [HttpDelete]
-        public IActionResult TourEstimates(int id)
-        {
-	        var tour = OMTour.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+		[HttpDelete]
+		public IActionResult TourEstimates(int id)
+		{
+			var tour = OMTour.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
 
-			
-	        if (tour == null)
-	        {
-		        return Json(new {Error = "Тур с указыным ид не найден"});
-	        }
 
-	        using (var ts = new TransactionScope())
-	        {
-		        tour.Destroy();
-		        ts.Complete();
-	        }
+			if (tour == null)
+			{
+				return Json(new { Error = "Тур с указыным ид не найден" });
+			}
 
-	        return Json(new { Success = "Удаление выполненно"});
-        }
+			using (var ts = new TransactionScope())
+			{
+				tour.Destroy();
+				ts.Complete();
+			}
+
+			return Json(new { Success = "Удаление выполненно" });
+		}
 
 		public JsonResult GetTourEstimations()
-        {
-            var tours = OMTour.Where(x => x).SelectAll().Execute()
-                .Select(x => new
-                {
-                    x.Id,
-                    Text = x.Year
-                });
+		{
+			var tours = OMTour.Where(x => x).SelectAll().Execute()
+				.Select(x => new
+				{
+					x.Id,
+					Text = x.Year
+				});
 
-           return Json(tours);
-        }
-    }
+			return Json(tours);
+		}
+
+		#endregion
+
+		#region Группы/подгруппы
+
+		public ActionResult Groups()
+		{
+			return View();
+		}
+
+		public JsonResult GetGroups()
+		{
+			var groups = OMGroup.Where(x => x).SelectAll().Execute().Select(x => new
+			{
+				x.Id,
+				x.ParentId,
+				x.GroupName
+			}).ToList();
+			return Json(groups);
+		}
+
+		#endregion
+	}
 }

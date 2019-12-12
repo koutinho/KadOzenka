@@ -62,7 +62,8 @@
 		var dataSource = new kendo.data.DataSource({
 			transport: {
 				read: {
-					url: '@Url.Action("GetTourEstimations", "Task")'
+					url: '@Url.Action("GetTourEstimations", "Task")',
+					dataType: "jsonp"
 				}
 			}
 		});

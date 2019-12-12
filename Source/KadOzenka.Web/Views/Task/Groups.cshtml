@@ -1,0 +1,94 @@
+﻿<div class="flex-content">
+	<div class="k-content wide flex-tree-list">
+		<div id="treeList"></div>
+	</div>
+	<div class="flex-list-buttons">
+		<button class="btn btn-default add-group">
+			Добавить
+		</button>
+		<button class="btn btn-default edit-group" style="display: block">
+			Изменить
+		</button>
+		<button class="btn btn-default remove-group" style="display: block">
+			Удалить
+		</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+	$(document).ready(function() {
+
+		var dataSource = new kendo.data.TreeListDataSource({
+			transport: {
+				read: {
+					url: "@Url.Action("GetGroups", "Task")",
+					dataType: "json"
+				}
+			},
+			//schema: {
+			//	model: {  
+			//		id: "id",  
+			//		parentId: "parentId",  
+			//		fields: {  
+			//			parentId: {  
+			//				field: "parentId",  
+			//				nullable: true  
+			//			} 
+			//		},  
+			//		expanded: true  
+			//	} 
+			//}
+		});
+
+		$("#treeList").kendoTreeList({
+			dataSource: dataSource,
+			columns: [
+				{ field: "GroupName", title: "Имя группы" }
+			]
+		});
+	});
+</script>
+
+@section styles {
+	<style>
+
+		.flex-content {
+			display: flex;
+			height: 100%;
+		}
+
+		.flex-tree-list {
+			margin: 10px;
+			flex-grow: 1;
+			flex-shrink: 1;
+			flex-basis: auto;
+			align-items: stretch;
+		}
+		.flex-list-buttons {
+			margin: 10px;
+		}
+
+		button {
+			width: 10rem;
+			margin-bottom: 5px !important;
+		}
+
+		.tour p:hover {
+			background: #eaeef7;
+		}
+
+		.tour p {
+			padding: 5px;
+		}
+
+		#treeList {
+			height: 100%;
+			/*overflow: auto;*/
+		}
+
+		.selected {
+			background: #eaeef7;
+		}
+	</style>
+}
