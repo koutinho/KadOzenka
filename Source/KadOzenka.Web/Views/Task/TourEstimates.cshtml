@@ -78,11 +78,14 @@
 
 	$('.edit-tour').on('click',
 		function () {
-			var listView = $("#listView").data("kendoListView");
-			listView.edit($('div.k-state-selected'));
-			$(this).attr('disabled', true);
-			$('.add-tour').attr('disabled', true);
-			$('.remove-tour').attr('disabled', true);
+			if (!!$('div.k-state-selected')) {
+				var listView = $("#listView").data("kendoListView");
+				listView.edit($('div.k-state-selected'));
+				$(this).attr('disabled', true);
+				$('.add-tour').attr('disabled', true);
+				$('.remove-tour').attr('disabled', true);
+			}
+			
 		});
 
 	$('.add-tour').on('click',
@@ -93,11 +96,13 @@
 
 	$('.remove-tour').on('click',
 		function () {
-			var listView = $("#listView").data("kendoListView");
-			listView.edit($('div.k-state-selected'));
-			$(this).attr('disabled', true);
-			$('.add-tour').attr('disabled', true);
-			$('.remove-tour').attr('disabled', true);
+			if (!!$('div.k-state-selected')) {
+				$(this).attr('disabled', true);
+				$('.add-tour').attr('disabled', true);
+				$('.edit-tour').attr('disabled', true);
+				removeTour();
+			}
+
 		});
 
 	$('#saveTour').on('click',
@@ -143,6 +148,35 @@
 				
 				Common.ShowMessage(response.Success);
 			}
+		});
+	}
+
+	function removeTour() {
+		kendo.ui.progress($('body'), true);
+
+		var id = $('div.k-state-selected p').data('id');
+
+		var url = "@Url.Action("TourEstimates", "Task")" + `?id=${id}`;
+
+		$.ajax({
+			url: url,
+			type: 'DELETE',
+			success: function (response) {
+				kendo.ui.progress($('body'), false);
+				if (response.Error) {
+					Common.ShowError(response.Error);
+					return;
+				}
+				if (response.Success) {
+					$('.edit-tour').attr('disabled', false);
+					$('.add-tour').attr('disabled', false);
+					$('.remove-tour').attr('disabled', false);
+					var listView = $("#listView").data("kendoListView");
+					listView.remove($('div.k-state-selected'));
+					Common.ShowMessage(response.Success);
+				}
+			},
+			data: {id}
 		});
 	}
 

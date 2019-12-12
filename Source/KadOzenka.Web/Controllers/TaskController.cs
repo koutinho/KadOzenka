@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ObjectModel.Core.SRD;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
@@ -44,6 +45,26 @@ namespace KadOzenka.Web.Controllers
 			return Json(new {Success = "Сохранение выполненно", Id = idSave });
         }
 
+
+        [HttpDelete]
+        public IActionResult TourEstimates(int id)
+        {
+	        var tour = OMTour.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+
+			
+	        if (tour == null)
+	        {
+		        return Json(new {Error = "Тур с указыным ид не найден"});
+	        }
+
+	        using (var ts = new TransactionScope())
+	        {
+		        tour.Destroy();
+		        ts.Complete();
+	        }
+
+	        return Json(new { Success = "Удаление выполненно"});
+        }
 
 		public JsonResult GetTourEstimations()
         {
