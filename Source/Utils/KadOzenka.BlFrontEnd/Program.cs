@@ -16,6 +16,7 @@ using KadOzenka.BlFrontEnd.ExportCommission;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.BlFrontEnd.SudTests;
 using System.Collections.Generic;
+using KadOzenka.Dal.DataImport;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -73,9 +74,6 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("220", "Формула 2016", MSExporter.GetFormulaText);
             consoleHelper.AddCommand("221", "Рассчет", MSExporter.GetCalcGroup);
-            consoleHelper.AddCommand("250", "Метки экспорт", DataExporterKO.ExportMarkerTest);
-            consoleHelper.AddCommand("251", "Список для меток экспорт", DataExporterKO.ExportMarkerListTest);
-
 
             consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы (БД)", SudExporter.DoLoadBd);
             consoleHelper.AddCommand("301", "Импорт данных судебной подсистемы (Excel)", SudExporter.DoLoadExcel);
