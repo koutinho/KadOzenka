@@ -15,6 +15,9 @@
             <div id="dataContentContainer" class="DataContentContainer"></div>
         </div>
         <div id="map" class="Map"></div>
+        <div id="wmsLoadWindowContainer" class="wmsLoadWindowContainer Hidden">
+            <div id="wmsLoadWindow"></div>
+        </div>
     </div>
 </body>
 
@@ -28,6 +31,7 @@
     <script src="~/MapScripts/widgets.js" charset="utf-8"></script>
     <script src="~/MapScripts/clustering.js" charset="utf-8"></script>
     <script src="~/MapScripts/initializeHeatmap.js" charset="utf-8"></script>
+    <script src="~/MapScripts/wms.js" charset="utf-8"></script>
 
     <script type="text/javascript">
         var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
@@ -46,6 +50,10 @@
             newUrl.search = params;
             window.history.replaceState({ path: newUrl.href }, '', newUrl.href);
         }
+    </script>
+
+    <script type="text/x-kendo-template" id="wmsLoadWindowTemplate">
+        @await Html.PartialAsync("/Views/Map/_wmsLoadWindowContent.cshtml")
     </script>
 }
 

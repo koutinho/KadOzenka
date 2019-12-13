@@ -186,3 +186,41 @@ function refreshToggleHeatmapWidget(isHeatmapWidgetVisible) {
         document.getElementById('ToggleHeatmapText').innerHTML = "Отобразить тепловую карту";
     }
 }
+
+//TODO: кнопка для вызова модального окна wms сервиса
+function createLoadWmsWidget() {
+    loadWmsClass = function (options) {
+        loadWmsClass.superclass.constructor.call(this, options);
+        this._$content = null;
+        this._geocoderDeferred = null;
+    };
+    ymaps.util.augment(loadWmsClass, ymaps.collection.Item, {
+        onAddToMap: function (map) {
+            loadWmsClass.superclass.onAddToMap.call(this, map);
+            this._lastCenter = null;
+            this.getParent().getChildElement(this).then(this._onGetChildElement, this);
+
+        },
+        _onGetChildElement: function (parentDomContainer) {
+            this._$content = $(`
+                <div id="LoadWms" class="loadWmsButton">
+                    <div id="LoadWmsText" class="content">Загрузить данные с WMS сервиса</div>
+                </div>
+            `).appendTo(parentDomContainer);
+
+            this._eventsGroup = ymaps.domEvent.manager.group(this._$content[0]);
+            this._eventsGroup.add('click', function () {
+                this.events.fire('click');
+            }, this);
+            this._createRequest();
+        }
+    });
+};
+
+function addLoadWmsWidget(position) {
+    let loadWmsControl = new loadWmsClass();
+    loadWmsControl.events.add('click', () => {
+        addWmsService();
+    });
+    map.controls.add(loadWmsControl, { float: 'right' });
+};

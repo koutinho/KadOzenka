@@ -457,7 +457,7 @@ body {
 	font-weight: normal;
 }
 
-.toggleHeatmap {
+.toggleHeatmap, .loadWmsButton {
 	background: #4590ff;
 	padding: 0px 12px;
 	min-height: 26px;
@@ -467,4 +467,11 @@ body {
 	display: flex;
 	align-items: center;
 	cursor: pointer;
+}
+
+.wmsLoadWindowContainer {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	background-color: #656e7b50;
 }
