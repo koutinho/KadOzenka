@@ -18,8 +18,12 @@ namespace KadOzenka.Web.Models.Sud
 		public decimal? Square { get; set; }
 		[Display(Name = "Оспариваемая стоимость")]
 		public decimal? Kc { get; set; }
+
+		
 		[Display(Name = "Тип объекта")]
-		public SudObjectType ObjectType { get; set; }
+		[Range(1, int.MaxValue, ErrorMessage = "Тип объекта обязательное поле")]
+		[Required(ErrorMessage = "Тип объекта обязательное поле")]
+		public SudObjectType? ObjectType { get; set; }
 		[Display(Name = "Адрес")]
 		public string Address { get; set; }
 		[Display(Name = "Наименование (ТЦ, БЦ)")]
@@ -111,7 +115,7 @@ namespace KadOzenka.Web.Models.Sud
 			omObject.Date = model.Date;
 			omObject.Square = model.Square;
 			omObject.Kc = model.Kc;
-			omObject.Typeobj_Code = model.ObjectType;
+			omObject.Typeobj_Code = model.ObjectType.GetValueOrDefault();
 			omObject.Adres = model.Address;
 			omObject.NameCenter = model.NameCenter;
 			omObject.StatDgi = model.StatDgi;

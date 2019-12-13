@@ -35,6 +35,15 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
+			if (obj == null)
+			{
+				obj =  new OMObject();
+			}
+
+			if (drs == null)
+			{
+				drs = new OMDRS();
+			}
 			return View(ObjectCardModel.FromOM(obj, drs));
 		}
 
