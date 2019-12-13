@@ -15,7 +15,6 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
 using ObjectModel.Directory.Sud;
 
 namespace KadOzenka.Web.Controllers
@@ -727,19 +726,25 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult EditApprovalObject(int idObject)
         {
-            List<OMParam> paramValues = OMParam.GetAllParamsById(OMTableParam.Object, idObject)
+
+	        var isApproved = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE);
+
+			List<OMParam> paramValues = OMParam.GetAllParamsById(OMTableParam.Object, idObject)
                 .Where(x => x.ParamStatus_Code == ProcessingStatus.Processed).ToList();
 
             var model = EditApprovalObjectModel.FromEntity(paramValues);
             model.Id = idObject;
-            
-            return View(model);
+            model.IsDisableButton = model.IsDisableButton || !isApproved;
+
+			return View(model);
         }
 
         [HttpPost]
         public ActionResult EditApprovalObject(EditApprovalObjectModel model)
         {
-            if (!ModelState.IsValid)
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE, true, false, true);
+
+			if (!ModelState.IsValid)
             {
                 return Json(new
                 {
@@ -782,7 +787,11 @@ namespace KadOzenka.Web.Controllers
 
         public ActionResult GetReportContent(int idObject)
         {
-            List<OMOtchetLink> reportLinks = OMOtchetLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
+	        bool isApprovedReportLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE);
+
+			bool isApprovedReport = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_APPROVE);
+
+			List<OMOtchetLink> reportLinks = OMOtchetLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
 
             List<long> idLinks = reportLinks.Select(x => x.Id).ToList();
             List<long?> idReports = reportLinks.Select(x => x.IdOtchet).Where(x => x != null).ToList();
@@ -808,9 +817,12 @@ namespace KadOzenka.Web.Controllers
                 var tempModel = EditApprovalReportLinkModel.FromEntity(forModel);
                 tempModel.Id = reportLink.Id;
                 tempModel.Report.Id = reportLink.IdOtchet;
-                
+                tempModel.Report.IsDisableButton = tempModel.Report.IsDisableButton || !isApprovedReport;
+                tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedReportLink;
 
-                model.Add(tempModel);
+
+
+				model.Add(tempModel);
                 forModel.Clear();
             }
 
@@ -819,7 +831,9 @@ namespace KadOzenka.Web.Controllers
 
         public ActionResult EditApprovalReportLink(EditApprovalReportLinkModel model)
         {
-            if (!ModelState.IsValid)
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE, true, false, true);
+
+	        if (!ModelState.IsValid)
             {
                 return Json(new
                 {
@@ -857,7 +871,9 @@ namespace KadOzenka.Web.Controllers
         }
         public ActionResult EditApprovalReport(EditApprovalReportModel model)
         {
-            if (!ModelState.IsValid)
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_APPROVE, true, false, true);
+
+	        if (!ModelState.IsValid)
             {
                 return Json(new
                 {
@@ -898,7 +914,11 @@ namespace KadOzenka.Web.Controllers
 
         public ActionResult GetCourtContent(int idObject)
         {
-            List<OMSudLink> courtLinks = OMSudLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
+	        bool isApprovedCourtLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE);
+
+	        bool isApprovedCourt = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE);
+
+	        List<OMSudLink> courtLinks = OMSudLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
 
             List<long> idLinks = courtLinks.Select(x => x.Id).ToList();
             List<long?> idCourts = courtLinks.Select(x => x.IdSud).Where(x => x != null).ToList();
@@ -924,15 +944,20 @@ namespace KadOzenka.Web.Controllers
                 var tempModel = EditApprovalCourtLinkModel.FromEntity(forModel);
                 tempModel.Id = courtLink.Id;
                 tempModel.Court.Id = courtLink.IdSud;
+                tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedCourtLink;
+                tempModel.Court.IsDisableButton = tempModel.Court.IsDisableButton || !isApprovedCourt;
 
-                model.Add(tempModel);
+
+				model.Add(tempModel);
                 forModel.Clear();
             }
             return View("~/Views/Sud/TabContent/CourtContent.cshtml", model);
         }
         public ActionResult EditApprovalCourt(EditApprovalCourtModel model)
         {
-            if (!ModelState.IsValid)
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE, true, false, true);
+
+	        if (!ModelState.IsValid)
             {
                 return Json(new
                 {
@@ -971,7 +996,9 @@ namespace KadOzenka.Web.Controllers
 
         public ActionResult EditApprovalCourtLink(EditApprovalCourtLinkModel model)
         {
-            if (!ModelState.IsValid)
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE, true, false, true);
+
+	        if (!ModelState.IsValid)
             {
                 return Json(new
                 {
@@ -1009,8 +1036,11 @@ namespace KadOzenka.Web.Controllers
         }
         public ActionResult GetConclusionContent(int idObject)
         {
+	        bool isApprovedConclusion = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE);
 
-            List<OMZakLink> conclusionLinks = OMZakLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
+	        bool isApprovedConclusionLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_ZAK_APPROVE);
+
+	        List<OMZakLink> conclusionLinks = OMZakLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
 
             List<long> idLinks = conclusionLinks.Select(x => x.Id).ToList();
             List<long?> idConclusions = conclusionLinks.Select(x => x.IdZak).Where(x => x != null).ToList();
@@ -1036,8 +1066,11 @@ namespace KadOzenka.Web.Controllers
                 var tempModel = EditApprovalConclusionLinkModel.FromEntity(forModel);
                 tempModel.Id = conclusionLink.Id;
                 tempModel.Conclusion.Id = conclusionLink.IdZak;
+                tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedConclusionLink;
+                tempModel.Conclusion.IsDisableButton = tempModel.Conclusion.IsDisableButton || !isApprovedConclusion;
 
-                model.Add(tempModel);
+
+				model.Add(tempModel);
                 forModel.Clear();
             }
             return View("~/Views/Sud/TabContent/ConclusionContent.cshtml", model);
@@ -1045,7 +1078,9 @@ namespace KadOzenka.Web.Controllers
 
         public ActionResult EditApprovalConclusion(EditApprovalConclusionModel model)
         {
-            if (!ModelState.IsValid)
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE, true, false, true);
+
+	        if (!ModelState.IsValid)
             {
                 return Json(new
                 {
@@ -1090,7 +1125,9 @@ namespace KadOzenka.Web.Controllers
 
         public ActionResult EditApprovalConclusionLink(EditApprovalConclusionLinkModel model)
         {
-            if (!ModelState.IsValid)
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_ZAK_APPROVE, true, false, true);
+
+			if (!ModelState.IsValid)
             {
                 return Json(new
                 {
