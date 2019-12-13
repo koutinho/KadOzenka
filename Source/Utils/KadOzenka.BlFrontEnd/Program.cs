@@ -15,6 +15,7 @@ using KadOzenka.BlFrontEnd.ExportMSSQL;
 using KadOzenka.BlFrontEnd.ExportCommission;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.BlFrontEnd.SudTests;
+using System.Collections.Generic;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -72,10 +73,12 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("220", "Формула 2016", MSExporter.GetFormulaText);
             consoleHelper.AddCommand("221", "Рассчет", MSExporter.GetCalcGroup);
+            consoleHelper.AddCommand("250", "Метки экспорт", DataExporterKO.ExportMarkerTest);
+            consoleHelper.AddCommand("251", "Список для меток экспорт", DataExporterKO.ExportMarkerListTest);
 
 
-            consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы", SudExporter.DoLoadBd);
-            consoleHelper.AddCommand("301", "Импорт данных судебной подсистемы", SudExporter.DoLoadExcel);
+            consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы (БД)", SudExporter.DoLoadBd);
+            consoleHelper.AddCommand("301", "Импорт данных судебной подсистемы (Excel)", SudExporter.DoLoadExcel);
             consoleHelper.AddCommand("302", "Экспорт данных судебной подсистемы в Xml", SudExporter.ExportXml);
             consoleHelper.AddCommand("303", "Экспорт данных судебной подсистемы в Excel", SudExporter.ExportExcel);
             consoleHelper.AddCommand("304", "Статистика сводная в Excel", SudExporter.ExportStatExcel);
@@ -86,6 +89,7 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("400", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.GAF(); });
             consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
+
         }
 
     }

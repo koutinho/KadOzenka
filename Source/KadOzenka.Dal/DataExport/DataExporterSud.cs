@@ -23,197 +23,6 @@ namespace KadOzenka.Dal.DataExport
     public class DataExporterSud
     {
         /// <summary>
-        /// Добавление аттрибута к объекту XML
-        /// </summary>
-        private static void AddAttribute(XmlDocument xmlFile, XmlNode xn, string name, string value)
-        {
-            XmlAttribute xa = xn.Attributes.Append(xmlFile.CreateAttribute(name));
-            xa.Value = value;
-        }
-        /// <summary>
-        /// Добавление в Excel данных в строку с индексом Row
-        /// </summary>
-        private static void AddRow(ExcelWorksheet sheet, int Row, object[] values)
-        {
-            int Col = 0;
-            foreach (object value in values)
-            {
-                if (value is Boolean) sheet.Rows[Row].Cells[Col].SetValue(Convert.ToBoolean(value) ? "Да" : "Нет");
-                else
-                if (value is string) sheet.Rows[Row].Cells[Col].SetValue(value as string);
-                else
-                if (value is int)
-                {
-                    sheet.Rows[Row].Cells[Col].SetValue((int)value);
-                    sheet.Rows[Row].Cells[Col].Style.NumberFormat = "#,##0";
-                }
-                else
-                if (value is decimal || value is double)
-                {
-                    sheet.Rows[Row].Cells[Col].SetValue(Convert.ToDouble(value));
-                    sheet.Rows[Row].Cells[Col].Style.NumberFormat = "#,##0.00";
-                }
-                else
-                if (value is DateTime)
-                {
-                    sheet.Rows[Row].Cells[Col].SetValue(Convert.ToDateTime(value));
-                    sheet.Rows[Row].Cells[Col].Style.NumberFormat = "mm/dd/yyyy";
-                }
-                else
-                if (value is int?)
-                {
-                    if (value == null)
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue("-");
-                    }
-                    else
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue((int)value);
-                        sheet.Rows[Row].Cells[Col].Style.NumberFormat = "#,##0";
-                    }
-                }
-                else
-                if (value is decimal?)
-                {
-                    if (value == null)
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue("-");
-                    }
-                    else
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue(Convert.ToDouble(value));
-                        sheet.Rows[Row].Cells[Col].Style.NumberFormat = "#,##0.00";
-                    }
-                }
-                else
-                if (value is DateTime?)
-                {
-                    if (value == null)
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue("-");
-                    }
-                    else
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue(Convert.ToDateTime(value));
-                        sheet.Rows[Row].Cells[Col].Style.NumberFormat = "mm/dd/yyyy";
-                    }
-                }
-
-                sheet.Rows[Row].Cells[Col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-                Col++;
-            }
-        }
-        /// <summary>
-        /// Добавление в Excel данных в строку с индексом Row и установка ширины столбцов
-        /// </summary>
-        private static void AddRow(ExcelWorksheet sheet, int Row, object[] values, int[] widths, bool wrap, bool center, bool bold)
-        {
-            int Col = 0;
-            foreach (object value in values)
-            {
-                if (value is Boolean) sheet.Rows[Row].Cells[Col].SetValue(Convert.ToBoolean(value) ? "Да" : "Нет");
-                else
-                if (value is string) sheet.Rows[Row].Cells[Col].SetValue(value as string);
-                else
-                if (value is int)
-                {
-                    sheet.Rows[Row].Cells[Col].SetValue((int)value);
-                    sheet.Rows[Row].Cells[Col].Style.NumberFormat = "#,##0";
-                }
-                else
-                if (value is decimal || value is double)
-                {
-                    sheet.Rows[Row].Cells[Col].SetValue(Convert.ToDouble(value));
-                    sheet.Rows[Row].Cells[Col].Style.NumberFormat = "#,##0.00";
-                }
-                else
-                if (value is DateTime)
-                {
-                    sheet.Rows[Row].Cells[Col].SetValue(Convert.ToDateTime(value));
-                    sheet.Rows[Row].Cells[Col].Style.NumberFormat = "mm/dd/yyyy";
-                }
-                else
-                if (value is int?)
-                {
-                    if (value == null)
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue("-");
-                    }
-                    else
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue((int)value);
-                        sheet.Rows[Row].Cells[Col].Style.NumberFormat = "#,##0";
-                    }
-                }
-                else
-                if (value is decimal?)
-                {
-                    if (value == null)
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue("-");
-                    }
-                    else
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue(Convert.ToDouble(value));
-                        sheet.Rows[Row].Cells[Col].Style.NumberFormat = "#,##0.00";
-                    }
-                }
-                else
-                if (value is DateTime?)
-                {
-                    if (value == null)
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue("-");
-                    }
-                    else
-                    {
-                        sheet.Rows[Row].Cells[Col].SetValue(Convert.ToDateTime(value));
-                        sheet.Rows[Row].Cells[Col].Style.NumberFormat = "mm/dd/yyyy";
-                    }
-                }
-
-                sheet.Rows[Row].Cells[Col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-                if (wrap)
-                {
-                    sheet.Rows[Row].Cells[Col].Style.WrapText = wrap;
-                }
-
-                if (center)
-                {
-                    sheet.Rows[Row].Cells[Col].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-                    sheet.Rows[Row].Cells[Col].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-                }
-
-                if (bold)
-                {
-                    sheet.Rows[Row].Cells[Col].Style.Font.Weight = ExcelFont.BoldWeight;
-                }
-
-                sheet.Columns[Col].Width = widths[Col];
-                Col++;
-            }
-        }
-        /// <summary>
-        /// Объединение ячеек в одной строке и установка данных в Excel
-        /// </summary>
-        private static void MergeCell(ExcelWorksheet sheet, int Row, int ColFirst, int ColLast, string value)
-        {
-            MergeCell(sheet, Row, Row, ColFirst, ColLast, value);
-        }
-        /// <summary>
-        /// Объединение ячеек и установка данных в Excel
-        /// </summary>
-        private static void MergeCell(ExcelWorksheet sheet, int FirstRow, int LastRow, int ColFirst, int ColLast, string value)
-        {
-            sheet.Rows[FirstRow].Cells[ColFirst].SetValue(value);
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Merged = true;
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-        }
-
-
-        /// <summary>
         /// Выгрузка судебных решений для ГБУ в формате Excel
         /// </summary>
         public static Stream ExportDataToExcelGbu()
@@ -222,7 +31,7 @@ namespace KadOzenka.Dal.DataExport
 
             var mainWorkSheet = excelTemplate.Worksheets.Add("Экспорт данных");
 
-            AddRow(mainWorkSheet, 0, new object[] { "Кадастровый номер объекта", "Дата определения КС", "Кадастровая стоимость", "№ дела", "Дата судебного акта", "Установленная судом РС", "Административный истец" });
+            DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "Кадастровый номер объекта", "Дата определения КС", "Кадастровая стоимость", "№ дела", "Дата судебного акта", "Установленная судом РС", "Административный истец" });
 
             List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where().SelectAll().Execute();
             int curIndex = 0;
@@ -290,7 +99,7 @@ namespace KadOzenka.Dal.DataExport
                 int row = 1;
                 foreach(List<object> value in values)
                 {
-                    AddRow(mainWorkSheet, row, value.ToArray());
+                    DataExportCommon.AddRow(mainWorkSheet, row, value.ToArray());
                     row++;
                 }
                 Console.WriteLine(values.Count);
@@ -308,7 +117,7 @@ namespace KadOzenka.Dal.DataExport
         {
             XmlDocument xmlFile = new XmlDocument();
             XmlNode xnLandValuation = xmlFile.CreateElement("SudExport");
-            AddAttribute(xmlFile, xnLandValuation, "Version", "01");
+            DataExportCommon.AddAttribute(xmlFile, xnLandValuation, "Version", "01");
             XmlNode xnobjects = xmlFile.CreateElement("Objects");
 
             List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where().SelectAll().Execute();
@@ -362,9 +171,9 @@ namespace KadOzenka.Dal.DataExport
                             lock (locked)
                             {
                                 XmlNode xnobject = xmlFile.CreateElement("object");
-                                AddAttribute(xmlFile, xnobject, "kn", Kn);
-                                AddAttribute(xmlFile, xnobject, "type", Type);
-                                AddAttribute(xmlFile, xnobject, "year", Year);
+                                DataExportCommon.AddAttribute(xmlFile, xnobject, "kn", Kn);
+                                DataExportCommon.AddAttribute(xmlFile, xnobject, "type", Type);
+                                DataExportCommon.AddAttribute(xmlFile, xnobject, "year", Year);
                                 //Установленная судом рыночная стоимость, руб.
                                 XmlNode xnvalue_25 = xmlFile.CreateElement("value_25"); xnvalue_25.InnerText = last.Rs.ParseToString(); xnobject.AppendChild(xnvalue_25);
                                 //Номер дела
@@ -402,7 +211,7 @@ namespace KadOzenka.Dal.DataExport
 
             var mainWorkSheet = excelTemplate.Worksheets.Add("Экспорт данных");
 
-            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => x.Adres == "ул Шереметьевская, д.6, корп.1").SelectAll().Execute();
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where().SelectAll().Execute();
             int curIndex = 0;
             if (objs.Count > 0)
             {
@@ -506,27 +315,27 @@ namespace KadOzenka.Dal.DataExport
                     #endregion
                 }
 
-                MergeCell(mainWorkSheet, 0, 1, 0, 8, "Объект");
-                MergeCell(mainWorkSheet, 0, 9, 9 + (10 * maxotchet) - 1, "Отчет");
-                MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet), 9 + (10 * maxotchet) + (8 * maxsud) - 1, "Судебное решение");
-                MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet) + (8 * maxsud), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * maxzak) - 1, "Экспертное заключение");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 1, 0, 8, "Объект");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 9, 9 + (10 * maxotchet) - 1, "Отчет");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet), 9 + (10 * maxotchet) + (8 * maxsud) - 1, "Судебное решение");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet) + (8 * maxsud), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * maxzak) - 1, "Экспертное заключение");
 
                 for (int i = 0; i < maxotchet; i++)
                 {
-                    MergeCell(mainWorkSheet, 1, 9 + (10 * (i)), 9 + (10 * (i + 1)) - 1, "Отчет " + "№" + (i + 1).ToString());
+                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * (i)), 9 + (10 * (i + 1)) - 1, "Отчет " + "№" + (i + 1).ToString());
                 }
 
                 for (int i = 0; i < maxsud; i++)
                 {
-                    MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * (i)), 9 + (10 * maxotchet) + (8 * (i + 1)) - 1, "Судебное решение " + "№" + (i + 1).ToString());
+                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * (i)), 9 + (10 * maxotchet) + (8 * (i + 1)) - 1, "Судебное решение " + "№" + (i + 1).ToString());
                 }
 
                 for (int i = 0; i < maxzak; i++)
                 {
-                    MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i)), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i + 1)) - 1, "Экспертное заключение " + "№" + (i + 1).ToString());
+                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i)), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i + 1)) - 1, "Экспертное заключение " + "№" + (i + 1).ToString());
                 }
 
-                AddRow(mainWorkSheet, 2, caption.ToArray());
+                DataExportCommon.AddRow(mainWorkSheet, 2, caption.ToArray());
 
                 curIndex = 0;
                 int dataRow = 2;
@@ -539,7 +348,7 @@ namespace KadOzenka.Dal.DataExport
                     lock (locked)
                     {
                         dataRow++;
-                        AddRow(mainWorkSheet, dataRow, datas.ToArray());
+                        DataExportCommon.AddRow(mainWorkSheet, dataRow, datas.ToArray());
                     }
                 });
 
@@ -873,7 +682,7 @@ namespace KadOzenka.Dal.DataExport
             }
 
             object[] captions = new string[] { "Статистика СПО СУДЫ", "Всего", "Дата определения стоимости: все, кроме 01.01.2018, 01.01.2019 и позднее", "Дата определения стоимости: 01.01.2018, 01.01.2019 и позднее" };
-            AddRow(mainWorkSheet, 0, captions, new int[] { 5600, 5600, 5600, 5600}, true, true, true);
+            DataExportCommon.AddRow(mainWorkSheet, 0, captions, new int[] { 5600, 5600, 5600, 5600}, true, true, true);
 
 
             object[] row1 = new object[] { "Количество объектов недвижимости", count1_new + count1_old, count1_old, count1_new };
@@ -886,15 +695,15 @@ namespace KadOzenka.Dal.DataExport
             object[] row8 = new object[] { "Рецензия после анализа (ДА)", count8_new + count8_old, count8_old, count8_new };
             object[] row9 = new object[] { "Рецензия после анализа (НЕТ)", count9_new + count9_old, count9_old, count9_new };
 
-            AddRow(mainWorkSheet, 1, row1);
-            AddRow(mainWorkSheet, 2, row2);
-            AddRow(mainWorkSheet, 3, row3);
-            AddRow(mainWorkSheet, 4, row4);
-            AddRow(mainWorkSheet, 5, row5);
-            AddRow(mainWorkSheet, 6, row6);
-            AddRow(mainWorkSheet, 7, row7);
-            AddRow(mainWorkSheet, 8, row8);
-            AddRow(mainWorkSheet, 9, row9);
+            DataExportCommon.AddRow(mainWorkSheet, 1, row1);
+            DataExportCommon.AddRow(mainWorkSheet, 2, row2);
+            DataExportCommon.AddRow(mainWorkSheet, 3, row3);
+            DataExportCommon.AddRow(mainWorkSheet, 4, row4);
+            DataExportCommon.AddRow(mainWorkSheet, 5, row5);
+            DataExportCommon.AddRow(mainWorkSheet, 6, row6);
+            DataExportCommon.AddRow(mainWorkSheet, 7, row7);
+            DataExportCommon.AddRow(mainWorkSheet, 8, row8);
+            DataExportCommon.AddRow(mainWorkSheet, 9, row9);
 
             MemoryStream stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
@@ -1029,12 +838,12 @@ namespace KadOzenka.Dal.DataExport
             object[] row4 = new object[] { "в т.ч. Помещение", flt_stop, flt_no, flt_yes, flt_none, flt_no + flt_yes };
             object[] row5 = new object[] { "ВСЕГО", zu_stop + oks_stop, zu_no + oks_no, zu_yes + oks_yes, zu_none + oks_none, zu_no + zu_yes + oks_no + oks_yes };
 
-            AddRow(mainWorkSheet, 0, captions);
-            AddRow(mainWorkSheet, 1, row1);
-            AddRow(mainWorkSheet, 2, row2);
-            AddRow(mainWorkSheet, 3, row3);
-            AddRow(mainWorkSheet, 4, row4);
-            AddRow(mainWorkSheet, 5, row5);
+            DataExportCommon.AddRow(mainWorkSheet, 0, captions);
+            DataExportCommon.AddRow(mainWorkSheet, 1, row1);
+            DataExportCommon.AddRow(mainWorkSheet, 2, row2);
+            DataExportCommon.AddRow(mainWorkSheet, 3, row3);
+            DataExportCommon.AddRow(mainWorkSheet, 4, row4);
+            DataExportCommon.AddRow(mainWorkSheet, 5, row5);
 
             MemoryStream stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
@@ -1194,19 +1003,17 @@ namespace KadOzenka.Dal.DataExport
             object[] row4 = new object[] { "в т.ч. Помещение", flt_kc, flt_rs, flt_exp, flt_sud, flt_kc - flt_sud, (flt_kc > 0) ? (100 - (flt_sud * 100 / flt_kc)) : 0, flt_count };
             object[] row5 = new object[] { "ВСЕГО", zu_kc + oks_kc, zu_rs + oks_rs, zu_exp + oks_exp, zu_sud + oks_sud, zu_kc + oks_kc - zu_sud - oks_sud, (zu_kc + oks_kc > 0) ? (100 - ((zu_sud + oks_sud) * 100 / (zu_kc + oks_kc))) : 0, zu_count + oks_count };
 
-            AddRow(mainWorkSheet, 0, captions, new int[] { 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600 }, true, true, true);
-            AddRow(mainWorkSheet, 1, row1);
-            AddRow(mainWorkSheet, 2, row2);
-            AddRow(mainWorkSheet, 3, row3);
-            AddRow(mainWorkSheet, 4, row4);
-            AddRow(mainWorkSheet, 5, row5);
+            DataExportCommon.AddRow(mainWorkSheet, 0, captions, new int[] { 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600 }, true, true, true);
+            DataExportCommon.AddRow(mainWorkSheet, 1, row1);
+            DataExportCommon.AddRow(mainWorkSheet, 2, row2);
+            DataExportCommon.AddRow(mainWorkSheet, 3, row3);
+            DataExportCommon.AddRow(mainWorkSheet, 4, row4);
+            DataExportCommon.AddRow(mainWorkSheet, 5, row5);
 
             MemoryStream stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
         }
-
-
     }
 }
