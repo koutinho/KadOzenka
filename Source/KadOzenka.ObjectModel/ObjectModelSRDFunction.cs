@@ -86,6 +86,75 @@ namespace ObjectModel.SRD
               // Удаление (362)
               public const string CORE_SRD_ROLES_DELETE = "CORE.SRD.ROLES.DELETE";
                 
+              // Объекты аналоги (500)
+              public const string MARKET = "MARKET";
+                
+              // Объекты оценки (501)
+              public const string GBU = "GBU";
+                
+              // Задания на оценку (502)
+              public const string KO = "KO";
+                
+              // Судебные решения (503)
+              public const string SUD = "SUD";
+                
+              // Комиссии (504)
+              public const string COMMISSION = "COMMISSION";
+                
+              // Декларации (505)
+              public const string DECLARATIONS = "DECLARATIONS";
+                
+              // Отчеты (506)
+              public const string SUD_OTCHET = "SUD.OTCHET";
+                
+              // Создание/Редактирование (507)
+              public const string SUD_OTCHET_EDIT = "SUD.OTCHET.EDIT";
+                
+              // Заключения (508)
+              public const string SUD_ZAK = "SUD.ZAK";
+                
+              // Создание/Редактирование (509)
+              public const string SUD_ZAK_EDIT = "SUD.ZAK.EDIT";
+                
+              // Решения (510)
+              public const string SUD_RESH = "SUD.RESH";
+                
+              // Создание/Редактирование (511)
+              public const string SUD_RESH_EDIT = "SUD.RESH.EDIT";
+                
+              // Объекты (512)
+              public const string SUD_OBJECTS = "SUD.OBJECTS";
+                
+              // Создание/Редактирование (513)
+              public const string SUD_OBJECTS_EDIT = "SUD.OBJECTS.EDIT";
+                
+              // Утверждение (514)
+              public const string SUD_OBJECTS_APPROVE = "SUD.OBJECTS.APPROVE";
+                
+              // Утверждение отчета из карточки объекта (515)
+              public const string SUD_OBJECTS_OTCHET_APPROVE = "SUD.OBJECTS.OTCHET.APPROVE";
+                
+              // Утверждение заключения из карточки объекта (516)
+              public const string SUD_OBJECTS_ZAK_APPROVE = "SUD.OBJECTS.ZAK.APPROVE";
+                
+              // Утверждение решения из карточки объекта (517)
+              public const string SUD_OBJECTS_RESH_APPROVE = "SUD.OBJECTS.RESH.APPROVE";
+                
+              // Утверждение отчетов (518)
+              public const string SUD_OTCHET_APPROVE = "SUD.OTCHET.APPROVE";
+                
+              // Утверждение заключений (519)
+              public const string SUD_ZAK_APPROVE = "SUD.ZAK.APPROVE";
+                
+              // Утверждение решений (520)
+              public const string SUD_RESH_APPROVE = "SUD.RESH.APPROVE";
+                
+              // Загрузка данных (521)
+              public const string SUD_IMPORT = "SUD.IMPORT";
+                
+              // Выгрузка данных (522)
+              public const string SUD_EXPORT = "SUD.EXPORT";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 
