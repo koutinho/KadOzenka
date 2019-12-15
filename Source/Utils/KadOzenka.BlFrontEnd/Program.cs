@@ -10,6 +10,7 @@ using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
 using KadOzenka.Dal.RestAppParser;
 using KadOzenka.Dal.Selenium.PriceChecker;
 using KadOzenka.Dal.Test;
+using KadOzenka.BlFrontEnd.ExportKO;
 using KadOzenka.BlFrontEnd.ExportSud;
 using KadOzenka.BlFrontEnd.ExportMSSQL;
 using KadOzenka.BlFrontEnd.ExportCommission;
@@ -84,6 +85,8 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("306", "Статистика по положительным судебным решениям в Excel", SudExporter.ExportStatCheckExcel);
             consoleHelper.AddCommand("350", "Импорт данных решений комиссий (БД)", CommissionExporter.DoLoadBd);
             consoleHelper.AddCommand("351", "Импорт данных решений комиссий (Excel)", CommissionExporter.DoLoadExcel);
+
+            consoleHelper.AddCommand("360", "Экспорт в Xml - результаты определения КС.", ExporterKO.ExportXml1);
 
             consoleHelper.AddCommand("400", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.GAF(); });
             consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });

@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Configuration;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -152,6 +153,172 @@ namespace KadOzenka.Dal.DataExport
             MemoryStream stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
             stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+
+        public static void AddXmlDocument(XmlDocument xmlFile, XmlNode parent, bool usedoc, string docname, string docn, DateTime docdate, DateTime ddate, string sender, DateTime dupload)
+        {
+            XmlNode xneDocument = xmlFile.CreateElement("eDocument");
+            DataExportCommon.AddAttribute(xmlFile, xneDocument, "Date", ddate.ToString("yyyy-MM-dd"));
+            DataExportCommon.AddAttribute(xmlFile, xneDocument, "CodeType", "004");
+            DataExportCommon.AddAttribute(xmlFile, xneDocument, "Version", "02");
+            if (usedoc)
+            {
+                DataExportCommon.AddAttribute(xmlFile, xneDocument, "Name_Doc", docname);
+                DataExportCommon.AddAttribute(xmlFile, xneDocument, "N_doc", docn);
+                DataExportCommon.AddAttribute(xmlFile, xneDocument, "Date_Doc", docdate.ToString("yyyy-MM-dd"));
+            }
+            AddXmlSender(xmlFile, xneDocument, sender, dupload);
+            AddXmlRecipient(xmlFile, xneDocument);
+            parent.AppendChild(xneDocument);
+        }
+        public static void AddXmlSender(XmlDocument xmlFile, XmlNode parent, string sender, DateTime dupload)
+        {
+            XmlNode xnSender = xmlFile.CreateElement("Sender");
+            DataExportCommon.AddAttribute(xmlFile, xnSender, "Name", sender);
+            DataExportCommon.AddAttribute(xmlFile, xnSender, "Date_Upload", dupload.ToString("yyyy-MM-dd"));
+            parent.AppendChild(xnSender);
+        }
+        public static void AddXmlRecipient(XmlDocument xmlFile, XmlNode parent)
+        {
+            XmlNode xnRecipient = xmlFile.CreateElement("Recipient");
+            DataExportCommon.AddAttribute(xmlFile, xnRecipient, "Name", "");
+            parent.AppendChild(xnRecipient);
+        }
+        public static void AddXmlPackage(XmlDocument xmlFile, XmlNode parent, List<ObjectModel.KO.OMUnit> units)
+        {
+            XmlNode xnRecipient = xmlFile.CreateElement("Package");
+            AddXmlFederal(xmlFile, xnRecipient, units);
+            parent.AppendChild(xnRecipient);
+        }
+        public static void AddXmlFederal(XmlDocument xmlFile, XmlNode parent, List<ObjectModel.KO.OMUnit> units)
+        {
+            XmlNode xnRecipient = xmlFile.CreateElement("Federal");
+            DataExportCommon.AddAttribute(xmlFile, xnRecipient, "CadastralNumber", "00");
+            AddXmlRegions(xmlFile, xnRecipient, units);
+            parent.AppendChild(xnRecipient);
+        }
+        public static void AddXmlRegions(XmlDocument xmlFile, XmlNode parent, List<ObjectModel.KO.OMUnit> units)
+        {
+            XmlNode xnRecipient = xmlFile.CreateElement("Cadastral_Regions");
+
+            string kn_sub = "";
+            string kn_raion = "";
+            string kn_kvartal = "";
+
+            XmlNode xn_kn_sub = null;
+            XmlNode xn_kn_raion = null;
+            XmlNode xn_kn_kvartal = null;
+
+            XmlNode xn_Cadastral_Districts = null;
+            XmlNode xn_Cadastral_Blocks = null;
+            XmlNode xn_Parcels = null;
+
+            foreach (ObjectModel.KO.OMUnit unit in units)
+            {
+                string[] arrtmp = unit.CadastralNumber.Split(':');
+                if (arrtmp.Length == 4)
+                {
+                    string kn = unit.CadastralNumber;
+                    string tupksz = unit.Upks.ToString();
+                    string tks = unit.CadastralCost.ToString();
+                    string upksz = "";
+                    string ks = "";
+                    double dUPKSZ = 0;
+                    double dKS = 0;
+
+                    if (double.TryParse(tupksz.Replace(',', '.'), out dUPKSZ))
+                        upksz = dUPKSZ.ToString("0.00").Replace(',', '.');
+                    else
+                        if (double.TryParse(tupksz.Replace('.', ','), out dUPKSZ))
+                        upksz = dUPKSZ.ToString("0.00").Replace(',', '.');
+                    else
+                        upksz = "";
+
+                    if (double.TryParse(tks.Replace(',', '.'), out dKS))
+                        ks = dKS.ToString("0.00").Replace(',', '.');
+                    else
+                        if (double.TryParse(tks.Replace('.', ','), out dKS))
+                        ks = dKS.ToString("0.00").Replace(',', '.');
+                    else
+                        ks = "";
+
+                    string[] arr = kn.Split(':');
+                    string new_kn_sub = arr[0];
+                    string new_kn_raion = arr[0] + ":" + arr[1];
+                    string new_kn_kvartal = arr[0] + ":" + arr[1] + ":" + arr[2];
+
+                    if (kn_sub != new_kn_sub)
+                    {
+                        xn_kn_sub = xmlFile.CreateElement("Cadastral_Region");
+                        DataExportCommon.AddAttribute(xmlFile, xn_kn_sub, "CadastralNumber", new_kn_sub);
+                        xn_Cadastral_Districts = xmlFile.CreateElement("Cadastral_Districts");
+                        xn_kn_sub.AppendChild(xn_Cadastral_Districts);
+                        xnRecipient.AppendChild(xn_kn_sub);
+                        kn_sub = new_kn_sub;
+                    }
+
+                    if (kn_raion != new_kn_raion)
+                    {
+                        xn_kn_raion = xmlFile.CreateElement("Cadastral_District");
+                        DataExportCommon.AddAttribute(xmlFile, xn_kn_raion, "CadastralNumber", new_kn_raion);
+                        xn_Cadastral_Blocks = xmlFile.CreateElement("Cadastral_Blocks");
+                        xn_Cadastral_Districts.AppendChild(xn_kn_raion);
+                        xn_kn_raion.AppendChild(xn_Cadastral_Blocks);
+                        kn_raion = new_kn_raion;
+                    }
+
+                    if (kn_kvartal != new_kn_kvartal)
+                    {
+                        xn_kn_kvartal = xmlFile.CreateElement("Cadastral_Block");
+                        DataExportCommon.AddAttribute(xmlFile, xn_kn_kvartal, "CadastralNumber", new_kn_kvartal);
+                        xn_Parcels = xmlFile.CreateElement("Parcels");
+                        xn_Cadastral_Blocks.AppendChild(xn_kn_kvartal);
+                        xn_kn_kvartal.AppendChild(xn_Parcels);
+                        kn_kvartal = new_kn_kvartal;
+                    }
+
+                    XmlNode xn_parcel = xmlFile.CreateElement("Parcel");
+                    DataExportCommon.AddAttribute(xmlFile, xn_parcel, "CadastralNumber", kn);
+                    XmlNode xn_Ground_Payments = xmlFile.CreateElement("Ground_Payments");
+                    XmlNode xn_Specific_CadastralCost = xmlFile.CreateElement("Specific_CadastralCost");
+                    DataExportCommon.AddAttribute(xmlFile, xn_Specific_CadastralCost, "Value", upksz);
+                    DataExportCommon.AddAttribute(xmlFile, xn_Specific_CadastralCost, "Unit", "1002");
+                    XmlNode xn_CadastralCost = xmlFile.CreateElement("CadastralCost");
+                    DataExportCommon.AddAttribute(xmlFile, xn_CadastralCost, "Value", ks);
+                    DataExportCommon.AddAttribute(xmlFile, xn_CadastralCost, "Unit", "383");
+                    xn_Ground_Payments.AppendChild(xn_Specific_CadastralCost);
+                    xn_Ground_Payments.AppendChild(xn_CadastralCost);
+                    xn_parcel.AppendChild(xn_Ground_Payments);
+
+                    if ((ks != String.Empty) & (upksz != string.Empty))
+                        xn_Parcels.AppendChild(xn_parcel);
+                }
+            }
+            parent.AppendChild(xnRecipient);
+        }
+        /// <summary>
+        /// Выгрузка в XML результатов Кадастровой оценки: Кадастровый номер, УПКСЗ, Кадастровая стоимость.
+        /// </summary>
+        public static Stream ExportCostToXml(List<ObjectModel.KO.OMUnit> units)
+        {
+            XmlDocument xmlFile = new XmlDocument();
+            XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
+
+            AddXmlDocument(xmlFile, xnLandValuation, ConfigurationManager.AppSettings["ucUseDoc" ].ParseToBoolean(),
+                                                     ConfigurationManager.AppSettings["ucDocName"],
+                                                     ConfigurationManager.AppSettings["ucDocNum" ],
+                                                     ConfigurationManager.AppSettings["ucDocDate"].ParseToDateTime(),
+                                                     ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime(),
+                                                     ConfigurationManager.AppSettings["ucSender" ],
+                                                     DateTime.Now);
+            AddXmlPackage(xmlFile, xnLandValuation, units);
+
+            xmlFile.AppendChild(xnLandValuation);
+            MemoryStream stream = new MemoryStream();
+            xmlFile.Save(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+
             return stream;
         }
     }
