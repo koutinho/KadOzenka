@@ -1,0 +1,155 @@
+﻿@using ObjectModel.Directory.Declarations
+@model KadOzenka.Web.Models.Declarations.SubjectModel
+
+@using (Html.BeginForm("EditSubject", "Declarations", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-3">
+                @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Юридическое лицо").Value((long) SubjectType.Ul).Enable(Model.Id == -1))
+            </div>
+            <div class="col-sm-3">
+                @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Физическое лицо").Value((long) SubjectType.Fl).Enable(Model.Id == -1))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Name)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.Name, new {@class = "k-textbox", @style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Job)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.Job, new {@class = "k-textbox", @style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Surname)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.Surname, new {@class = "k-textbox", @style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.FirstName)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.FirstName, new {@class = "k-textbox", @style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.MiddleName)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.MiddleName, new {@class = "k-textbox", @style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Address)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.Address, new {@class = "k-textbox", @style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Mail)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.Mail, new {@class = "k-textbox", @style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Phone)
+            </div>
+            <div class="col-sm-10">
+                @Html.TextBoxFor(m => m.Phone, new {@class = "k-textbox", @style = "width: 100%;"})
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        let fieldReadonly = '@((Model.Type == (long)SubjectType.Fl))';
+        changeFieldsAvailability(fieldReadonly == 'True');
+        $('input[type="radio"][name="Type"][value="@((long) SubjectType.Ul)"] ').change(function() {
+            if (this.checked) {
+                changeFieldsAvailability(false);
+            } else {
+                changeFieldsAvailability(true);
+            }
+        });
+        $('input[type="radio"][name="Type"][value="@((long) SubjectType.Fl)"] ').change(function() {
+            if (this.checked) {
+                changeFieldsAvailability(true);
+                $('#@Html.IdFor(m => m.Name)').val(null);
+                $('#@Html.IdFor(m => m.Job)').val(null);
+            } else {
+                changeFieldsAvailability(false);
+            }
+        });
+
+        $('#save').on('click',
+            function () {
+                kendo.ui.progress($('body'), true);
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+
+                $.post(form.attr('action'), formObject).done(function (response) {
+                    kendo.ui.progress($('body'), false);
+                    if (response.Errors) {
+                        var errors = $.map(distinctErrors(response.Errors),
+                            function(el) {
+                                return el.Message;
+                            });
+                        Common.ShowError(errors);
+                        return;
+                    }
+
+                    if (response.Success && response.data) {
+                        $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                        $('input[type="radio"][name="Type"][value="@((long) SubjectType.Fl)"] ').attr("disabled", true);
+                        $('input[type="radio"][name="Type"][value="@((long) SubjectType.Ul)"] ').attr("disabled", true);
+                        Common.ShowMessage(response.Success);
+                    }
+                });
+            });
+    });
+
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors, function(index, event) {
+            var events = $.grep(result, function (e) {
+                return event.Message === e.Message;
+            });
+            if (events.length === 0) {
+                result.push(event);
+            }
+        });
+
+        return result;
+    }
+
+    function changeFieldsAvailability(readonly) {
+        $('#@Html.IdFor(m => m.Name)').attr("readonly", readonly);
+        $('#@Html.IdFor(m => m.Job)').attr("readonly", readonly);
+    }
+</script>

@@ -494,8 +494,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ConfigPath Remove="Config\Registers\SearchPanels\DeclarationsBookSelect.xml" />
+    <ConfigPath Remove="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsBookSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsSubject.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
   </ItemGroup>
