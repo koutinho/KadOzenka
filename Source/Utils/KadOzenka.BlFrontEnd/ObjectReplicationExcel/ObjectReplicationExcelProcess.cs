@@ -199,9 +199,9 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             return dt;
         }
 
-        public static void GAF()
+        public static void SetCadastralNumber(string filePath, string defaultExcelValue)
         {
-            ExcelFile workbook = ExcelFile.Load(@"C:\Users\silanov\Desktop\На привязку адреса.xlsx");
+            ExcelFile workbook = ExcelFile.Load(filePath);
             ExcelWorksheet worksheet = workbook.Worksheets[0];
             int ACtr = 24000, CCur = 0, SCtr = 0, ECtr = 0;
             foreach (var row in worksheet.Rows)
@@ -220,14 +220,14 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     catch (Exception) { ECtr++; }
                     if(yAddress == null)
                     {
-                        row.Cells[1].Value = "-";
-                        row.Cells[2].Value = "-";
+                        row.Cells[1].Value = defaultExcelValue;
+                        row.Cells[2].Value = defaultExcelValue;
                     }
                     else
                     {
                         row.Cells[1].Value = yAddress.FormalizedAddress;
                         OMYandexAddress obj = OMYandexAddress.Where(x => x.FormalizedAddress == yAddress.FormalizedAddress).SelectAll().ExecuteFirstOrDefault();
-                        if(obj == null) row.Cells[2].Value = "-";
+                        if(obj == null) row.Cells[2].Value = defaultExcelValue;
                         else row.Cells[2].Value = obj.CadastralNumber;
                     }
                     CCur++;
@@ -235,10 +235,10 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                 }
             }
             ConsoleLog.WriteFotter("Присвоение координат объектам из исходного файла завершено");
-            workbook.Save(@"C:\Users\silanov\Desktop\На привязку адреса.xlsx");
+            workbook.Save(filePath);
         }
 
-        public static void FormFile()
+        public static void FormFile(string filePath)
         {
             List<OMCoreObject> initial = OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr).Select(x => new { x.Address }).OrderBy(x => x.Address).Execute().ToList();
             ExcelFile workbook = new ExcelFile();
@@ -264,7 +264,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     worksheet.Cells[$"D{i}"].Value = 0;
                     i++;
                 });
-            workbook.Save(@"C:\Users\silanov\Desktop\Workbook.xls");
+            workbook.Save(filePath);
         }
 
         private class ExceleData
@@ -275,9 +275,9 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             public int currentCounter;
         }
 
-        public static void REX()
+        public static void SetRRCoordinatesByYandex(string filePath)
         {
-            ExcelFile workbook = ExcelFile.Load(@"C:\Users\silanov\Desktop\Workbook.xls");
+            ExcelFile workbook = ExcelFile.Load(filePath);
             ExcelWorksheet worksheet = workbook.Worksheets[0];
             List<ExceleData> buffer = new List<ExceleData>();
             int i = 1, ACtr = 25000, CCur = 0, SCtr = 0, ECtr = 0;
@@ -315,10 +315,8 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                 ConsoleLog.WriteData("Присвоение координат объектам росреестра", ACtr, CCur, SCtr, ECtr);
             });
             ConsoleLog.WriteFotter("Присвоение координат объектам росреестра завершено");
-            workbook.Save(@"C:\Users\silanov\Desktop\Workbook.xls");
+            workbook.Save(filePath);
         }
-
-
 
 	}
 

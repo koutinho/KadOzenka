@@ -18,6 +18,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.BlFrontEnd.SudTests;
 using System.Collections.Generic;
 using KadOzenka.Dal.DataImport;
+using System.Configuration;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -40,7 +41,7 @@ namespace KadOzenka.BlFrontEnd
                 LongProcessManagementService service = new LongProcessManagementService();
                 service.Start();
             });
-            //consoleHelper.AddCommand("3", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new OuterMarketParser.Launcher.OuterMarketParser().StartProcess(); });
+
             consoleHelper.AddCommand("3", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new Data().Detect(); });
             consoleHelper.AddCommand("4", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.StartImport);
             consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
@@ -50,12 +51,13 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("9", "Процедура создания тестовых скриншотов", () => { new Selenium().MakeScreenshot(); });
             consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
             consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
-            //consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().TakePrice(); });
             consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().RefreshAllData(); });
             consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
             consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(); });
             consoleHelper.AddCommand("15", "Тест автоматического формирования исключений", () => { new TestAutoExclusions().TryParse(); });
-            consoleHelper.AddCommand("16", "Тест API судебной подсистемы", SudTestApi.TestAll);
+            consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.SetCadastralNumber(ConfigurationManager.AppSettings["InitialAddressFile"], ConfigurationManager.AppSettings["DefaultExceleValue"]); });
+            consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
+            consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
 
             consoleHelper.AddCommand("200", "Импорт данных KO (БД) Модель 2016", MSExporter.DoLoadBd2016Model);
             consoleHelper.AddCommand("201", "Импорт данных KO (БД) Объекты и факторы 2016 ОНС", MSExporter.DoLoadBd2016Unit_Uncomplited);
@@ -85,12 +87,9 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("306", "Статистика по положительным судебным решениям в Excel", SudExporter.ExportStatCheckExcel);
             consoleHelper.AddCommand("350", "Импорт данных решений комиссий (БД)", CommissionExporter.DoLoadBd);
             consoleHelper.AddCommand("351", "Импорт данных решений комиссий (Excel)", CommissionExporter.DoLoadExcel);
+            consoleHelper.AddCommand("390", "Тест API судебной подсистемы", SudTestApi.TestAll);
 
             consoleHelper.AddCommand("360", "Экспорт в Xml - результаты определения КС.", ExporterKO.ExportXml1);
-
-            consoleHelper.AddCommand("400", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.GAF(); });
-            consoleHelper.AddCommand("401", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(); });
-            consoleHelper.AddCommand("402", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.REX(); });
 
             consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
 
