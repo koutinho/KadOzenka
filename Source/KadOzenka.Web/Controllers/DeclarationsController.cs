@@ -10,10 +10,12 @@ namespace KadOzenka.Web.Controllers
 {
 	public class DeclarationsController : BaseController
 	{
+		#region Declarations
+
 		[HttpGet]
 		public ActionResult EditDeclaration(long declarationId)
 		{
-			var declaration =  OMDeclaration
+			var declaration = OMDeclaration
 					.Where(x => x.Id == declarationId)
 					.SelectAll()
 					.ExecuteFirstOrDefault();
@@ -22,7 +24,10 @@ namespace KadOzenka.Web.Controllers
 				: DeclarationModel.FromEntity(null);
 
 			return View(model);
+			//return View(DeclarationModel.FromEntity(null));
 		}
+
+		#endregion Declarations
 
 		#region Books
 

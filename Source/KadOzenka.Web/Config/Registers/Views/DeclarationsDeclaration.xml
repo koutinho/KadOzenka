@@ -8,7 +8,17 @@
         <Parameter Key="RegisterId" Value="[RegisterId]" />
       </Parameters>
     </Button>
-	  
+
+    <Button Caption="Добавить" NavigateURL="/Declarations/EditDeclaration" Icon="fas fa-plus">
+       <Parameters></Parameters>
+    </Button>
+
+    <Button Caption="Редактировать" NavigateURL="/Declarations/EditDeclaration" Icon="fas fa-edit">
+        <Parameters>
+            <Parameter Key="declarationId" Value="[ObjectID]" />
+        </Parameters>
+    </Button>
+
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
     
   </Buttons>
