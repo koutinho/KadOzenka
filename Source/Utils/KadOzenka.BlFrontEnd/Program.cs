@@ -89,6 +89,9 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("360", "Экспорт в Xml - результаты определения КС.", ExporterKO.ExportXml1);
 
             consoleHelper.AddCommand("400", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.GAF(); });
+            consoleHelper.AddCommand("401", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(); });
+            consoleHelper.AddCommand("402", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.REX(); });
+
             consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
 
         }

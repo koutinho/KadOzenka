@@ -12,7 +12,7 @@ namespace KadOzenka.Dal.WebRequest
         public string GetDataByGeocode(decimal? lng, decimal? lat) =>
             new StreamReader(
                 System.Net.WebRequest.Create(string.Format(ConfigurationManager.AppSettings["geocodeLink"],
-                                                           ConfigurationManager.AppSettings["GeocodeTest001"],
+                                                           ConfigurationManager.AppSettings["GeocodeTest000"],
                                                            lng.ToString().Replace(",", "."),
                                                            lat.ToString().Replace(",", ".")))
                                      .GetResponse()

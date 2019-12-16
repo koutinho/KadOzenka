@@ -4,7 +4,7 @@ using System.Text;
 namespace KadOzenka.Dal.Logger
 {
 
-    class ConsoleLog
+    public class ConsoleLog
     {
 
         public static void WriteData(string data, int length, int current, int correct, int error, int? duplicate = null, int? nspErr = null, int? unpub = null)

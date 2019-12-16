@@ -20,7 +20,17 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
     {
 
         public List<OMPriceHistory> resultList = new List<OMPriceHistory>();
-        public List<OMCoreObject> AllObjects = OMCoreObject.Where(x => x.Market_Code == MarketTypes.Cian && x.LastDateUpdate == null).Select(x => new { x.Url, x.DealType_Code, x.Price, x.LastDateUpdate }).Execute();
+        public List<OMCoreObject> AllObjects = OMCoreObject
+            .Where(x => 
+                x.Market_Code == MarketTypes.Cian && 
+                x.LastDateUpdate == null && (
+                    x.PropertyMarketSegment_Code == MarketSegment.Parking || 
+                    x.PropertyMarketSegment_Code == MarketSegment.Trading ||
+                    x.PropertyMarketSegment_Code == MarketSegment.Office ||
+                    x.PropertyMarketSegment_Code == MarketSegment.Factory
+                )
+            )
+            .Select(x => new { x.Url, x.DealType_Code, x.Price, x.LastDateUpdate }).Execute();
         public List<OMScreenshots> AllScreens = OMScreenshots.Where(x => true).SelectAll().Execute();
 
         public void Test()
@@ -124,12 +134,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         }
                         OCor++;
                     }
-                    catch (Exception ex)
-                    {
-                        OErr++;
-                        Console.WriteLine($"{ex.Message}\n");
-                        Console.ReadLine();
-                    }
+                    catch (Exception) {  OErr++;  }
                     OCur++;
                     ConsoleLog.WriteData("Обновление цен", OCtr, OCur, OCor, OErr, nspErr: NErr, unpub: NPub);
                 }

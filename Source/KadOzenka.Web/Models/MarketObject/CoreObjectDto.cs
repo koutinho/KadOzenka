@@ -19,8 +19,10 @@ namespace KadOzenka.Web.Models.MarketObject
 		public long Id { get; set; }
 		public string Market { get; set; }
 		public string DealType { get; set; }
+        public DealType DealTypeCode { get; set; }
 		public DateTime? ParserTime { get; set; }
-		public string Address { get; set; }
+        public DateTime? LastDateUpdate { get; set; }
+        public string Address { get; set; }
 		public string Metro { get; set; }
 		public decimal? Area { get; set; }
 		public string Description { get; set; }
@@ -49,13 +51,15 @@ namespace KadOzenka.Web.Models.MarketObject
 
 		public static CoreObjectDto OMMap(OMCoreObject entity)
 		{
-			var dto = new CoreObjectDto
-			{
-				Id = entity.Id,
-				Market = entity.Market,
-				DealType = entity.DealType,
-				ParserTime = entity.ParserTime,
-				Address = entity.Address,
+            var dto = new CoreObjectDto
+            {
+                Id = entity.Id,
+                Market = entity.Market,
+                DealType = entity.DealType,
+                DealTypeCode = entity.DealType_Code,
+                ParserTime = entity.ParserTime,
+                LastDateUpdate = entity.LastDateUpdate, // != null ? entity.LastDateUpdate : new DateTime(1970, 1, 1, 0, 0, 0, 1),
+                Address = entity.Address,
 				Metro = entity.Metro,
 				Area = entity.PropertyType_Code == PropertyTypes.Stead ? entity.AreaLand * 100 : entity.Area,
 				Description = entity.Description,

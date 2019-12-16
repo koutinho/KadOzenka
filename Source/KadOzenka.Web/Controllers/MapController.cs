@@ -39,7 +39,12 @@ namespace KadOzenka.Web.Controllers
 	    public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude,
 		    decimal? bottomLongitude, int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, string token, long? objectId)
 	    {
-		    var query = OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && x.Lng != null && x.Lat != null);
+		    var query = OMCoreObject
+                .Where(x => 
+                    x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && 
+                    x.Lng != null && 
+                    x.Lat != null && 
+                    (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
 		    if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
 		    else PrepareQueryByUserFilter(query);
 		    if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);

@@ -26,10 +26,12 @@
                             <input class="k-textbox" readonly value="@Model.DealType" />
                         </div>
                         <div class="col-sm-2">
-                            <label class="control-label">Дата сделки</label>
+                            @if (Model.DealTypeCode == DealType.RentDeal || Model.DealTypeCode == DealType.SaleDeal) {<label class="control-label">Дата сделки</label>}
+                            else {<label class="control-label">Дата предложения</label>}
                         </div>
                         <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.ParserTime.Value.ToString("yyyy.MM.dd")" />
+                            @if (Model.LastDateUpdate != null) {<input class="k-textbox" readonly value="@Model.LastDateUpdate.Value.ToString("dd.MM.yyyy")" />}
+                            else {<input class="k-textbox" readonly value="@Model.ParserTime.Value.ToString("dd.MM.yyyy")" />}
                         </div>
                     </div>
                     <div class="form-group">
