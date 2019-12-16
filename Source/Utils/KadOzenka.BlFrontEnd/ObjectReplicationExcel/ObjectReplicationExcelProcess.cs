@@ -203,7 +203,8 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         {
             ExcelFile workbook = ExcelFile.Load(filePath);
             ExcelWorksheet worksheet = workbook.Worksheets[0];
-            int ACtr = 24000, CCur = 0, SCtr = 0, ECtr = 0;
+            int ACtr = 25000, CCur = 0, SCtr = 0, ECtr = 0, MCtr = worksheet.Rows.Take(ACtr).Count();
+            List<string> errorLog = new List<string>();
             foreach (var row in worksheet.Rows)
             {
                 if(row.Cells[1].Value == null && CCur < ACtr)
@@ -217,7 +218,11 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                         row.Cells[1].Value = yAddress.FormalizedAddress;
                         SCtr++;
                     }
-                    catch (Exception) { ECtr++; }
+                    catch (Exception ex) 
+                    {
+                        errorLog.Add($"[{DateTime.Now}]: {address}\n{ex.Message}\n");
+                        ECtr++; 
+                    }
                     if(yAddress == null)
                     {
                         row.Cells[1].Value = defaultExcelValue;
@@ -227,14 +232,20 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     {
                         row.Cells[1].Value = yAddress.FormalizedAddress;
                         OMYandexAddress obj = OMYandexAddress.Where(x => x.FormalizedAddress == yAddress.FormalizedAddress).SelectAll().ExecuteFirstOrDefault();
-                        if(obj == null) row.Cells[2].Value = defaultExcelValue;
+                        if (obj == null)
+                        {
+                            row.Cells[2].Value = defaultExcelValue;
+                            errorLog.Add($"[{DateTime.Now}]: {address}\nКадастровый номер для данного адреса не найден в базе данных\n");
+                        }
                         else row.Cells[2].Value = obj.CadastralNumber;
                     }
                     CCur++;
-                    ConsoleLog.WriteData("Присвоение координат объектам из исходного файла", ACtr, CCur, SCtr, ECtr);
+                    ConsoleLog.WriteData("Присвоение координат объектам из исходного файла", MCtr, CCur, SCtr, ECtr);
                 }
             }
+            errorLog.Add($"========> Присвоение координат объектам из исходного файла завершено ({ConsoleLog.GetResultData(MCtr, CCur, SCtr, ECtr)})\n");
             ConsoleLog.WriteFotter("Присвоение координат объектам из исходного файла завершено");
+            ConsoleLog.LogError(errorLog.ToArray(), "Присвоение координат объектам из исходного файла");
             workbook.Save(filePath);
         }
 
@@ -280,7 +291,8 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             ExcelFile workbook = ExcelFile.Load(filePath);
             ExcelWorksheet worksheet = workbook.Worksheets[0];
             List<ExceleData> buffer = new List<ExceleData>();
-            int i = 1, ACtr = 25000, CCur = 0, SCtr = 0, ECtr = 0;
+            int i = 1, ACtr = 25000, CCur = 0, SCtr = 0, ECtr = 0, MCtr = 0;
+            List<string> errorLog = new List<string>();
             foreach (var row in worksheet.Rows)
             {
                 if(row.Cells[3].Value.ParseToInt() == 0)
@@ -295,6 +307,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                 }
                 i++;
             }
+            MCtr = buffer.Take(ACtr).Count();
             buffer.Take(ACtr).ToList().ForEach(x => 
             {
                 CCur++;
@@ -310,11 +323,17 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     });
                     SCtr++;
                 }
-                catch (Exception){ ECtr++; }
+                catch (Exception ex)
+                {
+                    errorLog.Add($"[{DateTime.Now}]: {x.address}\n{ex.Message}\n");
+                    ECtr++; 
+                }
                 worksheet.Cells[$"D{x.currentCounter}"].Value = 1;
-                ConsoleLog.WriteData("Присвоение координат объектам росреестра", ACtr, CCur, SCtr, ECtr);
+                ConsoleLog.WriteData("Присвоение координат объектам росреестра", MCtr, CCur, SCtr, ECtr);
             });
+            errorLog.Add($"========> Присвоение координат объектам росреестра завершено ({ConsoleLog.GetResultData(MCtr, CCur, SCtr, ECtr)})\n");
             ConsoleLog.WriteFotter("Присвоение координат объектам росреестра завершено");
+            ConsoleLog.LogError(errorLog.ToArray(), "Присвоение координат объектам росреестра");
             workbook.Save(filePath);
         }
 
