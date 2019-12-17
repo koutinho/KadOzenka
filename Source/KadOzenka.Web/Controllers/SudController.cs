@@ -690,7 +690,7 @@ namespace KadOzenka.Web.Controllers
 		}
 		#endregion
 
-		#region Load Document
+		#region Upload Document
 
 		[HttpGet]
 		public ActionResult LoadDocument()
@@ -1197,6 +1197,27 @@ namespace KadOzenka.Web.Controllers
             return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "Полная выгрузка" + ".xlsx");
         }
-        #endregion
-    }
+
+        public FileResult GetExportStatisticCheck()
+        {
+	        var file = DataExporterSud.ExportStatisticCheck();
+	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		        "Статистика по положительным судебным решениям" + ".xlsx");
+        }
+
+        public FileResult GetExportStatistic()
+        {
+	        var file = DataExporterSud.ExportStatistic();
+	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"Статистика сводная" + ".xlsx");
+        }
+
+        public FileResult GetExportStatisticObject()
+        {
+	        var file = DataExporterSud.ExportStatisticObject();
+	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"Статистика по объектам недвижимости" + ".xlsx");
+        }
+		#endregion
+	}
 }
