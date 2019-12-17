@@ -10,6 +10,8 @@
 		</Button>
 		<Button Caption="Туры оценки" NavigateURL="/Task/TourEstimates" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
 		</Button>
+    <Button Caption="Туры оценки (группы)" NavigateURL="/Task/Groups" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+    </Button>
 		<Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
 	</Buttons>
 	<Tabs>

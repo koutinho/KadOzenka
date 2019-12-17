@@ -2,17 +2,20 @@
 	<div class="k-content wide flex-tree-list">
 		<div id="treeList"></div>
 	</div>
-	<div class="flex-list-buttons">
-		<button class="btn btn-default add-group">
-			Добавить
-		</button>
-		<button class="btn btn-default edit-group" style="display: block">
-			Изменить
-		</button>
-		<button class="btn btn-default remove-group" style="display: block">
-			Удалить
-		</button>
-	</div>
+    <div class="flex-list-buttons">
+        <button class="btn btn-default add-group">
+            Добавить
+        </button>
+        <button class="btn btn-default edit-group" style="display: block">
+            Изменить
+        </button>
+        <button class="btn btn-default remove-group" style="display: block">
+            Удалить
+        </button>
+        @*<button class="btn btn-default model" style="display: block">
+            Модель
+        </button>*@
+    </div>
 </div>
 
 <script type="text/javascript">
@@ -26,27 +29,84 @@
 					dataType: "json"
 				}
 			},
-			//schema: {
-			//	model: {  
-			//		id: "id",  
-			//		parentId: "parentId",  
-			//		fields: {  
-			//			parentId: {  
-			//				field: "parentId",  
-			//				nullable: true  
-			//			} 
-			//		},  
-			//		expanded: true  
-			//	} 
-			//}
+			schema: {
+				model: {  
+					id: "Id",  
+					parentId: "ParentId",  
+					fields: {  						
+                        ParentId: { field: "ParentId", nullable: true },
+                        Id: { field: "Id", type: "number" }
+					},  
+					expanded: true  
+				} 
+			}
 		});
 
 		$("#treeList").kendoTreeList({
-			dataSource: dataSource,
-			columns: [
+            dataSource: dataSource,
+            selectable: true,
+            columns: [
+                { field: "Id", hidden: true },
 				{ field: "GroupName", title: "Имя группы" }
 			]
-		});
+        });
+
+        $('.add-group').on('click', function () {
+            Common.UI.ShowWindow('Оценочная группа', '@Url.Action("EditGroup","Task")', 'editGroupWindow');
+        });
+
+        $('.edit-group').on('click', function () {
+            var treeList = $("#treeList").data("kendoTreeList");
+            var row = treeList.select();
+            if (row.length > 0) {
+                var data = treeList.dataItem(row);
+                Common.UI.ShowWindow('Оценочная группа',
+                    '@Url.Action("EditGroup", "Task")' + '?id=' + data.Id,
+                    'editGroupWindow',
+                    function (e, param) {
+                        if (param == true) {
+
+                            debugger;
+
+                            treeList.refresh();
+                        }
+                    });
+            }
+        });
+
+        $('.remove-group').on('click', function () {            
+
+            var treeList = $("#treeList").data("kendoTreeList");
+            var row = treeList.select();
+            if (row.length > 0) {
+                var data = treeList.dataItem(row);
+                debugger;
+                Common.UI.ShowConfirm({
+                    title: '',
+                    content: 'Удалить группу ' + data.GroupName+'?',
+                    onSuccess: function () {
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            url: '@Url.Action("DeleteGroup","Task")',
+                            type: 'POST',
+                            data: { id: data.Id },
+                            success: function (response) {
+                                kendo.ui.progress($('body'), false);
+                                if (response.Success) {                            
+                                    treeList.remove($('div.k-state-selected'));
+                                    Common.ShowMessage(response.Success);
+                                }
+                            },
+                            error: function (response) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(response.responseText);
+                            }
+                        });
+                    }
+                });              
+            }
+        });
+
 	});
 </script>
 
