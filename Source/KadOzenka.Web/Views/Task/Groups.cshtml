@@ -65,10 +65,7 @@
                     'editGroupWindow',
                     function (e, param) {
                         if (param == true) {
-
-                            debugger;
-
-                            treeList.refresh();
+                            $("#treeList").data("kendoTreeList").dataSource.read();
                         }
                     });
             }
@@ -80,7 +77,7 @@
             var row = treeList.select();
             if (row.length > 0) {
                 var data = treeList.dataItem(row);
-                debugger;
+                
                 Common.UI.ShowConfirm({
                     title: '',
                     content: 'Удалить группу ' + data.GroupName+'?',
@@ -93,7 +90,7 @@
                             success: function (response) {
                                 kendo.ui.progress($('body'), false);
                                 if (response.Success) {                            
-                                    treeList.remove($('div.k-state-selected'));
+                                    $("#treeList").data("kendoTreeList").dataSource.read();
                                     Common.ShowMessage(response.Success);
                                 }
                             },

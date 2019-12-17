@@ -119,7 +119,7 @@ namespace KadOzenka.Web.Controllers
 				dto.GroupingMechanismId = (long)group.GroupAlgoritm_Code;
 				dto.RatingTourId = tourGroup.TourId;
 
-				KoGroupAlgoritm objType;
+				KoGroupAlgoritm objType = KoGroupAlgoritm.MainOKS;
 				if (group.ParentId != -1 && group.ParentId != null)
 				{
 					while (true)
@@ -127,8 +127,11 @@ namespace KadOzenka.Web.Controllers
 						OMGroup parent = OMGroup.Where(x => x.Id == group.ParentId)
 							.SelectAll().ExecuteFirstOrDefault();
 						if (parent == null)
+						{							
+							break;
+						}
+						if (group.ParentId == parent.ParentId)
 						{
-							objType = KoGroupAlgoritm.MainOKS;
 							break;
 						}
 						if (parent.ParentId == -1 || parent.ParentId == null)
@@ -136,6 +139,7 @@ namespace KadOzenka.Web.Controllers
 							objType = parent.GroupAlgoritm_Code;
 							break;
 						}
+						
 						group = parent;
 					}
 				}
@@ -211,7 +215,7 @@ namespace KadOzenka.Web.Controllers
 			return Json(tours);
 		}
 
-		public JsonResult GetParentGroup(string type)
+		public JsonResult GetParentGroup(string type, long? id)
 		{
 			KoGroupAlgoritm groupAlgoritm;
 
@@ -227,7 +231,8 @@ namespace KadOzenka.Web.Controllers
 					throw new Exception("Не выбран тип объекта");
 			}			
 
-			var groups = OMGroup.Where(x => x.GroupAlgoritm_Code == groupAlgoritm)
+			var groups = OMGroup.Where(x => x.GroupAlgoritm_Code == groupAlgoritm
+					&& x.Id != id)
 				.SelectAll().Execute()
 				.Select(x => new SelectListItem
 				{

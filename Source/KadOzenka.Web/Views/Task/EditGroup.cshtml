@@ -59,11 +59,11 @@
         </div>
     </div>
     <div class="form-group">
-        <div class="col-sm-1 col-sm-offset-8">
-            <button class="btn btn-default" id="cancel">Отмена</button>
+        <div class="col-sm-2 col-sm-offset-8">
+            <button class="btn btn-default btn-block" id="cancel">Отмена</button>
         </div>
-        <div class="col-sm-1 col-sm-offset-1">
-            <button class="btn btn-default" id="save">Сохранить</button>
+        <div class="col-sm-2">
+            <button class="btn btn-default btn-block" id="save">Сохранить</button>
         </div>
     </div>
 </div>
@@ -103,10 +103,7 @@
                 success: function () {
                     kendo.ui.progress($('body'), false);
                     Common.ShowMessage('Сохранение выполнено');
-
                     Common.UI.CloseWindow('editGroupWindow', window.parent, true);
-
-                    
                 },
                 error: function (response) {
                     kendo.ui.progress($('body'), false);
@@ -121,7 +118,6 @@
 
         $('[name="RatingTour"]')
             .kendoDropDownList({
-  
                 dataTextField: 'Text',
                 dataValueField: 'Value',
                 dataSource:
@@ -135,12 +131,14 @@
                 }
             });
 
-        function ParentGroupDropDownInit() {
+        function ParentGroupDropDownInit() {         
+
+            if ($('input[name="ObjType"]:checked').length == 0)
+                return;
             var parentType = $('input[name="ObjType"]:checked')[0].id;
-            //console.log('pg init');
+
             $('[name="ParentGroup"]')
             .kendoDropDownList({
-  
                 dataTextField: 'Text',
                 dataValueField: 'Value',
                 optionLabel: "--Выберите родительскую группу--",
@@ -149,7 +147,7 @@
                     transport: {
                         read: {
                             url: '@Url.Action("GetParentGroup", "Task")',
-                            data: { type: parentType },
+                            data: { type: parentType, id: '@Model.Id' },
                             dataType: 'json'
                         }
                     }
@@ -159,7 +157,6 @@
 
         function GroupingMechanismDropDownInit() {
 
-//            console.log('gm init');
             var parentIsSet = $('[name="ParentGroup"]').data("kendoDropDownList").value() != '';
 
             $('[name="GroupingMechanism"]')
@@ -167,7 +164,6 @@
                     dataTextField: 'Text',
                     dataValueField: 'Value',
                     optionLabel: "--Выберите механизм группировки--",
-              //      autoBind: false,
                     dataSource:
                     {
                         transport: {
@@ -183,12 +179,12 @@
 
         ParentGroupDropDownInit();
         GroupingMechanismDropDownInit();
-        
+
         var ratingTourDropdownlist = $('[name="RatingTour"]').data("kendoDropDownList");
         var parentGroupDropdownlist = $('[name="ParentGroup"]').data("kendoDropDownList");
         var groupingMechanismDropdownlist = $('[name="GroupingMechanism"]').data("kendoDropDownList");
 
-     
+
         @if(Model.Id.HasValue)
         {
         <Text>
@@ -201,31 +197,34 @@
         var objType = '#@Model.ObjType';
         $(objType).attr("checked", true);
 
-        parentGroupDropdownlist.bind("dataBound", function () {
-       //     console.log('bind pg'); 
+        ParentGroupDropDownInit();
 
-            parentGroupDropdownlist.select(function (dataItem) {
+        $('[name="ParentGroup"]').data("kendoDropDownList").bind("dataBound", function () {           
+
+            $('[name="ParentGroup"]').data("kendoDropDownList").select(function (dataItem) {          
                 return dataItem.Value == '@Model.ParentGroupId';
             });
-       
-            GroupingMechanismDropDownInit();
-        });     
 
-        groupingMechanismDropdownlist.bind("dataBound", function () {
-            groupingMechanismDropdownlist.select(function (dataItem) {
-                return dataItem.Value == '@Model.GroupingMechanismId';
+            GroupingMechanismDropDownInit();
+
+            $('[name="GroupingMechanism"]').data("kendoDropDownList").bind("dataBound", function () {
+            
+                $('[name="GroupingMechanism"]').data("kendoDropDownList").select(function (dataItem) {                
+                    return dataItem.Value == '@Model.GroupingMechanismId';
+                });
             });
         });
-
-        
         </Text>
         }
 
-
-        parentGroupDropdownlist.bind('change', GroupingMechanismDropDownInit);
+        $('[name="ParentGroup"]').data("kendoDropDownList").bind('change', GroupingMechanismDropDownInit);
 
         $('[name="ObjType"]').on('change', function () {
             ParentGroupDropDownInit();
-        });
+
+            $('[name="ParentGroup"]').data("kendoDropDownList").bind("dataBound", function () {
+                 GroupingMechanismDropDownInit();
+            });
+        });        
     });
 </script>
