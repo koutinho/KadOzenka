@@ -1,8 +1,16 @@
-﻿@model KadOzenka.Web.Models.Declarations.DeclarationModel
+﻿@using ObjectModel.Core.SRD
+@using ObjectModel.Declarations
+@using KadOzenka.Web.Models.Declarations
+
+@model KadOzenka.Web.Models.Declarations.DeclarationModel
 
 @using (Html.BeginForm("EditDeclaration", "Declarations", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.OwnerId)
+    @Html.HiddenFor(m => m.AgentId)
+    @Html.HiddenFor(m => m.BookId)
+    @Html.HiddenFor(m => m.UserIspId)
     <ul id="ls_panelbar" class="panelbar">
         <li id="Section_Making_Declaration" data-expand>
             <span>Подача декларации</span>
@@ -17,6 +25,90 @@
                             @Html.KendoEnumDropDownListFor(m => m.OwnerType, isReadonly: false)
                         </div>
                     </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.OwnerId)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.PlatformAutoCompleteWithEditButtonFor(m => m.OwnerDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearOwnerEvent", "editOwner", "selectOwnerEvent", isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.UvedTypeOwner)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(m => m.UvedTypeOwner, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.AgentId)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.PlatformAutoCompleteWithEditButtonFor(m => m.AgentDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearAgentEvent", "editAgent", "selectAgentEvent", isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.UvedTypeAgent)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(m => m.UvedTypeAgent, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.CertificateName)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(m => m.CertificateName, isReadonly: false)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CertificateNum)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(m => m.CertificateNum, isReadonly: false)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CertificateDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.CertificateDate, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.CadastralObjectNumber)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoTextBoxFor(m => m.CadastralObjectNumber, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.ObjectType)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateIn)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateIn, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.NumberIn)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(m => m.NumberIn, isReadonly: false)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.BookId)
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                                @Html.PlatformAutoCompleteWithEditButtonFor(m => m.BookDisplay, "Value", "Declarations", "GetAutoCompleteBook", "clearBookEvent", "editBook", "selectBookEvent", isReadonly: false)
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </li>
@@ -25,34 +117,227 @@
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateInIsp)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(m => m.DateInIsp, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.UserIspId)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.PlatformAutoCompleteWithEditButtonFor(m => m.UserIspDisplay, "Value", "Declarations", "GetAutoCompleteUser", "clearUserIspEvent", "editUserIsp", "selectUserIspEvent", isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateInPlan)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(m => m.DateInPlan, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateInFact)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoDatePickerFor(m => m.DateInFact, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DurationDateIn)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DurationDateIn, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateEnd)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateEnd, isReadonly: false)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.Status)
+                        </div>
+                        <div class="col-sm-1">
+                            @(Html.Kendo().RadioButtonFor(m => m.Status).Label("Открыто").Value((long)DeclarationStatusEnum.Opened))
+                        </div>
+                        <div class="col-sm-1">
+                            @(Html.Kendo().RadioButtonFor(m => m.Status).Label("Закрыто").Value((long)DeclarationStatusEnum.Closed))
+                        </div>
+                    </div>
                 </div>
             </div>
         </li>
     </ul>
-    <div class="static-nav">
-        <nav id="navigation-menu">
-            <a href="#Section_Making_Declaration">Подача декларации</a>
-            <a href="#Section_Process_Declaration">Обработка декларации</a>
-        </nav>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
+        </div>
     </div>
 }
 
 @section styles {
     <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
     <style>
+        #ls_panelbar {
+            width: 99%
+        }
     </style>
 }
 
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
             panelbar.expand('li[data-expand]');
 
             $("#navigation-menu a").mPageScroll2id({
                 highlightSelector: "#navigation-menu a"
             });
+
+            setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.OwnerId)', '#@Html.IdFor(m => m.OwnerDisplay)');
+            setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.AgentId)', '#@Html.IdFor(m => m.AgentDisplay)');
+            setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
+            setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.UserIspId)', '#@Html.IdFor(m => m.UserIspDisplay)');
         });
+
+        function selectOwnerEvent() {
+            $('#@Html.IdFor(m => m.OwnerId)').val(this.e.dataItem.Id);
+        }
+        function clearOwnerEvent() {
+            $('#@Html.IdFor(m => m.OwnerId)').val(0);
+        }
+        function selectAgentEvent() {
+            $('#@Html.IdFor(m => m.AgentId)').val(this.e.dataItem.Id);
+        }
+        function clearAgentEvent() {
+            $('#@Html.IdFor(m => m.AgentId)').val(0);
+        }
+        function selectBookEvent() {
+            $('#@Html.IdFor(m => m.BookId)').val(this.e.dataItem.Id);
+        }
+        function clearBookEvent() {
+            $('#@Html.IdFor(m => m.BookId)').val(0);
+        }
+        function selectUserIspEvent() {
+            $('#@Html.IdFor(m => m.UserIspId)').val(this.e.dataItem.Id);
+        }
+        function clearUserIspEvent() {
+            $('#@Html.IdFor(m => m.UserIspId)').val(0);
+        }
+
+        function editOwner () {
+            var contentUrl = '@Url.Action("DeclarationsSubjectSelect", "RegistersView")';
+            var title = 'Выбор Заявителя';
+
+            var callbackFn = function (item) {
+                kendo.ui.progress($('body'), true);
+                $('[name="OwnerId"]').val(item.ID);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetSubjectData", "Declarations")',
+                    data: { 'subjectId': item.ID },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response && !$.isEmptyObject(response)) {
+                            console.log('response', response.data);
+                            $('#@Html.IdFor(m => m.OwnerDisplay)').val(response.data.Value);
+                        }
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMSubject.GetRegisterId()');
+        };
+
+        function editAgent () {
+            var contentUrl = '@Url.Action("DeclarationsSubjectSelect", "RegistersView")';
+            var title = 'Выбор Представителя';
+
+            var callbackFn = function (item) {
+                kendo.ui.progress($('body'), true);
+                $('[name="AgentId"]').val(item.ID);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetSubjectData", "Declarations")',
+                    data: { 'subjectId': item.ID },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response && !$.isEmptyObject(response)) {
+                            console.log('response', response.data);
+                            $('#@Html.IdFor(m => m.AgentDisplay)').val(response.data.Value);
+                        }
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMSubject.GetRegisterId()');
+        };
+
+        function editBook () {
+            var contentUrl = '@Url.Action("DeclarationsBookSelect", "RegistersView")';
+            var title = 'Выбор Книги';
+
+            var callbackFn = function (item) {
+                kendo.ui.progress($('body'), true);
+                $('[name="BookId"]').val(item.ID);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetBookData", "Declarations")',
+                    data: { 'bookId': item.ID },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response && !$.isEmptyObject(response)) {
+                            console.log('response', response.data);
+                            $('#@Html.IdFor(m => m.BookDisplay)').val(response.data.Value);
+                        }
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBook.GetRegisterId()');
+        };
+
+        function editUserIsp () {
+            var contentUrl = '@Url.Action("CoreSRDUserSelect", "RegistersView")';
+            var title = 'Выбор Исполнителя по внесению';
+
+            var callbackFn = function (item) {
+                kendo.ui.progress($('body'), true);
+                $('[name="UserIspId"]').val(item.ID);
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("GetUserData", "Declarations")',
+                    data: { 'userId': item.ID },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response && !$.isEmptyObject(response)) {
+                            console.log('response', response.data);
+                            $('#@Html.IdFor(m => m.UserIspDisplay)').val(response.data.Value);
+                        }
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMUser.GetRegisterId()');
+        };
+
+        function setOnBlurHandlerForAutocomplete(idField, displayField) {
+            $(displayField).on('blur', function () {
+                if ($(displayField).val() === "") {
+                    $(idField).val(0);
+                    return;
+                }
+
+                if ($(idField).val() === "0" || $(idField).val() === "") {
+                    $(displayField).val("");
+                }
+            });
+        }
+
     </script>
 }
 
