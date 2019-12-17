@@ -52,10 +52,8 @@ namespace CIPJS
             services.AddTransient<CoreUiService>();
             services.AddTransient<RegistersService>();
 			services.AddTransient<DashboardService>();
-
 			services.AddTransient<GbuObjectService>();
-
-
+            
 			services.AddHttpContextAccessor();
             services.AddSession(options =>
             {

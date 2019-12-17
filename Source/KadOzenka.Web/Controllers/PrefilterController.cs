@@ -19,13 +19,15 @@ namespace KadOzenka.Web.Controllers
 	public class PrefilterController : BaseController
 	{
 		private readonly CoreUiService _service;
+		private readonly RegistersService _registersService;
 
 		public string MarketObjectsRegisterViewId => "MarketObjects";
 
-		public PrefilterController(CoreUiService service)
+		public PrefilterController(CoreUiService service, RegistersService registersService)
 		{
 			_service = service;
-		}
+            _registersService = registersService;
+        }
 
 		[HttpGet]
 		public IActionResult Prefilter()
@@ -85,7 +87,7 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ConfigureSearchFilter(PrefilterDto model)
 		{
 			var filter = CreateConditionFilter(model);
-			var c = new CoreUiController(_service);
+			var c = new CoreUiController(_service, _registersService);
 			c.SaveSearchFilter(MarketObjectsRegisterViewId, filter);
 
 			return NoContent();
