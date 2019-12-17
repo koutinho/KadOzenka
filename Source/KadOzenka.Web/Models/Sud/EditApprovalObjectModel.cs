@@ -62,7 +62,7 @@ namespace KadOzenka.Web.Models.Sud
                 Adres = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Adres.GetEnumDescription())?.Pid.ToString(),
                 NameCenter = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.NameCenter.GetEnumDescription())?.Pid.ToString(),
                 StatDgi = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.StatDgi.GetEnumDescription())?.Pid.ToString(),
-                Owner = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.StatDgi.GetEnumDescription())?.Pid.ToString()
+                Owner = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Owner.GetEnumDescription())?.Pid.ToString()
             };
 
             model.IsDisableButton = model.Kn != null && model.Date != null && model.Square != null &&

@@ -41,7 +41,7 @@
                             , isReadonly: m.SudId != null, id: $"courtLink-{j}-1")
                     </div>
                 </div>
-                <fieldset id="reportData">
+                <fieldset id="@($"courtData-{j}")">
                     <legend>Данные о судебном решении</legend>
                     @Html.HiddenFor(r => r[j].Court.Id)
                         <div class="form-horizontal col-sm-12">
@@ -91,13 +91,13 @@
                                 </div>
                                 <div class="col-sm-10">
                                     @Html.KendoDropDownListFor(r => r[j].Court.Status, "GetApprovalFieldData", "Sud",
-                                        new {idTable = OMTableParam.Sud, objectId = m.Court.Id, paramName = ParamNameEnum.Status.GetEnumDescription(), isActual = m.Court.Status != null}
-                                        , isReadonly: m.Court.Status != null, id: $"court-{j}-5")
+										new {idTable = OMTableParam.Sud, objectId = m.Court.Id, paramName = ParamNameEnum.Status.GetEnumDescription(), isActual = m.Court.Status != null}
+										, isReadonly: m.Court.Status != null, id: $"court-{j}-5")
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-12">
-                                    <button style="float: right"disabled="@m.Court.IsDisableButton"  data-action="@Url.Action("EditApprovalCourt","Sud")" data-id-tab="@j" data-id="@m.Id" class="k-button saveCourt" type="button">Утвердить</button>
+                                    <button style="float: right" disabled="@m.Court.IsDisableButton"  data-action="@Url.Action("EditApprovalCourt","Sud")" data-id-tab="@j" data-id="@m.Id" class="k-button saveCourt" type="button">Утвердить</button>
                                 </div>
                             </div>
                         </div>
@@ -138,8 +138,8 @@
                     </div>
                     <div class="col-sm-10">
                         @Html.KendoDropDownListFor(r => r[j].Description, "GetApprovalFieldData", "Sud",
-                            new {idTable = OMTableParam.SudLink, objectId = m.Id, paramName = ParamNameEnum.Descr.GetEnumDescription(), isActual = m.Description != null}
-                            , isReadonly: m.Description != null, id: $"courtLink-{j}-5")
+							new {idTable = OMTableParam.SudLink, objectId = m.Id, paramName = ParamNameEnum.Descr.GetEnumDescription(), isActual = m.Description != null}
+							, isReadonly: m.Description != null, id: $"courtLink-{j}-5")
                     </div>
                 </div>
                 <div class="form-group">
@@ -170,95 +170,118 @@
 }
 
 <script type="text/javascript">
-    $(document).ready(function () {
 
-        $("#courtTabstrip").kendoTabStrip();
+	function stylingDropDown() {
+		$('.court-link-content .k-widget.k-dropdown').each(function () {
+			if ($(this).find('input').attr('readonly')) {
+				$(this).find('span.k-select').css('display', 'none');
+				$(this).find('span.k-input').css('font-weight', 'bold');
+			}
+		});
+	}
+	$(document).ready(function () {
+		stylingDropDown();
+		$("#courtTabstrip").kendoTabStrip();
 
-        function distinctErrors(errors) {
-            var result = [];
-            $.each(errors, function (index, event) {
-                var events = $.grep(result, function (e) {
-                    return event.Message === e.Message;
-                });
-                if (events.length === 0) {
-                    result.push(event);
-                }
-            });
+		function distinctErrors(errors) {
+			var result = [];
+			$.each(errors, function (index, event) {
+				var events = $.grep(result, function (e) {
+					return event.Message === e.Message;
+				});
+				if (events.length === 0) {
+					result.push(event);
+				}
+			});
 
-            return result;
-        };
+			return result;
+		};
 
-        $(".saveCourtLink").on('click',
-            function () {
-                var id = $(this).data("id");
-                var idTab = $(this).data("id-tab");
-                var form = $(`form.court-link-content#${id}`);
-             
-                var formObject = Common.Functions.FormToObject(form);
+		$(".saveCourtLink").on('click',
+			function () {
+				var id = $(this).data("id");
+				var idTab = $(this).data("id-tab");
+				var form = $(`form.court-link-content#${id}`);
+				var courtData = `#courtData-${idTab}`;
+				var self = this;
+				var formObject = Common.Functions.FormToObject(form);
            
 
-                var data = {
-                    SudId: formObject[`[${idTab}].SudId`],
-                    Use: formObject[`[${idTab}].Use`],
-                    Rs: formObject[`[${idTab}].Rs`],
-                    Uprs: formObject[`[${idTab}].Uprs`],
-                    Description: formObject[`[${idTab}].Description`],
-                    Id: formObject[`[${idTab}].Id`]
-                }
+				var data = {
+					SudId: formObject[`[${idTab}].SudId`],
+					Use: formObject[`[${idTab}].Use`],
+					Rs: formObject[`[${idTab}].Rs`],
+					Uprs: formObject[`[${idTab}].Uprs`],
+					Description: formObject[`[${idTab}].Description`],
+					Id: formObject[`[${idTab}].Id`]
+				}
 
-                kendo.ui.progress($('body'), true);
-                $.post(form.attr('action'), data).done(function(response) {
-                    kendo.ui.progress($('body'), false);
-                    if (response.Errors) {
-                        var errors = $.map(distinctErrors(response.Errors),
-                            function(el) {
-                                return el.Message;
-                            });
-                        Common.ShowError(errors);
-                        return;
-                    }
+				kendo.ui.progress($('body'), true);
+				$.post(form.attr('action'), data).done(function(response) {
+					kendo.ui.progress($('body'), false);
+					if (response.Errors) {
+						var errors = $.map(distinctErrors(response.Errors),
+							function(el) {
+								return el.Message;
+							});
+						Common.ShowError(errors);
+						return;
+					}
 
-                    if (response.Success) {
-                        form.attr("disabled", true);
-                        Common.ShowMessage(response.Success);
-                    }
-                });
-            });
+					if (response.Success) {
+						$(self).attr('disabled', true);
+						form.find('input').not('readonly').each(function () {
+							if (!$(this).parents(courtData)[0] && $(this).data("kendoDropDownList")) {
+								$(this).data("kendoDropDownList").readonly();
+							}
+						});
+						stylingDropDown();
+						Common.ShowMessage(response.Success);
+					}
+				});
+			});
     
-        $(".saveCourt").on('click', function () {
-            var id = $(this).data("id");
-            var idTab = $(this).data("id-tab");
-            var action = $(this).data("action");
-            var form = $(`form.court-link-content#${id}`);
+		$(".saveCourt").on('click', function () {
+			var id = $(this).data("id");
+			var idTab = $(this).data("id-tab");
+			var action = $(this).data("action");
+			var form = $(`form.court-link-content#${id}`);
+			var courtData = $(`#courtData-${idTab}`);
+			var self = this;
+			var formObject = Common.Functions.FormToObject(form);
 
-            var formObject = Common.Functions.FormToObject(form);
+			var data = {
+				Name: formObject[`[${idTab}].Court.Name`],
+				Number: formObject[`[${idTab}].Court.Number`],
+				Date: formObject[`[${idTab}].Court.Date`],
+				SudDate: formObject[`[${idTab}].Court.SudDate`],
+				Status: formObject[`[${idTab}].Court.Status`],
+				Id: formObject[`[${idTab}].Court.Id`]
+			}
 
-            var data = {
-                Name: formObject[`[${idTab}].Court.Name`],
-                Number: formObject[`[${idTab}].Court.Number`],
-                Date: formObject[`[${idTab}].Court.Date`],
-                SudDate: formObject[`[${idTab}].Court.SudDate`],
-                Status: formObject[`[${idTab}].Court.Status`],
-                Id: formObject[`[${idTab}].Court.Id`]
-            }
+			kendo.ui.progress($('body'), true);
+			$.post(action, data).done(function (response) {
+				kendo.ui.progress($('body'), false);
+				if (response.Errors) {
+					var errors = $.map(distinctErrors(response.Errors),
+						function (el) {
+							return el.Message;
+						});
+					Common.ShowError(errors);
+					return;
+				}
 
-            kendo.ui.progress($('body'), true);
-            $.post(action, data).done(function (response) {
-                kendo.ui.progress($('body'), false);
-                if (response.Errors) {
-                    var errors = $.map(distinctErrors(response.Errors),
-                        function (el) {
-                            return el.Message;
-                        });
-                    Common.ShowError(errors);
-                    return;
-                }
-
-                if (response.Success) {
-                    form.attr("disabled", true);
-                    Common.ShowMessage(response.Success);
-                }
-            });
-        });
-    });
+				if (response.Success) {
+					$(self).attr('disabled', true);
+					courtData.find('input').not('readonly').each(function () {
+						if ($(this).data("kendoDropDownList")) {
+							$(this).data("kendoDropDownList").readonly();
+						}
+					});
+					stylingDropDown();
+					Common.ShowMessage(response.Success);
+				}
+			});
+		});
+	});
 </script>

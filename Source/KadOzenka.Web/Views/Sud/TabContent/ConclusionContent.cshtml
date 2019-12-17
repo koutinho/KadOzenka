@@ -42,7 +42,7 @@
                             , isReadonly: m.IdConclusion != null, id: $"conclusionLink-{j}-1")
                     </div>
                 </div>
-                <fieldset id="reportData">
+                <fieldset id="@($"conclusionData-{j}")">
                     <legend>Данные об экспертном заключении</legend>
                     @Html.HiddenFor(r => r[j].Conclusion.Id)
                     <div class="form-horizontal col-sm-12">
@@ -152,13 +152,13 @@
                             </div>
                             <div class="col-sm-10">
                                 @Html.KendoDropDownListFor(r => r[j].Conclusion.RecSoglas, "GetApprovalFieldData", "Sud",
-                                    new {idTable = OMTableParam.Zak, objectId = m.Conclusion.Id, paramName = ParamNameEnum.RecSoglas.GetEnumDescription(), isActual = m.Conclusion.RecSoglas != null}
-                                    , isReadonly: m.Conclusion.RecSoglas != null, id: $"conclusion-{j}-11")
+									new {idTable = OMTableParam.Zak, objectId = m.Conclusion.Id, paramName = ParamNameEnum.RecSoglas.GetEnumDescription(), isActual = m.Conclusion.RecSoglas != null}
+									, isReadonly: m.Conclusion.RecSoglas != null, id: $"conclusion-{j}-11")
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <button style="float: right" disabled="@m.Conclusion.IsDisableButton" onclick="saveConclusion(@m.Id, @j, '@Url.Action("EditApprovalConclusion","Sud")')" class="k-button" type="button">Утвердить</button>
+                                <button style="float: right" data-action="@Url.Action("EditApprovalConclusion","Sud")" data-id-tab="@j" data-id="@m.Id" disabled="@m.Conclusion.IsDisableButton" class="k-button saveConclusion" type="button">Утвердить</button>
                             </div>
                         </div>
                     </div>
@@ -199,13 +199,13 @@
                     </div>
                     <div class="col-sm-10">
                         @Html.KendoDropDownListFor(r => r[j].Descr, "GetApprovalFieldData", "Sud",
-                            new {idTable = OMTableParam.ZakLink, objectId = m.Id, paramName = ParamNameEnum.Descr.GetEnumDescription(), isActual = m.Descr != null}
-                            , isReadonly: m.Descr != null, id: $"conclusionLink-{j}-5")
+							new {idTable = OMTableParam.ZakLink, objectId = m.Id, paramName = ParamNameEnum.Descr.GetEnumDescription(), isActual = m.Descr != null}
+							, isReadonly: m.Descr != null false, id: $"conclusionLink-{j}-5")
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-12">
-                        <button style="float: right" disabled="@m.IsDisableButton" onclick="saveConclusionLink(@m.Id, @j)" class="k-button" type="button">Утвердить</button>
+                        <button style="float: right" disabled="@m.IsDisableButton"  data-id-tab="@j" data-id="@m.Id" class="k-button saveConclusionLink" type="button">Утвердить</button>
                     </div>
                 </div>
             </div>
@@ -244,83 +244,114 @@
         });
 
         return result;
-    }
+	}
 
-    function saveConclusionLink (id, idTab) {
-        var form = $(`form.conclusion-link-content#${id}`);
+	function stylingDropDown() {
+		$('.conclusion-link-content .k-widget.k-dropdown').each(function () {
+			if ($(this).find('input').attr('readonly')) {
+				$(this).find('span.k-select').css('display', 'none');
+				$(this).find('span.k-input').css('font-weight', 'bold');
+			}
+		});
+	}
 
-        var formObject = Common.Functions.FormToObject(form);
-
-
-        var data = {
-            IdConclusion: formObject[`[${idTab}].IdConclusion`],
-            Use: formObject[`[${idTab}].Use`],
-            Rs: formObject[`[${idTab}].Rs`],
-            Uprs: formObject[`[${idTab}].Uprs`],
-            Descr: formObject[`[${idTab}].Descr`],
-            Id: formObject[`[${idTab}].Id`]
-        }
-        
-        kendo.ui.progress($('body'), true);
-        $.post(form.attr('action'), data).done(function (response) {
-            kendo.ui.progress($('body'), false);
-            if (response.Errors) {
-                var errors = $.map(distinctErrors(response.Errors),
-                    function(el) {
-                        return el.Message;
-                    });
-                Common.ShowError(errors);
-                return;
-            }
-
-            if (response.Success) {
-                form.attr("disabled", true);
-                Common.ShowMessage(response.Success);
-            }
-        });
-    };
-
-    function saveConclusion(id, idTab, action) {
-        var form = $(`form.conclusion-link-content#${id}`);
-
-        var formObject = Common.Functions.FormToObject(form);
-
-        var data = {
-            Number: formObject[`[${idTab}].Conclusion.Number`],
-            CreateDate: formObject[`[${idTab}].Conclusion.CreateDate`],
-            Org: formObject[`[${idTab}].Conclusion.Org`],
-            Fio: formObject[`[${idTab}].Conclusion.Fio`],
-            Sro: formObject[`[${idTab}].Conclusion.Sro`],
-            RecDate: formObject[`[${idTab}].Conclusion.RecDate`],
-            RecUser: formObject[`[${idTab}].Conclusion.RecUser`],
-            RecLetter: formObject[`[${idTab}].Conclusion.RecLetter`],
-            RecBefore: formObject[`[${idTab}].Conclusion.RecBefore`],
-            RecAfter: formObject[`[${idTab}].Conclusion.RecAfter`],
-            RecSoglas: formObject[`[${idTab}].Conclusion.RecSoglas`],
-            Id: formObject[`[${idTab}].Conclusion.Id`]
-        }
-
-        console.log('act', form.attr('action'));
-        console.log('data', data);
-        kendo.ui.progress($('body'), true);
-        $.post(action, data).done(function (response) {
-            kendo.ui.progress($('body'), false);
-            if (response.Errors) {
-                var errors = $.map(distinctErrors(response.Errors),
-                    function(el) {
-                        return el.Message;
-                    });
-                Common.ShowError(errors);
-                return;
-            }
-
-            if (response.Success) {
-                form.attr("disabled", true);
-                Common.ShowMessage(response.Success);
-            }
-        });
-    };
     $(document).ready(function() {
-        $("#conclusionTabstrip").kendoTabStrip();
+		$("#conclusionTabstrip").kendoTabStrip();
+		stylingDropDown();
+
+		$('.saveConclusion').on('click',
+			function () {
+				var id = $(this).data("id");
+				var idTab = $(this).data("id-tab");
+				var action = $(this).data("action");
+				var form = $(`form.conclusion-link-content#${id}`);
+				var conclusionData = $(`#conclusionData-${idTab}`);
+				var self = this;
+
+				var formObject = Common.Functions.FormToObject(form);
+
+				var data = {
+					Number: formObject[`[${idTab}].Conclusion.Number`],
+					CreateDate: formObject[`[${idTab}].Conclusion.CreateDate`],
+					Org: formObject[`[${idTab}].Conclusion.Org`],
+					Fio: formObject[`[${idTab}].Conclusion.Fio`],
+					Sro: formObject[`[${idTab}].Conclusion.Sro`],
+					RecDate: formObject[`[${idTab}].Conclusion.RecDate`],
+					RecUser: formObject[`[${idTab}].Conclusion.RecUser`],
+					RecLetter: formObject[`[${idTab}].Conclusion.RecLetter`],
+					RecBefore: formObject[`[${idTab}].Conclusion.RecBefore`],
+					RecAfter: formObject[`[${idTab}].Conclusion.RecAfter`],
+					RecSoglas: formObject[`[${idTab}].Conclusion.RecSoglas`],
+					Id: formObject[`[${idTab}].Conclusion.Id`]
+				}
+
+				kendo.ui.progress($('body'), true);
+				$.post(action, data).done(function (response) {
+					kendo.ui.progress($('body'), false);
+					if (response.Errors) {
+						var errors = $.map(distinctErrors(response.Errors),
+							function(el) {
+								return el.Message;
+							});
+						Common.ShowError(errors);
+						return;
+					}
+
+					if (response.Success) {
+						$(self).attr('disabled', true);
+						conclusionData.find('input').not('readonly').each(function () {
+							if ($(this).data("kendoDropDownList")) {
+								$(this).data("kendoDropDownList").readonly();
+							}
+						});
+						stylingDropDown();
+						Common.ShowMessage(response.Success);
+					}
+				});
+			});
+
+		$('.saveConclusionLink').on('click',
+			function () {
+				var id = $(this).data("id");
+				var idTab = $(this).data("id-tab");
+				var form = $(`form.conclusion-link-content#${id}`);
+				var conclusionData = `#conclusionData-${idTab}`;
+				var self = this;
+				var formObject = Common.Functions.FormToObject(form);
+
+
+				var data = {
+					IdConclusion: formObject[`[${idTab}].IdConclusion`],
+					Use: formObject[`[${idTab}].Use`],
+					Rs: formObject[`[${idTab}].Rs`],
+					Uprs: formObject[`[${idTab}].Uprs`],
+					Descr: formObject[`[${idTab}].Descr`],
+					Id: formObject[`[${idTab}].Id`]
+				}
+        
+				kendo.ui.progress($('body'), true);
+				$.post(form.attr('action'), data).done(function (response) {
+					kendo.ui.progress($('body'), false);
+					if (response.Errors) {
+						var errors = $.map(distinctErrors(response.Errors),
+							function(el) {
+								return el.Message;
+							});
+						Common.ShowError(errors);
+						return;
+					}
+
+					if (response.Success) {
+						$(self).attr('disabled', true);
+						form.find('input').not('readonly').each(function () {
+							if (!$(this).parents(conclusionData)[0] && $(this).data("kendoDropDownList")) {
+								$(this).data("kendoDropDownList").readonly();
+							}
+						});
+						stylingDropDown();
+						Common.ShowMessage(response.Success);
+					}
+				});
+			});
     });
 </script>
