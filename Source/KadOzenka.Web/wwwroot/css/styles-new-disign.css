@@ -1340,7 +1340,12 @@ input#addressInput:focus {
 }
 
 /* для старого дизайна */
-[id^=SearchWindow-] .k-panelbar > .k-item > .k-link {
+[id^=SearchWindowToolBar-] {
+    border-radius: 0;
+}
+
+[id^=SearchWindow-] .k-panelbar > .k-item > .k-link,
+[id^=sidePanel-] .k-panelbar > .k-item > .k-link {
     border-color: #f1f2f6;
     background-position: 50% 50%;
     background-color: #eaecf3;
@@ -1352,20 +1357,23 @@ input#addressInput:focus {
     margin: 0;
 }
 
-    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link:hover {
+    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link:hover,
+    [id^=sidePanel-] .k-panelbar > .k-item > .k-link:hover {
         background-color: #e0e3ec;
     }
 
-    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link span:first-child {
+    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link span:first-child,
+    [id^=sidePanel-] .k-panelbar > .k-item > .k-link span:first-child {
         font-weight: inherit;
         font-size: inherit;
         color: #0a1124;
         position: absolute;
         top: 16px;
-        left: 97%;
+        left: 96%;
     }
 
-    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link:before {
+    [id^=SearchWindow-] .k-panelbar > .k-item > .k-link:before,
+    [id^=sidePanel-] .k-panelbar > .k-item > .k-link:before {
         background: none;
     }
 
