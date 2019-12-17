@@ -360,6 +360,165 @@ namespace KadOzenka.Dal.DataExport
             stream.Seek(0, SeekOrigin.Begin);
             return stream;
         }
+
+        /// <summary>
+        /// Выгрузка по фильтру в Excel
+        /// </summary>
+        public static Stream ExportFilterDataToExcel(List<ObjectModel.Sud.OMObject> objs)
+        {
+            ExcelFile excelTemplate = new ExcelFile();
+
+            var mainWorkSheet = excelTemplate.Worksheets.Add("Экспорт данных");
+
+            int curIndex = 0;
+            if (objs.Count > 0)
+            {
+                CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+                ParallelOptions optionsAnaliz = new ParallelOptions
+                {
+                    CancellationToken = cancelTokenSource.Token,
+                    MaxDegreeOfParallelism = 20,
+                };
+                ParallelOptions optionsExport = new ParallelOptions
+                {
+                    CancellationToken = cancelTokenSource.Token,
+                    MaxDegreeOfParallelism = 1,
+                };
+
+
+                int maxsud = 1;
+                int maxzak = 1;
+                int maxotchet = 1;
+                object locked = new object();
+                List<List<object>> values = new List<List<object>>();
+
+                Parallel.ForEach(objs, optionsAnaliz, obj =>
+                {
+                    curIndex++;
+                    if (curIndex % 40 == 0) Console.WriteLine(curIndex);
+
+                    obj.SudLink = ObjectModel.Sud.OMSudLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+                    obj.ZakLink = ObjectModel.Sud.OMZakLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+                    obj.OtchetLink = ObjectModel.Sud.OMOtchetLink.Where(x => x.IdObject == obj.Id).SelectAll().Execute();
+                    lock (locked)
+                    {
+                        maxsud = Math.Max(maxsud, obj.SudLink.Count);
+                        maxzak = Math.Max(maxzak, obj.ZakLink.Count);
+                        maxotchet = Math.Max(maxotchet, obj.OtchetLink.Count);
+                    }
+                });
+
+                List<object> caption = new List<object>();
+
+                #region Заголовок объекта
+                caption.Add("Кадастровый номер объекта");
+                caption.Add("Тип объекта");
+                caption.Add("Адрес");
+                caption.Add("Площадь, кв.");
+                caption.Add("Дата определения стоимости");
+                caption.Add("Оспариваемая КС");
+                caption.Add("Наименование(ТЦ, БЦ)");
+                caption.Add("Внесено в статистику ДГИ");
+                caption.Add("Заказчик / Административный истец");
+                #endregion
+
+                for (int i = 0; i < maxotchet; i++)
+                {
+                    #region Заголовок отчета
+                    caption.Add("Номер отчета");
+                    caption.Add("Дата составления");
+                    caption.Add("Текущее использование");
+                    caption.Add("Организация");
+                    caption.Add("Оценщик");
+                    caption.Add("СРО");
+                    caption.Add("Рыночная стоимость");
+                    caption.Add("Удельная стоимость");
+                    caption.Add("Дата получения");
+                    caption.Add("Жалоба в СРО");
+                    #endregion
+                }
+
+                for (int i = 0; i < maxsud; i++)
+                {
+                    #region Заголовок суда
+                    caption.Add("Наименование суда");
+                    caption.Add("Статус");
+                    caption.Add("Номер дела");
+                    caption.Add("Дата заседания");
+                    caption.Add("Дата судебного акта");
+                    caption.Add("Рыночная стоимость");
+                    caption.Add("Источник информации");
+                    caption.Add("Примечание");
+                    #endregion
+                }
+
+                for (int i = 0; i < maxzak; i++)
+                {
+                    #region Заголовок заключения
+                    caption.Add("Номер заключения");
+                    caption.Add("Дата составления");
+                    caption.Add("Текущее использование");
+                    caption.Add("Организация");
+                    caption.Add("Эксперт");
+                    caption.Add("СРО");
+                    caption.Add("Рыночная стоимость");
+                    caption.Add("Удельная стоимость");
+                    caption.Add("Предварительная рецензия");
+                    caption.Add("Рецензия после анализа");
+                    caption.Add("Дата сдачи");
+                    caption.Add("Исполнитель");
+                    caption.Add("Номер письма");
+                    caption.Add("Примечание");
+                    caption.Add("Рассмотрено с Ковалевым Д.В.");
+                    #endregion
+                }
+
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 1, 0, 8, "Объект");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 9, 9 + (10 * maxotchet) - 1, "Отчет");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet), 9 + (10 * maxotchet) + (8 * maxsud) - 1, "Судебное решение");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet) + (8 * maxsud), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * maxzak) - 1, "Экспертное заключение");
+
+                for (int i = 0; i < maxotchet; i++)
+                {
+                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * (i)), 9 + (10 * (i + 1)) - 1, "Отчет " + "№" + (i + 1).ToString());
+                }
+
+                for (int i = 0; i < maxsud; i++)
+                {
+                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * (i)), 9 + (10 * maxotchet) + (8 * (i + 1)) - 1, "Судебное решение " + "№" + (i + 1).ToString());
+                }
+
+                for (int i = 0; i < maxzak; i++)
+                {
+                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i)), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i + 1)) - 1, "Экспертное заключение " + "№" + (i + 1).ToString());
+                }
+
+                DataExportCommon.AddRow(mainWorkSheet, 2, caption.ToArray());
+
+                curIndex = 0;
+                int dataRow = 2;
+                Parallel.ForEach(objs, optionsExport, obj =>
+                {
+                    curIndex++;
+                    if (curIndex % 40 == 0) Console.WriteLine(curIndex);
+
+                    List<object> datas = FillExportData(obj, maxotchet, maxsud, maxzak);
+                    lock (locked)
+                    {
+                        dataRow++;
+                        DataExportCommon.AddRow(mainWorkSheet, dataRow, datas.ToArray());
+                    }
+                });
+
+                Console.WriteLine(values.Count);
+            }
+
+            MemoryStream stream = new MemoryStream();
+            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+
         /// <summary>
         /// Получение полных данных по объекту
         /// </summary>

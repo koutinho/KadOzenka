@@ -42,6 +42,19 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             else
                 return Convert.ToInt64(value);
         }
+        public static long? DBToProcent(object value)
+        {
+            if ((value == null) || (value == DBNull.Value))
+                return null;
+            else
+            {
+                string proc = Convert.ToString(value);
+                if (proc != string.Empty) return proc.ParseToLongNullable();
+                else
+                    return null;
+            }
+        }
+
         public static double DBToDouble(object value)
         {
             if ((value == null) || (value == DBNull.Value))
@@ -1573,6 +1586,12 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         StatusResultCalc_Code = KoStatusResultCalc.None,
                         ParentCalcType_Code=KoParentCalcType.None
                     };
+
+                    if (objtype==PropertyTypes.UncompletedBuilding)
+                    {
+                        koGroup.DegreeReadiness = NullConvertor.DBToProcent(myOleDbDataReader["procent"]);
+                    }
+
                     count++;
                     Items.Add(koGroup);
                     if (Items.Count == 40)
@@ -1854,6 +1873,10 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
                         StatusResultCalc_Code = KoStatusResultCalc.None
                     };
+                    if (objtype == PropertyTypes.UncompletedBuilding)
+                    {
+                        koGroup.DegreeReadiness = NullConvertor.DBToProcent(myOleDbDataReader["procent"]);
+                    }
                     count++;
                     Items.Add(koGroup);
                     if (Items.Count == 50)
@@ -2079,11 +2102,13 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
         }
         public static void GetCalcGroup()
         {
-            ObjectModel.KO.OMGroup group = ObjectModel.KO.OMGroup.Where(x=>x.Id== 300003).SelectAll().ExecuteFirstOrDefault();
+            ObjectModel.KO.OMGroup group = ObjectModel.KO.OMGroup.Where(x=>x.Id== 300048).SelectAll().ExecuteFirstOrDefault();
             if (group!=null)
             {
                 List<ObjectModel.KO.OMUnit> units = ObjectModel.KO.OMUnit.Where(x=>x.GroupId==group.Id && x.Status_Code==KoUnitStatus.Initial).SelectAll().Execute();
-                group.Calculate(units);
+                List<long> calcParentGroup = new List<long>();
+                calcParentGroup.Add(300044);
+                group.Calculate(units, calcParentGroup);
             }
         }
 
