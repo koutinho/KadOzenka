@@ -12,7 +12,7 @@
 				@Html.CustomLabelFor("Отчет об оценке", true)
 			</div>
 			<div class="col-sm-10">
-				@Html.PlatformAutoCompleteWithEditButtonFor(m => m.ReportNumber, "Value", "Sud", "GetAutoCompleteReport", "clearEvent", "editReport", "selectEvent", isReadonly: false)
+				@Html.PlatformAutoCompleteWithEditButtonFor(m => m.ReportNumber, "Value", "Sud", "GetAutoCompleteReport", "clearEvent", "searchReport", "selectEvent", isAdditionalButton: true, isReadonly: false)
 			</div>
 		</div>
 		<div class="form-group">
@@ -55,6 +55,7 @@
 <script type="text/javascript">
 
 	function selectEvent() {
+		console.log(this.e);
 		$('#@Html.IdFor(m => m.IdReport)').val(this.e.dataItem.Id);
 	}
 
@@ -100,7 +101,7 @@
 		});
 
 
-	function editReport () {
+	function searchReport () {
 		var contentUrl = '@Url.Action("SudOtchetSelect", "RegistersView")';
 		var title = 'Выбор отчета';
 
