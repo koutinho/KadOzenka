@@ -1598,9 +1598,9 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     {
                         ParallelLoopResult resultSucces1 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => {
 							// TODO: Евгению проверить, что так можно
-							ObjectModel.KO.OMUnit existsOmUnit = ObjectModel.KO.OMUnit.Where(y => y.CadastralNumber == x.CadastralNumber && y.TourId == x.TourId && y.TaskId == x.TaskId).ExecuteFirstOrDefault();
+							//ObjectModel.KO.OMUnit existsOmUnit = ObjectModel.KO.OMUnit.Where(y => y.CadastralNumber == x.CadastralNumber && y.TourId == x.TourId && y.TaskId == x.TaskId).ExecuteFirstOrDefault();
 
-							if (existsOmUnit != null) return;
+							//if (existsOmUnit != null) return;
 
 							x.SaveAndCreate();
 							LoadUnitFactorOKS_2016(x.OldId, x.Id, x.PropertyType_Code);
