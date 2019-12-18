@@ -45,8 +45,8 @@ namespace KadOzenka.Dal.DataImport
                 {
                     obj.Destroy();
                 });
+                objs.Clear();
             }
-            objs = ObjectModel.KO.OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId).SelectAll().Execute();
 
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {

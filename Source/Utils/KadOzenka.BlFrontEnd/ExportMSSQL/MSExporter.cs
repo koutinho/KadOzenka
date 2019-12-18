@@ -414,6 +414,53 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
             LoadUnitTaskOKS_2016(task.Id, tour.Id, PropertyTypes.Pllacement);
         }
+        public static void DoLoadBd2016Unit_FlatSkip()
+        {
+            long curYear = 2016;
+            ObjectModel.KO.OMTour tour = ObjectModel.KO.OMTour.Where(x => x.Year == curYear).SelectAll().ExecuteFirstOrDefault();
+            if (tour == null)
+            {
+                tour = new ObjectModel.KO.OMTour
+                {
+                    Year = curYear,
+                    Id = curYear,
+                };
+                tour.Save();
+            }
+
+            long curTask = 2;
+
+            ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == curTask).SelectAll().ExecuteFirstOrDefault();
+            if (task == null)
+            {
+                OMInstance inputDoc = null;
+                if (inputDoc == null)
+                {
+                    inputDoc = new OMInstance
+                    {
+                        Id = -1,
+                        RegNumber = "б/н",
+                        CreateDate = new DateTime(2016, 1, 1),
+                        ApproveDate = new DateTime(2016, 1, 1),
+                        Description = "Перечень объектов оценки",
+                    };
+                    inputDoc.Save();
+                }
+                task = new ObjectModel.KO.OMTask
+                {
+                    Id = curTask,
+                    NoteType_Code = KoNoteType.None,
+                    Status_Code = KoTaskStatus.None,
+                    TourId = tour.Id,
+                    CreationDate = new DateTime(2016, 1, 1),
+                    DocumentId = inputDoc.Id,
+                    ResponseDocId = -1
+                };
+                task.Save();
+            }
+
+            LoadUnitTaskOKS_2016_Skip(task.Id, tour.Id, PropertyTypes.Pllacement);
+        }
 
         public static void DoLoadBd2018Unit_Uncomplited()
         {
@@ -1584,7 +1631,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         PropertyType_Code = objtype,
                         StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
                         StatusResultCalc_Code = KoStatusResultCalc.None,
-                        ParentCalcType_Code=KoParentCalcType.None
+                        ParentCalcType_Code=KoParentCalcType.None,
+                        ParentCalcNumber = NullConvertor.ToString(myOleDbDataReader["CALC_PARENT"]),
                     };
 
                     if (objtype==PropertyTypes.UncompletedBuilding)
@@ -1808,6 +1856,107 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 connection.Close();
             }
         }
+
+        public static void LoadUnitTaskOKS_2016_Skip(long id_task, long id_tour, PropertyTypes objtype)
+        {
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_OKS_2016"]))
+            {
+                connection.Open();
+
+                SqlCommand myOleDbCommand = connection.CreateCommand();
+                myOleDbCommand.CommandTimeout = 600;
+                myOleDbCommand.CommandType = System.Data.CommandType.Text;
+
+                switch (objtype)
+                {
+                    case PropertyTypes.None:
+                        break;
+                    case PropertyTypes.Stead:
+                        myOleDbCommand.CommandText = "select * from tbObjectParcel";
+                        break;
+                    case PropertyTypes.Building:
+                        myOleDbCommand.CommandText = "select * from tbObjectBuild";
+                        break;
+                    case PropertyTypes.Pllacement:
+                        myOleDbCommand.CommandText = "select * from tbObjectFlat";
+                        break;
+                    case PropertyTypes.Construction:
+                        myOleDbCommand.CommandText = "select * from tbObjectConstruction";
+                        break;
+                    case PropertyTypes.UncompletedBuilding:
+                        myOleDbCommand.CommandText = "select * from tbObjectUnderConstruction";
+                        break;
+                    case PropertyTypes.Company:
+                        break;
+                    case PropertyTypes.UnitedPropertyComplex:
+                        break;
+                    case PropertyTypes.Parking:
+                        myOleDbCommand.CommandText = "select * from tbObjectFlat";
+                        break;
+                    case PropertyTypes.Other:
+                        break;
+                    default:
+                        break;
+                }
+
+                SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
+                long count = 0;
+                List<ObjectModel.KO.OMUnit> Items = new List<ObjectModel.KO.OMUnit>();
+
+                while (myOleDbDataReader.Read())
+                {
+                    string kn = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]);
+                    ObjectModel.KO.OMUnit koGroup = ObjectModel.KO.OMUnit.Where(x=>x.TourId==id_tour && x.TaskId==id_task&&x.CadastralNumber==kn).SelectAll().ExecuteFirstOrDefault();
+                    if (koGroup == null)
+                    {
+                        koGroup = new ObjectModel.KO.OMUnit
+                        {
+                            Id = -1,
+                            ModelId = -1,
+                            CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
+                            CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
+                            Upks = NullConvertor.DBToDecimal(myOleDbDataReader["NUPKSZ_OBJECT"]),
+                            UpksPre = NullConvertor.DBToDecimal(myOleDbDataReader["NUPKSZ_OBJECT"]),
+                            GroupId = NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]) + OffsetSubGroupOKS_2016,
+                            OldId = NullConvertor.DBToInt64(myOleDbDataReader["id_object"]),
+                            TourId = id_tour,
+                            TaskId = id_task,
+                            Status_Code = KoUnitStatus.Initial,
+                            ObjectId = -1,
+                            CreationDate = new DateTime(2016, 1, 1),
+                            CadastralNumber = kn,
+                            CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
+                            Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
+                            PropertyType_Code = objtype,
+                            StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
+                            StatusResultCalc_Code = KoStatusResultCalc.None,
+                            ParentCalcType_Code = KoParentCalcType.None,
+                            ParentCalcNumber = NullConvertor.ToString(myOleDbDataReader["CALC_PARENT"]),
+                        };
+
+                        if (objtype == PropertyTypes.UncompletedBuilding)
+                        {
+                            koGroup.DegreeReadiness = NullConvertor.DBToProcent(myOleDbDataReader["procent"]);
+                        }
+                        Items.Add(koGroup);
+                    }
+                    count++;
+                    if (count % 100==0) Console.WriteLine(count);
+
+                    if (Items.Count == 40)
+                    {
+                        ParallelLoopResult resultSucces1 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2016(x.OldId, x.Id, x.PropertyType_Code); });
+                        Items.Clear();
+                        Console.WriteLine(count);
+                    }
+                }
+                ParallelLoopResult resultSucces2 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2016(x.OldId, x.Id, x.PropertyType_Code); });
+                Console.WriteLine(count);
+                myOleDbDataReader.Close();
+                connection.Close();
+            }
+        }
+
         #endregion
 
         #region БД 2018 Factor
@@ -1879,7 +2028,9 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
                         PropertyType_Code = objtype,
                         StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
-                        StatusResultCalc_Code = KoStatusResultCalc.None
+                        StatusResultCalc_Code = KoStatusResultCalc.None,
+                        ParentCalcType_Code = KoParentCalcType.None,
+                        ParentCalcNumber = NullConvertor.ToString(myOleDbDataReader["CALC_PARENT"]),
                     };
                     if (objtype == PropertyTypes.UncompletedBuilding)
                     {
@@ -2110,12 +2261,13 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
         }
         public static void GetCalcGroup()
         {
-            ObjectModel.KO.OMGroup group = ObjectModel.KO.OMGroup.Where(x=>x.Id== 300048).SelectAll().ExecuteFirstOrDefault();
+            ObjectModel.KO.OMGroup group = ObjectModel.KO.OMGroup.Where(x=>x.Id== 300020).SelectAll().ExecuteFirstOrDefault();
             if (group!=null)
             {
-                List<ObjectModel.KO.OMUnit> units = ObjectModel.KO.OMUnit.Where(x=>x.GroupId==group.Id && x.Status_Code==KoUnitStatus.Initial).SelectAll().Execute();
+                List<ObjectModel.KO.OMUnit> units = ObjectModel.KO.OMUnit.Where(x=>x.GroupId==group.Id && x.Status_Code==KoUnitStatus.Initial&&x.PropertyType_Code==PropertyTypes.Building).SelectAll().Execute();
                 List<long> calcParentGroup = new List<long>();
-                calcParentGroup.Add(300044);
+                calcParentGroup.Add(300013);
+                calcParentGroup.Add(300014);
                 group.Calculate(units, calcParentGroup);
             }
         }
@@ -2126,14 +2278,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             if (task != null)
             {
                 {
-                    string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2016"], " *.xml", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2016"], "*.xml", SearchOption.AllDirectories);
 
                     int countAll = files.Length;
                     int count = 0;
                     foreach (string file in files)
                     {
                         count++;
-                        Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(file, ConfigurationManager.AppSettings["Schema_Path_2016"], task.CreationDate.Value, idTour, idTask, task.CreationDate.Value, task.CreationDate.Value, 63);
+                        Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(file, ConfigurationManager.AppSettings["Schema_Path_2016"], task);
                         Console.WriteLine(count.ToString() + " из " + countAll.ToString());
                     }
                 }
@@ -2145,14 +2297,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             if (task != null)
             {
                 {
-                    string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2018"], " *.xml", SearchOption.AllDirectories);
+                    string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2018"], "*.xml", SearchOption.AllDirectories);
 
                     int countAll = files.Length;
                     int count = 0;
                     foreach (string file in files)
                     {
                         count++;
-                        Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(file, ConfigurationManager.AppSettings["Schema_Path_2018"], task.CreationDate.Value, idTour, idTask, task.CreationDate.Value, task.CreationDate.Value, 63);
+                        Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(file, ConfigurationManager.AppSettings["Schema_Path_2018"], task);
                         Console.WriteLine(count.ToString() + " из " + countAll.ToString());
                     }
                 }

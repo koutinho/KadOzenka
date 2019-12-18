@@ -18,16 +18,18 @@ namespace ObjectModel.KO
         public PropertyTypes Type { get; set; }
         public decimal UPKSZ { get; set; }
         public string Calc_obj { get; set; }
+        public KoParentCalcType Calc_obj_code { get; set; }
         #endregion
 
         #region Конструкторы и инициализация
         // создание по составляющим
-        public ALLTmpItem(string aKK, PropertyTypes aType, decimal aUpks, string aCalc_obj)
+        public ALLTmpItem(string aKK, PropertyTypes aType, decimal aUpks, string aCalc_obj, KoParentCalcType aCalc_obj_code)
         {
             KK = aKK;
             Type = aType;
             UPKSZ = aUpks;
             Calc_obj = aCalc_obj;
+            Calc_obj_code = aCalc_obj_code;
         }
         #endregion
 
@@ -45,7 +47,7 @@ namespace ObjectModel.KO
             Valuetmp = new List<ALLTmpItem>();
         }
 
-        public void Add(string aKK, PropertyTypes aType, decimal aUpks, string aCalc_obj)
+        public void Add(string aKK, PropertyTypes aType, decimal aUpks, string aCalc_obj, KoParentCalcType aCalc_obj_code)
         {
             if (!String.IsNullOrEmpty(aKK))
             {
@@ -61,17 +63,18 @@ namespace ObjectModel.KO
                     }
                     if (!find)
                     {
-                        Valuetmp.Add(new ALLTmpItem(aKK, aType, aUpks, aCalc_obj));
+                        Valuetmp.Add(new ALLTmpItem(aKK, aType, aUpks, aCalc_obj, aCalc_obj_code));
                     }
                 }
 
             }
         }
-        public bool Get(string aKK, PropertyTypes aType, out decimal aUpks, out string aCalc_obj)
+        public bool Get(string aKK, PropertyTypes aType, out decimal aUpks, out string aCalc_obj, out KoParentCalcType aCalc_obj_code)
         {
             bool find = false;
             aUpks = 0;
             aCalc_obj = string.Empty;
+            aCalc_obj_code = KoParentCalcType.None;
             if (!String.IsNullOrEmpty(aKK))
             {
                 ALLTmpItem item = Valuetmp.Find(x => ((x.KK == aKK) && (x.Type == aType)));
@@ -80,6 +83,7 @@ namespace ObjectModel.KO
                     find = true;
                     aUpks = item.UPKSZ;
                     aCalc_obj = item.Calc_obj;
+                    aCalc_obj_code = item.Calc_obj_code;
                 }
             }
             return find;
@@ -132,13 +136,12 @@ namespace ObjectModel.KO
             this.Save();
         }
     }
-
     public partial class OMModel
     {
         public string GetFormulaFull(bool upks)
         {
             string str_koeff = GetFormulaKoeff(false, string.Empty);
-            return (upks ? ("УПКС=") : string.Empty) + ((str_koeff!=string.Empty) ?"(":string.Empty) + GetFormulaMain(false) + ((str_koeff != string.Empty) ? ")" : string.Empty) + str_koeff;
+            return (upks ? ("УПКС=") : string.Empty) + ((str_koeff != string.Empty) ? "(" : string.Empty) + GetFormulaMain(false) + ((str_koeff != string.Empty) ? ")" : string.Empty) + str_koeff;
         }
         public string GetFormulaMain(bool upks)
         {
@@ -146,7 +149,7 @@ namespace ObjectModel.KO
             #region Моделирование
             if (ParentGroup == null)
                 ParentGroup = ObjectModel.KO.OMGroup.Where(x => x.Id == GroupId).SelectAll().ExecuteFirstOrDefault();
-            if (ModelFactor.Count==0)
+            if (ModelFactor.Count == 0)
                 ModelFactor = OMModelFactor.Where(x => x.ModelId == this.Id).SelectAll().Execute();
 
             if (ParentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon || this.ParentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
@@ -251,8 +254,8 @@ namespace ObjectModel.KO
                 ParentGroup = ObjectModel.KO.OMGroup.Where(x => x.Id == GroupId).SelectAll().ExecuteFirstOrDefault();
             if (ParentGroup != null)
             {
-                if (ParentGroup.GroupFactor.Count==0)
-                ParentGroup.GroupFactor = OMGroupFactor.Where(x => x.GroupId == ParentGroup.Id).SelectAll().Execute();
+                if (ParentGroup.GroupFactor.Count == 0)
+                    ParentGroup.GroupFactor = OMGroupFactor.Where(x => x.GroupId == ParentGroup.Id).SelectAll().Execute();
                 foreach (OMGroupFactor koeff in ParentGroup.GroupFactor)
                 {
                     RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(koeff.FactorId));
@@ -279,34 +282,152 @@ namespace ObjectModel.KO
             return res;
         }
     }
-
     public partial class OMModelFactor
     {
         public List<OMMarkCatalog> MarkCatalogs { get; set; }
         public void FillMarkCatalogs(OMModel model)
         {
             MarkCatalogs = new List<OMMarkCatalog>();
-            MarkCatalogs.AddRange(OMMarkCatalog.Where(x=>x.GroupId==model.GroupId&&x.FactorId==this.FactorId).SelectAll().Execute());
+            MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == model.GroupId && x.FactorId == this.FactorId).SelectAll().Execute());
         }
     }
-
     public partial class OMGroup
     {
-        public static void GetAvgValue(long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject)
+        public static void GetMinValue(ref ALLStatOKS minKR, ref ALLStatOKS minKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
         {
-            upks = 0;
+            upks = decimal.MaxValue;
+            parentCalcType = KoParentCalcType.None;
             parentCalcObject = string.Empty;
             bool prFindInCadastralBlock = false;
             bool prFindInCadastralRaion = false;
             bool prFindInCadastralRegion = false;
-            decimal sumSquare = 0;
-            decimal sumCost = 0;
-
+            string kr = kk.Substring(0, 5);
 
             #region поиск по кварталу
             foreach (long calcChildGroup in calcChildGroups)
             {
-                List<OMUnit> unitsKK = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.CadastralBlock == kk).SelectAll().Execute();
+                List<OMUnit> unitsKK = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.CadastralBlock == kk && x.PropertyType_Code == type).SelectAll().Execute();
+                if (unitsKK.Count > 0)
+                {
+                    prFindInCadastralBlock = true;
+                    foreach (OMUnit unit in unitsKK)
+                    {
+                        if (unit.Upks != null)
+                        {
+                            if (unit.Upks < upks)
+                            {
+                                upks = unit.Upks.ParseToDecimal();
+                            }
+                        }
+                    }
+                }
+            }
+            #endregion
+            #region поиск по району
+            if (!prFindInCadastralBlock)
+            {
+                if (!minKR.Get(kr, PropertyTypes.Building, out upks, out parentCalcObject, out parentCalcType))
+                {
+                    upks = decimal.MaxValue;
+                    foreach (long calcChildGroup in calcChildGroups)
+                    {
+                        List<OMUnit> unitsKR = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.PropertyType_Code == type && x.CadastralBlock.Contains(kr)).SelectAll().Execute();
+                        if (unitsKR.Count > 0)
+                        {
+                            foreach (OMUnit unit in unitsKR)
+                            {
+                                if (unit.CadastralBlock.Substring(0, 5) == kr)
+                                {
+                                    if (unit.CadastralCost != null)
+                                    {
+                                        if (unit.Upks < upks && unit.Upks>0)
+                                        {
+                                            prFindInCadastralRaion = true;
+                                            upks = unit.Upks.ParseToDecimal();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    minKR.Add(kr, PropertyTypes.Building, upks, kr, KoParentCalcType.CadastralRegion);
+                }
+                else
+                {
+                    prFindInCadastralRaion = true;
+                }
+            }
+            #endregion
+            #region поиск по субъекту
+            if (!prFindInCadastralRaion && !prFindInCadastralBlock)
+            {
+                if (!minKS.Get("Субъект РФ", PropertyTypes.Building, out upks, out parentCalcObject, out parentCalcType))
+                {
+                    upks = decimal.MaxValue;
+                    foreach (long calcChildGroup in calcChildGroups)
+                    {
+                        List<OMUnit> unitsKS = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.PropertyType_Code == type).SelectAll().Execute();
+                        if (unitsKS.Count > 0)
+                        {
+                            prFindInCadastralRegion = true;
+                            foreach (OMUnit unit in unitsKS)
+                            {
+                                if (unit.CadastralCost != null)
+                                {
+                                    if (unit.Upks < upks)
+                                    {
+                                        upks = unit.Upks.ParseToDecimal();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    minKS.Add("Субъект РФ", PropertyTypes.Building, upks, kr, KoParentCalcType.RfSubject);
+                }
+                else
+                {
+                    prFindInCadastralRegion = true;
+                }
+            }
+            #endregion
+
+            if (prFindInCadastralBlock || prFindInCadastralRaion || prFindInCadastralRegion)
+            {
+                if (prFindInCadastralBlock)
+                {
+                    parentCalcObject = kk;
+                    parentCalcType = KoParentCalcType.CadastralBlock;
+                }
+                else
+                if (prFindInCadastralRaion)
+                {
+                    parentCalcObject = kk.Substring(0, 5);
+                    parentCalcType = KoParentCalcType.CadastralRegion;
+                }
+                else
+                if (prFindInCadastralRegion)
+                {
+                    parentCalcObject = "Субъект РФ";
+                    parentCalcType = KoParentCalcType.RfSubject;
+                }
+            }
+        }
+        public static void GetAvgValue(ref ALLStatOKS avgKR, ref ALLStatOKS avgKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
+        {
+            upks = 0;
+            parentCalcType = KoParentCalcType.None;
+            parentCalcObject = string.Empty;
+            bool prFindInCadastralBlock = false;
+            bool prFindInCadastralRaion = false;
+            bool prFindInCadastralRegion = false;
+            string kr = kk.Substring(0, 5);
+            decimal sumSquare = 0;
+            decimal sumCost = 0;
+
+            #region поиск по кварталу
+            foreach (long calcChildGroup in calcChildGroups)
+            {
+                List<OMUnit> unitsKK = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.CadastralBlock == kk && x.PropertyType_Code == type).SelectAll().Execute();
                 if (unitsKK.Count > 0)
                 {
                     prFindInCadastralBlock = true;
@@ -318,152 +439,102 @@ namespace ObjectModel.KO
                             sumCost += unit.CadastralCost.ParseToDecimal();
                         }
                     }
+                    if (sumSquare > 0)
+                        upks = Math.Round(sumCost / sumSquare, 2, MidpointRounding.AwayFromZero);
                 }
             }
             #endregion
             #region поиск по району
             if (!prFindInCadastralBlock)
             {
-                foreach (long calcChildGroup in calcChildGroups)
+                if (!avgKR.Get(kr, PropertyTypes.Building, out upks, out parentCalcObject, out parentCalcType))
                 {
-                    List<OMUnit> unitsKR = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.CadastralBlock.Substring(0, 5) == kk.Substring(0, 5)).SelectAll().Execute();
-                    if (unitsKR.Count > 0)
+                    upks = 0;
+                    foreach (long calcChildGroup in calcChildGroups)
                     {
-                        prFindInCadastralRaion = true;
-                        foreach (OMUnit unit in unitsKR)
+                        List<OMUnit> unitsKR = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.PropertyType_Code == type && x.CadastralBlock.Contains(kr)).SelectAll().Execute();
+                        if (unitsKR.Count > 0)
                         {
-                            if (unit.Square != null && unit.CadastralCost != null)
+                            foreach (OMUnit unit in unitsKR)
                             {
-                                sumSquare += unit.Square.ParseToDecimal();
-                                sumCost += unit.CadastralCost.ParseToDecimal();
+                                if (unit.CadastralBlock.Substring(0, 5) == kr)
+                                {
+                                    if (unit.Square != null && unit.CadastralCost != null)
+                                    {
+                                        sumSquare += unit.Square.ParseToDecimal();
+                                        sumCost += unit.CadastralCost.ParseToDecimal();
+                                    }
+                                }
                             }
                         }
                     }
+                    if (sumSquare > 0)
+                        upks = Math.Round(sumCost / sumSquare, 2, MidpointRounding.AwayFromZero);
+
+                    avgKR.Add(kr, PropertyTypes.Building, upks, kr, KoParentCalcType.CadastralRegion);
+                }
+                else
+                {
+                    prFindInCadastralRaion = true;
                 }
             }
             #endregion
             #region поиск по субъекту
             if (!prFindInCadastralRaion && !prFindInCadastralBlock)
             {
-                foreach (long calcChildGroup in calcChildGroups)
+                if (!avgKS.Get("Субъект РФ", PropertyTypes.Building, out upks, out parentCalcObject, out parentCalcType))
                 {
-                    List<OMUnit> unitsKS = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup).SelectAll().Execute();
-                    if (unitsKS.Count > 0)
+                    upks = 0;
+                    foreach (long calcChildGroup in calcChildGroups)
                     {
-                        prFindInCadastralRegion = true;
-                        foreach (OMUnit unit in unitsKS)
+                        List<OMUnit> unitsKS = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.PropertyType_Code == type).SelectAll().Execute();
+                        if (unitsKS.Count > 0)
                         {
-                            if (unit.Square != null && unit.CadastralCost != null)
+                            prFindInCadastralRegion = true;
+                            foreach (OMUnit unit in unitsKS)
                             {
-                                sumSquare += unit.Square.ParseToDecimal();
-                                sumCost += unit.CadastralCost.ParseToDecimal();
+                                if (unit.Square != null && unit.CadastralCost != null)
+                                {
+                                    sumSquare += unit.Square.ParseToDecimal();
+                                    sumCost += unit.CadastralCost.ParseToDecimal();
+                                }
                             }
                         }
                     }
+                    if (sumSquare > 0)
+                        upks = Math.Round(sumCost / sumSquare, 2, MidpointRounding.AwayFromZero);
+                    avgKS.Add("Субъект РФ", PropertyTypes.Building, upks, kr, KoParentCalcType.RfSubject);
+                }
+                else
+                {
+                    prFindInCadastralRegion = true;
                 }
             }
             #endregion
 
             if (prFindInCadastralBlock || prFindInCadastralRaion || prFindInCadastralRegion)
             {
-                if (prFindInCadastralBlock) parentCalcObject = kk;
-                else
-                if (prFindInCadastralRaion) parentCalcObject = kk.Substring(0, 5);
-                else
-                if (prFindInCadastralRegion) parentCalcObject = "Субъект РФ";
-
-
-                if (sumSquare > 0)
-                    upks = Math.Round(sumCost / sumSquare, 2, MidpointRounding.AwayFromZero);
-            }
-        }
-        public static void GetMinValue(long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject)
-        {
-            upks = 0;
-            parentCalcObject = string.Empty;
-            bool prFindInCadastralBlock = false;
-            bool prFindInCadastralRaion = false;
-            bool prFindInCadastralRegion = false;
-            decimal sumSquare = 0;
-            decimal sumCost = 0;
-
-
-            #region поиск по кварталу
-            foreach (long calcChildGroup in calcChildGroups)
-            {
-                List<OMUnit> unitsKK = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.CadastralBlock == kk).SelectAll().Execute();
-                if (unitsKK.Count > 0)
+                if (prFindInCadastralBlock)
                 {
-                    prFindInCadastralBlock = true;
-                    foreach (OMUnit unit in unitsKK)
-                    {
-                        if (unit.Square != null && unit.CadastralCost != null)
-                        {
-                            sumSquare += unit.Square.ParseToDecimal();
-                            sumCost += unit.CadastralCost.ParseToDecimal();
-                        }
-                    }
+                    parentCalcObject = kk;
+                    parentCalcType = KoParentCalcType.CadastralBlock;
                 }
-            }
-            #endregion
-            #region поиск по району
-            if (!prFindInCadastralBlock)
-            {
-                foreach (long calcChildGroup in calcChildGroups)
-                {
-                    List<OMUnit> unitsKR = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup && x.CadastralBlock.Substring(0, 5) == kk.Substring(0, 5)).SelectAll().Execute();
-                    if (unitsKR.Count > 0)
-                    {
-                        prFindInCadastralRaion = true;
-                        foreach (OMUnit unit in unitsKR)
-                        {
-                            if (unit.Square != null && unit.CadastralCost != null)
-                            {
-                                sumSquare += unit.Square.ParseToDecimal();
-                                sumCost += unit.CadastralCost.ParseToDecimal();
-                            }
-                        }
-                    }
-                }
-            }
-            #endregion
-            #region поиск по субъекту
-            if (!prFindInCadastralRaion && !prFindInCadastralBlock)
-            {
-                foreach (long calcChildGroup in calcChildGroups)
-                {
-                    List<OMUnit> unitsKS = OMUnit.Where(x => x.TourId == tourId && x.Status_Code == KoUnitStatus.Initial && x.GroupId == calcChildGroup).SelectAll().Execute();
-                    if (unitsKS.Count > 0)
-                    {
-                        prFindInCadastralRegion = true;
-                        foreach (OMUnit unit in unitsKS)
-                        {
-                            if (unit.Square != null && unit.CadastralCost != null)
-                            {
-                                sumSquare += unit.Square.ParseToDecimal();
-                                sumCost += unit.CadastralCost.ParseToDecimal();
-                            }
-                        }
-                    }
-                }
-            }
-            #endregion
-
-            if (prFindInCadastralBlock || prFindInCadastralRaion || prFindInCadastralRegion)
-            {
-                if (prFindInCadastralBlock) parentCalcObject = kk;
                 else
-                if (prFindInCadastralRaion) parentCalcObject = kk.Substring(0, 5);
+                if (prFindInCadastralRaion)
+                {
+                    parentCalcObject = kk.Substring(0, 5);
+                    parentCalcType = KoParentCalcType.CadastralRegion;
+                }
                 else
-                if (prFindInCadastralRegion) parentCalcObject = "Субъект РФ";
-
-
-                if (sumSquare > 0)
-                    upks = Math.Round(sumCost / sumSquare, 2, MidpointRounding.AwayFromZero);
+                if (prFindInCadastralRegion)
+                {
+                    parentCalcObject = "Субъект РФ";
+                    parentCalcType = KoParentCalcType.RfSubject;
+                }
             }
         }
 
-        public void Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup)
+        public void Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup, PropertyTypes curTypeObject)
         {
             #region Эталонный
             //if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
@@ -821,7 +892,7 @@ namespace ObjectModel.KO
             //    }
             //}
             #endregion
-            
+
             #region Моделирование
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
@@ -1272,81 +1343,101 @@ namespace ObjectModel.KO
                 fw.HideText();
             }
             #endregion
+            */
             #region Среднее (КР, КЛАДР)
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject == PropertyTypes.Building)
             {
-                frmWait fw = new frmWait();
-                fw.ShowText("Расчет зданий подгруппы " + this.FullName_SubGroup, 0, 0);
-                ALLObjectItem[] objs = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, true, false, false, false, false, true, false, false, false, ALLParamItem.Change_Object);
-                int ccc = 0;
-                ALLStatOKS sts = new ALLStatOKS();
-                foreach (ALLObjectItem obj in objs)
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
                 {
-                    if (obj.CheckDocInput(id_doc))
+                    ALLStatOKS avgKK = new ALLStatOKS();
+                    ALLStatOKS avgKR = new ALLStatOKS();
+                    ALLStatOKS avgKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        fw.ShowText("Расчет зданий подгруппы " + this.FullName_SubGroup, objs.Length, ccc);
-                        ccc++;
+                        {
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
 
-                        double upksz = 0;
-                        double cupksz = 0;
-                        string calc_obj = string.Empty;
-                        if (sts.Get4("77", obj.KN_KK, 1, out cupksz, out calc_obj))
-                        {
-                            obj.UpdateCalc(cupksz, cupksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                        }
-                        else
-                        {
-                            CalcNoHarAVG(obj.Id, obj.KN_OBJECT, obj.KN_KK, "77", 1, 1, out upksz, out calc_obj);
-                            obj.UpdateCalc(upksz, upksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                            sts.Add4("77", obj.KN_KK, 1, upksz, calc_obj);
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
                     }
                 }
-                fw.HideText();
             }
             #endregion
             #region Минимальное (КР, КЛАДР)
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min && curTypeObject == PropertyTypes.Building)
             {
-                frmWait fw = new frmWait();
-                fw.ShowText("Расчет зданий подгруппы " + this.FullName_SubGroup, 0, 0);
-                ALLObjectItem[] objs = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, true, false, false, false, false, true, false, false, false, ALLParamItem.Change_Object);
-                int ccc = 0;
-                ALLStatOKS sts = new ALLStatOKS();
-                foreach (ALLObjectItem obj in objs)
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
                 {
-                    if (obj.CheckDocInput(id_doc))
+                    ALLStatOKS minKK = new ALLStatOKS();
+                    ALLStatOKS minKR = new ALLStatOKS();
+                    ALLStatOKS minKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        fw.ShowText("Расчет зданий подгруппы " + this.FullName_SubGroup, objs.Length, ccc);
-                        ccc++;
+                        {
 
-                        double upksz = 0;
-                        double cupksz = 0;
-                        string calc_obj = string.Empty;
-                        if (sts.Get4("77", obj.KN_KK, 1, out cupksz, out calc_obj))
-                        {
-                            obj.UpdateCalc(cupksz, cupksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                        }
-                        else
-                        {
-                            CalcNoHarMin(obj.Id, obj.KN_OBJECT, obj.KN_KK, "77", 1, 1, out upksz, out calc_obj);
-                            obj.UpdateCalc(upksz, upksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                            sts.Add4("77", obj.KN_KK, 1, upksz, calc_obj);
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
+
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                minKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
                     }
                 }
-                fw.HideText();
             }
             #endregion
-            */
+
             #endregion
 
             #region Помещения
@@ -1504,290 +1595,407 @@ namespace ObjectModel.KO
                 fw.HideText();
             }
             #endregion
-            #region Среднее (КР, КЛАДР)
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG)
-            {
-                frmWait fw = new frmWait();
-                fw.ShowText("Расчет помещений подгруппы " + this.FullName_SubGroup, 0, 0);
-                ALLObjectItem[] objs = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, false, true, false, false, false, true, false, false, false, ALLParamItem.Change_Object);
-                int ccc = 0;
-                ALLStatOKS sts = new ALLStatOKS();
-                foreach (ALLObjectItem obj in objs)
-                {
-                    if (obj.CheckDocInput(id_doc))
-                    {
-                        fw.ShowText("Расчет помещений подгруппы " + this.FullName_SubGroup, objs.Length, ccc);
-                        ccc++;
+            */
 
-                        double upksz = 0;
-                        double cupksz = 0;
-                        string calc_obj = string.Empty;
-                        if (sts.Get4("77", obj.KN_KK, 0, out cupksz, out calc_obj))
+            #region Среднее (КР, КЛАДР)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject == PropertyTypes.Pllacement)
+            {
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
+                {
+                    ALLStatOKS avgKK = new ALLStatOKS();
+                    ALLStatOKS avgKR = new ALLStatOKS();
+                    ALLStatOKS avgKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
+                    {
                         {
-                            if (cupksz <= 0)
-                                break;
-                            obj.UpdateCalc(cupksz, cupksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                        }
-                        else
-                        {
-                            CalcNoHarAVG(obj.Id, obj.KN_OBJECT, obj.KN_KK, "77", 0, 1, out upksz, out calc_obj);
-                            if (upksz <= 0)
-                                break;
-                            obj.UpdateCalc(upksz, upksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                            sts.Add4("77", obj.KN_KK, 0, upksz, calc_obj);
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
+
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Pllacement, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Pllacement, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Pllacement, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
                     }
                 }
-                fw.HideText();
             }
             #endregion
             #region Минимальное (КР, КЛАДР)
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min && curTypeObject == PropertyTypes.Pllacement)
             {
-                frmWait fw = new frmWait();
-                fw.ShowText("Расчет помещений подгруппы " + this.FullName_SubGroup, 0, 0);
-                ALLObjectItem[] objs = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, false, true, false, false, false, true, false, false, false, ALLParamItem.Change_Object);
-                int ccc = 0;
-                ALLStatOKS sts = new ALLStatOKS();
-                foreach (ALLObjectItem obj in objs)
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
                 {
-                    if (obj.CheckDocInput(id_doc))
+                    ALLStatOKS minKK = new ALLStatOKS();
+                    ALLStatOKS minKR = new ALLStatOKS();
+                    ALLStatOKS minKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        fw.ShowText("Расчет помещений подгруппы " + this.FullName_SubGroup, objs.Length, ccc);
-                        ccc++;
+                        {
 
-                        double upksz = 0;
-                        double cupksz = 0;
-                        string calc_obj = string.Empty;
-                        if (sts.Get4("77", obj.KN_KK, 0, out cupksz, out calc_obj))
-                        {
-                            if (cupksz <= 0)
-                                break;
-                            obj.UpdateCalc(cupksz, cupksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                        }
-                        else
-                        {
-                            CalcNoHarMin(obj.Id, obj.KN_OBJECT, obj.KN_KK, "77", 0, 1, out upksz, out calc_obj);
-                            if (upksz <= 0)
-                                break;
-                            obj.UpdateCalc(upksz, upksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                            sts.Add4("77", obj.KN_KK, 0, upksz, calc_obj);
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
+
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Pllacement, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Pllacement, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                minKK.Add(unit.CadastralBlock, PropertyTypes.Pllacement, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
                     }
                 }
-                fw.HideText();
             }
             #endregion
-            */
             #endregion
 
             #region Сооружения
-            /*
-            #region Среднее (КР, КЛАДР)
-            if ((this.Type_SubGroup == 10) & (construction))
+            #region Среднее
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject == PropertyTypes.Construction)
             {
-                frmWait fw = new frmWait();
-                fw.ShowText("Расчет сооружений подгруппы " + this.FullName_SubGroup, 0, 0);
-                ALLObjectItem[] objs = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, false, false, true, false, false, true, false, false, false, ALLParamItem.Change_Object);
-                int ccc = 0;
-                ALLStatOKS sts = new ALLStatOKS();
-                foreach (ALLObjectItem obj in objs)
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
                 {
-                    if (obj.CheckDocInput(id_doc))
+                    ALLStatOKS avgKK = new ALLStatOKS();
+                    ALLStatOKS avgKR = new ALLStatOKS();
+                    ALLStatOKS avgKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        fw.ShowText("Расчет сооружений подгруппы " + this.FullName_SubGroup, objs.Length, ccc);
-                        ccc++;
+                        {
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
 
-                        double upksz = 0;
-                        double cupksz = 0;
-                        string calc_obj = string.Empty;
-                        if (sts.Get4("77", obj.KN_KK, 2, out cupksz, out calc_obj))
-                        {
-                            obj.UpdateCalc(cupksz, cupksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                        }
-                        else
-                        {
-                            CalcNoHarAVG(obj.Id, obj.KN_OBJECT, obj.KN_KK, "77", 2, 1, out upksz, out calc_obj);
-                            obj.UpdateCalc(upksz, upksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                            sts.Add4("77", obj.KN_KK, 2, upksz, calc_obj);
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Construction, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Construction, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Construction, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
                     }
                 }
-                fw.HideText();
             }
             #endregion
-            #region Минимальное (КР, КЛАДР)
-            if ((this.Type_SubGroup == 12) & (construction))
+            #region Минимальное
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min && curTypeObject == PropertyTypes.Construction)
             {
-                frmWait fw = new frmWait();
-                fw.ShowText("Расчет сооружений подгруппы " + this.FullName_SubGroup, 0, 0);
-                ALLObjectItem[] objs = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, false, false, true, false, false, true, false, false, false, ALLParamItem.Change_Object);
-                int ccc = 0;
-                ALLStatOKS sts = new ALLStatOKS();
-                foreach (ALLObjectItem obj in objs)
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
                 {
-                    if (obj.CheckDocInput(id_doc))
+                    ALLStatOKS minKK = new ALLStatOKS();
+                    ALLStatOKS minKR = new ALLStatOKS();
+                    ALLStatOKS minKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        fw.ShowText("Расчет сооружений подгруппы " + this.FullName_SubGroup, objs.Length, ccc);
-                        ccc++;
+                        {
 
-                        double upksz = 0;
-                        double cupksz = 0;
-                        string calc_obj = string.Empty;
-                        if (sts.Get4("77", obj.KN_KK, 2, out cupksz, out calc_obj))
-                        {
-                            obj.UpdateCalc(cupksz, cupksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                        }
-                        else
-                        {
-                            CalcNoHarMin(obj.Id, obj.KN_OBJECT, obj.KN_KK, "77", 2, 1, out upksz, out calc_obj);
-                            obj.UpdateCalc(upksz, upksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                            sts.Add4("77", obj.KN_KK, 2, upksz, calc_obj);
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
+
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Construction, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Construction, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                minKK.Add(unit.CadastralBlock, PropertyTypes.Construction, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
                     }
                 }
-                fw.HideText();
             }
             #endregion
-            */
             #endregion
 
             #region Участки
-            /*
-            #region Среднее (КР, КЛАДР)
-            if ((this.Type_SubGroup == 10) & (parcel))
+            #region Среднее
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject==PropertyTypes.Stead)
             {
-                frmWait fw = new frmWait();
-                fw.ShowText("Расчет учатков подгруппы " + this.FullName_SubGroup, 0, 0);
-                ALLObjectItem[] objs = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, false, false, false, false, true, true, false, false, false, ALLParamItem.Change_Object);
-                int ccc = 0;
-                ALLStatOKS sts = new ALLStatOKS();
-                foreach (ALLObjectItem obj in objs)
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
                 {
-                    if (obj.CheckDocInput(id_doc))
+                    ALLStatOKS avgKK = new ALLStatOKS();
+                    ALLStatOKS avgKR = new ALLStatOKS();
+                    ALLStatOKS avgKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        fw.ShowText("Расчет учатков подгруппы " + this.FullName_SubGroup, objs.Length, ccc);
-                        ccc++;
+                        {
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
 
-                        double upksz = 0;
-                        double cupksz = 0;
-                        string calc_obj = string.Empty;
-                        if (sts.Get4("77", obj.KN_KK, 2, out cupksz, out calc_obj))
-                        {
-                            obj.UpdateCalc(cupksz, cupksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                        }
-                        else
-                        {
-                            CalcNoHarAVG(obj.Id, obj.KN_OBJECT, obj.KN_KK, "77", 3, 1, out upksz, out calc_obj);
-                            obj.UpdateCalc(upksz, upksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                            sts.Add4("77", obj.KN_KK, 2, upksz, calc_obj);
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Stead, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Stead, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Stead, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
                     }
                 }
-                fw.HideText();
             }
             #endregion
-            #region Минимальное (КР, КЛАДР)
-            if ((this.Type_SubGroup == 12) & (parcel))
+            #region Минимальное
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min && curTypeObject == PropertyTypes.Stead)
             {
-                frmWait fw = new frmWait();
-                fw.ShowText("Расчет учатков подгруппы " + this.FullName_SubGroup, 0, 0);
-                ALLObjectItem[] objs = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, false, false, false, false, true, true, false, false, false, ALLParamItem.Change_Object);
-                int ccc = 0;
-                ALLStatOKS sts = new ALLStatOKS();
-                foreach (ALLObjectItem obj in objs)
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
                 {
-                    if (obj.CheckDocInput(id_doc))
+                    ALLStatOKS minKK = new ALLStatOKS();
+                    ALLStatOKS minKR = new ALLStatOKS();
+                    ALLStatOKS minKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        fw.ShowText("Расчет учатков подгруппы " + this.FullName_SubGroup, objs.Length, ccc);
-                        ccc++;
+                        {
 
-                        double upksz = 0;
-                        double cupksz = 0;
-                        string calc_obj = string.Empty;
-                        if (sts.Get4("77", obj.KN_KK, 2, out cupksz, out calc_obj))
-                        {
-                            obj.UpdateCalc(cupksz, cupksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                        }
-                        else
-                        {
-                            CalcNoHarMin(obj.Id, obj.KN_OBJECT, obj.KN_KK, "77", 3, 1, out upksz, out calc_obj);
-                            obj.UpdateCalc(upksz, upksz * obj.SQUARE_CALC);
-                            obj.UpdateCalcParent(calc_obj);
-                            obj.UpdateCalcRez(0, 0);
-                            sts.Add4("77", obj.KN_KK, 2, upksz, calc_obj);
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
+
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Stead, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Stead, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                minKK.Add(unit.CadastralBlock, PropertyTypes.Stead, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
                     }
                 }
-                fw.HideText();
             }
             #endregion
-            */
             #endregion
 
             #region ОНС
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited && this.Id>300000)
             {
-                OMTourGroup tourgroup = OMTourGroup.Where(x=>x.GroupId==this.Id).SelectAll().ExecuteFirstOrDefault();
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
-                    ALLStatOKS sts = new ALLStatOKS();
-
+                    ALLStatOKS minKK = new ALLStatOKS();
+                    ALLStatOKS minKR = new ALLStatOKS();
+                    ALLStatOKS minKS = new ALLStatOKS();
+                    int countIndex = 0;
                     foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        decimal procent = 50;
-                        if (unit.DegreeReadiness != null) procent = unit.DegreeReadiness.ParseToDecimal();
-
-                        decimal square = 1;
-                        if (unit.Square != null) square = unit.Square.ParseToDecimal();
-
-                        decimal upksz = 0;
-                        decimal pp = procent / 100;
-                        string calc_obj = string.Empty;
-
-                        if (!sts.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj))
                         {
-                            GetAvgValue(tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj);
-                            sts.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj);
+
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
+
+                            decimal procent = 50;
+                            if (unit.DegreeReadiness != null) procent = unit.DegreeReadiness.ParseToDecimal();
+
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            decimal pp = procent / 100;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!minKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetMinValue(ref minKR, ref minKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                minKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            upksz = Math.Round(upksz * pp, 2, MidpointRounding.AwayFromZero);
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
                         }
+                    }
+                }
+            }
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited && this.Id<300000)
+            {
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
+                {
+                    ALLStatOKS avgKK = new ALLStatOKS();
+                    ALLStatOKS avgKR = new ALLStatOKS();
+                    ALLStatOKS avgKS = new ALLStatOKS();
+                    int countIndex = 0;
+                    foreach (ObjectModel.KO.OMUnit unit in units)
+                    {
+                        {
+                            countIndex++;
+                            if (countIndex % 50 == 0)
+                                Console.WriteLine(countIndex);
 
-                        upksz = Math.Round(upksz * pp, 2, MidpointRounding.AwayFromZero);
-                        decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+                            decimal procent = 50;
+                            if (unit.DegreeReadiness != null) procent = unit.DegreeReadiness.ParseToDecimal();
 
-                        if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                            Console.WriteLine("УПКС:{0} УПКС:{1} КС:{2} КС:{3}", unit.UpksPre, upksz, unit.CadastralCostPre, cost);
-                        unit.UpksPre = upksz;
-                        unit.CadastralCostPre = cost;
-                        unit.Upks = 0;
-                        unit.CadastralCost = 0;
-                        //unit.Save();
+                            decimal square = 1;
+                            if (unit.Square != null && unit.Square != 0) square = unit.Square.ParseToDecimal();
+
+                            decimal upksz = 0;
+                            decimal pp = procent / 100;
+                            string calc_obj = string.Empty;
+                            KoParentCalcType calc_obj_code = KoParentCalcType.None;
+
+                            if (!avgKK.Get(unit.CadastralBlock, PropertyTypes.Building, out upksz, out calc_obj, out calc_obj_code))
+                            {
+                                GetAvgValue(ref avgKR, ref avgKS, tourgroup.TourId, unit.CadastralBlock, PropertyTypes.Building, CalcParentGroup, out upksz, out calc_obj, out calc_obj_code);
+                                avgKK.Add(unit.CadastralBlock, PropertyTypes.Building, upksz, calc_obj, calc_obj_code);
+                            }
+
+                            upksz = Math.Round(upksz * pp, 2, MidpointRounding.AwayFromZero);
+                            decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
+
+                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            unit.UpksPre = upksz;
+                            unit.CadastralCostPre = cost;
+                            unit.Upks = 0;
+                            unit.CadastralCost = 0;
+                            unit.ParentCalcNumber = calc_obj;
+                            unit.ParentCalcType_Code = calc_obj_code;
+                            //unit.Save();
+                        }
                     }
                 }
             }
             #endregion
         }
+
+        public void Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup)
+        {
+            Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Building), CalcParentGroup, PropertyTypes.Building);
+            Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Construction), CalcParentGroup, PropertyTypes.Construction);
+            Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.UncompletedBuilding), CalcParentGroup, PropertyTypes.UncompletedBuilding);
+            Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Stead), CalcParentGroup, PropertyTypes.Stead);
+            Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Pllacement), CalcParentGroup, PropertyTypes.Pllacement);
+        }
+
     }
 
 }

@@ -19,6 +19,8 @@ using KadOzenka.BlFrontEnd.SudTests;
 using System.Collections.Generic;
 using KadOzenka.Dal.DataImport;
 using System.Configuration;
+using System.Xml;
+using System.IO;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -66,6 +68,7 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("204", "Импорт данных KO (БД) Объекты и факторы 2016 Помещения", MSExporter.DoLoadBd2016Unit_Flat);
             consoleHelper.AddCommand("205", "Импорт данных KO (БД) Объекты и факторы 2016 Участки", MSExporter.DoLoadBd2016Unit_Parcel);
             consoleHelper.AddCommand("206", "Импорт данных KO (XML) 2016", MSExporter.DoLoadXml2016);
+            consoleHelper.AddCommand("207", "Импорт данных KO (БД) Объекты и факторы 2016 Помещения (отсутствующие)", MSExporter.DoLoadBd2016Unit_FlatSkip);
 
             consoleHelper.AddCommand("210", "Импорт данных KO (БД) Модель 2018", MSExporter.DoLoadBd2018Model);
             consoleHelper.AddCommand("211", "Импорт данных KO (БД) Объекты и факторы 2018 ОНС", MSExporter.DoLoadBd2018Unit_Uncomplited);
@@ -90,6 +93,23 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("390", "Тест API судебной подсистемы", SudTestApi.TestAll);
 
             consoleHelper.AddCommand("360", "Экспорт в Xml - результаты определения КС.", ExporterKO.ExportXml1);
+            consoleHelper.AddCommand("401", "Импорт данных ЦОД из Xml", () =>
+            {
+                using (FileStream fstream = File.OpenRead("c:\\WORK\\cod1.xml"))
+                {
+                    byte[] array = new byte[fstream.Length];
+                    fstream.Read(array, 0, array.Length);
+                    fstream.Seek(0, SeekOrigin.Begin);
+                    KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(fstream, 2, true);
+                }
+            });
+            consoleHelper.AddCommand("402", "Импорт данных ЦОД из Xml", () =>
+            {
+                XmlDocument xml = new XmlDocument();
+                xml.Load("c:\\WORK\\cod2.xml");
+                KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
+            });
+
 
             consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
 

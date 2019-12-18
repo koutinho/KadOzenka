@@ -50,7 +50,20 @@ namespace KadOzenka.Dal.DataImport
         //ID фактора Год постройки итоговый
         public static Int64 Id_Factor_Year = -1;
 
-        public static void ImportDataGknFromXml(string xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
+
+        /// <summary>
+        /// Импорт данных ГКН из Xml
+        /// xmlFile - файл xml
+        /// pathSchema - путь к каталогу где хранится схема
+        /// task - ссылка на задание на оценку
+        /// </summary>
+        public static void ImportDataGknFromXml(string xmlFile, string pathSchema, ObjectModel.KO.OMTask task)
+        {
+            ImportDataGknFromXml(xmlFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.CreationDate.Value, task.CreationDate.Value, task.DocumentId.Value);
+        }
+
+
+        private static void ImportDataGknFromXml(string xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetXmlObject(xmlFile);
@@ -68,7 +81,6 @@ namespace KadOzenka.Dal.DataImport
             Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, sDate, otDate, idDocument));
 
         }
-
         private static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
@@ -117,8 +129,6 @@ namespace KadOzenka.Dal.DataImport
             };
             attributeValue.Save();
         }
-
-
         public static void ImportObjectBuild(xmlObjectBuild current, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlObjectBuild prev = null;
