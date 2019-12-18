@@ -239,7 +239,7 @@ namespace KadOzenka.Web.Models.Declarations
 			{
 				entity.TypeObj_Code = declarationViewModel.ObjectType.GetValueOrDefault();
 			}
-			entity.DateEnd = declarationViewModel.DateIn;
+			entity.DateIn = declarationViewModel.DateIn;
 			entity.NumIn = declarationViewModel.NumberIn;
 			entity.Book_Id = declarationViewModel.BookId.Value;
 			entity.UserIsp_Id = declarationViewModel.UserIspId;
