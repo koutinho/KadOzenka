@@ -14,7 +14,7 @@
 				@Html.CustomLabelFor("Судебное решение", true)
 			</div>
 			<div class="col-sm-10">
-				@Html.PlatformAutoCompleteWithEditButtonFor(m => m.SudNumber, "Value", "Sud", "GetAutoCompleteCourt", "clearEvent", "editCourt", "selectEvent", isReadonly: false)
+				@Html.PlatformAutoCompleteWithEditButtonFor(m => m.SudNumber, "Value", "Sud", "GetAutoCompleteCourt", "clearEvent", "searchCourt", "selectEvent", "editCourt", "addCourt", isAdditionalButton: true, isReadonly: false)
 			</div>
 		</div>
 		<div class="form-group">
@@ -55,10 +55,94 @@
 	}
 
 	function clearEvent() {
-		$('#@Html.IdFor(m => m.SudId)').val(0);
+		$('#@Html.IdFor(m => m.SudId)').val(-1);
+	}
+
+		function updateCourtNumber(idCourt) {
+			kendo.ui.progress($('body'), true);
+			$('[name="SudId"]').val(idCourt);
+		$.ajax({
+			type: 'GET',
+			url: '@Url.Action("GetCourtData", "Sud")',
+			data: { 'sudId': idCourt },
+			dataType: 'json',
+			success: function (response) {
+				if (response && !$.isEmptyObject(response) && !$.isEmptyObject(response.data)) {
+					$('#@Html.IdFor(m => m.SudNumber)').val(response.data.Value);
+				}
+				kendo.ui.progress($('body'), false);
+			}
+		});
 	}
 
 	function editCourt() {
+		if ($('#@Html.IdFor(m => m.SudId)').val() === '-1') {
+			Common.ShowError("Не выбрано решение");
+			return;
+		}
+
+		var url = '@Url.Action("EditCourt", "Sud")' + `?courtId=${$('#@Html.IdFor(m => m.SudId)').val()}`;
+		var container = $('<div></div>').appendTo(document.body);
+		kendo.ui.progress(container, true);
+		var window = container.kendoWindow({
+			title: "Редактирование решения",
+			modal: true,
+			content: url,
+			iframe: true,
+			close: function (e) {
+				var windowElement = $(this.element);
+				var iframeDomElement = windowElement.children("iframe")[0];
+				var iframeWindowObject = iframeDomElement.contentWindow;
+				var iframejQuery = iframeWindowObject.$;
+
+				var idCourt = iframejQuery('#Id').val();
+				if (idCourt === '-1') {
+					Common.ShowError("Не выбрано решение");
+					this.destroy();
+					return;
+				}
+				updateCourtNumber(idCourt);
+				this.destroy();
+			}
+		}).data('kendoWindow');
+
+		window.center();
+		window.open().maximize();
+		kendo.ui.progress(container, false);
+	}
+
+	function addCourt() {
+		var url = '@Url.Action("EditCourt", "Sud")';
+		var container = $('<div></div>').appendTo(document.body);
+		kendo.ui.progress(container, true);
+		var window = container.kendoWindow({
+			title: "Создание решения",
+			modal: true,
+			content: url,
+			iframe: true,
+			close: function (e) {
+				var windowElement = $(this.element);
+				var iframeDomElement = windowElement.children("iframe")[0];
+				var iframeWindowObject = iframeDomElement.contentWindow;
+				var iframejQuery = iframeWindowObject.$;
+
+				var idCourt = iframejQuery('#Id').val();
+				if (idCourt === '-1') {
+					Common.ShowError("Не выбрано решение");
+					this.destroy();
+					return;
+				}
+				updateCourtNumber(idCourt);
+				this.destroy();
+			}
+		}).data('kendoWindow');
+
+		window.center();
+		window.open().maximize();
+		kendo.ui.progress(container, false);
+	}
+
+	function searchCourt() {
 		var contentUrl = '@Url.Action("SudReshSelect", "RegistersView")';
 		var title = 'Выбор судебных решений';
 
@@ -86,11 +170,11 @@
 
 		$('#@Html.IdFor(m => m.SudNumber)').on('blur', function () {
 			if ($('#@Html.IdFor(m => m.SudNumber)').val() === "") {
-				$('#@Html.IdFor(m => m.SudId)').val(0);
+				$('#@Html.IdFor(m => m.SudId)').val(-1);
 				return;
 			}
 
-			if ($('#@Html.IdFor(m => m.SudId)').val() === "0" || $('#@Html.IdFor(m => m.SudId)').val() === "") {
+			if ($('#@Html.IdFor(m => m.SudId)').val() === "-1" || $('#@Html.IdFor(m => m.SudId)').val() === "") {
 				$('#@Html.IdFor(m => m.SudNumber)').val("");
 			}
 		});
