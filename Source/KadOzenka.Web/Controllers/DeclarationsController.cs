@@ -5,6 +5,7 @@ using System.Transactions;
 using Core.SRD;
 using Core.UI.Registers.Controllers;
 using KadOzenka.Web.Models.Declarations;
+using KadOzenka.Web.Models.Declarations.DeclarationTabModel;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
@@ -228,7 +229,107 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult GetCharacteristicTabContent(long declarationId)
 		{
-			return View("~/Views/Declarations/DeclarationTabContent/CharacteristicContent.cshtml");
+			var declaration = OMDeclaration
+				.Where(x => x.Id == declarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			long? characteristicId = null;
+			if (declaration != null)
+			{
+				if (declaration.TypeObj_Code == ObjectType.Site)
+				{
+					characteristicId = OMHarParcel
+						.Where(x => x.Declaration_Id == declarationId)
+						.SelectAll()
+						.ExecuteFirstOrDefault()?.Id;
+				}
+				else
+				{
+					characteristicId = OMHarOKS
+						.Where(x => x.Declaration_Id == declarationId)
+						.SelectAll()
+						.ExecuteFirstOrDefault()?.Id;
+				}
+			}
+
+			var model = DeclarationCharacteristicModel.FromEntity(characteristicId, declaration);
+
+			return View("~/Views/Declarations/DeclarationTabContent/CharacteristicContent.cshtml", model);
+		}
+
+		public ActionResult EditParcelCharacteristics(long declarationId)
+		{
+			var declaration = OMDeclaration
+				.Where(x => x.Id == declarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (declaration == null)
+			{
+				throw new Exception($"Декларация с ИД {declarationId} не найдена");
+			}
+
+			var characteristic = OMHarParcel
+				.Where(x => x.Declaration_Id == declarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			var model = characteristic != null
+				? ParcelCharacteristicsModel.FromEntity(characteristic)
+				: ParcelCharacteristicsModel.FromEntity(null);
+			model.DeclarationId = declarationId;
+
+			return View("~/Views/Declarations/ParcelCharacteristicsWindowContent.cshtml", model);
+		}
+
+		[HttpPost]
+		public ActionResult EditParcelCharacteristics(ParcelCharacteristicsModel parcelCharacteristicsViewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			var characteristic = OMHarParcel
+				.Where(x => x.Id == parcelCharacteristicsViewModel.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (parcelCharacteristicsViewModel.Id != -1 && characteristic == null)
+			{
+				return NotFound();
+			}
+
+			if (characteristic == null)
+			{
+				characteristic = new OMHarParcel();
+			}
+
+			ParcelCharacteristicsModel.ToEntity(parcelCharacteristicsViewModel, ref characteristic);
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = characteristic.Save();
+				ts.Complete();
+			}
+
+			parcelCharacteristicsViewModel.Id = id;
+			return Json(new { Success = "Сохранено успешно", data = parcelCharacteristicsViewModel });
 		}
 
 		#endregion Declarations

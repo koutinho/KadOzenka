@@ -1,4 +1,113 @@
-﻿
+﻿@using ObjectModel.Directory.Declarations
+@model KadOzenka.Web.Models.Declarations.DeclarationTabModel.DeclarationCharacteristicModel
+
 <div id="characteristicContent">
-    Характеристика деклараций
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                @Html.KendoButton("siteCharacteristics", "Характеристики земельного участка", @Model.ObjectType != ObjectType.Site || !@Model.DeclarationId.HasValue)
+            </div>
+            <div class="col-sm-6">
+                @Html.KendoButton("parkingPlaceCharacteristics", "Характеристики машиноместа", @Model.ObjectType != ObjectType.ParkingPlace || !@Model.DeclarationId.HasValue)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                @Html.KendoButton("buildingCharacteristics", "Характеристики здания", @Model.ObjectType != ObjectType.Building || !@Model.DeclarationId.HasValue)
+            </div>
+            <div class="col-sm-6">
+                @Html.KendoButton("onsCharacteristics", "Характеристики объекта незавершенного строительства", @Model.ObjectType != ObjectType.Ons || !@Model.DeclarationId.HasValue)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                @Html.KendoButton("roomCharacteristics", "Характеристики помещения", @Model.ObjectType != ObjectType.Room || !@Model.DeclarationId.HasValue)
+            </div>
+            <div class="col-sm-6">
+                @Html.KendoButton("ensCharacteristics", "Характеристики единого недвижимого комплекса", @Model.ObjectType != ObjectType.Ens || !@Model.DeclarationId.HasValue)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-6">
+                @Html.KendoButton("constructionCharacteristics", "Характеристики сооружения", @Model.ObjectType != ObjectType.Construction || !@Model.DeclarationId.HasValue)
+            </div>
+            <div class="col-sm-6">
+                @Html.KendoButton("pikCharacteristics", "Характеристики производственно имущественного комплекса", @Model.ObjectType != ObjectType.Pik || !@Model.DeclarationId.HasValue)
+            </div>
+        </div>
+        <div id="characteristicsWindow"></div>
+    </div>
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#siteCharacteristics').on('click', {
+            id: '@Model.Id', declarationId: '@Model.DeclarationId'
+        }, loadParcelCharacteristicsForm);
+
+        $('#parkingPlaceCharacteristics').on('click', {
+            id: '@Model.Id', declarationId: '@Model.DeclarationId'
+        }, loadOKSCharacteristicsForm);
+
+        $('#buildingCharacteristics').on('click', {
+            id: '@Model.Id', declarationId: '@Model.DeclarationId'
+        }, loadOKSCharacteristicsForm);
+
+        $('#onsCharacteristics').on('click', {
+            id: '@Model.Id', declarationId: '@Model.DeclarationId'
+        }, loadOKSCharacteristicsForm);
+
+        $('#roomCharacteristics').on('click', {
+            id: '@Model.Id', declarationId: '@Model.DeclarationId'
+        }, loadOKSCharacteristicsForm);
+
+        $('#ensCharacteristics').on('click', {
+            id: '@Model.Id', declarationId: '@Model.DeclarationId'
+        }, loadOKSCharacteristicsForm);
+
+        $('#constructionCharacteristics').on('click', {
+            id: '@Model.Id', declarationId: '@Model.DeclarationId'
+        }, loadOKSCharacteristicsForm);
+
+        $('#pikCharacteristics').on('click', {
+            id: '@Model.Id', declarationId: '@Model.DeclarationId'
+        }, loadOKSCharacteristicsForm);
+    });
+
+    function loadParcelCharacteristicsForm(event) {
+        const window = $('#characteristicsWindow').kendoWindow({
+            visible: false,
+            resizable: false,
+            modal: true,
+            title: 'Характеристики',
+            width: 1200,
+            height: 800,
+            iframe: true,
+            content: "@Url.Action("EditParcelCharacteristics", "Declarations", new { declarationId = Model.DeclarationId })",
+            close: function() {
+                this.content("");
+            },
+        }).data('kendoWindow');
+        window.center();
+        window.open();
+    }
+
+    function loadOKSCharacteristicsForm(event) {
+        @*const window = $('#characteristicsWindow').kendoWindow({
+            visible: false,
+            resizable: false,
+            modal: true,
+            title: 'Характеристики',
+            width: 950,
+            height: 450,
+            content: "@Url.Action("EditOKSCharacteristics", "Declarations", new { declarationId = Model.DeclarationId })",
+            close: function() {
+            },
+            open: function() {
+            }
+        }).data('kendoWindow');
+        window.center();
+        window.open();*@
+    }
+</script>
