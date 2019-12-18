@@ -94,20 +94,20 @@
     }
 
     function loadOKSCharacteristicsForm(event) {
-        @*const window = $('#characteristicsWindow').kendoWindow({
+        const window = $('#characteristicsWindow').kendoWindow({
             visible: false,
             resizable: false,
             modal: true,
             title: 'Характеристики',
-            width: 950,
-            height: 450,
+            width: 1200,
+            height: 800,
+            iframe: true,
             content: "@Url.Action("EditOKSCharacteristics", "Declarations", new { declarationId = Model.DeclarationId })",
             close: function() {
+                this.content("");
             },
-            open: function() {
-            }
         }).data('kendoWindow');
         window.center();
-        window.open();*@
+        window.open();
     }
 </script>

@@ -1,8 +1,577 @@
 ﻿
+@model KadOzenka.Web.Models.Declarations.OksCharacteristicsModel
 
-
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+@using (Html.BeginForm("EditOksCharacteristics", "Declarations", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.DeclarationId)
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">1</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ObjectType)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.ObjectType, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">2</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.Address)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.Address, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">3</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.Square)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoNumericTextBoxFor(m => m.Square, precision: 2, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">4</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.TypeAndValueMainCharacteristic)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.TypeAndValueMainCharacteristic, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">5</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ReadinessDegreeOns)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.ReadinessDegreeOns, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">6</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.DesignedTypeAndValueOfMainCharacteristicsOns, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">7</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.DesignedPurposeOns)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.DesignedPurposeOns, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">8</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.FloorCount)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoNumericTextBoxFor(m => m.FloorCount, precision: 0, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">9</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.FloorNumber)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoNumericTextBoxFor(m => m.FloorNumber, precision: 0, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">10</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.BuildingWallMaterial)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.BuildingWallMaterial, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">11</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.MainSupportingStructuresMaterial)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.MainSupportingStructuresMaterial, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">12</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.RoofMaterial)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.RoofMaterial, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">13</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.CommissioningYear)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoDatePickerFor(m => m.CommissioningYear, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">14</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.CompletionYear)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoDatePickerFor(m => m.CompletionYear, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">15</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.OverhaulCompletionYear)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoDatePickerFor(m => m.OverhaulCompletionYear, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">16</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ReconstructionDate)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.KendoDatePickerFor(m => m.ReconstructionDate, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">17</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.DwellingType)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.DwellingType, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">18</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.PermittedUseType)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.PermittedUseType, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">19</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ObjectInclusionIntoCulturalHeritageInfo)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.ObjectInclusionIntoCulturalHeritageInfo, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">20</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.PhysicalDeterioration)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.PhysicalDeterioration, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.CommunicationsDescription)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.CommunicationsDescription, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.1 Электроснабжение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.1.1</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToPowerGrids)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToPowerGrids, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.1.2</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToPowerGrids)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToPowerGrids, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.1.3</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ElectricPower)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.ElectricPower, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.2 Газоснабжение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.2.1</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToGasGrids)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToGasGrids, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.2.2</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToGasGrids)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToGasGrids, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.2.3</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.GasPower)
+                    </div>
+                    <div class="col-sm-7">
+                        @Html.TextAreaFor(m => m.GasPower, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.3 Водоснабжение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.3.1</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToWaterSupply)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterSupply, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.3.2</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToWaterSupply)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterSupply, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.4 Теплоснабжение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.4.1</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToHeatSupply)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToHeatSupply, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.4.2</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToHeatSupply)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToHeatSupply, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label class="control-label">21.5 Водоотведение:</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.5.1</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.ConnectionToWaterDisposal)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterDisposal, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-1">
+                <label class="control-label">21.5.2</label>
+            </div>
+            <div class="col-sm-11">
+                <div class="row">
+                    <div class="col-sm-5">
+                        @Html.CustomLabelFor(m => m.AvailabilityConnectionToWaterDisposal)
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterDisposal, isReadonly: false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+            </div>
+        </div>
+    </div>
 }
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        $('#save').on('click',
+            function() {
+                kendo.ui.progress($('body'), true);
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+
+                $.post(form.attr('action'), formObject).done(function(response) {
+                    kendo.ui.progress($('body'), false);
+                    if (response.Errors) {
+                        var errors = $.map(distinctErrors(response.Errors),
+                            function(el) {
+                                return el.Message;
+                            });
+                        Common.ShowError(errors);
+                        return;
+                    }
+
+                    if (response.Success && response.data) {
+                        $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                        Common.ShowMessage(response.Success);
+                    }
+                });
+            });
+    });
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors, function(index, event) {
+            var events = $.grep(result, function (e) {
+                return event.Message === e.Message;
+            });
+            if (events.length === 0) {
+                result.push(event);
+            }
+        });
+
+        return result;
+    }
+</script>

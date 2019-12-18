@@ -332,6 +332,80 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Success = "Сохранено успешно", data = parcelCharacteristicsViewModel });
 		}
 
+		public ActionResult EditOksCharacteristics(long declarationId)
+		{
+			var declaration = OMDeclaration
+				.Where(x => x.Id == declarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (declaration == null)
+			{
+				throw new Exception($"Декларация с ИД {declarationId} не найдена");
+			}
+
+			var characteristic = OMHarOKS
+				.Where(x => x.Declaration_Id == declarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			var model = characteristic != null
+				? OksCharacteristicsModel.FromEntity(characteristic)
+				: OksCharacteristicsModel.FromEntity(null);
+			model.DeclarationId = declarationId;
+
+			return View("~/Views/Declarations/OksCharacteristicsWindowContent.cshtml", model);
+		}
+
+		[HttpPost]
+		public ActionResult EditOksCharacteristics(OksCharacteristicsModel oksCharacteristicsViewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			var characteristic = OMHarOKS
+				.Where(x => x.Id == oksCharacteristicsViewModel.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (oksCharacteristicsViewModel.Id != -1 && characteristic == null)
+			{
+				return NotFound();
+			}
+
+			if (characteristic == null)
+			{
+				characteristic = new OMHarOKS();
+			}
+
+			OksCharacteristicsModel.ToEntity(oksCharacteristicsViewModel, ref characteristic);
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = characteristic.Save();
+				ts.Complete();
+			}
+
+			oksCharacteristicsViewModel.Id = id;
+			return Json(new { Success = "Сохранено успешно", data = oksCharacteristicsViewModel });
+		}
+
 		#endregion Declarations
 
 		#region Books
