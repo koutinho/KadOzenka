@@ -1596,7 +1596,15 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Items.Add(koGroup);
                     if (Items.Count == 40)
                     {
-                        ParallelLoopResult resultSucces1 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2016(x.OldId, x.Id, x.PropertyType_Code); });
+                        ParallelLoopResult resultSucces1 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => {
+							// TODO: Евгению проверить, что так можно
+							ObjectModel.KO.OMUnit existsOmUnit = ObjectModel.KO.OMUnit.Where(y => y.CadastralNumber == x.CadastralNumber && y.TourId == x.TourId && y.TaskId == x.TaskId).ExecuteFirstOrDefault();
+
+							if (existsOmUnit != null) return;
+
+							x.SaveAndCreate();
+							LoadUnitFactorOKS_2016(x.OldId, x.Id, x.PropertyType_Code);
+						});
                         Items.Clear();
                         Console.WriteLine(count);
                     }
