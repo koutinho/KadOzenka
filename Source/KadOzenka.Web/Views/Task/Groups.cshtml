@@ -1,7 +1,22 @@
-﻿<div class="flex-content">
-	<div class="k-content wide flex-tree-list">
-		<div id="treeList"></div>
-	</div>
+﻿<div style="margin-top: 10px; display: flex;">
+    <div class="col-sm-2">
+        @Html.CustomLabel("Тур оценки")
+    </div>
+    <div class="col-sm-2">
+        @(Html.Kendo().DropDownList()
+                                                    .Name("RatingTour")
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+        )
+    </div>
+</div>
+
+
+<div class="flex-content">
+    
+    <div class="k-content wide flex-tree-list">
+        <div id="treeList"></div>
+    </div>
     <div class="flex-list-buttons">
         <button class="btn btn-default add-group">
             Добавить
@@ -13,8 +28,8 @@
             Удалить
         </button>
         @*<button class="btn btn-default model" style="display: block">
-            Модель
-        </button>*@
+                Модель
+            </button>*@
     </div>
 </div>
 
@@ -45,11 +60,42 @@
 		$("#treeList").kendoTreeList({
             dataSource: dataSource,
             selectable: true,
-            columns: [
-                { field: "Id", hidden: true },
-				{ field: "GroupName", title: "Имя группы" }
+            columns: [                
+                {
+                    field: "GroupName", title: "Имя группы", headerAttributes: {                        
+                        style: "display: none"
+                    }
+                }
 			]
         });
+
+        $('[name="RatingTour"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: "--",
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRatingTours", "Task")',
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        $('[name="RatingTour"]').data("kendoDropDownList").bind('change', RatingTourChanged);
+
+        function RatingTourChanged(e) {
+            var value = this.value();            
+            if (value != '') {
+                $("#treeList").data("kendoTreeList").dataSource.filter({ field: "TourId", operator: "equals", value: value });
+            }
+            else {
+                $("#treeList").data("kendoTreeList").dataSource.filter({});
+            }
+        }
 
         $('.add-group').on('click', function () {
             Common.UI.ShowWindow('Оценочная группа', '@Url.Action("EditGroup","Task")', 'editGroupWindow');
@@ -147,5 +193,11 @@
 		.selected {
 			background: #eaeef7;
 		}
+
+        .control-label {
+            margin-bottom: 0px;
+            font-weight: normal;
+            vertical-align: sub;
+        }
 	</style>
 }

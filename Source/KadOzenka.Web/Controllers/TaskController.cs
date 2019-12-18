@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using Core.Register.QuerySubsystem;
+using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.SRD;
@@ -92,12 +95,44 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetGroups()
 		{
-			var groups = OMGroup.Where(x => x).SelectAll().Execute().Select(x => new
+			QSQuery query = new QSQuery
 			{
-				x.Id,
-				ParentId = (x.ParentId == -1) ? null : x.ParentId,				
-				x.GroupName
-			}).ToList();			
+				MainRegisterID = OMGroup.GetRegisterId(),
+			};
+			query.Joins = new List<QSJoin>()
+			{
+				new QSJoin()
+				{
+					RegisterId = OMTourGroup.GetRegisterId(),
+					JoinCondition = new QSConditionSimple()
+					{
+						ConditionType = QSConditionType.Equal,
+							LeftOperand = OMGroup.GetColumn(x => x.Id),
+							RightOperand = OMTourGroup.GetColumn(x => x.GroupId)
+					},
+					JoinType = QSJoinType.Inner
+				}
+			};
+			
+			query.AddColumn(OMGroup.GetColumn(x => x.ParentId, "ParentId"));
+			query.AddColumn(OMGroup.GetColumn(x => x.GroupName, "GroupName"));
+			query.AddColumn(OMTourGroup.GetColumn(x => x.TourId, "TourId"));
+
+			DataTable table = query.ExecuteQuery();
+			List<GroupTreeDto> groups = new List<GroupTreeDto>();
+
+			foreach (DataRow row in table.Rows)
+			{
+				GroupTreeDto str = new GroupTreeDto();
+
+				str.Id = long.Parse(row["Id"].ToString());
+				long? parent = long.Parse(row["ParentId"].ToString());
+				str.ParentId = (parent == -1) ? null : parent;
+				str.GroupName = row["GroupName"].ToString();
+				str.TourId = long.Parse(row["TourId"].ToString());
+
+				groups.Add(str);
+			}				
 
 			return Json(groups);
 		}
@@ -268,17 +303,5 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
-	}
-
-	public class GroupDto
-	{
-		public long? Id { get; set; }
-		public long? RatingTourId { get; set; }
-	
-		public string ObjType { get; set; }
-		public long? ParentGroupId { get; set; }
-
-		public long? GroupingMechanismId { get; set; }
-		public string Name { get; set; }
-	}
+	}	
 }
