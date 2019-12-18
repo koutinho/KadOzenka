@@ -1,6 +1,7 @@
 ﻿@using ObjectModel.Core.SRD
 @using ObjectModel.Declarations
 @using KadOzenka.Web.Models.Declarations
+@using ObjectModel.Directory.Declarations
 
 @model KadOzenka.Web.Models.Declarations.DeclarationModel
 
@@ -94,7 +95,7 @@
                         <div class="col-sm-2">
                             @Html.KendoDatePickerFor(m => m.DateIn, isReadonly: false)
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-1">
                             @Html.CustomLabelFor(m => m.NumberIn)
                         </div>
                         <div class="col-sm-2">
@@ -103,7 +104,7 @@
                         <div class="col-sm-1">
                             @Html.CustomLabelFor(m => m.BookId)
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-4">
                             <div class="form-group">
                                 @Html.PlatformAutoCompleteWithEditButtonFor(m => m.BookDisplay, "Value", "Declarations", "GetAutoCompleteBook", "clearBookEvent", "editBook", "selectBookEvent", isReadonly: false)
                             </div>
@@ -158,32 +159,47 @@
                         <div class="col-sm-2">
                             @Html.KendoDatePickerFor(m => m.DateEnd, isReadonly: false)
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-1">
                             @Html.CustomLabelFor(m => m.Status)
                         </div>
-                        <div class="col-sm-1">
-                            @(Html.Kendo().RadioButtonFor(m => m.Status).Label("Открыто").Value((long)DeclarationStatusEnum.Opened))
+                        <div class="col-sm-2">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(StatusDec.Accepted.GetEnumDescription()).Value((long)StatusDec.Accepted))
+                                </div>
+                                <div class="col-sm-12">
+                                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(StatusDec.Considered.GetEnumDescription()).Value((long)StatusDec.Considered))
+                                </div>
+                                <div class="col-sm-12">
+                                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(StatusDec.Rejection.GetEnumDescription()).Value((long)StatusDec.Rejection))
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-sm-1">
-                            @(Html.Kendo().RadioButtonFor(m => m.Status).Label("Закрыто").Value((long)DeclarationStatusEnum.Closed))
-                        </div>
+                        
                     </div>
                 </div>
             </div>
         </li>
     </ul>
     <div class="form-group">
+        <div class="k-content col-sm-12">
+            <div id="tabstrip-wrap">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
         <div class="col-sm-12">
             <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
         </div>
     </div>
+    <div class="form-group"></div>
 }
 
 @section styles {
     <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
     <style>
         #ls_panelbar {
-            width: 99%
+            width: 99% !important;
         }
     </style>
 }
@@ -202,6 +218,66 @@
             setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.AgentId)', '#@Html.IdFor(m => m.AgentDisplay)');
             setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
             setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.UserIspId)', '#@Html.IdFor(m => m.UserIspDisplay)');
+
+            var partialViewCheckContent = '';
+            @{
+            <text>
+                partialViewCheckContent = `@await Html.PartialAsync("/Views/Declarations/DeclarationTabContent/_formalCheckContent.cshtml", Model)`;
+            </text>
+            }
+            var tabStrip = $("#tabstrip-wrap").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.append(
+                [
+                    {
+                        text: "Формальная проверка / Уведомление",
+                        content: partialViewCheckContent
+                    },
+                    {
+                        text: "Характеристика деклараций",
+                        contentUrl: "@Url.Action("GetCharacteristicTabContent", "Declarations", new { declarationId = Model.Id })"
+                    },
+                    {
+                        text: "Уведомления",
+                        contentUrl:  "@Url.Action("GetNotificationTabContent", "Declarations", new { declarationId = Model.Id })"
+                    }
+                ]
+            );
+            tabStrip.select(0);
+            jQuery("#FormalCheckModel_DateCheckPlan").kendoDatePicker(
+                { "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+            jQuery("#FormalCheckModel_DateCheckFact").kendoDatePicker(
+                { "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+
+            $('#save').on('click',
+                function() {
+                    var form = $('form');
+                    var formObject = Common.Functions.FormToObject(form);
+
+                    kendo.ui.progress($('body'), true);
+
+                    $.post(form.attr('action'), formObject).done(function (response) {
+                        kendo.ui.progress($('body'), false);
+                        if (response.Errors) {
+                            var errors = $.map(distinctErrors(response.Errors),
+                                function(el) {
+                                    return el.Message;
+                                });
+                            Common.ShowError(errors);
+                            return;
+                        }
+
+                        if (response.Success && response.data) {
+                            $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                            Common.ShowMessage(response.Success);
+                            var tabStrip = $("#tabstrip-wrap").kendoTabStrip().data("kendoTabStrip");
+                            $(".k-link:contains('Уведомления')").attr('data-content-url', '/Declarations/GetNotificationTabContent?declarationId=' + response.data.Id);
+                            $(".k-link:contains('Характеристика деклараций')").attr('data-content-url', '/Declarations/GetCharacteristicTabContent?declarationId=' + response.data.Id);
+                            tabStrip.reload("li:eq(2)");
+                            tabStrip.reload("li:eq(1)");
+                        }
+                    });
+                });
+        
         });
 
         function selectOwnerEvent() {
@@ -338,6 +414,21 @@
             });
         }
 
+        function distinctErrors(errors) {
+            var result = [];
+            $.each(errors,
+                function(index, event) {
+                    var events = $.grep(result,
+                        function(e) {
+                            return event.Message === e.Message;
+                        });
+                    if (events.length === 0) {
+                        result.push(event);
+                    }
+                });
+
+            return result;
+        }
     </script>
 }
 

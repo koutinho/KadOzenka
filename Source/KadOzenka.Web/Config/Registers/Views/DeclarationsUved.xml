@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="506" LinkedRegistersList="500,501" DefaultLayoutId="1005061"
+              IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
+              ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
+    <Buttons>
+        <Button Caption="Добавить" NavigateURL="/Declarations/EditNotification" WindowHeight="400" WindowWidth="800" NeedRefresh="true">
+            <Parameters>
+                <Parameter Key="declarationId" Value="{Get:DeclarationObjectId}" />
+            </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="{Get:DeclarationObjectId}" Operation="Equal" Value="-1" AndOr="Or" />
+                        <Condition Key="{Get:DeclarationObjectId}" Operation="IsNull" AndOr="Or" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+        </Button>
+
+
+        <Button Caption="Редактировать" NavigateURL="/Declarations/EditNotification" WindowHeight="400" WindowWidth="800" NeedRefresh="true">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="declarationId" Value="{Get:DeclarationObjectId}" />
+                <Parameter Key="notificationId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+
+        <Button Caption="Удалить" NavigateURL="/Declarations/DeleteNotification" NeedRefresh="true" WindowHeight="160" WindowWidth="500">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="notificationId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+    </Buttons>
+    <StatusBarConfiguration StatusBarEnabled="false" />
+</RegisterView>

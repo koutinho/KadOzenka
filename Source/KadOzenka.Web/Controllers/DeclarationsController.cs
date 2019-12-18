@@ -56,12 +56,19 @@ namespace KadOzenka.Web.Controllers
 					.SelectAll()
 					.ExecuteFirstOrDefault();
 			}
+			OMResult result = null;
+			if (declaration != null)
+			{
+				result = OMResult
+					.Where(x => x.Declaration_Id == declaration.Id)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+			}
 			var model = declaration != null
-				? DeclarationModel.FromEntity(declaration, owner, agent, book, userIsp)
-				: DeclarationModel.FromEntity(null, null, null, null, null);
+				? DeclarationModel.FromEntity(declaration, owner, agent, book, userIsp, result)
+				: DeclarationModel.FromEntity(null, null, null, null, null, null);
 
 			return View(model);
-			//return View(DeclarationModel.FromEntity(null, null, null, null, null));
 		}
 
 		[HttpPost]
@@ -91,6 +98,10 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.Id == declarationViewModel.Id)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
+			var omResult = OMResult
+				.Where(x => x.Declaration_Id == declarationViewModel.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
 			if (declarationViewModel.Id != -1 && omDeclaration == null)
 			{
 				return NotFound();
@@ -99,8 +110,10 @@ namespace KadOzenka.Web.Controllers
 			{
 				omDeclaration = new OMDeclaration();
 				omDeclaration.UserReg_Id = SRDSession.GetCurrentUserId();
+				omResult = new OMResult();
+
 			}
-			DeclarationModel.ToEntity(declarationViewModel, ref omDeclaration);
+			DeclarationModel.ToEntity(declarationViewModel, ref omDeclaration, ref omResult);
 
 			long id;
 			using (var ts = new TransactionScope())
@@ -108,6 +121,8 @@ namespace KadOzenka.Web.Controllers
 				try
 				{
 					id = omDeclaration.Save();
+					omResult.Declaration_Id = id;
+					omResult.Save();
 					ts.Complete();
 				}
 				catch (Exception e)
@@ -204,6 +219,16 @@ namespace KadOzenka.Web.Controllers
 				}).FirstOrDefault();
 
 			return Json(new { data = user });
+		}
+
+		public ActionResult GetNotificationTabContent(long declarationId)
+		{
+			return View("~/Views/Declarations/DeclarationTabContent/NotificationContent.cshtml", declarationId);
+		}
+
+		public ActionResult GetCharacteristicTabContent(long declarationId)
+		{
+			return View("~/Views/Declarations/DeclarationTabContent/CharacteristicContent.cshtml");
 		}
 
 		#endregion Declarations
@@ -370,5 +395,126 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion Subjects
 
+		#region Notifications
+
+		[HttpGet]
+		public ActionResult EditNotification(long notificationId, long declarationId)
+		{
+			if (declarationId == 0)
+			{
+				throw new Exception("В указанном запросе отсутствует ИД декларации");
+			}
+
+			var declaration = OMDeclaration
+				.Where(x => x.Id == declarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (declaration == null)
+			{
+				throw new Exception($"Декларация с ИД {declarationId} не найдена");
+			}
+
+			var uved = OMUved
+				.Where(x => x.Id == notificationId)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+
+			OMBook book = null;
+			if (uved != null)
+			{
+				book = OMBook
+					.Where(x => x.Id == uved.Book_Id)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+			}
+
+			var model = notificationId != 0 && uved != null && book != null
+				? NotificationModel.FromEntity(uved, book)
+				: NotificationModel.FromEntity(null, null);
+			model.DeclarationId = declarationId;
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult EditNotification(NotificationModel notificationViewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			var omUved = OMUved
+				.Where(x => x.Id == notificationViewModel.Id)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+
+			if (notificationViewModel.Id != -1 && omUved == null)
+			{
+				return NotFound();
+			}
+
+			if (omUved == null)
+			{
+				omUved = new OMUved();
+			}
+
+			NotificationModel.ToEntity(notificationViewModel, ref omUved);
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				id = omUved.Save();
+				ts.Complete();
+			}
+
+			notificationViewModel.Id = id;
+			return Json(new { Success = "Сохранено успешно", data = notificationViewModel });
+		}
+
+		[HttpGet, ActionName("DeleteNotification")]
+		public IActionResult DeleteNotification(long notificationId)
+		{
+			var omUved = OMUved
+				.Where(x => x.Id == notificationId)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+			if (omUved == null)
+			{
+				throw new Exception($"Уведомление с ИД {notificationId} не найдено");
+			}
+			var book = OMBook
+				.Where(x => x.Id == omUved.Book_Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			return View(NotificationModel.FromEntity(omUved, book));
+		}
+
+		[HttpPost, ActionName("DeleteNotification")]
+		public IActionResult Delete(long notificationId)
+		{
+			OMUved
+				.Where(x => x.Id == notificationId)
+				.ExecuteFirstOrDefault()
+				.Destroy();
+			return EmptyResponse();
+		}
+
+		#endregion Notifications
 	}
 }

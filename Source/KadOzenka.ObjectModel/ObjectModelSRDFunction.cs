@@ -155,6 +155,9 @@ namespace ObjectModel.SRD
               // Выгрузка данных (522)
               public const string SUD_EXPORT = "SUD.EXPORT";
                 
+              // Добавление декларации (523)
+              public const string DECLARATIONS_EDIT = "DECLARATIONS.EDIT";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 

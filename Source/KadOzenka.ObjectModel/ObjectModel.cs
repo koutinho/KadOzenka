@@ -12299,7 +12299,7 @@ namespace ObjectModel.Declarations
 
         private long _id;
         /// <summary>
-        /// 50000100  (ID)
+        /// 50000100 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 50000100)]
         public long Id
@@ -12679,12 +12679,12 @@ namespace ObjectModel.Declarations
         }
 
 
-        private long? _status;
+        private string _status;
         /// <summary>
-        /// 50101000 Статус декларации (STATUS)
+        /// 50101000 Статус декларации ()
         /// </summary>
         [RegisterAttribute(AttributeID = 50101000)]
-        public long? Status
+        public string Status
         {
             get
             {
@@ -12695,6 +12695,41 @@ namespace ObjectModel.Declarations
             {
                 _status = value;
                 NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.StatusDec _status_Code;
+        /// <summary>
+        /// 50101000 Статус декларации (справочный код) (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50101000)]
+        public ObjectModel.Directory.Declarations.StatusDec Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
             }
         }
 
@@ -13374,62 +13409,62 @@ namespace ObjectModel.Declarations
         }
 
 
-        private string _сertificatenum;
+        private string _certificatenum;
         /// <summary>
-        /// 50102900 Номер документа, удостоверяющего полномочия  представителя заявителя  (СERTIFICATE_NUM)
+        /// 50102900 Номер документа, удостоверяющего полномочия  представителя заявителя  (CERTIFICATE_NUM)
         /// </summary>
         [RegisterAttribute(AttributeID = 50102900)]
-        public string СertificateNum
+        public string CertificateNum
         {
             get
             {
-                CheckPropertyInited("СertificateNum");
-                return _сertificatenum;
+                CheckPropertyInited("CertificateNum");
+                return _certificatenum;
             }
             set
             {
-                _сertificatenum = value;
-                NotifyPropertyChanged("СertificateNum");
+                _certificatenum = value;
+                NotifyPropertyChanged("CertificateNum");
             }
         }
 
 
-        private DateTime? _сertificatedate;
+        private DateTime? _certificatedate;
         /// <summary>
-        /// 50103000 Дата документа, удостоверяющего полномочия представителя заявителя  (СERTIFICATE_DATE)
+        /// 50103000 Дата документа, удостоверяющего полномочия представителя заявителя  (CERTIFICATE_DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 50103000)]
-        public DateTime? СertificateDate
+        public DateTime? CertificateDate
         {
             get
             {
-                CheckPropertyInited("СertificateDate");
-                return _сertificatedate;
+                CheckPropertyInited("CertificateDate");
+                return _certificatedate;
             }
             set
             {
-                _сertificatedate = value;
-                NotifyPropertyChanged("СertificateDate");
+                _certificatedate = value;
+                NotifyPropertyChanged("CertificateDate");
             }
         }
 
 
-        private string _сertificatename;
+        private string _certificatename;
         /// <summary>
-        /// 50103100 Название документа, удостоверяющего полномочия представителя заявителя  (СERTIFICATE_NAME)
+        /// 50103100 Название документа, удостоверяющего полномочия представителя заявителя  (CERTIFICATE_NAME)
         /// </summary>
         [RegisterAttribute(AttributeID = 50103100)]
-        public string СertificateName
+        public string CertificateName
         {
             get
             {
-                CheckPropertyInited("СertificateName");
-                return _сertificatename;
+                CheckPropertyInited("CertificateName");
+                return _certificatename;
             }
             set
             {
-                _сertificatename = value;
-                NotifyPropertyChanged("СertificateName");
+                _certificatename = value;
+                NotifyPropertyChanged("CertificateName");
             }
         }
 
@@ -15681,61 +15716,6 @@ namespace ObjectModel.Declarations
             {
                 _textno = value;
                 NotifyPropertyChanged("TextNo");
-            }
-        }
-
-
-        private string _statusdec;
-        /// <summary>
-        /// 50400400 Статус декларации ()
-        /// </summary>
-        [RegisterAttribute(AttributeID = 50400400)]
-        public string StatusDec
-        {
-            get
-            {
-                CheckPropertyInited("StatusDec");
-                return _statusdec;
-            }
-            set
-            {
-                _statusdec = value;
-                NotifyPropertyChanged("StatusDec");
-            }
-        }
-
-
-        private ObjectModel.Directory.Declarations.StatusDec _statusdec_Code;
-        /// <summary>
-        /// 50400400 Статус декларации (справочный код) (STATUS_DEC)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 50400400)]
-        public ObjectModel.Directory.Declarations.StatusDec StatusDec_Code
-        {
-            get
-            {
-                CheckPropertyInited("StatusDec_Code");
-                return this._statusdec_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_statusdec))
-                    {
-                         _statusdec = descr;
-                    }
-                }
-                else
-                {
-                     _statusdec = descr;
-                }
-
-                this._statusdec_Code = value;
-                NotifyPropertyChanged("StatusDec");
-                NotifyPropertyChanged("StatusDec_Code");
             }
         }
 

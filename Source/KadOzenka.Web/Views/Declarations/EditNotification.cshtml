@@ -1,0 +1,154 @@
+﻿@using ObjectModel.Declarations
+@using ObjectModel.Directory.Declarations
+@model KadOzenka.Web.Models.Declarations.NotificationModel
+
+@using (Html.BeginForm("EditNotification", "Declarations", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.DeclarationId)
+    @Html.HiddenFor(m => m.BookId)
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(m => m.BookId)
+        </div>
+        <div class="col-sm-9">
+            @Html.PlatformAutoCompleteWithEditButtonFor(m => m.BookDisplay, "Value", "Declarations", "GetAutoCompleteBook", "clearBookEvent", "editBook", "selectBookEvent", isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(m => m.Type)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoEnumDropDownListFor(m => m.Type, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(m => m.Number)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoTextBoxFor(m => m.Number, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(m => m.Date)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoDatePickerFor(m => m.Date, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(m => m.MailNumber)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoTextBoxFor(m => m.MailNumber, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(m => m.MailDate)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoDatePickerFor(m => m.MailDate, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+        </div>
+    </div>
+</div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
+
+        $('#save').on('click',
+            function () {
+                kendo.ui.progress($('body'), true);
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+
+                $.post(form.attr('action'), formObject).done(function (response) {
+                    kendo.ui.progress($('body'), false);
+                    if (response.Errors) {
+                        var errors = $.map(distinctErrors(response.Errors),
+                            function(el) {
+                                return el.Message;
+                            });
+                        Common.ShowError(errors);
+                        return;
+                    }
+
+                    if (response.Success && response.data) {
+                        $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                        Common.ShowMessage(response.Success);
+                    }
+                });
+            });
+    });
+
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors, function(index, event) {
+            var events = $.grep(result, function (e) {
+                return event.Message === e.Message;
+            });
+            if (events.length === 0) {
+                result.push(event);
+            }
+        });
+
+        return result;
+    }
+
+    function selectBookEvent() {
+        $('#@Html.IdFor(m => m.BookId)').val(this.e.dataItem.Id);
+    }
+    function clearBookEvent() {
+        $('#@Html.IdFor(m => m.BookId)').val(0);
+    }
+
+    function editBook () {
+        var contentUrl = '@Url.Action("DeclarationsBookSelect", "RegistersView")';
+        var title = 'Выбор Книги';
+
+        var callbackFn = function (item) {
+            kendo.ui.progress($('body'), true);
+            $('[name="BookId"]').val(item.ID);
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetBookData", "Declarations")',
+                data: { 'bookId': item.ID },
+                dataType: 'json',
+                success: function (response) {
+                    if (response && !$.isEmptyObject(response)) {
+                        console.log('response', response.data);
+                        $('#@Html.IdFor(m => m.BookDisplay)').val(response.data.Value);
+                    }
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
+        Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBook.GetRegisterId()');
+    };
+
+    function setOnBlurHandlerForAutocomplete(idField, displayField) {
+        $(displayField).on('blur', function () {
+            if ($(displayField).val() === "") {
+                $(idField).val(0);
+                return;
+            }
+
+            if ($(idField).val() === "0" || $(idField).val() === "") {
+                $(displayField).val("");
+            }
+        });
+    }
+</script>

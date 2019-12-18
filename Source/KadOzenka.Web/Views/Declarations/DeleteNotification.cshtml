@@ -1,0 +1,21 @@
+﻿@model KadOzenka.Web.Models.Declarations.NotificationModel
+<form style="padding:5px;height:100%">
+    <p id="confirm">Вы уверены что хотите удалить запись &quot;@Model.Id&quot;?</p>
+    <div style="position:absolute;bottom:10px">
+        <button class="k-button k-button-icontext">
+            <span class="k-icon k-i-check"></span>Удалить
+        </button>
+    </div>
+</form>
+<script>
+    $('form').submit(function() {
+        $.post(
+            '@Url.Action("DeleteNotification", "Declarations")',
+            { notificationId: @Model.Id },
+            function () {
+                $('form').html('<p>Уведомление удалено</p>');
+            }
+        );
+        return false;
+    });
+</script>

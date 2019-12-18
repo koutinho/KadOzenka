@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Web.Models.Declarations.DeclarationTabModel;
 using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
@@ -162,13 +163,16 @@ namespace KadOzenka.Web.Models.Declarations
 		//[Required(ErrorMessage = "Поле Статус обязательное")]
 		public long? Status { get; set; }
 
-		public static DeclarationModel FromEntity(OMDeclaration entity, OMSubject owner, OMSubject agent, OMBook book, OMUser userIsp)
+		public DeclarationFormalCheckModel FormalCheckModel { get; set; }
+
+		public static DeclarationModel FromEntity(OMDeclaration entity, OMSubject owner, OMSubject agent, OMBook book, OMUser userIsp, OMResult result)
 		{
 			if (entity == null)
 			{
 				return new DeclarationModel
 				{
-					Id = -1
+					Id = -1,
+					FormalCheckModel = DeclarationFormalCheckModel.FromEntity(null, null)
 				};
 			}
 
@@ -190,9 +194,9 @@ namespace KadOzenka.Web.Models.Declarations
 					: null,
 				UvedTypeOwner = entity.UvedTypeOwner_Code,
 				UvedTypeAgent = entity.UvedTypeAgent_Code,
-				CertificateName = entity.СertificateName,
-				CertificateNum = entity.СertificateNum,
-				CertificateDate = entity.СertificateDate,
+				CertificateName = entity.CertificateName,
+				CertificateNum = entity.CertificateNum,
+				CertificateDate = entity.CertificateDate,
 				CadastralObjectNumber = entity.CadastralNumObj,
 				ObjectType = entity.TypeObj_Code,
 				DateIn = entity.DateIn,
@@ -206,23 +210,35 @@ namespace KadOzenka.Web.Models.Declarations
 				DateInFact = entity.DateInFact,
 				DurationDateIn = entity.DurationIn,
 				DateEnd = entity.DateEnd,
-				Status = entity.Status
+				Status = (long)entity.Status_Code,
+				FormalCheckModel = DeclarationFormalCheckModel.FromEntity(entity, result)
 			};
 		}
 
-		public static void ToEntity(DeclarationModel declarationViewModel, ref OMDeclaration entity)
+		public static void ToEntity(DeclarationModel declarationViewModel, ref OMDeclaration entity, ref OMResult result)
 		{
-			entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();
-
+			if (declarationViewModel.OwnerType.HasValue)
+			{
+				entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();
+			}
 			entity.Owner_Id = declarationViewModel.OwnerId;
 			entity.Agent_Id = declarationViewModel.AgentId;
-			entity.UvedTypeOwner_Code = declarationViewModel.UvedTypeOwner.GetValueOrDefault();
-			entity.UvedTypeAgent_Code = declarationViewModel.UvedTypeAgent.GetValueOrDefault();
-			entity.СertificateName = declarationViewModel.CertificateName;
-			entity.СertificateNum = declarationViewModel.CertificateNum;
-			entity.СertificateDate = declarationViewModel.CertificateDate;
+			if (declarationViewModel.UvedTypeOwner.HasValue)
+			{
+				entity.UvedTypeOwner_Code = declarationViewModel.UvedTypeOwner.GetValueOrDefault();
+			}
+			if (declarationViewModel.UvedTypeAgent.HasValue)
+			{
+				entity.UvedTypeAgent_Code = declarationViewModel.UvedTypeAgent.GetValueOrDefault();
+			}
+			entity.CertificateName = declarationViewModel.CertificateName;
+			entity.CertificateNum = declarationViewModel.CertificateNum;
+			entity.CertificateDate = declarationViewModel.CertificateDate;
 			entity.CadastralNumObj = declarationViewModel.CadastralObjectNumber;
-			entity.TypeObj_Code = declarationViewModel.ObjectType.GetValueOrDefault();
+			if (declarationViewModel.ObjectType.HasValue)
+			{
+				entity.TypeObj_Code = declarationViewModel.ObjectType.GetValueOrDefault();
+			}
 			entity.DateEnd = declarationViewModel.DateIn;
 			entity.NumIn = declarationViewModel.NumberIn;
 			entity.Book_Id = declarationViewModel.BookId.Value;
@@ -232,7 +248,11 @@ namespace KadOzenka.Web.Models.Declarations
 			entity.DateInFact = declarationViewModel.DateInFact;
 			entity.DurationIn = declarationViewModel.DurationDateIn;
 			entity.DateEnd = declarationViewModel.DateEnd;
-			entity.Status = declarationViewModel.Status;
+			if (declarationViewModel.Status.HasValue)
+			{
+				entity.Status_Code = (StatusDec)declarationViewModel.Status.GetValueOrDefault();
+			}
+			DeclarationFormalCheckModel.ToEntity(declarationViewModel.FormalCheckModel, ref entity, ref result);
 		}
 	}
 }
