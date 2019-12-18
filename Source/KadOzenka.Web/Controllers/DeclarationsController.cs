@@ -146,7 +146,7 @@ namespace KadOzenka.Web.Controllers
 		public IQueryable GetAutoCompleteSubject(string searchText)
 		{
 			return OMSubject
-				.Where(x => x.Name.StartsWith(searchText) || x.F_Name.StartsWith(searchText))
+				.Where(x => ((x.Name.StartsWith(searchText) && (long)x.Type_Code == (long)SubjectType.Ul) || (x.F_Name.StartsWith(searchText) && (long)x.Type_Code == (long)SubjectType.Fl)))
 				.SelectAll().Execute().Select(x => new
 				{
 					x.Id,
