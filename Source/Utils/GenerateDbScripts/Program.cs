@@ -29,10 +29,8 @@ namespace GenerateDbScripts
 
 			string baseFolder = ConfigurationManager.AppSettings["DbExporterBaseFolder"];
 			
-			//var command = DBMngr.Realty.GetStoredProcCommand("Core_Register_PKG.CorrectSystemLayoutsAndFilters");
-			//DBMngr.Realty.ExecuteNonQuery(command);
-
-
+			DbExporter.CorrectSystemLayoutsAndFilters();
+			
 			ExportProfile exportProfile = File.ReadAllText(exportProfileFilename).DeserializeFromXml<ExportProfile>();
 
 			DbExporter dbExporter = new DbExporter(connectionString, providerName);
