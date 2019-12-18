@@ -45,24 +45,24 @@
 				}
 			},
 			schema: {
-				model: {  
-					id: "Id",  
-					parentId: "ParentId",  
-					fields: {  						
+				model: {
+					id: "Id",
+					parentId: "ParentId",
+					fields: {
                         ParentId: { field: "ParentId", nullable: true },
                         Id: { field: "Id", type: "number" }
-					},  
-					expanded: true  
-				} 
+					},
+					expanded: true
+				}
 			}
 		});
 
 		$("#treeList").kendoTreeList({
             dataSource: dataSource,
             selectable: true,
-            columns: [                
+            columns: [
                 {
-                    field: "GroupName", title: "Имя группы", headerAttributes: {                        
+                    field: "GroupName", title: "Имя группы", headerAttributes: {
                         style: "display: none"
                     }
                 }
@@ -88,12 +88,28 @@
         $('[name="RatingTour"]').data("kendoDropDownList").bind('change', RatingTourChanged);
 
         function RatingTourChanged(e) {
-            var value = this.value();            
+            var value = this.value();
             if (value != '') {
                 $("#treeList").data("kendoTreeList").dataSource.filter({ field: "TourId", operator: "equals", value: value });
             }
             else {
                 $("#treeList").data("kendoTreeList").dataSource.filter({});
+            }
+        }
+
+        $("#treeList").data("kendoTreeList").bind('change', TreeListChanged);
+
+        function TreeListChanged() {            
+            var row = this.select();
+            var data = this.dataItem(row);
+            if (data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainOKS)'
+                || data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainParcel)') {
+                $('.edit-group').addClass('k-state-disabled');
+                $('.remove-group').addClass('k-state-disabled');
+            }
+            else {
+                $('.edit-group').removeClass('k-state-disabled');
+                $('.remove-group').removeClass('k-state-disabled');
             }
         }
 
@@ -117,13 +133,13 @@
             }
         });
 
-        $('.remove-group').on('click', function () {            
+        $('.remove-group').on('click', function () {
 
             var treeList = $("#treeList").data("kendoTreeList");
             var row = treeList.select();
             if (row.length > 0) {
                 var data = treeList.dataItem(row);
-                
+
                 Common.UI.ShowConfirm({
                     title: '',
                     content: 'Удалить группу ' + data.GroupName+'?',
@@ -135,7 +151,7 @@
                             data: { id: data.Id },
                             success: function (response) {
                                 kendo.ui.progress($('body'), false);
-                                if (response.Success) {                            
+                                if (response.Success) {
                                     $("#treeList").data("kendoTreeList").dataSource.read();
                                     Common.ShowMessage(response.Success);
                                 }
@@ -146,7 +162,7 @@
                             }
                         });
                     }
-                });              
+                });
             }
         });
 
