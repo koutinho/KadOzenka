@@ -16,6 +16,7 @@ using KadOzenka.Dal.DataImport;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory.Sud;
+using ObjectModel.Gbu;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -472,7 +473,7 @@ namespace KadOzenka.Web.Controllers
 			return Json( new {data = сonclusion});
 		}
 
-        [HttpGet]
+		[HttpGet]
         public JsonResult GetApprovalFieldData(OMTableParam idTable, int objectId, string paramName, bool isActual)
         {
             var act = isActual ? OMParam.GetActual(idTable, objectId, paramName) : null;
@@ -492,13 +493,15 @@ namespace KadOzenka.Web.Controllers
             return Json(res);
         }
 
-        public JsonResult GetApprovalReportFieldData(int objectId, string paramName, bool isActual)
-        {
-            return Json(new {});
-        }
-        #endregion
-
         [HttpGet]
+        public JsonResult GetAutoFillDataByKn(string kn)
+        {
+	        return Json(new { Address = "address", Type = SudObjectType.None});
+        }
+
+		#endregion
+
+		[HttpGet]
 		public JsonResult GetDictionary(int type)
 		{
 			List<OMDict> dictList = OMDict
@@ -541,6 +544,14 @@ namespace KadOzenka.Web.Controllers
 					x.Id,
 					Value = x.Date != null ? $"{x.Number} от {x.Date.GetString()}" : x.Number
 				}).AsQueryable();
+		}
+
+		[HttpGet]
+		public IQueryable GetKnData(string searchText)
+		{
+			//OMSource2.Where(x => x.)
+
+			return new List<Object>() {new {text = "123", value = "123"}, new { text = "456", value = "456" } }.AsQueryable();
 		}
 
 		#endregion

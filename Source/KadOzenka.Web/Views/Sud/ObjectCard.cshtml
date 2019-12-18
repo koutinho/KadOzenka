@@ -16,14 +16,14 @@
 						<div class="col-sm-2">
 							@Html.CustomLabelFor(m => m.Kn)
 						</div>
-						<div class="col-sm-4">
+						<div class="col-sm-4 kendo-auto-complite">
 							@if (Model.Id != -1)
 							{
 								@Html.KendoTextBoxFor(m => m.Kn)
 							}
 							else
 							{
-								@Html.KendoTextBoxFor(m => m.Kn, isReadonly: false)
+								<input id="Kn" name="Kn" style="width: 100%" value="@Model.Kn"/>
 							}
 						</div>
 						<div class="col-sm-2">
@@ -468,37 +468,72 @@
 
 	<script type="text/javascript">
 		$(document).ready(function() {
+
+			//Автокомлит для кадастрового номера
+			function onSelect(e) {
+				var url = "@Url.Action("GetAutoFillDataByKn", "Sud")" + `?kn=${e.dataItem.value}`;
+				$.get(url).done(function (response) {
+					$('#Address').val(response.Address);
+					$('#ObjectType').data('kendoDropDownList').value(response.Type);
+					console.log('response', response);
+				});
+			}
+
+			var dataSource = new kendo.data.DataSource({
+				serverFiltering: true,
+				transport: {
+					read: {
+						url: "@Url.Action("GetKnData", "Sud")",
+						dataType: "json",
+						data: function(opt) {
+							return {
+								searchText: $("#Kn").val()
+							}
+						}
+					}
+				}
+			});
+			$("#Kn").kendoAutoComplete({
+				dataTextField: "text",
+				select: onSelect,
+				filter: "contains",
+				minLength: 3,
+				clearButton: false,
+				dataSource: dataSource
+			});
+			// end auto complete
+
 			const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
 			panelbar.expand('li[data-expand]');
 
 			$("#navigation-menu a").mPageScroll2id({
 				highlightSelector: "#navigation-menu a"
-            });
-            /*$.ajaxDataLoader.addMethod('resizeGrid302', function() {
-                resizeGrid($("#Grid-302"));
-            });
+			});
+			/*$.ajaxDataLoader.addMethod('resizeGrid302', function() {
+			    resizeGrid($("#Grid-302"));
+			});
 
-            $.ajaxDataLoader.addMethod('resizeGrid304', function () {
-                resizeGrid($("#Grid-304"));
-            });
+			$.ajaxDataLoader.addMethod('resizeGrid304', function () {
+			    resizeGrid($("#Grid-304"));
+			});
 
-            $.ajaxDataLoader.addMethod('resizeGrid314', function () {
-                resizeGrid($("#Grid-314"));
-            });
+			$.ajaxDataLoader.addMethod('resizeGrid314', function () {
+			    resizeGrid($("#Grid-314"));
+			});
 
-            function resizeGrid(grid) {
-                if (grid.length) {
-                    var dataArea = grid.find(".k-grid-content");
-                    grid.css('height', '100%');
-                    dataArea.css('height', '100%');
-                }
-            }*/
+			function resizeGrid(grid) {
+			    if (grid.length) {
+			        var dataArea = grid.find(".k-grid-content");
+			        grid.css('height', '100%');
+			        dataArea.css('height', '100%');
+			    }
+			}*/
 
 			const toolbar = $("#toolbar").kendoToolBar({
 				items: [
-				@if (Model.Id != -1)
-				{
-					 @Html.Raw(@"{
+					@if (Model.Id != -1)
+					{
+						@Html.Raw(@"{
 						type: 'button',
 						id: 'reloadCardBtn',
 						text: '',
@@ -509,7 +544,7 @@
 						hidden: false
 					}," +
 
-                    @"{
+						          @"{
 						type: 'button',
 						id: 'editBtn',
 						text: '',
@@ -522,7 +557,7 @@
 					icon: 'edit',
 					hidden: false
 					}," +
-                    @"{
+						          @"{
 						type: 'button',
 						id: 'saveBtn',
 						text: '',
@@ -563,7 +598,7 @@
 						icon: 'save',
 						hidden: true
 					}," +
-                    @"{
+						          @"{
 						type: 'button',
 						id: 'cancelBtn',
 						text: '',
@@ -577,22 +612,23 @@
 						},
 						icon: 'cancel',
 					hidden: true
-					},"+ @"{
+					}," + @"{
                         type: 'button',
                         id: 'approveBtn',
 						text: '',
 						click: function() {
-							var contentUrl = '" + @Url.Action("EditApprovalObject", "Sud", new { idObject  = @Model.Id}) + @"';
+							var contentUrl = '" + @Url.Action("EditApprovalObject", "Sud", new {idObject = @Model.Id}) + @"';
 					        var title = 'Утверждение данных';
                             Common.UI.ChooseWindow(title, contentUrl);
                                  },
 						icon: 'check',
                         hidden: false
-                        }");
-				}
-				else
-				{
-					@Html.Raw(@"{
+                        }")
+						;
+					}
+					else
+					{
+						@Html.Raw(@"{
 						type: 'button',
 						id: 'saveBtn',
 						text: '',
@@ -633,32 +669,32 @@
 						icon: 'save',
 						hidden: false
 					}")
-				}
-				]
-			}).data('kendoToolBar');
-
-			$("#toolbar").kendoTooltip({
-				filter: "a.k-button",
-				content: function(e) {
-					switch ($(e.target).attr('id')) {
-					case "reloadCardBtn":
-						return "Обновить";
-					case "editBtn":
-						return "Редактировать";
-					case "saveBtn":
-						return "Сохранить";
-					case "cancelBtn":
-						return "Отмена";
-					case "print":
-                        return "Печать";
-                    case "approveBtn":
-                        return "Утвердить";
 					}
-				},
-				position: "top",
-				autoHide: true,
-				showAfter: 500
-			});
+			]
+		}).data('kendoToolBar');
+
+		$("#toolbar").kendoTooltip({
+			filter: "a.k-button",
+			content: function(e) {
+				switch ($(e.target).attr('id')) {
+				case "reloadCardBtn":
+					return "Обновить";
+				case "editBtn":
+					return "Редактировать";
+				case "saveBtn":
+					return "Сохранить";
+				case "cancelBtn":
+					return "Отмена";
+				case "print":
+					return "Печать";
+				case "approveBtn":
+					return "Утвердить";
+				}
+			},
+			position: "top",
+			autoHide: true,
+			showAfter: 500
+		});
 		});
 
 		function distinctErrors(errors) {
