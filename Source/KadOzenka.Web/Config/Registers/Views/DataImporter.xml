@@ -16,13 +16,13 @@
               <Parameter Key="importId" Value="[ObjectID]" />
               <Parameter Key="downloadResult" Value="true" />
           </Parameters>
-          <ConditionGroups>
+          <!--<ConditionGroups>
               <ConditionGroup HideOrDisable="Disable">
                   <Conditions>
                       <Condition Key="[80100300]" Operation="NotEqual" Value="2" />
                   </Conditions>
               </ConditionGroup>
-          </ConditionGroups>
+          </ConditionGroups>-->
       </Button>
     
       <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart" OpenInNewWindow="false" Icon="fas fa-undo-alt"

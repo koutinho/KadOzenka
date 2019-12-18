@@ -10,11 +10,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
 using ObjectModel.Common;
+using Core.Register.LongProcessManagment;
+using ObjectModel.Core.LongProcess;
+using System.Linq;
 
 namespace KadOzenka.Dal.DataImport
 {
-    public static class DataImporterSud
-    {
+    public class DataImporterSud : ILongProcess
+	{
+		public const string LongProcessName = "DataImporterSud";
+
 		class ErrorRow
 		{
 			public int rowIndex = 0;
@@ -26,9 +31,90 @@ namespace KadOzenka.Dal.DataImport
 				colIndex = new List<int>();
 			}
 		}
-
-		public static Stream ImportDataSudFromExcel(ExcelFile excelFile,  string registerViewId, int mainRegisterId)
+		
+		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile)
 		{
+			var export = new OMImportDataLog
+			{
+				UserId = SRDSession.GetCurrentUserId().Value,
+				DateCreated = DateTime.Now,
+				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added, // TODO: доработать платформу, чтоб формировался Enum
+				DataFileName = templateFileName,
+				MainRegisterId = mainRegisterId,
+				RegisterViewId = registerViewId
+			};
+			export.Save();
+
+			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, export.DateCreated, DataImporterCommon.GetTemplateName(export.Id));
+
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+		}
+
+		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
+		{
+			if (!processQueue.ObjectId.HasValue)
+			{
+				return;
+			}
+
+			OMImportDataLog import = OMImportDataLog
+				.Where(x => x.Id == processQueue.ObjectId)
+				.SelectAll()
+				.Execute()
+				.FirstOrDefault();
+
+			if (import == null)
+			{
+				return;
+			}
+
+			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
+			import.DateStarted = DateTime.Now;
+			import.Save();
+
+			// Запустить формирование файла
+			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
+
+			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
+			
+			Stream resultFile = ImportDataSudFromExcel(excelTemplate);
+
+			// Сохранение файла
+			FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetResultFileName(import.Id));
+
+			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
+			import.DateFinished = DateTime.Now;
+			import.Save();
+
+			// Отправка уведомления о завершении загрузки
+			DataImporterCommon.SendResultNotification(import);
+		}
+
+		public void LogError(long? objectId, Exception ex, long? errorId = null)
+		{
+			OMImportDataLog import = OMImportDataLog
+				.Where(x => x.Id == objectId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (import == null)
+			{
+				return;
+			}
+
+			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
+			import.DateFinished = DateTime.Now;
+			import.ResultMessage = $"{ex.Message}{(errorId != null ? $" (журнал № {errorId})" : String.Empty)}";
+			import.Save();
+		}
+
+		public bool Test()
+		{
+			return true;
+		}
+		
+		public static Stream ImportDataSudFromExcel(ExcelFile excelFile)
+		{	
 			List<ErrorRow> errorrowMain = new List<ErrorRow>();
 			List<ErrorRow> errorrowOtcher = new List<ErrorRow>();
 			List<ErrorRow> errorrowSud = new List<ErrorRow>();
@@ -137,23 +223,23 @@ namespace KadOzenka.Dal.DataImport
 							{
 								errorMain.colIndex.Add(2);
 							}
-							if (cSq != sud_object.Square && cSq != null)
+							if (cSq != null && cSq != sud_object.Square)
 							{
 								errorMain.colIndex.Add(3);
 							}
-							if (cKC != sud_object.Kc && cKC != null)
+							if (cKC != null && cKC != sud_object.Kc)
 							{
 								errorMain.colIndex.Add(5);
 							}
-							if (cName_Center.ToUpper() != sud_object.NameCenter.ToUpper() && cName_Center != string.Empty)
+							if (cName_Center.IsNotEmpty() && cName_Center.ToUpper() != sud_object.NameCenter.ToUpper())
 							{
 								errorMain.colIndex.Add(6);
 							}
-							if (cStat_Dgi.ToUpper() != sud_object.StatDgi.ToUpper() && cStat_Dgi != string.Empty)
+							if (cStat_Dgi.IsNotEmpty() && cStat_Dgi.ToUpper() != sud_object.StatDgi.ToUpper())
 							{
 								errorMain.colIndex.Add(7);
 							}
-							if (cOwner.ToUpper() != sud_object.Owner.ToUpper() && cOwner != string.Empty)
+							if (cOwner.IsNotEmpty() && cOwner.ToUpper() != sud_object.Owner.ToUpper())
 							{
 								errorMain.colIndex.Add(8);
 							}
@@ -841,53 +927,12 @@ namespace KadOzenka.Dal.DataImport
 					mainWorkSheet.Rows[ind.rowIndex].Cells[indX].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(200, 255, 200));
 				}
 			}
-
-
-
-
-			MemoryStream stream = new MemoryStream();
-			excelFile.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-
-			SaveImportFile(stream, excelFile, registerViewId, mainRegisterId, true);
-
-			return stream;
-		}
-
-		public static void SaveImportFile(Stream stream, ExcelFile excelFile, string registerViewId, int mainRegisterId, bool isResultFile = false)
-		{
-			var fileName = excelFile.DocumentProperties.Custom["FileName"].ToString();
-
-			var dateStarted = DateTime.Now;
-			var importResult = new OMImportDataLog()
-			{
-				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-				DateStarted = dateStarted,
-				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
-				DataFileName = fileName,
-				DateCreated = dateStarted,
-				RegisterViewId = registerViewId,
-				MainRegisterId = mainRegisterId
-			};
-			try
-			{
-				FileStorageManager.Save(
-					stream,
-					"SudFilesStorage",
-					dateStarted,
-					isResultFile ? importResult.Save() + "_result" : importResult.Save().ToString()
-				);
-				importResult.DateFinished = DateTime.Now;
-				importResult.Save();
-			}
-			catch (Exception ex)
-			{
-				long errorId = ErrorManager.LogError(ex);
-				importResult.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
-				importResult.DateFinished = DateTime.Now;
-				importResult.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
-				importResult.Save();
-			}
+			
+			MemoryStream streamResult = new MemoryStream();
+			excelFile.Save(streamResult, SaveOptions.XlsxDefault);
+			streamResult.Seek(0, SeekOrigin.Begin);
+			
+			return streamResult;
 		}
 	}
 }

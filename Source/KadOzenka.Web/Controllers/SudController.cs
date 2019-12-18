@@ -712,24 +712,12 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult LoadDocument(IFormFile file)
 		{
-
 			try
 			{
-				ExcelFile excelFile;
 				using (var stream = file.OpenReadStream())
 				{
-					excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-					excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
+					DataImporterSud.AddImportToQueue(OMObject.GetRegisterId(), "SudObjects", file.FileName, stream);
 				}
-
-				string registerViewId = "SudObjects";
-				int mainRegisterId = 315;
-
-				MemoryStream str = new MemoryStream();
-				excelFile.Save(str, SaveOptions.XlsxDefault);
-				str.Seek(0, SeekOrigin.Begin);
-				DataImporterSud.SaveImportFile(str, excelFile, registerViewId, mainRegisterId);
-				DataImporterSud.ImportDataSudFromExcel(excelFile, registerViewId, mainRegisterId);
 			}
 			catch (Exception e)
 			{

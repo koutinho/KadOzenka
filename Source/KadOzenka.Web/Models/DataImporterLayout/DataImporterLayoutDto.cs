@@ -5,6 +5,7 @@ using System.Linq;
 using Core.Main.FileStorages;
 using Core.Register;
 using Core.Register.Enums;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Newtonsoft.Json;
@@ -48,14 +49,20 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 				fileSize = new FileInfo(fileLocation).Length;
 			}
 
-			var dbColumns = JsonConvert.DeserializeObject<List<DataExportColumn>>(entity.ColumnsMapping);
-			var columnsMappingDtoList = dbColumns.Select(x => new ColumnsMappingDto
-			{
-				ColumnName = x.ColumnName,
-				AttributeName = RegisterCache.GetAttributeData((int)x.AttributrId).Name,
-				IsKey = x.IsKey
-			}).ToList();
+			List<ColumnsMappingDto> columnsMappingDtoList = null;
 
+			if(entity.ColumnsMapping.IsNotEmpty())
+			{
+				var dbColumns = JsonConvert.DeserializeObject<List<DataExportColumn>>(entity.ColumnsMapping);
+
+				columnsMappingDtoList = dbColumns.Select(x => new ColumnsMappingDto
+				{
+					ColumnName = x.ColumnName,
+					AttributeName = RegisterCache.GetAttributeData((int)x.AttributrId).Name,
+					IsKey = x.IsKey
+				}).ToList();
+			}
+			
 			return new DataImporterLayoutDto
 			{
 				Id = entity.Id,

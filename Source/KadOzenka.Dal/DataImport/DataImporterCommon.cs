@@ -19,6 +19,7 @@ using Core.SRD;
 using Core.ErrorManagment;
 using ObjectModel.Core.Shared;
 using ObjectModel.Commission;
+using Core.Messages;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -94,10 +95,26 @@ namespace KadOzenka.Dal.DataImport
 			import.ResultMessage = $"{ex.Message}{(errorId != null ? $" (журнал № {errorId})" : String.Empty)}";
 			import.Save();
 		}
-
+		
 		public bool Test()
 		{
 			return true;
+		}
+
+		internal static void SendResultNotification(OMImportDataLog import)
+		{
+			new MessageService().SendMessages(new MessageDto
+			{
+				UserIds = new long[] { import.UserId },
+				Subject = $"Результат загрузки данных в реестр: {RegisterCache.GetRegisterData((int)import.MainRegisterId).Description} от ({import.DateCreated.GetString()})",
+				Message = $@"Загрузка файла ""{import.DataFileName}"" была завершена.
+Статус загрузки: {import.Status_Code.GetEnumDescription()}
+<a href=""/DataImporterLayout/Download?downloadResult=true&importId={import.Id}"">Скачать результат</a>
+<a href=""/DataImporterLayout/Download?downloadResult=false&importId={import.Id}"">Скачать исходный файл</a>
+<a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",
+				IsUrgent = true,
+				IsEmail = true
+			});
 		}
 
 		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)

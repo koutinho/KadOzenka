@@ -20,7 +20,7 @@
 		},
 		success: function (e) {
 			if (e.operation === "upload") {
-				Common.ShowMessage("Данные загружены успешно");
+				Common.ShowMessage("Загрузка успешно добавлена в очередь, по результатам загрузки будет отправлено сообщение");
 			}
 		},
 		validation: {
@@ -30,7 +30,7 @@
 			if (e.XMLHttpRequest.responseText) {
 				Common.ShowError(e.XMLHttpRequest.responseText);
 			} else {
-				Common.ShowError("Не удалось загрузить выбранный файл");
+				Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошиюок)");
 			}
 		}
 	}).data('kendoUpload');

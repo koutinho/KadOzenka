@@ -19,6 +19,15 @@
           <Parameter Key="courtId" Value="[ObjectID]" />
         </Parameters>
       </Button>
+
+      <Button Caption="Образы" NavigateURL="/RegistersView/CoreSharedAttachment" WindowTitleTemplate="Образы отчета" Icon="far fa-images"
+                        NeedRefresh="true" SRDFunctionTag="">
+        <Parameters>
+          <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
+          <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
+          <Parameter Key="NotSetTitle" Value="true" />
+        </Parameters>
+      </Button>
     </Buttons>
     <StatusBarConfiguration StatusBarEnabled="false" />
 </RegisterView>
