@@ -67,17 +67,17 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 			{
 				return new DeclarationFormalCheckModel
 				{
-					Id = -1
+					Id = -1,
 				};
 			}
 
 			return new DeclarationFormalCheckModel
 			{
 				Id = entity.Id,
-				MatchingApprovedFormCheck = (long)entity.CheckPoint1_Code,
-				PresenceMainDataCheck = (long)entity.CheckPoint2_Code,
-				NotificationOfConsiderationTermsProlongation = (long)entity.CheckPoint3_Code,
-				FurtherDeclarationCheck = (long)entity.CheckPoint4_Code,
+				MatchingApprovedFormCheck = !string.IsNullOrEmpty(entity.CheckPoint1) ? (long)entity.CheckPoint1_Code : (long?)null,
+				PresenceMainDataCheck = !string.IsNullOrEmpty(entity.CheckPoint2) ? (long)entity.CheckPoint2_Code : (long?)null,
+				NotificationOfConsiderationTermsProlongation = !string.IsNullOrEmpty(entity.CheckPoint3) ? (long)entity.CheckPoint3_Code : (long?)null,
+				FurtherDeclarationCheck = !string.IsNullOrEmpty(entity.CheckPoint4) ? (long)entity.CheckPoint4_Code : (long?)null,
 				DateCheckPlan = entity.DateCheckPlan,
 				DateCheckFact = entity.DateCheckFact,
 				ApprovedCharacteristic = result.TextYes,
