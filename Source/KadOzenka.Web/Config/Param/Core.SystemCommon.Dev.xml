@@ -35,6 +35,10 @@
     <Email></Email>
   </ErrorManagment>
 
+  <AttachmnetsSettings>
+    <IsFileStorage>true</IsFileStorage>
+  </AttachmnetsSettings>
+
   <OmAssemblies>
     <string>Platform</string>
     <string>KadOzenka.ObjectModel</string>

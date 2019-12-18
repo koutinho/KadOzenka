@@ -28,6 +28,10 @@
         <Email></Email>
     </ErrorManagment>
 
+  <AttachmnetsSettings>
+    <IsFileStorage>true</IsFileStorage>
+  </AttachmnetsSettings>
+
   <OmAssemblies>
     <string>Platform</string>
     <string>KadOzenka.Dal</string>
