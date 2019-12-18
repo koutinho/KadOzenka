@@ -28,7 +28,7 @@
 	  </Button>
 	  <Button Caption="Выгрузка в Xml" NavigateURL="~/Sud/GetExportDataToXml" Icon="fas fa-code"  OpenInRadWindow="false" />
 
-	  <Button Caption="Статистика" Icon="fas fa-archive" OpenInRadWindow="false" Type="DropDown">
+	  <Button Caption="Статистика" Icon="fas fa-chart-pie" OpenInRadWindow="false" Type="DropDown">
 		  <DropDownButtons>
 			  <Button Caption="Положительные судебные решения" NavigateURL="~/Sud/GetExportStatisticCheck" OpenInRadWindow="false" />
 			  <Button Caption="Сводная статистика" NavigateURL="~/Sud/GetExportStatistic"  OpenInRadWindow="false" />
