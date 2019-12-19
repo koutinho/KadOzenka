@@ -62,7 +62,7 @@ namespace KadOzenka.Web.Models.Sud
 			return new ConclusionLinkModel()
 			{
 				Id = conclusionLink.Id,
-				IdConclusion = conclusionLink.IdZak,
+				IdConclusion = conclusion.Id,
 				Descr = conclusionLink.Descr,
 				Rs = conclusionLink.Rs.GetValueOrDefault(),
 				Uprs = conclusionLink.Uprs.GetValueOrDefault(),

@@ -58,7 +58,7 @@ namespace KadOzenka.Web.Models.Sud
 			var res = new ReportLinkModel
 			{
 				Id = entity.Id,
-				IdReport = entity.IdOtchet.GetValueOrDefault(),
+				IdReport = report.Id,
 				Descr = entity.Descr,
 				Rs = entity.Rs.GetValueOrDefault(),
 				Uprs = entity.Uprs.GetValueOrDefault(),

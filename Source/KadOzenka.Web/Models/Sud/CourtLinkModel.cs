@@ -56,7 +56,7 @@ namespace KadOzenka.Web.Models.Sud
 			var res = new CourtLinkModel
 			{
 				Id = omSudLink.Id,
-				SudId = omSudLink.IdSud.GetValueOrDefault(),
+				SudId = omSud.Id,
 				SudNumber = !string.IsNullOrEmpty(omSud.Number) && omSud.Date != null ? $"{omSud.Number} от {omSud.Date.GetString()}" : !string.IsNullOrEmpty(omSud.Number) ? omSud.Number : "",
 				Rs = omSudLink.Rs.GetValueOrDefault(),
 				Use = omSudLink.Use,
