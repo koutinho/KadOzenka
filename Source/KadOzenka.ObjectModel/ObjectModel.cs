@@ -24,6 +24,26 @@ namespace ObjectModel.Gbu
     [Serializable]
     public partial class OMSource2 : OMBaseClass<OMSource2>
     {
+
+        private long _id;
+        /// <summary>
+        /// 200100 ИД (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
     }
 }
 
@@ -4094,6 +4114,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private bool? _useasprototype;
+        /// <summary>
+        /// 20102200 Признак использования в качестве эталонного объекта (USE_AS_PROTOTYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102200)]
+        public bool? UseAsPrototype
+        {
+            get
+            {
+                CheckPropertyInited("UseAsPrototype");
+                return _useasprototype;
+            }
+            set
+            {
+                _useasprototype = value;
+                NotifyPropertyChanged("UseAsPrototype");
+            }
+        }
+
     }
 }
 
@@ -4751,6 +4791,26 @@ namespace ObjectModel.KO
             {
                 _factorid = value;
                 NotifyPropertyChanged("FactorId");
+            }
+        }
+
+
+        private bool? _signmarket;
+        /// <summary>
+        /// 20800400 Признак использования метки (SIGN_NARKET)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20800400)]
+        public bool? SignMarket
+        {
+            get
+            {
+                CheckPropertyInited("SignMarket");
+                return _signmarket;
+            }
+            set
+            {
+                _signmarket = value;
+                NotifyPropertyChanged("SignMarket");
             }
         }
 

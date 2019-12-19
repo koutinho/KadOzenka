@@ -37,6 +37,8 @@ namespace ObjectModel.Gbu
         public OMSource2()
         {
 
+            Id = -1;
+
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
@@ -1024,6 +1026,12 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMGroupFactor> GroupFactor { get; set; }
+
+        /// <summary>
+        /// Ссылка на (212 Группы тура)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMTourGroup> TourGroup { get; set; }
         public OMGroup()
         {
 
@@ -1037,6 +1045,8 @@ namespace ObjectModel.KO
             Model = new List<ObjectModel.KO.OMModel>();
 
             GroupFactor = new List<ObjectModel.KO.OMGroupFactor>();
+
+            TourGroup = new List<ObjectModel.KO.OMTourGroup>();
 
         }
         public OMGroup(bool trackPropertyChanging) : this()
@@ -1954,6 +1964,18 @@ namespace ObjectModel.Declarations
     public partial class OMBook
     {
 
+
+        /// <summary>
+        /// Ссылка на (501 Декларация)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMDeclaration> Declaration { get; set; }
+
+        /// <summary>
+        /// Ссылка на (506 Уведомления)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMUved> Uved { get; set; }
         public OMBook()
         {
 
@@ -1961,6 +1983,10 @@ namespace ObjectModel.Declarations
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            Declaration = new List<ObjectModel.Declarations.OMDeclaration>();
+
+            Uved = new List<ObjectModel.Declarations.OMUved>();
 
         }
         public OMBook(bool trackPropertyChanging) : this()
@@ -1978,6 +2004,30 @@ namespace ObjectModel.Declarations
     public partial class OMDeclaration
     {
 
+
+        /// <summary>
+        /// Ссылка на (502 Характеристики ОКС)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMHarOKS> HarOKS { get; set; }
+
+        /// <summary>
+        /// Ссылка на (503 Характеристики ЗУ)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMHarParcel> HarParcel { get; set; }
+
+        /// <summary>
+        /// Ссылка на (504 Результаты)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMResult> Result { get; set; }
+
+        /// <summary>
+        /// Ссылка на (506 Уведомления)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMUved> Uved { get; set; }
         public OMDeclaration()
         {
 
@@ -1985,6 +2035,14 @@ namespace ObjectModel.Declarations
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            HarOKS = new List<ObjectModel.Declarations.OMHarOKS>();
+
+            HarParcel = new List<ObjectModel.Declarations.OMHarParcel>();
+
+            Result = new List<ObjectModel.Declarations.OMResult>();
+
+            Uved = new List<ObjectModel.Declarations.OMUved>();
 
         }
         public OMDeclaration(bool trackPropertyChanging) : this()
@@ -2074,6 +2132,12 @@ namespace ObjectModel.Declarations
     public partial class OMSubject
     {
 
+
+        /// <summary>
+        /// Ссылка на (501 Декларация)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMDeclaration> Declaration { get; set; }
         public OMSubject()
         {
 
@@ -2081,6 +2145,8 @@ namespace ObjectModel.Declarations
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            Declaration = new List<ObjectModel.Declarations.OMDeclaration>();
 
         }
         public OMSubject(bool trackPropertyChanging) : this()

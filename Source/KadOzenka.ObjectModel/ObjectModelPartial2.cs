@@ -563,6 +563,24 @@ namespace ObjectModel.KO
 }
 
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 212 Группы тура
+    /// </summary>
+    public partial class OMTourGroup
+    {
+        /// <summary>
+        /// Ссылка на (205 Группы/Подгруппы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Sud
 {
     /// <summary>
@@ -777,6 +795,117 @@ namespace ObjectModel.Sud
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.Sud.OMSud ParentSud { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 501 Декларация
+    /// </summary>
+    public partial class OMDeclaration
+    {
+        /// <summary>
+        /// Ссылка на (500 Книги)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMBook ParentBook { get; set; }
+
+        /// <summary>
+        /// Ссылка на (505 Субъекты)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMSubject ParentSubject { get; set; }
+
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 502 Характеристики ОКС
+    /// </summary>
+    public partial class OMHarOKS
+    {
+        /// <summary>
+        /// Ссылка на (501 Декларация)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMDeclaration ParentDeclaration { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 503 Характеристики ЗУ
+    /// </summary>
+    public partial class OMHarParcel
+    {
+        /// <summary>
+        /// Ссылка на (501 Декларация)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMDeclaration ParentDeclaration { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 504 Результаты
+    /// </summary>
+    public partial class OMResult
+    {
+        /// <summary>
+        /// Ссылка на (501 Декларация)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMDeclaration ParentDeclaration { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 506 Уведомления
+    /// </summary>
+    public partial class OMUved
+    {
+        /// <summary>
+        /// Ссылка на (500 Книги)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMBook ParentBook { get; set; }
+
+        /// <summary>
+        /// Ссылка на (501 Декларация)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMDeclaration ParentDeclaration { get; set; }
 
     }
 }
