@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="500" LinkedRegistersList="" DefaultLayoutId="1005001"
+<RegisterView RegisterId="500" LinkedRegistersList="501" DefaultLayoutId="1005001"
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
