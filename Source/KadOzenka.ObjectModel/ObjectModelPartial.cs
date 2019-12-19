@@ -1299,6 +1299,54 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 217 Экспликации площадей
+    /// </summary>
+    public partial class OMExplication
+    {
+
+        public OMExplication()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMExplication(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 218 Эталонные объекты
+    /// </summary>
+    public partial class OMEtalon
+    {
+
+        public OMEtalon()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMEtalon(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года
     /// </summary>
     public partial class OMUnitParamsOks2018

@@ -5704,6 +5704,270 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 217 Экспликации площадей (KO_EXPLICATION)
+    /// </summary>
+    [RegisterInfo(RegisterID = 217)]
+    [Serializable]
+    public partial class OMExplication : OMBaseClass<OMExplication>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21700100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 21700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _objectid;
+        /// <summary>
+        /// 21700200 Идентификатор единицы кадастровой оценки (OBJECT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21700200)]
+        public long ObjectId
+        {
+            get
+            {
+                CheckPropertyInited("ObjectId");
+                return _objectid;
+            }
+            set
+            {
+                _objectid = value;
+                NotifyPropertyChanged("ObjectId");
+            }
+        }
+
+
+        private long _groupid;
+        /// <summary>
+        /// 21700300 Идентификатор группы (GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21700300)]
+        public long GroupId
+        {
+            get
+            {
+                CheckPropertyInited("GroupId");
+                return _groupid;
+            }
+            set
+            {
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
+            }
+        }
+
+
+        private decimal? _square;
+        /// <summary>
+        /// 21700400 Площадь экспликации (SQUARE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21700400)]
+        public decimal? Square
+        {
+            get
+            {
+                CheckPropertyInited("Square");
+                return _square;
+            }
+            set
+            {
+                _square = value;
+                NotifyPropertyChanged("Square");
+            }
+        }
+
+
+        private decimal? _upks;
+        /// <summary>
+        /// 21700500 Удельный показатель для экспликации (UPKS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21700500)]
+        public decimal? Upks
+        {
+            get
+            {
+                CheckPropertyInited("Upks");
+                return _upks;
+            }
+            set
+            {
+                _upks = value;
+                NotifyPropertyChanged("Upks");
+            }
+        }
+
+
+        private decimal? _kc;
+        /// <summary>
+        /// 21700600 Кадастровая стоимость экспликации (KC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21700600)]
+        public decimal? Kc
+        {
+            get
+            {
+                CheckPropertyInited("Kc");
+                return _kc;
+            }
+            set
+            {
+                _kc = value;
+                NotifyPropertyChanged("Kc");
+            }
+        }
+
+
+        private decimal? _upksanalog;
+        /// <summary>
+        /// 21700700 Удельный показатель аналога (UPKS_ANALOG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21700700)]
+        public decimal? UpksAnalog
+        {
+            get
+            {
+                CheckPropertyInited("UpksAnalog");
+                return _upksanalog;
+            }
+            set
+            {
+                _upksanalog = value;
+                NotifyPropertyChanged("UpksAnalog");
+            }
+        }
+
+
+        private decimal? _nameanalog;
+        /// <summary>
+        /// 21700800 Наименование аналога (NAME_ANALOG)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21700800)]
+        public decimal? NameAnalog
+        {
+            get
+            {
+                CheckPropertyInited("NameAnalog");
+                return _nameanalog;
+            }
+            set
+            {
+                _nameanalog = value;
+                NotifyPropertyChanged("NameAnalog");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 218 Эталонные объекты (KO_ETALON)
+    /// </summary>
+    [RegisterInfo(RegisterID = 218)]
+    [Serializable]
+    public partial class OMEtalon : OMBaseClass<OMEtalon>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21800100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 21800100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _groupid;
+        /// <summary>
+        /// 21800200 Идентификатор группы (GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21800200)]
+        public long GroupId
+        {
+            get
+            {
+                CheckPropertyInited("GroupId");
+                return _groupid;
+            }
+            set
+            {
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
+            }
+        }
+
+
+        private string _cadastraldistrict;
+        /// <summary>
+        /// 21800300 Кадастровый район (CADASTRALDISTRICT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21800300)]
+        public string Cadastraldistrict
+        {
+            get
+            {
+                CheckPropertyInited("Cadastraldistrict");
+                return _cadastraldistrict;
+            }
+            set
+            {
+                _cadastraldistrict = value;
+                NotifyPropertyChanged("Cadastraldistrict");
+            }
+        }
+
+
+        private string _cadastralnumber;
+        /// <summary>
+        /// 21800400 Кадастровый номер эталонного объекта (CADASTRALNUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21800400)]
+        public string Cadastralnumber
+        {
+            get
+            {
+                CheckPropertyInited("Cadastralnumber");
+                return _cadastralnumber;
+            }
+            set
+            {
+                _cadastralnumber = value;
+                NotifyPropertyChanged("Cadastralnumber");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года (KO_UNIT_PARAMS_OKS_2018)
     /// </summary>
     [RegisterInfo(RegisterID = 250)]
