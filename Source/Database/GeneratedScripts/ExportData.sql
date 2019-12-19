@@ -377,9 +377,9 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(315, 'Sud.Object', 'Объект', NULL, NULL, 'SUD_OBJECT', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(315, 'Sud.Object', 'Объект', 'SUD_OBJECT_A', NULL, 'SUD_OBJECT', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Sud.Object', "registerdescription"='Объект', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='SUD_OBJECT', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Sud.Object', "registerdescription"='Объект', "allpri_table"='SUD_OBJECT_A', "object_table"=NULL, "quant_table"='SUD_OBJECT', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -395,9 +395,9 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(400, 'Commission.Cost', 'Решение комиссий', NULL, NULL, 'COMISSION_COST', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(400, 'Commission.Cost', 'Решение комиссий', 'COMISSION_COST_A', NULL, 'COMISSION_COST', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Commission.Cost', "registerdescription"='Решение комиссий', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='COMISSION_COST', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Commission.Cost', "registerdescription"='Решение комиссий', "allpri_table"='COMISSION_COST_A', "object_table"=NULL, "quant_table"='COMISSION_COST', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -2052,6 +2052,18 @@ on conflict (referenceid) do update set
 		"Name": "Stopped"
 	}
 ]';
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(12072, 'Тип фотографии', 1, 'Core.RefLib.Executors.ReferenceExecutor', NULL, NULL, NULL, NULL, NULL)
+on conflict (referenceid) do update set
+"description"='Тип фотографии', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutor', "istree"=NULL, "defaultvalue"=NULL, "name"=NULL, "register_id"=NULL, "simple_values"=NULL;
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(12082, 'Тип образа', 1, 'Core.RefLib.Executors.ReferenceExecutor', NULL, NULL, NULL, NULL, NULL)
+on conflict (referenceid) do update set
+"description"='Тип образа', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutor', "istree"=NULL, "defaultvalue"=NULL, "name"=NULL, "register_id"=NULL, "simple_values"=NULL;
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
@@ -6812,6 +6824,18 @@ on conflict (itemid) do update set
 "referenceid"=117, "code"='16', "value"='Снято с публикации', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Unpublished';
 
 --<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(1000900, 12072, '-', '-', NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (itemid) do update set
+"referenceid"=12072, "code"='-', "value"='-', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"=NULL;
+
+--<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(1000901, 12082, '-', '-', NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (itemid) do update set
+"referenceid"=12082, "code"='-', "value"='-', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"=NULL;
+
+--<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (1, 'Наименование земельного участка', 2, 4, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 on conflict (id) do update set
@@ -6927,9 +6951,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(25, 'Тип этажа', 2, 4, NULL, 8, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+(25, 'Тип этажа', 2, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Тип этажа', "registerid"=2, "type"=4, "parentid"=NULL, "referenceid"=8, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"=NULL, "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Тип этажа', "registerid"=2, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"=NULL, "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -9519,15 +9543,39 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(603, 'Тип помещения', 2, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Тип помещения', "registerid"=2, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"=NULL, "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(604, 'Кадастровый номер здания или сооружения, в котором расположено помещение', 2, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Кадастровый номер здания или сооружения, в котором расположено помещение', "registerid"=2, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"=NULL, "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(605, 'Кадастровый номер квартиры, в которой расположена комната', 2, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Кадастровый номер квартиры, в которой расположена комната', "registerid"=2, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"=NULL, "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(606, 'Номер на плане', 2, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Номер на плане', "registerid"=2, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"=NULL, "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (100100, 'ИД', 1, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='ИД', "registerid"=1, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"=NULL, "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(200100, 'ИД', 2, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+(200100, 'ИД', 2, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='ИД', "registerid"=2, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"=NULL, "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='ИД', "registerid"=2, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -13687,15 +13735,15 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50000100, NULL, 500, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+(50000100, 'Идентификатор', 500, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=500, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Идентификатор', "registerid"=500, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50000200, 'Префикс', 500, 4, NULL, NULL, 'PREFICS', NULL, NULL, NULL, NULL, NULL, 'Prefics', 0, NULL, NULL, NULL)
+(50000200, 'Префикс', 500, 4, NULL, NULL, 'PREFICS', NULL, NULL, NULL, 1, NULL, 'Prefics', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Префикс', "registerid"=500, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='PREFICS', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Prefics', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Префикс', "registerid"=500, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='PREFICS', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=1, "qscolumn"=NULL, "internal_name"='Prefics', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -13717,9 +13765,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50000600, 'Тип', 500, 4, NULL, 502, NULL, 'TYPE', NULL, NULL, NULL, NULL, 'Type', 1, NULL, NULL, NULL)
+(50000600, 'Тип', 500, 4, NULL, 502, NULL, 'TYPE', NULL, NULL, 2, NULL, 'Type', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Тип', "registerid"=500, "type"=4, "parentid"=NULL, "referenceid"=502, "value_field"=NULL, "code_field"='TYPE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Type', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Тип', "registerid"=500, "type"=4, "parentid"=NULL, "referenceid"=502, "value_field"=NULL, "code_field"='TYPE', "value_template"=NULL, "primary_key"=NULL, "user_key"=2, "qscolumn"=NULL, "internal_name"='Type', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -13759,9 +13807,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50100700, 'Входящий номер', 501, 4, NULL, NULL, 'NUM_IN', NULL, NULL, NULL, NULL, NULL, 'NumIn', 1, NULL, NULL, NULL)
+(50100700, 'Входящий номер', 501, 4, NULL, NULL, 'NUM_IN', NULL, NULL, NULL, 1, NULL, 'NumIn', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Входящий номер', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='NUM_IN', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='NumIn', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Входящий номер', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='NUM_IN', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=1, "qscolumn"=NULL, "internal_name"='NumIn', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -13777,15 +13825,15 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50101000, 'Статус декларации', 501, 1, NULL, NULL, 'STATUS', NULL, NULL, NULL, NULL, NULL, 'Status', 1, NULL, NULL, NULL)
+(50101000, 'Статус декларации', 501, 4, NULL, 505, NULL, 'STATUS', NULL, NULL, NULL, NULL, 'Status', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Статус декларации', "registerid"=501, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='STATUS', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Status', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус декларации', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=505, "value_field"=NULL, "code_field"='STATUS', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Status', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50101100, 'Кадастровый номер объекта', 501, 4, NULL, NULL, 'CADASTRAL_NUM_OBJ', NULL, NULL, NULL, NULL, NULL, 'CadastralNumObj', 1, NULL, NULL, NULL)
+(50101100, 'Кадастровый номер объекта', 501, 4, NULL, NULL, 'CADASTRAL_NUM_OBJ', NULL, NULL, NULL, 2, NULL, 'CadastralNumObj', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Кадастровый номер объекта', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='CADASTRAL_NUM_OBJ', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='CadastralNumObj', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Кадастровый номер объекта', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='CADASTRAL_NUM_OBJ', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=2, "qscolumn"=NULL, "internal_name"='CadastralNumObj', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -13891,21 +13939,21 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50102900, 'Номер документа, удостоверяющего полномочия  представителя заявителя ', 501, 4, NULL, NULL, 'СERTIFICATE_NUM', NULL, NULL, NULL, NULL, NULL, 'СertificateNum', 1, NULL, NULL, NULL)
+(50102900, 'Номер документа, удостоверяющего полномочия  представителя заявителя ', 501, 4, NULL, NULL, 'CERTIFICATE_NUM', NULL, NULL, NULL, NULL, NULL, 'CertificateNum', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Номер документа, удостоверяющего полномочия  представителя заявителя ', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='СERTIFICATE_NUM', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='СertificateNum', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Номер документа, удостоверяющего полномочия  представителя заявителя ', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='CERTIFICATE_NUM', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='CertificateNum', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50103000, 'Дата документа, удостоверяющего полномочия представителя заявителя ', 501, 5, NULL, NULL, 'СERTIFICATE_DATE', NULL, NULL, NULL, NULL, NULL, 'СertificateDate', 1, NULL, NULL, NULL)
+(50103000, 'Дата документа, удостоверяющего полномочия представителя заявителя ', 501, 5, NULL, NULL, 'CERTIFICATE_DATE', NULL, NULL, NULL, NULL, NULL, 'CertificateDate', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Дата документа, удостоверяющего полномочия представителя заявителя ', "registerid"=501, "type"=5, "parentid"=NULL, "referenceid"=NULL, "value_field"='СERTIFICATE_DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='СertificateDate', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Дата документа, удостоверяющего полномочия представителя заявителя ', "registerid"=501, "type"=5, "parentid"=NULL, "referenceid"=NULL, "value_field"='CERTIFICATE_DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='CertificateDate', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50103100, 'Название документа, удостоверяющего полномочия представителя заявителя ', 501, 4, NULL, NULL, 'СERTIFICATE_NAME', NULL, NULL, NULL, NULL, NULL, 'СertificateName', 1, NULL, NULL, NULL)
+(50103100, 'Название документа, удостоверяющего полномочия представителя заявителя ', 501, 4, NULL, NULL, 'CERTIFICATE_NAME', NULL, NULL, NULL, NULL, NULL, 'CertificateName', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Название документа, удостоверяющего полномочия представителя заявителя ', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='СERTIFICATE_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='СertificateName', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Название документа, удостоверяющего полномочия представителя заявителя ', "registerid"=501, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='CERTIFICATE_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='CertificateName', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -13927,9 +13975,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50200300, 'Вид объекта недвижимости ', 502, 4, NULL, NULL, 'HAR_1', NULL, NULL, NULL, NULL, NULL, 'Har_1', 1, NULL, NULL, NULL)
+(50200300, 'Вид объекта недвижимости ', 502, 4, NULL, NULL, 'HAR_1', NULL, NULL, NULL, 1, NULL, 'Har_1', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Вид объекта недвижимости ', "registerid"=502, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='HAR_1', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Har_1', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Вид объекта недвижимости ', "registerid"=502, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='HAR_1', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=1, "qscolumn"=NULL, "internal_name"='Har_1', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -14137,9 +14185,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50300300, 'Адрес земельного участка', 503, 4, NULL, NULL, 'HAR_1', NULL, NULL, NULL, NULL, NULL, 'Har_1', 1, NULL, NULL, NULL)
+(50300300, 'Адрес земельного участка', 503, 4, NULL, NULL, 'HAR_1', NULL, NULL, NULL, 1, NULL, 'Har_1', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Адрес земельного участка', "registerid"=503, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='HAR_1', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Har_1', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Адрес земельного участка', "registerid"=503, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='HAR_1', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=1, "qscolumn"=NULL, "internal_name"='Har_1', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -14353,12 +14401,6 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50400400, 'Статус декларации', 504, 4, NULL, 505, NULL, 'STATUS_DEC', NULL, NULL, NULL, NULL, 'StatusDec', 1, NULL, NULL, NULL)
-on conflict (id) do update set
-"name"='Статус декларации', "registerid"=504, "type"=4, "parentid"=NULL, "referenceid"=505, "value_field"=NULL, "code_field"='STATUS_DEC', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='StatusDec', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (50500100, NULL, 505, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"=NULL, "registerid"=505, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
@@ -14371,21 +14413,21 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50500300, 'Фамилия физического лица/представителя заявителя', 505, 4, NULL, NULL, 'F_NAME', NULL, NULL, NULL, NULL, NULL, 'F_Name', 1, NULL, NULL, NULL)
+(50500300, 'Фамилия физического лица/представителя заявителя', 505, 4, NULL, NULL, 'F_NAME', NULL, NULL, NULL, 1, NULL, 'F_Name', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Фамилия физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='F_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='F_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Фамилия физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='F_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=1, "qscolumn"=NULL, "internal_name"='F_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50500400, 'Имя, отчество физического лица/представителя заявителя', 505, 4, NULL, NULL, 'I_NAME', NULL, NULL, NULL, NULL, NULL, 'I_Name', 1, NULL, NULL, NULL)
+(50500400, 'Имя, отчество физического лица/представителя заявителя', 505, 4, NULL, NULL, 'I_NAME', NULL, NULL, NULL, 2, NULL, 'I_Name', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Имя, отчество физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='I_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='I_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Имя, отчество физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='I_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=2, "qscolumn"=NULL, "internal_name"='I_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50500500, 'Отчество физического лица/представителя заявителя', 505, 4, NULL, NULL, 'O_NAME', NULL, NULL, NULL, NULL, NULL, 'O_Name', 1, NULL, NULL, NULL)
+(50500500, 'Отчество физического лица/представителя заявителя', 505, 4, NULL, NULL, 'O_NAME', NULL, NULL, NULL, 3, NULL, 'O_Name', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Отчество физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='O_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='O_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Отчество физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='O_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=3, "qscolumn"=NULL, "internal_name"='O_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -14437,9 +14479,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50600400, 'Номер', 506, 4, NULL, NULL, 'NUM', NULL, NULL, NULL, NULL, NULL, 'Num', 1, NULL, NULL, NULL)
+(50600400, 'Номер', 506, 4, NULL, NULL, 'NUM', NULL, NULL, NULL, 1, NULL, 'Num', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Номер', "registerid"=506, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='NUM', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Num', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Номер', "registerid"=506, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='NUM', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=1, "qscolumn"=NULL, "internal_name"='Num', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -14449,9 +14491,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50600600, 'Тип уведомления', 506, 4, NULL, 504, NULL, 'TYPE', NULL, NULL, NULL, NULL, 'Type', 1, NULL, NULL, NULL)
+(50600600, 'Тип уведомления', 506, 4, NULL, 504, NULL, 'TYPE', NULL, NULL, 2, NULL, 'Type', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Тип уведомления', "registerid"=506, "type"=4, "parentid"=NULL, "referenceid"=504, "value_field"=NULL, "code_field"='TYPE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Type', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Тип уведомления', "registerid"=506, "type"=4, "parentid"=NULL, "referenceid"=504, "value_field"=NULL, "code_field"='TYPE', "value_template"=NULL, "primary_key"=NULL, "user_key"=2, "qscolumn"=NULL, "internal_name"='Type', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -19721,6 +19763,60 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(315, '205 - 212', 205, 212, NULL, 21200200, NULL)
+on conflict (id) do update set
+"name"='205 - 212', "parentregister"=205, "chieldregister"=212, "cardinality"=NULL, "kindid"=21200200, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(500, 'От Уведомления к Декларации', 501, 506, NULL, 50600200, NULL)
+on conflict (id) do update set
+"name"='От Уведомления к Декларации', "parentregister"=501, "chieldregister"=506, "cardinality"=NULL, "kindid"=50600200, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(501, 'От Уведомления к Книге', 500, 506, NULL, 50600300, NULL)
+on conflict (id) do update set
+"name"='От Уведомления к Книге', "parentregister"=500, "chieldregister"=506, "cardinality"=NULL, "kindid"=50600300, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(502, 'От Декларации к Польвателю', 950, 501, NULL, 50100500, NULL)
+on conflict (id) do update set
+"name"='От Декларации к Польвателю', "parentregister"=950, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100500, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(503, 'От Декларации к Книге', 500, 501, NULL, 50100200, NULL)
+on conflict (id) do update set
+"name"='От Декларации к Книге', "parentregister"=500, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100200, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(504, 'От Декларации к Субъекту', 505, 501, NULL, 50100400, NULL)
+on conflict (id) do update set
+"name"='От Декларации к Субъекту', "parentregister"=505, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100400, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(505, 'От Результата к Декларации', 501, 504, NULL, 50400100, NULL)
+on conflict (id) do update set
+"name"='От Результата к Декларации', "parentregister"=501, "chieldregister"=504, "cardinality"=NULL, "kindid"=50400100, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(506, 'От Характеристик ОКС к Декларации', 501, 502, NULL, 50200200, NULL)
+on conflict (id) do update set
+"name"='От Характеристик ОКС к Декларации', "parentregister"=501, "chieldregister"=502, "cardinality"=NULL, "kindid"=50200200, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
+(507, 'От Характеристик ЗУ к Декларации', 501, 503, NULL, 50300200, NULL)
+on conflict (id) do update set
+"name"='От Характеристик ЗУ к Декларации', "parentregister"=501, "chieldregister"=503, "cardinality"=NULL, "kindid"=50300200, "parentregister_attribute_id"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
 (913, 'От объекта списка к списку', 920, 921, NULL, 92100200, NULL)
 on conflict (id) do update set
 "name"='От объекта списка к списку', "parentregister"=920, "chieldregister"=921, "cardinality"=NULL, "kindid"=92100200, "parentregister_attribute_id"=NULL;
@@ -20036,6 +20132,12 @@ insert into core_long_process_type ("id", "process_name", "class_name", "descrip
 (6, 'DataImporterFromTemplate', 'KadOzenka.Dal.DataImport.DataImporter, KadOzenka.Dal', 'Фоновый импорт из Excel')
 on conflict (id) do update set
 "process_name"='DataImporterFromTemplate', "class_name"='KadOzenka.Dal.DataImport.DataImporter, KadOzenka.Dal', "description"='Фоновый импорт из Excel';
+
+--<DO>--
+insert into core_long_process_type ("id", "process_name", "class_name", "description") values
+(7, 'DataImporterSud', 'KadOzenka.Dal.DataImport.DataImporterSud, KadOzenka.Dal', 'Импорт объектов по судебным решениям из Excel')
+on conflict (id) do update set
+"process_name"='DataImporterSud', "class_name"='KadOzenka.Dal.DataImport.DataImporterSud, KadOzenka.Dal', "description"='Импорт объектов по судебным решениям из Excel';
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
@@ -20703,7 +20805,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1000975, 'Основная раскладка для списка текущих процессов', NULL, 975, 1002038, NULL, NULL, TO_TIMESTAMP('2019.11.21 18:38:20', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1000975, 'Основная раскладка для списка текущих процессов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 975, 1002038, NULL, NULL, TO_TIMESTAMP('2019.11.21 18:38:20', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>933</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -20724,7 +20826,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'DESC', 1, NULL, 0, NULL, NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для списка текущих процессов', "layoutcomment"=NULL, "registerid"=975, "defaultsort"=1002038, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.21 18:38:20', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для списка текущих процессов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=975, "defaultsort"=1002038, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.21 18:38:20', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>933</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -20747,7 +20849,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1000976, 'Основная раскладка для типов долгих процессов', NULL, 976, 1002054, NULL, NULL, TO_TIMESTAMP('2018.12.03 20:31:47', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1000976, 'Основная раскладка для типов долгих процессов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 976, 1002054, NULL, NULL, TO_TIMESTAMP('2018.12.03 20:31:47', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>933</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -20768,7 +20870,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'ASC', 1, NULL, 0, NULL, NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для типов долгих процессов', "layoutcomment"=NULL, "registerid"=976, "defaultsort"=1002054, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2018.12.03 20:31:47', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для типов долгих процессов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=976, "defaultsort"=1002054, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2018.12.03 20:31:47', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>933</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -20835,7 +20937,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1000980, 'Все сообщения (основная раскладка)', NULL, 980, 1100979, NULL, NULL, TO_TIMESTAMP('2019.02.01 15:07:53', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1000980, 'Все сообщения (основная раскладка)', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 980, 1100979, NULL, NULL, TO_TIMESTAMP('2019.02.01 15:07:53', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>980</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -20856,7 +20958,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'DESC', 1, NULL, 0, 'CoreMessages', NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Все сообщения (основная раскладка)', "layoutcomment"=NULL, "registerid"=980, "defaultsort"=1100979, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.02.01 15:07:53', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Все сообщения (основная раскладка)', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=980, "defaultsort"=1100979, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.02.01 15:07:53', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>980</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -20879,7 +20981,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1000981, 'Основная раскладка для адресатов сообщений', NULL, 981, NULL, NULL, NULL, TO_TIMESTAMP('2019.01.31 18:35:35', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1000981, 'Основная раскладка для адресатов сообщений', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 981, NULL, NULL, NULL, TO_TIMESTAMP('2019.01.31 18:35:35', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>981</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -20896,7 +20998,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 1, NULL, 0, 'CoreMessagesRecipients', NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для адресатов сообщений', "layoutcomment"=NULL, "registerid"=981, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.01.31 18:35:35', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для адресатов сообщений', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=981, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.01.31 18:35:35', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>981</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21181,7 +21283,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1001001, 'Основная раскладка для объектов аналогов', NULL, 100, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 21:12:33', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1001001, 'Основная раскладка для объектов аналогов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 100, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.11 16:09:52', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>100</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21222,7 +21324,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'MarketObjects', NULL, 2, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для объектов аналогов', "layoutcomment"=NULL, "registerid"=100, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 21:12:33', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для объектов аналогов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=100, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.11 16:09:52', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>100</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21265,7 +21367,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1002001, 'Основная раскладка для объектов', NULL, 200, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 17:47:02', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1002001, 'Основная раскладка для объектов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 200, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 17:47:02', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>200</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21282,7 +21384,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'GbuObjects', NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для объектов', "layoutcomment"=NULL, "registerid"=200, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 17:47:02', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для объектов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=200, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 17:47:02', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>200</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21301,7 +21403,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1002031, 'Основная раскладка для представления Задания на оценку', NULL, 203, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.26 14:26:26', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1002031, 'Основная раскладка для представления Задания на оценку', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 203, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.26 14:26:26', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>203</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21323,7 +21425,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'KoObjects', NULL, 0, 0)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для представления Задания на оценку', "layoutcomment"=NULL, "registerid"=203, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.26 14:26:26', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для представления Задания на оценку', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=203, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.26 14:26:26', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>203</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21347,7 +21449,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003001, 'Экспертное заключение', NULL, 300, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.26 09:52:05', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003001, 'Экспертное заключение', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 300, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.17 11:36:06', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>300</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21364,7 +21466,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudZak', NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Экспертное заключение', "layoutcomment"=NULL, "registerid"=300, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.26 09:52:05', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Экспертное заключение', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=300, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.17 11:36:06', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>300</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21383,7 +21485,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003021, 'Заключения объекта', NULL, 302, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 20:32:19', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003021, 'Заключения объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 302, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 20:32:19', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>302</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21421,7 +21523,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudZakLinkCard', NULL, NULL, 1)
 on conflict (layoutid) do update set
-"layoutname"='Заключения объекта', "layoutcomment"=NULL, "registerid"=302, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 20:32:19', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Заключения объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=302, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 20:32:19', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>302</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21461,7 +21563,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003041, 'Отчеты объекта', NULL, 304, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.04 14:45:28', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003041, 'Отчеты объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 304, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.11 17:12:47', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>304</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21503,7 +21605,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudOtchetLinkCard', NULL, NULL, 1)
 on conflict (layoutid) do update set
-"layoutname"='Отчеты объекта', "layoutcomment"=NULL, "registerid"=304, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.04 14:45:28', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Отчеты объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=304, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.11 17:12:47', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>304</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21547,7 +21649,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003042, 'Справочник отчетов', NULL, 308, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.25 17:05:46', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003042, 'Справочник отчетов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 308, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.17 13:04:24', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>308</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21562,9 +21664,9 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <GroupBy />
   <JoinType xsi:nil="true" />
   <LoadRelations>false</LoadRelations>
-</QSQuery>', 0, NULL, 0, NULL, 0, 'SudOtchetSelect', NULL, NULL, 1)
+</QSQuery>', 0, NULL, 0, NULL, 0, 'SudOtchet', NULL, NULL, 1)
 on conflict (layoutid) do update set
-"layoutname"='Справочник отчетов', "layoutcomment"=NULL, "registerid"=308, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.25 17:05:46', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Справочник отчетов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=308, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.17 13:04:24', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>308</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21579,11 +21681,11 @@ on conflict (layoutid) do update set
   <GroupBy />
   <JoinType xsi:nil="true" />
   <LoadRelations>false</LoadRelations>
-</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='SudOtchetSelect', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=1;
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='SudOtchet', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=1;
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003131, 'Список справочных значений', NULL, 313, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.12 18:26:21', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003131, 'Список справочных значений', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 313, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.12 18:26:21', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>313</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21600,7 +21702,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudDictOrganisations', NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Список справочных значений', "layoutcomment"=NULL, "registerid"=313, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.12 18:26:21', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Список справочных значений', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=313, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.12 18:26:21', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>313</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21619,7 +21721,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003141, 'Решения объекта', NULL, 314, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 20:32:55', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003141, 'Решения объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 314, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 20:32:55', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>314</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21657,7 +21759,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudReshLinkCard', NULL, NULL, 1)
 on conflict (layoutid) do update set
-"layoutname"='Решения объекта', "layoutcomment"=NULL, "registerid"=314, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 20:32:55', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Решения объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=314, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 20:32:55', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>314</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21697,7 +21799,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003151, 'Основная раскладка', NULL, 315, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 20:31:17', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003151, 'Основная раскладка', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 315, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 20:31:17', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>315</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21714,7 +21816,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 1, NULL, 0, 'SudObjects', NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка', "layoutcomment"=NULL, "registerid"=315, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 20:31:17', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=315, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 20:31:17', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>315</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21733,7 +21835,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003161, 'Судебные заседания', NULL, 316, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.26 10:01:05', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003161, 'Судебные заседания', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 316, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.17 11:37:08', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>316</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21750,7 +21852,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudResh', NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Судебные заседания', "layoutcomment"=NULL, "registerid"=316, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.26 10:01:05', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Судебные заседания', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=316, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.17 11:37:08', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>316</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21769,7 +21871,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1004001, 'Основная раскладка для представления Решения комиссии', NULL, 400, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.02 14:48:21', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1004001, 'Основная раскладка для представления Решения комиссии', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 400, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.11 15:45:56', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>400</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21786,7 +21888,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'CommissionCost', NULL, 0, 0)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для представления Решения комиссии', "layoutcomment"=NULL, "registerid"=400, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.02 14:48:21', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для представления Решения комиссии', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=400, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.11 15:45:56', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>400</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21805,7 +21907,43 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1005011, 'Основная для списка деклараций', NULL, 501, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.29 21:26:42', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1005001, 'Основная раскладка для списка книг', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 500, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.13 16:38:34', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>500</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'DeclarationsBook', NULL, NULL, 0)
+on conflict (layoutid) do update set
+"layoutname"='Основная раскладка для списка книг', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=500, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.13 16:38:34', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>500</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='DeclarationsBook', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1005011, 'Основная для списка деклараций', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 501, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.19 14:17:53', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>501</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21822,7 +21960,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'DeclarationsDeclaration', NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Основная для списка деклараций', "layoutcomment"=NULL, "registerid"=501, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.29 21:26:42', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная для списка деклараций', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=501, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.19 14:17:53', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>501</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21841,7 +21979,79 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1008001, 'Выгрузки по шаблону', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 800, 38, NULL, NULL, TO_TIMESTAMP('2019.11.06 21:57:48', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1005051, 'Основная раскладка для списка субъектов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 505, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.13 19:44:37', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>505</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'DeclarationsSubject', NULL, NULL, 0)
+on conflict (layoutid) do update set
+"layoutname"='Основная раскладка для списка субъектов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=505, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.13 19:44:37', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>505</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='DeclarationsSubject', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1005061, 'Раскладка для уведомлений декларации', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 506, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.19 14:27:37', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>506</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'DeclarationsUved', NULL, NULL, 0)
+on conflict (layoutid) do update set
+"layoutname"='Раскладка для уведомлений декларации', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=506, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.19 14:27:37', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>506</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='DeclarationsUved', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1008001, 'Выгрузки по шаблону', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 800, 1002207, NULL, NULL, TO_TIMESTAMP('2019.11.06 21:57:48', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>933</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -21858,7 +22068,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'DESC', 0, NULL, 0, NULL, NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Выгрузки по шаблону', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=800, "defaultsort"=38, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.06 21:57:48', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Выгрузки по шаблону', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=800, "defaultsort"=1002207, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.06 21:57:48', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>933</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -21877,7 +22087,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1008011, 'Журнал загрузки из шаблонов Excel Раскладка', NULL, 801, 44, NULL, NULL, TO_TIMESTAMP('2019.11.28 18:08:46', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1008011, 'Журнал загрузки из шаблонов Excel Раскладка', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 801, 1002210, NULL, NULL, TO_TIMESTAMP('2019.11.28 18:08:46', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>801</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -21899,7 +22109,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'DESC', 1, NULL, 1, 'DataImporter', NULL, NULL, 1)
 on conflict (layoutid) do update set
-"layoutname"='Журнал загрузки из шаблонов Excel Раскладка', "layoutcomment"=NULL, "registerid"=801, "defaultsort"=44, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.28 18:08:46', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Журнал загрузки из шаблонов Excel Раскладка', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=801, "defaultsort"=1002210, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.28 18:08:46', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>801</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -22585,7 +22795,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1009491, 'Сессии пользователя', NULL, 949, 1101043, NULL, NULL, TO_TIMESTAMP('2019.02.12 15:09:50', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1009491, 'Сессии пользователя', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 949, 1101043, NULL, NULL, TO_TIMESTAMP('2019.02.12 15:09:50', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>949</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -22606,7 +22816,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'DESC', 0, NULL, 0, 'CoreSRDUserSession', NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Сессии пользователя', "layoutcomment"=NULL, "registerid"=949, "defaultsort"=1101043, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.02.12 15:09:50', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Сессии пользователя', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=949, "defaultsort"=1101043, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.02.12 15:09:50', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>949</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -22673,7 +22883,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1009751, 'Журнал загрузки СК', NULL, 975, 1100836, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1009751, 'Журнал загрузки СК', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 975, 1100836, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>975</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -22727,7 +22937,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'ASC', 1, 'SkLoadFile', 0, NULL, NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Журнал загрузки СК', "layoutcomment"=NULL, "registerid"=975, "defaultsort"=1100836, "preffered"=NULL, "username"=NULL, "createdate"=NULL, "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Журнал загрузки СК', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=975, "defaultsort"=1100836, "preffered"=NULL, "username"=NULL, "createdate"=NULL, "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>975</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -22783,7 +22993,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1009752, 'Основная раскладка для процессов перерасчета признака страхования', NULL, 975, 1100957, NULL, NULL, TO_TIMESTAMP('2019.02.20 20:36:31', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1009752, 'Основная раскладка для процессов перерасчета признака страхования', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 975, 1100957, NULL, NULL, TO_TIMESTAMP('2019.02.20 20:36:31', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>975</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -22822,7 +23032,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'DESC', 0, NULL, 0, 'CoreLongProcessQueue', NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для процессов перерасчета признака страхования', "layoutcomment"=NULL, "registerid"=975, "defaultsort"=1100957, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.02.20 20:36:31', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для процессов перерасчета признака страхования', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=975, "defaultsort"=1100957, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.02.20 20:36:31', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>975</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -22863,7 +23073,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1009801, 'Только мои сообщения', NULL, 980, NULL, NULL, NULL, TO_TIMESTAMP('2019.02.05 12:35:18', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1009801, 'Только мои сообщения', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 980, NULL, NULL, NULL, TO_TIMESTAMP('2019.02.05 12:35:18', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>980</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -22884,7 +23094,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'CoreMessages', NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Только мои сообщения', "layoutcomment"=NULL, "registerid"=980, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.02.05 12:35:18', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Только мои сообщения', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=980, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.02.05 12:35:18', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>980</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -22907,7 +23117,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1009831, 'Основная раскладка для справочных значений', NULL, 983, NULL, NULL, NULL, TO_TIMESTAMP('2018.12.04 23:18:36', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1009831, 'Основная раскладка для справочных значений', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 983, NULL, NULL, NULL, TO_TIMESTAMP('2018.12.04 23:18:36', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>983</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -22924,7 +23134,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 1, NULL, 0, 'CoreSharedReferenceItem', NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для справочных значений', "layoutcomment"=NULL, "registerid"=983, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2018.12.04 23:18:36', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для справочных значений', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=983, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2018.12.04 23:18:36', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>983</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23738,1902 +23948,6 @@ on conflict (layoutid) do update set
   <SubMapRegisters />
   <LoadRelations>false</LoadRelations>
 </QSQuery>', "isdistinct"=0, "ordertype"='ASC', "iscommon"=1, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"=NULL, "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(5, 1001001, 0, 5, 10002500, NULL, NULL, 'Тип объекта недвижимости', 320, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=5, "attributeid"=10002500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта недвижимости', "headerwidth"=320, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(6, 1001001, 0, 9, 10002300, NULL, NULL, 'Источник', 100, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=9, "attributeid"=10002300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Источник', "headerwidth"=100, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(7, 1001001, 0, 6, 10002700, NULL, NULL, 'Цена объекта недвижимости', 150, 1, 'ZeroDecimalDigitsWithSeparator', 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, 'Right', NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=6, "attributeid"=10002700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Цена объекта недвижимости', "headerwidth"=150, "visible"=1, "format"='ZeroDecimalDigitsWithSeparator', "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='Right', "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(19, 1001001, 0, 8, 10003200, NULL, NULL, 'Метро', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=8, "attributeid"=10003200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Метро', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(23, 1002001, 0, 2, 20000300, NULL, NULL, 'Тип объекта', 320, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002001, "detailtype"=0, "ordinal"=2, "attributeid"=20000300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=320, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(32, 1001001, 2, 1, NULL, NULL, NULL, 'Столбец выбора', 40, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=2, "ordinal"=1, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Столбец выбора', "headerwidth"=40, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(36, 1008001, 0, 3, 80000500, NULL, NULL, 'Дата запуска', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008001, "detailtype"=0, "ordinal"=3, "attributeid"=80000500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата запуска', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(37, 1008001, 0, 4, 80000600, NULL, NULL, 'Дата завершения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008001, "detailtype"=0, "ordinal"=4, "attributeid"=80000600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата завершения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(38, 1008001, 0, 2, 80000400, NULL, NULL, 'Дата создания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008001, "detailtype"=0, "ordinal"=2, "attributeid"=80000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата создания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(39, 1008001, 0, 5, 80000700, NULL, NULL, 'Имя файла шаблона', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008001, "detailtype"=0, "ordinal"=5, "attributeid"=80000700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Имя файла шаблона', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(41, 1008001, 0, 7, 80001100, NULL, NULL, 'ИД основного реестра', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008001, "detailtype"=0, "ordinal"=7, "attributeid"=80001100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='ИД основного реестра', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(42, 1008001, 0, 8, 80001200, NULL, NULL, 'ИД представления реестра', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008001, "detailtype"=0, "ordinal"=8, "attributeid"=80001200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='ИД представления реестра', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(43, 1008011, 0, 1, 80100300, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Создано</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-edit</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>В работе</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-play</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Завершено</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-check</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Ошибка</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-close</ImagePath>
-      <Text />
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008011, "detailtype"=0, "ordinal"=1, "attributeid"=80100300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Создано</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-edit</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>В работе</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-play</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Завершено</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-check</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Ошибка</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-close</ImagePath>
-      <Text />
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(44, 1008011, 0, 2, 80100400, NULL, NULL, 'Дата создания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008011, "detailtype"=0, "ordinal"=2, "attributeid"=80100400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата создания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(45, 1008011, 0, 3, 80100500, NULL, NULL, 'Дата запуска', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008011, "detailtype"=0, "ordinal"=3, "attributeid"=80100500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата запуска', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(46, 1008011, 0, 4, 80100600, NULL, NULL, 'Дата завершения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008011, "detailtype"=0, "ordinal"=4, "attributeid"=80100600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата завершения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(47, 1008011, 0, 5, 80100700, NULL, NULL, 'Имя файла шаблона', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008011, "detailtype"=0, "ordinal"=5, "attributeid"=80100700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Имя файла шаблона', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(48, 1008011, 0, 7, 80101000, NULL, NULL, 'Результирующее сообщение', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008011, "detailtype"=0, "ordinal"=7, "attributeid"=80101000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Результирующее сообщение', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(60, 1008001, 0, 6, 95000400, NULL, NULL, 'Автор', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008001, "detailtype"=0, "ordinal"=6, "attributeid"=95000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Автор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(61, 1008011, 0, 6, 95000400, NULL, NULL, 'Автор', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1008011, "detailtype"=0, "ordinal"=6, "attributeid"=95000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Автор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(62, 1003151, 0, 3, 31500200, NULL, NULL, 'Кадастровый номер', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003151, "detailtype"=0, "ordinal"=3, "attributeid"=31500200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(80, 1008001, 3, 1, NULL, NULL, NULL, 'Статус', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Создано</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-edit</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>В работе</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-play</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Завершено</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-check</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Ошибка</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-close</ImagePath>
-      <Text />
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnSwitch">
-  <Alias>Колонка_1</Alias>
-  <ValueToCompare xsi:type="QSColumnSimple">
-    <Alias>Колонка_1</Alias>
-    <AttributeID>80000300</AttributeID>
-    <Type>Value</Type>
-    <Level>0</Level>
-  </ValueToCompare>
-  <Blocks>
-    <QSColumnSwitchBlock>
-      <ValueToCompare xsi:type="QSColumnConstant">
-        <Alias>Колонка_2</Alias>
-        <Value xsi:type="xsd:long">0</Value>
-      </ValueToCompare>
-      <Result xsi:type="QSColumnConstant">
-        <Alias>Колонка_3</Alias>
-        <Value xsi:type="xsd:string">Создано</Value>
-      </Result>
-    </QSColumnSwitchBlock>
-    <QSColumnSwitchBlock>
-      <ValueToCompare xsi:type="QSColumnConstant">
-        <Alias>Колонка_4</Alias>
-        <Value xsi:type="xsd:long">1</Value>
-      </ValueToCompare>
-      <Result xsi:type="QSColumnConstant">
-        <Alias>Колонка_5</Alias>
-        <Value xsi:type="xsd:string">В работе</Value>
-      </Result>
-    </QSColumnSwitchBlock>
-    <QSColumnSwitchBlock>
-      <ValueToCompare xsi:type="QSColumnConstant">
-        <Alias>Колонка_6</Alias>
-        <Value xsi:type="xsd:long">2</Value>
-      </ValueToCompare>
-      <Result xsi:type="QSColumnConstant">
-        <Alias>Колонка_7</Alias>
-        <Value xsi:type="xsd:string">Завершено</Value>
-      </Result>
-    </QSColumnSwitchBlock>
-    <QSColumnSwitchBlock>
-      <ValueToCompare xsi:type="QSColumnConstant">
-        <Alias>Колонка_8</Alias>
-        <Value xsi:type="xsd:long">3</Value>
-      </ValueToCompare>
-      <Result xsi:type="QSColumnConstant">
-        <Alias>Колонка_9</Alias>
-        <Value xsi:type="xsd:string">Ошибка</Value>
-      </Result>
-    </QSColumnSwitchBlock>
-  </Blocks>
-</QSColumn>', NULL)
-on conflict (id) do update set
-"layoutid"=1008001, "detailtype"=3, "ordinal"=1, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Создано</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-edit</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>В работе</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-play</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Завершено</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-check</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Ошибка</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-close</ImagePath>
-      <Text />
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
-<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnSwitch">
-  <Alias>Колонка_1</Alias>
-  <ValueToCompare xsi:type="QSColumnSimple">
-    <Alias>Колонка_1</Alias>
-    <AttributeID>80000300</AttributeID>
-    <Type>Value</Type>
-    <Level>0</Level>
-  </ValueToCompare>
-  <Blocks>
-    <QSColumnSwitchBlock>
-      <ValueToCompare xsi:type="QSColumnConstant">
-        <Alias>Колонка_2</Alias>
-        <Value xsi:type="xsd:long">0</Value>
-      </ValueToCompare>
-      <Result xsi:type="QSColumnConstant">
-        <Alias>Колонка_3</Alias>
-        <Value xsi:type="xsd:string">Создано</Value>
-      </Result>
-    </QSColumnSwitchBlock>
-    <QSColumnSwitchBlock>
-      <ValueToCompare xsi:type="QSColumnConstant">
-        <Alias>Колонка_4</Alias>
-        <Value xsi:type="xsd:long">1</Value>
-      </ValueToCompare>
-      <Result xsi:type="QSColumnConstant">
-        <Alias>Колонка_5</Alias>
-        <Value xsi:type="xsd:string">В работе</Value>
-      </Result>
-    </QSColumnSwitchBlock>
-    <QSColumnSwitchBlock>
-      <ValueToCompare xsi:type="QSColumnConstant">
-        <Alias>Колонка_6</Alias>
-        <Value xsi:type="xsd:long">2</Value>
-      </ValueToCompare>
-      <Result xsi:type="QSColumnConstant">
-        <Alias>Колонка_7</Alias>
-        <Value xsi:type="xsd:string">Завершено</Value>
-      </Result>
-    </QSColumnSwitchBlock>
-    <QSColumnSwitchBlock>
-      <ValueToCompare xsi:type="QSColumnConstant">
-        <Alias>Колонка_8</Alias>
-        <Value xsi:type="xsd:long">3</Value>
-      </ValueToCompare>
-      <Result xsi:type="QSColumnConstant">
-        <Alias>Колонка_9</Alias>
-        <Value xsi:type="xsd:string">Ошибка</Value>
-      </Result>
-    </QSColumnSwitchBlock>
-  </Blocks>
-</QSColumn>', "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(82, 1003151, 0, 5, 31500900, NULL, NULL, 'Адрес', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003151, "detailtype"=0, "ordinal"=5, "attributeid"=31500900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Адрес', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(83, 1003151, 0, 6, 31500400, NULL, NULL, 'Площадь, кв.', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003151, "detailtype"=0, "ordinal"=6, "attributeid"=31500400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Площадь, кв.', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(84, 1003151, 0, 7, 31500300, NULL, NULL, 'Дата определения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003151, "detailtype"=0, "ordinal"=7, "attributeid"=31500300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата определения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(85, 1003151, 0, 8, 31500500, NULL, NULL, 'Оспариваемая КС', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003151, "detailtype"=0, "ordinal"=8, "attributeid"=31500500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Оспариваемая КС', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(89, 1003041, 0, 1, 30400500, NULL, NULL, 'Рыночная стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003041, "detailtype"=0, "ordinal"=1, "attributeid"=30400500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Рыночная стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(90, 1003041, 0, 2, 30400600, NULL, NULL, 'Удельная стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003041, "detailtype"=0, "ordinal"=2, "attributeid"=30400600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Удельная стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(91, 1003042, 0, 2, 30800300, NULL, NULL, 'Дата отчета', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003042, "detailtype"=0, "ordinal"=2, "attributeid"=30800300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата отчета', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(92, 1003042, 0, 3, 30800700, NULL, NULL, 'Дата получения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003042, "detailtype"=0, "ordinal"=3, "attributeid"=30800700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата получения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(94, 1003042, 0, 4, 30800500, NULL, NULL, 'ФИО оценщика', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003042, "detailtype"=0, "ordinal"=4, "attributeid"=30800500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='ФИО оценщика', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(98, 1003021, 0, 1, 30200500, NULL, NULL, 'Рыночная стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003021, "detailtype"=0, "ordinal"=1, "attributeid"=30200500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Рыночная стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(99, 1003021, 0, 2, 30200400, NULL, NULL, 'Текущее использование', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003021, "detailtype"=0, "ordinal"=2, "attributeid"=30200400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Текущее использование', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(100, 1003021, 0, 3, 30200600, NULL, NULL, 'Удельная стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003021, "detailtype"=0, "ordinal"=3, "attributeid"=30200600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Удельная стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(101, 1003141, 0, 1, 31400500, NULL, NULL, 'Рыночная стоимость по судебному решению', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003141, "detailtype"=0, "ordinal"=1, "attributeid"=31400500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Рыночная стоимость по судебному решению', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(102, 1003141, 0, 2, 31400600, NULL, NULL, 'Удельный показатель', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003141, "detailtype"=0, "ordinal"=2, "attributeid"=31400600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Удельный показатель', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(103, 1003141, 0, 3, 31400700, NULL, NULL, 'Примечание', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003141, "detailtype"=0, "ordinal"=3, "attributeid"=31400700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Примечание', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(104, 1003131, 0, 1, 31300300, NULL, NULL, 'Наименование', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003131, "detailtype"=0, "ordinal"=1, "attributeid"=31300300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Наименование', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(106, 1004001, 0, 2, 40000400, NULL, NULL, 'Оспариваемая кадастровая стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=2, "attributeid"=40000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Оспариваемая кадастровая стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(107, 1004001, 0, 3, 40000700, NULL, NULL, 'Дата заявления', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=3, "attributeid"=40000700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата заявления', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(108, 1004001, 0, 4, 40000600, NULL, NULL, 'Номер заявления', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=4, "attributeid"=40000600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер заявления', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(109, 1004001, 0, 5, 40000800, NULL, NULL, 'Статус заявителя', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=5, "attributeid"=40000800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус заявителя', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(110, 1004001, 0, 6, 40001100, NULL, NULL, 'Решение комиссии', 200, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=6, "attributeid"=40001100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Решение комиссии', "headerwidth"=200, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(111, 1004001, 0, 7, 40000900, NULL, NULL, 'Номер решения', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=7, "attributeid"=40000900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер решения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(112, 1004001, 0, 8, 40001300, NULL, NULL, 'Кадастровая стоимость по решению', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=8, "attributeid"=40001300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровая стоимость по решению', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(114, 1004001, 0, 9, 40001000, NULL, NULL, 'Дата решения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=9, "attributeid"=40001000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата решения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(119, 1004001, 0, 10, 40001200, NULL, NULL, 'Рыночная стоимость после оспаривания', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=10, "attributeid"=40001200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Рыночная стоимость после оспаривания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(120, 1004001, 0, 11, 40001400, NULL, NULL, 'Группа после оспаривания', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=11, "attributeid"=40001400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Группа после оспаривания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(121, 1003161, 0, 1, 31600300, NULL, NULL, 'Номер судебного дела', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003161, "detailtype"=0, "ordinal"=1, "attributeid"=31600300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер судебного дела', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(122, 1003161, 0, 2, 31600400, NULL, NULL, 'Дата заседания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003161, "detailtype"=0, "ordinal"=2, "attributeid"=31600400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата заседания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(123, 1003001, 0, 1, 30000200, NULL, NULL, 'Номер заключения', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003001, "detailtype"=0, "ordinal"=1, "attributeid"=30000200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер заключения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(124, 1003001, 0, 2, 30000300, NULL, NULL, 'Дата заключения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003001, "detailtype"=0, "ordinal"=2, "attributeid"=30000300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата заключения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(125, 1003151, 0, 1, 31501100, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003151, "detailtype"=0, "ordinal"=1, "attributeid"=31501100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(127, 1001001, 0, 3, 10003600, NULL, NULL, 'Тип сделки', 170, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=3, "attributeid"=10003600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип сделки', "headerwidth"=170, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(128, 1001001, 0, 4, 10007000, NULL, NULL, 'Сегмент рынка недвижимости', 400, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=4, "attributeid"=10007000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Сегмент рынка недвижимости', "headerwidth"=400, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(130, 1004001, 0, 12, 40000500, NULL, NULL, 'Дата определения кадастровой стоимости', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=12, "attributeid"=40000500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата определения кадастровой стоимости', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(131, 1004001, 0, 1, 40000100, NULL, NULL, 'Идентификатор', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1004001, "detailtype"=0, "ordinal"=1, "attributeid"=40000100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(145, 1002001, 0, 3, 6, NULL, NULL, 'Кадастровая стоимость', 200, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002001, "detailtype"=0, "ordinal"=3, "attributeid"=6, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровая стоимость', "headerwidth"=200, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(150, 1002001, 0, 5, 8, NULL, NULL, 'Местоположение', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002001, "detailtype"=0, "ordinal"=5, "attributeid"=8, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Местоположение', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(158, 1002001, 0, 4, 2, NULL, NULL, 'Площадь', 150, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002001, "detailtype"=0, "ordinal"=4, "attributeid"=2, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Площадь', "headerwidth"=150, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(168, 1000975, 0, 1, 97500900, NULL, NULL, 'Статус', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1000975, "detailtype"=0, "ordinal"=1, "attributeid"=97500900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"=NULL, "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(169, 1003151, 0, 4, 31501000, NULL, NULL, 'Тип объекта', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003151, "detailtype"=0, "ordinal"=4, "attributeid"=31501000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(171, 1003151, 0, 2, 30501100, NULL, NULL, 'Анализ', NULL, 1, NULL, 3, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>1</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Да</Text>
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>0</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Нет</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003151, "detailtype"=0, "ordinal"=2, "attributeid"=30501100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Анализ', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=3, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>1</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Да</Text>
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>0</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Нет</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(172, 1003041, 0, 3, 30600800, NULL, NULL, 'Статус', NULL, 1, NULL, 3, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>1</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Да</Text>
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>0</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Нет</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003041, "detailtype"=0, "ordinal"=3, "attributeid"=30600800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=3, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>1</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Да</Text>
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>0</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Нет</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(173, 1003021, 0, 4, 31100800, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>1</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Да</Text>
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>0</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Нет</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003021, "detailtype"=0, "ordinal"=4, "attributeid"=31100800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>1</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Да</Text>
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>0</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Нет</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(174, 1003141, 0, 4, 30900800, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>1</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Да</Text>
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>0</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Нет</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003141, "detailtype"=0, "ordinal"=4, "attributeid"=30900800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>1</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Да</Text>
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>0</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>Нет</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(175, 1003042, 0, 5, 30700900, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003042, "detailtype"=0, "ordinal"=5, "attributeid"=30700900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(176, 1003001, 0, 3, 31201300, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003001, "detailtype"=0, "ordinal"=3, "attributeid"=31201300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(177, 1003161, 0, 3, 31000600, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003161, "detailtype"=0, "ordinal"=3, "attributeid"=31000600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(178, 1002031, 0, 1, 20300200, NULL, NULL, 'Дата создания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=1, "attributeid"=20300200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата создания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(179, 1002031, 0, 2, 20300100, NULL, NULL, 'Идентификатор', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=2, "attributeid"=20300100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(180, 1002031, 0, 3, 20300300, NULL, NULL, 'Идентификатор входящего документа', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=3, "attributeid"=20300300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор входящего документа', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(181, 1002031, 0, 4, 20300600, NULL, NULL, 'Идентификатор исходящего документа', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=4, "attributeid"=20300600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор исходящего документа', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(182, 1002031, 0, 5, 20300500, NULL, NULL, 'Идентификатор тура', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=5, "attributeid"=20300500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор тура', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(183, 1002031, 0, 6, 20300700, NULL, NULL, 'Статус', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=6, "attributeid"=20300700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(184, 1002031, 0, 7, 20300400, NULL, NULL, 'Тип статьи', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=7, "attributeid"=20300400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип статьи', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(186, 1008011, 3, 8, NULL, NULL, NULL, 'Реестр', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
-  <Alias>Реестр</Alias>
-  <SubQuery>
-    <MainRegisterID>930</MainRegisterID>
-    <TDInstanceID>0</TDInstanceID>
-    <Columns>
-      <QSColumn xsi:type="QSColumnSimple">
-        <Alias>Колонка_1</Alias>
-        <AttributeID>93000300</AttributeID>
-        <Type>Value</Type>
-        <Level>0</Level>
-      </QSColumn>
-    </Columns>
-    <Condition xsi:type="QSConditionGroup">
-      <Type>And</Type>
-      <Conditions>
-        <QSCondition xsi:type="QSConditionSimple">
-          <ConditionType>Equal</ConditionType>
-          <LeftOperand xsi:type="QSColumnSimple">
-            <Alias>Колонка_2</Alias>
-            <AttributeID>93000100</AttributeID>
-            <Type>Value</Type>
-            <Level>0</Level>
-          </LeftOperand>
-          <LeftOperandLevel>0</LeftOperandLevel>
-          <RightOperand xsi:type="QSColumnSimple">
-            <Alias>Колонка_3</Alias>
-            <AttributeID>80101100</AttributeID>
-            <Type>Value</Type>
-            <Level>1</Level>
-          </RightOperand>
-          <RightOperandLevel>0</RightOperandLevel>
-        </QSCondition>
-      </Conditions>
-    </Condition>
-    <ActualDate>0001-01-01T00:00:00</ActualDate>
-    <IsActual>false</IsActual>
-    <Distinct>false</Distinct>
-    <ManualJoin>false</ManualJoin>
-    <PackageSize>0</PackageSize>
-    <PackageIndex>0</PackageIndex>
-    <OrderBy />
-    <GroupBy />
-    <JoinType>Inner</JoinType>
-    <Joins />
-    <LoadRelations>false</LoadRelations>
-  </SubQuery>
-</QSColumn>', NULL)
-on conflict (id) do update set
-"layoutid"=1008011, "detailtype"=3, "ordinal"=8, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Реестр', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"=NULL, "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
-<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
-  <Alias>Реестр</Alias>
-  <SubQuery>
-    <MainRegisterID>930</MainRegisterID>
-    <TDInstanceID>0</TDInstanceID>
-    <Columns>
-      <QSColumn xsi:type="QSColumnSimple">
-        <Alias>Колонка_1</Alias>
-        <AttributeID>93000300</AttributeID>
-        <Type>Value</Type>
-        <Level>0</Level>
-      </QSColumn>
-    </Columns>
-    <Condition xsi:type="QSConditionGroup">
-      <Type>And</Type>
-      <Conditions>
-        <QSCondition xsi:type="QSConditionSimple">
-          <ConditionType>Equal</ConditionType>
-          <LeftOperand xsi:type="QSColumnSimple">
-            <Alias>Колонка_2</Alias>
-            <AttributeID>93000100</AttributeID>
-            <Type>Value</Type>
-            <Level>0</Level>
-          </LeftOperand>
-          <LeftOperandLevel>0</LeftOperandLevel>
-          <RightOperand xsi:type="QSColumnSimple">
-            <Alias>Колонка_3</Alias>
-            <AttributeID>80101100</AttributeID>
-            <Type>Value</Type>
-            <Level>1</Level>
-          </RightOperand>
-          <RightOperandLevel>0</RightOperandLevel>
-        </QSCondition>
-      </Conditions>
-    </Condition>
-    <ActualDate>0001-01-01T00:00:00</ActualDate>
-    <IsActual>false</IsActual>
-    <Distinct>false</Distinct>
-    <ManualJoin>false</ManualJoin>
-    <PackageSize>0</PackageSize>
-    <PackageIndex>0</PackageIndex>
-    <OrderBy />
-    <GroupBy />
-    <JoinType>Inner</JoinType>
-    <Joins />
-    <LoadRelations>false</LoadRelations>
-  </SubQuery>
-</QSColumn>', "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(221, 1001001, 3, 10, NULL, NULL, NULL, 'Карта', 60, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/Map?objectId=[10002000]" Target="Blank" IsNotNull="false" />
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Ссылка на карту</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-hyperlink-globe</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>&amp;nbsp;</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', NULL, 'Center', '<?xml version="1.0" encoding="utf-16"?>
-<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
-	<Alias>Карта</Alias>
-	<Blocks>
-		<QSColumnIfBlock>
-			<Condition xsi:type="QSConditionGroup">
-				<Type>And</Type>
-				<Conditions>
-					<QSCondition xsi:type="QSConditionSimple">
-						<ConditionType>NotEqual</ConditionType>
-						<LeftOperand xsi:type="QSColumnSimple">
-							<Alias>Колонка_1</Alias>
-							<AttributeID>10002300</AttributeID>
-							<Type>Code</Type>
-							<Level>0</Level>
-						</LeftOperand>
-						<LeftOperandLevel>0</LeftOperandLevel>
-						<RightOperand xsi:type="QSColumnConstant">
-							<Alias>Колонка_2</Alias>
-							<Value xsi:type="xsd:long">737</Value>
-						</RightOperand>
-						<RightOperandLevel>0</RightOperandLevel>
-					</QSCondition>
-					<QSCondition xsi:type="QSConditionSimple">
-						<ConditionType>Equal</ConditionType>
-						<LeftOperand xsi:type="QSColumnSimple">
-							<Alias>Колонка_3</Alias>
-							<AttributeID>10006000</AttributeID>
-							<Type>Code</Type>
-							<Level>0</Level>
-						</LeftOperand>
-						<LeftOperandLevel>0</LeftOperandLevel>
-						<RightOperand xsi:type="QSColumnConstant">
-							<Alias>Колонка_4</Alias>
-							<Value xsi:type="xsd:long">741</Value>
-						</RightOperand>
-						<RightOperandLevel>0</RightOperandLevel>
-					</QSCondition>
-				</Conditions>
-			</Condition>
-			<Result xsi:type="QSColumnConstant">
-				<Alias>Колонка_6</Alias>
-				<Value xsi:type="xsd:string">Ссылка на карту</Value>
-			</Result>
-		</QSColumnIfBlock>
-		<QSColumnIfBlock>
-			<Result xsi:type="QSColumnConstant">
-				<Alias>Колонка_7</Alias>
-			</Result>
-		</QSColumnIfBlock>
-	</Blocks>
-</QSColumn>', NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=3, "ordinal"=10, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Карта', "headerwidth"=60, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/Map?objectId=[10002000]" Target="Blank" IsNotNull="false" />
-  <Conditions>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <Value>Ссылка на карту</Value>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath>k-i-hyperlink-globe</ImagePath>
-      <Text />
-    </StyleConditionItem>
-    <StyleConditionItem>
-      <Id>0</Id>
-      <Condition>равно</Condition>
-      <ValueId>0</ValueId>
-      <Bold>false</Bold>
-      <Underline>false</Underline>
-      <Strikethru>false</Strikethru>
-      <Italic>false</Italic>
-      <ImagePath />
-      <Text>&amp;nbsp;</Text>
-    </StyleConditionItem>
-  </Conditions>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='Center', "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
-<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
-	<Alias>Карта</Alias>
-	<Blocks>
-		<QSColumnIfBlock>
-			<Condition xsi:type="QSConditionGroup">
-				<Type>And</Type>
-				<Conditions>
-					<QSCondition xsi:type="QSConditionSimple">
-						<ConditionType>NotEqual</ConditionType>
-						<LeftOperand xsi:type="QSColumnSimple">
-							<Alias>Колонка_1</Alias>
-							<AttributeID>10002300</AttributeID>
-							<Type>Code</Type>
-							<Level>0</Level>
-						</LeftOperand>
-						<LeftOperandLevel>0</LeftOperandLevel>
-						<RightOperand xsi:type="QSColumnConstant">
-							<Alias>Колонка_2</Alias>
-							<Value xsi:type="xsd:long">737</Value>
-						</RightOperand>
-						<RightOperandLevel>0</RightOperandLevel>
-					</QSCondition>
-					<QSCondition xsi:type="QSConditionSimple">
-						<ConditionType>Equal</ConditionType>
-						<LeftOperand xsi:type="QSColumnSimple">
-							<Alias>Колонка_3</Alias>
-							<AttributeID>10006000</AttributeID>
-							<Type>Code</Type>
-							<Level>0</Level>
-						</LeftOperand>
-						<LeftOperandLevel>0</LeftOperandLevel>
-						<RightOperand xsi:type="QSColumnConstant">
-							<Alias>Колонка_4</Alias>
-							<Value xsi:type="xsd:long">741</Value>
-						</RightOperand>
-						<RightOperandLevel>0</RightOperandLevel>
-					</QSCondition>
-				</Conditions>
-			</Condition>
-			<Result xsi:type="QSColumnConstant">
-				<Alias>Колонка_6</Alias>
-				<Value xsi:type="xsd:string">Ссылка на карту</Value>
-			</Result>
-		</QSColumnIfBlock>
-		<QSColumnIfBlock>
-			<Result xsi:type="QSColumnConstant">
-				<Alias>Колонка_7</Alias>
-			</Result>
-		</QSColumnIfBlock>
-	</Blocks>
-</QSColumn>', "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(288, 1005011, 0, 1, 50101100, NULL, NULL, 'Кадастровый номер объекта', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1005011, "detailtype"=0, "ordinal"=1, "attributeid"=50101100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер объекта', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(289, 1005011, 0, 2, 50101200, NULL, NULL, 'Тип объекта', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1005011, "detailtype"=0, "ordinal"=2, "attributeid"=50101200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(290, 1001001, 0, 2, 10002000, NULL, NULL, 'Номер', 100, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=2, "attributeid"=10002000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер', "headerwidth"=100, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(292, 1002001, 0, 1, 20000100, NULL, NULL, 'Номер', 100, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002001, "detailtype"=0, "ordinal"=1, "attributeid"=20000100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер', "headerwidth"=100, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(294, 1001001, 0, 7, 10002701, NULL, NULL, 'Цена за кв. м', 150, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=7, "attributeid"=10002701, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Цена за кв. м', "headerwidth"=150, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(310, 1003041, 0, 4, 30800200, NULL, NULL, 'Номер отчета', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1003041, "detailtype"=0, "ordinal"=4, "attributeid"=30800200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер отчета', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
@@ -31173,6 +29487,2906 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002196, 1002001, 0, 3, 6, NULL, NULL, 'Кадастровая стоимость', 200, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002001, "detailtype"=0, "ordinal"=3, "attributeid"=6, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровая стоимость', "headerwidth"=200, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002197, 1002001, 0, 2, 20000300, NULL, NULL, 'Тип объекта', 320, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002001, "detailtype"=0, "ordinal"=2, "attributeid"=20000300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=320, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002198, 1002001, 0, 5, 8, NULL, NULL, 'Местоположение', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002001, "detailtype"=0, "ordinal"=5, "attributeid"=8, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Местоположение', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002199, 1002001, 0, 4, 2, NULL, NULL, 'Площадь', 150, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002001, "detailtype"=0, "ordinal"=4, "attributeid"=2, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Площадь', "headerwidth"=150, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002200, 1005001, 0, 3, 50000400, NULL, NULL, 'Дата окончания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005001, "detailtype"=0, "ordinal"=3, "attributeid"=50000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата окончания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002201, 1005001, 0, 4, 50000500, NULL, NULL, 'Статус', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005001, "detailtype"=0, "ordinal"=4, "attributeid"=50000500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002202, 1005001, 0, 5, 50000600, NULL, NULL, 'Тип', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005001, "detailtype"=0, "ordinal"=5, "attributeid"=50000600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002203, 1001001, 0, 11, 10002701, NULL, NULL, 'Цена за кв. м', 150, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=11, "attributeid"=10002701, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Цена за кв. м', "headerwidth"=150, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002204, 1005001, 0, 6, 50000100, NULL, NULL, NULL, NULL, 0, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005001, "detailtype"=0, "ordinal"=6, "attributeid"=50000100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"=NULL, "headerwidth"=NULL, "visible"=0, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002205, 1001001, 0, 13, 10002300, NULL, NULL, 'Источник', 100, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=13, "attributeid"=10002300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Источник', "headerwidth"=100, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002206, 1001001, 2, 1, NULL, NULL, NULL, 'Столбец выбора', 40, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=2, "ordinal"=1, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Столбец выбора', "headerwidth"=40, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002207, 1008001, 0, 2, 80000400, NULL, NULL, 'Дата создания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008001, "detailtype"=0, "ordinal"=2, "attributeid"=80000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата создания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002208, 1008001, 0, 3, 80000500, NULL, NULL, 'Дата запуска', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008001, "detailtype"=0, "ordinal"=3, "attributeid"=80000500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата запуска', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002209, 1001001, 0, 9, 10002500, NULL, NULL, 'Тип объекта недвижимости', 320, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=9, "attributeid"=10002500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта недвижимости', "headerwidth"=320, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002210, 1008011, 0, 2, 80100400, NULL, NULL, 'Дата создания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008011, "detailtype"=0, "ordinal"=2, "attributeid"=80100400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата создания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002211, 1008011, 0, 3, 80100500, NULL, NULL, 'Дата запуска', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008011, "detailtype"=0, "ordinal"=3, "attributeid"=80100500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата запуска', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002212, 1008011, 0, 4, 80100600, NULL, NULL, 'Дата завершения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008011, "detailtype"=0, "ordinal"=4, "attributeid"=80100600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата завершения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002213, 1008011, 0, 5, 80100700, NULL, NULL, 'Имя файла шаблона', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008011, "detailtype"=0, "ordinal"=5, "attributeid"=80100700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Имя файла шаблона', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002214, 1005051, 0, 2, 50500300, NULL, NULL, 'Фамилия', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005051, "detailtype"=0, "ordinal"=2, "attributeid"=50500300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Фамилия', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002215, 1005051, 0, 3, 50500400, NULL, NULL, 'Имя', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005051, "detailtype"=0, "ordinal"=3, "attributeid"=50500400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Имя', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002216, 1008001, 0, 7, 80001100, NULL, NULL, 'ИД основного реестра', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008001, "detailtype"=0, "ordinal"=7, "attributeid"=80001100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='ИД основного реестра', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002217, 1008001, 0, 4, 80000600, NULL, NULL, 'Дата завершения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008001, "detailtype"=0, "ordinal"=4, "attributeid"=80000600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата завершения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002218, 1008001, 0, 8, 80001200, NULL, NULL, 'ИД представления реестра', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008001, "detailtype"=0, "ordinal"=8, "attributeid"=80001200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='ИД представления реестра', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002219, 1008001, 0, 5, 80000700, NULL, NULL, 'Имя файла шаблона', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008001, "detailtype"=0, "ordinal"=5, "attributeid"=80000700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Имя файла шаблона', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002220, 1008011, 0, 7, 80101000, NULL, NULL, 'Результирующее сообщение', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008011, "detailtype"=0, "ordinal"=7, "attributeid"=80101000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Результирующее сообщение', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002221, 1005051, 0, 4, 50500500, NULL, NULL, 'Отчество', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005051, "detailtype"=0, "ordinal"=4, "attributeid"=50500500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Отчество', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002222, 1008011, 0, 6, 95000400, NULL, NULL, 'Автор', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008011, "detailtype"=0, "ordinal"=6, "attributeid"=95000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Автор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002223, 1005051, 0, 5, 50500600, NULL, NULL, 'Адрес', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005051, "detailtype"=0, "ordinal"=5, "attributeid"=50500600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Адрес', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002224, 1005011, 0, 5, 50100900, NULL, NULL, 'Срок', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=0, "ordinal"=5, "attributeid"=50100900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Срок', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002225, 1008001, 0, 6, 95000400, NULL, NULL, 'Автор', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008001, "detailtype"=0, "ordinal"=6, "attributeid"=95000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Автор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002226, 1003151, 0, 3, 31500200, NULL, NULL, 'Кадастровый номер', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003151, "detailtype"=0, "ordinal"=3, "attributeid"=31500200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002227, 1003141, 0, 4, 30900800, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003141, "detailtype"=0, "ordinal"=4, "attributeid"=30900800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002228, 1008001, 3, 1, NULL, NULL, NULL, 'Статус', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Создано</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-edit</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>В работе</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-play</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Завершено</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Ошибка</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-close</ImagePath>
+      <Text />
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnSwitch">
+  <Alias>Колонка_1</Alias>
+  <ValueToCompare xsi:type="QSColumnSimple">
+    <Alias>Колонка_1</Alias>
+    <AttributeID>80000300</AttributeID>
+    <Type>Value</Type>
+    <Level>0</Level>
+  </ValueToCompare>
+  <Blocks>
+    <QSColumnSwitchBlock>
+      <ValueToCompare xsi:type="QSColumnConstant">
+        <Alias>Колонка_2</Alias>
+        <Value xsi:type="xsd:long">0</Value>
+      </ValueToCompare>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_3</Alias>
+        <Value xsi:type="xsd:string">Создано</Value>
+      </Result>
+    </QSColumnSwitchBlock>
+    <QSColumnSwitchBlock>
+      <ValueToCompare xsi:type="QSColumnConstant">
+        <Alias>Колонка_4</Alias>
+        <Value xsi:type="xsd:long">1</Value>
+      </ValueToCompare>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_5</Alias>
+        <Value xsi:type="xsd:string">В работе</Value>
+      </Result>
+    </QSColumnSwitchBlock>
+    <QSColumnSwitchBlock>
+      <ValueToCompare xsi:type="QSColumnConstant">
+        <Alias>Колонка_6</Alias>
+        <Value xsi:type="xsd:long">2</Value>
+      </ValueToCompare>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_7</Alias>
+        <Value xsi:type="xsd:string">Завершено</Value>
+      </Result>
+    </QSColumnSwitchBlock>
+    <QSColumnSwitchBlock>
+      <ValueToCompare xsi:type="QSColumnConstant">
+        <Alias>Колонка_8</Alias>
+        <Value xsi:type="xsd:long">3</Value>
+      </ValueToCompare>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_9</Alias>
+        <Value xsi:type="xsd:string">Ошибка</Value>
+      </Result>
+    </QSColumnSwitchBlock>
+  </Blocks>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1008001, "detailtype"=3, "ordinal"=1, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Создано</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-edit</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>В работе</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-play</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Завершено</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Ошибка</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-close</ImagePath>
+      <Text />
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnSwitch">
+  <Alias>Колонка_1</Alias>
+  <ValueToCompare xsi:type="QSColumnSimple">
+    <Alias>Колонка_1</Alias>
+    <AttributeID>80000300</AttributeID>
+    <Type>Value</Type>
+    <Level>0</Level>
+  </ValueToCompare>
+  <Blocks>
+    <QSColumnSwitchBlock>
+      <ValueToCompare xsi:type="QSColumnConstant">
+        <Alias>Колонка_2</Alias>
+        <Value xsi:type="xsd:long">0</Value>
+      </ValueToCompare>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_3</Alias>
+        <Value xsi:type="xsd:string">Создано</Value>
+      </Result>
+    </QSColumnSwitchBlock>
+    <QSColumnSwitchBlock>
+      <ValueToCompare xsi:type="QSColumnConstant">
+        <Alias>Колонка_4</Alias>
+        <Value xsi:type="xsd:long">1</Value>
+      </ValueToCompare>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_5</Alias>
+        <Value xsi:type="xsd:string">В работе</Value>
+      </Result>
+    </QSColumnSwitchBlock>
+    <QSColumnSwitchBlock>
+      <ValueToCompare xsi:type="QSColumnConstant">
+        <Alias>Колонка_6</Alias>
+        <Value xsi:type="xsd:long">2</Value>
+      </ValueToCompare>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_7</Alias>
+        <Value xsi:type="xsd:string">Завершено</Value>
+      </Result>
+    </QSColumnSwitchBlock>
+    <QSColumnSwitchBlock>
+      <ValueToCompare xsi:type="QSColumnConstant">
+        <Alias>Колонка_8</Alias>
+        <Value xsi:type="xsd:long">3</Value>
+      </ValueToCompare>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_9</Alias>
+        <Value xsi:type="xsd:string">Ошибка</Value>
+      </Result>
+    </QSColumnSwitchBlock>
+  </Blocks>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002229, 1005011, 0, 4, 50101200, NULL, NULL, 'Тип объекта', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=0, "ordinal"=4, "attributeid"=50101200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002230, 1003041, 0, 1, 30400500, NULL, NULL, 'Рыночная стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003041, "detailtype"=0, "ordinal"=1, "attributeid"=30400500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Рыночная стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002231, 1003021, 0, 1, 30200500, NULL, NULL, 'Рыночная стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003021, "detailtype"=0, "ordinal"=1, "attributeid"=30200500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Рыночная стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002232, 1003021, 0, 2, 30200400, NULL, NULL, 'Текущее использование', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003021, "detailtype"=0, "ordinal"=2, "attributeid"=30200400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Текущее использование', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002233, 1003021, 0, 3, 30200600, NULL, NULL, 'Удельная стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003021, "detailtype"=0, "ordinal"=3, "attributeid"=30200600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Удельная стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002234, 1004001, 0, 13, 40000300, NULL, NULL, 'Кадастровый номер объекта', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+</StyleConditionItemWrapper>', NULL, 'NotSet', NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=13, "attributeid"=40000300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер объекта', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='NotSet', "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002235, 1001001, 0, 8, 10007000, NULL, NULL, 'Сегмент рынка недвижимости', 400, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=8, "attributeid"=10007000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Сегмент рынка недвижимости', "headerwidth"=400, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002236, 1003041, 0, 2, 30400600, NULL, NULL, 'Удельная стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003041, "detailtype"=0, "ordinal"=2, "attributeid"=30400600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Удельная стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002237, 1005051, 0, 1, 50500200, NULL, NULL, 'Наименование', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005051, "detailtype"=0, "ordinal"=1, "attributeid"=50500200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Наименование', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002238, 1003042, 0, 2, 30800300, NULL, NULL, 'Дата отчета', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003042, "detailtype"=0, "ordinal"=2, "attributeid"=30800300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата отчета', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002239, 1005061, 3, 1, NULL, NULL, NULL, 'Номер', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnFunction">
+  <Alias>№</Alias>
+  <FunctionType>Concatenation</FunctionType>
+  <Operands>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_1</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_1</Alias>
+          <AttributeID>50600400</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_2</Alias>
+          <Value xsi:type="xsd:string">-</Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnConstant">
+      <Alias>Колонка_1</Alias>
+      <Value xsi:type="xsd:string">/</Value>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_2</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_2</Alias>
+          <AttributeID>50000200</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_3</Alias>
+          <Value xsi:type="xsd:string">-</Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+  </Operands>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1005061, "detailtype"=3, "ordinal"=1, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnFunction">
+  <Alias>№</Alias>
+  <FunctionType>Concatenation</FunctionType>
+  <Operands>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_1</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_1</Alias>
+          <AttributeID>50600400</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_2</Alias>
+          <Value xsi:type="xsd:string">-</Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnConstant">
+      <Alias>Колонка_1</Alias>
+      <Value xsi:type="xsd:string">/</Value>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_2</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_2</Alias>
+          <AttributeID>50000200</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_3</Alias>
+          <Value xsi:type="xsd:string">-</Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+  </Operands>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002240, 1003141, 0, 1, 31400500, NULL, NULL, 'Рыночная стоимость по судебному решению', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003141, "detailtype"=0, "ordinal"=1, "attributeid"=31400500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Рыночная стоимость по судебному решению', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002241, 1003141, 0, 2, 31400600, NULL, NULL, 'Удельный показатель', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003141, "detailtype"=0, "ordinal"=2, "attributeid"=31400600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Удельный показатель', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002242, 1003141, 0, 3, 31400700, NULL, NULL, 'Примечание', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003141, "detailtype"=0, "ordinal"=3, "attributeid"=31400700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Примечание', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002243, 1003131, 0, 1, 31300300, NULL, NULL, 'Наименование', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003131, "detailtype"=0, "ordinal"=1, "attributeid"=31300300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Наименование', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002244, 1004001, 0, 2, 40000400, NULL, NULL, 'Оспариваемая кадастровая стоимость', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=2, "attributeid"=40000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Оспариваемая кадастровая стоимость', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002245, 1003161, 0, 1, 31600300, NULL, NULL, 'Номер судебного дела', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003161, "detailtype"=0, "ordinal"=1, "attributeid"=31600300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер судебного дела', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002246, 1003161, 0, 2, 31600400, NULL, NULL, 'Дата заседания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003161, "detailtype"=0, "ordinal"=2, "attributeid"=31600400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата заседания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002247, 1003001, 0, 1, 30000200, NULL, NULL, 'Номер заключения', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003001, "detailtype"=0, "ordinal"=1, "attributeid"=30000200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер заключения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002248, 1003001, 0, 2, 30000300, NULL, NULL, 'Дата заключения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003001, "detailtype"=0, "ordinal"=2, "attributeid"=30000300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата заключения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002249, 1004001, 0, 3, 40000700, NULL, NULL, 'Дата заявления', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=3, "attributeid"=40000700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата заявления', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002250, 1004001, 0, 4, 40000600, NULL, NULL, 'Номер заявления', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=4, "attributeid"=40000600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер заявления', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002251, 1004001, 0, 5, 40000800, NULL, NULL, 'Статус заявителя', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=5, "attributeid"=40000800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус заявителя', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002252, 1004001, 0, 6, 40001100, NULL, NULL, 'Решение комиссии', 200, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=6, "attributeid"=40001100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Решение комиссии', "headerwidth"=200, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002253, 1001001, 0, 6, 10005500, NULL, NULL, 'Кадастровый номер здания', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=6, "attributeid"=10005500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер здания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002254, 1001001, 0, 18, 10005900, NULL, NULL, 'Зона', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=18, "attributeid"=10005900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Зона', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002255, 1003151, 0, 1, 31501100, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003151, "detailtype"=0, "ordinal"=1, "attributeid"=31501100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002256, 1001001, 0, 3, 10005400, NULL, NULL, 'Кадастровый номер', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[10002000]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, 'NotSet', NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=3, "attributeid"=10005400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[10002000]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='NotSet', "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002257, 1003151, 0, 5, 31500900, NULL, NULL, 'Адрес', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003151, "detailtype"=0, "ordinal"=5, "attributeid"=31500900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Адрес', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002258, 1003151, 0, 6, 31500400, NULL, NULL, 'Площадь, кв.', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003151, "detailtype"=0, "ordinal"=6, "attributeid"=31500400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Площадь, кв.', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002259, 1003151, 0, 7, 31500300, NULL, NULL, 'Дата определения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003151, "detailtype"=0, "ordinal"=7, "attributeid"=31500300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата определения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002260, 1003151, 0, 8, 31500500, NULL, NULL, 'Оспариваемая КС', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003151, "detailtype"=0, "ordinal"=8, "attributeid"=31500500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Оспариваемая КС', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002261, 1004001, 0, 1, 40000100, NULL, NULL, 'Идентификатор', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=1, "attributeid"=40000100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002262, 1004001, 0, 7, 40000900, NULL, NULL, 'Номер решения', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=7, "attributeid"=40000900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер решения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002263, 1004001, 0, 8, 40001300, NULL, NULL, 'Кадастровая стоимость по решению', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=8, "attributeid"=40001300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровая стоимость по решению', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002264, 1004001, 0, 9, 40001000, NULL, NULL, 'Дата решения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=9, "attributeid"=40001000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата решения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002265, 1004001, 0, 10, 40001200, NULL, NULL, 'Рыночная стоимость после оспаривания', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=10, "attributeid"=40001200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Рыночная стоимость после оспаривания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002266, 1004001, 0, 11, 40001400, NULL, NULL, 'Группа после оспаривания', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=11, "attributeid"=40001400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Группа после оспаривания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002267, 1001001, 0, 5, 10003600, NULL, NULL, 'Тип сделки', 170, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=5, "attributeid"=10003600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип сделки', "headerwidth"=170, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002268, 1001001, 0, 7, 10005600, NULL, NULL, 'Кадастровый номер квартала', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=7, "attributeid"=10005600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер квартала', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002269, 1001001, 0, 19, 10007100, NULL, NULL, 'Материал стен', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=19, "attributeid"=10007100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Материал стен', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002270, 1003001, 0, 3, 31201300, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003001, "detailtype"=0, "ordinal"=3, "attributeid"=31201300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002271, 1003042, 0, 3, 30800700, NULL, NULL, 'Дата получения', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003042, "detailtype"=0, "ordinal"=3, "attributeid"=30800700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата получения', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002272, 1003042, 0, 4, 30800500, NULL, NULL, 'ФИО оценщика', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003042, "detailtype"=0, "ordinal"=4, "attributeid"=30800500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='ФИО оценщика', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002273, 1001001, 0, 20, 10004300, NULL, NULL, 'Общая площадь', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=20, "attributeid"=10004300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Общая площадь', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002274, 1003042, 0, 5, 30700900, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003042, "detailtype"=0, "ordinal"=5, "attributeid"=30700900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002275, 1001001, 3, 14, NULL, NULL, NULL, 'Карта', 60, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/Map?objectId=[10002000]" Target="Blank" IsNotNull="false" />
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Ссылка на карту</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-hyperlink-globe</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>&amp;nbsp;</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, 'Center', '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
+	<Alias>Карта</Alias>
+	<Blocks>
+		<QSColumnIfBlock>
+			<Condition xsi:type="QSConditionGroup">
+				<Type>And</Type>
+				<Conditions>
+					<QSCondition xsi:type="QSConditionSimple">
+						<ConditionType>NotEqual</ConditionType>
+						<LeftOperand xsi:type="QSColumnSimple">
+							<Alias>Колонка_1</Alias>
+							<AttributeID>10002300</AttributeID>
+							<Type>Code</Type>
+							<Level>0</Level>
+						</LeftOperand>
+						<LeftOperandLevel>0</LeftOperandLevel>
+						<RightOperand xsi:type="QSColumnConstant">
+							<Alias>Колонка_2</Alias>
+							<Value xsi:type="xsd:long">737</Value>
+						</RightOperand>
+						<RightOperandLevel>0</RightOperandLevel>
+					</QSCondition>
+					<QSCondition xsi:type="QSConditionSimple">
+						<ConditionType>Equal</ConditionType>
+						<LeftOperand xsi:type="QSColumnSimple">
+							<Alias>Колонка_3</Alias>
+							<AttributeID>10006000</AttributeID>
+							<Type>Code</Type>
+							<Level>0</Level>
+						</LeftOperand>
+						<LeftOperandLevel>0</LeftOperandLevel>
+						<RightOperand xsi:type="QSColumnConstant">
+							<Alias>Колонка_4</Alias>
+							<Value xsi:type="xsd:long">741</Value>
+						</RightOperand>
+						<RightOperandLevel>0</RightOperandLevel>
+					</QSCondition>
+				</Conditions>
+			</Condition>
+			<Result xsi:type="QSColumnConstant">
+				<Alias>Колонка_6</Alias>
+				<Value xsi:type="xsd:string">Ссылка на карту</Value>
+			</Result>
+		</QSColumnIfBlock>
+		<QSColumnIfBlock>
+			<Result xsi:type="QSColumnConstant">
+				<Alias>Колонка_7</Alias>
+			</Result>
+		</QSColumnIfBlock>
+	</Blocks>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=3, "ordinal"=14, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Карта', "headerwidth"=60, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/Map?objectId=[10002000]" Target="Blank" IsNotNull="false" />
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Ссылка на карту</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-hyperlink-globe</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>&amp;nbsp;</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='Center', "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
+	<Alias>Карта</Alias>
+	<Blocks>
+		<QSColumnIfBlock>
+			<Condition xsi:type="QSConditionGroup">
+				<Type>And</Type>
+				<Conditions>
+					<QSCondition xsi:type="QSConditionSimple">
+						<ConditionType>NotEqual</ConditionType>
+						<LeftOperand xsi:type="QSColumnSimple">
+							<Alias>Колонка_1</Alias>
+							<AttributeID>10002300</AttributeID>
+							<Type>Code</Type>
+							<Level>0</Level>
+						</LeftOperand>
+						<LeftOperandLevel>0</LeftOperandLevel>
+						<RightOperand xsi:type="QSColumnConstant">
+							<Alias>Колонка_2</Alias>
+							<Value xsi:type="xsd:long">737</Value>
+						</RightOperand>
+						<RightOperandLevel>0</RightOperandLevel>
+					</QSCondition>
+					<QSCondition xsi:type="QSConditionSimple">
+						<ConditionType>Equal</ConditionType>
+						<LeftOperand xsi:type="QSColumnSimple">
+							<Alias>Колонка_3</Alias>
+							<AttributeID>10006000</AttributeID>
+							<Type>Code</Type>
+							<Level>0</Level>
+						</LeftOperand>
+						<LeftOperandLevel>0</LeftOperandLevel>
+						<RightOperand xsi:type="QSColumnConstant">
+							<Alias>Колонка_4</Alias>
+							<Value xsi:type="xsd:long">741</Value>
+						</RightOperand>
+						<RightOperandLevel>0</RightOperandLevel>
+					</QSCondition>
+				</Conditions>
+			</Condition>
+			<Result xsi:type="QSColumnConstant">
+				<Alias>Колонка_6</Alias>
+				<Value xsi:type="xsd:string">Ссылка на карту</Value>
+			</Result>
+		</QSColumnIfBlock>
+		<QSColumnIfBlock>
+			<Result xsi:type="QSColumnConstant">
+				<Alias>Колонка_7</Alias>
+			</Result>
+		</QSColumnIfBlock>
+	</Blocks>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002276, 1001001, 0, 15, 10004700, NULL, NULL, 'Год постройки', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=15, "attributeid"=10004700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Год постройки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002277, 1001001, 0, 16, 10002800, NULL, NULL, 'Дата сделки', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=16, "attributeid"=10002800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата сделки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002278, 1001001, 0, 17, 10007600, NULL, NULL, 'Дата последнего обновления цены', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=17, "attributeid"=10007600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата последнего обновления цены', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002279, 1001001, 0, 21, 10003400, NULL, NULL, 'Описание', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=21, "attributeid"=10003400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Описание', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002280, 1001001, 0, 4, 10003100, NULL, NULL, 'Адрес', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=4, "attributeid"=10003100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Адрес', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002281, 1001001, 0, 23, 10004800, NULL, NULL, 'Категория', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=23, "attributeid"=10004800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Категория', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002282, 1005061, 0, 2, 50600500, NULL, NULL, 'Дата', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005061, "detailtype"=0, "ordinal"=2, "attributeid"=50600500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002283, 1005061, 0, 3, 50600700, NULL, NULL, '№ почт. увед.', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005061, "detailtype"=0, "ordinal"=3, "attributeid"=50600700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='№ почт. увед.', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002284, 1005061, 0, 4, 50600800, NULL, NULL, 'Дата почт. увед.', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005061, "detailtype"=0, "ordinal"=4, "attributeid"=50600800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата почт. увед.', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002285, 1005061, 0, 5, 50600600, NULL, NULL, 'Тип', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005061, "detailtype"=0, "ordinal"=5, "attributeid"=50600600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002286, 1005011, 0, 3, 50101100, NULL, NULL, 'Объект', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=0, "ordinal"=3, "attributeid"=50101100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Объект', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002287, 1005011, 0, 6, 50100100, NULL, NULL, 'Идентификатор', NULL, 0, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=0, "ordinal"=6, "attributeid"=50100100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=0, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002288, 1001001, 0, 22, 10006000, NULL, NULL, 'Статус обработки', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=22, "attributeid"=10006000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус обработки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002289, 1000975, 0, 1, 97500900, NULL, NULL, 'Статус', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1000975, "detailtype"=0, "ordinal"=1, "attributeid"=97500900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"=NULL, "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002290, 1003021, 0, 4, 31100800, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003021, "detailtype"=0, "ordinal"=4, "attributeid"=31100800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002291, 1008011, 0, 1, 80100300, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Создано</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-edit</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>В работе</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-play</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Завершено</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Ошибка</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-close</ImagePath>
+      <Text />
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008011, "detailtype"=0, "ordinal"=1, "attributeid"=80100300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Создано</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-edit</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>В работе</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-play</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Завершено</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Ошибка</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-close</ImagePath>
+      <Text />
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002292, 1003161, 0, 3, 31000600, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003161, "detailtype"=0, "ordinal"=3, "attributeid"=31000600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002293, 1002031, 0, 1, 20300200, NULL, NULL, 'Дата создания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=1, "attributeid"=20300200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата создания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002294, 1002031, 0, 2, 20300100, NULL, NULL, 'Идентификатор', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=2, "attributeid"=20300100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002295, 1002031, 0, 3, 20300300, NULL, NULL, 'Идентификатор входящего документа', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=3, "attributeid"=20300300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор входящего документа', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002296, 1002031, 0, 4, 20300600, NULL, NULL, 'Идентификатор исходящего документа', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=4, "attributeid"=20300600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор исходящего документа', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002297, 1002031, 0, 5, 20300500, NULL, NULL, 'Идентификатор тура', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=5, "attributeid"=20300500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор тура', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002298, 1002031, 0, 6, 20300700, NULL, NULL, 'Статус', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=6, "attributeid"=20300700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002299, 1002031, 0, 7, 20300400, NULL, NULL, 'Тип статьи', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=7, "attributeid"=20300400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип статьи', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002300, 1008011, 3, 8, NULL, NULL, NULL, 'Реестр', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
+  <Alias>Реестр</Alias>
+  <SubQuery>
+    <MainRegisterID>930</MainRegisterID>
+    <TDInstanceID>0</TDInstanceID>
+    <Columns>
+      <QSColumn xsi:type="QSColumnSimple">
+        <Alias>Колонка_1</Alias>
+        <AttributeID>93000300</AttributeID>
+        <Type>Value</Type>
+        <Level>0</Level>
+      </QSColumn>
+    </Columns>
+    <Condition xsi:type="QSConditionGroup">
+      <Type>And</Type>
+      <Conditions>
+        <QSCondition xsi:type="QSConditionSimple">
+          <ConditionType>Equal</ConditionType>
+          <LeftOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_2</Alias>
+            <AttributeID>93000100</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </LeftOperand>
+          <LeftOperandLevel>0</LeftOperandLevel>
+          <RightOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_3</Alias>
+            <AttributeID>80101100</AttributeID>
+            <Type>Value</Type>
+            <Level>1</Level>
+          </RightOperand>
+          <RightOperandLevel>0</RightOperandLevel>
+        </QSCondition>
+      </Conditions>
+    </Condition>
+    <ActualDate>0001-01-01T00:00:00</ActualDate>
+    <IsActual>false</IsActual>
+    <Distinct>false</Distinct>
+    <ManualJoin>false</ManualJoin>
+    <PackageSize>0</PackageSize>
+    <PackageIndex>0</PackageIndex>
+    <OrderBy />
+    <GroupBy />
+    <JoinType>Inner</JoinType>
+    <Joins />
+    <LoadRelations>false</LoadRelations>
+  </SubQuery>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1008011, "detailtype"=3, "ordinal"=8, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Реестр', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"=NULL, "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
+  <Alias>Реестр</Alias>
+  <SubQuery>
+    <MainRegisterID>930</MainRegisterID>
+    <TDInstanceID>0</TDInstanceID>
+    <Columns>
+      <QSColumn xsi:type="QSColumnSimple">
+        <Alias>Колонка_1</Alias>
+        <AttributeID>93000300</AttributeID>
+        <Type>Value</Type>
+        <Level>0</Level>
+      </QSColumn>
+    </Columns>
+    <Condition xsi:type="QSConditionGroup">
+      <Type>And</Type>
+      <Conditions>
+        <QSCondition xsi:type="QSConditionSimple">
+          <ConditionType>Equal</ConditionType>
+          <LeftOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_2</Alias>
+            <AttributeID>93000100</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </LeftOperand>
+          <LeftOperandLevel>0</LeftOperandLevel>
+          <RightOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_3</Alias>
+            <AttributeID>80101100</AttributeID>
+            <Type>Value</Type>
+            <Level>1</Level>
+          </RightOperand>
+          <RightOperandLevel>0</RightOperandLevel>
+        </QSCondition>
+      </Conditions>
+    </Condition>
+    <ActualDate>0001-01-01T00:00:00</ActualDate>
+    <IsActual>false</IsActual>
+    <Distinct>false</Distinct>
+    <ManualJoin>false</ManualJoin>
+    <PackageSize>0</PackageSize>
+    <PackageIndex>0</PackageIndex>
+    <OrderBy />
+    <GroupBy />
+    <JoinType>Inner</JoinType>
+    <Joins />
+    <LoadRelations>false</LoadRelations>
+  </SubQuery>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002301, 1001001, 0, 12, 10003200, NULL, NULL, 'Метро', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=12, "attributeid"=10003200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Метро', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002302, 1001001, 0, 10, 10002700, NULL, NULL, 'Цена объекта недвижимости', 150, 1, 'ZeroDecimalDigitsWithSeparator', 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, 'Right', NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=10, "attributeid"=10002700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Цена объекта недвижимости', "headerwidth"=150, "visible"=1, "format"='ZeroDecimalDigitsWithSeparator', "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='Right', "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002303, 1005011, 0, 2, 50100800, NULL, NULL, 'Дата', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=0, "ordinal"=2, "attributeid"=50100800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002304, 1002001, 0, 1, 20000100, NULL, NULL, 'Номер', 100, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002001, "detailtype"=0, "ordinal"=1, "attributeid"=20000100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер', "headerwidth"=100, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002305, 1003041, 0, 3, 30600800, NULL, NULL, 'Статус', NULL, 1, NULL, 3, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003041, "detailtype"=0, "ordinal"=3, "attributeid"=30600800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=3, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002306, 1003041, 0, 5, 30800500, NULL, NULL, 'ФИО оценщика', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003041, "detailtype"=0, "ordinal"=5, "attributeid"=30800500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='ФИО оценщика', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002307, 1003151, 0, 2, 30501100, NULL, NULL, 'Анализ', NULL, 1, NULL, 3, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003151, "detailtype"=0, "ordinal"=2, "attributeid"=30501100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Анализ', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=3, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Да</Text>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>Нет</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002308, 1004001, 0, 12, 40000500, NULL, NULL, 'Дата определения кадастровой стоимости', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1004001, "detailtype"=0, "ordinal"=12, "attributeid"=40000500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата определения кадастровой стоимости', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[40000100]&amp;RegisterViewId=CommissionCost&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002309, 1003151, 0, 4, 31501000, NULL, NULL, 'Тип объекта', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003151, "detailtype"=0, "ordinal"=4, "attributeid"=31501000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002310, 1001001, 0, 2, 10002000, NULL, NULL, 'Номер', 100, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=2, "attributeid"=10002000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер', "headerwidth"=100, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002311, 1003041, 0, 4, 30800200, NULL, NULL, 'Номер отчета', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003041, "detailtype"=0, "ordinal"=4, "attributeid"=30800200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер отчета', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002312, 1005001, 0, 1, 50000200, NULL, NULL, 'Префикс', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005001, "detailtype"=0, "ordinal"=1, "attributeid"=50000200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Префикс', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002313, 1005001, 0, 2, 50000300, NULL, NULL, 'Дата начала', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005001, "detailtype"=0, "ordinal"=2, "attributeid"=50000300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата начала', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002314, 1005011, 0, 7, 95000400, NULL, NULL, 'Исполнитель', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=0, "ordinal"=7, "attributeid"=95000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Исполнитель', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002315, 1005011, 0, 9, 50101000, NULL, NULL, 'Статус', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Рассмотрено</Value>
+      <ValueId>0</ValueId>
+      <BackColor>#a6d6a6</BackColor>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Отказ в рассмотрении</Value>
+      <ValueId>0</ValueId>
+      <BackColor>#f1a4a4</BackColor>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Принято на рассмотрение</Value>
+      <ValueId>0</ValueId>
+      <BackColor>#e8e49b</BackColor>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=0, "ordinal"=9, "attributeid"=50101000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Рассмотрено</Value>
+      <ValueId>0</ValueId>
+      <BackColor>#a6d6a6</BackColor>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Отказ в рассмотрении</Value>
+      <ValueId>0</ValueId>
+      <BackColor>#f1a4a4</BackColor>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Принято на рассмотрение</Value>
+      <ValueId>0</ValueId>
+      <BackColor>#e8e49b</BackColor>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002316, 1005011, 3, 8, NULL, NULL, NULL, 'Регистратор', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
+  <Alias>Исполнитель</Alias>
+  <SubQuery>
+    <MainRegisterID>950</MainRegisterID>
+    <TDInstanceID>0</TDInstanceID>
+    <Columns>
+      <QSColumn xsi:type="QSColumnSimple">
+        <Alias>Колонка_1</Alias>
+        <AttributeID>95000400</AttributeID>
+        <Type>Value</Type>
+        <Level>0</Level>
+      </QSColumn>
+    </Columns>
+    <Condition xsi:type="QSConditionGroup">
+      <Type>And</Type>
+      <Conditions>
+        <QSCondition xsi:type="QSConditionSimple">
+          <ConditionType>Equal</ConditionType>
+          <LeftOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_2</Alias>
+            <AttributeID>95000100</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </LeftOperand>
+          <LeftOperandLevel>0</LeftOperandLevel>
+          <RightOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_3</Alias>
+            <AttributeID>50100600</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </RightOperand>
+          <RightOperandLevel>0</RightOperandLevel>
+        </QSCondition>
+      </Conditions>
+    </Condition>
+    <ActualDate>0001-01-01T00:00:00</ActualDate>
+    <IsActual>false</IsActual>
+    <Distinct>false</Distinct>
+    <ManualJoin>false</ManualJoin>
+    <PackageSize>0</PackageSize>
+    <PackageIndex>0</PackageIndex>
+    <OrderBy />
+    <GroupBy />
+    <JoinType>Inner</JoinType>
+    <Joins />
+    <Parameters />
+    <LoadRelations>false</LoadRelations>
+  </SubQuery>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=3, "ordinal"=8, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Регистратор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
+  <Alias>Исполнитель</Alias>
+  <SubQuery>
+    <MainRegisterID>950</MainRegisterID>
+    <TDInstanceID>0</TDInstanceID>
+    <Columns>
+      <QSColumn xsi:type="QSColumnSimple">
+        <Alias>Колонка_1</Alias>
+        <AttributeID>95000400</AttributeID>
+        <Type>Value</Type>
+        <Level>0</Level>
+      </QSColumn>
+    </Columns>
+    <Condition xsi:type="QSConditionGroup">
+      <Type>And</Type>
+      <Conditions>
+        <QSCondition xsi:type="QSConditionSimple">
+          <ConditionType>Equal</ConditionType>
+          <LeftOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_2</Alias>
+            <AttributeID>95000100</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </LeftOperand>
+          <LeftOperandLevel>0</LeftOperandLevel>
+          <RightOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_3</Alias>
+            <AttributeID>50100600</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </RightOperand>
+          <RightOperandLevel>0</RightOperandLevel>
+        </QSCondition>
+      </Conditions>
+    </Condition>
+    <ActualDate>0001-01-01T00:00:00</ActualDate>
+    <IsActual>false</IsActual>
+    <Distinct>false</Distinct>
+    <ManualJoin>false</ManualJoin>
+    <PackageSize>0</PackageSize>
+    <PackageIndex>0</PackageIndex>
+    <OrderBy />
+    <GroupBy />
+    <JoinType>Inner</JoinType>
+    <Joins />
+    <Parameters />
+    <LoadRelations>false</LoadRelations>
+  </SubQuery>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002317, 1005011, 3, 1, NULL, NULL, NULL, '№', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnFunction">
+  <Alias>Номер</Alias>
+  <FunctionType>Concatenation</FunctionType>
+  <Operands>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_2</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_1</Alias>
+          <AttributeID>50100700</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_2</Alias>
+          <Value xsi:type="xsd:string">-</Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnConstant">
+      <Alias>Колонка_4</Alias>
+      <Value xsi:type="xsd:string">/</Value>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_5</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_5</Alias>
+          <AttributeID>50000200</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_6</Alias>
+          <Value xsi:type="xsd:string">-</Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+  </Operands>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=3, "ordinal"=1, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='№', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnFunction">
+  <Alias>Номер</Alias>
+  <FunctionType>Concatenation</FunctionType>
+  <Operands>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_2</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_1</Alias>
+          <AttributeID>50100700</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_2</Alias>
+          <Value xsi:type="xsd:string">-</Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnConstant">
+      <Alias>Колонка_4</Alias>
+      <Value xsi:type="xsd:string">/</Value>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_5</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_5</Alias>
+          <AttributeID>50000200</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_6</Alias>
+          <Value xsi:type="xsd:string">-</Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+  </Operands>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
 (1100479, 1009401, 0, 3, 94000400, NULL, NULL, 'Дата выполнения', 10, 1, NULL, NULL, NULL, NULL, NULL, 0, NULL, NULL, NULL, NULL, NULL)
 on conflict (id) do update set
 "layoutid"=1009401, "detailtype"=0, "ordinal"=3, "attributeid"=94000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата выполнения', "headerwidth"=10, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=0, "style"=NULL, "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
@@ -33701,7 +34915,7 @@ on conflict (qryid) do update set
 
 --<DO>--
 insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry_user", "registerid", "qscondition", "iscommon", "internal_name", "register_view_id", "author", "is_using_extended_editor") values
-(1000980, 'Только мои сообщения', NULL, TO_TIMESTAMP('2019.02.01 14:48:27', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 980, '<?xml version="1.0" encoding="utf-16"?>
+(1000980, 'Только мои сообщения', 'Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', TO_TIMESTAMP('2019.02.01 14:48:27', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 980, '<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="QSConditionGroup">
 	<Type>And</Type>
 	<Conditions>
@@ -33731,7 +34945,7 @@ insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry
 	</Conditions>
 </QSCondition>', 1, NULL, 'CoreMessagesMy', NULL, NULL)
 on conflict (qryid) do update set
-"name"='Только мои сообщения', "description"=NULL, "datefrom"=TO_TIMESTAMP('2019.02.01 14:48:27', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=980, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
+"name"='Только мои сообщения', "description"='Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', "datefrom"=TO_TIMESTAMP('2019.02.01 14:48:27', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=980, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="QSConditionGroup">
 	<Type>And</Type>
 	<Conditions>
@@ -33763,7 +34977,73 @@ on conflict (qryid) do update set
 
 --<DO>--
 insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry_user", "registerid", "qscondition", "iscommon", "internal_name", "register_view_id", "author", "is_using_extended_editor") values
-(1003131, 'Организации', NULL, TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 313, '<?xml version="1.0" encoding="utf-16"?>
+(1001001, 'Не пустая дата обновления', 'Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', TO_TIMESTAMP('2019.12.10 19:04:48', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 100, '<?xml version="1.0" encoding="utf-16"?>
+<QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
+  <Type>Or</Type>
+  <Conditions>
+    <QSCondition xsi:type="QSConditionSimple">
+      <ConditionType>IsNotNull</ConditionType>
+      <LeftOperand xsi:type="QSColumnSimple">
+        <Alias>10007600</Alias>
+        <AttributeID>10007600</AttributeID>
+        <Type>Value</Type>
+        <Level xsi:nil="true" />
+      </LeftOperand>
+      <LeftOperandLevel>0</LeftOperandLevel>
+      <RightOperandLevel>0</RightOperandLevel>
+    </QSCondition>
+    <QSCondition xsi:type="QSConditionSimple">
+      <ConditionType>Equal</ConditionType>
+      <LeftOperand xsi:type="QSColumnSimple">
+        <Alias>10002300</Alias>
+        <AttributeID>10002300</AttributeID>
+        <Type>Code</Type>
+        <Level xsi:nil="true" />
+      </LeftOperand>
+      <LeftOperandLevel>0</LeftOperandLevel>
+      <RightOperand xsi:type="QSColumnConstant">
+        <Value xsi:type="xsd:string">737</Value>
+      </RightOperand>
+      <RightOperandLevel>0</RightOperandLevel>
+    </QSCondition>
+  </Conditions>
+</QSCondition>', 0, NULL, 'MarketObjects', NULL, 0)
+on conflict (qryid) do update set
+"name"='Не пустая дата обновления', "description"='Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', "datefrom"=TO_TIMESTAMP('2019.12.10 19:04:48', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=100, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
+<QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
+  <Type>Or</Type>
+  <Conditions>
+    <QSCondition xsi:type="QSConditionSimple">
+      <ConditionType>IsNotNull</ConditionType>
+      <LeftOperand xsi:type="QSColumnSimple">
+        <Alias>10007600</Alias>
+        <AttributeID>10007600</AttributeID>
+        <Type>Value</Type>
+        <Level xsi:nil="true" />
+      </LeftOperand>
+      <LeftOperandLevel>0</LeftOperandLevel>
+      <RightOperandLevel>0</RightOperandLevel>
+    </QSCondition>
+    <QSCondition xsi:type="QSConditionSimple">
+      <ConditionType>Equal</ConditionType>
+      <LeftOperand xsi:type="QSColumnSimple">
+        <Alias>10002300</Alias>
+        <AttributeID>10002300</AttributeID>
+        <Type>Code</Type>
+        <Level xsi:nil="true" />
+      </LeftOperand>
+      <LeftOperandLevel>0</LeftOperandLevel>
+      <RightOperand xsi:type="QSColumnConstant">
+        <Value xsi:type="xsd:string">737</Value>
+      </RightOperand>
+      <RightOperandLevel>0</RightOperandLevel>
+    </QSCondition>
+  </Conditions>
+</QSCondition>', "iscommon"=0, "internal_name"=NULL, "register_view_id"='MarketObjects', "author"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry_user", "registerid", "qscondition", "iscommon", "internal_name", "register_view_id", "author", "is_using_extended_editor") values
+(1003131, 'Организации', 'Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 313, '<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
   <Type>And</Type>
   <Conditions>
@@ -33784,7 +35064,7 @@ insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry
   </Conditions>
 </QSCondition>', 0, NULL, 'SudDictOrganisations', NULL, 0)
 on conflict (qryid) do update set
-"name"='Организации', "description"=NULL, "datefrom"=TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=313, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
+"name"='Организации', "description"='Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', "datefrom"=TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=313, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
   <Type>And</Type>
   <Conditions>
@@ -33807,7 +35087,7 @@ on conflict (qryid) do update set
 
 --<DO>--
 insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry_user", "registerid", "qscondition", "iscommon", "internal_name", "register_view_id", "author", "is_using_extended_editor") values
-(1003132, 'СРО', NULL, TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 313, '<?xml version="1.0" encoding="utf-16"?>
+(1003132, 'СРО', 'Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 313, '<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
   <Type>And</Type>
   <Conditions>
@@ -33828,7 +35108,7 @@ insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry
   </Conditions>
 </QSCondition>', 0, NULL, 'SudDictOrganisations', NULL, 0)
 on conflict (qryid) do update set
-"name"='СРО', "description"=NULL, "datefrom"=TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=313, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
+"name"='СРО', "description"='Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', "datefrom"=TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=313, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
   <Type>And</Type>
   <Conditions>
@@ -33851,7 +35131,7 @@ on conflict (qryid) do update set
 
 --<DO>--
 insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry_user", "registerid", "qscondition", "iscommon", "internal_name", "register_view_id", "author", "is_using_extended_editor") values
-(1003133, 'Оценщик', NULL, TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 313, '<?xml version="1.0" encoding="utf-16"?>
+(1003133, 'Оценщик', 'Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 313, '<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
   <Type>And</Type>
   <Conditions>
@@ -33872,7 +35152,7 @@ insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry
   </Conditions>
 </QSCondition>', 0, NULL, 'SudDictOrganisations', NULL, 0)
 on conflict (qryid) do update set
-"name"='Оценщик', "description"=NULL, "datefrom"=TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=313, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
+"name"='Оценщик', "description"='Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', "datefrom"=TO_TIMESTAMP('2019.11.12 18:26:55', 'YYYY.MM.DD HH24:MI:SS'), "inlist"=0, "qry_user"=NULL, "registerid"=313, "qscondition"='<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
   <Type>And</Type>
   <Conditions>
@@ -34414,6 +35694,60 @@ insert into core_srd_function ("id", "functionname", "functiontag", "parent_id",
 (514, 'Утверждение', 'SUD.OBJECTS.APPROVE', 512, NULL)
 on conflict (id) do update set
 "functionname"='Утверждение', "functiontag"='SUD.OBJECTS.APPROVE', "parent_id"=512, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(515, 'Утверждение отчета из карточки объекта', 'SUD.OBJECTS.OTCHET.APPROVE', 512, NULL)
+on conflict (id) do update set
+"functionname"='Утверждение отчета из карточки объекта', "functiontag"='SUD.OBJECTS.OTCHET.APPROVE', "parent_id"=512, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(516, 'Утверждение заключения из карточки объекта', 'SUD.OBJECTS.ZAK.APPROVE', 512, NULL)
+on conflict (id) do update set
+"functionname"='Утверждение заключения из карточки объекта', "functiontag"='SUD.OBJECTS.ZAK.APPROVE', "parent_id"=512, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(517, 'Утверждение решения из карточки объекта', 'SUD.OBJECTS.RESH.APPROVE', 512, NULL)
+on conflict (id) do update set
+"functionname"='Утверждение решения из карточки объекта', "functiontag"='SUD.OBJECTS.RESH.APPROVE', "parent_id"=512, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(518, 'Утверждение отчетов', 'SUD.OTCHET.APPROVE', 506, NULL)
+on conflict (id) do update set
+"functionname"='Утверждение отчетов', "functiontag"='SUD.OTCHET.APPROVE', "parent_id"=506, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(519, 'Утверждение заключений', 'SUD.ZAK.APPROVE', 508, NULL)
+on conflict (id) do update set
+"functionname"='Утверждение заключений', "functiontag"='SUD.ZAK.APPROVE', "parent_id"=508, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(520, 'Утверждение решений', 'SUD.RESH.APPROVE', 510, NULL)
+on conflict (id) do update set
+"functionname"='Утверждение решений', "functiontag"='SUD.RESH.APPROVE', "parent_id"=510, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(521, 'Загрузка данных', 'SUD.IMPORT', 503, NULL)
+on conflict (id) do update set
+"functionname"='Загрузка данных', "functiontag"='SUD.IMPORT', "parent_id"=503, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(522, 'Выгрузка данных', 'SUD.EXPORT', 503, NULL)
+on conflict (id) do update set
+"functionname"='Выгрузка данных', "functiontag"='SUD.EXPORT', "parent_id"=503, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(523, 'Добавление декларации', 'DECLARATIONS.EDIT', 505, NULL)
+on conflict (id) do update set
+"functionname"='Добавление декларации', "functiontag"='DECLARATIONS.EDIT', "parent_id"=505, "description"=NULL;
 
 --<DO>--
 insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values

@@ -144,6 +144,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('COMISSION_COST', 'change_user_id')) then
+        execute 'alter table COMISSION_COST add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMISSION_COST', 'change_date')) then
+        execute 'alter table COMISSION_COST add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_400_q_pk')) then
     execute 'alter table COMISSION_COST add constraint reg_400_q_pk primary key (id)';
   end if;
@@ -588,6 +606,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_ATTACHMENT_FILE', 'is_main')) then
         execute 'alter table CORE_ATTACHMENT_FILE add "is_main" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_ATTACHMENT_FILE', 'file_data')) then
+        execute 'alter table CORE_ATTACHMENT_FILE add "file_data" BYTEA';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_ATTACHMENT_FILE', 'file_data_small')) then
+        execute 'alter table CORE_ATTACHMENT_FILE add "file_data_small" BYTEA';
     end if;
 end $$;
 
@@ -6646,8 +6682,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'сertificate_num')) then
-        execute 'alter table DECLARATIONS_DECLARATION add "сertificate_num" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'certificate_num')) then
+        execute 'alter table DECLARATIONS_DECLARATION add "certificate_num" VARCHAR(255)';
     end if;
 end $$;
 
@@ -6655,17 +6691,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'сertificate_name')) then
-        execute 'alter table DECLARATIONS_DECLARATION add "сertificate_name" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'purpose_dec')) then
-        execute 'alter table DECLARATIONS_DECLARATION add "purpose_dec" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'certificate_name')) then
+        execute 'alter table DECLARATIONS_DECLARATION add "certificate_name" VARCHAR(255)';
     end if;
 end $$;
 
@@ -6700,8 +6727,17 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'сertificate_date')) then
-        execute 'alter table DECLARATIONS_DECLARATION add "сertificate_date" TIMESTAMP';
+    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'certificate_date')) then
+        execute 'alter table DECLARATIONS_DECLARATION add "certificate_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('DECLARATIONS_DECLARATION', 'purpose_dec')) then
+        execute 'alter table DECLARATIONS_DECLARATION add "purpose_dec" BIGINT';
     end if;
 end $$;
 
@@ -7407,15 +7443,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('DECLARATIONS_RESULT', 'text_no')) then
         execute 'alter table DECLARATIONS_RESULT add "text_no" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('DECLARATIONS_RESULT', 'status_dec')) then
-        execute 'alter table DECLARATIONS_RESULT add "status_dec" BIGINT';
     end if;
 end $$;
 
@@ -18643,7 +18670,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'value')) then
-        execute 'alter table KO_COD_DICTIONARY add "value" VARCHAR(255)';
+        execute 'alter table KO_COD_DICTIONARY add "value" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -23476,6 +23503,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('SUD_OBJECT', 'name_center')) then
         execute 'alter table SUD_OBJECT add "name_center" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_OBJECT', 'change_user_id')) then
+        execute 'alter table SUD_OBJECT add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_OBJECT', 'change_date')) then
+        execute 'alter table SUD_OBJECT add "change_date" TIMESTAMP';
     end if;
 end $$;
 
