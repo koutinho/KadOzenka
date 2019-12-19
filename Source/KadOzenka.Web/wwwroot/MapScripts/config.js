@@ -176,6 +176,9 @@ var toggleHeatmapWidgetPosition = {
     left: 335
 }
 
+const MapZoneType = { "district": 1, "region": 2, "zone": 3, "quartal": 4 };
+Object.freeze(MapZoneType);
+
 var targetWidget = null;
 var clusterSelected = null;
 var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

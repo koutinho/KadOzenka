@@ -18,8 +18,6 @@
                 </div>
             `).appendTo(parentDomContainer);
             this._mapEventGroup = this.getMap().events.group();
-            this._mapEventGroup.add('boundschange', this._createRequest, this);
-            this._createRequest();
         }
     });
 };
@@ -36,10 +34,7 @@ function createTargetWidget() {
             this._lastCenter = null;
             this.getParent().getChildElement(this).then(this._onGetChildElement, this);
         },
-        _onGetChildElement: function (parentDomContainer) {
-            this._$content = $(`<div id="targetControl" onclick="toTarget()" class="targetControl"></div>`).appendTo(parentDomContainer);
-            this._createRequest();
-        }
+        _onGetChildElement: function (parentDomContainer) { this._$content = $(`<div id="targetControl" onclick="toTarget()" class="targetControl"></div>`).appendTo(parentDomContainer); }
     });
 };
 
@@ -90,7 +85,6 @@ function creatFilterWidget() {
                     </div>
                 </div>
             `).appendTo(parentDomContainer);
-            this._createRequest();
         }
     });
 };
@@ -112,22 +106,28 @@ function creatLayerWidget() {
                 <div id="layerControl" class="filterControl">
                     <div id="layerImage" class="layerImage"></div>
                     <div id="layerContainer" class="filterContainer">
-                        <div id="districtLayer" class="filterMainButton" onclick="changeMapType(1, 'districtLayerHeader')">
+                        <div id="districtLayer" class="filterMainButton">
                             <div id="districtLayerHeader" class="filterHeader">Округа</div>
                         </div>
-                        <div id="regionLayer" class="filterMainButton" onclick="changeMapType(2, 'regionLayerHeader')">
+                        <div id="regionLayer" class="filterMainButton">
                             <div id="regionLayerHeader" class="filterHeader">Районы</div>
                         </div>
-                        <div id="zoneLayer" class="filterMainButton" onclick="changeMapType(3, 'zoneLayerHeader')">
+                        <div id="zoneLayer" class="filterMainButton">
                             <div id="zoneLayerHeader" class="filterHeader">Зоны</div>
                         </div>
-                        <div id="quartalLayer" class="filterMainButton" onclick="changeMapType(4, 'quartalLayerHeader')">
+                        <div id="quartalLayer" class="filterMainButton">
                             <div id="quartalLayerHeader" class="filterHeader">Кварталы</div>
                         </div>
                     </div>
                 </div>
             `).appendTo(parentDomContainer);
-            this._createRequest();
+            this.addEventListeners();
+        },
+        addEventListeners: function () {
+            document.getElementById("districtLayerHeader").addEventListener("click", function (e) { changeMapType(MapZoneType.district, e.target); });
+            document.getElementById("regionLayerHeader").addEventListener("click", function (e) { changeMapType(MapZoneType.region, e.target); });
+            document.getElementById("zoneLayerHeader").addEventListener("click", function (e) { changeMapType(MapZoneType.zone, e.target); });
+            document.getElementById("quartalLayerHeader").addEventListener("click", function (e) { changeMapType(MapZoneType.quartal, e.target); });
         }
     });
 };
@@ -140,13 +140,6 @@ function addFilterWidget(position) {
 };
 
 function addLayerWidget(position) { map.controls.add(new layerWidgetClass(), { float: 'none', position }); };
-
-function changeMapType(count, id) {
-    Array.from(document.getElementsByClassName("filterHeader")).forEach(x => { if (x.id != id) x.classList.remove("active"); });
-    document.getElementById(id).classList.toggle("active");
-    if (document.getElementById(id).classList.contains("active")) currentLayer = count; else currentLayer = null;
-    changeLayer();
-}
 
 function addTargetWidget(position) {
     if (!document.getElementById("targetControl")) {
@@ -181,7 +174,6 @@ function createToggleHeatmapWidget() {
             this._eventsGroup.add('click', function () {
                 this.events.fire('click');
             }, this);
-            this._createRequest();
         }
     });
 };
@@ -235,7 +227,6 @@ function createLoadWmsWidget() {
             this._eventsGroup.add('click', function () {
                 this.events.fire('click');
             }, this);
-            this._createRequest();
         }
     });
 };

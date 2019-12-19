@@ -50,3 +50,31 @@ function removeTarget(placemark) {
 };
 
 function toTarget() { if (clusterSelected) map.setCenter(clusterSelected.coords, clusterSelected.zoom, "map"); };
+
+function changeMapType(type, element) {
+    Array.from(document.getElementsByClassName("filterHeader")).forEach(x => { if (x.id != element.id) x.classList.remove("active"); });
+    element.classList.toggle("active");
+    changeLayer(element.classList.contains("active") ? type : 0);
+}
+
+function changeLayer(type) {
+    if(type != null) currentLayer = type;
+    for (var i = 0; i < CLD.length; i++) { map.geoObjects.remove(CLD[i]); }
+    CLD = [];
+    switch (currentLayer) {
+        case MapZoneType.district:
+            addDistrictsLayer();
+            break;
+        case MapZoneType.region:
+            addAreaLayer();
+            break;
+        case MapZoneType.zone:
+            addZoneLayer();
+            break;
+        case MapZoneType.quartal:
+            addQuartalLayer();
+            break;
+        default:
+            break;
+    }
+}
