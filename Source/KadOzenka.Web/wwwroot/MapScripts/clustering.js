@@ -44,11 +44,13 @@ function initCluster(coordinates, zoom, dotSize) {
         clusterer.add(geoObjects);
         clusterer.events.add('click', function (event) { clickOnCluster(event); });
         map.geoObjects.removeAll();
+        changeLayer();
         map.geoObjects.add(clusterer);
     }
     else {
         AllControllersData = coordinates;
         map.geoObjects.removeAll();
+        changeLayer();
         for (var i = 0, len = AllControllersData.length; i < len; i++) {
             map.geoObjects.add(new ymaps.Placemark(AllControllersData[i].points,
             {},

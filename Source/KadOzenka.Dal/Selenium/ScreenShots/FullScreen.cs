@@ -24,8 +24,8 @@ namespace KadOzenka.Dal.Selenium.ScreenShots
         public byte[] TakeScreenShot(ChromeDriver driver)
         {
             driver.ExecuteScript(ConfigurationManager.AppSettings["showCIANHiddenInfo"]);
-            driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANEnterSiteScript"]);
-            driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANAboutSiteScript"]);
+            //driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANEnterSiteScript"]);
+            //driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANAboutSiteScript"]);
             driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANRightBanerScript"]);
             driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
             driver.ExecuteScript(ConfigurationManager.AppSettings["hidePageScroll"]);
@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.Selenium.ScreenShots
 	        metrics["mobile"] = false;
 	        driver.ExecuteChromeCommand("Emulation.setDeviceMetricsOverride", metrics);
 
-            Thread.Sleep(500);
+            Thread.Sleep(1500);
             var screenShot = ((ITakesScreenshot)driver).GetScreenshot();
 
 			driver.ExecuteChromeCommand("Emulation.clearDeviceMetricsOverride", new Dictionary<string, object>());

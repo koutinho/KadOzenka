@@ -143,6 +143,11 @@ var filterWidgetPosition = {
     left: 10
 }
 
+var layerWidgetPosition = {
+    top: 96,
+    left: 10
+}
+
 var targetWidgetPosition = {
     bottom: 48,
     left: 10
@@ -174,3 +179,5 @@ var toggleHeatmapWidgetPosition = {
 var targetWidget = null;
 var clusterSelected = null;
 var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+var currentLayer = null;
+var CLD = [];

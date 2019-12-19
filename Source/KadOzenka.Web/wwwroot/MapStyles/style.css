@@ -232,6 +232,21 @@ body {
     z-index: 2;
 }
 
+.filterControl .layerImage {
+    background: #4590ff;
+    height: 36px;
+    width: 36px;
+    border-radius: 22px;
+    border: solid 1px #5c9eff;
+    color: #fff;
+    cursor: pointer;
+    background-image: url("/MapIcons/layers.svg");
+    background-size: 22px 22px;
+    background-repeat: no-repeat;
+    background-position: 7px 7px;
+    z-index: 2;
+}
+
 .filterControl .filterContainer {
     border: solid 1px #5c9eff;
     color: #4590ff;
@@ -346,6 +361,11 @@ body {
 }
 
 .filterControl .filterContainer .filterMainButton .filterHeader:hover {
+    color: #fff;
+    background: #4590ff;
+}
+
+.filterControl .filterContainer .filterMainButton .filterHeader.active {
     color: #fff;
     background: #4590ff;
 }

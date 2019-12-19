@@ -278,7 +278,6 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="Config\Reports\" />
-    <Folder Include="Views\Task\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 
@@ -495,8 +494,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ConfigPath Remove="Config\Registers\SearchPanels\DeclarationsBookSelect.xml" />
-    <ConfigPath Remove="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />

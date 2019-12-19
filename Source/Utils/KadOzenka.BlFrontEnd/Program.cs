@@ -21,6 +21,7 @@ using KadOzenka.Dal.DataImport;
 using System.Configuration;
 using System.Xml;
 using System.IO;
+using KadOzenka.Dal.XmlParser;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -53,13 +54,14 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("9", "Процедура создания тестовых скриншотов", () => { new Selenium().MakeScreenshot(); });
             consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
             consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
-            consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().RefreshAllData(); });
+            consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().RefreshAllData(15000, true); });
             consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
-            consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(); });
+            consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(100); });
             consoleHelper.AddCommand("15", "Тест автоматического формирования исключений", () => { new TestAutoExclusions().TryParse(); });
             consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.SetCadastralNumber(ConfigurationManager.AppSettings["InitialAddressFile"], ConfigurationManager.AppSettings["DefaultExceleValue"]); });
             consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
             consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
+            consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseDistricts(); });
 
             consoleHelper.AddCommand("200", "Импорт данных KO (БД) Модель 2016", MSExporter.DoLoadBd2016Model);
             consoleHelper.AddCommand("201", "Импорт данных KO (БД) Объекты и факторы 2016 ОНС", MSExporter.DoLoadBd2016Unit_Uncomplited);

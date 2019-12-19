@@ -34,11 +34,13 @@ function initMap() {
     createDisplayCountWidget();
     createTargetWidget();
     creatFilterWidget();
+    creatLayerWidget();
     //createLoadWmsWidget(); // кнопка для вызова модального окна wms сервиса
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
     changeDefaultControlPosition(map);
     addDisplayCountWidget(countWidgetPosition);
     addFilterWidget(filterWidgetPosition);
+    addLayerWidget(layerWidgetPosition);
     //addLoadWmsWidget(); // кнопка для вызова модального окна wms сервиса
     GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
     map.events.add('boundschange', function (event) { ChangeBounds(event); });
@@ -47,5 +49,26 @@ function initMap() {
 function changeDefaultControlPosition(map) {
     map.controls.get("rulerControl").options.set({position:{bottom: 10, right: 10}});
 };
+
+function changeLayer() {
+    for (var i = 0; i < CLD.length; i++) { map.geoObjects.remove(CLD[i]); }
+    CLD = [];
+    switch (currentLayer){
+        case 1:
+            addDistrictsLayer();
+            break;
+        case 2:
+            addAreaLayer();
+            break;
+        case 3:
+            addZoneLayer();
+            break;
+        case 4:
+            addQuartalLayer();
+            break;
+        default:
+            break;
+    }
+}
 
 init();
