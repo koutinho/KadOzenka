@@ -70,19 +70,6 @@ namespace KadOzenka.Web.Controllers
             return Json(new { token=token, arr=point, allCount=query.ExecuteCount() });
 	    }
 
-	    public JsonResult HeatmapData()
-	    {
-		    var query = OMCoreObject
-                .Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && x.Lng != null && x.Lat != null);
-			PrepareQueryByUserFilter(query);
-		    var coordinates = query.Select(x => new {x.Lat, x.Lng})
-			    .Execute()
-			    .Select(x => new[] { x.Lat, x.Lng })
-				.ToList();
-
-		    return Json(new {arr = coordinates});
-	    }
-
 		public JsonResult RequiredInfo()
         {
             List<long> ids = JsonConvert.DeserializeObject<List<long>>(new StreamReader(HttpContext.Request.Body).ReadToEnd());
