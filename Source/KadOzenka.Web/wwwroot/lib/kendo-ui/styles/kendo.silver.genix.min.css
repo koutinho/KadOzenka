@@ -33,7 +33,7 @@
 }
 
 * {
-    font-family: 'Roboto';
+    font-family: 'Roboto', sans-serif;
     font-style: normal;
 }
 
@@ -164,7 +164,7 @@
     }
 
     .panel * {
-        font-family: Roboto;
+        font-family: 'Roboto', sans-serif;
         font-style: normal;
         font-weight: normal;
     }
@@ -3300,7 +3300,7 @@ span.k-timepicker {
 .filter-window-content .k-window-actions .filter-window-title {
     padding: 31px;
     display: inline-block;
-    font-family: Roboto;
+    font-family: 'Roboto', sans-serif;
     font-style: normal;
     font-weight: normal;
     font-size: 20px;
