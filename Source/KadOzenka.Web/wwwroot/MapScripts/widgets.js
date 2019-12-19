@@ -189,8 +189,6 @@ function createLoadWmsWidget() {
 
 function addLoadWmsWidget(position) {
     let loadWmsControl = new loadWmsClass();
-    loadWmsControl.events.add('click', () => {
-        addWmsService();
-    });
+    loadWmsControl.events.add('click', () => { addWmsService(); });
     map.controls.add(loadWmsControl, { float: 'right' });
 };

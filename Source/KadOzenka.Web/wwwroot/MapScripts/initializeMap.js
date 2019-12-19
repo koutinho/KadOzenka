@@ -5,9 +5,10 @@ function init(){
     script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
     document.head.appendChild(script);
     script.onload = function () {
-        var wmsScript = document.createElement('script');
-        wmsScript.src = `/MapScripts/layer-wms.js`;
-        document.head.appendChild(wmsScript);
+        /***Добавление wms-скриптов***/
+        //var wmsScript = document.createElement('script');
+        //wmsScript.src = `/MapScripts/layer-wms.js`;
+        //document.head.appendChild(wmsScript);
         ymaps.ready(function() {initMap();});
     }
 };

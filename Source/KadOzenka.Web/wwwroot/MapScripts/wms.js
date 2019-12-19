@@ -10,12 +10,8 @@
         title: 'Параметры WMS',
         width: 950,
         height: 450,
-        close: function () {
-            container.classList.add("Hidden");
-        },
-        open: function () {
-            initWmsLoadWindowContent();
-        }
+        close: function () { container.classList.add("Hidden"); },
+        open: function () { initWmsLoadWindowContent(); }
     }).data('kendoWindow').content($('#wmsLoadWindowTemplate').html());
     window.center();
     window.open();

@@ -477,7 +477,7 @@ body {
 	font-weight: normal;
 }
 
-.toggleHeatmap, .loadWmsButton {
+.loadWmsButton {
 	background: #4590ff;
 	padding: 0px 12px;
 	min-height: 26px;
