@@ -47,7 +47,7 @@
 		</div>
 		<div class="form-group">
 			<div class="col-sm-12">
-				<button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+				<button disabled="@(!Model.IsEditReportLink)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
 			</div>
 		</div>
 	</div>
@@ -216,6 +216,13 @@
 
 		if ($('#@Html.IdFor(m => m.IdReport)').val() === "-1" || $('#@Html.IdFor(m => m.IdReport)').val() === "") {
 			$('#@Html.IdFor(m => m.ReportNumber)').val("");
+		}
+	});
+
+	$(document).ready(function () {
+		if ("@Model.IsEditReport" === "False") {
+			$(`.edit-button-${"@Html.IdFor(m => m.ReportNumber)"}`).off('click').attr('disabled', true);
+			$(`.add-button-${"@Html.IdFor(m => m.ReportNumber)"}`).off('click').attr('disabled', true);
 		}
 	});
 </script>

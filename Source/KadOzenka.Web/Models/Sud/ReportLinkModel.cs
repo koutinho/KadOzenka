@@ -53,6 +53,9 @@ namespace KadOzenka.Web.Models.Sud
 		[Range(1, long.MaxValue, ErrorMessage = "Недопустимое значение ид объекта")]
 		public long SudObjectId { get; set; }
 
+		public bool IsEditReport { get; set; }
+		public bool IsEditReportLink { get; set; }
+
 		public static ReportLinkModel FromEntity(OMOtchetLink entity, OMOtchet report)
 		{
 			var res = new ReportLinkModel

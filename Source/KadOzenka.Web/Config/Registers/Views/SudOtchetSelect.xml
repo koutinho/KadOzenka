@@ -2,13 +2,13 @@
 <RegisterView RegisterId="308" LinkedRegistersList="308,307" DefaultLayoutId="1003042" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="false" UseMasterPage="false" SearchPanel="SudOtchetSelect" SRDFunctionTag="">
     <Buttons>
-      <Button Caption="Выбрать" NavigateURL="/" />
+      <Button Caption="Выбрать" NavigateURL="/" SRDFunctionTAG="SUD.OBJECTS.EDIT"/>
       
-      <Button Caption="Добавить" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Добавить" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800" SRDFunctionTAG="SUD.OTCHET.EDIT">
         <Parameters></Parameters>
       </Button>
       
-      <Button Caption="Редактировать" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800" SRDFunctionTAG="SUD.OTCHET.EDIT">
         <Parameters>
           <Parameter Key="reportId" Value="[ObjectID]" />
         </Parameters>

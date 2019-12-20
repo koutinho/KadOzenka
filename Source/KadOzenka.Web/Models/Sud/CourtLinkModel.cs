@@ -51,6 +51,8 @@ namespace KadOzenka.Web.Models.Sud
 		[Display(Name = "Примечание")]
 		public string Description { get; set; }
 
+		public bool IsEditCourt { get; set; }
+		public bool IsEditCourtLink { get; set; }
 		public static CourtLinkModel FromEntity(OMSudLink omSudLink, OMSud omSud)
 		{
 			var res = new CourtLinkModel

@@ -6,6 +6,7 @@ using Core.Register.DAL;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Sud;
@@ -58,36 +59,39 @@ namespace KadOzenka.Dal.Gadgets
 
 			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", SudObjectType.Site.GetEnumCode()),
-				"Участки",
-				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Site)?.Count ?? 0);
+			if (SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS))
+			{
+				data.Rows.Add(
+					linkParam.Replace("{Type}", SudObjectType.Site.GetEnumCode()),
+					"Участки",
+					objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Site)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", SudObjectType.Building.GetEnumCode()),
-				"Здания",
-				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Building)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", SudObjectType.Building.GetEnumCode()),
+					"Здания",
+					objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Building)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", SudObjectType.Room.GetEnumCode()),
-				"Помещения",
-				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Room)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", SudObjectType.Room.GetEnumCode()),
+					"Помещения",
+					objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Room)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", SudObjectType.Construction.GetEnumCode()),
-				"Сооружения",
-				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Construction)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", SudObjectType.Construction.GetEnumCode()),
+					"Сооружения",
+					objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Construction)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", SudObjectType.Ons.GetEnumCode()),
-				"Онс",
-				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Ons)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", SudObjectType.Ons.GetEnumCode()),
+					"Онс",
+					objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.Ons)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", SudObjectType.ParkingPlace.GetEnumCode()),
-				"Машиноместа",
-				objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.ParkingPlace)?.Count ?? 0);
-
+				data.Rows.Add(
+					linkParam.Replace("{Type}", SudObjectType.ParkingPlace.GetEnumCode()),
+					"Машиноместа",
+					objects.FirstOrDefault(x => x.Typeobj_Code == SudObjectType.ParkingPlace)?.Count ?? 0);
+			}
+			
 			return data;
 		}
 
@@ -100,16 +104,25 @@ namespace KadOzenka.Dal.Gadgets
 			var data = new DataTable();
 			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-			var otchetCount = OMOtchet.Where(GetQuery("SudOtchet")).ExecuteCount();
-			data.Rows.Add("SudOtchet", "Отчеты", otchetCount);
+			if (SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET))
+			{
+				var otchetCount = OMOtchet.Where(GetQuery("SudOtchet")).ExecuteCount();
+				data.Rows.Add("SudOtchet", "Отчеты", otchetCount);
+			}
 
-			var zakCount = OMOtchet.Where(GetQuery("SudZak")).ExecuteCount();
-			data.Rows.Add("SudZak", "Заключения", zakCount);
+			if (SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK))
+			{
+				var zakCount = OMOtchet.Where(GetQuery("SudZak")).ExecuteCount();
+				data.Rows.Add("SudZak", "Заключения", zakCount);
 
+			}
 
-			var reshCount = OMOtchet.Where(GetQuery("SudResh")).ExecuteCount();
-			data.Rows.Add("SudResh", "Решения", reshCount);
-
+			if (SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH))
+			{
+				var reshCount = OMOtchet.Where(GetQuery("SudResh")).ExecuteCount();
+				data.Rows.Add("SudResh", "Решения", reshCount);
+			}
+			
 			return data;
 		}
 	}

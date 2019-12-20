@@ -43,7 +43,7 @@
 		</div>
 		<div class="form-group">
 			<div class="col-sm-12">
-				<button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+				<button disabled="@(!Model.IsEditCourtLink)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
 			</div>
 		</div>
 	</div>
@@ -217,4 +217,11 @@
 
 		return result;
 	}
+
+	$(document).ready(function () {
+		if ("@Model.IsEditCourt" === "False") {
+			$(`.edit-button-${"@Html.IdFor(m => m.SudNumber)"}`).off('click').attr('disabled', true);
+			$(`.add-button-${"@Html.IdFor(m => m.SudNumber)"}`).off('click').attr('disabled', true);
+		}
+	});
 </script>

@@ -2,13 +2,13 @@
 <RegisterView RegisterId="304" DefaultLayoutId="1003041" LinkedRegistersList="304,306,307,308" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
     <Buttons>
-      <Button Caption="Добавить" NavigateURL="/Sud/EditReportLink" WindowHeight="450" WindowWidth="800">
+      <Button Caption="Добавить" NavigateURL="/Sud/EditReportLink" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="SUD.OBJECTS.EDIT">
         <Parameters>
           <Parameter Key="sudObjectId" Value="{Get:SudObjectId}" />
           <Parameter Key="createNew" Value="True" />
         </Parameters>
       </Button>
-      <Button Caption="Редактировать" NavigateURL="/Sud/EditReportLink" WindowHeight="450" WindowWidth="800">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditReportLink" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="SUD.OBJECTS.EDIT">
         <Parameters>
           <Parameter Key="reportLinkId" Value="[ObjectID]" />
         </Parameters>

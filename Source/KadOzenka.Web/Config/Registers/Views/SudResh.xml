@@ -9,12 +9,12 @@
 			    <Parameter Key="RegisterId" Value="[RegisterId]" />
 		    </Parameters>
 	    </Button>
-	    <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+	    <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTAG="SUD.RESH.EDIT">
         <Parameters></Parameters>
       </Button>
 
       
-      <Button Caption="Редактировать" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTAG="SUD.RESH.EDIT">
         <Parameters>
           <Parameter Key="courtId" Value="[ObjectID]" />
         </Parameters>

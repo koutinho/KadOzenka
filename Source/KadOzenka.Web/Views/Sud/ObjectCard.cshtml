@@ -528,6 +528,8 @@
 			        dataArea.css('height', '100%');
 			    }
 			}*/
+			var isEditPermission = "@Model.IsEditPermission" === "True";
+			var isApprovePermission = "@Model.IsApprovePermission" === "True";
 
 			const toolbar = $("#toolbar").kendoToolBar({
 				items: [
@@ -544,7 +546,7 @@
 						hidden: false
 					}," +
 
-						          @"{
+								  @"{
 						type: 'button',
 						id: 'editBtn',
 						text: '',
@@ -555,9 +557,9 @@
 						toolbar.show($('#cancelBtn'));
 					},
 					icon: 'edit',
-					hidden: false
+					hidden: !isEditPermission
 					}," +
-						          @"{
+								  @"{
 						type: 'button',
 						id: 'saveBtn',
 						text: '',
@@ -598,7 +600,7 @@
 						icon: 'save',
 						hidden: true
 					}," +
-						          @"{
+								  @"{
 						type: 'button',
 						id: 'cancelBtn',
 						text: '',
@@ -611,7 +613,7 @@
 							rootWindow.location = '" + ("~/ObjectCard?ObjId=" + @Model.Id + @"&RegisterViewId=SudObjects&isVertical=true&useMasterPage=true").ResolveClientUrl() + @"';
 						},
 						icon: 'cancel',
-					hidden: true
+					hidden: !isEditPermission
 					}," + @"{
                         type: 'button',
                         id: 'approveBtn',
@@ -622,7 +624,7 @@
                             Common.UI.ChooseWindow(title, contentUrl);
                                  },
 						icon: 'check',
-                        hidden: false
+                        hidden: !isApprovePermission
                         }")
 						;
 					}
@@ -667,7 +669,7 @@
 							});
 						},
 						icon: 'save',
-						hidden: false
+						hidden: !isEditPermission
 					}")
 					}
 			]

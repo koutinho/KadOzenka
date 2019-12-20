@@ -62,7 +62,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// </summary>
 		public long? IdSro { get; set; }
 
-
+		public bool IsEditReport { get; set; }
 
 		public static ReportModel FromEntity(OMOtchet report)
 		{

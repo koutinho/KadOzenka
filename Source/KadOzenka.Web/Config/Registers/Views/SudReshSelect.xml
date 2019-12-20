@@ -2,13 +2,13 @@
 <RegisterView RegisterId="316" LinkedRegistersList="316,310" DefaultLayoutId="1003161" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="false" UseMasterPage="false" SearchPanel="SudReshSelect" SRDFunctionTag="">
     <Buttons>
-      <Button Caption="Выбрать" NavigateURL="/" />
+      <Button Caption="Выбрать" NavigateURL="/" SRDFunctionTAG="SUD.OBJECTS.EDIT"/>
       
-      <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Добавить" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800" SRDFunctionTAG="SUD.RESH.EDIT">
         <Parameters></Parameters>
       </Button>
       
-      <Button Caption="Редактировать" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditCourt" WindowHeight="500" WindowWidth="800" SRDFunctionTAG="SUD.RESH.EDIT">
         <Parameters>
           <Parameter Key="courtId" Value="[ObjectID]" />
         </Parameters>

@@ -57,6 +57,9 @@ namespace KadOzenka.Web.Models.Sud
 		/// </summary>
 		public string ConclusionNumber { get; set; }
 
+		public bool IsEditConclusionLink { get; set; }
+		public bool IsEditConclusion { get; set; }
+
 		public static ConclusionLinkModel FromEntity(OMZakLink conclusionLink, OMZak conclusion)
 		{
 			return new ConclusionLinkModel()

@@ -9,11 +9,11 @@
 			    <Parameter Key="RegisterId" Value="[RegisterId]" />
 		    </Parameters>
 	    </Button>
-		<Button Caption="Добавить" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+		<Button Caption="Добавить" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTAG="SUD.OTCHET.EDIT">
         <Parameters></Parameters>
       </Button>
       
-      <Button Caption="Редактировать" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditReport" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTAG="SUD.OTCHET.EDIT">
         <Parameters>
           <Parameter Key="reportId" Value="[ObjectID]" />
         </Parameters>

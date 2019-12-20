@@ -9,11 +9,11 @@
 				<Parameter Key="RegisterId" Value="[RegisterId]" />
 			</Parameters>
 		</Button>
-      <Button Caption="Добавить" NavigateURL="/Sud/EditConclusion" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+      <Button Caption="Добавить" NavigateURL="/Sud/EditConclusion" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTAG="SUD.ZAK.EDIT">
         <Parameters></Parameters>
       </Button>
       
-      <Button Caption="Редактировать" NavigateURL="/Sud/EditConclusion" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit">
+      <Button Caption="Редактировать" NavigateURL="/Sud/EditConclusion" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTAG="SUD.ZAK.EDIT">
         <Parameters>
           <Parameter Key="conclusionId" Value="[ObjectID]" />
         </Parameters>

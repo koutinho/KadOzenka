@@ -38,6 +38,8 @@ namespace KadOzenka.Web.Models.Sud
 		[Display(Name = "Статус дела")]
 		public long? Status { get; set; }
 
+		public bool IsEditCourt { get; set; }
+
 		public static CourtModel FromEntity(OMSud entity)
 		{
 			return new CourtModel()

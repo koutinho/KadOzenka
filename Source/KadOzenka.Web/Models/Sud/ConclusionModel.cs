@@ -89,7 +89,7 @@ namespace KadOzenka.Web.Models.Sud
 		/// </summary>
 		public long? IdSro { get; set; }
 
-
+		public bool IsEditConclusion { get; set; }
 
 		public static ConclusionModel FromEntity(OMZak conclusion)
 		{

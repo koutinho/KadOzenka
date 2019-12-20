@@ -65,6 +65,9 @@ namespace KadOzenka.Web.Models.Sud
 		[Display(Name = "Источник")]
 		public string DrsOwner { get; set; }
 
+		public bool IsEditPermission { get; set; }
+		public bool IsApprovePermission { get; set; }
+
 
 		public static ObjectCardModel FromOM(OMObject omObject, OMDRS omDrs)
 		{

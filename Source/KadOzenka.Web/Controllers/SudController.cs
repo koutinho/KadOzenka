@@ -45,7 +45,19 @@ namespace KadOzenka.Web.Controllers
 			{
 				drs = new OMDRS();
 			}
-			return View(ObjectCardModel.FromOM(obj, drs));
+			bool isEditPermission = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT);
+
+			var model = ObjectCardModel.FromOM(obj, drs);
+			model.IsEditPermission = isEditPermission;
+			model.IsApprovePermission =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_ZAK_APPROVE) ||
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE);
+			return View(model);
 		}
 
 		[HttpGet]
@@ -60,12 +72,14 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
+
 			return JsonResponse(ObjectCardModel.FromOM(obj, drs));
 		}
 
 		[HttpPost]
 		public ActionResult EditObjectCard(ObjectCardModel data)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT, true, false, true);
 			if (data == null)
 			{
 				throw new ArgumentNullException(nameof(ObjectCardModel));
@@ -154,12 +168,17 @@ namespace KadOzenka.Web.Controllers
 				? ReportLinkModel.FromEntity(reportLink, report) : ReportLinkModel.FromEntity(new OMOtchetLink(), new OMOtchet());
 
 			model.SudObjectId = reportLink != null && reportLinkId != 0 ? reportLink.IdObject.GetValueOrDefault() : sudObjectId;
+
+			model.IsEditReport = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_EDIT);
+			model.IsEditReportLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT);
+
 			return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult EditReportLink(ReportLinkModel reportLinkViewModel)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT, true, false, true);
 			if (!ModelState.IsValid)
 			{
 				return Json(new
@@ -210,6 +229,8 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult EditReport(int reportId)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET, true, false, true);
+
 			OMOtchet report = OMOtchet
 				.Where(x => x.Id == reportId)
 				.SelectAll()
@@ -218,12 +239,15 @@ namespace KadOzenka.Web.Controllers
 			var model = reportId != 0 && report != null
 				? ReportModel.FromEntity(report)
 				: ReportModel.FromEntity(new OMOtchet());
+
+			model.IsEditReport = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_EDIT);
 			return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult EditReport(ReportModel reportViewModel)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_EDIT, true, false, true);
 			if (!ModelState.IsValid)
 			{
 				return Json(new
@@ -303,13 +327,16 @@ namespace KadOzenka.Web.Controllers
 				? ConclusionLinkModel.FromEntity(conclusionLink, conclusion) : ConclusionLinkModel.FromEntity(new OMZakLink(), new OMZak());
 
 			model.SudObjectId = conclusionLink != null && conclusionLinkId != 0 ? conclusionLink.IdObject.GetValueOrDefault() : sudObjectId;
+
+			model.IsEditConclusion =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_EDIT);
 			return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult EditConclusionLink(ConclusionLinkModel conclusionLinkViewModel)
 		{
-
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_EDIT, true, false, true);
 			if (!ModelState.IsValid)
 			{
 				return Json(new
@@ -361,6 +388,8 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult EditConclusion(int conclusionId)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK, true, false, true);
+
 			OMZak conclusion = OMZak
 				.Where(x => x.Id == conclusionId)
 				.SelectAll()
@@ -369,12 +398,16 @@ namespace KadOzenka.Web.Controllers
 			var model = conclusionId != 0 && conclusion != null
 				? ConclusionModel.FromEntity(conclusion)
 				: ConclusionModel.FromEntity(new OMZak());
+
+			model.IsEditConclusion =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_EDIT);
 			return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult EditConclusion(ConclusionModel conclusionViewModel)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_EDIT, true, false, true);
 			if (!ModelState.IsValid)
 			{
 				return Json(new
@@ -561,6 +594,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult EditCourt(int courtId)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH, true, false, true);
 			var omSud = OMSud
 				.Where(x => x.Id == courtId)
 				.SelectAll()
@@ -569,12 +603,16 @@ namespace KadOzenka.Web.Controllers
 			var model = courtId != 0 && omSud != null
 				? CourtModel.FromEntity(omSud)
 				: CourtModel.FromEntity(new OMSud());
+
+			model.IsEditCourt =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_EDIT);
 			return View(model);
 		}
 
 		[HttpPost]
 		public ActionResult EditCourt(CourtModel courtViewModel)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_EDIT, true, false, true);
 			if (!ModelState.IsValid)
 			{
 				return Json(new
@@ -624,6 +662,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult EditCourtLink(int courtLinkId, long sudObjectId)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT, true, false, true);
 			if (sudObjectId == 0 && courtLinkId == 0)
 			{
 				throw new Exception("В указанном запросе отсутствует ИД объекта. ?sudObjectId=IdObject");
@@ -648,6 +687,11 @@ namespace KadOzenka.Web.Controllers
 				? courtLink.IdObject.GetValueOrDefault()
 				: sudObjectId;
 
+			model.IsEditCourt =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_EDIT);
+
+			model.IsEditCourtLink =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT);
 			return View(model);
 		}
 
@@ -706,12 +750,15 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult LoadDocument()
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
+
 			return View();
 		}
 
 		[HttpPost]
 		public ActionResult LoadDocument(IFormFile file)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
 			try
 			{
 				using (var stream = file.OpenReadStream())
@@ -730,7 +777,7 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
-        #region ApprovalCard
+        #region Approval Card
         [HttpGet]
         public ActionResult EditApprovalObject(int idObject)
         {
@@ -1178,42 +1225,48 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportDataToExcelGbu()
         {
-           var file = DataExporterSud.ExportDataToExcelGbu();
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+			var file = DataExporterSud.ExportDataToExcelGbu();
            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                "Выгрузка судебных решений для ГБУ" + ".xlsx");
         }
 
         public FileResult GetExportDataToXml()
         {
-            var file = DataExporterSud.ExportDataToXml();
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+			var file = DataExporterSud.ExportDataToXml();
             return File(file, "application/xml",
                 "Выгрузка судебных решений на сайт в формате XML" + ".xml");
         }
 
         public FileResult GetExportAllDataToExcel()
         {
-            var file = DataExporterSud.ExportAllDataToExcel();
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+			var file = DataExporterSud.ExportAllDataToExcel();
             return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "Полная выгрузка" + ".xlsx");
         }
 
         public FileResult GetExportStatisticCheck()
         {
-	        var file = DataExporterSud.ExportStatisticCheck();
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+			var file = DataExporterSud.ExportStatisticCheck();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 		        "Статистика по положительным судебным решениям" + ".xlsx");
         }
 
         public FileResult GetExportStatistic()
         {
-	        var file = DataExporterSud.ExportStatistic();
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+			var file = DataExporterSud.ExportStatistic();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика сводная" + ".xlsx");
         }
 
         public FileResult GetExportStatisticObject()
         {
-	        var file = DataExporterSud.ExportStatisticObject();
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+			var file = DataExporterSud.ExportStatisticObject();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика по объектам недвижимости" + ".xlsx");
         }
