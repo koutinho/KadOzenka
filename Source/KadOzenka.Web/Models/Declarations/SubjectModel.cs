@@ -26,12 +26,6 @@ namespace KadOzenka.Web.Models.Declarations
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Должность представителя заявителя
-		/// </summary>
-		[Display(Name = "Должность")]
-		public string Job { get; set; }
-
-		/// <summary>
 		/// Фамилия физического лица/представителя заявителя
 		/// </summary>
 		[Display(Name = "Фамилия")]
@@ -52,13 +46,13 @@ namespace KadOzenka.Web.Models.Declarations
 		/// <summary>
 		/// Почтовый адрес
 		/// </summary>
-		[Display(Name = "Адрес")]
+		[Display(Name = "Почтовый адрес")]
 		public string Address { get; set; }
 
 		/// <summary>
 		/// Адрес электронной почты
 		/// </summary>
-		[Display(Name = "Почта")]
+		[Display(Name = "Адрес электронной почты")]
 		public string Mail { get; set; }
 
 		/// <summary>
@@ -82,7 +76,6 @@ namespace KadOzenka.Web.Models.Declarations
 				Id = entity.Id,
 				Type = (long)entity.Type_Code,
 				Name = entity.Name,
-				Job = entity.Job,
 				Surname = entity.F_Name,
 				FirstName = entity.I_Name,
 				MiddleName = entity.O_Name,
@@ -95,7 +88,6 @@ namespace KadOzenka.Web.Models.Declarations
 		public static void ToEntity(SubjectModel subjectViewModel, ref OMSubject entity)
 		{
 			entity.Name = subjectViewModel.Name;
-			entity.Job = subjectViewModel.Job;
 			entity.F_Name = subjectViewModel.Surname;
 			entity.I_Name = subjectViewModel.FirstName;
 			entity.O_Name = subjectViewModel.MiddleName;

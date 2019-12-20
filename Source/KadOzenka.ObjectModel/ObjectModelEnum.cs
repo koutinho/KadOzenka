@@ -1221,9 +1221,9 @@ namespace ObjectModel.Directory.Declarations
     public enum ObjectType : long
     {
 		/// <summary>
-		/// Участок (0)
+		/// Земельный участок (0)
 		/// </summary>
-		[Description("Участок")]
+		[Description("Земельный участок")]
         [EnumCode("0")]
         Site = 0,
 		/// <summary>
@@ -1338,27 +1338,27 @@ namespace ObjectModel.Directory.Declarations
     public enum SendUvedType : long
     {
 		/// <summary>
-		/// нет (0)
+		/// Нет (0)
 		/// </summary>
-		[Description("нет")]
+		[Description("Нет")]
         [EnumCode("0")]
         No = 0,
 		/// <summary>
-		/// на почтовый адрес (1)
+		/// На почтовый адрес (1)
 		/// </summary>
-		[Description("на почтовый адрес")]
+		[Description("На почтовый адрес")]
         [EnumCode("1")]
         Post = 1,
 		/// <summary>
-		/// на электронный адрес (2)
+		/// На электронный адрес (2)
 		/// </summary>
-		[Description("на электронный адрес")]
+		[Description("На электронный адрес")]
         [EnumCode("2")]
         Email = 2,
 		/// <summary>
-		/// в руки (3)
+		/// На руки (3)
 		/// </summary>
-		[Description("в руки")]
+		[Description("На руки")]
         [EnumCode("3")]
         OnHands = 3,
     }
@@ -1373,9 +1373,9 @@ namespace ObjectModel.Directory.Declarations
     public enum OwnerType : long
     {
 		/// <summary>
-		/// Заявитель (он же собственник) (1)
+		/// Заявитель (правообладатель) (1)
 		/// </summary>
-		[Description("Заявитель (он же собственник)")]
+		[Description("Заявитель (правообладатель)")]
         [EnumCode("1")]
         Item1 = 1,
 		/// <summary>

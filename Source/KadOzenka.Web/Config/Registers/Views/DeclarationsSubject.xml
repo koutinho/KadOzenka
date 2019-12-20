@@ -3,12 +3,12 @@
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
-        <Button Caption="Добавить" NavigateURL="/Declarations/EditSubject" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+        <Button Caption="Добавить" NavigateURL="/Declarations/EditSubject" WindowHeight="470" WindowWidth="800" Icon="fas fa-plus">
             <Parameters></Parameters>
         </Button>
 
 
-        <Button Caption="Редактировать" NavigateURL="/Declarations/EditSubject" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit">
+        <Button Caption="Редактировать" NavigateURL="/Declarations/EditSubject" WindowHeight="470" WindowWidth="800" Icon="fas fa-edit">
             <Parameters>
                 <Parameter Key="subjectId" Value="[ObjectID]" />
             </Parameters>

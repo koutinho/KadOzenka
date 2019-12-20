@@ -15,66 +15,58 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 @Html.CustomLabelFor(m => m.Name)
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-9">
                 @Html.TextBoxFor(m => m.Name, new {@class = "k-textbox", @style = "width: 100%;"})
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.Job)
-            </div>
-            <div class="col-sm-10">
-                @Html.TextBoxFor(m => m.Job, new {@class = "k-textbox", @style = "width: 100%;"})
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 @Html.CustomLabelFor(m => m.Surname)
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-9">
                 @Html.TextBoxFor(m => m.Surname, new {@class = "k-textbox", @style = "width: 100%;"})
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 @Html.CustomLabelFor(m => m.FirstName)
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-9">
                 @Html.TextBoxFor(m => m.FirstName, new {@class = "k-textbox", @style = "width: 100%;"})
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 @Html.CustomLabelFor(m => m.MiddleName)
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-9">
                 @Html.TextBoxFor(m => m.MiddleName, new {@class = "k-textbox", @style = "width: 100%;"})
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 @Html.CustomLabelFor(m => m.Address)
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-9">
                 @Html.TextBoxFor(m => m.Address, new {@class = "k-textbox", @style = "width: 100%;"})
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 @Html.CustomLabelFor(m => m.Mail)
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-9">
                 @Html.TextBoxFor(m => m.Mail, new {@class = "k-textbox", @style = "width: 100%;"})
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 @Html.CustomLabelFor(m => m.Phone)
             </div>
-            <div class="col-sm-10">
+            <div class="col-sm-9">
                 @Html.TextBoxFor(m => m.Phone, new {@class = "k-textbox", @style = "width: 100%;"})
             </div>
         </div>
@@ -101,7 +93,6 @@
             if (this.checked) {
                 changeFieldsAvailability(true);
                 $('#@Html.IdFor(m => m.Name)').val(null);
-                $('#@Html.IdFor(m => m.Job)').val(null);
             } else {
                 changeFieldsAvailability(false);
             }
@@ -150,6 +141,5 @@
 
     function changeFieldsAvailability(readonly) {
         $('#@Html.IdFor(m => m.Name)').attr("readonly", readonly);
-        $('#@Html.IdFor(m => m.Job)').attr("readonly", readonly);
     }
 </script>

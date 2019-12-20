@@ -16216,26 +16216,6 @@ namespace ObjectModel.Declarations
         }
 
 
-        private string _job;
-        /// <summary>
-        /// 50500900 Должность представителя заявителя (JOB)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 50500900)]
-        public string Job
-        {
-            get
-            {
-                CheckPropertyInited("Job");
-                return _job;
-            }
-            set
-            {
-                _job = value;
-                NotifyPropertyChanged("Job");
-            }
-        }
-
-
         private string _type;
         /// <summary>
         /// 50501000 Тип субъекта ()

@@ -52,19 +52,19 @@ namespace KadOzenka.Web.Models.Declarations
 		/// <summary>
 		/// Тип уведомления заявителя (UVED_TYPE_OWNER)
 		/// </summary>
-		[Display(Name = "Вид уведомления")]
+		[Display(Name = "Способ получения уведомления")]
 		public SendUvedType? UvedTypeOwner { get; set; }
 
 		/// <summary>
 		/// Тип уведомления представителя заявителя (UVED_TYPE_AGENT)
 		/// </summary>
-		[Display(Name = "Вид уведомления")]
+		[Display(Name = "Способ получения уведомления")]
 		public SendUvedType? UvedTypeAgent { get; set; }
 
 		/// <summary>
 		/// Название документа, удостоверяющего полномочия представителя заявителя (СERTIFICATE_NAME)
 		/// </summary>
-		[Display(Name = "Документ")]
+		[Display(Name = "Документ удостоверяющий полномочия")]
 		public string CertificateName { get; set; }
 
 		/// <summary>
