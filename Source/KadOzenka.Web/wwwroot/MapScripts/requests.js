@@ -1,6 +1,4 @@
 function GetClusterData(bounds, zoom, token, objectId) {
-    zd = zoomData[zoom];
-    accuracy = zd ? zd.accurancy : null;
     redrawWaiting();
 	$.ajax({
         type: "GET",
@@ -12,7 +10,6 @@ function GetClusterData(bounds, zoom, token, objectId) {
 			bottomLatitude: bounds ? bounds[1][0] : null,
             bottomLongitude: bounds ? bounds[1][1] : null,
             mapZoom: zoom,
-            accuracy: accuracy,
             minClusterZoom: MapSettings.minClusterZoom,
             maxLoadedObjectsCount: MapSettings.maxLoadedObjectsCount,
             token: token,
@@ -23,7 +20,7 @@ function GetClusterData(bounds, zoom, token, objectId) {
             if (result.token == currentToken) {
                 ids = [];
                 result.arr.slice(0, MapSettings.leftMenuMaxValues).forEach(x => { if (x.id != undefined) ids.push(x.id); });
-                initCluster(result.arr, zoom, zd ? zd.dotSize : null);
+                initCluster(result.arr, zoom);
                 changeObjectsCount(zoom, result.allCount);
             }
         }
@@ -50,8 +47,6 @@ function GetFilterData() {
         type: "POST",
         url: "Map/FindFilters",
         contentType: 'application/json; charset=utf-8',
-        success: function (filterInfo) {
-            refreshFilterWidget(filterInfo);
-        }
+        success: function (filterInfo) { refreshFilterWidget(filterInfo); }
     });
 };

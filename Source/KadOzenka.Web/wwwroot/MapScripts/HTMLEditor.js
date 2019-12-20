@@ -1,5 +1,4 @@
 ﻿function insertCard(cartData, isLast) {
-    console.log(cartData);
     document.getElementById("dataContentContainer").innerHTML += `
         <!--<div class="DataItemContainer ${getPropertyType(cartData.source)}">-->
         <div class="DataItemContainer">

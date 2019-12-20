@@ -132,33 +132,6 @@ function creatLayerWidget() {
     });
 };
 
-function addDisplayCountWidget(position) { map.controls.add(new countWidgetClass(), { float: 'none', position }); };
-
-function addFilterWidget(position) {
-    map.controls.add(new filterWidgetClass(), { float: 'none', position });
-    GetFilterData();
-};
-
-function addLayerWidget(position) { map.controls.add(new layerWidgetClass(), { float: 'none', position }); };
-
-function addTargetWidget(position) {
-    if (!document.getElementById("targetControl")) {
-        targetWidget = new targetWidgetClass();
-        map.controls.add(targetWidget, { float: 'none', position });
-    }
-};
-
-function removeTargetWidget() { map.controls.remove(targetWidget); };
-
-function refreshFilterWidget(filterInfo) {
-    var dealTypeData = '', marketSegmentData = '';
-    filterInfo.dealTypeList.forEach(x => { dealTypeData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
-    filterInfo.marketSegmentList.forEach(x => { marketSegmentData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
-    document.getElementById('dealTypefilterBody').innerHTML = dealTypeData;
-    document.getElementById('marketSegmentfilterBody').innerHTML = marketSegmentData;
-}
-
-//TODO: кнопка для вызова модального окна wms сервиса
 function createLoadWmsWidget() {
     loadWmsClass = function (options) {
         loadWmsClass.superclass.constructor.call(this, options);
@@ -187,8 +160,26 @@ function createLoadWmsWidget() {
     });
 };
 
+function addDisplayCountWidget(position) { map.controls.add(new countWidgetClass(), { float: 'none', position }); };
+
+function addFilterWidget(position) {
+    map.controls.add(new filterWidgetClass(), { float: 'none', position });
+    GetFilterData();
+};
+
+function addLayerWidget(position) { map.controls.add(new layerWidgetClass(), { float: 'none', position }); };
+
+function addTargetWidget(position) {
+    if (!document.getElementById("targetControl")) {
+        targetWidget = new targetWidgetClass();
+        map.controls.add(targetWidget, { float: 'none', position });
+    }
+};
+
 function addLoadWmsWidget(position) {
     let loadWmsControl = new loadWmsClass();
     loadWmsControl.events.add('click', () => { addWmsService(); });
     map.controls.add(loadWmsControl, { float: 'right' });
 };
+
+function removeTargetWidget() { map.controls.remove(targetWidget); };

@@ -1,4 +1,5 @@
-function initCluster(coordinates, zoom, dotSize) {
+function initCluster(coordinates, zoom) {
+    map.geoObjects.removeAll();
     if (zoom >= MapSettings.minClusterZoom) {
         clusterer = new ymaps.Clusterer({
             clusterIconLayout: ClusterSettings.layout,
@@ -43,25 +44,9 @@ function initCluster(coordinates, zoom, dotSize) {
         }
         clusterer.add(geoObjects);
         clusterer.events.add('click', function (event) { clickOnCluster(event); });
-        map.geoObjects.removeAll();
-        changeLayer();
         map.geoObjects.add(clusterer);
     }
-    else {
-        AllControllersData = coordinates;
-        map.geoObjects.removeAll();
-        changeLayer();
-        for (var i = 0, len = AllControllersData.length; i < len; i++) {
-            map.geoObjects.add(new ymaps.Placemark(AllControllersData[i].points,
-            {},
-            {
-                iconLayout: GeoDotSettings.layout,
-                iconImageHref: GeoDotSettings.imageHref,
-                iconImageSize: dotSize,
-                iconImageOffset: GeoDotSettings.imageOffset
-            }));
-        }
-    }
+    changeLayer();
     if (clusterSelected) map.geoObjects.add(clusterSelected.geoObject);
 };
 

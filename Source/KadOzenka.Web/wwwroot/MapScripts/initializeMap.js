@@ -9,7 +9,7 @@ function init(){
         //var wmsScript = document.createElement('script');
         //wmsScript.src = `/MapScripts/layer-wms.js`;
         //document.head.appendChild(wmsScript);
-        ymaps.ready(function() {initMap();});
+        ymaps.ready(function() { initMap(); });
     }
 };
 

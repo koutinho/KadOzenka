@@ -62,11 +62,6 @@ namespace KadOzenka.Web.Controllers
                     segment=FormSegment(x.PropertyMarketSegment) 
                 })
             );
-
-            //  query.SetPackageSize(700).GroupBy(x => new { x.Lat.Round(2), x.Lng.Round(2) });//.ExecuteSelect(x => new{ x.Lat, x.Lng });
-            //  var analogItem = query.ExecuteSelect(x => new{ x.Lat.Avg(), x.Lng }).ToList();
-            //  analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng } }));
-
             return Json(new { token=token, arr=point, allCount=query.ExecuteCount() });
 	    }
 

@@ -49,6 +49,14 @@ function removeTarget(placemark) {
     clusterSelected = null;
 };
 
+function refreshFilterWidget(filterInfo) {
+    var dealTypeData = '', marketSegmentData = '';
+    filterInfo.dealTypeList.forEach(x => { dealTypeData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
+    filterInfo.marketSegmentList.forEach(x => { marketSegmentData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
+    document.getElementById('dealTypefilterBody').innerHTML = dealTypeData;
+    document.getElementById('marketSegmentfilterBody').innerHTML = marketSegmentData;
+};
+
 function toTarget() { if (clusterSelected) map.setCenter(clusterSelected.coords, clusterSelected.zoom, "map"); };
 
 function changeMapType(type, element) {

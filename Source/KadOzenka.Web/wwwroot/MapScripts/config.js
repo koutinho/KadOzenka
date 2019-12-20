@@ -11,7 +11,7 @@ var MapSettings = {
     center: [55.76, 37.64],
     zoom: 9,
     minClusterZoom: 15,
-    maxLoadedObjectsCount: 700,
+    maxLoadedObjectsCount: 1,
     leftMenuMaxValues: 20
 };
 
@@ -31,12 +31,6 @@ var MapWithDefinedObjectSettings = {
     iconImageSize: [50, 50],
     iconImageOffset: [-25, -50]
 }
-
-var GeoDotSettings = {
-    layout: 'default#image',
-    imageHref: 'mapIcons/mapDot.svg',
-    imageOffset: [0, 0]
-};
 
 var SelectedClusterSettings = {
 	clusterIconHref: 'MapIcons/home.svg',
@@ -103,24 +97,6 @@ var SegmentType = [
     { id: 12, name: 'OrdinarLand', color: '#e997ae', type: 'Земельные участки' },
     { id: 13, name: 'CommercialLand', color: '#67a3a0', type: 'Коммерческая земля' },
     { id: 14, name: 'NoSegment', color: '#c4dc66', type: 'Без сегмента' }
-];
-
-var zoomData = [
-    { accurancy: 0, dotSize: [3, 3] }, 
-    { accurancy: 0, dotSize: [3, 3] }, 
-    { accurancy: 0, dotSize: [3, 3] }, 
-    { accurancy: 0, dotSize: [3, 3] }, 
-    { accurancy: 0, dotSize: [3, 3] }, 
-    { accurancy: 1, dotSize: [3, 3] }, 
-    { accurancy: 1, dotSize: [6, 6] }, 
-    { accurancy: 1, dotSize: [8, 8] }, 
-    { accurancy: 2, dotSize: [5, 5] }, 
-    { accurancy: 2, dotSize: [5, 5] }, 
-    { accurancy: 2, dotSize: [6, 6] }, 
-    { accurancy: 2, dotSize: [8, 8] }, 
-    { accurancy: 2, dotSize: [8, 8] }, 
-    { accurancy: 3, dotSize: [8, 8] }, 
-    { accurancy: 3, dotSize: [8, 8] }
 ];
 
 var ObjectTypes = {
