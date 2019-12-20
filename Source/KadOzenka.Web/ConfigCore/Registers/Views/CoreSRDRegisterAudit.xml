@@ -2,7 +2,7 @@
 <RegisterView IsBasic="true" RegisterId="965" Description="Действия в реестрах" ShowObjectCards="false" ShowActualDate="false" LinkedRegistersList="965,964,963,950,930" 
               SRDFunctionTag="CORE.SRD.USERS" SearchPanel="CoreSRDRegisterAudit">
     <Buttons>
-        <Button Caption="Перейти к пользователю" NavigateURL="~/RegistersView/CoreSRDUser?Transition=1" OpenInRadWindow="false">
+        <Button Caption="Перейти к пользователю" Icon="fas fa-user" NavigateURL="~/RegistersView/CoreSRDUser?Transition=1" OpenInRadWindow="false">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -14,7 +14,7 @@
                 <Parameter Key="95000100" Value="[96400500]" />
             </Parameters>
         </Button>
-        <Button Caption="Все данные объекта" NavigateURL="~/LinkedRegisterObjects">
+        <Button Caption="Все данные объекта" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects">
           <Parameters>
             <Parameter Key="ObjectId" Value="[96500400]" />
             <Parameter Key="RegisterId" Value="[96500300]" />

@@ -2,8 +2,25 @@
 <RegisterView RegisterId="931" DefaultLayoutId="1000931" IsBasic="false" LinkedRegistersList="931,982" SRDFunctionTag="ADMIN.REGISTERS"
               SearchPanel="CoreRegisterAttribute" ShowActualDate="false" ShowObjectCards="false">
   <Buttons>
-    <Button Caption="Операции" OpenInRadWindow="false" Type="DropDown">
+    <Button Caption="Операции" Icon="fas fa-wrench" OpenInRadWindow="false" Type="DropDown">
       <DropDownButtons>
+        <Button Caption="Добавить" Icon="icon-plus" NavigateURL="~/CoreUI/EditAttributeData" NeedRefresh="true" WindowHeight="500" WindowWidth="780">
+          <Parameters>
+            <Parameter Key="RegisterID" Value="[93100300]" />
+          </Parameters>
+        </Button>
+        <Button Caption="Редактировать" icon="fas fa-edit" NavigateURL="~/CoreUI/EditAttributeData" NeedRefresh="true" WindowHeight="500" WindowWidth="780">
+          <ConditionGroups>
+            <ConditionGroup HideOrDisable="Disable">
+              <Conditions>
+                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+              </Conditions>
+            </ConditionGroup>
+          </ConditionGroups>
+          <Parameters>
+            <Parameter Key="AttributeId" Value="[ObjectID]" />
+          </Parameters>
+        </Button>
         <Button Caption="Настройка виртуальной колонки" NavigateURL="~/CoreUI/EditVirtualColumn">
           <ConditionGroups>
             <ConditionGroup HideOrDisable="Disable">
@@ -38,7 +55,7 @@
         </Button>
       </DropDownButtons>
     </Button>
-    <Button Caption="Перейти к" OpenInRadWindow="false" Type="DropDown">
+    <Button Caption="Перейти к" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
       <DropDownButtons>
         <Button Caption="реестру" NavigateURL="~/RegistersView/CoreRegisterRegister?Transition=1&amp;" OpenInRadWindow="false">
           <Parameters>
@@ -60,7 +77,7 @@
       </DropDownButtons>
     </Button>
     <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
-    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects">
+    <Button Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects">
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>

@@ -35,17 +35,6 @@
         </div>
         <div class="form-group">
             <div class="col-sm-6">
-                @Html.CustomLabelFor(m => m.FormalCheckModel.NotificationOfConsiderationTermsProlongation)
-            </div>
-            <div class="col-sm-2">
-                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.NotificationOfConsiderationTermsProlongation).Label(CheckStatus.Yes.GetEnumDescription()).Value((long)CheckStatus.Yes))
-            </div>
-            <div class="col-sm-2">
-                @(Html.Kendo().RadioButtonFor(m => m.FormalCheckModel.NotificationOfConsiderationTermsProlongation).Label(CheckStatus.No.GetEnumDescription()).Value((long)CheckStatus.No))
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-6">
                 @Html.CustomLabelFor(m => m.FormalCheckModel.FurtherDeclarationCheck)
             </div>
             <div class="col-sm-2">
@@ -63,13 +52,13 @@
                 @Html.CustomLabelFor(m => m.FormalCheckModel.DateCheckPlan)
             </div>
             <div class="col-sm-4">
-                <input editmode="true" id="FormalCheckModel_DateCheckPlan" name="FormalCheckModel.DateCheckPlan" type="text" value="" />
+                <input editmode="true" id="FormalCheckModel_DateCheckPlan" name="FormalCheckModel.DateCheckPlan" type="text" value="@Model.FormalCheckModel.DateCheckPlan" />
             </div>
             <div class="col-sm-2">
                 @Html.CustomLabelFor(m => m.FormalCheckModel.DateCheckFact)
             </div>
             <div class="col-sm-4">
-                <input editmode="true" id="FormalCheckModel_DateCheckFact" name="FormalCheckModel.DateCheckFact" type="text" value="" />
+                <input editmode="true" id="FormalCheckModel_DateCheckFact" name="FormalCheckModel.DateCheckFact" type="text" value="@Model.FormalCheckModel.DateCheckFact" />
             </div>
         </div>
         <div class="form-group">

@@ -2,14 +2,14 @@
 <RegisterView RegisterId="931" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" ShowSettingsPanel="false" UseMasterPage="false"
                SRDFunctionTag="ADMIN.REGISTERS">
     <Buttons>
-        <Button Caption="Операции" OpenInRadWindow="false" Type="DropDown">
+        <Button Caption="Операции" Icon="fas fa-wrench" OpenInRadWindow="false" Type="DropDown">
             <DropDownButtons>
-                <Button Caption="Добавить" NavigateURL="~/CoreUI/Configurator/RegKind/AddAttribute.aspx?" WindowHeight="300" WindowWidth="500">
+                <Button Caption="Добавить" Icon="icon-plus" NavigateURL="~/CoreUI/EditAttributeData" NeedRefresh="true" WindowHeight="500" WindowWidth="780">
                     <Parameters>
                         <Parameter Key="RegisterID" Value="[93100300]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Редактировать" NavigateURL="~/CoreUI/Configurator/RegKind/EditAttribute.aspx?" WindowHeight="300" WindowWidth="500">
+                <Button Caption="Редактировать" icon="fas fa-edit" NavigateURL="~/CoreUI/EditAttributeData" NeedRefresh="true" WindowHeight="500" WindowWidth="780">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -21,7 +21,7 @@
                         <Parameter Key="AttributeId" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Настройка виртуальной колонки" NavigateURL="~/CoreUI/EditVirtualColumn">
+                <Button Caption="Настройка виртуальной колонки" Icon="fas fa-sliders-h" NavigateURL="~/CoreUI/EditVirtualColumn">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -34,7 +34,7 @@
                       <Parameter Key="registerId" Value="[93100300]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Удалить" NavigateURL="~/CoreUI/Configurator/RegKind/DeleteIndex.aspx?" WindowHeight="300" WindowWidth="500">
+                <Button Caption="Удалить" Icon="far fa-trash-alt" NavigateURL="~/CoreUI/DeleteAttribute" NeedRefresh="true" WindowHeight="150" WindowWidth="450">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -43,7 +43,7 @@
                         </ConditionGroup>
                     </ConditionGroups>
                     <Parameters>
-                        <Parameter Key="IDToDel" Value="[ObjectID]" />
+                        <Parameter Key="AttributeId" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
             </DropDownButtons>
@@ -61,7 +61,7 @@
             </Parameters>
         </Button>
         <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
-        <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects">
+        <Button Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>

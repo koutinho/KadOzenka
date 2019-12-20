@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView IsBasic="false" RegisterId="{Get:ListRegisterId}" Description="Списки" LinkedRegistersList="920,930,950" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" ShowSettingsPanel="false" UseMasterPage="false">
   <Buttons>
-    <Button Caption="Удалить" NavigateURL="~/CoreUI/Registers/ListEditor/DeleteListObject.aspx?" NeedRefreshWithoutSavingSelection="true" WindowHeight="150" WindowWidth="500">
+    <Button Caption="Удалить" Icon="far fa-trash-alt" NavigateURL="~/CoreUI/Registers/ListEditor/DeleteListObject.aspx?" NeedRefreshWithoutSavingSelection="true" WindowHeight="150" WindowWidth="500">
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>

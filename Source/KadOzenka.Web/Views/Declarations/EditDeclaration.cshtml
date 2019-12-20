@@ -129,7 +129,7 @@
                             @Html.CustomLabelFor(m => m.UserIspId)
                         </div>
                         <div class="col-sm-4">
-                            @Html.PlatformAutoCompleteWithEditButtonFor(m => m.UserIspDisplay, "Value", "Declarations", "GetAutoCompleteUser", "clearUserIspEvent", "editUserIsp", "selectUserIspEvent", isReadonly: false)
+                            @Html.KendoTextBoxFor(m => m.UserIspDisplay, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -298,12 +298,6 @@
         function clearBookEvent() {
             $('#@Html.IdFor(m => m.BookId)').val(0);
         }
-        function selectUserIspEvent() {
-            $('#@Html.IdFor(m => m.UserIspId)').val(this.e.dataItem.Id);
-        }
-        function clearUserIspEvent() {
-            $('#@Html.IdFor(m => m.UserIspId)').val(0);
-        }
 
         function editOwner () {
             var contentUrl = '@Url.Action("DeclarationsSubjectSelect", "RegistersView")';
@@ -375,30 +369,6 @@
                 });
             }
             Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBook.GetRegisterId()');
-        };
-
-        function editUserIsp () {
-            var contentUrl = '@Url.Action("CoreSRDUserSelect", "RegistersView")';
-            var title = 'Выбор Исполнителя по внесению';
-
-            var callbackFn = function (item) {
-                kendo.ui.progress($('body'), true);
-                $('[name="UserIspId"]').val(item.ID);
-                $.ajax({
-                    type: 'GET',
-                    url: '@Url.Action("GetUserData", "Declarations")',
-                    data: { 'userId': item.ID },
-                    dataType: 'json',
-                    success: function (response) {
-                        if (response && !$.isEmptyObject(response)) {
-                            console.log('response', response.data);
-                            $('#@Html.IdFor(m => m.UserIspDisplay)').val(response.data.Value);
-                        }
-                        kendo.ui.progress($('body'), false);
-                    }
-                });
-            }
-            Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMUser.GetRegisterId()');
         };
 
         function setOnBlurHandlerForAutocomplete(idField, displayField) {

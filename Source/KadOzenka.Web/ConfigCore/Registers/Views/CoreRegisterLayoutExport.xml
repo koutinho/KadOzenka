@@ -3,21 +3,21 @@
     <Buttons>
         <Button Caption="Запустить формирование новой выгрузки" Type="DropDown">
             <DropDownButtons>
-                <Button Caption="Xlsx (Excel 2007 и др)" NavigateURL="/CoreRegisterLayout/ExportStart" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
+                <Button Caption="Xlsx (Excel 2007 и др)" Icon="fas fa-file-excel" NavigateURL="/CoreRegisterLayout/ExportStart" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
                     <Parameters>
                       <Parameter Key="layoutId" Value="{Get:ExportLayoutId}" />
                       <Parameter Key="type" Value="Xlsx" />
                       <Parameter Key="registerViewId" Value="{Get:ExportRegisterViewId}" />
                     </Parameters>
                 </Button>
-                <Button Caption="Xls (Excel 97 - 2003)" NavigateURL="/CoreRegisterLayout/ExportStart" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
+                <Button Caption="Xls (Excel 97 - 2003)" Icon="far fa-file-excel" NavigateURL="/CoreRegisterLayout/ExportStart" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
                     <Parameters>
                        <Parameter Key="layoutId" Value="{Get:ExportLayoutId}" />
                        <Parameter Key="type" Value="Xls" />
                       <Parameter Key="registerViewId" Value="{Get:ExportRegisterViewId}" />
                     </Parameters>
                 </Button>
-                <Button Caption="Csv" NavigateURL="/CoreRegisterLayout/ExportStart" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
+                <Button Caption="Csv" Icon="fas fa-file-csv" NavigateURL="/CoreRegisterLayout/ExportStart" NeedRefresh="true" WindowHeight="200" WindowWidth="400">
                     <Parameters>
                       <Parameter Key="layoutId" Value="{Get:ExportLayoutId}" />
                       <Parameter Key="type" Value="Csv" />
@@ -33,7 +33,7 @@
                 </Button>
             </DropDownButtons>
         </Button>
-        <Button Caption="Скачать результат" NavigateURL="/CoreRegisterLayout/ExportDownload" OpenInNewWindow="true" SRDFunctionTag="CORE.REGISTER.EXPORT">
+        <Button Caption="Скачать результат" Icon="fas fa-file-download" NavigateURL="/CoreRegisterLayout/ExportDownload" OpenInNewWindow="true" SRDFunctionTag="CORE.REGISTER.EXPORT">
             <Parameters>
                 <Parameter Key="exportId" Value="[ObjectID]" />
             </Parameters>
@@ -83,7 +83,7 @@
         </Button>
     </Buttons>
     <Tabs>
-        <Tab Caption="Основные данные" NavigateURL="CoreRegisterLayout/LayoutExportInfo">
+        <Tab Caption="Основные данные" Icon="fas fa-pencil-alt" NavigateURL="CoreRegisterLayout/LayoutExportInfo">
             <Parameters>
                 <Parameter Key="exportId" Value="[ObjectID]" />
             </Parameters>

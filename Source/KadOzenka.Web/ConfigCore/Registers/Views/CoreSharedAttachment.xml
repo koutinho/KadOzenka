@@ -31,7 +31,7 @@
                 <Parameter Key="Mode" Value="Detach"/>
             </Parameters>
         </Button>
-        <Button Caption="Удалить" NavigateURL="~/CoreAttachment/AttachmentDelete" NeedRefresh="true" WindowWidth="400" WindowHeight="150">
+        <Button Caption="Удалить" Icon="far fa-trash-alt" NavigateURL="~/CoreAttachment/AttachmentDelete" NeedRefresh="true" WindowWidth="400" WindowHeight="150">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -45,7 +45,7 @@
                 <Parameter Key="AttachmentId" Value="[ObjectId]" />
             </Parameters>
         </Button>
-        <Button Caption="Загрузить" NavigateURL="~/CoreAttachment/AttachmentUpload" NeedRefresh="true">
+        <Button Caption="Загрузить" Icon="fas fa-file-upload" NavigateURL="~/CoreAttachment/AttachmentUpload" NeedRefresh="true">
             <Parameters>
                 <Parameter Key="AttachmentRegisterId" Value="{Get:AttachmentRegisterId}" />
                 <Parameter Key="AttachmentObjectId" Value="{Get:AttachmentObjectId}" />

@@ -3,14 +3,14 @@
               LinkedRegistersList="945,950,941,952" ShowActualDate="false" SearchPanel="CoreSRDRole" 
               SRDFunctionTag="CORE.SRD.ROLES">
     <Buttons>
-        <Button Caption="Создать роль" NavigateURL="/SRDRole/Index" NeedRefresh="true" 
+        <Button Caption="Создать роль" Icon="icon-plus" NavigateURL="/SRDRole/Index" NeedRefresh="true" 
                 SRDFunctionTag="CORE.SRD.ROLES.CHANGE" WindowHeight="520" WindowWidth="1050">
             <Parameters>
                 <Parameter Key="RoleID" Value="-1" />
             </Parameters>
         </Button>
-        <Button Caption="Удалить роль" NavigateURL="/SRDRole/Destroy" NeedRefresh="true" 
-                SRDFunctionTag="CORE.SRD.ROLES.CHANGE" WindowHeight="200" WindowWidth="350">
+        <Button Caption="Удалить роль" Icon="far fa-trash-alt" NavigateURL="/SRDRole/Destroy" NeedRefresh="true" 
+                SRDFunctionTag="CORE.SRD.ROLES.DELETE" WindowHeight="200" WindowWidth="350">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -22,7 +22,8 @@
                 <Parameter Key="RoleID" Value="[ObjectID]" />
             </Parameters>
         </Button>
-        <Button Caption="Перейти к пользователям роли" NavigateURL="/RegistersView/CoreSRDUser?Transition=1" SRDFunctionTag="CORE.SRD.USERS" OpenInRadWindow="false">
+        <Button Caption="Перейти к пользователям роли" Icon="fas fa-user-friends" NavigateURL="/RegistersView/CoreSRDUser?Transition=1" 
+                SRDFunctionTag="CORE.SRD.USERS" OpenInRadWindow="false">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -42,11 +43,17 @@
                 <Parameter Key="RoleID" Value="[ObjectID]" />
             </Parameters>
         </Tab>
-        <Tab Caption="Пользователи роли" NavigateURL="/RegistersView/CoreSRDRoleUsers">
+        <Tab Caption="Пользователи роли" NavigateURL="/RegistersView/CoreSRDRoleUsers" SRDFunctionTag="CORE.SRD.USERS">
             <Parameters>
                 <Parameter Key="Transition" Value="1" />
                 <Parameter Key="95200200" Value="[ObjectID]" />
             </Parameters>
         </Tab>
+      <Tab Caption="Функции роли" NavigateURL="/RegistersView/CoreSRDRoleFunctions">
+        <Parameters>
+          <Parameter Key="Transition" Value="1" />
+          <Parameter Key="94600200" Value="[ObjectID]" />
+        </Parameters>
+      </Tab>
     </Tabs>
 </RegisterView>

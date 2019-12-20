@@ -7,14 +7,14 @@
         2 - Остановлена
         3 - Запрос на экстренную остановку
         -->
-        <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects">
+        <Button Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects">
             <Parameters>
                 <Parameter Key="ObjectId" Value="[ObjectID]" />
                 <Parameter Key="RegisterId" Value="[RegisterId]" />
                 <Parameter Key="LightMode" Value="true" />
             </Parameters>
         </Button>
-        <Button Caption="Остановить сервис" NavigateURL="~/CoreUI/Registers/LongProcessManagment/StopService.aspx" WindowHeight="300" WindowWidth="500">
+        <Button Caption="Остановить сервис" Icon="far fa-stop-circle" NavigateURL="~/CoreUI/Registers/LongProcessManagment/StopService.aspx" WindowHeight="300" WindowWidth="500">
             <Parameters>
                 <Parameter Key="ServiceId" Value="[ObjectID]" />
             </Parameters>

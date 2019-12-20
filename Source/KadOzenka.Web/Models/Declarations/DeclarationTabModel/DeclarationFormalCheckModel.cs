@@ -16,7 +16,7 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 		/// <summary>
 		/// Проверка декларации на соответствии утвержденной форме Приказа № 846 от 27.12.2016 (CHECK_POINT1)
 		/// </summary>
-		[Display(Name = "Проверка декларации на соответствии утвержденной форме Приказа № 846 от 27.12.2016")]
+		[Display(Name = "Проверка декларации на соответствие утвержденной форме Приказа № 318 от 04.06.2019")]
 		public long? MatchingApprovedFormCheck { get; set; }
 
 		/// <summary>
@@ -24,12 +24,6 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 		/// </summary>
 		[Display(Name = "Проверка декларации на наличие основных данных, позволяющих идентифицировать объект")]
 		public long? PresenceMainDataCheck { get; set; }
-
-		/// <summary>
-		/// Уведомление о продлении сроков рассмотрения (CHECK_POINT3)
-		/// </summary>
-		[Display(Name = "Уведомление о продлении сроков рассмотрения")]
-		public long? NotificationOfConsiderationTermsProlongation { get; set; }
 
 		/// <summary>
 		/// Декларация, прошедшая формальную проверку, подлежит дальнейшей проверке (CHECK_POINT4)
@@ -61,13 +55,14 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 		[Display(Name = "Непринятые хар-ки")]
 		public string RejectedCharacteristic { get; set; }
 
-		public static DeclarationFormalCheckModel FromEntity(OMDeclaration entity, OMResult result)
+		public static DeclarationFormalCheckModel FromEntity(OMDeclaration entity, OMResult result, DateTime? dateCheckPlan)
 		{
 			if (entity == null)
 			{
 				return new DeclarationFormalCheckModel
 				{
 					Id = -1,
+					DateCheckPlan = dateCheckPlan
 				};
 			}
 
@@ -76,7 +71,6 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 				Id = entity.Id,
 				MatchingApprovedFormCheck = !string.IsNullOrEmpty(entity.CheckPoint1) ? (long)entity.CheckPoint1_Code : (long?)null,
 				PresenceMainDataCheck = !string.IsNullOrEmpty(entity.CheckPoint2) ? (long)entity.CheckPoint2_Code : (long?)null,
-				NotificationOfConsiderationTermsProlongation = !string.IsNullOrEmpty(entity.CheckPoint3) ? (long)entity.CheckPoint3_Code : (long?)null,
 				FurtherDeclarationCheck = !string.IsNullOrEmpty(entity.CheckPoint4) ? (long)entity.CheckPoint4_Code : (long?)null,
 				DateCheckPlan = entity.DateCheckPlan,
 				DateCheckFact = entity.DateCheckFact,
@@ -94,10 +88,6 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 			if (declarationViewModel.PresenceMainDataCheck.HasValue)
 			{
 				entity.CheckPoint2_Code = (CheckStatus)declarationViewModel.PresenceMainDataCheck.GetValueOrDefault();
-			}
-			if (declarationViewModel.NotificationOfConsiderationTermsProlongation.HasValue)
-			{
-				entity.CheckPoint3_Code = (CheckStatus)declarationViewModel.NotificationOfConsiderationTermsProlongation.GetValueOrDefault();
 			}
 			if (declarationViewModel.FurtherDeclarationCheck.HasValue)
 			{

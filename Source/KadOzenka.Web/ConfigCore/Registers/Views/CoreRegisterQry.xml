@@ -15,9 +15,9 @@
                 <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
             </Parameters>
         </Button>
-        <Button Caption="Операции" Type="DropDown">
+        <Button Caption="Операции" Icon="fas fa-wrench" Type="DropDown">
             <DropDownButtons>
-                <Button Caption="Добавить" NavigateURL="/CoreUi/RegistryFilter" NeedRefresh="true" WindowHeight="400" WindowWidth="800">
+                <Button Caption="Добавить" Icon="icon-plus" NavigateURL="/CoreUi/RegistryFilter" NeedRefresh="true" WindowHeight="400" WindowWidth="800">
                     <Parameters>
                         <Parameter Key="FilterRegisterId" Value="{Get:FilterRegisterId}" />
                         <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
@@ -25,7 +25,7 @@
                         <!--<Parameter Key="QueryId" Value="[ObjectID]" />-->
                     </Parameters>
                 </Button>
-                <Button Caption="Копировать" NavigateURL="~/CoreUI/RegistryFilter" NeedRefresh="true" WindowHeight="400" WindowWidth="800">
+                <Button Caption="Копировать" Icon="far fa-copy" NavigateURL="~/CoreUI/RegistryFilter" NeedRefresh="true" WindowHeight="400" WindowWidth="800">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -39,7 +39,7 @@
                         <Parameter Key="CopyQueryId" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Удалить" NavigateURL="~/CoreUI/DeleteFilter?" NeedRefreshWithoutSavingSelection="true" WindowHeight="150" WindowWidth="500">
+                <Button Caption="Удалить" Icon="far fa-trash-alt" NavigateURL="~/CoreUI/DeleteFilter?" NeedRefreshWithoutSavingSelection="true" WindowHeight="150" WindowWidth="500">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -87,7 +87,7 @@
     </Buttons>
     <StatusBarConfiguration StatusBarEnabled="false" />
     <Tabs>
-        <Tab Caption="Основные данные" NavigateURL="/CoreUi/RegistryFilter">
+        <Tab Caption="Основные данные" Icon="fas fa-pencil-alt" NavigateURL="/CoreUi/RegistryFilter">
             <Parameters>
               <Parameter Key="FilterRegisterId" Value="{Get:FilterRegisterId}" />
               <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />

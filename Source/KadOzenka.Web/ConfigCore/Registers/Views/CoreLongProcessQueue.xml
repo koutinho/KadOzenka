@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView IsBasic="true" RegisterId="975" DefaultLayoutId="1000975" Description="Очередь долгих процессов" LinkedRegistersList="975,976,977,950,941" ShowActualDate="false"
-              ShowObjectCards="false" SearchPanel="CoreLongProcessQueue" ShowFilterMenuOnToolbar="true" SRDFunctionTag="ADMIN.LONG_PROCESS">
+              ShowObjectCards="true" SearchPanel="CoreLongProcessQueue" ShowFilterMenuOnToolbar="true" SRDFunctionTag="ADMIN.LONG_PROCESS">
   <Buttons>
     <!--
         0 - Добавлен
@@ -11,14 +11,14 @@
         5 - Отправлен запрос на остановку
         6 - Остановлен
         -->
-    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects">
+    <Button Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />
         <Parameter Key="RegisterId" Value="[RegisterId]" />
         <Parameter Key="LightMode" Value="true" />
       </Parameters>
     </Button>
-    <Button Caption="Перезапустить" NavigateURL="~/LongProcessManagement/Restart" WindowHeight="160" WindowWidth="520">
+    <Button Caption="Перезапустить" Icon="fas fa-redo-alt" NavigateURL="~/LongProcessManagement/Restart" WindowHeight="160" WindowWidth="520">
       <Parameters>
         <Parameter Key="queueId" Value="[ObjectID]" />
       </Parameters>
@@ -33,7 +33,7 @@
         </ConditionGroup>
       </ConditionGroups>
     </Button>
-    <Button Caption="Отменить задание" NavigateURL="~/LongProcessManagement/CancelTask" WindowHeight="300" WindowWidth="500">
+    <Button Caption="Отменить задание" Icon="fas fa-ban" NavigateURL="~/LongProcessManagement/CancelTask" WindowHeight="300" WindowWidth="500">
       <Parameters>
         <Parameter Key="TaskId" Value="[ObjectID]" />
       </Parameters>
@@ -54,4 +54,12 @@
       </Parameters>
     </Button>
   </Buttons>
+
+  <Tabs>
+    <Tab Caption="Все данные" NavigateURL="~/LongProcessManagement/QueueCard">
+      <Parameters>
+        <Parameter Key="queueId" Value="[ObjectID]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
 </RegisterView>

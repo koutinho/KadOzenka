@@ -15,6 +15,11 @@ namespace KadOzenka.Web.Controllers
 {
 	public class DeclarationsController : BaseController
 	{
+		/// <summary>
+		/// Срок рассмотрения декларации в соответствии с Приказом 318 составляет 50 рабочих дней со дня поступления декларации
+		/// </summary>
+		public static int DurationWorkDaysCount => 50;
+
 		#region Declarations
 
 		[HttpGet]
@@ -57,6 +62,13 @@ namespace KadOzenka.Web.Controllers
 					.SelectAll()
 					.ExecuteFirstOrDefault();
 			}
+			else
+			{
+				userIsp = OMUser
+					.Where(x => x.Id == SRDSession.GetCurrentUserId())
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+			}
 			OMResult result = null;
 			if (declaration != null)
 			{
@@ -67,7 +79,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			var model = declaration != null
 				? DeclarationModel.FromEntity(declaration, owner, agent, book, userIsp, result)
-				: DeclarationModel.FromEntity(null, null, null, null, null, null);
+				: DeclarationModel.FromEntity(null, null, null, null, userIsp, null);
 
 			return View(model);
 		}
@@ -166,17 +178,6 @@ namespace KadOzenka.Web.Controllers
 				}).AsQueryable();
 		}
 
-		public IQueryable GetAutoCompleteUser(string searchText)
-		{
-			return OMUser
-				.Where(x => x.FullName.StartsWith(searchText))
-				.SelectAll().Execute().Select(x => new
-				{
-					x.Id,
-					Value = x.FullName
-				}).AsQueryable();
-		}
-
 		[HttpGet]
 		public JsonResult GetSubjectData(int subjectId)
 		{
@@ -205,21 +206,6 @@ namespace KadOzenka.Web.Controllers
 				}).FirstOrDefault();
 
 			return Json(new { data = book });
-		}
-
-		[HttpGet]
-		public JsonResult GetUserData(int userId)
-		{
-			var user = OMUser
-				.Where(x => x.Id == userId)
-				.SelectAll()
-				.Execute().Select(x => new
-				{
-					x.Id,
-					Value = x.FullName
-				}).FirstOrDefault();
-
-			return Json(new { data = user });
 		}
 
 		public ActionResult GetNotificationTabContent(long declarationId)
@@ -602,10 +588,17 @@ namespace KadOzenka.Web.Controllers
 					.SelectAll()
 					.ExecuteFirstOrDefault();
 			}
+			else
+			{
+				book = OMBook
+					.Where(x => x.Id == declaration.Book_Id)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+			}
 
-			var model = notificationId != 0 && uved != null && book != null
+			var model = notificationId != 0 && uved != null
 				? NotificationModel.FromEntity(uved, book)
-				: NotificationModel.FromEntity(null, null);
+				: NotificationModel.FromEntity(null, book);
 			model.DeclarationId = declarationId;
 
 			return View(model);

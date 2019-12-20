@@ -4,10 +4,10 @@
               SRDFunctionTag="CORE.MESSAGES.ALL">
   <Buttons>
 
-    <Button Caption="Создать сообщение" NavigateURL="~/CoreMessages/CreateNewMessage" OpenInRadWindow="true" WindowHeight="700" WindowWidth="768" SRDFunctionTag="CORE.MESSAGES.WRITE" NeedRefresh="true">
+    <Button Caption="Создать сообщение" Icon="icon-plus" NavigateURL="~/CoreMessages/CreateNewMessage" OpenInRadWindow="true" WindowHeight="700" WindowWidth="768" SRDFunctionTag="CORE.MESSAGES.WRITE" NeedRefresh="true">
     </Button>
     
-    <Button Caption="Удалить сообщение" NavigateURL="~/CoreMessages/DeleteMessage" OpenInRadWindow="true" WindowHeight="160" WindowWidth="420" SRDFunctionTag="CORE.MESSAGES.WRITE">
+    <Button Caption="Удалить сообщение" Icon="far fa-trash-alt" NavigateURL="~/CoreMessages/DeleteMessage" OpenInRadWindow="true" WindowHeight="160" WindowWidth="420" SRDFunctionTag="CORE.MESSAGES.WRITE">
       <Parameters>
         <Parameter Key="messageId" Value="[98000100]" />
       </Parameters>

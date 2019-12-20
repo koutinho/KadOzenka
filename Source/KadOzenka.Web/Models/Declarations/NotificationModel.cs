@@ -69,7 +69,9 @@ namespace KadOzenka.Web.Models.Declarations
 			{
 				return new NotificationModel
 				{
-					Id = -1
+					Id = -1,
+					BookId = book.Id,
+					BookDisplay = book.Prefics,
 				};
 			}
 
@@ -77,7 +79,7 @@ namespace KadOzenka.Web.Models.Declarations
 			{
 				Id = entity.Id,
 				BookId = entity.Book_Id,
-				BookDisplay = book?.Prefics,
+				BookDisplay = book.Prefics,
 				Number = entity.Num,
 				Date = entity.Date,
 				Type = entity.Type_Code,

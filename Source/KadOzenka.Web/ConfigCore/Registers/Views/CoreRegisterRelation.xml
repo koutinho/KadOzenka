@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView IsBasic="true" RegisterId="932" Description="" LinkedRegistersList="930,931,932,993" SRDFunctionTag="ADMIN.REGISTERS" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" ShowSettingsPanel="false" UseMasterPage="false">
     <Buttons>
-        <Button Caption="Перейти к" Type="DropDown">
+        <Button Caption="Перейти к" Icon="fas fa-angle-right" Type="DropDown">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
@@ -28,7 +28,7 @@
             </DropDownButtons>
         </Button>
         <Button CommandName="ExportToExcel" />
-        <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects">
+        <Button Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>

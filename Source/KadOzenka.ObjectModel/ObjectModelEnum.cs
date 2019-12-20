@@ -1157,12 +1157,6 @@ namespace ObjectModel.Directory.Declarations
         [EnumCode("1")]
         Item1 = 1,
 		/// <summary>
-		/// Уведомление об отрицательной формальной проверке (2)
-		/// </summary>
-		[Description("Уведомление об отрицательной формальной проверке")]
-        [EnumCode("2")]
-        Item2 = 2,
-		/// <summary>
 		/// Уведомление об учете информации из декларации (3)
 		/// </summary>
 		[Description("Уведомление об учете информации из декларации")]

@@ -2,13 +2,13 @@
 <RegisterView  IsBasic="true" RegisterId="992" DefaultLayoutId="1000992" Description="Представление для журнала диагностики" JoinType="Left" LinkedRegistersList="992,950,941" ShowActualDate="false" SRDFunctionTag="CORE.CONF.CORE_DIAGNOSTICS" SearchPanel="CoreSharedDiagnostics">
   <Buttons>
     <Button Caption="Настройка сбора диагностических данных" NavigateURL="~/CoreUI/Configurator/Diagnostics/DiagnosticsSetup.aspx" />
-    <Button Caption="Обновить кэш настроек" NavigateURL="~/CoreUI/Configurator/Diagnostics/UpdateCache.aspx" />
+    <Button Caption="Обновить кэш настроек" Icon="fas fa-redo-alt" NavigateURL="~/CoreUI/Configurator/Diagnostics/UpdateCache.aspx" />
     <Button Caption="Выгрузка уникальных сообщений" NavigateURL="~/CoreUI/Configurator/Diagnostics/ReportUniqueDiagnostics.aspx" WindowHeight="450" WindowWidth="400" />
     <Button Caption="Экспорт в Excel" CommandName="ExportToExcel" SRDFunctionTag="CORE.REGISTER.EXCELEXPORT.CORE_ERROR_LOG" />
     <Button Caption="Экспорт в DBF" CommandName="ExportToDBF" SRDFunctionTag="CORE.REGISTER.DBFEXPORT.CORE_ERROR_LOG" />
   </Buttons>
   <Tabs>
-    <Tab Caption="Все данные" NavigateURL="~/CoreUi/DiagnosticsDetails">
+    <Tab Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/CoreUi/DiagnosticsDetails">
       <Parameters>
         <Parameter Key="messageId" Value="[ObjectID]" />
       </Parameters>

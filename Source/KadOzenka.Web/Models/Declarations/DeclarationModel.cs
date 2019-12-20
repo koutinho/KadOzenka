@@ -1,6 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Core.Register.DAL;
+using Core.UI.Registers.Services;
+using KadOzenka.Web.Controllers;
 using KadOzenka.Web.Models.Declarations.DeclarationTabModel;
+using ObjectModel.Core.Shared;
 using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
@@ -169,10 +173,15 @@ namespace KadOzenka.Web.Models.Declarations
 		{
 			if (entity == null)
 			{
+				var durationDateIn =
+					CalendarHolidays.GetDateFromWorkDays(DateTime.Today, DeclarationsController.DurationWorkDaysCount);
 				return new DeclarationModel
 				{
 					Id = -1,
-					FormalCheckModel = DeclarationFormalCheckModel.FromEntity(null, null)
+					DurationDateIn = durationDateIn,
+					FormalCheckModel = DeclarationFormalCheckModel.FromEntity(null, null, durationDateIn),
+					UserIspId = userIsp?.Id,
+					UserIspDisplay = userIsp?.FullName
 				};
 			}
 
@@ -211,7 +220,7 @@ namespace KadOzenka.Web.Models.Declarations
 				DurationDateIn = entity.DurationIn,
 				DateEnd = entity.DateEnd,
 				Status = (long)entity.Status_Code,
-				FormalCheckModel = DeclarationFormalCheckModel.FromEntity(entity, result)
+				FormalCheckModel = DeclarationFormalCheckModel.FromEntity(entity, result, null)
 			};
 		}
 

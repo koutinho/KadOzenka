@@ -3,16 +3,16 @@
               ShowActualDate="false" ShowFilterMenu="false" ShowSettingsPanel="false" UseMasterPage="false" 
               SearchPanel="CoreRegisterList" DockNavigationPanel="true">
     <Buttons>
-        <Button Caption="Операции" Type="DropDown">
+        <Button Caption="Операции" Icon="fas fa-wrench" Type="DropDown">
             <DropDownButtons>
-                <Button Caption="Добавить" NavigateURL="~/CoreUI/Registers/ListEditor/ListData.aspx?" WindowHeight="300" WindowWidth="500">
+                <Button Caption="Добавить" Icon="icon-plus" NavigateURL="~/CoreUI/Registers/ListEditor/ListData.aspx?" WindowHeight="300" WindowWidth="500">
                     <Parameters>
                         <Parameter Key="PageMode" Value="Create" />
                         <Parameter Key="RegisterId" Value="{Get:ListRegisterId}" />
                         <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
                     </Parameters>
                 </Button>
-                <Button Caption="Копировать" NavigateURL="~/CoreUI/Registers/ListEditor/ListData.aspx?" NeedRefresh="true" WindowHeight="300" WindowWidth="500">
+                <Button Caption="Копировать" Icon="far fa-copy" NavigateURL="~/CoreUI/Registers/ListEditor/ListData.aspx?" NeedRefresh="true" WindowHeight="300" WindowWidth="500">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -27,7 +27,7 @@
                         <Parameter Key="RegisterViewId" Value="{Get:RegisterViewId}" />
                     </Parameters>
                 </Button>
-                <Button Caption="Удалить" NavigateURL="~/CoreUI/Registers/ListEditor/DeleteList.aspx?" NeedRefreshWithoutSavingSelection="true" WindowHeight="150" WindowWidth="500">
+                <Button Caption="Удалить" Icon="far fa-trash-alt" NavigateURL="~/CoreUI/Registers/ListEditor/DeleteList.aspx?" NeedRefreshWithoutSavingSelection="true" WindowHeight="150" WindowWidth="500">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -75,7 +75,7 @@
     </Buttons>
     <StatusBarConfiguration StatusBarEnabled="false" />
     <Tabs>
-        <Tab Caption="Основные данные" NavigateURL="~/CoreUI/Registers/ListEditor/ListData.aspx?">
+        <Tab Caption="Основные данные" Icon="fas fa-pencil-alt" NavigateURL="~/CoreUI/Registers/ListEditor/ListData.aspx?">
             <Parameters>
                 <Parameter Key="PageMode" Value="Edit" />
                 <Parameter Key="ListId" Value="[ObjectID]" />

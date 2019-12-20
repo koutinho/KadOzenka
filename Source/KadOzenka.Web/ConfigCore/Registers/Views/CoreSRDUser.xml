@@ -2,21 +2,33 @@
 <RegisterView IsBasic="true" RegisterId="950" DefaultLayoutId="1000006" Description="Представление для списка пользователей" 
               LinkedRegistersList="950,941,940,949,946,952" ShowActualDate="false" SearchPanel="CoreSRDUser"
               SRDFunctionTag="CORE.SRD.USERS">
+			  
+	<DefaultSearchControls>
+		<ControlElement AttributeNumber="95000400" />
+		<ControlElement AttributeNumber="95000300" />
+		<ControlElement AttributeNumber="95001000" DefaultValue="false" />
+	</DefaultSearchControls>
+	
     <Buttons>
-        <Button Caption="Операции" Type="DropDown" SRDFunctionTag="CORE.SRD.USERS.CHANGE">
+        <Button Caption="Операции" Icon="fas fa-cog" Type="DropDown" SRDFunctionTag="CORE.SRD.USERS.CHANGE">
             <DropDownButtons>
-                <Button Caption="Добавить пользователя" NavigateURL="/CoreUi/UserCreate?UserId=-1" NeedRefresh="true" SRDFunctionTag="CORE.SRD.USERS.CHANGE" WindowHeight="520" WindowWidth="800" />
-                <Button Caption="Изменить пароль" NavigateURL="/CoreUi/ChangePassword" SRDFunctionTag="CORE.SRD.USERS.CHANGE" WindowHeight="300" WindowWidth="660">
+                <Button Caption="Добавить пользователя" Icon="fas fa-user-plus" NavigateURL="/CoreUi/UserCreate?UserId=-1" 
+                        NeedRefresh="true" SRDFunctionTag="CORE.SRD.USERS.CHANGE" WindowHeight="520" WindowWidth="800" />
+              
+                <Button Caption="Изменить пароль" NavigateURL="/CoreUi/ChangePassword" SRDFunctionTag="CORE.SRD.USERS.CHANGE_PASSWORD" 
+                        WindowHeight="300" WindowWidth="660">
                     <Parameters>
                         <Parameter Key="UserId" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-              <Button Caption="Сгенерировать новый пароль" NavigateURL="/CoreUi/UserGeneratePassword" SRDFunctionTag="CORE.SRD.USERS.CHANGE" WindowHeight="200" WindowWidth="400">
+              <Button Caption="Сгенерировать новый пароль" NavigateURL="/CoreUi/UserGeneratePassword" 
+                      SRDFunctionTag="CORE.SRD.USERS.CHANGE_PASSWORD" WindowHeight="200" WindowWidth="400">
                 <Parameters>
                   <Parameter Key="UserId" Value="[ObjectID]" />
                 </Parameters>
               </Button>
-              <Button Caption="Заблокировать" NavigateURL="/CoreUi/UserDelete" NeedRefresh="true" SRDFunctionTag="CORE.SRD.USERS.CHANGE" WindowHeight="200" WindowWidth="350">
+              <Button Caption="Заблокировать" Icon="fas fa-lock" NavigateURL="/CoreUi/UserDelete" NeedRefresh="true" 
+                      SRDFunctionTag="CORE.SRD.USERS.BLOCKING" WindowHeight="200" WindowWidth="350">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Hide">
                             <Conditions>
@@ -29,7 +41,8 @@
                         <Parameter Key="UserID" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Разблокировать" NavigateURL="/CoreUi/UserUnDelete" NeedRefresh="true" SRDFunctionTag="CORE.SRD.USERS.CHANGE" WindowHeight="200" WindowWidth="350">
+                <Button Caption="Разблокировать" Icon="fas fa-unlock" NavigateURL="/CoreUi/UserUnDelete" NeedRefresh="true" 
+                        SRDFunctionTag="CORE.SRD.USERS.BLOCKING" WindowHeight="200" WindowWidth="350">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Hide">
                             <Conditions>
@@ -42,12 +55,20 @@
                         <Parameter Key="UserID" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-              <Button Caption="Пакетная загрузка" NavigateURL="/CoreUi/UploadUsers" NeedRefresh="true" SRDFunctionTag="CORE.SRD.USERS.CHANGE" WindowHeight="600" WindowWidth="800"></Button>
+              <Button Caption="Сбросить активные сессии" NavigateURL="/CoreUi/DropActiveSessions" SRDFunctionTag="CORE.SRD.USERS.CHANGE" 
+                      WindowHeight="300" WindowWidth="660">
+                <Parameters>
+                  <Parameter Key="userId" Value="[ObjectID]" />
+                </Parameters>
+              </Button>
+              <Button Caption="Пакетная загрузка" NavigateURL="/CoreUi/UploadUsers" NeedRefresh="true" 
+                      SRDFunctionTag="CORE.SRD.USERS.CHANGE" WindowHeight="600" WindowWidth="800"></Button>
             </DropDownButtons>
         </Button>
-        <Button Caption="Аудит" Type="DropDown">
+        <Button Caption="Аудит" Icon="fas fa-pencil-alt" Type="DropDown" SRDFunctionTag="CORE.SRD.AUDIT">
             <DropDownButtons>
-                <Button Caption="Сессии" NavigateURL="/RegistersView/CoreSRDSession?Transition=1" SRDFunctionTag="CORE.CONF.SRD" OpenInRadWindow="false">
+                <Button Caption="Сессии" NavigateURL="/RegistersView/CoreSRDSession?Transition=1" 
+                        SRDFunctionTag="CORE.SRD.AUDIT.SESSIONS" OpenInRadWindow="false">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -59,7 +80,7 @@
                         <Parameter Key="94900200" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Действия" NavigateURL="/RegistersView/CoreSRDAudit?Transition=1" SRDFunctionTag="CORE.CONF.SRD" OpenInRadWindow="false">
+                <Button Caption="Действия" Icon ="fas fa-wrench" NavigateURL="/RegistersView/CoreSRDAudit?Transition=1" SRDFunctionTag="CORE.CONF.SRD" OpenInRadWindow="false">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -71,23 +92,12 @@
                         <Parameter Key="94000300" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Журнал изменений в реестрах" NavigateURL="/RegistersView/CoreSRDRegisterAudit?Transition=1" SRDFunctionTag="CORE.CONF.SRD" OpenInRadWindow="false">
-                    <ConditionGroups>
-                        <ConditionGroup HideOrDisable="Disable">
-                            <Conditions>
-                                <Condition Key="NeedSelectedRow" Operation="" Value="true" />
-                            </Conditions>
-                        </ConditionGroup>
-                    </ConditionGroups>
-                    <Parameters>
-                        <Parameter Key="96400500" Value="[ObjectID]" />
-                    </Parameters>
-                </Button>
             </DropDownButtons>
         </Button>
-        <Button Caption="Перейти к" Type="DropDown">
+        <Button Caption="Перейти к" Icon="fas fa-angle-right" Type="DropDown">
             <DropDownButtons>
-                <Button Caption="Ролям пользователя" NavigateURL="/RegistersView/CoreSRDRole?Transition=1" SRDFunctionTag="CORE.CONF.SRD" OpenInRadWindow="false">
+                <Button Caption="Ролям пользователя" NavigateURL="/RegistersView/CoreSRDRole?Transition=1" 
+                        SRDFunctionTag="CORE.SRD.ROLES" OpenInRadWindow="false">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -99,7 +109,8 @@
                         <Parameter Key="95200100" Value="[ObjectID]" />
                     </Parameters>
                 </Button>
-                <Button Caption="Подразделению пользователя" NavigateURL="/RegistersView/CoreSRDDepartment?Transition=1" SRDFunctionTag="CORE.CONF.SRD" OpenInRadWindow="false">
+                <Button Caption="Подразделению пользователя" NavigateURL="/RegistersView/CoreSRDDepartment?Transition=1" 
+                        SRDFunctionTag="CORE.SRD.DEPARTMENTS" OpenInRadWindow="false">
                     <ConditionGroups>
                         <ConditionGroup HideOrDisable="Disable">
                             <Conditions>
@@ -115,18 +126,19 @@
         </Button>
         <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
     </Buttons>
+  
     <Tabs>
         <Tab Caption="Данные пользователя" NavigateURL="~/CoreUi/UserEdit">
             <Parameters>
                 <Parameter Key="UserID" Value="[ObjectID]" />
             </Parameters>
         </Tab>
-      <Tab Caption="Сессии" NavigateURL="/RegistersView/CoreSRDUserSession?Transition=1">
+      <Tab Caption="Сессии" NavigateURL="/RegistersView/CoreSRDUserSession?Transition=1" SRDFunctionTag="CORE.SRD.AUDIT.SESSIONS">
         <Parameters>
           <Parameter Key="94900200" Value="[ObjectID]" />
         </Parameters>
       </Tab>
-      <Tab Caption="Действия" NavigateURL="/RegistersView/CoreSRDUserAction?Transition=1">
+      <Tab Caption="Действия" NavigateURL="/RegistersView/CoreSRDUserAction?Transition=1" SRDFunctionTag="CORE.SRD.AUDIT.ACTIONS">
         <Parameters>
           <Parameter Key="94000300" Value="[ObjectID]" />
         </Parameters>

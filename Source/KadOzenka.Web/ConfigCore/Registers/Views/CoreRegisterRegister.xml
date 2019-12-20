@@ -3,7 +3,7 @@
               SearchPanel="CoreRegisterRegister" ShowActualDate="false"
               RightSplitterOrientation="Horizontal" SplitterSize="40%">
   <Buttons>
-    <Button Caption="Перейти к" OpenInRadWindow="false" Type="DropDown">
+    <Button Caption="Перейти к" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
       <DropDownButtons>
         <Button Caption="показателям&amp;nbsp;реестра" NavigateURL="~/RegistersView?Transition=1&amp;" OpenInRadWindow="false">
           <ConditionGroups>
@@ -34,7 +34,7 @@
       </DropDownButtons>
     </Button>
     <Button CommandName="ExportToExcel" OpenInRadWindow="false" />
-    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects">
+    <Button Caption="Все данные" Icon="fas fa-pencil-alt" NavigateURL="~/LinkedRegisterObjects">
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>
@@ -48,7 +48,7 @@
         <Parameter Key="LightMode" Value="true" />
       </Parameters>
     </Button>
-    <Button Caption="Операции" OpenInRadWindow="false" Type="DropDown">
+    <Button Caption="Операции" Icon="fas fa-wrench" OpenInRadWindow="false" Type="DropDown">
       <DropDownButtons>
         <Button Caption="Добавить атрибуты на основе колонок в таблице" NavigateURL="~/CoreUi/AddAttributesFromTableColumns">
           <Parameters>
