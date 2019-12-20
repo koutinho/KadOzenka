@@ -226,28 +226,16 @@ namespace KadOzenka.Web.Models.Declarations
 
 		public static void ToEntity(DeclarationModel declarationViewModel, ref OMDeclaration entity, ref OMResult result)
 		{
-			if (declarationViewModel.OwnerType.HasValue)
-			{
-				entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();
-			}
+			entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();
 			entity.Owner_Id = declarationViewModel.OwnerId;
 			entity.Agent_Id = declarationViewModel.AgentId;
-			if (declarationViewModel.UvedTypeOwner.HasValue)
-			{
-				entity.UvedTypeOwner_Code = declarationViewModel.UvedTypeOwner.GetValueOrDefault();
-			}
-			if (declarationViewModel.UvedTypeAgent.HasValue)
-			{
-				entity.UvedTypeAgent_Code = declarationViewModel.UvedTypeAgent.GetValueOrDefault();
-			}
+			entity.UvedTypeOwner_Code = declarationViewModel.UvedTypeOwner.GetValueOrDefault();
+			entity.UvedTypeAgent_Code = declarationViewModel.UvedTypeAgent.GetValueOrDefault();
 			entity.CertificateName = declarationViewModel.CertificateName;
 			entity.CertificateNum = declarationViewModel.CertificateNum;
 			entity.CertificateDate = declarationViewModel.CertificateDate;
 			entity.CadastralNumObj = declarationViewModel.CadastralObjectNumber;
-			if (declarationViewModel.ObjectType.HasValue)
-			{
-				entity.TypeObj_Code = declarationViewModel.ObjectType.GetValueOrDefault();
-			}
+			entity.TypeObj_Code = declarationViewModel.ObjectType.GetValueOrDefault();
 			entity.DateIn = declarationViewModel.DateIn;
 			entity.NumIn = declarationViewModel.NumberIn;
 			entity.Book_Id = declarationViewModel.BookId.Value;

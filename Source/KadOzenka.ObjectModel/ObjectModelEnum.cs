@@ -1215,59 +1215,59 @@ namespace ObjectModel.Directory.Declarations
     public enum ObjectType : long
     {
 		/// <summary>
-		/// Земельный участок (0)
+		/// Земельный участок (1)
 		/// </summary>
 		[Description("Земельный участок")]
-        [EnumCode("0")]
-        Site = 0,
+        [EnumCode("1")]
+        Site = 1,
 		/// <summary>
-		/// Здание (1)
+		/// Здание (2)
 		/// </summary>
 		[Description("Здание")]
-        [EnumCode("1")]
-        Building = 1,
+        [EnumCode("2")]
+        Building = 2,
 		/// <summary>
-		/// Помещение (2)
+		/// Помещение (3)
 		/// </summary>
 		[Description("Помещение")]
-        [EnumCode("2")]
-        Room = 2,
+        [EnumCode("3")]
+        Room = 3,
 		/// <summary>
-		/// Сооружение (3)
+		/// Сооружение (4)
 		/// </summary>
 		[Description("Сооружение")]
-        [EnumCode("3")]
-        Construction = 3,
+        [EnumCode("4")]
+        Construction = 4,
 		/// <summary>
-		/// Машиноместо (4)
+		/// Машиноместо (5)
 		/// </summary>
 		[Description("Машиноместо")]
-        [EnumCode("4")]
-        ParkingPlace = 4,
+        [EnumCode("5")]
+        ParkingPlace = 5,
 		/// <summary>
-		/// Онс (5)
+		/// Онс (6)
 		/// </summary>
 		[Description("Онс")]
-        [EnumCode("5")]
-        Ons = 5,
+        [EnumCode("6")]
+        Ons = 6,
 		/// <summary>
-		/// Единый недвижимый комплекс (6)
+		/// Единый недвижимый комплекс (7)
 		/// </summary>
 		[Description("Единый недвижимый комплекс")]
-        [EnumCode("6")]
-        Ens = 6,
+        [EnumCode("7")]
+        Ens = 7,
 		/// <summary>
-		/// Производственно имущественный комплекс (7)
+		/// Производственно имущественный комплекс (8)
 		/// </summary>
 		[Description("Производственно имущественный комплекс")]
-        [EnumCode("7")]
-        Pik = 7,
+        [EnumCode("8")]
+        Pik = 8,
 		/// <summary>
-		/// Иное (8)
+		/// Иное (9)
 		/// </summary>
 		[Description("Иное")]
-        [EnumCode("8")]
-        Other = 8,
+        [EnumCode("9")]
+        Other = 9,
     }
 }
 
@@ -1332,29 +1332,29 @@ namespace ObjectModel.Directory.Declarations
     public enum SendUvedType : long
     {
 		/// <summary>
-		/// Нет (0)
+		/// Нет (1)
 		/// </summary>
 		[Description("Нет")]
-        [EnumCode("0")]
-        No = 0,
+        [EnumCode("1")]
+        No = 1,
 		/// <summary>
-		/// На почтовый адрес (1)
+		/// На почтовый адрес (2)
 		/// </summary>
 		[Description("На почтовый адрес")]
-        [EnumCode("1")]
-        Post = 1,
+        [EnumCode("2")]
+        Post = 2,
 		/// <summary>
-		/// На электронный адрес (2)
+		/// На электронный адрес (3)
 		/// </summary>
 		[Description("На электронный адрес")]
-        [EnumCode("2")]
-        Email = 2,
+        [EnumCode("3")]
+        Email = 3,
 		/// <summary>
-		/// На руки (3)
+		/// На руки (4)
 		/// </summary>
 		[Description("На руки")]
-        [EnumCode("3")]
-        OnHands = 3,
+        [EnumCode("4")]
+        OnHands = 4,
     }
 }
 
