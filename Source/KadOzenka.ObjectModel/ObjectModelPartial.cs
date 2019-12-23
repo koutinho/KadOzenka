@@ -1347,6 +1347,30 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 219 Реестр хранения факторов тура
+    /// </summary>
+    public partial class OMTourFactorRegister
+    {
+
+        public OMTourFactorRegister()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMTourFactorRegister(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года
     /// </summary>
     public partial class OMUnitParamsOks2018

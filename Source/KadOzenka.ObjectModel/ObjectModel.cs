@@ -5979,7 +5979,7 @@ namespace ObjectModel.KO
         /// <summary>
         /// 21900100 Идентификатор (ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 21900100)]
+        [PrimaryKey(AttributeID = 21900100)]
         public long Id
         {
             get
