@@ -1,6 +1,5 @@
 ﻿function ChangeBounds(event) {
     const params = new window.URLSearchParams(window.location.search);
-
     const newCenter = event.get('newCenter');
     params.set('center', newCenter);
     const newZoom = event.get('newZoom');
@@ -10,7 +9,6 @@
         newUrl.search = params;
         window.history.replaceState({ path: newUrl.href }, '', newUrl.href);
     }
-    
     const newBounds = event.get('newBounds');
     refreshCurrentToken();
     GetClusterData(newBounds, newZoom, currentToken, params.has('objectId') ? params.get('objectId') : null);
@@ -30,7 +28,7 @@ function clickOnCluster(event) {
     GetRequiredInfo(ids);
 };
 
-function changeObjectsCount(zoom, count) {
+function changeObjectsCount(count) {
     document.getElementById("CountControl").classList.add("loaded");
     document.getElementById("CountControlText").innerHTML = `Объектов в видимой области ${count}`;
 };
@@ -67,22 +65,28 @@ function changeMapType(type, element) {
 
 function changeLayer(type) {
     if(type != null) currentLayer = type;
-    for (var i = 0; i < CLD.length; i++) { map.geoObjects.remove(CLD[i]); }
-    CLD = [];
+    map.geoObjects.remove(SOM);
     switch (currentLayer) {
         case MapZoneType.district:
-            addDistrictsLayer();
+            setCurrentLayer('/MapJSONData/districts.min.json');
             break;
         case MapZoneType.region:
-            addAreaLayer();
+            setCurrentLayer('/MapJSONData/regions.min.json');
             break;
         case MapZoneType.zone:
-            addZoneLayer();
+            setCurrentLayer('/MapJSONData/zones.min.json');
             break;
         case MapZoneType.quartal:
-            addQuartalLayer();
-            break;
-        default:
+            setCurrentLayer('/MapJSONData/quartal.min.json');
             break;
     }
+}
+
+function setCurrentLayer(url) {
+    SOM = new ymaps.ObjectManager();
+    $.getJSON(url).done(function (geoJson) {
+        geoJson.features.forEach(function (obj) { try { obj.properties.balloonContent = obj.properties.description; } catch{ } });
+        SOM.add(geoJson);
+        map.geoObjects.add(SOM);
+    });
 }

@@ -21,7 +21,7 @@ function GetClusterData(bounds, zoom, token, objectId) {
                 ids = [];
                 result.arr.slice(0, MapSettings.leftMenuMaxValues).forEach(x => { if (x.id != undefined) ids.push(x.id); });
                 initCluster(result.arr, zoom);
-                changeObjectsCount(zoom, result.allCount);
+                changeObjectsCount(result.allCount);
             }
         }
     });
