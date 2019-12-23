@@ -16607,6 +16607,118 @@ namespace ObjectModel.Declarations
     }
 }
 
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 507 Таблица, содержащая информацию о скан-образах декларации (DECLARATIONS_SCAN_DATA)
+    /// </summary>
+    [RegisterInfo(RegisterID = 507)]
+    [Serializable]
+    public partial class OMScanData : OMBaseClass<OMScanData>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50700100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _declarationid;
+        /// <summary>
+        /// 50700200 Идентификатор декларации (DECLARATION_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50700200)]
+        public long DeclarationId
+        {
+            get
+            {
+                CheckPropertyInited("DeclarationId");
+                return _declarationid;
+            }
+            set
+            {
+                _declarationid = value;
+                NotifyPropertyChanged("DeclarationId");
+            }
+        }
+
+
+        private DateTime? _creationdate;
+        /// <summary>
+        /// 50700300 Дата добавления (CREATION_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50700300)]
+        public DateTime? CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 50700400 Имя файла (FILE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50700400)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+
+        private string _filetype;
+        /// <summary>
+        /// 50700500 Тип файла (FILE_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50700500)]
+        public string FileType
+        {
+            get
+            {
+                CheckPropertyInited("FileType");
+                return _filetype;
+            }
+            set
+            {
+                _filetype = value;
+                NotifyPropertyChanged("FileType");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>
