@@ -5968,6 +5968,133 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 219 Реестр хранения факторов тура (ko_tour_factor_register)
+    /// </summary>
+    [RegisterInfo(RegisterID = 219)]
+    [Serializable]
+    public partial class OMTourFactorRegister : OMBaseClass<OMTourFactorRegister>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 21900100 Идентификатор (ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21900100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _tourid;
+        /// <summary>
+        /// 21900200 Идентификатор тура (TOUR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21900200)]
+        public long? TourId
+        {
+            get
+            {
+                CheckPropertyInited("TourId");
+                return _tourid;
+            }
+            set
+            {
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
+            }
+        }
+
+
+        private string _objecttype;
+        /// <summary>
+        /// 21900300 Тип объекта (OBJECT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21900300)]
+        public string ObjectType
+        {
+            get
+            {
+                CheckPropertyInited("ObjectType");
+                return _objecttype;
+            }
+            set
+            {
+                _objecttype = value;
+                NotifyPropertyChanged("ObjectType");
+            }
+        }
+
+
+        private PropertyTypes _objecttype_Code;
+        /// <summary>
+        /// 21900300 Тип объекта (справочный код) (OBJECT_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21900300)]
+        public PropertyTypes ObjectType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ObjectType_Code");
+                return this._objecttype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_objecttype))
+                    {
+                         _objecttype = descr;
+                    }
+                }
+                else
+                {
+                     _objecttype = descr;
+                }
+
+                this._objecttype_Code = value;
+                NotifyPropertyChanged("ObjectType");
+                NotifyPropertyChanged("ObjectType_Code");
+            }
+        }
+
+
+        private long? _registerid;
+        /// <summary>
+        /// 21900400 Идентификатор регистра (REGISTER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21900400)]
+        public long? RegisterId
+        {
+            get
+            {
+                CheckPropertyInited("RegisterId");
+                return _registerid;
+            }
+            set
+            {
+                _registerid = value;
+                NotifyPropertyChanged("RegisterId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года (KO_UNIT_PARAMS_OKS_2018)
     /// </summary>
     [RegisterInfo(RegisterID = 250)]
