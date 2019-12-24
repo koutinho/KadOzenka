@@ -91,6 +91,7 @@ namespace KadOzenka.Web.Models.Declarations
 		public static void ToEntity(NotificationModel notificationViewModel, ref OMUved entity)
 		{
 			entity.Declaration_Id = notificationViewModel.DeclarationId;
+			entity.Type_Code = notificationViewModel.Type.GetValueOrDefault();
 			entity.Book_Id = notificationViewModel.BookId;
 			entity.Num = notificationViewModel.Number;
 			entity.Date = notificationViewModel.Date;
