@@ -1,0 +1,37 @@
+﻿<div>
+    <input name="file" id="file" type="file" aria-label="files" />
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#file').kendoUpload({
+		    multiple: false,
+		    localization: {
+			    select: 'Загрузить файл'
+		    },
+		    async: {
+                autoUpload: true,                
+                saveUrl: '@Url.Action("ImportGkn", "DataImport")'                
+            },
+            upload: function (e) {
+                e.data = { objectId: '@ViewBag.ObjectId'}
+            },
+
+		    success: function (e) {
+			    if (e.operation === "upload") {
+				    Common.ShowMessage("Файл успешно загружен");
+			    }
+		    },
+		    validation: {
+			    allowedExtensions: ['.xml']
+		    },
+		    error: function (e) {
+			    if (e.XMLHttpRequest.responseText) {
+				    Common.ShowError(e.XMLHttpRequest.responseText);
+			    } else {
+				    Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошибок)");
+			    }
+		    }
+	    }).data('kendoUpload');
+    });
+</script>

@@ -1,0 +1,58 @@
+﻿<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabel("Идентификатор задания ЦОД")
+        </div>
+        <div class="col-sm-8">
+            <input class="k-textbox" id="codId" name="codId" type="text" value="" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabel("Удалить старый")
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoCheckBox("", "deleteOld", false, isReadonly: false)
+        </div>
+    </div>
+
+    <input name="file" id="file" type="file" aria-label="files" />
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#file').kendoUpload({
+		    multiple: false,
+		    localization: {
+			    select: 'Загрузить файл'
+		    },
+		    async: {
+                autoUpload: true,
+                saveUrl: '@Url.Action("ImportCod", "DataImport")'
+            },
+            upload: function (e) {
+                debugger;
+                var codId = $('#codId').val();
+                var deleteOld = $('#deleteOld').prop('checked');
+                debugger;
+                e.data = { codId, deleteOld}
+            },
+
+		    success: function (e) {
+			    if (e.operation === "upload") {
+				    Common.ShowMessage("Файл успешно загружен");
+			    }
+		    },
+		    validation: {
+			    allowedExtensions: ['.xml']
+		    },
+		    error: function (e) {
+			    if (e.XMLHttpRequest.responseText) {
+				    Common.ShowError(e.XMLHttpRequest.responseText);
+			    } else {
+				    Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошибок)");
+			    }
+		    }
+	    }).data('kendoUpload');
+    });
+</script>

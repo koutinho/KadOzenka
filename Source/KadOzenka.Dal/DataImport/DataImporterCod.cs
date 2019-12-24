@@ -106,7 +106,7 @@ namespace KadOzenka.Dal.DataImport
         /// <summary>
         /// Импорт классификатора ЦОД
         /// </summary>
-        public static Stream ImportDataCodFromXml(FileStream stream, long CodJobId, bool deleteOld)
+        public static Stream ImportDataCodFromXml(Stream stream, long CodJobId, bool deleteOld)
         {
             XmlDocument xml = new XmlDocument();
             xml.Load(stream);

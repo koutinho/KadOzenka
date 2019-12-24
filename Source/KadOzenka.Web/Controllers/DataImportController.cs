@@ -9,6 +9,8 @@ using GemBox.Spreadsheet;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using Core.Main.FileStorages;
+using Core.ErrorManagment;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -105,6 +107,57 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return NoContent();
+		}
+
+		[HttpGet]
+		public ActionResult ImportGkn(long? objectId)
+		{
+			ViewBag.ObjectId = objectId;
+			return View();
+		}
+
+		[HttpPost]
+		public ActionResult ImportGkn(IFormFile file, long objectId)
+		{
+			try
+			{
+				ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
+
+				string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
+				string fileStorageName = "DataImporterFromTemplate";
+				DateTime date = DateTime.Now;
+				FileStorageManager.Save(file.OpenReadStream(), fileStorageName, date, file.FileName);
+
+				var filePath = FileStorageManager.GetFullFileName(fileStorageName, date, file.FileName);
+				DataImporterGkn.ImportDataGknFromXml(filePath, schemaPath, task);
+			}
+			catch (Exception ex)
+			{
+				ErrorManager.LogError(ex);
+				return BadRequest();
+			}
+			return Ok();
+		}
+
+		[HttpGet]
+		public ActionResult ImportCod()
+		{			
+			return View();
+		}
+
+		[HttpPost]
+		public ActionResult ImportCod(IFormFile file, long codId, bool deleteOld)
+		{
+			try
+			{
+				DataImporterCod.ImportDataCodFromXml(file.OpenReadStream(), codId, deleteOld);
+			}
+			catch (Exception ex)
+			{
+				ErrorManager.LogError(ex);
+				return BadRequest();
+			}
+			return Ok();
 		}
 	}
 }
