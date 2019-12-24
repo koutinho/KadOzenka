@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -8,9 +9,11 @@ using Core.Register.QuerySubsystem;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.SRD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using Core.Shared.Extensions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -337,5 +340,167 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
-	}	
+
+		#region Модель
+
+		public ActionResult Model(long groupId)
+		{
+			OMModel model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+
+			if (model == null)
+			{
+				throw new Exception("Модель не найдена");
+			}
+
+			return View(model); 
+		}
+
+		public JsonResult GetModelFactors(long modelId)
+		{
+			List<ModelFactorDto> factors = OMModelFactor.Where(x => x.ModelId == modelId)
+				.SelectAll()
+				.Execute()
+				.Select(factor => new ModelFactorDto
+				{
+					Id = factor.Id,
+					ModelId = factor.ModelId,
+					FactorId = factor.FactorId,
+					MarkerId = factor.MarkerId,
+					Weight = factor.Weight,
+					B0 = factor.B0,
+					SignDiv = factor.SignDiv,
+					SignAdd = factor.SignAdd,
+					SignMarket = factor.SignMarket
+				}).ToList();
+
+			List<long?> factorIds = factors.Select(x => x.FactorId).ToList();
+			var sqlResult = GetModelFactorNameSql(factorIds);
+
+			foreach (ModelFactorDto factorDto in factors)
+			{
+				factorDto.Factor = sqlResult[factorDto.FactorId];
+			}
+					   
+			return Json(factors);
+		}
+
+		public ActionResult EditModelFactor(long? id, long modelId)
+		{
+			ModelFactorDto factorDto;
+
+			if (id.HasValue)
+			{
+				OMModelFactor factor = OMModelFactor.Where(x => x.Id == id)
+					.SelectAll().ExecuteFirstOrDefault();
+
+				factorDto = new ModelFactorDto();
+				factorDto.Id = factor.Id;
+				factorDto.ModelId = factor.ModelId;
+				factorDto.FactorId = factor.FactorId;
+				factorDto.MarkerId = factor.MarkerId;
+				factorDto.Weight = factor.Weight;
+				factorDto.B0 = factor.B0;
+				factorDto.SignDiv = factor.SignDiv;
+				factorDto.SignAdd = factor.SignAdd;
+				factorDto.SignMarket = factor.SignMarket;
+
+				var sqlResult = GetModelFactorNameSql(new List<long?> { factorDto.FactorId });
+				factorDto.Factor = sqlResult[factorDto.FactorId];
+			}
+			else
+			{
+				factorDto = new ModelFactorDto()
+				{
+					Id = -1,
+					ModelId = modelId,
+					FactorId = -1,
+					MarkerId = -1
+				};
+			}
+			return View(factorDto);
+		}
+
+		private static Dictionary<long?, string> GetModelFactorNameSql(List<long?> idList, bool byRegisterIds = false)
+		{
+			string ids = string.Join(",", idList.Where(x => x.HasValue));
+			string sql = $@"select cra.id, cra.name from core_register_attribute cra ";
+
+			if (byRegisterIds)
+			{
+				sql += $@"where cra.registerid in ({ids});";
+			}
+			else
+			{
+				sql += $@"where cra.id in ({ids});";
+			}
+
+			DbCommand command = DBMngr.Main.GetSqlStringCommand(sql);
+			DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+
+			Dictionary<long?, string> result = new Dictionary<long?, string>();
+			foreach (DataRow dataRow in dt.Rows)
+			{
+				result.Add(dataRow[0].ParseToLong(), dataRow[1].ParseToString());
+			}
+
+			return result;
+		}
+
+		public JsonResult GetModelFactorName(long modelId)
+		{			
+			OMModel model = OMModel.Where(x => x.Id == modelId)
+				.Select(x => x.GroupId).ExecuteFirstOrDefault();
+
+			if (model != null)
+			{
+				OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == model.GroupId)
+					.Select(x => x.TourId).ExecuteFirstOrDefault();
+
+				if (tourGroup != null)
+				{					
+					List<OMTourFactorRegister> tfrList = OMTourFactorRegister.Where(x => x.TourId == tourGroup.TourId)
+						.Select(x => x.RegisterId).Execute();
+
+					List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
+					var result = GetModelFactorNameSql(ids, true).Select(x=>new SelectListItem
+					{
+						Value = x.Key.ToString(),
+						Text = x.Value
+					});
+
+					return Json(result);
+				}
+			}
+
+			return Json(new List<SelectListItem>());
+		}
+
+		[HttpPost]
+		public ActionResult EditModelFactor(OMModelFactor factor)
+		{			
+			factor.Save();
+
+			OMModel model = OMModel.Where(x => x.Id == factor.ModelId).SelectAll().ExecuteFirstOrDefault();
+			model.Formula = model.GetFormulaFull(true);
+			model.Save();
+
+			return Ok();
+		}
+
+		[HttpPost]
+		public ActionResult DeleteModelFactor(long? id)
+		{
+			OMModelFactor factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			factor.Destroy();
+
+			OMModel model = OMModel.Where(x => x.Id == factor.ModelId).SelectAll().ExecuteFirstOrDefault();
+			model.Formula = model.GetFormulaFull(true);
+			model.Save();
+
+			return Json(new { Success = "Удаление выполненно" });
+		}
+
+		#endregion
+	}
+
 }

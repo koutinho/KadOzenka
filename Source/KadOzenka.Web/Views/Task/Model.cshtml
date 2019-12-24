@@ -1,0 +1,189 @@
+﻿@model ObjectModel.KO.OMModel
+
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Наименование")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Описание")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Алгоритм расчета")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoEnumDropDownListFor(x => x.AlgoritmType_Code, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Формула")
+        </div>
+        <div class="col-sm-10">
+            @Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Свободный член")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
+        </div>
+    </div>
+    <div style="display: flex;">
+        <div style="align-items: stretch">
+            <div id="grid"></div>
+        </div>
+
+        <div class="col-sm-2 factor-buttons" style="padding-right:0px;">
+            <button class="btn btn-default" id="add-factor">
+                Добавить
+            </button>
+            <button class="btn btn-default" id="edit-factor">
+                Изменить
+            </button>
+            <button class="btn btn-default" id="remove-factor">
+                Удалить
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        var gridDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetModelFactors", "Task")',
+                    contentType: 'application/json; charset=utf-8',
+                    data: { modelId: @Model.Id },
+                    dataType: 'json'
+                }
+            }
+        });
+
+        $('#grid').kendoGrid({
+            dataSource: gridDataSource,
+            columns: [
+                {
+                    field: 'Factor', title: 'Фактор'
+                }, {
+                    field: 'SignDiv', title: 'Деление', template: "#=SignDiv ? 'Да' : 'Нет'#", width: 100
+                }, {
+                    field: 'SignAdd', title: 'Сумма', template: "#=SignAdd ? 'Да' : 'Нет'#", width: 100
+                }, {
+                    field: 'SignMarket', title: 'Метка', template: "#=SignMarket ? 'Да' : 'Нет'#", width: 100
+                }, {
+                    field: 'B0', title: 'Коэф.', width: 100
+                }, {
+                    field: 'Weight', title: 'Вес', width: 250
+                }
+            ],
+            height: "30em",
+            scrollable: true,
+            selectable: true
+        });
+
+        $("#grid").data("kendoGrid").bind('change', GridChanged);
+
+        function GridChanged() {
+            
+            var grid = $("#grid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length == 0) {
+                $('#edit-factor').addClass('k-state-disabled');
+                $('#remove-factor').addClass('k-state-disabled');                
+            }
+            else {
+                $('#edit-factor').removeClass('k-state-disabled');
+                $('#remove-factor').removeClass('k-state-disabled');                
+            }
+        }
+
+        $('#edit-factor').addClass('k-state-disabled');
+        $('#remove-factor').addClass('k-state-disabled');  
+
+        $('#add-factor').on('click', function () {
+            Common.UI.ShowWindow('Редактирование фактора',
+                '@Url.Action("EditModelFactor", "Task")' + '?modelId=@Model.Id',
+                'editFactorWindow',
+                function (e, param) {                        
+                        if (param == true) {                            
+                            location.reload();
+                        }
+                    },
+                800, 400);
+        });
+
+        $('#edit-factor').on('click', function () {
+            var grid = $("#grid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                Common.UI.ShowWindow('Редактирование фактора',
+                    '@Url.Action("EditModelFactor", "Task")' + '?id=' + data.Id + '&modelId=@Model.Id',
+                    'editFactorWindow',
+                    function (e, param) {                        
+                        if (param == true) {                            
+                            location.reload();
+                        }
+                    },
+                    800, 400
+                );
+            }
+        });
+
+        $('#remove-factor').on('click', function () {
+
+            var grid = $("#grid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+
+                Common.UI.ShowConfirm({
+                    title: '',
+                    content: 'Удалить фактор?',
+                    onSuccess: function () {
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            url: '@Url.Action("DeleteModelFactor","Task")',
+                            type: 'POST',
+                            data: { id: data.Id },
+                            success: function (response) {
+                                kendo.ui.progress($('body'), false);
+                                if (response.Success) {                                                                        
+                                    Common.ShowMessage(response.Success);
+                                    location.reload();
+                                }
+                            },
+                            error: function (response) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(response.responseText);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<style>
+    .factor-buttons button {
+        width: 10rem;
+        margin-bottom: 5px !important;
+        display: block;
+    }
+</style>

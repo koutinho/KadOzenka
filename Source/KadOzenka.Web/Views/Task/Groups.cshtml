@@ -27,9 +27,9 @@
         <button class="btn btn-default remove-group" style="display: block">
             Удалить
         </button>
-        @*<button class="btn btn-default model" style="display: block">
-                Модель
-            </button>*@
+        <button class="btn btn-default model" style="display: block">
+            Модель
+        </button>
     </div>
 </div>
 
@@ -99,17 +99,19 @@
 
         $("#treeList").data("kendoTreeList").bind('change', TreeListChanged);
 
-        function TreeListChanged() {            
+        function TreeListChanged() {
             var row = this.select();
             var data = this.dataItem(row);
             if (data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainOKS)'
                 || data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainParcel)') {
                 $('.edit-group').addClass('k-state-disabled');
                 $('.remove-group').addClass('k-state-disabled');
+                $('.model').addClass('k-state-disabled');
             }
             else {
                 $('.edit-group').removeClass('k-state-disabled');
                 $('.remove-group').removeClass('k-state-disabled');
+                $('.model').removeClass('k-state-disabled');
             }
         }
 
@@ -130,6 +132,15 @@
                             $("#treeList").data("kendoTreeList").dataSource.read();
                         }
                     });
+            }
+        });
+
+        $('.model').on('click', function () {
+            var treeList = $("#treeList").data("kendoTreeList");
+            var row = treeList.select();
+            if (row.length > 0) {
+                var data = treeList.dataItem(row);                
+                window.open('@Url.Action("Model", "Task")' + '?groupId=' + data.Id);
             }
         });
 
