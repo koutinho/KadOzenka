@@ -12,9 +12,14 @@ namespace KadOzenka.Web.Models.Sud
 		public long Id { get; set; }
 		[Display(Name = "Кадастровый номер")]
 		public string Kn { get; set; }
+
 		[Display(Name = "Дата определения стоимости")]
+		[Required(ErrorMessage = "Дата определения стоимости обязательное поле")]
 		public DateTime? Date { get; set; }
+
 		[Display(Name = "Площадь")]
+		[Required(ErrorMessage = "Площадь обязательное поле")]
+		[Range(1, int.MaxValue, ErrorMessage = "Площадь обязательное поле")]
 		public decimal? Square { get; set; }
 		[Display(Name = "Оспариваемая стоимость")]
 		public decimal? Kc { get; set; }
