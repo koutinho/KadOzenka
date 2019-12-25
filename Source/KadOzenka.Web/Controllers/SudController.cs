@@ -10,6 +10,7 @@ using System.Transactions;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
@@ -208,6 +209,20 @@ namespace KadOzenka.Web.Controllers
 			});
 			}
 
+			var links = OMOtchetLink.Where(x => x.IdObject == reportLinkViewModel.SudObjectId &&
+			                                 x.IdOtchet == reportLinkViewModel.IdReport).Execute();
+			if (links.Any())
+			{
+				return Json(new
+				{
+					Errors = links.Select(x => new
+					{
+						Control = 0,
+						Message = "Объект с таким отчетом уже существует. Выберите другое отчет."
+					})
+				});
+			}
+
 			OMOtchetLink reportLink = OMOtchetLink
 				.Where(x => x.Id == reportLinkViewModel.Id)
 				.SelectAll()
@@ -372,7 +387,18 @@ namespace KadOzenka.Web.Controllers
 				});
 			}
 
-			OMZakLink conclusionLink = OMZakLink
+			var links = OMZakLink.Where(x => x.IdObject == conclusionLinkViewModel.SudObjectId &&
+			                                 x.IdZak == conclusionLinkViewModel.IdConclusion).Execute();
+			if (links.Any())
+			{
+				return Json(new { Errors = links.Select(x => new
+				{
+					Control = 0,
+					Message = "Объект с таким заключением уже существует. Выберите другое заключение."
+				})});
+			}
+
+			var conclusionLink = OMZakLink
 				.Where(x => x.Id == conclusionLinkViewModel.Id)
 				.SelectAll()
 				.Execute().FirstOrDefault();
@@ -725,6 +751,20 @@ namespace KadOzenka.Web.Controllers
 
 							return e.ErrorMessage;
 						}))
+					})
+				});
+			}
+
+			var links = OMSudLink.Where(x => x.IdObject == courtLinkViewModel.ObjectId &&
+			                                    x.IdSud == courtLinkViewModel.SudId).Execute();
+			if (links.Any())
+			{
+				return Json(new
+				{
+					Errors = links.Select(x => new
+					{
+						Control = 0,
+						Message = "Объект с таким решением уже существует. Выберите другое решение."
 					})
 				});
 			}
