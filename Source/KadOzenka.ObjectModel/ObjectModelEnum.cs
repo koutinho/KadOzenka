@@ -1245,9 +1245,9 @@ namespace ObjectModel.Directory.Declarations
         [EnumCode("5")]
         ParkingPlace = 5,
 		/// <summary>
-		/// Онс (6)
+		/// ОНС (6)
 		/// </summary>
-		[Description("Онс")]
+		[Description("ОНС")]
         [EnumCode("6")]
         Ons = 6,
 		/// <summary>
