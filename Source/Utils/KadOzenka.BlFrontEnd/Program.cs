@@ -38,13 +38,11 @@ namespace KadOzenka.BlFrontEnd
 
         private static void InitCommands(BlFrontEndConsoleHelper consoleHelper)
         {
-            consoleHelper.AddCommand("1", "Запуск парсинга excele файла с объектами-аналогами из росреестра", () => { new RosreestrParser.ExcelParser().LoadRosreestrDeals(); });
             consoleHelper.AddCommand("2", "Запуск службы выполнения фоновых процессов", () =>
             {
                 LongProcessManagementService service = new LongProcessManagementService();
                 service.Start();
             });
-
             consoleHelper.AddCommand("3", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new Data().Detect(); });
             consoleHelper.AddCommand("4", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.StartImport);
             consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
@@ -112,9 +110,7 @@ namespace KadOzenka.BlFrontEnd
                 KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
             });
 
-
             consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
-
         }
 
     }

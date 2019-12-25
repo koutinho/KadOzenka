@@ -1,9 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Xml;
-using System.Text;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Configuration;
+using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
@@ -52,7 +53,7 @@ namespace KadOzenka.Dal.XmlParser
         public static void parseDistricts()
         {
             XmlDocument xDoc = new XmlDocument();
-            xDoc.Load(@"C:\Users\silanov\Documents\Дженикс\ЦИПЖС деление по кварталам, районам, округам\Геодезические координаты в XML\Данные\Кварталы.xml");
+            xDoc.Load($@"{ConfigurationManager.AppSettings["InitialXMLCoordinatesFolder"]}{ConfigurationManager.AppSettings["InitialXMLCoordinatesFile"]}");
             XmlElement xRoot = xDoc.DocumentElement;
             GeoObjects geoObjects = new GeoObjects();
             int i = 0;
@@ -70,18 +71,10 @@ namespace KadOzenka.Dal.XmlParser
                 }
                 i++;
             }
-            File.WriteAllText(@"C:\Users\silanov\Documents\Дженикс\ЦИПЖС деление по кварталам, районам, округам\Геодезические координаты в XML\JSON\quartal.json", JsonConvert.SerializeObject(geoObjects, Newtonsoft.Json.Formatting.Indented));
-            File.WriteAllText(@"C:\Users\silanov\Documents\Дженикс\ЦИПЖС деление по кварталам, районам, округам\Геодезические координаты в XML\JSON\quartal.min.json", JsonConvert.SerializeObject(geoObjects, Newtonsoft.Json.Formatting.None));
-            //List<List<string>> allPolylines = new List<List<string>>();
-            //string result = string.Empty;
-            //foreach (XmlNode xnode in xRoot.SelectNodes("Objects/Object/Conturs/Contur/Points"))
-            //{
-            //    allPolylines.Add(new List<string>());
-            //    foreach (XmlNode point in xnode.SelectNodes("Point")) allPolylines.LastOrDefault().Add($"[{point.SelectNodes("Y")[0].InnerText}, {point.SelectNodes("X")[0].InnerText}]");
-            //}
-            //for(int i = 0; i < allPolylines.Count; i++)
-            //    result += $"CLD.push(new ymaps.Polygon([[{string.Join(", ", allPolylines.ElementAt(i))}]], {{hintContent: \"Многоугольник\"}}, {{ fillColor: '#00FF0040', strokeColor: '#fe1616', strokeWidth: 1 }}));\n";
-            //File.WriteAllText(@"C:\Users\silanov\Documents\Дженикс\ЦИПЖС деление по кварталам, районам, округам\Геодезические координаты в XML\В текстовом виде\Кварталы.txt", result);
+            File.WriteAllText($@"{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFolder"]}{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFile"]}", 
+                              JsonConvert.SerializeObject(geoObjects, Newtonsoft.Json.Formatting.Indented));
+            File.WriteAllText($@"{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFolder"]}{ConfigurationManager.AppSettings["DestinyJSONMINCoordinatesFile"]}", 
+                              JsonConvert.SerializeObject(geoObjects, Newtonsoft.Json.Formatting.None));
         }
 
     }

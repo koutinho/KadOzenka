@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 objects.ForEach(x => 
                 {
                     driver.Navigate().GoToUrl(x.Url);
-                    File.WriteAllBytes($@"C:\Users\silanov\Desktop\Screens\{cntr}.png", new FullScreen().TakeScreenShot((ChromeDriver)driver));
+                    File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{cntr}.png", new FullScreen().TakeScreenShot((ChromeDriver)driver));
                     cntr++;
                 });
             }
@@ -151,7 +151,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             {
 				var screenShot = new FullScreen().TakeScreenShot(driver);
 				if (screenShot != null) FileStorageManager.Save(new MemoryStream(screenShot), ConfigurationManager.AppSettings["screenShotFolder"], screenShotData, screenshot.Save().ToString());
-                if (testBoot) File.WriteAllBytes($@"C:\Users\silanov\Desktop\Screens\{objectId}.png", screenShot);
+                if (testBoot) File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png", screenShot);
             }
             catch(Exception ex) { Console.WriteLine(ex.Message); }
         }

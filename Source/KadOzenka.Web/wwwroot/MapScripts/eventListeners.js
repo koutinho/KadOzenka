@@ -77,7 +77,7 @@ function changeLayer(type) {
             setCurrentLayer('/MapJSONData/zones.min.json');
             break;
         case MapZoneType.quartal:
-            setCurrentLayer('/MapJSONData/quartal.min.json');
+            setCurrentLayer('/MapJSONData/quartal.json');
             break;
     }
 }
