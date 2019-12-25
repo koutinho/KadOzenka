@@ -2278,16 +2278,20 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             if (task != null)
             {
                 {
-                    string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2016"], "*.xml", SearchOption.AllDirectories);
+					string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2016"], "*.xml", SearchOption.AllDirectories);
 
                     int countAll = files.Length;
                     int count = 0;
                     foreach (string file in files)
                     {
                         count++;
-                        Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(file, ConfigurationManager.AppSettings["Schema_Path_2016"], task);
-                        Console.WriteLine(count.ToString() + " из " + countAll.ToString());
-                    }
+
+						using (FileStream fstream = File.OpenRead(file))
+						{
+							Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(fstream, ConfigurationManager.AppSettings["Schema_Path_2016"], task);
+							Console.WriteLine(count.ToString() + " из " + countAll.ToString());
+						}
+					}
                 }
             }
         }
@@ -2304,8 +2308,12 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     foreach (string file in files)
                     {
                         count++;
-                        Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(file, ConfigurationManager.AppSettings["Schema_Path_2018"], task);
-                        Console.WriteLine(count.ToString() + " из " + countAll.ToString());
+
+						using (FileStream fstream = File.OpenRead(file))
+						{
+							Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(fstream, ConfigurationManager.AppSettings["Schema_Path_2018"], task);
+							Console.WriteLine(count.ToString() + " из " + countAll.ToString());
+						}
                     }
                 }
             }

@@ -1167,7 +1167,7 @@ namespace KadOzenka.Dal.XmlParser
             if (dictRealty == null)
                 dictRealty = new xsdDictionary(pathSchema + "\\dRealty_v04.xsd", "dRealty");
         }
-        public static xmlObjectList GetXmlObject(string file)
+        public static xmlObjectList GetXmlObject(Stream file)
         {
             xmlObjectList objs = new xmlObjectList();
             XmlDocument xmlFile = new XmlDocument();

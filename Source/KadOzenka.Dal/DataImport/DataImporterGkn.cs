@@ -57,13 +57,13 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public static void ImportDataGknFromXml(string xmlFile, string pathSchema, ObjectModel.KO.OMTask task)
+        public static void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task)
         {
             ImportDataGknFromXml(xmlFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.CreationDate.Value, task.CreationDate.Value, task.DocumentId.Value);
         }
 
 
-        private static void ImportDataGknFromXml(string xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
+        private static void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetXmlObject(xmlFile);

@@ -11,6 +11,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Core.Main.FileStorages;
 using Core.ErrorManagment;
+using System.IO;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -122,14 +123,12 @@ namespace KadOzenka.Web.Controllers
 			try
 			{
 				ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
-
 				string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-				string fileStorageName = "DataImporterFromTemplate";
-				DateTime date = DateTime.Now;
-				FileStorageManager.Save(file.OpenReadStream(), fileStorageName, date, file.FileName);
 
-				var filePath = FileStorageManager.GetFullFileName(fileStorageName, date, file.FileName);
-				DataImporterGkn.ImportDataGknFromXml(filePath, schemaPath, task);
+				using (Stream fileStream = file.OpenReadStream())
+				{
+					DataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);
+				}
 			}
 			catch (Exception ex)
 			{
@@ -150,7 +149,10 @@ namespace KadOzenka.Web.Controllers
 		{
 			try
 			{
-				DataImporterCod.ImportDataCodFromXml(file.OpenReadStream(), codId, deleteOld);
+				using (Stream fileStream = file.OpenReadStream())
+				{
+					DataImporterCod.ImportDataCodFromXml(fileStream, codId, deleteOld);
+				}
 			}
 			catch (Exception ex)
 			{
