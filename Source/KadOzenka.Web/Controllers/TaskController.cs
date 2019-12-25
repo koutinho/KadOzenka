@@ -355,6 +355,22 @@ namespace KadOzenka.Web.Controllers
 			return View(model); 
 		}
 
+		[HttpPost]
+		public ActionResult Model(OMModel model)
+		{			
+			model.Formula = model.GetFormulaFull(true);
+			model.Save();
+			return Ok();
+		}
+
+		public JsonResult GetFormula(long modelId, long algType)
+		{	
+			OMModel model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+			model.AlgoritmType_Code = (KoAlgoritmType)algType;
+			string formula = model.GetFormulaFull(true);
+			return Json(new { formula });
+		}
+
 		public JsonResult GetModelFactors(long modelId)
 		{
 			List<ModelFactorDto> factors = OMModelFactor.Where(x => x.ModelId == modelId)
@@ -498,6 +514,15 @@ namespace KadOzenka.Web.Controllers
 			model.Save();
 
 			return Json(new { Success = "Удаление выполненно" });
+		}
+
+		#endregion
+
+		#region Метки
+
+		public ActionResult MarkCatalog(long id)
+		{			
+			return View();
 		}
 
 		#endregion
