@@ -22,6 +22,11 @@ namespace KadOzenka.Web.Controllers
 		/// </summary>
 		public static int DurationWorkDaysCount => 50;
 
+		/// <summary>
+		/// Срок рассмотрения декларации составляет 5 рабочих дней со дня поступления декларации eсли заявителю отказано в рассмотрении
+		/// </summary>
+		public static int DurationWorkDaysCountForRejectedDeclaration => 5;
+
 		#region Declarations
 
 		[HttpGet]

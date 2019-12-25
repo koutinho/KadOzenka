@@ -175,13 +175,10 @@ namespace KadOzenka.Web.Models.Declarations
 		{
 			if (entity == null)
 			{
-				var durationDateIn =
-					CalendarHolidays.GetDateFromWorkDays(DateTime.Today, DeclarationsController.DurationWorkDaysCount);
 				return new DeclarationModel
 				{
 					Id = -1,
-					DurationDateIn = durationDateIn,
-					FormalCheckModel = DeclarationFormalCheckModel.FromEntity(null, null, durationDateIn),
+					FormalCheckModel = DeclarationFormalCheckModel.FromEntity(null, null),
 					UserIspId = userIsp?.Id,
 					UserIspDisplay = userIsp?.FullName
 				};
@@ -222,12 +219,35 @@ namespace KadOzenka.Web.Models.Declarations
 				DurationDateIn = entity.DurationIn,
 				DateEnd = entity.DateEnd,
 				Status = (long)entity.Status_Code,
-				FormalCheckModel = DeclarationFormalCheckModel.FromEntity(entity, result, null)
+				FormalCheckModel = DeclarationFormalCheckModel.FromEntity(entity, result)
 			};
 		}
 
 		public static void ToEntity(DeclarationModel declarationViewModel, ref OMDeclaration entity, ref OMResult result)
 		{
+			if (declarationViewModel.DateIn != entity.DateIn ||
+			    (entity.Status_Code != (StatusDec) declarationViewModel.Status.GetValueOrDefault() &&
+			     (StatusDec) declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection))
+			{
+				if (declarationViewModel.DateIn.HasValue)
+				{
+					declarationViewModel.DurationDateIn =
+						(StatusDec) declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection
+							? CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value,
+								DeclarationsController.DurationWorkDaysCountForRejectedDeclaration)
+							: CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value,
+								DeclarationsController.DurationWorkDaysCount);
+				}
+				else
+				{
+					declarationViewModel.DurationDateIn = null;
+				}
+			}
+			if (entity.DurationIn != declarationViewModel.DurationDateIn)
+			{
+				declarationViewModel.FormalCheckModel.DateCheckPlan = declarationViewModel.DurationDateIn;
+			}
+
 			entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();
 			entity.Owner_Id = declarationViewModel.OwnerId;
 			entity.Agent_Id = declarationViewModel.AgentId;

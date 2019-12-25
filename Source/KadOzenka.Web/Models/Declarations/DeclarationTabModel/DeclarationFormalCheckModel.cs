@@ -55,14 +55,13 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 		[Display(Name = "Непринятые хар-ки")]
 		public string RejectedCharacteristic { get; set; }
 
-		public static DeclarationFormalCheckModel FromEntity(OMDeclaration entity, OMResult result, DateTime? dateCheckPlan)
+		public static DeclarationFormalCheckModel FromEntity(OMDeclaration entity, OMResult result)
 		{
 			if (entity == null)
 			{
 				return new DeclarationFormalCheckModel
 				{
-					Id = -1,
-					DateCheckPlan = dateCheckPlan
+					Id = -1
 				};
 			}
 
