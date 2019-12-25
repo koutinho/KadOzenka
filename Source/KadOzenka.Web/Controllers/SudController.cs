@@ -518,7 +518,7 @@ namespace KadOzenka.Web.Controllers
         {
             var act = isActual ? OMParam.GetActual(idTable, objectId, paramName) : null;
             var paramValues = isActual ? act != null ? new List<OMParam>{ OMParam.GetActual(idTable, objectId, paramName)} : new List<OMParam>() :
-                OMParam.GetParams(idTable, objectId, paramName);
+                OMParam.GetParams(idTable, objectId, paramName).OrderByDescending(x => x.DateUser).ToList();
 
             List<SelectListItem> res =  paramValues.Select(x => new SelectListItem
                 {
@@ -526,10 +526,6 @@ namespace KadOzenka.Web.Controllers
                     Text = $"({(SRDCache.Users.ContainsKey((int)x.IdUser) ? SRDCache.Users[(int)x.IdUser].FullName : String.Empty)}, {x.DateUser.ToString("dd.MM.yyyy")}) {x}"
                 }).ToList();
 
-            if (!isActual)
-            {
-                res.Insert(0, new SelectListItem("-", ""));
-            }
             return Json(res);
         }
 

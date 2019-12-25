@@ -86,7 +86,7 @@
             <div class="col-sm-10">
                 @Html.KendoDropDownListFor(m => m.Owner, "GetApprovalFieldData", "Sud",
 					new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.Owner.GetEnumDescription(), isActual = Model.Owner != null },
-	                isReadonly: Model.Owner != null)
+					isReadonly: Model.Owner != null)
             </div>
         </div>
         <div class="form-group">
@@ -148,7 +148,6 @@
                 var form = $('form.object-form');
                 var formObject = Common.Functions.FormToObject(form);
 				var self = this;
-				console.log($('#objectOwner').data("kendoDropDownList"));
                 kendo.ui.progress($('body'), true);
                 $.post(form.attr('action'), formObject).done(function (response) {
                     kendo.ui.progress($('body'), false);
@@ -163,10 +162,16 @@
 
                     if (response.Success) {
 						$(self).attr('disabled', true);
-						form.find('input').not('readonly').each(function (i, el) {
-							
-							if ($(this).data("kendoDropDownList")) {
-								$(this).data("kendoDropDownList").readonly();
+						//form.find('input').not('readonly').each(function (i, el) {
+						//	console.log($(this));
+						//	if ($(this).data("kendoDropDownList")) {
+						//		$(this).data("kendoDropDownList").readonly();
+						//	}
+						//});
+						$('.object-form .k-widget.k-dropdown').each(function () {
+							if (!$(this).find('input').attr('readonly')) {
+								$(this).find('span.k-select').css('display', 'none');
+								$(this).find('span.k-input').css('font-weight', 'bold');
 							}
 						});
 						stylingDropDown();
