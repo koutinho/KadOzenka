@@ -337,6 +337,9 @@ namespace KadOzenka.Web.Controllers
 
 			model.IsEditConclusion =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_EDIT);
+
+			model.IsEditConclusionLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT);
+
 			return View(model);
 		}
 

@@ -39,6 +39,15 @@ namespace KadOzenka.Web.Models.Sud
 		[Range(0.00001, long.MaxValue, ErrorMessage = "Недопустимое значение рыночной стоимости")]
 		public decimal? Rs { get; set; }
 
+
+		/// <summary>
+		/// Рыночная стоимость
+		/// </summary>
+		[Display(Name = "Удельный показатель")]
+		[Required(ErrorMessage = "Поле удельный показатель обязательное")]
+		[Range(0.00001, long.MaxValue, ErrorMessage = "Недопустимое значение удельного показателя")]
+		public decimal? Uprs { get; set; }
+
 		/// <summary>
 		/// Источник информации
 		/// </summary>
@@ -62,6 +71,7 @@ namespace KadOzenka.Web.Models.Sud
 				SudNumber = !string.IsNullOrEmpty(omSud.Number) && omSud.Date != null ? $"{omSud.Number} от {omSud.Date.GetString()}" : !string.IsNullOrEmpty(omSud.Number) ? omSud.Number : "",
 				Rs = omSudLink.Rs.GetValueOrDefault(),
 				Use = omSudLink.Use,
+				Uprs = omSudLink.Uprs,
 				Description = omSudLink.Descr,
 			};
 
@@ -75,6 +85,7 @@ namespace KadOzenka.Web.Models.Sud
 			courtLink.Descr = model.Description;
 			courtLink.Use = model.Use;
 			courtLink.IdObject = model.ObjectId;
+			courtLink.Uprs = model.Uprs;
 		}
 	}
 
