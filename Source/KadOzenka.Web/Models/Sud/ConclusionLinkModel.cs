@@ -56,10 +56,9 @@ namespace KadOzenka.Web.Models.Sud
 		/// Номер заключения
 		/// </summary>
 		public string ConclusionNumber { get; set; }
-
 		public bool IsEditConclusionLink { get; set; }
 		public bool IsEditConclusion { get; set; }
-
+		public decimal SquareObject { get; set; }
 		public static ConclusionLinkModel FromEntity(OMZakLink conclusionLink, OMZak conclusion)
 		{
 			return new ConclusionLinkModel()

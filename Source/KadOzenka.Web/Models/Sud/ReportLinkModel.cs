@@ -52,10 +52,9 @@ namespace KadOzenka.Web.Models.Sud
 		[Required(ErrorMessage = "Ид объекта не указан")]
 		[Range(1, long.MaxValue, ErrorMessage = "Недопустимое значение ид объекта")]
 		public long SudObjectId { get; set; }
-
 		public bool IsEditReport { get; set; }
 		public bool IsEditReportLink { get; set; }
-
+		public decimal SquareObject { get; set; }
 		public static ReportLinkModel FromEntity(OMOtchetLink entity, OMOtchet report)
 		{
 			var res = new ReportLinkModel

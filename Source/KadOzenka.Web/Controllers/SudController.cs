@@ -176,6 +176,8 @@ namespace KadOzenka.Web.Controllers
 
 			model.SudObjectId = reportLink != null && reportLinkId != 0 ? reportLink.IdObject.GetValueOrDefault() : sudObjectId;
 
+			model.SquareObject = OMObject.Where(x => x.Id == model.SudObjectId).Select(x => x.Square)
+				.ExecuteFirstOrDefault().Square.GetValueOrDefault();
 			model.IsEditReport = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_EDIT);
 			model.IsEditReportLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT);
 
@@ -334,6 +336,9 @@ namespace KadOzenka.Web.Controllers
 				? ConclusionLinkModel.FromEntity(conclusionLink, conclusion) : ConclusionLinkModel.FromEntity(new OMZakLink(), new OMZak());
 
 			model.SudObjectId = conclusionLink != null && conclusionLinkId != 0 ? conclusionLink.IdObject.GetValueOrDefault() : sudObjectId;
+
+			model.SquareObject = OMObject.Where(x => x.Id == model.SudObjectId).Select(x => x.Square)
+				.ExecuteFirstOrDefault().Square.GetValueOrDefault();
 
 			model.IsEditConclusion =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_EDIT);
