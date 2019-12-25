@@ -238,7 +238,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.18" />
-    <PackageReference Include="Platform.Web" Version="1.0.289" />
+    <PackageReference Include="Platform.Web" Version="1.0.291" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
   </ItemGroup>
 
@@ -277,6 +277,8 @@
 
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
+    <Folder Include="Config\Reports\" />
+    <Folder Include="Views\Task\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 
@@ -493,6 +495,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ConfigPath Remove="Config\Registers\SearchPanels\DeclarationsBookSelect.xml" />
+    <ConfigPath Remove="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />
@@ -501,9 +505,6 @@
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
-    <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
   </ItemGroup>
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
