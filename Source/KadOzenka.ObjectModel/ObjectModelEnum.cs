@@ -1059,6 +1059,12 @@ namespace ObjectModel.Directory.Declarations
     public enum HarAvailability : long
     {
 		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
 		/// отсутствует (1)
 		/// </summary>
 		[Description("отсутствует")]
@@ -1081,6 +1087,12 @@ namespace ObjectModel.Directory.Declarations
     [ReferenceInfo(ReferenceId = 501)]
     public enum BookStatus : long
     {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
 		/// <summary>
 		/// В работе (1)
 		/// </summary>
@@ -1105,6 +1117,12 @@ namespace ObjectModel.Directory.Declarations
     public enum BookType : long
     {
 		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
 		/// Книга деклараций (1)
 		/// </summary>
 		[Description("Книга деклараций")]
@@ -1128,6 +1146,12 @@ namespace ObjectModel.Directory.Declarations
     public enum SubjectType : long
     {
 		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
 		/// Физлицо (1)
 		/// </summary>
 		[Description("Физлицо")]
@@ -1150,6 +1174,12 @@ namespace ObjectModel.Directory.Declarations
     [ReferenceInfo(ReferenceId = 504)]
     public enum UvedType : long
     {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
 		/// <summary>
 		/// Уведомление о принятии декларации (1)
 		/// </summary>
@@ -1186,6 +1216,12 @@ namespace ObjectModel.Directory.Declarations
     public enum StatusDec : long
     {
 		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
 		/// Отказ в рассмотрении (1)
 		/// </summary>
 		[Description("Отказ в рассмотрении")]
@@ -1214,6 +1250,12 @@ namespace ObjectModel.Directory.Declarations
     [ReferenceInfo(ReferenceId = 506)]
     public enum ObjectType : long
     {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
 		/// <summary>
 		/// Земельный участок (1)
 		/// </summary>
@@ -1309,6 +1351,12 @@ namespace ObjectModel.Directory.Declarations
     public enum DeclarationPurpose : long
     {
 		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
 		/// Декларация подается с целью доведения информации о характеристиках объекта недвижимости (1)
 		/// </summary>
 		[Description("Декларация подается с целью доведения информации о характеристиках объекта недвижимости")]
@@ -1331,6 +1379,12 @@ namespace ObjectModel.Directory.Declarations
     [ReferenceInfo(ReferenceId = 509)]
     public enum SendUvedType : long
     {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
 		/// <summary>
 		/// Нет (1)
 		/// </summary>
@@ -1366,6 +1420,12 @@ namespace ObjectModel.Directory.Declarations
     [ReferenceInfo(ReferenceId = 510)]
     public enum OwnerType : long
     {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
 		/// <summary>
 		/// Заявитель (правообладатель) (1)
 		/// </summary>
