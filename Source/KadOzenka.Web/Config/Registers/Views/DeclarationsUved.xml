@@ -44,6 +44,39 @@
                 <Parameter Key="notificationId" Value="[ObjectID]" />
             </Parameters>
         </Button>
+
+        <Button Caption="Сформировать уведомление по шаблону" NavigateURL="/Declarations/NotificationReportViewer">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="And" />
+                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об учете информации из декларации" AndOr="And"/>
+                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об отказе в учете информации из декларации" AndOr="And"/>
+                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об отказе в рассмотрении декларации и возврате документов" AndOr="And"/>
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="notificationId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+
+        <Button Caption="Скачать сформированный результат" NavigateURL="~/Declarations/DownloadSavedNotificationReport" OpenInNewWindow="true">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="And" />
+                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об учете информации из декларации" AndOr="And"/>
+                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об отказе в учете информации из декларации" AndOr="And"/>
+                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об отказе в рассмотрении декларации и возврате документов" AndOr="And"/>
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="notificationId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+
     </Buttons>
     <StatusBarConfiguration StatusBarEnabled="false" />
 </RegisterView>

@@ -501,7 +501,9 @@
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
+    <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
   </ItemGroup>
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />

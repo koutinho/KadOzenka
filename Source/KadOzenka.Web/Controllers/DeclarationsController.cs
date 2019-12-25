@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
+using Core.Shared.Extensions;
+using ObjectModel.Core.Reports;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -641,12 +643,29 @@ namespace KadOzenka.Web.Controllers
 			{
 				omUved = new OMUved();
 			}
+			var isNotificationTypeChanged = notificationViewModel.Type.GetValueOrDefault() != omUved.Type_Code;
 
 			NotificationModel.ToEntity(notificationViewModel, ref omUved);
 			long id;
 			using (var ts = new TransactionScope())
 			{
 				id = omUved.Save();
+				if (isNotificationTypeChanged)
+				{
+					var registerId = OMUved.GetRegisterId();
+					var savedReports = OMSavedReport.Where(x =>
+							x.ObjectId == id &&
+							x.ObjectRegisterId == registerId &&
+							(x.IsDeleted == null || x.IsDeleted == false))
+						.SelectAll()
+						.Execute();
+					foreach (var savedReport in savedReports)
+					{
+						savedReport.IsDeleted = true;
+						savedReport.Save();
+					}
+				}
+
 				ts.Complete();
 			}
 
@@ -676,11 +695,112 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost, ActionName("DeleteNotification")]
 		public IActionResult Delete(long notificationId)
 		{
-			OMUved
-				.Where(x => x.Id == notificationId)
-				.ExecuteFirstOrDefault()
-				.Destroy();
+			using (var ts = new TransactionScope())
+			{
+				try
+				{
+					var registerId = OMUved.GetRegisterId();
+					var savedReports = OMSavedReport.Where(x =>
+							x.ObjectId == notificationId && 
+							x.ObjectRegisterId == registerId &&
+							(x.IsDeleted == null || x.IsDeleted == false))
+						.SelectAll()
+						.Execute();
+					foreach (var savedReport in savedReports)
+					{
+						savedReport.IsDeleted = true;
+						savedReport.Save();
+					}
+
+					OMUved
+						.Where(x => x.Id == notificationId)
+						.ExecuteFirstOrDefault()
+						.Destroy();
+
+					ts.Complete();
+				}
+				catch (Exception e)
+				{
+					return Json(new
+					{
+						Errors =
+							new
+							{
+								Control = string.Empty,
+								e.Message
+							}
+					});
+				}
+			}
+			
 			return EmptyResponse();
+		}
+
+		[HttpGet]
+		public IActionResult NotificationReportViewer(long notificationId)
+		{
+			var omUved = OMUved
+				.Where(x => x.Id == notificationId)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+			if (omUved == null)
+			{
+				throw new Exception($"Уведомление с ИД {notificationId} не найдено");
+			}
+			var reportType = GetNotificationReportType(omUved);
+
+			return RedirectToAction("Viewer", "Report", new {reportTypeId = reportType, reportRegisterId = OMUved.GetRegisterId(), reportObjectId = notificationId});
+		}
+
+		public IActionResult DownloadSavedNotificationReport(long notificationId)
+		{
+			var omUved = OMUved
+				.Where(x => x.Id == notificationId)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+			if (omUved == null)
+			{
+				throw new Exception($"Уведомление с ИД {notificationId} не найдено");
+			}
+
+			var registerId = OMUved.GetRegisterId();
+			var reportType = GetNotificationReportType(omUved);
+			var savedReport = OMSavedReport.Where(x =>
+					x.ObjectId == notificationId &&
+					x.ObjectRegisterId == registerId &&
+					x.Code == reportType &&
+					(x.IsDeleted == null || x.IsDeleted == false))
+				.Execute()
+				.FirstOrDefault();
+
+			if (savedReport == null)
+			{
+				throw new Exception("Сохраненный отчет не найден.");
+			}
+
+			return RedirectToAction("DownloadSavedReport", "Report", new { savedReportId = savedReport.Id });
+		}
+
+		private int GetNotificationReportType(OMUved omUved)
+		{
+			int reportType;
+			switch (omUved?.Type_Code)
+			{
+				case UvedType.Item5:
+					reportType = 1001;
+					break;
+				case UvedType.Item3:
+					reportType = 1002;
+					break;
+				case UvedType.Item4:
+					reportType = 1003;
+					break;
+				default:
+					throw new Exception(
+						$"Тип уведомления '{omUved?.Type_Code.GetEnumDescription()}' не поддерживает формирование по шаблону");
+			}
+
+			return reportType;
 		}
 
 		#endregion Notifications
