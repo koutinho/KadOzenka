@@ -111,7 +111,8 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.IdObject == data.Id)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
-			if (data.Id != -1 && (obj == null || drs == null))
+
+			if (data.Id != -1 && obj == null)
 			{
 				return NotFound();
 			}
@@ -122,13 +123,19 @@ namespace KadOzenka.Web.Controllers
 				obj = new OMObject();
 				drs = new OMDRS();
 			}
+
+			if (drs == null)
+			{
+				drs = new OMDRS();
+			}
+
 			using (var ts = new TransactionScope())
 			{
 				ObjectCardModel.ToOM(data, ref obj, ref drs);
 
 				objId = obj.SaveAndCheckParam();
 
-                if (data.Id == -1)
+                if (data.Id == -1 || drs.IdObject == -1)
 				{
 					drs.IdObject = objId;
 				}
