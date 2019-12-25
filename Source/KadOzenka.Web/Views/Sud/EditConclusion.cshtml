@@ -244,8 +244,18 @@
 				}
 
 				if (response.Success && response.data) {
+					var oldId = $('#@Html.IdFor(m => m.Id)').val();
 					$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
 					$('.attachment-conclusion').removeClass('hidden');
+
+					//uploadData - объект из частичного представления AttachPartialGrid
+					if (uploadData && oldId === '-1') {
+						uploadData.setObjectId(response.data.Id);
+						var grid = $('#AttachmentGrid').data('kendoGrid');
+						var url = grid.dataSource.transport.options.read.url.replace('objectId=-1', `objectId=${response.data.Id}`);
+						grid.dataSource.transport.options.read.url = url;
+					}
+
 					Common.ShowMessage(response.Success);
 				}
 			});
