@@ -64,6 +64,7 @@ namespace KadOzenka.Web.Models.Sud
 
 		public bool IsEditReport { get; set; }
 
+		public int RegisterId { get; } = OMOtchet.GetRegisterId();
 		public static ReportModel FromEntity(OMOtchet report)
 		{
 			return new ReportModel()
