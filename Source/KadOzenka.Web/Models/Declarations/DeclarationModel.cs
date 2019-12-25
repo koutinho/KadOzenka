@@ -167,6 +167,8 @@ namespace KadOzenka.Web.Models.Declarations
 		//[Required(ErrorMessage = "Поле Статус обязательное")]
 		public long? Status { get; set; }
 
+		public int RegisterId { get; } = OMDeclaration.GetRegisterId();
+
 		public DeclarationFormalCheckModel FormalCheckModel { get; set; }
 
 		public static DeclarationModel FromEntity(OMDeclaration entity, OMSubject owner, OMSubject agent, OMBook book, OMUser userIsp, OMResult result)

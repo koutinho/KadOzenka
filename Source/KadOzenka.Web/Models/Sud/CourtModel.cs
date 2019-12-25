@@ -40,6 +40,8 @@ namespace KadOzenka.Web.Models.Sud
 
 		public bool IsEditCourt { get; set; }
 
+		public int RegisterId { get; } = OMSud.GetRegisterId();
+
 		public static CourtModel FromEntity(OMSud entity)
 		{
 			return new CourtModel()

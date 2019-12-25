@@ -2,6 +2,7 @@
 @using ObjectModel.Declarations
 @using KadOzenka.Web.Models.Declarations
 @using ObjectModel.Directory.Declarations
+@using Platform.Web.Models.CoreAttachment
 
 @model KadOzenka.Web.Models.Declarations.DeclarationModel
 
@@ -13,116 +14,125 @@
     @Html.HiddenFor(m => m.BookId)
     @Html.HiddenFor(m => m.UserIspId)
     <ul id="ls_panelbar" class="panelbar">
-        <li id="Section_Making_Declaration" data-expand>
-            <span>Подача декларации</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.OwnerType)
-                        </div>
-                        <div class="col-sm-3">
-                            @Html.KendoEnumDropDownListFor(m => m.OwnerType, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.OwnerId)
-                        </div>
-                        <div class="col-sm-4">
-                            @Html.PlatformAutoCompleteWithEditButtonFor(m => m.OwnerDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearOwnerEvent", "editOwner", "selectOwnerEvent", isReadonly: false)
-                        </div>
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.UvedTypeOwner)
-                        </div>
-                        <div class="col-sm-3">
-                            @Html.KendoEnumDropDownListFor(m => m.UvedTypeOwner, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.AgentId)
-                        </div>
-                        <div class="col-sm-4">
-                            @Html.PlatformAutoCompleteWithEditButtonFor(m => m.AgentDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearAgentEvent", "editAgent", "selectAgentEvent", isReadonly: false)
-                        </div>
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.UvedTypeAgent)
-                        </div>
-                        <div class="col-sm-3">
-                            @Html.KendoEnumDropDownListFor(m => m.UvedTypeAgent, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.CertificateName)
-                        </div>
-                        <div class="col-sm-3">
-                            @Html.KendoTextBoxFor(m => m.CertificateName, isReadonly: false)
-                        </div>
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-1">
-                            @Html.CustomLabelFor(m => m.CertificateNum)
-                        </div>
-                        <div class="col-sm-1">
-                            @Html.KendoTextBoxFor(m => m.CertificateNum, isReadonly: false)
-                        </div>
-                        <div class="col-sm-1">
-                            @Html.CustomLabelFor(m => m.CertificateDate)
-                        </div>
-                        <div class="col-sm-2">
-                            @Html.KendoDatePickerFor(m => m.CertificateDate, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.CadastralObjectNumber)
-                        </div>
-                        <div class="col-sm-3">
-                            @Html.KendoTextBoxFor(m => m.CadastralObjectNumber, isReadonly: false)
-                        </div>
-                        <div class="col-sm-2"></div>
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.ObjectType)
-                        </div>
-                        <div class="col-sm-3">
-                            @Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(m => m.DateIn)
-                        </div>
-                        <div class="col-sm-2">
-                            @Html.KendoDatePickerFor(m => m.DateIn, isReadonly: false)
-                        </div>
-                        <div class="col-sm-1">
-                            @Html.CustomLabelFor(m => m.NumberIn)
-                        </div>
-                        <div class="col-sm-1">
-                            @Html.KendoTextBoxFor(m => m.NumberIn, isReadonly: false)
-                        </div>
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-1">
-                            @Html.CustomLabelFor(m => m.BookId)
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="form-group">
-                                @Html.PlatformAutoCompleteWithEditButtonFor(m => m.BookDisplay, "Value", "Declarations", "GetAutoCompleteBook", "clearBookEvent", "editBook", "selectBookEvent", isReadonly: false)
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </li>
+	    <li id="Section_Making_Declaration" data-expand>
+		    <span>Подача декларации</span>
+		    <div>
+			    <div class="form-horizontal col-sm-12">
+				    <div class="form-group"></div>
+				    <div class="form-group">
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.OwnerType)
+					    </div>
+					    <div class="col-sm-3">
+						    @Html.KendoEnumDropDownListFor(m => m.OwnerType, isReadonly: false)
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.OwnerId)
+					    </div>
+					    <div class="col-sm-4">
+						    @Html.PlatformAutoCompleteWithEditButtonFor(m => m.OwnerDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearOwnerEvent", "editOwner", "selectOwnerEvent", isReadonly: false)
+					    </div>
+					    <div class="col-sm-1"></div>
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.UvedTypeOwner)
+					    </div>
+					    <div class="col-sm-3">
+						    @Html.KendoEnumDropDownListFor(m => m.UvedTypeOwner, isReadonly: false)
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.AgentId)
+					    </div>
+					    <div class="col-sm-4">
+						    @Html.PlatformAutoCompleteWithEditButtonFor(m => m.AgentDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearAgentEvent", "editAgent", "selectAgentEvent", isReadonly: false)
+					    </div>
+					    <div class="col-sm-1"></div>
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.UvedTypeAgent)
+					    </div>
+					    <div class="col-sm-3">
+						    @Html.KendoEnumDropDownListFor(m => m.UvedTypeAgent, isReadonly: false)
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.CertificateName)
+					    </div>
+					    <div class="col-sm-3">
+						    @Html.KendoTextBoxFor(m => m.CertificateName, isReadonly: false)
+					    </div>
+					    <div class="col-sm-2"></div>
+					    <div class="col-sm-1">
+						    @Html.CustomLabelFor(m => m.CertificateNum)
+					    </div>
+					    <div class="col-sm-1">
+						    @Html.KendoTextBoxFor(m => m.CertificateNum, isReadonly: false)
+					    </div>
+					    <div class="col-sm-1">
+						    @Html.CustomLabelFor(m => m.CertificateDate)
+					    </div>
+					    <div class="col-sm-2">
+						    @Html.KendoDatePickerFor(m => m.CertificateDate, isReadonly: false)
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.CadastralObjectNumber)
+					    </div>
+					    <div class="col-sm-3">
+						    @Html.KendoTextBoxFor(m => m.CadastralObjectNumber, isReadonly: false)
+					    </div>
+					    <div class="col-sm-2"></div>
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.ObjectType)
+					    </div>
+					    <div class="col-sm-3">
+						    @Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: false)
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <div class="col-sm-2">
+						    @Html.CustomLabelFor(m => m.DateIn)
+					    </div>
+					    <div class="col-sm-2">
+						    @Html.KendoDatePickerFor(m => m.DateIn, isReadonly: false)
+					    </div>
+					    <div class="col-sm-1">
+						    @Html.CustomLabelFor(m => m.NumberIn)
+					    </div>
+					    <div class="col-sm-1">
+						    @Html.KendoTextBoxFor(m => m.NumberIn, isReadonly: false)
+					    </div>
+					    <div class="col-sm-1"></div>
+					    <div class="col-sm-1">
+						    @Html.CustomLabelFor(m => m.BookId)
+					    </div>
+					    <div class="col-sm-4">
+						    <div class="form-group">
+							    @Html.PlatformAutoCompleteWithEditButtonFor(m => m.BookDisplay, "Value", "Declarations", "GetAutoCompleteBook", "clearBookEvent", "editBook", "selectBookEvent", isReadonly: false)
+						    </div>
+					    </div>
+				    </div>
+			    </div>
+		    </div>
+	    </li>
+	    <li id="Section_Attachment" data-expand>
+		    <span>Образы</span>
+		    <div class="form-group">
+				    <div class="attachment-declaration @(Model.Id == -1 ? "hidden" : "")">
+					    @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+						    new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
+				    </div>
+			    </div>
+	    </li>
         <li id="Section_Process_Declaration" data-expand>
             <span>Обработка декларации</span>
             <div>
                 <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
+	                <div class="form-group"></div>
                     <div class="form-group">
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(m => m.DateInIsp)
@@ -209,6 +219,9 @@
         #ls_panelbar {
             width: 99% !important;
         }
+		.hidden {
+			display: none;
+		}
     </style>
 }
 
@@ -276,7 +289,8 @@
 
                         if (response.Success && response.data) {
                             $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
-                            Common.ShowMessage(response.Success);
+							Common.ShowMessage(response.Success);
+                            $('.attachment-declaration').removeClass('hidden');
                             var tabStrip = $("#tabstrip-wrap").kendoTabStrip().data("kendoTabStrip");
                             $(".k-link:contains('Уведомления')").attr('data-content-url', '/Declarations/GetNotificationTabContent?declarationId=' + response.data.Id);
                             $(".k-link:contains('Характеристика деклараций')").attr('data-content-url', '/Declarations/GetCharacteristicTabContent?declarationId=' + response.data.Id);

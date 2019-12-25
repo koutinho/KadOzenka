@@ -91,6 +91,8 @@ namespace KadOzenka.Web.Models.Sud
 
 		public bool IsEditConclusion { get; set; }
 
+		public int RegisterId { get; } = OMZak.GetRegisterId();
+
 		public static ConclusionModel FromEntity(OMZak conclusion)
 		{
 			return new ConclusionModel()

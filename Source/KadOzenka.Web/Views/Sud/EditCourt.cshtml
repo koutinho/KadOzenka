@@ -1,6 +1,15 @@
 ﻿@using KadOzenka.Web.Models.Sud;
+@using Platform.Web.Models.CoreAttachment
 
 @model KadOzenka.Web.Models.Sud.CourtModel
+
+@section styles{
+	<style>
+		.hidden {
+			display: none;
+		}
+	</style>
+}
 
 @using (Html.BeginForm("EditCourt", "Sud", FormMethod.Post))
 {
@@ -64,6 +73,12 @@
 			</div>
 		</div>
 		<div class="form-group">
+			<div class="attachment-court @(Model.Id == -1 ? "hidden" : "")">
+				@await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+					new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
+			</div>
+		</div>
+		<div class="form-group">
 			<div class="col-sm-12">
 				<button disabled="@(!Model.IsEditCourt)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
 			</div>
@@ -94,6 +109,7 @@
 
 					if (response.Success && response.data) {
 						$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+						$('.attachment-court').removeClass('hidden');
 						Common.ShowMessage(response.Success);
 					}
 				});
