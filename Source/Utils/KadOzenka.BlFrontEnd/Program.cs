@@ -30,7 +30,10 @@ namespace KadOzenka.BlFrontEnd
 
         static void Main(string[] args)
         {
-            SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
+			BuildQsXml.BuildSudApproveStatus();
+
+
+			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
             var consoleHelper = new BlFrontEndConsoleHelper();
             InitCommands(consoleHelper);
             consoleHelper.Run();
