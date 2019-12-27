@@ -148,6 +148,7 @@
                 var form = $('form.object-form');
                 var formObject = Common.Functions.FormToObject(form);
 				var self = this;
+             
                 kendo.ui.progress($('body'), true);
                 $.post(form.attr('action'), formObject).done(function (response) {
                     kendo.ui.progress($('body'), false);
@@ -162,16 +163,9 @@
 
                     if (response.Success) {
 						$(self).attr('disabled', true);
-						//form.find('input').not('readonly').each(function (i, el) {
-						//	console.log($(this));
-						//	if ($(this).data("kendoDropDownList")) {
-						//		$(this).data("kendoDropDownList").readonly();
-						//	}
-						//});
-						$('.object-form .k-widget.k-dropdown').each(function () {
-							if (!$(this).find('input').attr('readonly')) {
-								$(this).find('span.k-select').css('display', 'none');
-								$(this).find('span.k-input').css('font-weight', 'bold');
+						form.find('input').not('readonly').each(function () {
+							if ($(this).data("kendoDropDownList")) {
+								$(this).data("kendoDropDownList").readonly();
 							}
 						});
 						stylingDropDown();
