@@ -15,9 +15,15 @@
     <ul>
 
         @{
-            foreach (var m in Model)
-            {
-                <li class="@(i == 0 ? "k-state-active" : "")">@($"{m.Court.NumberForTab} от {m.Court.DateForTab}. {m.Court.NameForTab}")</li>
+			foreach (var m in Model)
+			{
+				var textTab = !string.IsNullOrEmpty(m.Court.NumberForTab) && !string.IsNullOrEmpty(m.Court.DateForTab) ?
+					$"{m.Court.NumberForTab} от {m.Court.DateForTab}. {m.Court.NameForTab}"
+					: string.IsNullOrEmpty(m.Court.DateForTab) && !string.IsNullOrEmpty(m.Court.NumberForTab) ? $"{m.Court.NumberForTab}"
+						: string.IsNullOrEmpty(m.Court.NumberForTab) && !string.IsNullOrEmpty(m.Court.DateForTab)
+							? $"Заключение от {m.Court.DateForTab}. {m.Court.NameForTab}" : "Заключение";
+
+                <li class="@(i == 0 ? "k-state-active" : "")">@(textTab)</li>
                 i++;
             }
             i = 0;
