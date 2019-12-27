@@ -904,7 +904,7 @@ namespace KadOzenka.Web.Controllers
 
             if (idReports.Count == 0)
             {
-                return View("~/Views/Sud/TabContent/ReportContent.cshtml", new List<EditApprovalReportLinkModel>());
+                return PartialView("~/Views/Sud/TabContent/ReportContent.cshtml", new List<EditApprovalReportLinkModel>());
 
             }
             List<OMParam> param =  OMParam.Where(x => (x.IdTable == (long) OMTableParam.OtchetLink  && idLinks.Contains(x.Id) || x.IdTable == (long) OMTableParam.Otchet
@@ -932,7 +932,7 @@ namespace KadOzenka.Web.Controllers
                 forModel.Clear();
             }
 
-            return View("~/Views/Sud/TabContent/ReportContent.cshtml", model);
+            return PartialView("~/Views/Sud/TabContent/ReportContent.cshtml", model);
         }
 
         public ActionResult EditApprovalReportLink(EditApprovalReportLinkModel model)
@@ -1031,7 +1031,7 @@ namespace KadOzenka.Web.Controllers
 
             if (idCourts.Count == 0)
             {
-                return View("~/Views/Sud/TabContent/CourtContent.cshtml", new List<EditApprovalCourtLinkModel>());
+                return PartialView("~/Views/Sud/TabContent/CourtContent.cshtml", new List<EditApprovalCourtLinkModel>());
             }
 
             List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.SudLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Sud
@@ -1057,7 +1057,7 @@ namespace KadOzenka.Web.Controllers
 				model.Add(tempModel);
                 forModel.Clear();
             }
-            return View("~/Views/Sud/TabContent/CourtContent.cshtml", model);
+            return PartialView("~/Views/Sud/TabContent/CourtContent.cshtml", model);
         }
         public ActionResult EditApprovalCourt(EditApprovalCourtModel model)
         {
@@ -1153,7 +1153,7 @@ namespace KadOzenka.Web.Controllers
 
             if (idConclusions.Count == 0)
             {
-                return View("~/Views/Sud/TabContent/ConclusionContent.cshtml", new List<EditApprovalConclusionLinkModel>());
+                return PartialView("~/Views/Sud/TabContent/ConclusionContent.cshtml", new List<EditApprovalConclusionLinkModel>());
             }
 
             List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.ZakLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Zak
@@ -1179,7 +1179,7 @@ namespace KadOzenka.Web.Controllers
 				model.Add(tempModel);
                 forModel.Clear();
             }
-            return View("~/Views/Sud/TabContent/ConclusionContent.cshtml", model);
+            return PartialView("~/Views/Sud/TabContent/ConclusionContent.cshtml", model);
         }
 
         public ActionResult EditApprovalConclusion(EditApprovalConclusionModel model)
