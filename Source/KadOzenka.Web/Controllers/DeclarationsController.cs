@@ -217,7 +217,7 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult GetNotificationTabContent(long declarationId)
 		{
-			return View("~/Views/Declarations/DeclarationTabContent/NotificationContent.cshtml", declarationId);
+			return PartialView("~/Views/Declarations/DeclarationTabContent/NotificationContent.cshtml", declarationId);
 		}
 
 		public ActionResult GetCharacteristicTabContent(long declarationId)
@@ -248,7 +248,7 @@ namespace KadOzenka.Web.Controllers
 
 			var model = DeclarationCharacteristicModel.FromEntity(characteristicId, declaration);
 
-			return View("~/Views/Declarations/DeclarationTabContent/CharacteristicContent.cshtml", model);
+			return PartialView("~/Views/Declarations/DeclarationTabContent/CharacteristicContent.cshtml", model);
 		}
 
 		public ActionResult EditParcelCharacteristics(long declarationId)
