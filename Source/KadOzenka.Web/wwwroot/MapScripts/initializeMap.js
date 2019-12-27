@@ -36,10 +36,10 @@ function initMap() {
     GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
     map.events.add('boundschange', function (event) { ChangeBounds(event); });
     //var projection = map.options.get('projection');        
-    //console.log(projection.fromGlobalPixels([157696, 81408], 10));
-    //console.log(projection.fromGlobalPixels([159232, 81408], 10));
-    //console.log(projection.fromGlobalPixels([159232, 83456], 10));
-    //console.log(projection.fromGlobalPixels([157696, 83456], 10));
+    //console.log(projection.fromGlobalPixels([315392, 162816], 11));
+    //console.log(projection.fromGlobalPixels([318464, 162816], 11));
+    //console.log(projection.fromGlobalPixels([318464, 166912], 11));
+    //console.log(projection.fromGlobalPixels([315392, 166912], 11));
     //map.geoObjects.add(new ymaps.GeoObject({
     //    geometry: {
     //        type: "Polygon",

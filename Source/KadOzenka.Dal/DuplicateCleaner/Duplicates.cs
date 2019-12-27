@@ -12,6 +12,9 @@ namespace KadOzenka.Dal.DuplicateCleaner
     public class Duplicates
     {
 
+        public static double currentPersent = 0;
+        public static bool inProgress = false;
+
         readonly List<OMCoreObject> AllObjects =
             OMCoreObject
                 .Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && x.Price > 1  && (
@@ -22,7 +25,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
                 .Execute()
                 .ToList();
 
-        public void Detect(bool useTestTable = false)
+        public void Detect(bool useTestTable = false, double area = 0.01, double price = 0.05)
         {
 	        if (useTestTable)
 	        {
@@ -32,21 +35,21 @@ namespace KadOzenka.Dal.DuplicateCleaner
 			        .Execute()
 			        .ToList()
 					.Select(x => x.AsIMarketObject()).ToList();
-		        PerformProc(inputObjects);
+		        PerformProc(inputObjects, area, price);
 			}
 	        else
 	        {
 		        var inputObjects = AllObjects
 			        .Select(x => x.AsIMarketObject()).ToList();
-		        PerformProc(inputObjects);
+		        PerformProc(inputObjects, area, price);
 			}
         }
 
-	    private void PerformProc<T>(List<T> inputObjects) where T : IMarketObject
+	    private void PerformProc<T>(List<T> inputObjects, double area, double price) where T : IMarketObject
 		{
 			var objs = inputObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.Subcategory }).Select(grp => grp.ToList()).ToList();
 			var result = new List<List<T>>();
-			objs.ForEach(x => result.AddRange(SplitListByPersent(x.OrderBy(y => y.Area).ToList())));
+			objs.ForEach(x => result.AddRange(SplitListByPersent(x.OrderBy(y => y.Area).ToList(), area, price)));
 			int ICur = 0, ICor = 0, IErr = 0, ICtr = result.Count;
 			result.ForEach(x =>
 			{
@@ -64,12 +67,15 @@ namespace KadOzenka.Dal.DuplicateCleaner
 				}
 				catch (Exception) { IErr++; }
 				ICur++;
-				ConsoleLog.WriteData("Проверка данных на дублинование", ICtr, ICur, ICor, IErr);
+                currentPersent = ((double)ICur) / ICtr * 100;
+                ConsoleLog.WriteData("Проверка данных на дублинование", ICtr, ICur, ICor, IErr);
 			});
-			ConsoleLog.WriteFotter("Проверка данных на дублинование завершена");
+            currentPersent = 0;
+            inProgress = false;
+            ConsoleLog.WriteFotter("Проверка данных на дублинование завершена");
 		}
 
-	    private List<List<T>> SplitListByPersent<T>(List<T> list) where T : IMarketObject
+	    private List<List<T>> SplitListByPersent<T>(List<T> list, double area, double price) where T : IMarketObject
 		{
             List<List<T>> result = new List<List<T>>();
 			T FEL = list.ElementAt(0);
@@ -77,9 +83,9 @@ namespace KadOzenka.Dal.DuplicateCleaner
             result.Add(new List<T>());
             list.ForEach(x =>
             {
-                if (FEL.Area.GetValueOrDefault() >= x.Area.GetValueOrDefault() * 0.99m &&
-                    FEL.Price.GetValueOrDefault() >= x.Price.GetValueOrDefault() * 0.95m &&
-                    FEL.Price.GetValueOrDefault() <= x.Price.GetValueOrDefault() * 1.05m)
+                if (FEL.Area.GetValueOrDefault() >= x.Area.GetValueOrDefault() * Convert.ToDecimal(1 - area) &&
+                    FEL.Price.GetValueOrDefault() >= x.Price.GetValueOrDefault() * Convert.ToDecimal(1 - price) &&
+                    FEL.Price.GetValueOrDefault() <= x.Price.GetValueOrDefault() * Convert.ToDecimal(1 + price))
                     result.ElementAt(counter).Add(x);
                 else
                 {
