@@ -10,7 +10,9 @@
 		</Button>
 		<Button Caption="Туры оценки" NavigateURL="/Task/TourEstimates" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
 		</Button>
-    <Button Caption="Туры оценки (группы)" NavigateURL="/Task/Groups" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+    <Button Caption="Группы" NavigateURL="/Task/Groups" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+    </Button>
+    <Button Caption="Значения меток" NavigateURL="/Task/MarkCatalog" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
     </Button>
     <Button Caption="Импорт данных ГКН" NavigateURL="/DataImport/ImportGkn" WindowHeight="120" WindowWidth="800" Icon="fas fa-code">
       <Parameters>

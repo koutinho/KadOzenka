@@ -1,0 +1,245 @@
+﻿<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Тур оценки")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                                                        .Name("RatingTour")
+                                                        .DataTextField("Text")
+                                                        .DataValueField("Value")
+            )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Тип объекта")
+        </div>
+        <div class="col-sm-9">
+            <div class="radio-inline">
+                <input type="radio" id="OKS" name="ObjType" class="custom-control-input" checked>ОКС
+            </div>
+            <div class="radio-inline">
+                <input type="radio" id="Parcel" name="ObjType" class="custom-control-input">Земельные участки
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Оценочная группа")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                                                                .Name("Group")
+                                                                .DataTextField("Text")
+                                                                .DataValueField("Value")
+            )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Оценочная подгруппа")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                                                                .Name("Subgroup")
+                                                                .DataTextField("Text")
+                                                                .DataValueField("Value")
+            )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Фактор стоимости")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                                                                .Name("Factor")
+                                                                .DataTextField("Text")
+                                                                .DataValueField("Value")
+            )
+        </div>
+    </div>
+    <div id="grid"></div>
+</div>
+
+<script>
+    $(document).ready(function () {        
+        function GridInit() {
+            var groupId = $('#Subgroup').val();
+            var factorId = $('#Factor').val();            
+
+            var gridDataSource = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetMarkCatalog", "Task")',
+                        contentType: 'application/json; charset=utf-8',
+                        data: { groupId, factorId },
+                        dataType: 'json'
+                    },
+                    create: {
+                        url: '@Url.Action("CreateMark", "Task")',                         
+                        type: 'POST',
+                        dataType: 'json'
+                    },
+                    update: {
+                        url: '@Url.Action("UpdateMark", "Task")',                    
+                        type: 'POST',
+                        dataType: 'json'
+                    },
+                    destroy: {
+                        url: '@Url.Action("DeleteMark", "Task")',                        
+                        type: 'POST',
+                        dataType: 'json'
+                    }
+                },             
+                schema: {
+                    model: {
+                        id: "Id",
+                        fields: {
+                            Id: { editable: false, nullable: true },
+                            GroupId: { editable: false},
+                            FactorId: { editable: false },
+                            ValueFactor: { validation: { required: true } },
+                            MetkaFactor: { validation: { required: true } }
+                        }
+                    }
+                }
+            });
+
+            $('#grid').kendoGrid({
+                dataSource: gridDataSource,
+                columns: [
+                    {
+                        field: 'ValueFactor', title: 'Значение'
+                    }, {
+                        field: 'MetkaFactor', title: 'Метка'
+                    },
+                    { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
+                ],
+                toolbar: ["create"],
+                scrollable: true,
+                editable: "inline",
+                beforeEdit: function (e) {
+                    if (e.model.isNew()) {
+                        e.model.GroupId = $('#Subgroup').val();
+                        e.model.FactorId = $('#Factor').val();
+                    }
+                }
+            });
+        }
+
+        $('[name="RatingTour"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRatingTours", "Task")',
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        function GroupDropDownInit() {   
+            if ($('input[name="ObjType"]:checked').length == 0)
+                return;
+            var parentType = $('input[name="ObjType"]:checked')[0].id;
+
+            $('[name="Group"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: "--Выберите группу--",
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetParentGroup", "Task")',
+                            data: { type: parentType, id: '' },
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+        }
+
+        function SubgroupDropDownInit() {  
+            var groupId = $('#Group').val();
+
+            $('[name="Subgroup"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: "--Выберите подгруппу--",
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetSubgroup", "Task")',
+                            data: { groupId },
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+        }
+
+        function FactorDropDownInit() {
+            var tourId = $('#RatingTour').val();
+                    
+            $('[name="Factor"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: "--Выберите фактор--",
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetFactors", "Task")',
+                            data: { tourId },
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+        }
+
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', RatingTourChanged);
+        function RatingTourChanged() {           
+            FactorDropDownInit();
+        }     
+
+        $('[name="ObjType"]').on('change', function () {
+            GroupDropDownInit();
+
+            $('[name="Group"]').data("kendoDropDownList").bind("dataBound", function () {
+                SubgroupDropDownInit();
+            });
+        });  
+
+        $('[name="Group"]').data('kendoDropDownList').bind('change', GroupChanged);
+        function GroupChanged() {
+            SubgroupDropDownInit();
+        }
+
+        $('[name="Subgroup"]').data('kendoDropDownList').bind('change', SubgroupChanged);
+        function SubgroupChanged() {            
+            GridInit();
+        }
+
+        $('[name="Factor"]').data('kendoDropDownList').bind('change', FactorChanged);
+        function FactorChanged() {
+            GridInit();
+        }        
+
+        GroupDropDownInit();
+        SubgroupDropDownInit();
+        FactorDropDownInit();
+        GridInit();
+    });
+</script>

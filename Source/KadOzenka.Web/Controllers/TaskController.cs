@@ -315,6 +315,24 @@ namespace KadOzenka.Web.Controllers
 			return Json(groups);
 		}
 
+		public JsonResult GetSubgroup(long? groupId)
+		{
+			if (groupId == null)
+			{
+				return Json(new List<SelectListItem> { });
+			}
+
+			var groups = OMGroup.Where(x => x.ParentId == groupId)
+				.SelectAll().Execute()
+				.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.GroupName.ToString()
+				});
+
+			return Json(groups);
+		}
+
 		public JsonResult GetGroupingMechanism(bool parentIsSet)
 		{
 			var algotitmItems = Core.RefLib.ReferencesCommon.GetItems(204);
@@ -390,14 +408,39 @@ namespace KadOzenka.Web.Controllers
 				}).ToList();
 
 			List<long?> factorIds = factors.Select(x => x.FactorId).ToList();
-			var sqlResult = GetModelFactorNameSql(factorIds);
+			if (factorIds.Count == 0)
+			{
+				return Json(factors);
+			}
 
+			var sqlResult = GetModelFactorNameSql(factorIds);
 			foreach (ModelFactorDto factorDto in factors)
 			{
 				factorDto.Factor = sqlResult[factorDto.FactorId];
 			}
 					   
 			return Json(factors);
+		}
+
+		public JsonResult GetFactors(long? tourId)
+		{
+			List<OMTourFactorRegister> tfrList = OMTourFactorRegister.Where(x => x.TourId == tourId)
+				.Select(x => x.RegisterId).Execute();
+
+			List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
+
+			if (ids.Count == 0)
+			{
+				return Json(new List<SelectListItem> { });
+			}
+						
+			var result = GetModelFactorNameSql(ids, true).Select(x => new SelectListItem
+			{
+				Value = x.Key.ToString(),
+				Text = x.Value
+			});
+
+			return Json(result);
 		}
 
 		public ActionResult EditModelFactor(long? id, long modelId)
@@ -478,7 +521,12 @@ namespace KadOzenka.Web.Controllers
 						.Select(x => x.RegisterId).Execute();
 
 					List<long?> ids = tfrList.Select(x => x.RegisterId).ToList();
-					var result = GetModelFactorNameSql(ids, true).Select(x=>new SelectListItem
+					if (ids.Count == 0)
+					{
+						return Json(new List<SelectListItem>());
+					}
+
+					var result = GetModelFactorNameSql(ids, true).Select(x => new SelectListItem
 					{
 						Value = x.Key.ToString(),
 						Text = x.Value
@@ -520,9 +568,38 @@ namespace KadOzenka.Web.Controllers
 
 		#region Метки
 
-		public ActionResult MarkCatalog(long id)
+		public ActionResult MarkCatalog()
 		{			
 			return View();
+		}
+
+		public JsonResult GetMarkCatalog(long? groupId, long? factorId)
+		{			
+			List<OMMarkCatalog> markCatalog = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
+				.SelectAll().Execute();			
+
+			return Json(markCatalog);
+		}
+
+		[HttpPost]
+		public ActionResult CreateMark(OMMarkCatalog markCatalog)
+		{
+			markCatalog.Save();
+			return Json(markCatalog);
+		}
+
+		[HttpPost]
+		public ActionResult UpdateMark(OMMarkCatalog markCatalog)
+		{
+			markCatalog.Save();
+			return Json(markCatalog);
+		}
+
+		[HttpPost]
+		public ActionResult DeleteMark(OMMarkCatalog markCatalog)
+		{
+			markCatalog.Destroy();
+			return Json(markCatalog);
 		}
 
 		#endregion
