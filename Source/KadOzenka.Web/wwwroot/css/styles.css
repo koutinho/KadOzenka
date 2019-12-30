@@ -1218,8 +1218,15 @@ div#searchToolbar > div > span > span > span.k-input {
 	padding-right: 10px;
 }
 
+div#searchToolbar > div > span > span > input[type=text] {
+	background-color: #fff;
+	border-bottom: none !important;
+}
+
 input#addressInput {
 	border-color: #e8e8f0;
+	background-color: #fff;
+	border-bottom: none !important;
 }
 
 input#addressInput:hover {
