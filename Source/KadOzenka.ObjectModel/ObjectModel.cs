@@ -6023,12 +6023,12 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal? _nameanalog;
+        private string _nameanalog;
         /// <summary>
         /// 21700800 Наименование аналога (NAME_ANALOG)
         /// </summary>
         [RegisterAttribute(AttributeID = 21700800)]
-        public decimal? NameAnalog
+        public string NameAnalog
         {
             get
             {
@@ -10774,6 +10774,26 @@ namespace ObjectModel.Sud
             {
                 _idsro = value;
                 NotifyPropertyChanged("IdSro");
+            }
+        }
+
+
+        private bool _containsattachments;
+        /// <summary>
+        /// 30801200 Признак наличия образа ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30801200)]
+        public bool ContainsAttachments
+        {
+            get
+            {
+                CheckPropertyInited("ContainsAttachments");
+                return _containsattachments;
+            }
+            set
+            {
+                _containsattachments = value;
+                NotifyPropertyChanged("ContainsAttachments");
             }
         }
 
