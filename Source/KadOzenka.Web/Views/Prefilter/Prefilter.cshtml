@@ -54,24 +54,11 @@
         $("#searchToolbar").kendoToolBar({
             resizable: false,
             items: [
-                {
-                    template: "<input id='dealTypeDropdown'/>"
-                },
-                {
-                    template: "<input id='marketSegmentDropdown'/>"
-                },
-                {
-                    template: "<input id='propertyTypeDropdown'/>"
-                },
-                {
-                    template: "<input id='priceFromInput' placeholder='от' autocomplete='off'/>"
-                },
-                {
-                    template: "<input id='priceToInput' placeholder='до' autocomplete='off'/>"
-                },
-                {
-                    template: "<input id='addressInput' type='text' placeholder='Метро' autocomplete='off' style='width: 100%;'/>"
-                }
+                { template: "<input id='dealTypeDropdown'/>" },
+                { template: "<input id='marketSegmentDropdown'/>" },
+                { template: "<input id='priceFromInput' placeholder='от' autocomplete='off'/>" },
+                { template: "<input id='priceToInput' placeholder='до' autocomplete='off'/>" },
+                { template: "<input id='addressInput' type='text' placeholder='Метро' autocomplete='off' style='width: 100%;'/>" }
             ]
         });
 
@@ -132,34 +119,6 @@
             }
         });
 
-        $("#propertyTypeDropdown").kendoDropDownList({
-            dataTextField: "Name",
-            dataValueField: "Id",
-            template: $("#CheckboxTemplate").html(),
-            dataSource: {
-                transport: {
-                    read: function(options) {
-                        $.ajax({
-                            url: '@Url.Action("PropertyTypeList", "Prefilter")',
-                            contentType: 'application/json; charset=utf-8',
-                            dataType: 'json',
-                            success: function(result) {
-                                result.unshift({ Name: "[Выбрать все]", Id: "" });
-                                options.success(result);
-                            },
-                            error: function(result) {
-                                options.error(result);
-                            }
-                        });
-                    }
-                }
-            },
-            dataBound: propertyTypeDropdownDataBound,
-            select: function(e) {
-                e.preventDefault();
-            }
-        });
-
         $("#priceFromInput").kendoNumericTextBox({
             format: "c0",
             min: 0,
@@ -200,10 +159,6 @@
 
     function marketSegmentDropdownDataBound(e) {
         addItemHandlers(e, $("#marketSegmentDropdown").data("kendoDropDownList"), "Сегмент рынка");
-    }
-
-    function propertyTypeDropdownDataBound(e) {
-        addItemHandlers(e, $("#propertyTypeDropdown").data("kendoDropDownList"), "Тип объекта");
     }
 
     function searchButtonClick(e) {
@@ -265,9 +220,6 @@
         var dealTypeIds = $.map($("#dealTypeDropdown").data("kendoDropDownList").list.find(".check-input:checked"), function (item) {
             return item.value;
         });
-        var propertyIds = $.map($("#propertyTypeDropdown").data("kendoDropDownList").list.find(".check-input:checked"), function (item) {
-            return item.value;
-        });
         var priceFrom = $("#priceFromInput").val();
         var priceTo = $("#priceToInput").val();
         var metro = $("#addressInput").data("kendoAutoComplete").value();
@@ -278,7 +230,6 @@
             data: {
                 marketSegmentItemIds: marketIds,
                 dealTypeItemIds: dealTypeIds,
-                propertyTypeItemIds: propertyIds,
                 priceFrom: priceFrom,
                 priceTo: priceTo,
                 metro: metro

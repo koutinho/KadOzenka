@@ -1244,9 +1244,8 @@ div#searchToolbar > div {
 }
 
 div#searchToolbar div:nth-child(1),
-div#searchToolbar div:nth-child(2),
-div#searchToolbar div:nth-child(3) {
-	max-width: 260px;
+div#searchToolbar div:nth-child(2) {
+    max-width: 320px;
 }
 
 div#searchToolbar > div > span > span > span.k-input {

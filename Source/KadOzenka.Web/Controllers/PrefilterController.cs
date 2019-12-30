@@ -135,22 +135,6 @@ namespace KadOzenka.Web.Controllers
 					};
 					subFilters.Add(filterModel.ConvertToString());
 				}
-				if (model.PropertyTypeItemIds?.Length > 0)
-				{
-					var propertyType = OMCoreObject
-						.GetAttributeData(x => x.PropertyType);
-					var filterModel = new FilterModel
-					{
-						TypeControl = "value",
-						Type = "REFERENCE",
-						Text =
-							$"{propertyType.Name}: {string.Join(", ", model.PropertyTypeItemIds.Select(x => ((PropertyTypes)x).GetEnumDescription()))}",
-						Value = model.PropertyTypeItemIds,
-						ReferenceId = propertyType.ReferenceId,
-						Id = propertyType.Id,
-					};
-					subFilters.Add(filterModel.ConvertToString());
-				}
 				if (model.PriceTo.HasValue || model.PriceFrom.HasValue)
 				{
 					if (model.PriceFrom.HasValue && model.PriceTo.HasValue && model.PriceFrom > model.PriceTo)
@@ -195,7 +179,6 @@ namespace KadOzenka.Web.Controllers
 		{
 			return model == null || (model.MarketSegmentItemIds?.Length == 0
 			                         && model.DealTypeItemIds?.Length == 0
-			                         && model.PropertyTypeItemIds?.Length == 0
 			                         && !model.PriceTo.HasValue
 			                         && !model.PriceFrom.HasValue
 			                         && string.IsNullOrEmpty(model.Metro));
