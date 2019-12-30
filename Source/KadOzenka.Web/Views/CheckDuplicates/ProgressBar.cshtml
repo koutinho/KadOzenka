@@ -87,6 +87,13 @@
             document.getElementById("progressCounter").innerHTML = `${(currentProgress).toFixed(2)}&nbsp;%`;
         }
 
+        function updateLastCheckPanel(data) {
+            console.log(data);
+            document.getElementById("lastChechResults").innerHTML = data.marketSegment == null ? `<div>Пока проверка не проводилась</div>` :
+                `<div>Последняя&nbsp;проверка&nbsp;${data.marketSegment}&nbsp;(${data.checkDate}):&nbsp;площадь&nbsp;${data.areaDelta},&nbsp;цена:&nbsp;${data.priceDelta}</div>
+                 <div>Всего объектов: ${data.commonCount}. Из них дубликатов: ${data.duplicateCount} (${(data.duplicateCount / data.commonCount * 100).toFixed(2)}%) и объектов "в работе": ${data.inProgressCount} (${(data.inProgressCount / data.commonCount * 100).toFixed(2)}%)</div>`;
+        }
+
         function sendInitialData(data) {
             $.ajax({
                 type: "POST",
@@ -110,6 +117,7 @@
                 success: function (result) {
                     currentProgress = result.currentProgress;
                     inProgress = result.inProgress;
+                    updateLastCheckPanel(result);
                     if (currentProgress != 0) {
                         lockPanel();
                         updateProgressBar(currentProgress);
@@ -147,16 +155,19 @@
     </script>
 </head>
 <body>
-    <div style="display: flex; margin:5px; align-items: center;">
-        <div id="progressCounter" class="current-content" style="width:80px;font-size:18px;text-align:center">0&nbsp;%</div>
-        <div style="background-color:#f1f1f1; width:calc(100% - 516.109px)">
-            <div id="progressBar" style="height:24px;width:0%;background:#6fd0d0"></div>
+    <div>
+        <div style="display: flex; margin:5px; align-items: center;">
+            <div id="progressCounter" class="current-content" style="width:80px;font-size:18px;text-align:center">0&nbsp;%</div>
+            <div style="background-color:#f1f1f1; width:calc(100% - 516.109px)">
+                <div id="progressBar" style="height:24px;width:0%;background:#6fd0d0"></div>
+            </div>
+            <div style="display: flex; align-items: center; margin-left: 5px">
+                <input type="text" id="priceTextBox" placeholder="цена">
+                <input type="text" id="areaTextBox" placeholder="площадь">
+                <div id="startCheckingButton" class="startCheckingButton" style="display:flex; align-items:center;">Начать&nbsp;проверку</div>
+            </div>
         </div>
-        <div style="display: flex; align-items: center; margin-left: 5px">
-            <input type="text" id="priceTextBox" placeholder="цена">
-            <input type="text" id="areaTextBox" placeholder="площадь">
-            <div id="startCheckingButton" class="startCheckingButton" style="display:flex; align-items:center;">Начать&nbsp;проверку</div>
-        </div>
+        <div id="lastChechResults" style="margin:5px; margin-left:30px; color:darkgray"></div>
     </div>
 </body>
 </html>

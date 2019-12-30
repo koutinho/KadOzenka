@@ -667,6 +667,30 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
+    /// 106 Таблица, содержащая информацию о проведённых проверках на дублирование
+    /// </summary>
+    public partial class OMDuplicatesHistory
+    {
+
+        public OMDuplicatesHistory()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMDuplicatesHistory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
     /// 110 Временная таблица для проведения проверки механизма отбора дублей
     /// </summary>
     public partial class OMCoreObjectTest
@@ -1594,6 +1618,12 @@ namespace ObjectModel.Sud
         /// </summary>
         [Reference]
         public List<ObjectModel.Sud.OMOtchetLinkStatus> OtchetLinkStatus { get; set; }
+
+        /// <summary>
+        /// Ссылка на (988 Связь образа и объекта реестра)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Core.Shared.OMAttachmentObject> AttachmentObject { get; set; }
         public OMOtchetLink()
         {
 
@@ -1603,6 +1633,8 @@ namespace ObjectModel.Sud
             PropertyChangedList = new HashSet<String>();
 
             OtchetLinkStatus = new List<ObjectModel.Sud.OMOtchetLinkStatus>();
+
+            AttachmentObject = new List<ObjectModel.Core.Shared.OMAttachmentObject>();
 
         }
         public OMOtchetLink(bool trackPropertyChanging) : this()

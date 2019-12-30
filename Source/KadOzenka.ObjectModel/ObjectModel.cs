@@ -2954,6 +2954,178 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
+    /// 106 Таблица, содержащая информацию о проведённых проверках на дублирование (MARKET_DUPLICATES_HISTORY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 106)]
+    [Serializable]
+    public partial class OMDuplicatesHistory : OMBaseClass<OMDuplicatesHistory>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10600100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private DateTime? _checkdate;
+        /// <summary>
+        /// 10600200 Дата проверки (CHECK_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10600200)]
+        public DateTime? CheckDate
+        {
+            get
+            {
+                CheckPropertyInited("CheckDate");
+                return _checkdate;
+            }
+            set
+            {
+                _checkdate = value;
+                NotifyPropertyChanged("CheckDate");
+            }
+        }
+
+
+        private string _marketsegment;
+        /// <summary>
+        /// 10600300 Сегмент рынка (MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10600300)]
+        public string MarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment");
+                return _marketsegment;
+            }
+            set
+            {
+                _marketsegment = value;
+                NotifyPropertyChanged("MarketSegment");
+            }
+        }
+
+
+        private decimal? _areadelta;
+        /// <summary>
+        /// 10600400 Отклонение по площади (AREA_DELTA)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10600400)]
+        public decimal? AreaDelta
+        {
+            get
+            {
+                CheckPropertyInited("AreaDelta");
+                return _areadelta;
+            }
+            set
+            {
+                _areadelta = value;
+                NotifyPropertyChanged("AreaDelta");
+            }
+        }
+
+
+        private decimal? _pricedelta;
+        /// <summary>
+        /// 10600500 Отклонение по цене (PRICE_DELTA)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10600500)]
+        public decimal? PriceDelta
+        {
+            get
+            {
+                CheckPropertyInited("PriceDelta");
+                return _pricedelta;
+            }
+            set
+            {
+                _pricedelta = value;
+                NotifyPropertyChanged("PriceDelta");
+            }
+        }
+
+
+        private long? _commoncount;
+        /// <summary>
+        /// 10600600 Всего объектов (COMMON_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10600600)]
+        public long? CommonCount
+        {
+            get
+            {
+                CheckPropertyInited("CommonCount");
+                return _commoncount;
+            }
+            set
+            {
+                _commoncount = value;
+                NotifyPropertyChanged("CommonCount");
+            }
+        }
+
+
+        private long? _inprogresscount;
+        /// <summary>
+        /// 10600700 Объектов в работе (IN_PROGRESS_COUNT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10600700)]
+        public long? InProgressCount
+        {
+            get
+            {
+                CheckPropertyInited("InProgressCount");
+                return _inprogresscount;
+            }
+            set
+            {
+                _inprogresscount = value;
+                NotifyPropertyChanged("InProgressCount");
+            }
+        }
+
+
+        private long? _duplicateobjects;
+        /// <summary>
+        /// 10600800 Объектов дубликатов (DUPLICATE_OBJECTS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10600800)]
+        public long? DuplicateObjects
+        {
+            get
+            {
+                CheckPropertyInited("DuplicateObjects");
+                return _duplicateobjects;
+            }
+            set
+            {
+                _duplicateobjects = value;
+                NotifyPropertyChanged("DuplicateObjects");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
     /// 110 Временная таблица для проведения проверки механизма отбора дублей (MARKET_CORE_OBJECT_TEST)
     /// </summary>
     [RegisterInfo(RegisterID = 110)]
@@ -11916,6 +12088,26 @@ namespace ObjectModel.Sud
                 this._workstat_Code = value;
                 NotifyPropertyChanged("Workstat");
                 NotifyPropertyChanged("Workstat_Code");
+            }
+        }
+
+
+        private bool _approvestatus;
+        /// <summary>
+        /// 31501200 Статус утверждения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501200)]
+        public bool ApproveStatus
+        {
+            get
+            {
+                CheckPropertyInited("ApproveStatus");
+                return _approvestatus;
+            }
+            set
+            {
+                _approvestatus = value;
+                NotifyPropertyChanged("ApproveStatus");
             }
         }
 
