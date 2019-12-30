@@ -562,13 +562,24 @@ namespace ObjectModel.Directory
     [ReferenceInfo(ReferenceId = 201)]
     public enum KoNoteType : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-
+		/// <summary>
+		/// Ежедневка (1)
+		/// </summary>
+		[Description("Ежедневка")]
+        [EnumCode("1")]
+        Day = 1,
+		/// <summary>
+		/// Обращение (2)
+		/// </summary>
+		[Description("Обращение")]
+        [EnumCode("2")]
+        Petition = 2,
+		/// <summary>
+		/// Годовые (3)
+		/// </summary>
+		[Description("Годовые")]
+        [EnumCode("3")]
+        Year = 3,
     }
 }
 

@@ -1618,12 +1618,6 @@ namespace ObjectModel.Sud
         /// </summary>
         [Reference]
         public List<ObjectModel.Sud.OMOtchetLinkStatus> OtchetLinkStatus { get; set; }
-
-        /// <summary>
-        /// Ссылка на (988 Связь образа и объекта реестра)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Core.Shared.OMAttachmentObject> AttachmentObject { get; set; }
         public OMOtchetLink()
         {
 
@@ -1633,8 +1627,6 @@ namespace ObjectModel.Sud
             PropertyChangedList = new HashSet<String>();
 
             OtchetLinkStatus = new List<ObjectModel.Sud.OMOtchetLinkStatus>();
-
-            AttachmentObject = new List<ObjectModel.Core.Shared.OMAttachmentObject>();
 
         }
         public OMOtchetLink(bool trackPropertyChanging) : this()
