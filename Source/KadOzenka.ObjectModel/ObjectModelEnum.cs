@@ -580,6 +580,12 @@ namespace ObjectModel.Directory
 		[Description("Годовые")]
         [EnumCode("3")]
         Year = 3,
+		/// <summary>
+		/// Исходный перечень (4)
+		/// </summary>
+		[Description("Исходный перечень")]
+        [EnumCode("4")]
+        Initial = 4,
     }
 }
 
@@ -591,13 +597,18 @@ namespace ObjectModel.Directory
     [ReferenceInfo(ReferenceId = 202)]
     public enum KoTaskStatus : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
-        [EnumCode("0")]
-        None = 0,
-
+		/// <summary>
+		/// В работе (1)
+		/// </summary>
+		[Description("В работе")]
+        [EnumCode("1")]
+        InWork = 1,
+		/// <summary>
+		/// Готово (2)
+		/// </summary>
+		[Description("Готово")]
+        [EnumCode("2")]
+        Ready = 2,
     }
 }
 
