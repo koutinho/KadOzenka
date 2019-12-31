@@ -113,7 +113,7 @@ namespace KadOzenka.Dal.FastReports
 			dataSet.Tables[0].Rows.Add(
 				ownerName,
 				owner.Address,
-				declaration.DateIn?.ToString("dd.mm.yyyy"),
+				declaration.DateIn?.ToString("dd.MM.yyyy"),
 				$"{declaration.NumIn}/{book?.Prefics}",
 				declaration.TypeObj_Code.GetEnumDescription(),
 				declaration.CadastralNumObj,
