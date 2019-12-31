@@ -11,6 +11,7 @@ using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using Core.Shared.Extensions;
+using Newtonsoft.Json;
 using ObjectModel.Core.Reports;
 
 namespace KadOzenka.Web.Controllers
@@ -26,6 +27,11 @@ namespace KadOzenka.Web.Controllers
 		/// Срок рассмотрения декларации составляет 5 рабочих дней со дня поступления декларации eсли заявителю отказано в рассмотрении
 		/// </summary>
 		public static int DurationWorkDaysCountForRejectedDeclaration => 5;
+
+		/// <summary>
+		/// Плановая дата рассмотрения должна быть за 10 дней до окончания срока рассмотрения
+		/// </summary>
+		public static int DaysDiffBetweenDateCheckPlanAndDurationDateIn => 10;
 
 		#region Declarations
 
@@ -313,11 +319,25 @@ namespace KadOzenka.Web.Controllers
 				characteristic = new OMHarParcel();
 			}
 
+			var result = OMResult
+				.Where(x => x.Declaration_Id == parcelCharacteristicsViewModel.DeclarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (result == null)
+			{
+				throw new Exception($"не найдены результаты для декларации с идентификатором {parcelCharacteristicsViewModel.DeclarationId}");
+			}
+
 			ParcelCharacteristicsModel.ToEntity(parcelCharacteristicsViewModel, ref characteristic);
 			long id;
 			using (var ts = new TransactionScope())
 			{
 				id = characteristic.Save();
+
+				result.TextYes = parcelCharacteristicsViewModel.GetAcceptedCharacteristics();
+				result.TextNo = parcelCharacteristicsViewModel.GetRejectedCharacteristics();
+				result.Save();
+
 				ts.Complete();
 			}
 
@@ -382,6 +402,15 @@ namespace KadOzenka.Web.Controllers
 				return NotFound();
 			}
 
+			var result = OMResult
+				.Where(x => x.Declaration_Id == oksCharacteristicsViewModel.DeclarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (result == null)
+			{
+				throw new Exception($"не найдены результаты для декларации с идентификатором {oksCharacteristicsViewModel.DeclarationId}");
+			}
+
 			if (characteristic == null)
 			{
 				characteristic = new OMHarOKS();
@@ -392,11 +421,34 @@ namespace KadOzenka.Web.Controllers
 			using (var ts = new TransactionScope())
 			{
 				id = characteristic.Save();
+
+				result.TextYes = oksCharacteristicsViewModel.GetAcceptedCharacteristics();
+				result.TextNo = oksCharacteristicsViewModel.GetRejectedCharacteristics();
+				result.Save();
+
 				ts.Complete();
 			}
 
 			oksCharacteristicsViewModel.Id = id;
 			return Json(new { Success = "Сохранено успешно", data = oksCharacteristicsViewModel });
+		}
+
+		[HttpGet]
+		public ActionResult GetNewAcceptedRejectedCharacteristics(long declarationId)
+		{
+			var result = OMResult
+				.Where(x => x.Declaration_Id == declarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (result == null)
+			{
+				throw new Exception($"не найдены результаты для декларации с идентификатором {declarationId}");
+			}
+
+			return Content(
+				JsonConvert.SerializeObject(new
+					{acceptedCharacteristics = result.TextYes, rejectedCharacteristics = result.TextNo}),
+				"application/json");
 		}
 
 		#endregion Declarations

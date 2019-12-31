@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
@@ -7,6 +8,18 @@ namespace KadOzenka.Web.Models.Declarations
 {
 	public class OksCharacteristicsModel
 	{
+		public const string ConnectionToPowerGridsName = "Наличие/отсутствие подключения к электрическим сетям";
+		public const string AvailabilityConnectionToPowerGridsName = "Возможность/отсутствие возможности подключения к сетям инженерно-технического обеспечения";
+		public const string ConnectionToGasGridsName = "Наличие/отсутствие подключения к сетям газораспределения";
+		public const string AvailabilityConnectionToGasGridsName = "Возможность/отсутствие возможности подключения к сетям газораспределения";
+		public const string GasPowerName = "Наличие/отсутствие централизованного подключения к системе водоснабжения";
+		public const string ConnectionToWaterSupplyName = "Наличие/отсутствие централизованного подключения к системе водоснабжения";
+		public const string AvailabilityConnectionToWaterSupplyName = "Возможность/отсутствие возможности подключения к системе водоснабжения";
+		public const string ConnectionToHeatSupplyName = "Наличие/отсутствие централизованного подключения к системе теплоснабжения";
+		public const string AvailabilityConnectionToHeatSupplyName = "Возможность/отсутствие возможности подключения к системе теплоснабжения";
+		public const string ConnectionToWaterDisposalName = "Наличие/отсутствие централизованного подключения к системе водоотведения";
+		public const string AvailabilityConnectionToWaterDisposalName = "Возможность/отсутствие возможности подключения к системе водоотведения";
+
 		/// <summary>
 		/// Идентификатор (ID)
 		/// </summary>
@@ -147,13 +160,13 @@ namespace KadOzenka.Web.Models.Declarations
 		/// <summary>
 		/// Наличие/отсутствие подключения к электрическим сетям (HAR_21_1_1)
 		/// </summary>
-		[Display(Name = "Наличие/отсутствие подключения к электрическим сетям")]
+		[Display(Name = ConnectionToPowerGridsName)]
 		public HarAvailability? ConnectionToPowerGrids { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к сетям (HAR_21_1_2)
 		/// </summary>
-		[Display(Name = "Возможность/отсутствие возможности подключения к сетям инженерно-технического обеспечения")]
+		[Display(Name = AvailabilityConnectionToPowerGridsName)]
 		public HarAvailability? AvailabilityConnectionToPowerGrids { get; set; }
 
 		/// <summary>
@@ -165,57 +178,113 @@ namespace KadOzenka.Web.Models.Declarations
 		/// <summary>
 		/// Наличие/отсутствие подключения к сетям газораспределения (HAR_21_2_1)
 		/// </summary>
-		[Display(Name = "Наличие/отсутствие подключения к сетям газораспределения")]
+		[Display(Name = ConnectionToGasGridsName)]
 		public HarAvailability? ConnectionToGasGrids { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к сетям газораспределения (HAR_21_2_2)
 		/// </summary>
-		[Display(Name = "Возможность/отсутствие возможности подключения к сетям газораспределения")]
+		[Display(Name = AvailabilityConnectionToGasGridsName)]
 		public HarAvailability? AvailabilityConnectionToGasGrids { get; set; }
 
 		/// <summary>
 		/// Мощность электрической сети (HAR_21_2_3)
 		/// </summary>
-		[Display(Name = "Мощность сетей газораспределения ")]
+		[Display(Name = GasPowerName)]
 		public string GasPower { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к системе водоснабжения (HAR_21_3_1)
 		/// </summary>
-		[Display(Name = "Наличие/отсутствие централизованного подключения к системе водоснабжения")]
+		[Display(Name = ConnectionToWaterSupplyName)]
 		public HarAvailability? ConnectionToWaterSupply { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к системе водоснабжения (HAR_21_3_2)
 		/// </summary>
-		[Display(Name = "Возможность/отсутствие возможности подключения к системе водоснабжения")]
+		[Display(Name = AvailabilityConnectionToWaterSupplyName)]
 		public HarAvailability? AvailabilityConnectionToWaterSupply { get; set; }
 
 		/// <summary>
 		/// Наличие/отсутствие централизованного подключения к системе теплоснабжения (HAR_21_4_1)
 		/// </summary>
-		[Display(Name = "Наличие/отсутствие централизованного подключения к системе теплоснабжения")]
+		[Display(Name = ConnectionToHeatSupplyName)]
 		public HarAvailability? ConnectionToHeatSupply { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к системе теплоснабжения (HAR_21_4_2)
 		/// </summary>
-		[Display(Name = "Возможность/отсутствие возможности подключения к системе теплоснабжения")]
+		[Display(Name = AvailabilityConnectionToHeatSupplyName)]
 		public HarAvailability? AvailabilityConnectionToHeatSupply { get; set; }
 
 		/// <summary>
 		/// Наличие/отсутствие централизованного подключения к системе теплоснабжения (HAR_21_5_1)
 		/// </summary>
-		[Display(Name = "Наличие/отсутствие централизованного подключения к системе водоотведения")]
+		[Display(Name = ConnectionToWaterDisposalName)]
 		public HarAvailability? ConnectionToWaterDisposal { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к системе теплоснабжения (HAR_21_5_2)
 		/// </summary>
-		[Display(Name = "Возможность/отсутствие возможности подключения к системе водоотведения")]
+		[Display(Name = AvailabilityConnectionToWaterDisposalName)]
 		public HarAvailability? AvailabilityConnectionToWaterDisposal { get; set; }
 
+		public string GetAcceptedCharacteristics()
+		{
+			return GetCharacteristicsString(HarAvailability.Exists);
+		}
+
+		public string GetRejectedCharacteristics()
+		{
+			return GetCharacteristicsString(HarAvailability.NotExists);
+		}
+
+		private string GetCharacteristicsString(HarAvailability harAvailabilityType)
+		{
+			var result = new List<string>();
+			if (ConnectionToPowerGrids.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(ConnectionToPowerGridsName);
+			}
+			if (AvailabilityConnectionToPowerGrids.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(AvailabilityConnectionToPowerGridsName);
+			}
+			if (ConnectionToGasGrids.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(ConnectionToGasGridsName);
+			}
+			if (AvailabilityConnectionToGasGrids.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(AvailabilityConnectionToGasGridsName);
+			}
+			if (ConnectionToWaterSupply.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(ConnectionToWaterSupplyName);
+			}
+			if (AvailabilityConnectionToWaterSupply.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(AvailabilityConnectionToWaterSupplyName);
+			}
+			if (ConnectionToHeatSupply.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(ConnectionToHeatSupplyName);
+			}
+			if (AvailabilityConnectionToHeatSupply.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(AvailabilityConnectionToHeatSupplyName);
+			}
+			if (ConnectionToWaterDisposal.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(ConnectionToWaterDisposalName);
+			}
+			if (AvailabilityConnectionToWaterDisposal.GetValueOrDefault() == harAvailabilityType)
+			{
+				result.Add(AvailabilityConnectionToWaterDisposalName);
+			}
+
+			return string.Join(",\n", result);
+		}
 
 		public static OksCharacteristicsModel FromEntity(OMHarOKS entity)
 		{

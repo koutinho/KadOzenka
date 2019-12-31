@@ -87,6 +87,7 @@
             content: "@Url.Action("EditParcelCharacteristics", "Declarations", new { declarationId = Model.DeclarationId })",
             close: function() {
                 this.content("");
+                updateAcceptedRejectedCharacteristics();
             },
         }).data('kendoWindow');
         window.center();
@@ -105,9 +106,27 @@
             content: "@Url.Action("EditOKSCharacteristics", "Declarations", new { declarationId = Model.DeclarationId })",
             close: function() {
                 this.content("");
+                updateAcceptedRejectedCharacteristics();
             },
         }).data('kendoWindow');
         window.center();
         window.open();
+    }
+
+    function updateAcceptedRejectedCharacteristics() {
+        $.get(
+            "@Url.Action("GetNewAcceptedRejectedCharacteristics", "Declarations", new { declarationId = Model.DeclarationId })",
+            function(response) {
+                if (response) {
+                    let approvedCharacteristicTextArea = $("textarea#FormalCheckModel_ApprovedCharacteristic");
+                    if (approvedCharacteristicTextArea) {
+                        approvedCharacteristicTextArea.val(response.acceptedCharacteristics);
+                    }
+                    let rejectedCharacteristicTextArea = $("textarea#FormalCheckModel_RejectedCharacteristic");
+                    if (rejectedCharacteristicTextArea) {
+                        rejectedCharacteristicTextArea.val(response.rejectedCharacteristics);
+                    }
+                }
+            });
     }
 </script>

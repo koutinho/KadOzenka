@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Core.Register.DAL;
+using Core.Shared.Misc;
 using Core.UI.Registers.Services;
 using KadOzenka.Web.Controllers;
 using KadOzenka.Web.Models.Declarations.DeclarationTabModel;
@@ -233,9 +234,9 @@ namespace KadOzenka.Web.Models.Declarations
 				{
 					declarationViewModel.DurationDateIn =
 						(StatusDec) declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection
-							? CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value,
+							? CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value.AddDays(-1),
 								DeclarationsController.DurationWorkDaysCountForRejectedDeclaration)
-							: CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value,
+							: CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value.AddDays(-1),
 								DeclarationsController.DurationWorkDaysCount);
 				}
 				else
@@ -245,7 +246,8 @@ namespace KadOzenka.Web.Models.Declarations
 			}
 			if (entity.DurationIn != declarationViewModel.DurationDateIn)
 			{
-				declarationViewModel.FormalCheckModel.DateCheckPlan = declarationViewModel.DurationDateIn;
+				declarationViewModel.FormalCheckModel.DateCheckPlan = declarationViewModel.DurationDateIn?.AddDays(-DeclarationsController
+					.DaysDiffBetweenDateCheckPlanAndDurationDateIn);
 			}
 
 			entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();
