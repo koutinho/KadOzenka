@@ -39,6 +39,10 @@
         var currentProgress = 0;
         var inProgress = false;
 
+        var socket = new WebSocket(`ws://${location.hostname + (location.port ? ':' + location.port : '')}/DuplicateProgress`);
+
+        socket.onmessage = function (event) { console.log(`${event.data}`); };
+
         function setInputFilter(textbox, inputFilter) {
             ["input", "keydown", "keyup", "mousedown", "mouseup", "select", "contextmenu", "drop"].forEach(function(event) {
                 textbox.addEventListener(event, function() {

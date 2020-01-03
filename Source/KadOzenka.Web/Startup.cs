@@ -22,6 +22,7 @@ using System.Configuration;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using KadOzenka.Dal.WebSocket;
 
 namespace CIPJS
 {
@@ -135,6 +136,22 @@ namespace CIPJS
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+            app.UseWebSockets();
+
+            app.Use(async (context, next) =>
+            {
+                //if (context.Request.Path == "/ws")
+                if (context.WebSockets.IsWebSocketRequest)
+                {
+                    switch (context.Request.Path)
+                    {
+                        case "/DuplicateProgress":
+                            SocketPool.ProgressInitWebSocket(await context.WebSockets.AcceptWebSocketAsync());
+                            break;
+                    }
+                }
+                else await next();
             });
 
             HttpContextHelper.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
