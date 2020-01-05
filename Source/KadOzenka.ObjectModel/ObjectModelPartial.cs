@@ -2268,6 +2268,12 @@ namespace ObjectModel.Declarations
     public partial class OMUved
     {
 
+
+        /// <summary>
+        /// Ссылка на (809 Сохраненные отчеты)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Core.Reports.OMSavedReport> SavedReport { get; set; }
         public OMUved()
         {
 
@@ -2275,6 +2281,8 @@ namespace ObjectModel.Declarations
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            SavedReport = new List<ObjectModel.Core.Reports.OMSavedReport>();
 
         }
         public OMUved(bool trackPropertyChanging) : this()

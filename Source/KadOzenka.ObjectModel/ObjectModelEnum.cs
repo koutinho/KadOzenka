@@ -563,6 +563,12 @@ namespace ObjectModel.Directory
     public enum KoNoteType : long
     {
 		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
 		/// Ежедневка (1)
 		/// </summary>
 		[Description("Ежедневка")]
@@ -597,6 +603,12 @@ namespace ObjectModel.Directory
     [ReferenceInfo(ReferenceId = 202)]
     public enum KoTaskStatus : long
     {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
 		/// <summary>
 		/// В работе (1)
 		/// </summary>

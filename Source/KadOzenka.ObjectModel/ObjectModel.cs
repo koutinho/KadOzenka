@@ -4306,6 +4306,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private long? _responsedocid;
+        /// <summary>
+        /// 20102300 Идентификатор исходящего документа (RESPONSE_DOCUMENT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102300)]
+        public long? ResponseDocId
+        {
+            get
+            {
+                CheckPropertyInited("ResponseDocId");
+                return _responsedocid;
+            }
+            set
+            {
+                _responsedocid = value;
+                NotifyPropertyChanged("ResponseDocId");
+            }
+        }
+
     }
 }
 
@@ -4502,26 +4522,6 @@ namespace ObjectModel.KO
             {
                 _tourid = value;
                 NotifyPropertyChanged("TourId");
-            }
-        }
-
-
-        private long? _responsedocid;
-        /// <summary>
-        /// 20300600 Идентификатор исходящего документа (RESPONSE_DOCUMENT_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20300600)]
-        public long? ResponseDocId
-        {
-            get
-            {
-                CheckPropertyInited("ResponseDocId");
-                return _responsedocid;
-            }
-            set
-            {
-                _responsedocid = value;
-                NotifyPropertyChanged("ResponseDocId");
             }
         }
 
@@ -9141,6 +9141,26 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private bool _containsattachments;
+        /// <summary>
+        /// 30001600 Признак наличия образа ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30001600)]
+        public bool ContainsAttachments
+        {
+            get
+            {
+                CheckPropertyInited("ContainsAttachments");
+                return _containsattachments;
+            }
+            set
+            {
+                _containsattachments = value;
+                NotifyPropertyChanged("ContainsAttachments");
+            }
+        }
+
     }
 }
 
@@ -12260,6 +12280,26 @@ namespace ObjectModel.Sud
             {
                 _status = value;
                 NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private bool _containsattachments;
+        /// <summary>
+        /// 31600700 Признак наличия образа ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600700)]
+        public bool ContainsAttachments
+        {
+            get
+            {
+                CheckPropertyInited("ContainsAttachments");
+                return _containsattachments;
+            }
+            set
+            {
+                _containsattachments = value;
+                NotifyPropertyChanged("ContainsAttachments");
             }
         }
 
