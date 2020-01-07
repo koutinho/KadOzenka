@@ -10,6 +10,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateObjectModel", "Utils\GenerateObjectModel\GenerateObjectModel.csproj", "{0E7E9ED7-37D5-4769-AE8D-E1CB5A76CD1E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web", "KadOzenka.Web\KadOzenka.Web.csproj", "{04FC3986-3A02-4E41-8CB4-72D43605511A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1570E94C-497B-4581-80B7-F32BA3A9EFE7} = {1570E94C-497B-4581-80B7-F32BA3A9EFE7}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateDbScripts", "Utils\GenerateDbScripts\GenerateDbScripts.csproj", "{1ED61666-43A6-420B-9F1E-C587B88794A8}"
 EndProject
@@ -19,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GISStandProject", "GISStand
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.ObjectModel", "KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj", "{1570E94C-497B-4581-80B7-F32BA3A9EFE7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProccessor", "ImageProccessor\ImageProccessor.csproj", "{E885A580-E156-4906-8978-41B59991EF01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProccessor", "ImageProccessor\ImageProccessor.csproj", "{E885A580-E156-4906-8978-41B59991EF01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

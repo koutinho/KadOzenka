@@ -281,10 +281,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="DevExpress.Charts.v19.1.Core">
       <HintPath>..\_Dll\DevExpress.Charts.v19.1.Core.dll</HintPath>
     </Reference>
@@ -504,6 +500,10 @@
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
