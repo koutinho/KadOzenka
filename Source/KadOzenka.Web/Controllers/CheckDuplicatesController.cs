@@ -29,26 +29,9 @@ namespace KadOzenka.Web.Controllers
         public JsonResult StartDuplicatesChecking()
         {
             Data data = JsonConvert.DeserializeObject<Data>(new StreamReader(HttpContext.Request.Body).ReadToEnd());
-            new Thread(() => { new Duplicates(data.Area, data.Price).Detect(); }).Start();
+            new Thread(() => { new Duplicates(data.Area, data.Price).Detect(logData:false); }).Start();
             Duplicates.InProgress = data.InProgress;
             return Json(new { type = "started" });
-        }
-
-        public JsonResult GetProgress()
-        {
-            OMDuplicatesHistory history = OMDuplicatesHistory.Where(x => true).SelectAll().OrderByDescending(x => x.CheckDate).ExecuteFirstOrDefault();
-            return Json(new
-            {
-                checkDate = history == null ? null : history.CheckDate?.ToString("yyyy.MM.dd HH:mm:ss"),
-                marketSegment = history == null ? null : history.MarketSegment,
-                areaDelta = history == null ? null : $"{(int)(history.AreaDelta * 100)}&nbsp;%",
-                priceDelta = history == null ? null : $"{(int)(history.PriceDelta * 100)}&nbsp;%",
-                commonCount = history == null ? null : history.CommonCount,
-                inProgressCount = history == null ? null : history.InProgressCount,
-                duplicateCount = history == null ? null : history.DuplicateObjects,
-                currentProgress = Duplicates.CurrentProgress,
-                inProgress = Duplicates.InProgress
-            });
         }
 
     }

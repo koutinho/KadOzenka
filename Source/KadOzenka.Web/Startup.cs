@@ -23,6 +23,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using KadOzenka.Dal.WebSocket;
+using KadOzenka.Dal.DuplicateCleaner;
+using KadOzenka.Web.Controllers;
 
 namespace CIPJS
 {
@@ -141,13 +143,14 @@ namespace CIPJS
 
             app.Use(async (context, next) =>
             {
-                //if (context.Request.Path == "/ws")
                 if (context.WebSockets.IsWebSocketRequest)
                 {
                     switch (context.Request.Path)
                     {
                         case "/DuplicateProgress":
-                            SocketPool.ProgressInitWebSocket(await context.WebSockets.AcceptWebSocketAsync());
+                            System.Net.WebSockets.WebSocket socket = await context.WebSockets.AcceptWebSocketAsync();
+                            await new SocketPool().SendMessage(socket, Duplicates.GetCurrentProgress());
+                            await new SocketPool().AddSocket(socket);
                             break;
                     }
                 }

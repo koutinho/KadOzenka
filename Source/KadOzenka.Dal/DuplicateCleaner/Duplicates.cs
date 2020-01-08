@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using ObjectModel.Market;
 using KadOzenka.Dal.Logger;
 
+using Newtonsoft.Json;
+
 namespace KadOzenka.Dal.DuplicateCleaner
 {
 
@@ -61,7 +63,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
                 .Execute()
                 .ToList();
 
-        public void Detect(bool useTestTable = false)
+        public void Detect(bool useTestTable = false, bool logData = true)
         {
 	        if (useTestTable)
 	        {
@@ -71,12 +73,12 @@ namespace KadOzenka.Dal.DuplicateCleaner
 			        .Execute()
 			        .ToList()
 					.Select(x => x.AsIMarketObject()).ToList();
-		        PerformProc(inputObjects);
+		        PerformProc(inputObjects, logData);
 			}
 	        else
 	        {
 		        var inputObjects = AllObjects.Select(x => x.AsIMarketObject()).ToList();
-		        PerformProc(inputObjects);
+		        PerformProc(inputObjects, logData);
 			}
         }
 
@@ -93,7 +95,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
             return result;
         }
 
-	    private void PerformProc<T>(List<T> inputObjects) where T : IMarketObject
+	    private void PerformProc<T>(List<T> inputObjects, bool logData = true) where T : IMarketObject
 		{
 			var objs = inputObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.Subcategory }).Select(grp => grp.ToList()).ToList();
 			var result = new List<List<T>>();
@@ -117,11 +119,13 @@ namespace KadOzenka.Dal.DuplicateCleaner
 				catch (Exception) { IErr++; }
 				ICur++;
                 currentProgress = ((double)ICur) / ICtr * 100;
-                ConsoleLog.WriteData("Проверка данных на дублинование", ICtr, ICur, ICor, IErr);
+                new WebSocket.SocketPool().BroadCastMessage(GetCurrentProgress());
+                if(logData)  ConsoleLog.WriteData("Проверка данных на дублинование", ICtr, ICur, ICor, IErr);
 			});
             currentProgress = 0;
             inProgress = false;
             FormHistory(DateTime.Now, "Все сегменты", Convert.ToDecimal(AreaDelta), Convert.ToDecimal(PriceDelta), AllObjects.Count, ICor, IDup).Save();
+            new WebSocket.SocketPool().BroadCastMessage(GetCurrentProgress());
             ConsoleLog.WriteFotter("Проверка данных на дублинование завершена");
 		}
 
@@ -147,6 +151,23 @@ namespace KadOzenka.Dal.DuplicateCleaner
             });
             result.ForEach(x => x.Sort((y, z) => DateTime.Compare(z.ParserTime.GetValueOrDefault(), y.ParserTime.GetValueOrDefault())));
             return result;
+        }
+
+        public static string GetCurrentProgress()
+        {
+            OMDuplicatesHistory history = OMDuplicatesHistory.Where(x => true).SelectAll().OrderByDescending(x => x.CheckDate).ExecuteFirstOrDefault();
+            return JsonConvert.SerializeObject(new
+            {
+                checkDate = history == null ? null : history.CheckDate?.ToString("yyyy.MM.dd HH:mm:ss"),
+                marketSegment = history == null ? null : history.MarketSegment,
+                areaDelta = history == null ? null : $"{(int)(history.AreaDelta * 100)}&nbsp;%",
+                priceDelta = history == null ? null : $"{(int)(history.PriceDelta * 100)}&nbsp;%",
+                commonCount = history == null ? null : history.CommonCount,
+                inProgressCount = history == null ? null : history.InProgressCount,
+                duplicateCount = history == null ? null : history.DuplicateObjects,
+                currentProgress = CurrentProgress,
+                inProgress = InProgress
+            });
         }
 
     }
