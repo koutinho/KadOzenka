@@ -218,8 +218,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code=KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate=new DateTime(2016,1,1),
-                    DocumentId= inputDoc.Id,
-                    ResponseDocId=-1
+                    DocumentId= inputDoc.Id
                 };
                 task.Save();
             }
@@ -265,8 +264,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2016, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -312,8 +310,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2016, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -359,8 +356,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2016, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -406,8 +402,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2016, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -453,8 +448,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2016, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -503,8 +497,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2018, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -554,8 +547,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2018, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -605,8 +597,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2018, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -656,8 +647,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2018, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
@@ -705,8 +695,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     Status_Code = KoTaskStatus.None,
                     TourId = tour.Id,
                     CreationDate = new DateTime(2018, 1, 1),
-                    DocumentId = inputDoc.Id,
-                    ResponseDocId = -1
+                    DocumentId = inputDoc.Id
                 };
                 task.Save();
             }
