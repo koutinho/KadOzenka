@@ -557,7 +557,7 @@ namespace KadOzenka.Web.Controllers
             List<SelectListItem> res =  paramValues.Select(x => new SelectListItem
                 {
                     Value = $"{x.Pid}",
-                    Text = $"({(SRDCache.Users.ContainsKey((int)x.IdUser) ? SRDCache.Users[(int)x.IdUser].FullName : String.Empty)}, {x.DateUser.ToString("dd.MM.yyyy")}) {x}"
+                    Text = $"{x} ({(SRDCache.Users.ContainsKey((int)x.IdUser) ? SRDCache.Users[(int)x.IdUser].FullName : String.Empty)}, {x.DateUser.ToString("dd.MM.yyyy")})"
                 }).ToList();
 
             return Json(res);
