@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Core.UI.Registers.Controllers;
@@ -10,8 +9,6 @@ using System.Transactions;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
-using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Microsoft.AspNetCore.Http;
@@ -1322,5 +1319,7 @@ namespace KadOzenka.Web.Controllers
 				"Статистика по объектам недвижимости" + ".xlsx");
         }
 		#endregion
+
+
 	}
 }

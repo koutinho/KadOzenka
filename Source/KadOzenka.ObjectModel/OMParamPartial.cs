@@ -52,13 +52,13 @@ namespace ObjectModel.Sud
                     switch (ParamName)
                     {
                         case "kn":          return ParamChar;
-                        case "date":        return (ParamDate==null)?string.Empty:ParamDate.Value.ToShortDateString();
-                        case "square":      return (ParamDouble==null)?string.Empty:ParamDouble.ToString();
-                        case "kc":          return (ParamDouble == null) ? string.Empty : ParamDouble.ToString(); 
+                        case "date":        return (ParamDate == null)  ? string.Empty:ParamDate.Value.ToShortDateString();
+                        case "square":      return (ParamDouble == null)? string.Empty:ParamDouble?.ToString("N3");
+                        case "kc":          return (ParamDouble == null) ? string.Empty : ParamDouble?.ToString("N3"); 
                         case "stat_dgi":    return ParamChar;
                         case "owner":       return ParamChar;
                         case "adres":       return ParamChar;
-                        case "typeobj":     return (ParamInt==null)?string.Empty:((Directory.Sud.SudObjectType)ParamInt).GetEnumDescription();
+                        case "typeobj":     return (ParamInt==null) ? string.Empty:((Directory.Sud.SudObjectType)ParamInt).GetEnumDescription();
                         case "name_center": return ParamChar;
                         default:            return string.Empty;
                     }
@@ -79,8 +79,8 @@ namespace ObjectModel.Sud
                     {
                         case "use":       return ParamChar;
                         case "descr":     return ParamChar;
-                        case "rs":        return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
-                        case "uprs":      return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "rs":        return (ParamDouble == null) ? string.Empty : ParamDouble?.ToString("N3");
+                        case "uprs":      return (ParamDouble == null) ? string.Empty : ParamDouble?.ToString("N3");
                         case "id_otchet": return (ParamInt == null) ? string.Empty : OMOtchet.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Number;
                         default:          return string.Empty;
                     }
@@ -105,8 +105,8 @@ namespace ObjectModel.Sud
                     {
                         case "use":     return ParamChar;
                         case "descr":   return ParamChar;
-                        case "rs":      return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
-                        case "uprs":    return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "rs":      return (ParamDouble == null) ? string.Empty : ParamDouble?.ToString("N3");
+                        case "uprs":    return (ParamDouble == null) ? string.Empty : ParamDouble?.ToString("N3");
                         case "id_zak":	return (ParamInt == null) ? string.Empty : OMZak.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Number;
                         default:        return string.Empty;
                     }
@@ -125,8 +125,8 @@ namespace ObjectModel.Sud
                     {
                         case "use": return ParamChar;
                         case "descr": return ParamChar;
-                        case "rs": return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
-                        case "uprs": return (ParamDouble == null) ? string.Empty : ParamDouble.ToString();
+                        case "rs": return (ParamDouble == null) ? string.Empty : ParamDouble?.ToString("N3");
+                        case "uprs": return (ParamDouble == null) ? string.Empty : ParamDouble?.ToString("N3");
                         case "id_sud": return (ParamInt == null) ? string.Empty : OMSud.Where(x => x.Id == localParamInt).SelectAll().ExecuteFirstOrDefault().Number;
                         default: return string.Empty;
                     }
