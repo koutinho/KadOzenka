@@ -96,9 +96,12 @@ namespace ObjectModel.KO
         public long FactorId { get; set; }
         public string Value { get; set; }
 
-        public CalcItem(long factorid, string value)
+        public CalcItem(long factorid, string value, string numeric)
         {
-            Value = value;
+            if (value == string.Empty)
+                Value = numeric;
+            else
+                Value = value;
             FactorId = factorid;
         }
     }
@@ -293,6 +296,40 @@ namespace ObjectModel.KO
     }
     public partial class OMGroup
     {
+        public static int? GetFactorReestrId(OMGroup current)
+        {
+            OMGroup ParentGroup = OMGroup.Where(x => x.Id == current.ParentId).SelectAll().ExecuteFirstOrDefault();
+            if (ParentGroup != null) return GetFactorReestrId(ParentGroup);
+            else
+            {
+                OMTourGroup tourgroup = OMTourGroup.Where(x=>x.GroupId==current.Id).SelectAll().ExecuteFirstOrDefault();
+                if (tourgroup != null)
+                {
+                    if (current.GroupAlgoritm_Code == KoGroupAlgoritm.MainOKS)
+                    {
+                        if (tourgroup.TourId == 2016) return 252;
+                        else
+                        if (tourgroup.TourId == 2018) return 250;
+                        else
+                            return null;
+                    }
+                    else
+                    if (current.GroupAlgoritm_Code == KoGroupAlgoritm.MainParcel)
+                    {
+                        if (tourgroup.TourId == 2016) return 253;
+                        else
+                        if (tourgroup.TourId == 2018) return 251;
+                        else
+                            return null;
+                    }
+                    else
+                        return null;
+
+                }
+                else
+                    return null;
+            }
+        }
         public static void GetMinValue(ref ALLStatOKS minKR, ref ALLStatOKS minKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
         {
             upks = decimal.MaxValue;
@@ -533,7 +570,6 @@ namespace ObjectModel.KO
                 }
             }
         }
-
         public void Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup, PropertyTypes curTypeObject)
         {
             #region Эталонный
@@ -896,8 +932,9 @@ namespace ObjectModel.KO
             #region Моделирование
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
+                int? factorReestrId = GetFactorReestrId(this);
                 OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
-                if (model != null)
+                if (model != null && factorReestrId!=null)
                 {
                     if (model.ModelFactor.Count == 0)
                         model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
@@ -938,19 +975,19 @@ namespace ObjectModel.KO
                     ParallelOptions options = new ParallelOptions
                     {
                         CancellationToken = cancelTokenSource.Token,
-                        MaxDegreeOfParallelism = 40
+                        MaxDegreeOfParallelism = 1
                     };
 
 
                     Parallel.ForEach(units, options, unit =>
                     {
                         List<CalcItem> FactorValues = new List<CalcItem>();
-                        DataTable data = RegisterStorage.GetAttributes((int)unit.Id, 252);
+                        DataTable data = RegisterStorage.GetAttributes((int)unit.Id, factorReestrId.Value);
                         if (data != null)
                         {
                             foreach (DataRow row in data.Rows)
                             {
-                                FactorValues.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString()));
+                                FactorValues.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
                             }
                         }
 
@@ -1211,10 +1248,8 @@ namespace ObjectModel.KO
                             {
                                 decimal UPKS = Math.Round(Convert.ToDecimal(Math.Exp(Convert.ToDouble(model.A0 + D))) * De, 2, MidpointRounding.AwayFromZero);
                                 decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
-                                if (unit.UpksPre != UPKS)
-                                    Console.WriteLine("УПКС:{0} УПКС:{1}", unit.UpksPre, UPKS);
-                                if (unit.CadastralCostPre != Cost)
-                                    Console.WriteLine("УПКС:{0} УПКС:{1} КС:{2} КС:{3} SQ:{4}", unit.UpksPre, UPKS, unit.CadastralCostPre, Cost, unit.Square);
+                                if (unit.CadastralCostPre != Cost || unit.UpksPre != UPKS)
+                                    Console.WriteLine("КН:{5} УПКС:{0} УПКС:{1} КС:{2} КС:{3} SQ:{4}", unit.UpksPre, UPKS, unit.CadastralCostPre, Cost, unit.Square, unit.CadastralNumber);
                                 if (true)//obj._main
                                 {
                                     if (strerror != string.Empty)
@@ -1986,7 +2021,6 @@ namespace ObjectModel.KO
             }
             #endregion
         }
-
         public void Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup)
         {
             Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Building), CalcParentGroup, PropertyTypes.Building);
@@ -1994,6 +2028,62 @@ namespace ObjectModel.KO
             Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.UncompletedBuilding), CalcParentGroup, PropertyTypes.UncompletedBuilding);
             Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Stead), CalcParentGroup, PropertyTypes.Stead);
             Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Pllacement), CalcParentGroup, PropertyTypes.Pllacement);
+        }
+        public void CalculateResult(List<ObjectModel.KO.OMUnit> units)
+        {
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 10
+            };
+            int count = 0;
+            int? factorReestrId = GetFactorReestrId(this);
+            if (factorReestrId != null)
+            {
+                Parallel.ForEach(units, options, item => CalculateResult(item, factorReestrId.Value, ref count));
+            }
+        }
+        private void CalculateResult(ObjectModel.KO.OMUnit unit, int factorReestrId, ref int count)
+        {
+            count++;
+            if (count % 50 == 0)
+                Console.WriteLine(count);
+            decimal? upks = unit.UpksPre;
+            decimal? square = unit.Square;
+            if (square == null) square = 1;
+            if (upks!=null)
+            {
+                List<ObjectModel.KO.OMGroupFactor> groupFactors = ObjectModel.KO.OMGroupFactor.Where(x=>x.GroupId==this.Id).SelectAll().Execute();
+                foreach(ObjectModel.KO.OMGroupFactor groupFactor in groupFactors)
+                {
+                    List<CalcItem> FactorValues = new List<CalcItem>();
+                    decimal koeff = 0;
+                    DataTable data = RegisterStorage.GetAttribute((int)unit.Id, factorReestrId, (int)groupFactor.FactorId);
+                    if (data != null)
+                    {
+                        foreach (DataRow row in data.Rows)
+                        {
+                            string t = row.ItemArray[6].ParseToString();
+                            if (t!=string.Empty && t!=null)
+                            koeff = t.ParseToDecimal();
+                        }
+                    }
+                    upks *= koeff;
+                }
+                upks = Math.Round(upks.Value, 2, MidpointRounding.AwayFromZero);
+            }
+            else
+            {
+                upks = 0;
+            }
+            decimal cost = Math.Round(upks.Value * square.Value, 2, MidpointRounding.AwayFromZero);
+            if (unit.Upks != upks || unit.CadastralCost != cost)
+                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3}", unit.Upks, upks, unit.CadastralCost, cost, unit.CadastralNumber);
+
+            //unit.Upks = upks;
+            //unit.CadastralCost = cost;
+            //unit.Save();
         }
 
     }
