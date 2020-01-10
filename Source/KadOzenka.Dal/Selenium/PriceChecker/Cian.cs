@@ -21,7 +21,11 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
 
         public List<OMPriceHistory> resultList = new List<OMPriceHistory>();
         public List<OMCoreObject> AllObjects = OMCoreObject
-            .Where(x => x.Market_Code == MarketTypes.Cian && x.LastDateUpdate == null && x.Category == "Коммерческая недвижимость")
+            .Where(x => 
+                x.Market_Code == MarketTypes.Cian && 
+                x.LastDateUpdate == null /*&& 
+                x.ProcessType_Code == ProcessStep.CadastralNumberStep && 
+                x.Category == "Коммерческая недвижимость"*/)
             .Select(x => new { x.Url, x.DealType_Code, x.Price, x.LastDateUpdate }).Execute();
         public List<OMScreenshots> AllScreens = OMScreenshots.Where(x => true).SelectAll().Execute();
 
@@ -57,7 +61,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 driver.Manage().Window.Maximize();
                 IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
-                int OCur = 0, OCor = 0, OErr = 0, NErr = 0, NPub = 0, CScr = 0, OCtr = AllObjects.Count;
+                int OCur = 0, OCor = 0, OErr = 0, NErr = 0, NPub = 0, NAuc = 0, CScr = 0, OCtr = AllObjects.Count;
                 List<string> errorLog = new List<string>();
                 foreach (OMCoreObject initialObject in AllObjects)
                 {
@@ -72,6 +76,16 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                             initialObject.ExclusionStatus_Code = ExclusionStatus.Unpublished;
                             initialObject.ProcessType_Code = ProcessStep.Excluded;
                             NPub++;
+                            initialObject.Save();
+                            errorLog.Add($"[{DateTime.Now}]({initialObject.Id}): {initialObject.Url}\nОбъявление снято с публикации\n");
+                        }
+                        else if (bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["isAuction"]).ToString()))
+                        {
+                            //Тут обрабатываются данные объектов, выставленных на электронные торги
+                            initialObject.LastDateUpdate = currentTime;
+                            initialObject.ExclusionStatus_Code = ExclusionStatus.Auction;
+                            initialObject.ProcessType_Code = ProcessStep.Excluded;
+                            NAuc++;
                             initialObject.Save();
                             errorLog.Add($"[{DateTime.Now}]({initialObject.Id}): {initialObject.Url}\nОбъявление снято с публикации\n");
                         }
@@ -135,11 +149,11 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         }
                         OCor++;
                     }
-                    catch (Exception) {  OErr++;  }
+                    catch (Exception) { OErr++; }
                     OCur++;
-                    ConsoleLog.WriteData("Обновление цен", OCtr, OCur, OCor, OErr, nspErr: NErr, unpub: NPub, screen: CScr);
+                    ConsoleLog.WriteData("Обновление цен", OCtr, OCur, OCor, OErr, nspErr: NErr, unpub: NPub, screen: CScr, auc: NAuc);
                 }
-                errorLog.Add($"========> Обновление цен завершено ({ConsoleLog.GetResultData(OCtr, OCur, OCor, OErr, nspErr: NErr, unpub: NPub, screen: CScr)})\n");
+                errorLog.Add($"========> Обновление цен завершено ({ConsoleLog.GetResultData(OCtr, OCur, OCor, OErr, nspErr: NErr, unpub: NPub, screen: CScr, auc: NAuc)})\n");
                 ConsoleLog.LogError(errorLog.ToArray(), "Присвоение координат объектам из исходного файла");
             }
             ConsoleLog.WriteFotter("Обновление цен завершено");

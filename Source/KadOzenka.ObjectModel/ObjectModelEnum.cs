@@ -509,6 +509,12 @@ namespace ObjectModel.Directory
 		[Description("Снято с публикации")]
         [EnumCode("16")]
         Unpublished = 800,
+		/// <summary>
+		/// Выставлено на электронные торги (801)
+		/// </summary>
+		[Description("Выставлено на электронные торги")]
+        [EnumCode("17")]
+        Auction = 801,
     }
 }
 

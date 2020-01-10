@@ -9,7 +9,9 @@ namespace KadOzenka.Dal.Logger
     public class ConsoleLog
     {
 
-        public static void WriteData(string data, int length, int current, int correct, int error, int? duplicate = null, int? nspErr = null, int? unpub = null, int? screen = null)
+        public static void WriteData(string data, int length, int current, int correct, int error, 
+                                     int? duplicate = null, int? nspErr = null, int? unpub = null, 
+                                     int? screen = null, int? auc = null)
         {
             Console.Write($"\r{data}: {current}/{length} {((double)current / length * 100).ToString("0.00")}% " +
                           $"(Корректно: {correct} {((double)correct / length * 100).ToString("0.00")}%; " +
@@ -17,16 +19,18 @@ namespace KadOzenka.Dal.Logger
                           (duplicate != null ? $"Дубликаты: {duplicate} {((double)duplicate / length * 100).ToString("0.00")}%; " : string.Empty) +
                           (nspErr != null ? $"Удалённых страниц: {nspErr} {((double)nspErr / length * 100).ToString("0.00")}%; " : string.Empty) +
                           (unpub != null ? $"Снятых с публикации страниц: {unpub} {((double)unpub / length * 100).ToString("0.00")}%; " : string.Empty) +
+                          (auc != null ? $"Аукцион: {auc} {((double)auc / length * 100).ToString("0.00")}%; " : string.Empty) +
                           $"С ошибкой: {error} {((double)error / length * 100).ToString("0.00")}%)");
         }
 
-        public static string GetResultData(int length, int current, int correct, int error, int? nspErr = null, int? unpub = null, int? screen = null)
+        public static string GetResultData(int length, int current, int correct, int error, int? nspErr = null, int? unpub = null, int? screen = null, int? auc = null)
         {
             return $"Всего: {current}/{length} {((double)current / length * 100).ToString("0.00")}% " + 
                    $"Корректно: {correct} {((double)correct / length * 100).ToString("0.00")}%; " +
                    (screen != null ? $"Со скриншотами: {screen} {((double)screen / length * 100).ToString("0.00")}%; " : string.Empty) +
                    (nspErr != null ? $"Удалённых страниц: {nspErr} {((double)nspErr / length * 100).ToString("0.00")}%; " : string.Empty) +
                    (unpub != null ? $"Снятых с публикации страниц: {unpub} {((double)unpub / length * 100).ToString("0.00")}%; " : string.Empty) +
+                   (auc != null ? $"Аукцион: {auc} {((double)auc / length * 100).ToString("0.00")}%; " : string.Empty) +
                    $"С ошибкой: {error} {((double)error / length * 100).ToString("0.00")}%)";
         }
 
