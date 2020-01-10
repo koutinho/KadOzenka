@@ -13,7 +13,7 @@ using Platform.Reports;
 
 namespace KadOzenka.Dal.FastReports
 {
-	public class RefusalToDeclarationReviewAndReturnDocsNotificationReport : FastReportBase
+	public class RefusalToDeclarationReviewAndReturnDocsNotificationReport : DeclarationNotificationReport
 	{
 		protected override string TemplateName(NameValueCollection query)
 		{
@@ -33,8 +33,6 @@ namespace KadOzenka.Dal.FastReports
 			dataSet.Tables[0].Columns.Add("OwnerAddress");
 			dataSet.Tables[0].Columns.Add("DeclarationDateIn");
 			dataSet.Tables[0].Columns.Add("DeclarationNumber");
-			dataSet.Tables[0].Columns.Add("ObjectType");
-			dataSet.Tables[0].Columns.Add("ObjectCadastralNumber");
 			dataSet.Tables[0].Columns.Add("UserIspName");
 			dataSet.Tables[0].Columns.Add("MainData");
 
@@ -111,19 +109,17 @@ namespace KadOzenka.Dal.FastReports
 			}
 
 			var mainData =
-					  @"	В соответствии с п. 8 приказа Минэкономразвития от 04.06.2019 № 318 «Об утверждении Порядка рассмотрения декларации о характеристиках объекта недвижимости, " +
-					  @"в том числе ее формы» (далее – Приказ) ГБУ «Центр имущественных платежей и жилищного страхования» провело проверку декларации" +
-				@"о характеристиках объекта недвижимости на " + declaration.TypeObj_Code.GetEnumDescription() + @" с кадастровым номером " + declaration.CadastralNumObj +
-					  @" и сообщает." + System.Environment.NewLine + @"	Декларация проверку не прошла и не подлежит рассмотрению, т.к. " + reason + @"."
-				+ System.Environment.NewLine + System.Environment.NewLine + @"Приложение: перечень документов";
+					  "	В соответствии с п. 8 приказа Минэкономразвития от 04.06.2019 № 318 «Об утверждении Порядка рассмотрения декларации о характеристиках объекта недвижимости, " +
+					  "в том числе ее формы» (далее – Приказ) ГБУ «Центр имущественных платежей и жилищного страхования» провело проверку декларации" +
+				"о характеристиках объекта недвижимости на " + GetObjectTypeString(declaration.TypeObj_Code) + " с кадастровым номером " + declaration.CadastralNumObj +
+					  " и сообщает." + System.Environment.NewLine + "	Декларация проверку не прошла и не подлежит рассмотрению, т.к. " + reason + @"."
+				+ System.Environment.NewLine + System.Environment.NewLine + "Приложение: перечень документов";
 
 			dataSet.Tables[0].Rows.Add(
 				ownerName,
 				owner.Address,
 				declaration.DateIn?.ToString("dd.MM.yyyy"),
 				$"{declaration.NumIn}/{book?.Prefics}",
-				declaration.TypeObj_Code.GetEnumDescription(),
-				declaration.CadastralNumObj,
 				userIspName,
 				mainData);
 

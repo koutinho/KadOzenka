@@ -34,7 +34,7 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 		/// <summary>
 		/// Плановая дата рассмотрения (DATE_CHECK_PLAN)
 		/// </summary>
-		[Display(Name = "Плановая дата рассмотрения")]
+		[Display(Name = "Дата предварительного контроля")]
 		public DateTime? DateCheckPlan { get; set; }
 
 		/// <summary>

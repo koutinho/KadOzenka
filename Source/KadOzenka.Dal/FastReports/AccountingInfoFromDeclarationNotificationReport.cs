@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
 using Core.SRD;
+using DeepMorphy;
 using NPetrovich;
 using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
@@ -13,7 +14,7 @@ using Platform.Reports;
 
 namespace KadOzenka.Dal.FastReports
 {
-	public class AccountingInfoFromDeclarationNotificationReport : FastReportBase
+	public class AccountingInfoFromDeclarationNotificationReport : DeclarationNotificationReport
 	{
 		protected override string TemplateName(NameValueCollection query)
 		{
@@ -33,8 +34,6 @@ namespace KadOzenka.Dal.FastReports
 			dataSet.Tables[0].Columns.Add("OwnerAddress");
 			dataSet.Tables[0].Columns.Add("DeclarationDateIn");
 			dataSet.Tables[0].Columns.Add("DeclarationNumber");
-			dataSet.Tables[0].Columns.Add("ObjectType");
-			dataSet.Tables[0].Columns.Add("ObjectCadastralNumber");
 			dataSet.Tables[0].Columns.Add("UserIspName");
 			dataSet.Tables[0].Columns.Add("MainData");
 
@@ -104,20 +103,26 @@ namespace KadOzenka.Dal.FastReports
 				userIspName += $" {userIsp.Surname.Trim()[0]}.{userIsp.Patronymic.Trim()[0]}.";
 			}
 
+			//var m = new MorphAnalyzer();
+			//var results = m.Parse(new string[]{"в", "от", "с"}).ToArray();
+			//Console.WriteLine("Лучший тег");
+			//foreach (var morphInfo in results)
+			//	Console.WriteLine($"{morphInfo.Text} - {morphInfo.BestTag}");
+
 			var mainData =
-					  @"	В соответствии с п. 13 приказа Минэкономразвития от 04.06.2019 № 318 «Об утверждении Порядка рассмотрения декларации о характеристиках объекта недвижимости, " +
-					  @"в том числе ее формы» ГБУ «Центр имущественных платежей и жилищного страхования» направляет уведомление" +
-				@"об учете информации, содержащейся в декларации о характеристиках объекта недвижимости на " + declaration.TypeObj_Code.GetEnumDescription() + @" с кадастровым номером " 
-					  + declaration.CadastralNumObj + @".";
+					  "	В соответствии с п. 13 приказа Минэкономразвития от 04.06.2019 № 318 «Об утверждении Порядка рассмотрения декларации о характеристиках объекта недвижимости, " +
+					  "в том числе ее формы» ГБУ «Центр имущественных платежей и жилищного страхования» направляет уведомление " +
+				"об учете информации, содержащейся в декларации о характеристиках объекта недвижимости на " + GetObjectTypeString(declaration.TypeObj_Code) + " с кадастровым номером " 
+					  + declaration.CadastralNumObj + ".";
 
 			dataSet.Tables[0].Rows.Add(
 				ownerName,
 				owner.Address,
 				declaration.DateIn?.ToString("dd.MM.yyyy"),
 				$"{declaration.NumIn}/{book?.Prefics}",
-				declaration.TypeObj_Code.GetEnumDescription(),
-				declaration.CadastralNumObj,
 				userIspName,
+				//string.Join(" ", GetTextLines(mainData).Select(x => $"<span style=\"white-space: nowrap;font-family:'Times New Roman'; font-size: 13pt;text-align: justify\">{x}</span>").ToList()));
+				//string.Join("", GetTextLines(mainData).Select(x => $"<nowrap>{x}</nowrap>").ToList()));
 				mainData);
 
 			return dataSet;

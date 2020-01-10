@@ -246,8 +246,9 @@ namespace KadOzenka.Web.Models.Declarations
 			}
 			if (entity.DurationIn != declarationViewModel.DurationDateIn)
 			{
-				declarationViewModel.FormalCheckModel.DateCheckPlan = declarationViewModel.DurationDateIn?.AddDays(-DeclarationsController
-					.DaysDiffBetweenDateCheckPlanAndDurationDateIn);
+				declarationViewModel.FormalCheckModel.DateCheckPlan = (StatusDec)declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection 
+					? declarationViewModel.DurationDateIn 
+					: declarationViewModel.DurationDateIn?.AddDays(-DeclarationsController.DaysDiffBetweenDateCheckPlanAndDurationDateIn);
 			}
 
 			entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();
