@@ -127,6 +127,12 @@ namespace KadOzenka.Web.Controllers
 				drs = new OMDRS();
 			}
 
+			var existObject = OMObject.Where(x => x.Date == data.Date && x.Kn == data.Kn).ExecuteFirstOrDefault();
+			if (data.Id == -1 && existObject != null || data.Id != -1 && existObject  != null && data.Id != existObject?.Id)
+			{
+				return NotFound($"Объект {data.Kn} на {data.Date?.ToShortDateString()} уже внесен");
+			}
+
 			using (var ts = new TransactionScope())
 			{
 				ObjectCardModel.ToOM(data, ref obj, ref drs);
