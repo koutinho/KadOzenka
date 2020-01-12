@@ -1,0 +1,119 @@
+﻿@model Dictionary<long, List<RsmCloudService.Web.Models.CoreAttachment.AttachmentCardDto>>
+@{
+	var count = 0;
+}
+
+@foreach (KeyValuePair<long, List<RsmCloudService.Web.Models.CoreAttachment.AttachmentCardDto>> entry in Model)
+{
+	<div class="demo-section k-content wide display-flex">
+		<p>От @entry.Value[0].FileId</p>
+		<div id="listView-@count" class="list-view"></div>
+		<script>
+			$(function() {
+				var dsImages = new kendo.data.DataSource({
+					data: @Html.Raw(Json.Serialize(entry.Value))
+				});
+
+				$("#listView-@count").kendoListView({
+					dataSource: dsImages,
+					template: kendo.template($("#template").html())
+				});
+			});
+		</script>
+	</div>
+		count++;
+		}
+
+		<script type="text/x-kendo-template" id="template">
+		<div class="attachment">
+			<img src="data:#= MIMEType #;base64,#= FileData #" alt="#: FileName #" data-content="#= MIMEType #" />
+			<span class="k-icon" style="font-size: 64px; display: none;"></span>
+			<p>#:FileName#</p>
+			<input type="hidden" class="fileId" value="#:FileId#" />
+		</div>
+	</script>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+		$('.attachment').on('click', function () {
+
+			var fileId = $(this).find('.fileId').val();
+
+			window.location.href = '@Url.Action("SaveFile", "CoreAttachment")'
+					+ '?fileId=' + fileId;
+		});
+
+		var arrimg = $('img');
+
+		for (i = 0; i < arrimg.length; i++) {
+			var MIMEType = $(arrimg[i]).attr('data-content');
+			if (MIMEType.indexOf('image') < 0) {
+				$(arrimg[i]).css('display', 'none');
+				var span = $(arrimg[i]).siblings('span');
+				span.css('display', 'block');
+
+				if (MIMEType.indexOf('pdf') >= 0) {
+					span.addClass('k-i-pdf');
+				}
+				else if (MIMEType.indexOf('xml') >= 0) {
+					span.addClass('k-i-html');
+				}
+				else if (MIMEType.indexOf('json') >= 0) {
+					span.addClass('k-i-css');
+				}
+				else if (MIMEType.indexOf('text') >= 0) {
+					span.addClass('k-i-txt');
+				}
+				else if (MIMEType.indexOf('word') >= 0) {
+					span.addClass('k-i-word');
+				}
+				else if (MIMEType.indexOf('excel') >= 0) {
+					span.addClass('k-i-excel');
+				}
+				else {
+					span.addClass('k-i-file');
+				}
+			}
+		}  
+	});
+</script>
+
+<style>
+	.display-flex {
+		display: flex;
+	}
+	.list-view {
+		padding: 10px 5px;
+		margin-bottom: -1px;
+		border-style: none;
+	}
+
+	.attachment {
+		float: left;
+		position: relative;
+		margin: 0 5px 10px 5px;
+		padding: 0;
+		cursor: pointer;
+	}
+
+	.attachment img, .attachment span {
+		width: 150px;
+		height: 150px;
+		min-width: 150px;
+		min-height: 150px;
+		border-radius: 4px;
+		border-style: dotted;
+		border-width: thin;
+	}
+
+	.attachment p {
+		margin: 0;
+		padding: 5px 5px 0 0;
+		overflow: hidden;
+		line-height: 1.1em;
+		font-size: .9em;
+		font-weight: bold;
+		text-align: center;
+	}
+</style>

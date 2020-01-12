@@ -7,14 +7,18 @@ using KadOzenka.Web.Models.Sud;
 using ObjectModel.Sud;
 using System.Transactions;
 using Core.ErrorManagment;
+using Core.Main.FileStorages;
+using Core.Register.DAL;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ObjectModel.Core.Shared;
 using ObjectModel.Directory.Sud;
 using ObjectModel.Gbu;
+using RsmCloudService.Web.Models.CoreAttachment;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -1326,6 +1330,46 @@ namespace KadOzenka.Web.Controllers
         }
 		#endregion
 
+
+		public ActionResult AttachmentView(long objectId, int registerId)
+		{
+			List<OMAttachmentFile> mAttachments =
+				TdAttachmentsDAL.GetAllAttachments(objectId, registerId);
+
+			if (TdAttachmentsDAL.IsFileStorage)
+			{
+				foreach (OMAttachmentFile mAttachment in mAttachments)
+				{
+					if (mAttachment.ParentAttachment == null)
+					{
+						continue;
+					}
+					mAttachment.FileData = FileStorageManager.ReadAllBytes(TdAttachmentsDAL.FileStorageName, mAttachment.ParentAttachment.CreatedDate, mAttachment.Id.ToString());
+				}
+			}
+
+			Dictionary<long, List<OMAttachmentFile>> attachmentFiles = mAttachments.GroupBy(x => x.AttachmentId).Select(x => x).ToDictionary(x => x.Key, x => x.ToList());
+
+			Dictionary<long, List<AttachmentCardDto>> image = new Dictionary<long, List<AttachmentCardDto>>();
+
+			foreach (var entry in attachmentFiles)
+			{
+				image.Add(entry.Key, entry.Value.Select(x => new AttachmentCardDto
+				{
+					FileName = x.FileName,
+					MIMEType = x.MIMEType,
+					FileData = x.FileData,
+					FileId = x.Id
+				}).ToList());
+			}
+
+			return View(image);
+		}
+
+		public ActionResult GetAllAttachmentsReport(long objectId)
+		{
+			return RedirectToAction("AttachmentView", "Sud", new { objectId, registerId = OMOtchet.GetRegisterId() });
+		}
 
 	}
 }

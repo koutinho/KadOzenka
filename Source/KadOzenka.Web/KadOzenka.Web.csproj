@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Sud\AttachmentView.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
     <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
   </ItemGroup>
@@ -508,5 +509,14 @@
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Sud\AttachmentView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Sud\AttachmentView.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Views\Sud\AttachmentView.cshtml" />
+  </ItemGroup>
 
 </Project>

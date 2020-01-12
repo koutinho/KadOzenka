@@ -13,11 +13,11 @@
           <Parameter Key="reportLinkId" Value="[ObjectID]" />
         </Parameters>
       </Button>
-      <Button Caption="Образы" NavigateURL="/RegistersView/CoreSharedAttachment" WindowTitleTemplate="Образы отчета" Icon="far fa-images"
+      <Button Caption="Образы" NavigateURL="/Sud/AttachmentView" WindowTitleTemplate="Образы отчета" Icon="far fa-images"
                         NeedRefresh="true" SRDFunctionTag="">
         <Parameters>
-          <Parameter Key="AttachmentObjectId" Value="[30400300]" />
-          <Parameter Key="AttachmentRegisterId" Value="308" />
+          <Parameter Key="objectId" Value="[30400300]" />
+          <Parameter Key="registerId" Value="308" />
           <Parameter Key="NotSetTitle" Value="true" />
         </Parameters>
         <ConditionGroups>
