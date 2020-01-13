@@ -105,7 +105,6 @@ namespace ObjectModel.KO
             FactorId = factorid;
         }
     }
-
     public class HistoryUnit : IComparer<HistoryUnit>
     {
         public OMUnit Unit { get; set; }
@@ -154,6 +153,31 @@ namespace ObjectModel.KO
             List<HistoryUnit> Items = new List<HistoryUnit>();
             List<OMUnit> units = OMUnit.Where(x=>x.CadastralNumber==cadastralNumber).SelectAll().Execute();
             foreach(OMUnit unit in units)
+            {
+                Items.Add(new HistoryUnit(unit));
+            }
+
+            if (Items.Count > 0)
+            {
+                Items.Sort(Items[0]);
+                int indexActual = Items.Count - 1;
+                for (int i = Items.Count - 1; i > 0; i--)
+                {
+                    if (Items[i].Unit.CadastralCost == Items[i - 1].Unit.CadastralCost)
+                    {
+                        indexActual = i - 1;
+                    }
+                    else break;
+                }
+                Items[indexActual].isActual = true;
+            }
+            return Items;
+        }
+        public static List<HistoryUnit> GetHistoryTour(OMUnit current)
+        {
+            List<HistoryUnit> Items = new List<HistoryUnit>();
+            List<OMUnit> units = OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId==current.TourId).SelectAll().Execute();
+            foreach (OMUnit unit in units)
             {
                 Items.Add(new HistoryUnit(unit));
             }
@@ -2180,5 +2204,4 @@ namespace ObjectModel.KO
 
         }
     }
-
 }
