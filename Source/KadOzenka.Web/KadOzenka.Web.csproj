@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Sud\AttachmentView.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
     <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
   </ItemGroup>
@@ -237,10 +236,11 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.4" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.10" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.18" />
-    <PackageReference Include="Platform.Web" Version="1.0.301" />
+    <PackageReference Include="Platform.Web" Version="1.0.303" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -509,14 +509,5 @@
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Sud\AttachmentView.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Sud\AttachmentView.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Views\Sud\AttachmentView.cshtml" />
-  </ItemGroup>
 
 </Project>

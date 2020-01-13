@@ -13,7 +13,7 @@
           <Parameter Key="reportLinkId" Value="[ObjectID]" />
         </Parameters>
       </Button>
-      <Button Caption="Образы" NavigateURL="/Sud/AttachmentView" WindowTitleTemplate="Образы отчета" Icon="far fa-images"
+      <Button Caption="Образы" NavigateURL="/CoreAttachment/AttachmentView" WindowTitleTemplate="Образы отчета" Icon="far fa-images"
                         NeedRefresh="true" SRDFunctionTag="">
         <Parameters>
           <Parameter Key="objectId" Value="[30400300]" />
