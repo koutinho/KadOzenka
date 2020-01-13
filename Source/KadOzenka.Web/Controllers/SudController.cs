@@ -1330,5 +1330,39 @@ namespace KadOzenka.Web.Controllers
         }
 		#endregion
 
+		#region Attachments
+
+		public ActionResult GetAllAttachmentsReport(int objectId, int isFile)
+		{
+			if (isFile == 0)
+			{
+				return NoContent();
+			}
+			return RedirectToAction("AttachmentView", "CoreAttachment",
+				new { objectId, registerId = OMOtchet.GetRegisterId()});
+		}
+
+		public ActionResult GetAllAttachmentsConclusion(int objectId, int isFile)
+		{
+			if (isFile == 0)
+			{
+				return NoContent();
+			}
+			return RedirectToAction("AttachmentView", "CoreAttachment",
+				new { objectId, registerId = OMZak.GetRegisterId() });
+		}
+
+		public ActionResult GetAllAttachmentsCourt(int objectId, int isFile)
+		{
+			if (isFile == 0)
+			{
+				return NoContent();
+			}
+			return RedirectToAction("AttachmentView", "CoreAttachment",
+				new { objectId, registerId = OMSud.GetRegisterId() });
+		}
+
+		#endregion
+
 	}
 }

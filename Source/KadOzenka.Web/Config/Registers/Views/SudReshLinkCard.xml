@@ -13,21 +13,6 @@
         </Parameters>
       </Button>
 
-	    <Button Caption="Образы" NavigateURL="/CoreAttachment/AttachmentView" WindowTitleTemplate="Образы отчета" Icon="far fa-images"
-	            NeedRefresh="true" SRDFunctionTag="">
-		    <Parameters>
-			    <Parameter Key="objectId" Value="[31400300]" />
-			    <Parameter Key="registerId" Value="316" />
-			    <Parameter Key="NotSetTitle" Value="true" />
-		    </Parameters>
-		    <ConditionGroups>
-			    <ConditionGroup HideOrDisable="Disable">
-				    <Conditions>
-					    <Condition Key="[31600700]" Operation="Equal" Value="0" />
-				    </Conditions>
-			    </ConditionGroup>
-		    </ConditionGroups>
-	    </Button>
     </Buttons>
     <StatusBarConfiguration StatusBarEnabled="false" />
 </RegisterView>
