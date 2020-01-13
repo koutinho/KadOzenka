@@ -2306,6 +2306,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
                         StatusResultCalc_Code = KoStatusResultCalc.None,
                         UseAsPrototype = NullConvertor.DBToBoolean(myOleDbDataReader["PROCENT"]),
+                        ParentCalcType_Code = KoParentCalcType.None,
+                        ParentCalcNumber = NullConvertor.ToString(myOleDbDataReader["CALC_PARENT"]),
                     };
                     count++;
                     Items.Add(koGroup);
@@ -2488,6 +2490,54 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
             LoadUnitTaskBuild_2018_VUON(tour.Id);
         }
+        public static void DoLoadBd2018Unit_Construction_VUON()
+        {
+            long curYear = 2018;
+            ObjectModel.KO.OMTour tour = ObjectModel.KO.OMTour.Where(x => x.Year == curYear).SelectAll().ExecuteFirstOrDefault();
+            if (tour == null)
+            {
+                tour = new ObjectModel.KO.OMTour
+                {
+                    Year = curYear,
+                    Id = curYear,
+                };
+                tour.Save();
+            }
+
+            LoadUnitTaskConstruction_2018_VUON(tour.Id);
+        }
+        public static void DoLoadBd2018Unit_Flat_VUON()
+        {
+            long curYear = 2018;
+            ObjectModel.KO.OMTour tour = ObjectModel.KO.OMTour.Where(x => x.Year == curYear).SelectAll().ExecuteFirstOrDefault();
+            if (tour == null)
+            {
+                tour = new ObjectModel.KO.OMTour
+                {
+                    Year = curYear,
+                    Id = curYear,
+                };
+                tour.Save();
+            }
+
+            LoadUnitTaskFlat_2018_VUON(tour.Id);
+        }
+        public static void DoLoadBd2018Unit_Uncomplited_VUON()
+        {
+            long curYear = 2018;
+            ObjectModel.KO.OMTour tour = ObjectModel.KO.OMTour.Where(x => x.Year == curYear).SelectAll().ExecuteFirstOrDefault();
+            if (tour == null)
+            {
+                tour = new ObjectModel.KO.OMTour
+                {
+                    Year = curYear,
+                    Id = curYear,
+                };
+                tour.Save();
+            }
+
+            LoadUnitTaskUncomplited_2018_VUON(tour.Id);
+        }
         public static void LoadUnitTaskParcel_2018_VUON(long id_tour)
         {
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_Parcel_2018"]))
@@ -2517,9 +2567,11 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                         case 1:
                             koUnitStatus = KoUnitStatus.New;
                             break;
-                        case 2:koUnitStatus = KoUnitStatus.Recalculated;
+                        case 2:
+                            koUnitStatus = KoUnitStatus.Recalculated;
                             break;
-                        case 3:koUnitStatus = KoUnitStatus.Annual;
+                        case 3:
+                            koUnitStatus = KoUnitStatus.Annual;
                             break;
                         default:
                             break;
@@ -2636,7 +2688,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                 NoteType_Code = koNoteType,
                                 Status_Code = KoTaskStatus.InWork,
                                 TourId = id_tour,
-                                CreationDate = inputDoc.ApproveDate,
+                                CreationDate = inputDoc.CreateDate,
                                 DocumentId = inputDoc.Id,
                             };
                             task.Save();
@@ -2671,7 +2723,9 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             StatusRepeatCalc_Code = koStatusRepeatCalc,
                             StatusResultCalc_Code = koStatusResultCalc,
                             UseAsPrototype = NullConvertor.DBToBoolean(myOleDbDataReader["PROCENT"]),
-                            ResponseDocId = ((outputDoc == null) ? -1 : outputDoc.Id)
+                            ResponseDocId = ((outputDoc == null) ? -1 : outputDoc.Id),
+                            ParentCalcType_Code = KoParentCalcType.None,
+                            ParentCalcNumber = NullConvertor.ToString(myOleDbDataReader["CALC_PARENT"]),
                         };
                         count++;
                         Items.Add(koGroup);
@@ -2839,7 +2893,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                 NoteType_Code = koNoteType,
                                 Status_Code = KoTaskStatus.InWork,
                                 TourId = id_tour,
-                                CreationDate = inputDoc.ApproveDate,
+                                CreationDate = inputDoc.CreateDate,
                                 DocumentId = inputDoc.Id,
                                 
                             };
@@ -2890,6 +2944,625 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     }
                 }
                 ParallelLoopResult resultSucces2 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2018(x.OldId, x.Id, PropertyTypes.Building); });
+                Console.WriteLine(count);
+                myOleDbDataReader.Close();
+                connection.Close();
+            }
+        }
+        public static void LoadUnitTaskConstruction_2018_VUON(long id_tour)
+        {
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_OKS_2018"]))
+            {
+                connection.Open();
+
+                SqlCommand myOleDbCommand = connection.CreateCommand();
+                myOleDbCommand.CommandTimeout = 300;
+                myOleDbCommand.CommandType = System.Data.CommandType.Text;
+
+                myOleDbCommand.CommandText = "select o.*, c.id_inputdoc, c.id_outputdoc, dIn.name_doc as doc_in_name, dIn.date_doc as doc_in_date, dIn.num_doc as doc_in_num, dIn.date_app as doc_in_app, dIn.status_doc as doc_in_status, dOut.name_doc as doc_out_name, dOut.date_doc as doc_out_date, dOut.num_doc as doc_out_num, dOut.date_app as doc_out_app, dOut.status_doc as doc_out_status, dOut.name_out, dOut.num_out, dOut.date_out from tbObjectConstruction o, tbCalcObject c left join tbDocObject dIn on dIn.id_doc = c.id_inputdoc and dIn.type_doc = 0 left join tbDocObject dOut on dOut.id_doc = c.id_outputdoc and dOut.type_doc = 1 where o.ID_OBJECT = c.id_object and c.type_object = 4 and o.change_object > 0";
+
+                SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
+                long count = 0;
+                List<ObjectModel.KO.OMUnit> Items = new List<ObjectModel.KO.OMUnit>();
+
+                while (myOleDbDataReader.Read())
+                {
+
+                    int change_object = NullConvertor.DBToInt(myOleDbDataReader["change_object"]);
+                    KoUnitStatus koUnitStatus = KoUnitStatus.None;
+                    switch (change_object)
+                    {
+                        case 0:
+                            koUnitStatus = KoUnitStatus.Initial;
+                            break;
+                        case 1:
+                            koUnitStatus = KoUnitStatus.New;
+                            break;
+                        case 2:
+                            koUnitStatus = KoUnitStatus.Recalculated;
+                            break;
+                        case 3:
+                            koUnitStatus = KoUnitStatus.Annual;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    int status_calc = NullConvertor.DBToInt(myOleDbDataReader["status_calc"]);
+                    KoStatusResultCalc koStatusResultCalc = KoStatusResultCalc.None;
+                    switch (status_calc)
+                    {
+                        case 0:
+                            koStatusResultCalc = KoStatusResultCalc.CostChanged;
+                            break;
+                        case 1:
+                            koStatusResultCalc = KoStatusResultCalc.CostNotChanged;
+                            break;
+                        case 2:
+                            koStatusResultCalc = KoStatusResultCalc.ErrorInData;
+                            break;
+                        case 3:
+                            koStatusResultCalc = KoStatusResultCalc.ErrorTechnical;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    int status_object = NullConvertor.DBToInt(myOleDbDataReader["status_object"]);
+                    KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.None;
+                    switch (status_object)
+                    {
+                        case 0:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                            break;
+                        case 2:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.RepeatedInitial;
+                            break;
+                        case 3:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                            break;
+                        case 4:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.Repeated;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_inputdoc"]);
+                    Int64 id_outputDoc = NullConvertor.DBToInt(myOleDbDataReader["id_outputdoc"]);
+                    int doc_in_status = NullConvertor.DBToInt(myOleDbDataReader["doc_in_status"]);
+                    KoNoteType koNoteType = KoNoteType.Initial;
+                    switch (doc_in_status)
+                    {
+                        case 0:
+                            koNoteType = KoNoteType.Day;
+                            break;
+                        case 1:
+                            koNoteType = KoNoteType.Petition;
+                            break;
+                        case 2:
+                            koNoteType = KoNoteType.Year;
+                            break;
+                        default:
+                            break;
+                    }
+
+
+
+
+                    OMInstance inputDoc = null;
+                    OMInstance outputDoc = null;
+
+                    if (id_inputDoc > 0)
+                    {
+                        inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = new OMInstance
+                            {
+                                Id = id_inputDoc + 200000000,
+                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
+                            };
+                            inputDoc.Save();
+                        }
+                    }
+                    if (id_outputDoc > 0)
+                    {
+                        outputDoc = OMInstance.Where(x => x.Id == (id_outputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (outputDoc == null)
+                        {
+                            outputDoc = new OMInstance
+                            {
+                                Id = id_outputDoc + 200000000,
+                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
+                            };
+                            outputDoc.Save();
+                        }
+                    }
+
+                    if (id_inputDoc > 0)
+                    {
+                        ObjectModel.KO.OMTask task = null;
+                        task = ObjectModel.KO.OMTask.Where(x => x.DocumentId == inputDoc.Id).SelectAll().ExecuteFirstOrDefault();
+
+                        if (task == null)
+                        {
+                            task = new ObjectModel.KO.OMTask
+                            {
+                                Id = -1,
+                                NoteType_Code = koNoteType,
+                                Status_Code = KoTaskStatus.InWork,
+                                TourId = id_tour,
+                                CreationDate = inputDoc.CreateDate,
+                                DocumentId = inputDoc.Id,
+
+                            };
+                            task.Save();
+                        }
+
+
+
+
+
+
+
+
+                        ObjectModel.KO.OMUnit koGroup = new ObjectModel.KO.OMUnit
+                        {
+
+                            Id = -1,
+                            ModelId = -1,
+                            CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
+                            CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
+                            Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
+                            UpksPre = NullConvertor.DBToDecimal(myOleDbDataReader["NUPKSZ_OBJECT"]),
+                            GroupId = NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]) + OffsetSubGroupOKS_2018,
+                            OldId = NullConvertor.DBToInt64(myOleDbDataReader["id_object"]),
+                            TourId = id_tour,
+                            TaskId = task.Id,
+                            Status_Code = koUnitStatus,
+                            ObjectId = -1,
+                            CreationDate = task.CreationDate,
+                            CadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]),
+                            CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
+                            Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
+                            PropertyType_Code = PropertyTypes.Construction,
+                            StatusRepeatCalc_Code = koStatusRepeatCalc,
+                            StatusResultCalc_Code = koStatusResultCalc,
+                            ResponseDocId = ((outputDoc == null) ? -1 : outputDoc.Id),
+                            ParentCalcType_Code = KoParentCalcType.None,
+                            ParentCalcNumber = NullConvertor.ToString(myOleDbDataReader["CALC_PARENT"]),
+                        };
+                        count++;
+                        Items.Add(koGroup);
+                        if (Items.Count == 25)
+                        {
+                            ParallelLoopResult resultSucces1 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2018(x.OldId, x.Id, PropertyTypes.Construction); });
+                            Items.Clear();
+                            Console.WriteLine(count);
+                        }
+                    }
+                }
+                ParallelLoopResult resultSucces2 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2018(x.OldId, x.Id, PropertyTypes.Construction); });
+                Console.WriteLine(count);
+                myOleDbDataReader.Close();
+                connection.Close();
+            }
+        }
+        public static void LoadUnitTaskFlat_2018_VUON(long id_tour)
+        {
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_OKS_2018"]))
+            {
+                connection.Open();
+
+                SqlCommand myOleDbCommand = connection.CreateCommand();
+                myOleDbCommand.CommandTimeout = 300;
+                myOleDbCommand.CommandType = System.Data.CommandType.Text;
+
+                myOleDbCommand.CommandText = "select o.*, c.id_inputdoc, c.id_outputdoc, dIn.name_doc as doc_in_name, dIn.date_doc as doc_in_date, dIn.num_doc as doc_in_num, dIn.date_app as doc_in_app, dIn.status_doc as doc_in_status, dOut.name_doc as doc_out_name, dOut.date_doc as doc_out_date, dOut.num_doc as doc_out_num, dOut.date_app as doc_out_app, dOut.status_doc as doc_out_status, dOut.name_out, dOut.num_out, dOut.date_out from tbObjectFlat o, tbCalcObject c left join tbDocObject dIn on dIn.id_doc = c.id_inputdoc and dIn.type_doc = 0 left join tbDocObject dOut on dOut.id_doc = c.id_outputdoc and dOut.type_doc = 1 where o.ID_OBJECT = c.id_object and c.type_object = 3 and o.change_object > 0";
+
+                SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
+                long count = 0;
+                List<ObjectModel.KO.OMUnit> Items = new List<ObjectModel.KO.OMUnit>();
+
+                while (myOleDbDataReader.Read())
+                {
+
+                    int change_object = NullConvertor.DBToInt(myOleDbDataReader["change_object"]);
+                    KoUnitStatus koUnitStatus = KoUnitStatus.None;
+                    switch (change_object)
+                    {
+                        case 0:
+                            koUnitStatus = KoUnitStatus.Initial;
+                            break;
+                        case 1:
+                            koUnitStatus = KoUnitStatus.New;
+                            break;
+                        case 2:
+                            koUnitStatus = KoUnitStatus.Recalculated;
+                            break;
+                        case 3:
+                            koUnitStatus = KoUnitStatus.Annual;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    int status_calc = NullConvertor.DBToInt(myOleDbDataReader["status_calc"]);
+                    KoStatusResultCalc koStatusResultCalc = KoStatusResultCalc.None;
+                    switch (status_calc)
+                    {
+                        case 0:
+                            koStatusResultCalc = KoStatusResultCalc.CostChanged;
+                            break;
+                        case 1:
+                            koStatusResultCalc = KoStatusResultCalc.CostNotChanged;
+                            break;
+                        case 2:
+                            koStatusResultCalc = KoStatusResultCalc.ErrorInData;
+                            break;
+                        case 3:
+                            koStatusResultCalc = KoStatusResultCalc.ErrorTechnical;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    int status_object = NullConvertor.DBToInt(myOleDbDataReader["status_object"]);
+                    KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.None;
+                    switch (status_object)
+                    {
+                        case 0:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                            break;
+                        case 2:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.RepeatedInitial;
+                            break;
+                        case 3:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                            break;
+                        case 4:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.Repeated;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_inputdoc"]);
+                    Int64 id_outputDoc = NullConvertor.DBToInt(myOleDbDataReader["id_outputdoc"]);
+                    int doc_in_status = NullConvertor.DBToInt(myOleDbDataReader["doc_in_status"]);
+                    KoNoteType koNoteType = KoNoteType.Initial;
+                    switch (doc_in_status)
+                    {
+                        case 0:
+                            koNoteType = KoNoteType.Day;
+                            break;
+                        case 1:
+                            koNoteType = KoNoteType.Petition;
+                            break;
+                        case 2:
+                            koNoteType = KoNoteType.Year;
+                            break;
+                        default:
+                            break;
+                    }
+
+
+
+
+                    OMInstance inputDoc = null;
+                    OMInstance outputDoc = null;
+
+                    if (id_inputDoc > 0)
+                    {
+                        inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = new OMInstance
+                            {
+                                Id = id_inputDoc + 200000000,
+                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
+                            };
+                            inputDoc.Save();
+                        }
+                    }
+                    if (id_outputDoc > 0)
+                    {
+                        outputDoc = OMInstance.Where(x => x.Id == (id_outputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (outputDoc == null)
+                        {
+                            outputDoc = new OMInstance
+                            {
+                                Id = id_outputDoc + 200000000,
+                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
+                            };
+                            outputDoc.Save();
+                        }
+                    }
+
+                    if (id_inputDoc > 0)
+                    {
+                        ObjectModel.KO.OMTask task = null;
+                        task = ObjectModel.KO.OMTask.Where(x => x.DocumentId == inputDoc.Id).SelectAll().ExecuteFirstOrDefault();
+
+                        if (task == null)
+                        {
+                            task = new ObjectModel.KO.OMTask
+                            {
+                                Id = -1,
+                                NoteType_Code = koNoteType,
+                                Status_Code = KoTaskStatus.InWork,
+                                TourId = id_tour,
+                                CreationDate = inputDoc.CreateDate,
+                                DocumentId = inputDoc.Id,
+
+                            };
+                            task.Save();
+                        }
+
+
+
+
+
+
+
+
+                        ObjectModel.KO.OMUnit koGroup = new ObjectModel.KO.OMUnit
+                        {
+
+                            Id = -1,
+                            ModelId = -1,
+                            CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
+                            CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
+                            Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
+                            UpksPre = NullConvertor.DBToDecimal(myOleDbDataReader["NUPKSZ_OBJECT"]),
+                            GroupId = NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]) + OffsetSubGroupOKS_2018,
+                            OldId = NullConvertor.DBToInt64(myOleDbDataReader["id_object"]),
+                            TourId = id_tour,
+                            TaskId = task.Id,
+                            Status_Code = koUnitStatus,
+                            ObjectId = -1,
+                            CreationDate = task.CreationDate,
+                            CadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]),
+                            CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
+                            Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
+                            PropertyType_Code = PropertyTypes.Pllacement,
+                            StatusRepeatCalc_Code = koStatusRepeatCalc,
+                            StatusResultCalc_Code = koStatusResultCalc,
+                            ResponseDocId = ((outputDoc == null) ? -1 : outputDoc.Id),
+                            ParentCalcType_Code = KoParentCalcType.None,
+                            ParentCalcNumber = NullConvertor.ToString(myOleDbDataReader["CALC_PARENT"]),
+                        };
+                        count++;
+                        Items.Add(koGroup);
+                        if (Items.Count == 25)
+                        {
+                            ParallelLoopResult resultSucces1 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2018(x.OldId, x.Id, PropertyTypes.Pllacement); });
+                            Items.Clear();
+                            Console.WriteLine(count);
+                        }
+                    }
+                }
+                ParallelLoopResult resultSucces2 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2018(x.OldId, x.Id, PropertyTypes.Pllacement); });
+                Console.WriteLine(count);
+                myOleDbDataReader.Close();
+                connection.Close();
+            }
+        }
+        public static void LoadUnitTaskUncomplited_2018_VUON(long id_tour)
+        {
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_OKS_2018"]))
+            {
+                connection.Open();
+
+                SqlCommand myOleDbCommand = connection.CreateCommand();
+                myOleDbCommand.CommandTimeout = 300;
+                myOleDbCommand.CommandType = System.Data.CommandType.Text;
+
+                myOleDbCommand.CommandText = "select o.*, c.id_inputdoc, c.id_outputdoc, dIn.name_doc as doc_in_name, dIn.date_doc as doc_in_date, dIn.num_doc as doc_in_num, dIn.date_app as doc_in_app, dIn.status_doc as doc_in_status, dOut.name_doc as doc_out_name, dOut.date_doc as doc_out_date, dOut.num_doc as doc_out_num, dOut.date_app as doc_out_app, dOut.status_doc as doc_out_status, dOut.name_out, dOut.num_out, dOut.date_out from tbObjectUnderconstruction o, tbCalcObject c left join tbDocObject dIn on dIn.id_doc = c.id_inputdoc and dIn.type_doc = 0 left join tbDocObject dOut on dOut.id_doc = c.id_outputdoc and dOut.type_doc = 1 where o.ID_OBJECT = c.id_object and c.type_object = 5 and o.change_object > 0";
+
+                SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
+                long count = 0;
+                List<ObjectModel.KO.OMUnit> Items = new List<ObjectModel.KO.OMUnit>();
+
+                while (myOleDbDataReader.Read())
+                {
+
+                    int change_object = NullConvertor.DBToInt(myOleDbDataReader["change_object"]);
+                    KoUnitStatus koUnitStatus = KoUnitStatus.None;
+                    switch (change_object)
+                    {
+                        case 0:
+                            koUnitStatus = KoUnitStatus.Initial;
+                            break;
+                        case 1:
+                            koUnitStatus = KoUnitStatus.New;
+                            break;
+                        case 2:
+                            koUnitStatus = KoUnitStatus.Recalculated;
+                            break;
+                        case 3:
+                            koUnitStatus = KoUnitStatus.Annual;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    int status_calc = NullConvertor.DBToInt(myOleDbDataReader["status_calc"]);
+                    KoStatusResultCalc koStatusResultCalc = KoStatusResultCalc.None;
+                    switch (status_calc)
+                    {
+                        case 0:
+                            koStatusResultCalc = KoStatusResultCalc.CostChanged;
+                            break;
+                        case 1:
+                            koStatusResultCalc = KoStatusResultCalc.CostNotChanged;
+                            break;
+                        case 2:
+                            koStatusResultCalc = KoStatusResultCalc.ErrorInData;
+                            break;
+                        case 3:
+                            koStatusResultCalc = KoStatusResultCalc.ErrorTechnical;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    int status_object = NullConvertor.DBToInt(myOleDbDataReader["status_object"]);
+                    KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.None;
+                    switch (status_object)
+                    {
+                        case 0:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                            break;
+                        case 2:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.RepeatedInitial;
+                            break;
+                        case 3:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                            break;
+                        case 4:
+                            koStatusRepeatCalc = KoStatusRepeatCalc.Repeated;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_inputdoc"]);
+                    Int64 id_outputDoc = NullConvertor.DBToInt(myOleDbDataReader["id_outputdoc"]);
+                    int doc_in_status = NullConvertor.DBToInt(myOleDbDataReader["doc_in_status"]);
+                    KoNoteType koNoteType = KoNoteType.Initial;
+                    switch (doc_in_status)
+                    {
+                        case 0:
+                            koNoteType = KoNoteType.Day;
+                            break;
+                        case 1:
+                            koNoteType = KoNoteType.Petition;
+                            break;
+                        case 2:
+                            koNoteType = KoNoteType.Year;
+                            break;
+                        default:
+                            break;
+                    }
+
+
+
+
+                    OMInstance inputDoc = null;
+                    OMInstance outputDoc = null;
+
+                    if (id_inputDoc > 0)
+                    {
+                        inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = new OMInstance
+                            {
+                                Id = id_inputDoc + 200000000,
+                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
+                            };
+                            inputDoc.Save();
+                        }
+                    }
+                    if (id_outputDoc > 0)
+                    {
+                        outputDoc = OMInstance.Where(x => x.Id == (id_outputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (outputDoc == null)
+                        {
+                            outputDoc = new OMInstance
+                            {
+                                Id = id_outputDoc + 200000000,
+                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
+                            };
+                            outputDoc.Save();
+                        }
+                    }
+
+                    if (id_inputDoc > 0)
+                    {
+                        ObjectModel.KO.OMTask task = null;
+                        task = ObjectModel.KO.OMTask.Where(x => x.DocumentId == inputDoc.Id).SelectAll().ExecuteFirstOrDefault();
+
+                        if (task == null)
+                        {
+                            task = new ObjectModel.KO.OMTask
+                            {
+                                Id = -1,
+                                NoteType_Code = koNoteType,
+                                Status_Code = KoTaskStatus.InWork,
+                                TourId = id_tour,
+                                CreationDate = inputDoc.CreateDate,
+                                DocumentId = inputDoc.Id,
+
+                            };
+                            task.Save();
+                        }
+
+
+
+
+
+
+
+
+                        ObjectModel.KO.OMUnit koGroup = new ObjectModel.KO.OMUnit
+                        {
+
+                            Id = -1,
+                            ModelId = -1,
+                            CadastralCost = NullConvertor.DBToDecimal(myOleDbDataReader["KC_OBJECT"]),
+                            CadastralCostPre = NullConvertor.DBToDecimal(myOleDbDataReader["NKC_OBJECT"]),
+                            Upks = NullConvertor.DBToDecimal(myOleDbDataReader["UPKSZ_OBJECT"]),
+                            UpksPre = NullConvertor.DBToDecimal(myOleDbDataReader["NUPKSZ_OBJECT"]),
+                            GroupId = NullConvertor.DBToInt64(myOleDbDataReader["id_subgroup"]) + OffsetSubGroupOKS_2018,
+                            OldId = NullConvertor.DBToInt64(myOleDbDataReader["id_object"]),
+                            TourId = id_tour,
+                            TaskId = task.Id,
+                            Status_Code = koUnitStatus,
+                            ObjectId = -1,
+                            CreationDate = task.CreationDate,
+                            CadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]),
+                            CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
+                            Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
+                            PropertyType_Code = PropertyTypes.UncompletedBuilding,
+                            StatusRepeatCalc_Code = koStatusRepeatCalc,
+                            StatusResultCalc_Code = koStatusResultCalc,
+                            ResponseDocId = ((outputDoc == null) ? -1 : outputDoc.Id),
+                            ParentCalcType_Code = KoParentCalcType.None,
+                            ParentCalcNumber = NullConvertor.ToString(myOleDbDataReader["CALC_PARENT"]),
+                        };
+                        koGroup.DegreeReadiness = NullConvertor.DBToProcent(myOleDbDataReader["procent"]);
+                        count++;
+                        Items.Add(koGroup);
+                        if (Items.Count == 25)
+                        {
+                            ParallelLoopResult resultSucces1 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2018(x.OldId, x.Id, PropertyTypes.UncompletedBuilding); });
+                            Items.Clear();
+                            Console.WriteLine(count);
+                        }
+                    }
+                }
+                ParallelLoopResult resultSucces2 = Parallel.ForEach<ObjectModel.KO.OMUnit>(Items, x => { x.SaveAndCreate(); LoadUnitFactorOKS_2018(x.OldId, x.Id, PropertyTypes.UncompletedBuilding); });
                 Console.WriteLine(count);
                 myOleDbDataReader.Close();
                 connection.Close();

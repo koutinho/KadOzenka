@@ -22,6 +22,7 @@ using System.Configuration;
 using System.Xml;
 using System.IO;
 using KadOzenka.Dal.XmlParser;
+using System;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -84,9 +85,20 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("218", "Импорт данных KO (БД) Эталонные объекты", MSExporter.LoadGroupEtalonParcel_2018);
             consoleHelper.AddCommand("219", "Импорт данных KO (БД) ВУОН Земля", MSExporter.DoLoadBd2018Unit_Parcel_VUON);
             consoleHelper.AddCommand("220", "Импорт данных KO (БД) ВУОН Здания", MSExporter.DoLoadBd2018Unit_Build_VUON);
+            consoleHelper.AddCommand("221", "Импорт данных KO (БД) ВУОН Сооружения", MSExporter.DoLoadBd2018Unit_Construction_VUON);
+            consoleHelper.AddCommand("222", "Импорт данных KO (БД) ВУОН Помещения", MSExporter.DoLoadBd2018Unit_Flat_VUON);
+            consoleHelper.AddCommand("223", "Импорт данных KO (БД) ВУОН ОНС", MSExporter.DoLoadBd2018Unit_Uncomplited_VUON);
 
             consoleHelper.AddCommand("250", "Формула 2016", MSExporter.GetFormulaText);
             consoleHelper.AddCommand("251", "Рассчет", MSExporter.GetCalcGroup);
+            consoleHelper.AddCommand("252", "История", ()=>
+            {
+                List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory("77:17:0100302:62");//77:17:0100302:62  77:18:0170508:184
+                foreach (ObjectModel.KO.HistoryUnit history in histories)
+                {
+                Console.WriteLine(history.ToString());
+                }
+            });
 
             consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы (БД)", SudExporter.DoLoadBd);
             consoleHelper.AddCommand("301", "Импорт данных судебной подсистемы (Excel)", SudExporter.DoLoadExcel);

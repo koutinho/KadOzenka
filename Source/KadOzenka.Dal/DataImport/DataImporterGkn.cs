@@ -31,11 +31,11 @@ namespace KadOzenka.Dal.DataImport
         /// </summary>
         public static void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task)
         {
-            ImportDataGknFromXml(xmlFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.CreationDate.Value, task.CreationDate.Value, task.DocumentId.Value);
+            ImportDataGknFromXml(xmlFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.CreationDate.Value, task.CreationDate.Value, task.DocumentId.Value);
         }
 
 
-        private static void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
+        private static void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetXmlObject(xmlFile);
@@ -47,8 +47,8 @@ namespace KadOzenka.Dal.DataImport
                 MaxDegreeOfParallelism = 10
             };
 
-            Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Constructions, options, item => ImportObjectConstruction(item, unitDate, idTour, idTask, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Flats, options, item => ImportObjectFlat(item, unitDate, idTour, idTask, sDate, otDate, idDocument));
@@ -102,8 +102,28 @@ namespace KadOzenka.Dal.DataImport
             };
             attributeValue.Save();
         }
-        public static void ImportObjectBuild(xmlObjectBuild current, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
+        public static void ImportObjectBuild(xmlObjectBuild current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
+            KoUnitStatus koUnitStatus = KoUnitStatus.New;
+            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+            switch (koNoteType)
+            {
+                case KoNoteType.Day:
+                    koUnitStatus = KoUnitStatus.New;
+                    break;
+                case KoNoteType.Petition:
+                    koUnitStatus = KoUnitStatus.New;
+                    break;
+                case KoNoteType.Year:
+                    koUnitStatus = KoUnitStatus.Annual;
+                    break;
+                case KoNoteType.Initial:
+                    koUnitStatus = KoUnitStatus.Initial;
+                    break;
+            }
+
+
+
             ObjectModel.KO.OMUnit prev = null; 
 
             #region Получение данных о прошлой оценке данного объекта
@@ -140,7 +160,7 @@ namespace KadOzenka.Dal.DataImport
                 //Сохранение данных ГКН
                 SaveGknDataBuilding(current, gbuObject.Id, sDate, otDate, idDocument);
                 //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, KoUnitStatus.Initial, KoStatusRepeatCalc.Initial);
+                ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                 #endregion
 
                 /*
@@ -262,7 +282,7 @@ namespace KadOzenka.Dal.DataImport
                 //Сохранение данных ГКН
                 SaveGknDataBuilding(current, gbuObject.Id, sDate, otDate, idDocument);
                 //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, KoUnitStatus.Initial, KoStatusRepeatCalc.Initial);
+                ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                 #endregion
 
                 #region Заполнение фактора Материал стен на основании данных ГКН
@@ -304,7 +324,6 @@ namespace KadOzenka.Dal.DataImport
             }
 
         }
-
         private static void SaveGknDataBuilding(xmlObjectBuild current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
             #region Сохранение данных ГКН
@@ -375,9 +394,14 @@ namespace KadOzenka.Dal.DataImport
                     UpksPre = 0,
                 };
                 koUnit.Save();
-                if (current.CadastralCost != null)
+            }
+
+            if (current.CadastralCost != null)
+            {
+                ObjectModel.KO.OMCostRosreestr cost = ObjectModel.KO.OMCostRosreestr.Where(x=>x.IdObject==koUnit.Id).SelectAll().ExecuteFirstOrDefault();
+                if (cost == null)
                 {
-                    ObjectModel.KO.OMCostRosreestr cost = new ObjectModel.KO.OMCostRosreestr
+                    cost = new ObjectModel.KO.OMCostRosreestr
                     {
                         Id = -1,
                         Applicationdate = (current.CadastralCost.ApplicationDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.ApplicationDate,
@@ -394,6 +418,8 @@ namespace KadOzenka.Dal.DataImport
                     cost.Save();
                 }
             }
+
+
             return koUnit;
             #endregion
         }
@@ -402,29 +428,66 @@ namespace KadOzenka.Dal.DataImport
 
 
 
-        public static void ImportObjectParcel(xmlObjectParcel current, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
+        public static void ImportObjectParcel(xmlObjectParcel current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
-            xmlObjectParcel prev = null;
+            KoUnitStatus koUnitStatus = KoUnitStatus.New;
+            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+            switch (koNoteType)
+            {
+                case KoNoteType.Day:
+                    koUnitStatus = KoUnitStatus.New;
+                    break;
+                case KoNoteType.Petition:
+                    koUnitStatus = KoUnitStatus.New;
+                    break;
+                case KoNoteType.Year:
+                    koUnitStatus = KoUnitStatus.Annual;
+                    break;
+                case KoNoteType.Initial:
+                    koUnitStatus = KoUnitStatus.Initial;
+                    break;
+            }
+
+            ObjectModel.KO.OMUnit prev = null;
 
             #region Получение данных о прошлой оценке данного объекта
-            //TODO: prev=????????
-            // 
-            //
-            //
-            //
+            //prev = ObjectModel.KO.OMUnit.Where().SelectAll().ExecuteFirstOrDefault();
             #endregion
 
             //Если данные о прошлой оценке найдены
             if (prev != null)
             {
                 #region Импорт нового объекта
-                // TODO: Импорт нового объекта
-                //
-                //
-                //
-                //
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                #region Сохранение объекта
+                if (gbuObject == null)
+                {
+                    gbuObject = new ObjectModel.Gbu.OMMainObject
+                    {
+                        Id = -1,
+                        CadastralNumber = current.CadastralNumber,
+                        IsActive = true,
+                        ObjectType_Code = PropertyTypes.Stead,
+                    };
+                    gbuObject.Save();
+                }
+                else
+                {
+                    if (gbuObject.ObjectType_Code != PropertyTypes.Stead)
+                    {
+                        gbuObject.ObjectType_Code = PropertyTypes.Stead;
+                        gbuObject.Save();
+                    }
+                }
                 #endregion
 
+                //Сохранение данных ГКН
+                SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
+                //Задание на оценку
+                ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                #endregion
+
+                /*
                 //Признак было ли по данному объекту обращение?
                 bool prCheckObr = false;
                 //TODO: получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
@@ -435,7 +498,7 @@ namespace KadOzenka.Dal.DataImport
                 //
 
                 //Признак не поменялся ли тип объекта?
-                bool prTypeObjectCheck = prev.TypeObject == current.TypeObject;
+                bool prTypeObjectCheck = prev.PropertyType_Code == koUnit.PropertyType_Code;
                 //Признак не поменялось ли наименование объекта
                 bool prNameObjectCheck = prev.Name == current.Name;
                 //Признак не поменялось ли назначение объекта
@@ -452,11 +515,7 @@ namespace KadOzenka.Dal.DataImport
                     //
                     #endregion
                 }
-
-                //Если не было обращения по объекту
-                if (!prCheckObr)
-                {
-                }
+                */
             }
             //Если данные о прошлой оценке не найдены
             else
@@ -486,64 +545,80 @@ namespace KadOzenka.Dal.DataImport
                 }
                 #endregion
 
-                #region Сохранение данных ГКН
-                //Наименование участка
-                SetAttributeValue_String(1, current.Name.Name, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Площадь
-                SetAttributeValue_Numeric(2, Convert.ToDecimal(current.Area), gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Дата образования
-                SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Тип объекта
-                SetAttributeValue_String(26, current.TypeRealty, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Местоположение
-                SetAttributeValue_String(8, xmlAdress.GetTextPlace(current.Adress), gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Адрес
-                SetAttributeValue_String(600, xmlAdress.GetTextAdress(current.Adress), gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Кадастровая стоимость
-                if (current.CadastralCost != null) SetAttributeValue_Numeric(6, Convert.ToDecimal(current.CadastralCost.Value), gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Кадастровый квартал
-                SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Категория земель
-                SetAttributeValue_String(3, current.Category.Name, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Вид использования по документам
-                SetAttributeValue_String(4, current.Utilization.ByDoc, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
-                //Вид использования по классификатору
-                SetAttributeValue_String(5, current.Utilization.Utilization.Name, gbuObject.Id, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                //Сохранение данных ГКН
+                SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
+                //Задание на оценку
+                ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                 #endregion
 
-                #region Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObject.Id && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
-                if (koUnit == null)
+            }
+
+        }
+        private static void SaveGknDataParcel(xmlObjectParcel current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
+        {
+            #region Сохранение данных ГКН
+            //Наименование участка
+            SetAttributeValue_String(1, current.Name.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Площадь
+            SetAttributeValue_Numeric(2, Convert.ToDecimal(current.Area), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Дата образования
+            SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Тип объекта
+            SetAttributeValue_String(26, current.TypeRealty, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Местоположение
+            SetAttributeValue_String(8, xmlAdress.GetTextPlace(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Адрес
+            SetAttributeValue_String(600, xmlAdress.GetTextAdress(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Кадастровая стоимость
+            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, Convert.ToDecimal(current.CadastralCost.Value), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Кадастровый квартал
+            SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Категория земель
+            SetAttributeValue_String(3, current.Category.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Вид использования по документам
+            SetAttributeValue_String(4, current.Utilization.ByDoc, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Вид использования по классификатору
+            SetAttributeValue_String(5, current.Utilization.Utilization.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            #endregion
+        }
+        private static ObjectModel.KO.OMUnit SaveUnitParcel(xmlObjectParcel current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
+        {
+            #region Задание на оценку
+            ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
+            if (koUnit == null)
+            {
+                koUnit = new ObjectModel.KO.OMUnit
                 {
-                    koUnit = new ObjectModel.KO.OMUnit
+                    Id = -1,
+                    ModelId = -1,
+                    TourId = idTour,
+                    TaskId = idTask,
+                    GroupId = -1,
+                    Status_Code = unitStatus,
+                    ObjectId = gbuObjectId,
+                    CreationDate = unitDate,
+                    CadastralNumber = current.CadastralNumber,
+                    CadastralBlock = current.CadastralNumberBlock,
+                    Square = current.Area.ParseToDecimal(),
+                    PropertyType_Code = PropertyTypes.Stead,
+                    StatusRepeatCalc_Code = calcStatus,
+                    StatusResultCalc_Code = KoStatusResultCalc.None,
+                    CadastralCost = 0,
+                    CadastralCostPre = 0,
+                    Upks = 0,
+                    UpksPre = 0,
+                };
+                koUnit.Save();
+            }
+
+            if (current.CadastralCost != null)
+            {
+                ObjectModel.KO.OMCostRosreestr cost = ObjectModel.KO.OMCostRosreestr.Where(x => x.IdObject == koUnit.Id).SelectAll().ExecuteFirstOrDefault();
+                if (cost == null)
+                {
+                    cost = new ObjectModel.KO.OMCostRosreestr
                     {
                         Id = -1,
-                        ModelId = -1,
-                        TourId = idTour,
-                        TaskId = idTask,
-                        GroupId = -1,
-                        Status_Code = KoUnitStatus.Initial,
-                        ObjectId = gbuObject.Id,
-                        CreationDate = unitDate,
-                        CadastralNumber = current.CadastralNumber,
-                        CadastralBlock = current.CadastralNumberBlock,
-                        Square=current.Area.ParseToDecimal(),
-                        PropertyType_Code = PropertyTypes.Stead,
-                        StatusRepeatCalc_Code = KoStatusRepeatCalc.Initial,
-                        StatusResultCalc_Code = KoStatusResultCalc.None,
-                        CadastralCost = 0,
-                        CadastralCostPre = 0,
-                        Upks = 0,
-                        UpksPre = 0,
-                    };
-                    koUnit.Save();
-
-                }
-                if (current.CadastralCost != null)
-                {
-                    ObjectModel.KO.OMCostRosreestr cost = new ObjectModel.KO.OMCostRosreestr
-                    {
-                        Id=-1,
                         Applicationdate = (current.CadastralCost.ApplicationDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.ApplicationDate,
                         Dateapproval = (current.CadastralCost.DateApproval == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateApproval,
                         Dateentering = (current.CadastralCost.DateEntering == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateEntering,
@@ -557,12 +632,16 @@ namespace KadOzenka.Dal.DataImport
                     };
                     cost.Save();
                 }
-                #endregion
-                #endregion
-
             }
 
+
+            return koUnit;
+            #endregion
         }
+
+
+
+
         public static void ImportObjectConstruction(xmlObjectConstruction current, DateTime unitDate, long idTour, long idTask, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlObjectConstruction prev = null;

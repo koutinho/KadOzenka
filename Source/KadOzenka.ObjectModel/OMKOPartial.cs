@@ -106,10 +106,81 @@ namespace ObjectModel.KO
         }
     }
 
+    public class HistoryUnit : IComparer<HistoryUnit>
+    {
+        public OMUnit Unit { get; set; }
+        public OMTask Task { get; set; }
+        public bool isActual { get; set; }
+        public bool isBad { get; set; }
+        public Core.TD.OMInstance InputDoc { get; set; }
+        public Core.TD.OMInstance OutputDoc { get; set; }
+
+        public HistoryUnit(OMUnit unit)
+        {
+            Unit = unit;
+            isBad = (Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorInData || Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorTechnical);
+            isActual = false;
+            Task = OMTask.Where(x=>x.Id==unit.TaskId).SelectAll().ExecuteFirstOrDefault();
+            if (Task!=null)
+            {
+                long? id_Indoc = Task.DocumentId;
+                if (id_Indoc != null)
+                {
+                    InputDoc = Core.TD.OMInstance.Where(x => x.Id == id_Indoc.Value).SelectAll().ExecuteFirstOrDefault();
+                }
+                long? id_Outdoc = unit.ResponseDocId;
+                if (id_Outdoc != null)
+                {
+                    OutputDoc = Core.TD.OMInstance.Where(x => x.Id == id_Outdoc.Value).SelectAll().ExecuteFirstOrDefault();
+                }
+            }
+        }
+        int IComparer<HistoryUnit>.Compare(HistoryUnit unit1, HistoryUnit unit2)
+        {
+            if (unit1.Unit.CreationDate.Value == unit2.Unit.CreationDate.Value)
+            {
+                return -1 * unit1.Unit.StatusResultCalc_Code.CompareTo(unit2.Unit.StatusResultCalc_Code);
+            }
+            else
+                return unit1.Unit.CreationDate.Value.CompareTo(unit2.Unit.CreationDate.Value);
+        }
+        public override string ToString()
+        {
+            return Unit.CreationDate.Value.ToString("dd.MM.yyyy") + ", " + Unit.CadastralCost.Value.ToString() + ", " + Task.NoteType + ", "+Unit.StatusResultCalc;
+        }
+
+        public static List<HistoryUnit> GetHistory(string cadastralNumber)
+        {
+            List<HistoryUnit> Items = new List<HistoryUnit>();
+            List<OMUnit> units = OMUnit.Where(x=>x.CadastralNumber==cadastralNumber).SelectAll().Execute();
+            foreach(OMUnit unit in units)
+            {
+                Items.Add(new HistoryUnit(unit));
+            }
+
+            if (Items.Count > 0)
+            {
+                Items.Sort(Items[0]);
+                int indexActual = Items.Count - 1;
+                for (int i = Items.Count - 1; i > 0; i--)
+                {
+                    if (Items[i].Unit.CadastralCost == Items[i - 1].Unit.CadastralCost)
+                    {
+                        indexActual = i - 1;
+                    }
+                    else break;
+                }
+                Items[indexActual].isActual = true;
+            }
+            return Items;
+        }
+
+    }
 
     public partial class OMUnit
     {
         public long OldId { get; set; }
+        public bool isExplication { get; set; }
         public void SaveAndCreate()
         {
             ObjectModel.Gbu.OMMainObject mainObject = ObjectModel.Gbu.OMMainObject
@@ -302,7 +373,7 @@ namespace ObjectModel.KO
             if (ParentGroup != null) return GetFactorReestrId(ParentGroup);
             else
             {
-                OMTourGroup tourgroup = OMTourGroup.Where(x=>x.GroupId==current.Id).SelectAll().ExecuteFirstOrDefault();
+                OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == current.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
                     if (current.GroupAlgoritm_Code == KoGroupAlgoritm.MainOKS)
@@ -330,7 +401,7 @@ namespace ObjectModel.KO
                     return null;
             }
         }
-        public static void GetMinValue(ref ALLStatOKS minKR, ref ALLStatOKS minKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
+        private static void GetMinValue(ref ALLStatOKS minKR, ref ALLStatOKS minKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
         {
             upks = decimal.MaxValue;
             parentCalcType = KoParentCalcType.None;
@@ -377,7 +448,7 @@ namespace ObjectModel.KO
                                 {
                                     if (unit.CadastralCost != null)
                                     {
-                                        if (unit.Upks < upks && unit.Upks>0)
+                                        if (unit.Upks < upks && unit.Upks > 0)
                                         {
                                             prFindInCadastralRaion = true;
                                             upks = unit.Upks.ParseToDecimal();
@@ -449,7 +520,7 @@ namespace ObjectModel.KO
                 }
             }
         }
-        public static void GetAvgValue(ref ALLStatOKS avgKR, ref ALLStatOKS avgKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
+        private static void GetAvgValue(ref ALLStatOKS avgKR, ref ALLStatOKS avgKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
         {
             upks = 0;
             parentCalcType = KoParentCalcType.None;
@@ -570,7 +641,7 @@ namespace ObjectModel.KO
                 }
             }
         }
-        public void Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup, PropertyTypes curTypeObject)
+        private void Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup, PropertyTypes curTypeObject)
         {
             #region Эталонный
             //if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
@@ -930,44 +1001,30 @@ namespace ObjectModel.KO
             #endregion
 
             #region Моделирование
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model || this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
             {
                 int? factorReestrId = GetFactorReestrId(this);
                 OMModel model = OMModel.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
-                if (model != null && factorReestrId!=null)
+                if (model != null && factorReestrId != null)
                 {
                     if (model.ModelFactor.Count == 0)
                         model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
 
+                    long? idsquarefactor = null;
+                    long? idanalogfactor = null;
+
                     foreach (OMModelFactor weight in model.ModelFactor)
                     {
                         weight.FillMarkCatalogs(model);
+                        if (weight.MarkerId == 1)
+                        {
+                            idsquarefactor = weight.FactorId;
+                        }
+                        if (weight.MarkerId == 2)
+                        {
+                            idanalogfactor = weight.FactorId;
+                        }
                     }
-
-
-                    //TO DO: Добавить объекты с экспликацией
-
-                    bool usesquarefactor = false;
-                    Int64 idsquarefactor = 0;
-                    bool useanalogfactor = false;
-                    Int64 idanalogfactor = 0;
-
-                    //foreach (ALLFactorItem factor in factors)
-                    //{
-                    //    factor.FillMetka(this);
-                    //    if (factor.TYPE_FACTOR == euFactorType.ftSquare)
-                    //    {
-                    //        usesquarefactor = true;
-                    //        idsquarefactor = factor.Id;
-                    //    }
-                    //    if (factor.TYPE_FACTOR == euFactorType.ftAnalog)
-                    //    {
-                    //        useanalogfactor = true;
-                    //        idanalogfactor = factor.Id;
-                    //    }
-                    //}
-
-
 
                     int ccc = 0;
 
@@ -981,374 +1038,385 @@ namespace ObjectModel.KO
 
                     Parallel.ForEach(units, options, unit =>
                     {
-                        List<CalcItem> FactorValues = new List<CalcItem>();
-                        DataTable data = RegisterStorage.GetAttributes((int)unit.Id, factorReestrId.Value);
-                        if (data != null)
+                        bool useAsPrototype = false;
+                        if (unit.UseAsPrototype != null) useAsPrototype = unit.UseAsPrototype.Value;
+                        if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model || (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon && useAsPrototype))
                         {
-                            foreach (DataRow row in data.Rows)
+                            List<CalcItem> FactorValues = new List<CalcItem>();
+                            DataTable data = RegisterStorage.GetAttributes((int)unit.Id, factorReestrId.Value);
+                            if (data != null)
                             {
-                                FactorValues.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
-                            }
-                        }
-
-                        {
-                            ccc++;
-                            if (ccc % 500 == 0)
-                                Console.WriteLine(ccc);
-                            decimal D = 0;
-                            decimal Dm = 1;
-                            decimal De = 1;
-                            decimal Dss = 0;
-                            //List<ALLFactorValueItem> fvs = new List<ALLFactorValueItem>();
-                            //fvs.AddRange(ALLFactorValueItem.GetAllFactors(obj.TYPE_OBJECT, obj.Id, obj.ID_GROUP, false));
-                            //if (usesquarefactor)
-                            //{
-                            //    bool findsquarevalue = false;
-                            //    foreach (ALLFactorValueItem fvi in fvs)
-                            //    {
-                            //        if (fvi.ID_FACTOR == idsquarefactor)
-                            //        {
-                            //            findsquarevalue = true;
-                            //            fvi.TYPE_FACTOR = euFactorType.ftSquare;
-                            //            if (obj._main)
-                            //            {
-                            //                fvi.VALUE_FACTOR = obj.SQUARE_OBJECT.ToString();
-                            //            }
-                            //            else
-                            //            {
-                            //                ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-                            //                double exsquare = 0;
-                            //                foreach (ALLExplicationValueItem exp in exps)
-                            //                {
-                            //                    if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-                            //                    {
-                            //                        exsquare = exp.SQUARE;
-                            //                    }
-                            //                }
-                            //                fvi.VALUE_FACTOR = (exsquare.ToString());
-                            //            }
-                            //        }
-                            //    }
-                            //    if (!findsquarevalue)
-                            //    {
-                            //        if (obj._main)
-                            //        {
-                            //            fvs.Add(new ALLFactorValueItem(euFactorType.ftSquare, obj.Id, idsquarefactor, obj.SQUARE_OBJECT.ToString()));
-                            //        }
-                            //        else
-                            //        {
-                            //            ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-                            //            double exsquare = 0;
-                            //            foreach (ALLExplicationValueItem exp in exps)
-                            //            {
-                            //                if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-                            //                {
-                            //                    exsquare = exp.SQUARE;
-                            //                }
-                            //            }
-                            //            fvs.Add(new ALLFactorValueItem(euFactorType.ftSquare, obj.Id, idsquarefactor, exsquare.ToString()));
-                            //        }
-                            //    }
-                            //}
-                            //if (useanalogfactor)
-                            //{
-                            //    bool findanalogvalue = false;
-                            //    foreach (ALLFactorValueItem fvi in fvs)
-                            //    {
-                            //        if (fvi.ID_FACTOR == idanalogfactor)
-                            //        {
-                            //            findanalogvalue = true;
-                            //            fvi.TYPE_FACTOR = euFactorType.ftAnalog;
-                            //            if (!obj._main)
-                            //            {
-                            //                ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-                            //                string exanalog = string.Empty;
-                            //                foreach (ALLExplicationValueItem exp in exps)
-                            //                {
-                            //                    if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-                            //                    {
-                            //                        exanalog = exp.CALC_PARENT;
-                            //                    }
-                            //                }
-                            //                fvi.VALUE_FACTOR = exanalog;
-                            //            }
-                            //        }
-                            //    }
-                            //    if (!findanalogvalue)
-                            //    {
-                            //        if (!obj._main)
-                            //        {
-                            //            ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-                            //            string exanalog = string.Empty;
-                            //            foreach (ALLExplicationValueItem exp in exps)
-                            //            {
-                            //                if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-                            //                {
-                            //                    exanalog = exp.CALC_PARENT;
-                            //                }
-                            //            }
-                            //            fvs.Add(new ALLFactorValueItem(euFactorType.ftAnalog, obj.Id, idanalogfactor, exanalog));
-                            //        }
-                            //    }
-                            //}
-
-
-
-                            string strerror = "";
-
-                            foreach (OMModelFactor weight in model.ModelFactor)
-                            {
-                                if (weight.SignAdd)
+                                foreach (DataRow row in data.Rows)
                                 {
-                                    string factorValue = string.Empty;//TODO: значение фактора для данного объекта
-                                    CalcItem ci = FactorValues.Find(x => x.FactorId == weight.FactorId);
-                                    if (ci != null) factorValue = ci.Value;
-
-                                    string factorName = string.Empty;//TODO: наименование фактора
-
-                                    if (weight.SignMarket)
-                                    {
-                                        bool mok = false;
-                                        decimal d = 0;
-                                        OMMarkCatalog mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper());
-                                        if (mc != null)
-                                        {
-                                            d = mc.MetkaFactor.ParseToDecimal();
-                                            mok = true;
-                                        }
-                                        if (!mok)
-                                        {
-                                            strerror = strerror + "Отсутствует значение метки фактора " + factorName + " для значения " + factorValue + Environment.NewLine;
-                                        }
-
-
-
-                                        if (model.AlgoritmType_Code == KoAlgoritmType.Exp)
-                                        {
-                                            if (!weight.SignDiv)
-                                                De = De * (weight.B0 + weight.Weight * d);
-                                            else
-                                                De = De * 1 / (weight.B0 + weight.Weight * d);
-                                        }
-
-                                        if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
-                                        {
-                                            if (!weight.SignDiv)
-                                                Dss = Dss + (weight.B0 + weight.Weight * d);
-                                            else
-                                                Dss = Dss + 1 / (weight.B0 + weight.Weight * d);
-                                            Dm = Dss;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        decimal d = 0;
-                                        bool dok = decimal.TryParse(factorValue, out d);
-                                        if (!dok)
-                                            strerror = strerror + "Неверное значение фактора " + factorName + " : " + factorValue + Environment.NewLine;
-
-                                        if (model.AlgoritmType_Code == KoAlgoritmType.Exp)
-                                        {
-                                            if (!weight.SignDiv)
-                                                De = De * (weight.B0 + weight.Weight * d);
-                                            else
-                                                De = De * 1 / (weight.B0 + weight.Weight * d);
-                                        }
-
-                                        if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
-                                        {
-                                            if (!weight.SignDiv)
-                                                Dss = Dss + (weight.B0 + weight.Weight * d);
-                                            else
-                                                Dss = Dss + 1 / (weight.B0 + weight.Weight * d);
-                                            Dm = Dss;
-                                        }
-                                    }
+                                    FactorValues.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
                                 }
                             }
 
-                            foreach (OMModelFactor weight in model.ModelFactor)
                             {
-                                if (!weight.SignAdd)
+                                ccc++;
+                                if (ccc % 500 == 0)
+                                    Console.WriteLine(ccc);
+                                decimal D = 0;
+                                decimal Dm = 1;
+                                decimal De = 1;
+                                decimal Dss = 0;
+
+                                string strerror = "";
+
+                                foreach (OMModelFactor weight in model.ModelFactor)
                                 {
-                                    string factorValue = string.Empty;//TODO: значение фактора для данного объекта
-                                    CalcItem ci = FactorValues.Find(x => x.FactorId == weight.FactorId);
-                                    if (ci != null) factorValue = ci.Value;
-
-                                    string factorName = string.Empty;//TODO: наименование фактора
-
-                                    if (weight.SignMarket)
+                                    if (weight.SignAdd)
                                     {
-                                        decimal d = 0;
-                                        bool mok = false;
-
-                                        OMMarkCatalog mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper());
-                                        if (mc != null)
+                                        string factorValue = string.Empty;//TODO: значение фактора для данного объекта
+                                        if (weight.FactorId == idsquarefactor)
                                         {
-                                            d = mc.MetkaFactor.ParseToDecimal();
-                                            mok = true;
-                                        }
-                                        if (!mok)
-                                            strerror = strerror + "Отсутствует значение метки фактора " + factorName + " для значения " + factorValue + Environment.NewLine;
-
-                                        if (!weight.SignDiv)
-                                            D = D + weight.Weight * d;
-                                        else
-                                            D = D + 1 / (weight.Weight * d);
-
-                                        if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
-                                        {
-                                            if (!weight.SignDiv)
-                                                Dm = Dm * (weight.B0 + weight.Weight * d);
-                                            else
-                                                Dm = Dm / (weight.B0 + weight.Weight * d);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        decimal d = 0;
-                                        bool dok = decimal.TryParse(factorValue, out d);
-                                        if (!dok)
-                                            strerror = strerror + "Неверное значение фактора " + factorName + " : " + factorValue + Environment.NewLine;
-
-                                        if (!weight.SignDiv)
-                                            D = D + weight.Weight * d;
-                                        else
-                                        {
-                                            if (dok)
-                                                D = D + 1 / (weight.Weight * d);
-                                            else
-                                                D = 0;
-                                        }
-
-                                        if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
-                                        {
-                                            if (!weight.SignDiv)
-                                                Dm = Dm * (weight.B0 + weight.Weight * d);
+                                            decimal curSq = (unit.Square == null) ? 1 : unit.Square.Value;
+                                            if (unit.isExplication)
+                                            {
+                                                decimal sumsq = 0;
+                                                List<OMExplication> unitExplications = OMExplication.Where(x => x.ObjectId == unit.Id).SelectAll().Execute();
+                                                foreach (OMExplication unitExplication in unitExplications)
+                                                {
+                                                    if (unitExplication.GroupId != this.Id)
+                                                    {
+                                                        if (unitExplication.Square != null)
+                                                            sumsq += unitExplication.Square.Value;
+                                                    }
+                                                }
+                                                factorValue = (curSq - sumsq).ParseToString();
+                                            }
                                             else
                                             {
+                                                factorValue = curSq.ParseToString();
+                                            }
+                                        }
+                                        else
+                                        if (weight.FactorId == idanalogfactor)
+                                        {
+                                            if (unit.isExplication)
+                                            {
+                                                List<OMExplication> unitExplications = OMExplication.Where(x => x.ObjectId == unit.Id && x.GroupId == this.Id).SelectAll().Execute();
+                                                foreach (OMExplication unitExplication in unitExplications)
+                                                {
+                                                    factorValue = unitExplication.NameAnalog;
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            CalcItem ci = FactorValues.Find(x => x.FactorId == weight.FactorId);
+                                            if (ci != null) factorValue = ci.Value;
+                                        }
 
-                                                if (dok)
-                                                    Dm = Dm / (weight.B0 + weight.Weight * d);
+
+                                        string factorName = string.Empty;//TODO: наименование фактора
+
+                                        if (weight.SignMarket)
+                                        {
+                                            bool mok = false;
+                                            decimal d = 0;
+                                            OMMarkCatalog mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper());
+                                            if (mc != null)
+                                            {
+                                                d = mc.MetkaFactor.ParseToDecimal();
+                                                mok = true;
+                                            }
+                                            if (!mok)
+                                            {
+                                                strerror = strerror + "Отсутствует значение метки фактора " + factorName + " для значения " + factorValue + Environment.NewLine;
+                                            }
+
+
+
+                                            if (model.AlgoritmType_Code == KoAlgoritmType.Exp)
+                                            {
+                                                if (!weight.SignDiv)
+                                                    De = De * (weight.B0 + weight.Weight * d);
                                                 else
-                                                    Dm = 0;
+                                                    De = De * 1 / (weight.B0 + weight.Weight * d);
+                                            }
+
+                                            if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
+                                            {
+                                                if (!weight.SignDiv)
+                                                    Dss = Dss + (weight.B0 + weight.Weight * d);
+                                                else
+                                                    Dss = Dss + 1 / (weight.B0 + weight.Weight * d);
+                                                Dm = Dss;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            decimal d = 0;
+                                            bool dok = decimal.TryParse(factorValue, out d);
+                                            if (!dok)
+                                                strerror = strerror + "Неверное значение фактора " + factorName + " : " + factorValue + Environment.NewLine;
+
+                                            if (model.AlgoritmType_Code == KoAlgoritmType.Exp)
+                                            {
+                                                if (!weight.SignDiv)
+                                                    De = De * (weight.B0 + weight.Weight * d);
+                                                else
+                                                    De = De * 1 / (weight.B0 + weight.Weight * d);
+                                            }
+
+                                            if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
+                                            {
+                                                if (!weight.SignDiv)
+                                                    Dss = Dss + (weight.B0 + weight.Weight * d);
+                                                else
+                                                    Dss = Dss + 1 / (weight.B0 + weight.Weight * d);
+                                                Dm = Dss;
                                             }
                                         }
                                     }
                                 }
-                            }
 
-                            if (strerror != "")
-                            {
-                                //sw.WriteLine(unit.CadastralNumber);
-                                //sw.WriteLine(strerror);
-                            }
-
-                            if (model.AlgoritmType_Code == KoAlgoritmType.Exp)
-                            {
-                                decimal UPKS = Math.Round(Convert.ToDecimal(Math.Exp(Convert.ToDouble(model.A0 + D))) * De, 2, MidpointRounding.AwayFromZero);
-                                decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
-                                if (unit.CadastralCostPre != Cost || unit.UpksPre != UPKS)
-                                    Console.WriteLine("КН:{5} УПКС:{0} УПКС:{1} КС:{2} КС:{3} SQ:{4}", unit.UpksPre, UPKS, unit.CadastralCostPre, Cost, unit.Square, unit.CadastralNumber);
-                                if (true)//obj._main
+                                foreach (OMModelFactor weight in model.ModelFactor)
                                 {
-                                    if (strerror != string.Empty)
+                                    if (!weight.SignAdd)
                                     {
-                                        unit.UpksPre = 0;
-                                        unit.CadastralCostPre = 0;
+                                        string factorValue = string.Empty;//TODO: значение фактора для данного объекта
+
+                                        if (weight.FactorId == idsquarefactor)
+                                        {
+                                            decimal curSq = (unit.Square == null) ? 1 : unit.Square.Value;
+                                            if (unit.isExplication)
+                                            {
+                                                decimal sumsq = 0;
+                                                List<OMExplication> unitExplications = OMExplication.Where(x => x.ObjectId == unit.Id).SelectAll().Execute();
+                                                foreach (OMExplication unitExplication in unitExplications)
+                                                {
+                                                    if (unitExplication.GroupId != this.Id)
+                                                    {
+                                                        if (unitExplication.Square != null)
+                                                            sumsq += unitExplication.Square.Value;
+                                                    }
+                                                }
+                                                factorValue = (curSq - sumsq).ParseToString();
+                                            }
+                                            else
+                                            if (weight.FactorId == idanalogfactor)
+                                            {
+                                                if (unit.isExplication)
+                                                {
+                                                    List<OMExplication> unitExplications = OMExplication.Where(x => x.ObjectId == unit.Id && x.GroupId == this.Id).SelectAll().Execute();
+                                                    foreach (OMExplication unitExplication in unitExplications)
+                                                    {
+                                                        factorValue = unitExplication.NameAnalog;
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                factorValue = curSq.ParseToString();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            CalcItem ci = FactorValues.Find(x => x.FactorId == weight.FactorId);
+                                            if (ci != null) factorValue = ci.Value;
+                                        }
+
+                                        string factorName = string.Empty;//TODO: наименование фактора
+
+                                        if (weight.SignMarket)
+                                        {
+                                            decimal d = 0;
+                                            bool mok = false;
+
+                                            OMMarkCatalog mc = weight.MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == factorValue.ToUpper());
+                                            if (mc != null)
+                                            {
+                                                d = mc.MetkaFactor.ParseToDecimal();
+                                                mok = true;
+                                            }
+                                            if (!mok)
+                                                strerror = strerror + "Отсутствует значение метки фактора " + factorName + " для значения " + factorValue + Environment.NewLine;
+
+                                            if (!weight.SignDiv)
+                                                D = D + weight.Weight * d;
+                                            else
+                                                D = D + 1 / (weight.Weight * d);
+
+                                            if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
+                                            {
+                                                if (!weight.SignDiv)
+                                                    Dm = Dm * (weight.B0 + weight.Weight * d);
+                                                else
+                                                    Dm = Dm / (weight.B0 + weight.Weight * d);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            decimal d = 0;
+                                            bool dok = decimal.TryParse(factorValue, out d);
+                                            if (!dok)
+                                                strerror = strerror + "Неверное значение фактора " + factorName + " : " + factorValue + Environment.NewLine;
+
+                                            if (!weight.SignDiv)
+                                                D = D + weight.Weight * d;
+                                            else
+                                            {
+                                                if (dok)
+                                                    D = D + 1 / (weight.Weight * d);
+                                                else
+                                                    D = 0;
+                                            }
+
+                                            if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
+                                            {
+                                                if (!weight.SignDiv)
+                                                    Dm = Dm * (weight.B0 + weight.Weight * d);
+                                                else
+                                                {
+
+                                                    if (dok)
+                                                        Dm = Dm / (weight.B0 + weight.Weight * d);
+                                                    else
+                                                        Dm = 0;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (strerror != "")
+                                {
+                                    //sw.WriteLine(unit.CadastralNumber);
+                                    //sw.WriteLine(strerror);
+                                }
+
+                                if (model.AlgoritmType_Code == KoAlgoritmType.Exp)
+                                {
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(Math.Exp(Convert.ToDouble(model.A0 + D))) * De, 2, MidpointRounding.AwayFromZero);
+                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
+                                    if (unit.CadastralCostPre != Cost || unit.UpksPre != UPKS)
+                                        Console.WriteLine("КН:{5} УПКС:{0} УПКС:{1} КС:{2} КС:{3} SQ:{4}", unit.UpksPre, UPKS, unit.CadastralCostPre, Cost, unit.Square, unit.CadastralNumber);
+                                    if (!unit.isExplication)
+                                    {
+                                        if (strerror != string.Empty)
+                                        {
+                                            unit.UpksPre = 0;
+                                            unit.CadastralCostPre = 0;
+                                        }
+                                        else
+                                        {
+                                            unit.UpksPre = UPKS;
+                                            unit.CadastralCostPre = Cost;
+                                        }
+                                        unit.Upks = 0;
+                                        unit.CadastralCost = 0;
+                                        //unit.Save();
+                                        if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
+                                            CalculateChildForEtalon(unit);
                                     }
                                     else
                                     {
-                                        unit.UpksPre = UPKS;
-                                        unit.CadastralCostPre = Cost;
+                                        List<OMExplication> unitExplications = OMExplication.Where(x => x.ObjectId == unit.Id && x.GroupId == this.Id).SelectAll().Execute();
+                                        foreach (OMExplication unitExplication in unitExplications)
+                                        {
+                                            if (strerror != string.Empty)
+                                            {
+                                                unitExplication.Upks = 0;
+                                                unitExplication.Kc = 0;
+                                            }
+                                            else
+                                            {
+                                                unitExplication.Upks = UPKS;
+                                                unitExplication.Kc = Math.Round((UPKS * unitExplication.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
+                                            }
+                                            unitExplication.Save();
+                                        }
                                     }
-                                    unit.Upks = 0;
-                                    unit.CadastralCost = 0;
-                                    //unit.Save();
                                 }
-                                else
+                                if (model.AlgoritmType_Code == KoAlgoritmType.Line)
                                 {
-                                    //ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-                                    //foreach (ALLExplicationValueItem exp in exps)
-                                    //{
-                                    //    if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-                                    //    {
-                                    //        if (strerror == string.Empty)
-                                    //            exp.Update(UPKS, Math.Round(UPKS * exp.SQUARE, 2));
-                                    //    }
-                                    //}
-                                }
-                            }
-                            if (model.AlgoritmType_Code == KoAlgoritmType.Line)
-                            {
-                                decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 + D), 2);
-                                decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 + D), 2);
+                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
 
-                                if (unit.UpksPre != UPKS || unit.CadastralCostPre != Cost)
-                                    Console.WriteLine("УПКС:{0} УПКС:{1} КС:{2} КС:{3}", unit.UpksPre, UPKS, unit.CadastralCostPre, Cost);
+                                    if (unit.UpksPre != UPKS || unit.CadastralCostPre != Cost)
+                                        Console.WriteLine("УПКС:{0} УПКС:{1} КС:{2} КС:{3}", unit.UpksPre, UPKS, unit.CadastralCostPre, Cost);
 
-                                if (true)//obj._main
-                                {
-                                    if (strerror != string.Empty)
+                                    if (!unit.isExplication)
                                     {
-                                        unit.UpksPre = 0;
-                                        unit.CadastralCostPre = 0;
+                                        if (strerror != string.Empty)
+                                        {
+                                            unit.UpksPre = 0;
+                                            unit.CadastralCostPre = 0;
+                                        }
+                                        else
+                                        {
+                                            unit.UpksPre = UPKS;
+                                            unit.CadastralCostPre = Cost;
+                                        }
+                                        unit.Upks = 0;
+                                        unit.CadastralCost = 0;
+                                        //unit.Save();
+                                        if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
+                                            CalculateChildForEtalon(unit);
                                     }
                                     else
                                     {
-                                        unit.UpksPre = UPKS;
-                                        unit.CadastralCostPre = Cost;
+                                        List<OMExplication> unitExplications = OMExplication.Where(x => x.ObjectId == unit.Id && x.GroupId == this.Id).SelectAll().Execute();
+                                        foreach (OMExplication unitExplication in unitExplications)
+                                        {
+                                            if (strerror != string.Empty)
+                                            {
+                                                unitExplication.Upks = 0;
+                                                unitExplication.Kc = 0;
+                                            }
+                                            else
+                                            {
+                                                unitExplication.Upks = UPKS;
+                                                unitExplication.Kc = Math.Round((UPKS * unitExplication.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
+                                            }
+                                            unitExplication.Save();
+                                        }
                                     }
-                                    unit.Upks = 0;
-                                    unit.CadastralCost = 0;
-                                    //unit.Save();
                                 }
-                                else
+                                if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
                                 {
-                                    //ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-                                    //foreach (ALLExplicationValueItem exp in exps)
-                                    //{
-                                    //    if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-                                    //    {
-                                    //        if (strerror == string.Empty)
-                                    //            exp.Update(UPKS, Math.Round(UPKS * exp.SQUARE, 2));
-                                    //    }
-                                    //}
-                                }
-                            }
-                            if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
-                            {
-                                decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 * Dm), 2);
-                                decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
-                                if (unit.UpksPre != UPKS || unit.CadastralCostPre != Cost)
-                                    Console.WriteLine("УПКС:{0} УПКС:{1} КС:{2} КС:{3}", unit.UpksPre, UPKS, unit.CadastralCostPre, Cost);
-                                if (true)//obj._main
-                                {
-                                    if (strerror != string.Empty)
+                                    decimal UPKS = Math.Round(Convert.ToDecimal(model.A0 * Dm), 2);
+                                    decimal Cost = Math.Round((UPKS * unit.Square).ParseToDecimal(), 2);
+                                    if (unit.UpksPre != UPKS || unit.CadastralCostPre != Cost)
+                                        Console.WriteLine("УПКС:{0} УПКС:{1} КС:{2} КС:{3}", unit.UpksPre, UPKS, unit.CadastralCostPre, Cost);
+                                    if (!unit.isExplication)
                                     {
-                                        unit.UpksPre = 0;
-                                        unit.CadastralCostPre = 0;
+                                        if (strerror != string.Empty)
+                                        {
+                                            unit.UpksPre = 0;
+                                            unit.CadastralCostPre = 0;
+                                        }
+                                        else
+                                        {
+                                            unit.UpksPre = UPKS;
+                                            unit.CadastralCostPre = Cost;
+                                        }
+                                        unit.Upks = 0;
+                                        unit.CadastralCost = 0;
+                                        //unit.Save();
+                                        if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
+                                            CalculateChildForEtalon(unit);
                                     }
                                     else
                                     {
-                                        unit.UpksPre = UPKS;
-                                        unit.CadastralCostPre = Cost;
+                                        List<OMExplication> unitExplications = OMExplication.Where(x => x.ObjectId == unit.Id && x.GroupId == this.Id).SelectAll().Execute();
+                                        foreach (OMExplication unitExplication in unitExplications)
+                                        {
+                                            if (strerror != string.Empty)
+                                            {
+                                                unitExplication.Upks = 0;
+                                                unitExplication.Kc = 0;
+                                            }
+                                            else
+                                            {
+                                                unitExplication.Upks = UPKS;
+                                                unitExplication.Kc = Math.Round((UPKS * unitExplication.Square).ParseToDecimal(), 2, MidpointRounding.AwayFromZero);
+                                            }
+                                            unitExplication.Save();
+                                        }
                                     }
-                                    unit.Upks = 0;
-                                    unit.CadastralCost = 0;
-                                    //unit.Save();
-                                }
-                                else
-                                {
-                                    //ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-                                    //foreach (ALLExplicationValueItem exp in exps)
-                                    //{
-                                    //    if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-                                    //    {
-                                    //        if (strerror == string.Empty)
-                                    //            exp.Update(UPKS, Math.Round(UPKS * exp.SQUARE, 2));
-                                    //    }
-                                    //}
                                 }
                             }
                         }
@@ -1825,7 +1893,7 @@ namespace ObjectModel.KO
 
             #region Участки
             #region Среднее
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject==PropertyTypes.Stead)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject == PropertyTypes.Stead)
             {
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
@@ -1920,7 +1988,7 @@ namespace ObjectModel.KO
             #endregion
 
             #region ОНС
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited && this.Id>300000)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited && this.Id > 300000)
             {
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
@@ -1970,7 +2038,7 @@ namespace ObjectModel.KO
                     }
                 }
             }
-            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited && this.Id<300000)
+            if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited && this.Id < 300000)
             {
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
@@ -2052,10 +2120,10 @@ namespace ObjectModel.KO
             decimal? upks = unit.UpksPre;
             decimal? square = unit.Square;
             if (square == null) square = 1;
-            if (upks!=null)
+            if (upks != null)
             {
-                List<ObjectModel.KO.OMGroupFactor> groupFactors = ObjectModel.KO.OMGroupFactor.Where(x=>x.GroupId==this.Id).SelectAll().Execute();
-                foreach(ObjectModel.KO.OMGroupFactor groupFactor in groupFactors)
+                List<ObjectModel.KO.OMGroupFactor> groupFactors = ObjectModel.KO.OMGroupFactor.Where(x => x.GroupId == this.Id).SelectAll().Execute();
+                foreach (ObjectModel.KO.OMGroupFactor groupFactor in groupFactors)
                 {
                     List<CalcItem> FactorValues = new List<CalcItem>();
                     decimal koeff = 0;
@@ -2064,9 +2132,15 @@ namespace ObjectModel.KO
                     {
                         foreach (DataRow row in data.Rows)
                         {
-                            string t = row.ItemArray[6].ParseToString();
-                            if (t!=string.Empty && t!=null)
-                            koeff = t.ParseToDecimal();
+                            string t6 = row.ItemArray[6].ParseToString();
+                            if (t6 != string.Empty && t6 != null)
+                                koeff = t6.ParseToDecimal();
+                            else
+                            {
+                                string t7 = row.ItemArray[7].ParseToString();
+                                if (t7 != string.Empty && t7 != null)
+                                    koeff = t7.ParseToDecimal();
+                            }
                         }
                     }
                     upks *= koeff;
@@ -2085,7 +2159,26 @@ namespace ObjectModel.KO
             //unit.CadastralCost = cost;
             //unit.Save();
         }
+        private void CalculateChildForEtalon(ObjectModel.KO.OMUnit unit)
+        {
+            List<OMUnit> childs = OMUnit.Where(x=>x.GroupId==unit.GroupId && x.UseAsPrototype==false && x.TourId==unit.TourId && x.Status_Code==unit.Status_Code && x.CadastralBlock==unit.CadastralBlock).SelectAll().Execute();
 
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 25
+            };
+            Parallel.ForEach(childs, options, child =>
+            {
+                child.UpksPre = unit.UpksPre;
+                child.CadastralCostPre = Math.Round((child.UpksPre * child.Square).ParseToDecimal(), 2);
+                child.Upks = 0;
+                child.CadastralCost = 0;
+                child.Save();
+            });
+
+        }
     }
 
 }
