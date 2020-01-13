@@ -140,7 +140,7 @@ namespace KadOzenka.Web.Controllers
 			using (var ts = new TransactionScope())
 			{
 				ObjectCardModel.ToOM(data, ref obj, ref drs);
-
+				
 				objId = obj.SaveAndCheckParam();
 
                 if (data.Id == -1 || drs.IdObject == -1)

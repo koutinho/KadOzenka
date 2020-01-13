@@ -70,6 +70,16 @@ namespace KadOzenka.Web.Models.Sud
 		[Display(Name = "Источник")]
 		public string DrsOwner { get; set; }
 
+		[Display(Name = "Тип заявителя")]
+		[Required(ErrorMessage = "Тип заявителя обязательное поле")]
+		[Range(1, int.MaxValue, ErrorMessage = "Тип заявителя обязательное поле")]
+		public ApplicantType? ApplicantType { get; set; }
+
+		[Display(Name = "Форма собственности")]
+		[Required(ErrorMessage = "Форма собственности обязательное поле")]
+		[Range(1, int.MaxValue, ErrorMessage = "Форма собственности обязательное поле")]
+		public TypeOfOwnership? TypeOfOwnership { get; set; }
+
 		public bool IsEditPermission { get; set; }
 		public bool IsApprovePermission { get; set; }
 
@@ -103,7 +113,9 @@ namespace KadOzenka.Web.Models.Sud
 				RecountReason = omDrs?.DrsPrichin,
 				Updrs = omDrs?.DrsUpdrs,
 				Drs = omDrs?.DrsDrs,
-				DrsOwner = omDrs?.DrsOwner
+				DrsOwner = omDrs?.DrsOwner,
+				ApplicantType = omObject.ApplicantType_Code,
+				TypeOfOwnership = omObject.TypeOfOwnership_Code
 			};
 			return model;
 		}
@@ -129,6 +141,8 @@ namespace KadOzenka.Web.Models.Sud
 			omObject.StatDgi = model.StatDgi;
 			omObject.Owner = model.Owner;
 			omObject.Workstat = model.AdditionalAnalysisRequired.GetValueOrDefault(false) ? ProcessingStatus.Processed.GetEnumDescription() : ProcessingStatus.InWork.GetEnumDescription();
+			omObject.ApplicantType_Code = model.ApplicantType.GetValueOrDefault();
+			omObject.TypeOfOwnership_Code = model.TypeOfOwnership.GetValueOrDefault();
 
 			omDrs.DrsGroup = model.DrsGroup;
 			omDrs.DrsSq1 = model.Basement;

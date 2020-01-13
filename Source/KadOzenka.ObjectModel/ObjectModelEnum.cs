@@ -231,7 +231,7 @@ namespace ObjectModel.Directory
 		/// Апартаменты (744)
 		/// </summary>
 		[Description("Апартаменты")]
-        [EnumCode("1")]
+        [EnumCode("104")]
         Appartment = 744,
 		/// <summary>
 		/// Гаражи (745)
@@ -249,73 +249,73 @@ namespace ObjectModel.Directory
 		/// ИЖС (747)
 		/// </summary>
 		[Description("ИЖС")]
-        [EnumCode("4")]
+        [EnumCode("101")]
         IZHS = 747,
 		/// <summary>
 		/// Машиноместа (748)
 		/// </summary>
 		[Description("Машиноместа")]
-        [EnumCode("5")]
+        [EnumCode("1")]
         CarParking = 748,
 		/// <summary>
 		/// МЖС (749)
 		/// </summary>
 		[Description("МЖС")]
-        [EnumCode("6")]
+        [EnumCode("102")]
         MZHS = 749,
 		/// <summary>
 		/// Офисы (750)
 		/// </summary>
 		[Description("Офисы")]
-        [EnumCode("7")]
+        [EnumCode("5")]
         Office = 750,
 		/// <summary>
 		/// Производство и склады (751)
 		/// </summary>
 		[Description("Производство и склады")]
-        [EnumCode("8")]
+        [EnumCode("4")]
         Factory = 751,
 		/// <summary>
 		/// Садоводческое, огородническое и дачное использование (752)
 		/// </summary>
 		[Description("Садоводческое, огородническое и дачное использование")]
-        [EnumCode("9")]
+        [EnumCode("106")]
         Garden = 752,
 		/// <summary>
 		/// Санатории (753)
 		/// </summary>
 		[Description("Санатории")]
-        [EnumCode("10")]
+        [EnumCode("105")]
         Sanatorium = 753,
 		/// <summary>
 		/// Торговля (754)
 		/// </summary>
 		[Description("Торговля")]
-        [EnumCode("11")]
+        [EnumCode("6")]
         Trading = 754,
 		/// <summary>
 		/// Общепит (795)
 		/// </summary>
 		[Description("Общепит")]
-        [EnumCode("12")]
+        [EnumCode("7")]
         PublicCatering = 795,
 		/// <summary>
 		/// Земельные участки (796)
 		/// </summary>
 		[Description("Земельные участки")]
-        [EnumCode("13")]
+        [EnumCode("103")]
         Land = 796,
 		/// <summary>
 		/// Коммерческая земля (797)
 		/// </summary>
 		[Description("Коммерческая земля")]
-        [EnumCode("14")]
+        [EnumCode("8")]
         CommertialLand = 797,
 		/// <summary>
 		/// Без сегмента (798)
 		/// </summary>
 		[Description("Без сегмента")]
-        [EnumCode("15")]
+        [EnumCode("9")]
         NoSegment = 798,
     }
 }
@@ -912,7 +912,7 @@ namespace ObjectModel.Directory
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>
-    /// Тип объекта судебного решения (300)
+    /// Тип объекта (300)
     ///</summary>
     [ReferenceInfo(ReferenceId = 300)]
     public enum SudObjectType : long
@@ -982,6 +982,58 @@ namespace ObjectModel.Directory.Sud
 		[Description("Актуальный")]
         [EnumCode("1")]
         Processed = 1,
+    }
+}
+
+namespace ObjectModel.Directory.Sud
+{
+    /// <summary>
+    /// Тип заявителя (302)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 302)]
+    public enum ApplicantType : long
+    {
+		/// <summary>
+		/// Физическое лицо (1)
+		/// </summary>
+		[Description("Физическое лицо")]
+        [EnumCode("1")]
+        Individual = 1,
+		/// <summary>
+		/// Юридическое лицо (2)
+		/// </summary>
+		[Description("Юридическое лицо")]
+        [EnumCode("2")]
+        Entity = 2,
+    }
+}
+
+namespace ObjectModel.Directory.Sud
+{
+    /// <summary>
+    /// Форма собственности (303)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 303)]
+    public enum TypeOfOwnership : long
+    {
+		/// <summary>
+		/// Федеральное имущество (1)
+		/// </summary>
+		[Description("Федеральное имущество")]
+        [EnumCode("1")]
+        FederalProperty = 1,
+		/// <summary>
+		/// Город Москва (2)
+		/// </summary>
+		[Description("Город Москва")]
+        [EnumCode("2")]
+        MoscowCity = 2,
+		/// <summary>
+		/// Иное (3)
+		/// </summary>
+		[Description("Иное")]
+        [EnumCode("3")]
+        Other = 3,
     }
 }
 

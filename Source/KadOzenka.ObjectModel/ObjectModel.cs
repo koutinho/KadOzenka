@@ -4526,6 +4526,26 @@ namespace ObjectModel.KO
         }
 
 
+        private long? _responsedocid;
+        /// <summary>
+        /// 20300600 Идентификатор исходящего документа (response_document_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20300600)]
+        public long? ResponseDocId
+        {
+            get
+            {
+                CheckPropertyInited("ResponseDocId");
+                return _responsedocid;
+            }
+            set
+            {
+                _responsedocid = value;
+                NotifyPropertyChanged("ResponseDocId");
+            }
+        }
+
+
         private string _status;
         /// <summary>
         /// 20300700 Статус (STATUS)
@@ -12151,6 +12171,116 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private string _applicanttype;
+        /// <summary>
+        /// 31501300 Тип заявителя ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501300)]
+        public string ApplicantType
+        {
+            get
+            {
+                CheckPropertyInited("ApplicantType");
+                return _applicanttype;
+            }
+            set
+            {
+                _applicanttype = value;
+                NotifyPropertyChanged("ApplicantType");
+            }
+        }
+
+
+        private ObjectModel.Directory.Sud.ApplicantType _applicanttype_Code;
+        /// <summary>
+        /// 31501300 Тип заявителя (справочный код) (APPLICANTTYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501300)]
+        public ObjectModel.Directory.Sud.ApplicantType ApplicantType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ApplicantType_Code");
+                return this._applicanttype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_applicanttype))
+                    {
+                         _applicanttype = descr;
+                    }
+                }
+                else
+                {
+                     _applicanttype = descr;
+                }
+
+                this._applicanttype_Code = value;
+                NotifyPropertyChanged("ApplicantType");
+                NotifyPropertyChanged("ApplicantType_Code");
+            }
+        }
+
+
+        private string _typeofownership;
+        /// <summary>
+        /// 31501400 Форма собственности ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501400)]
+        public string TypeOfOwnership
+        {
+            get
+            {
+                CheckPropertyInited("TypeOfOwnership");
+                return _typeofownership;
+            }
+            set
+            {
+                _typeofownership = value;
+                NotifyPropertyChanged("TypeOfOwnership");
+            }
+        }
+
+
+        private ObjectModel.Directory.Sud.TypeOfOwnership _typeofownership_Code;
+        /// <summary>
+        /// 31501400 Форма собственности (справочный код) (TYPEOFOWNERSHIP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501400)]
+        public ObjectModel.Directory.Sud.TypeOfOwnership TypeOfOwnership_Code
+        {
+            get
+            {
+                CheckPropertyInited("TypeOfOwnership_Code");
+                return this._typeofownership_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_typeofownership))
+                    {
+                         _typeofownership = descr;
+                    }
+                }
+                else
+                {
+                     _typeofownership = descr;
+                }
+
+                this._typeofownership_Code = value;
+                NotifyPropertyChanged("TypeOfOwnership");
+                NotifyPropertyChanged("TypeOfOwnership_Code");
+            }
+        }
+
     }
 }
 
@@ -16646,6 +16776,126 @@ namespace ObjectModel.Declarations
                 this._type_Code = value;
                 NotifyPropertyChanged("Type");
                 NotifyPropertyChanged("Type_Code");
+            }
+        }
+
+
+        private string _zip;
+        /// <summary>
+        /// 50501100 Индекс (ZIP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501100)]
+        public string Zip
+        {
+            get
+            {
+                CheckPropertyInited("Zip");
+                return _zip;
+            }
+            set
+            {
+                _zip = value;
+                NotifyPropertyChanged("Zip");
+            }
+        }
+
+
+        private string _city;
+        /// <summary>
+        /// 50501200 Город (CITY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501200)]
+        public string City
+        {
+            get
+            {
+                CheckPropertyInited("City");
+                return _city;
+            }
+            set
+            {
+                _city = value;
+                NotifyPropertyChanged("City");
+            }
+        }
+
+
+        private string _street;
+        /// <summary>
+        /// 50501300 Улица (STREET)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501300)]
+        public string Street
+        {
+            get
+            {
+                CheckPropertyInited("Street");
+                return _street;
+            }
+            set
+            {
+                _street = value;
+                NotifyPropertyChanged("Street");
+            }
+        }
+
+
+        private string _house;
+        /// <summary>
+        /// 50501400 Дом (HOUSE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501400)]
+        public string House
+        {
+            get
+            {
+                CheckPropertyInited("House");
+                return _house;
+            }
+            set
+            {
+                _house = value;
+                NotifyPropertyChanged("House");
+            }
+        }
+
+
+        private string _building;
+        /// <summary>
+        /// 50501500 Строение (BUILDING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501500)]
+        public string Building
+        {
+            get
+            {
+                CheckPropertyInited("Building");
+                return _building;
+            }
+            set
+            {
+                _building = value;
+                NotifyPropertyChanged("Building");
+            }
+        }
+
+
+        private string _flat;
+        /// <summary>
+        /// 50501600 Квартира (FLAT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50501600)]
+        public string Flat
+        {
+            get
+            {
+                CheckPropertyInited("Flat");
+                return _flat;
+            }
+            set
+            {
+                _flat = value;
+                NotifyPropertyChanged("Flat");
             }
         }
 
