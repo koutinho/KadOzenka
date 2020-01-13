@@ -102,14 +102,14 @@ namespace KadOzenka.Dal.FastReports
 				userIspName += $" {userIsp.Surname.Trim()[0]}.{userIsp.Patronymic.Trim()[0]}.";
 			}
 
-			var reason = GetQueryParam<string>("RefuseInfoReason", query);
+			var reason = PrepareText(notification.RejectionReason);
 
 			var mainData =
-				"	В соответствии с Приказом Минэкономразвития от 04.06.2019 № 318 «Об утверждении Порядка рассмотрения декларации о характеристиках объекта недвижимости, " +
-				"в том числе ее формы» (далее – Приказ) ГБУ «Центр имущественных платежей и жилищного страхования» провело проверку декларации" +
-				"о характеристиках объекта недвижимости на " + GetObjectTypeString(declaration.TypeObj_Code) +
-				" с кадастровым номером " + declaration.CadastralNumObj +
-				" и сообщает." + System.Environment.NewLine + reason;
+				"	В&nbsp;соответствии с&nbsp;Приказом Минэкономразвития от&nbsp;04.06.2019 № 318 «Об&nbsp;утверждении Порядка рассмотрения декларации о&nbsp;характеристиках объекта недвижимости, " +
+				"в&nbsp;том числе ее&nbsp;формы» (далее – Приказ) ГБУ «Центр имущественных платежей и&nbsp;жилищного страхования» провело проверку декларации" +
+				"о&nbsp;характеристиках объекта недвижимости на&nbsp;" + GetObjectTypeString(declaration.TypeObj_Code) +
+				" с&nbsp;кадастровым номером " + declaration.CadastralNumObj +
+				" и&nbsp;сообщает." + System.Environment.NewLine + reason;
 
 			dataSet.Tables[0].Rows.Add(
 				ownerName,

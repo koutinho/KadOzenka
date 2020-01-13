@@ -63,6 +63,12 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = "Дата почтового уведомления")]
 		public DateTime? MailDate { get; set; }
 
+		/// <summary>
+		/// Причина отказа (REJECTION_REASON)
+		/// </summary>
+		[Display(Name = "Причина отказа")]
+		public string RejectionReason { get; set; }
+
 		public static NotificationModel FromEntity(OMUved entity, OMBook book)
 		{
 			if (entity == null)
@@ -84,7 +90,8 @@ namespace KadOzenka.Web.Models.Declarations
 				Date = entity.Date,
 				Type = entity.Type_Code,
 				MailNumber = entity.MailNum,
-				MailDate = entity.MailDate
+				MailDate = entity.MailDate,
+				RejectionReason = entity.RejectionReason
 			};
 		}
 
@@ -97,6 +104,7 @@ namespace KadOzenka.Web.Models.Declarations
 			entity.Date = notificationViewModel.Date;
 			entity.MailNum = notificationViewModel.MailNumber;
 			entity.MailDate = notificationViewModel.MailDate;
+			entity.RejectionReason = notificationViewModel.RejectionReason;
 		}
 	}
 }

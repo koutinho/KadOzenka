@@ -16856,6 +16856,26 @@ namespace ObjectModel.Declarations
             }
         }
 
+
+        private string _rejectionreason;
+        /// <summary>
+        /// 50600900 Причина отказа (REJECTION_REASON)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50600900)]
+        public string RejectionReason
+        {
+            get
+            {
+                CheckPropertyInited("RejectionReason");
+                return _rejectionreason;
+            }
+            set
+            {
+                _rejectionreason = value;
+                NotifyPropertyChanged("RejectionReason");
+            }
+        }
+
     }
 }
 

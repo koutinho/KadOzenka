@@ -103,16 +103,10 @@ namespace KadOzenka.Dal.FastReports
 				userIspName += $" {userIsp.Surname.Trim()[0]}.{userIsp.Patronymic.Trim()[0]}.";
 			}
 
-			//var m = new MorphAnalyzer();
-			//var results = m.Parse(new string[]{"в", "от", "с"}).ToArray();
-			//Console.WriteLine("Лучший тег");
-			//foreach (var morphInfo in results)
-			//	Console.WriteLine($"{morphInfo.Text} - {morphInfo.BestTag}");
-
 			var mainData =
-					  "	В соответствии с п. 13 приказа Минэкономразвития от 04.06.2019 № 318 «Об утверждении Порядка рассмотрения декларации о характеристиках объекта недвижимости, " +
-					  "в том числе ее формы» ГБУ «Центр имущественных платежей и жилищного страхования» направляет уведомление " +
-				"об учете информации, содержащейся в декларации о характеристиках объекта недвижимости на " + GetObjectTypeString(declaration.TypeObj_Code) + " с кадастровым номером " 
+					  "В&nbsp;соответствии с&nbsp;пунктом 13 приказа Минэкономразвития от 04.06.2019 №&nbsp;318 «Об&nbsp;утверждении Порядка рассмотрения декларации о&nbsp;характеристиках объекта недвижимости, " +
+					  "в&nbsp;том числе ее&nbsp;формы» ГБУ «Центр имущественных платежей и&nbsp;жилищного страхования» направляет уведомление " +
+				"об&nbsp;учете информации, содержащейся в&nbsp;декларации о&nbsp;характеристиках объекта недвижимости на&nbsp;" + GetObjectTypeString(declaration.TypeObj_Code) + " с&nbsp;кадастровым номером "
 					  + declaration.CadastralNumObj + ".";
 
 			dataSet.Tables[0].Rows.Add(
@@ -121,8 +115,6 @@ namespace KadOzenka.Dal.FastReports
 				declaration.DateIn?.ToString("dd.MM.yyyy"),
 				$"{declaration.NumIn}/{book?.Prefics}",
 				userIspName,
-				//string.Join(" ", GetTextLines(mainData).Select(x => $"<span style=\"white-space: nowrap;font-family:'Times New Roman'; font-size: 13pt;text-align: justify\">{x}</span>").ToList()));
-				//string.Join("", GetTextLines(mainData).Select(x => $"<nowrap>{x}</nowrap>").ToList()));
 				mainData);
 
 			return dataSet;

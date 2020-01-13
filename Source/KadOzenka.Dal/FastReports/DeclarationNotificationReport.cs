@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Text;
 using Core.Shared.Extensions;
+using DeepMorphy;
 using ObjectModel.Directory.Declarations;
 using Platform.Reports;
 
@@ -8,7 +9,12 @@ namespace KadOzenka.Dal.FastReports
 {
 	public abstract class DeclarationNotificationReport : FastReportBase
 	{
-		const int MaxLineWidth = 80;
+		protected MorphAnalyzer MorphAnalyzer {get; set; }
+
+		protected DeclarationNotificationReport()
+		{
+			MorphAnalyzer = new MorphAnalyzer();
+		}
 
 		public string GetObjectTypeString(ObjectType objectType)
 		{
@@ -35,75 +41,32 @@ namespace KadOzenka.Dal.FastReports
 			return result;
 		}
 
-		public List<string> GetTextLines(string text)
+		public string PrepareText(string text)
 		{
-			//List<string> lines = new List<string>();
-			//StringBuilder line = new StringBuilder();
-			//foreach (Match word in Regex.Matches(text, @"\S+", RegexOptions.ECMAScript))
-			//{
-			//	if (word.Value.Length + line.Length + 1 > MAX_WIDTH)
-			//	{
-			//		lines.Add(line.ToString());
-			//		line.Length = 0;
-			//	}
-			//	line.Append(String.Format("{0} ", word.Value));
+			if (string.IsNullOrWhiteSpace(text))
+			{
+				return string.Empty;
+			}
 
-			//	if (line.Length > 0)
-			//		line.Append(word.Value);
-			//}
+			var result = new StringBuilder();
+			var words = text.Split(' ').ToList();
+			var results = MorphAnalyzer.Parse(words).ToArray();
+			for (var i = 0; i < words.Count() - 1; i++)
+			{
+				result.Append(words[i]);
+				if (results[i].BestTag["чр"] == "предл" || results[i].BestTag["чр"] == "союз" ||
+				    results[i].BestTag["чр"] == "част" || results[i].BestTag["чр"] == "мест")
+				{
+					result.Append("&nbsp;");
+				}
+				else
+				{
+					result.Append(" ");
+				}
+			}
+			result.Append(words.Last());
 
-			var words = text.Split(' ').Concat(new[] { "" });
-			return
-				words
-					.Skip(1)
-					.Aggregate(
-						words.Take(1).ToList(),
-						(a, w) =>
-						{
-							var last = a.Last();
-							while (last.Length > MaxLineWidth)
-							{
-								a[a.Count() - 1] = last.Substring(0, MaxLineWidth);
-								last = last.Substring(MaxLineWidth);
-								a.Add(last);
-							}
-							var test = last + " " + w;
-							if (test.Length > MaxLineWidth)
-							{
-								a.Add(w);
-							}
-							else
-							{
-								a[a.Count() - 1] = test;
-							}
-							return a;
-						});
+			return result.ToString();
 		}
-
-		//public string WrapText(SpriteFont spriteFont, string text, float maxLineWidth)
-		//{
-		//	string[] words = text.Split(' ');
-		//	StringBuilder sb = new StringBuilder();
-		//	float lineWidth = 0f;
-		//	float spaceWidth = spriteFont.MeasureString(" ").X;
-
-		//	foreach (string word in words)
-		//	{
-		//		Vector2 size = spriteFont.MeasureString(word);
-
-		//		if (lineWidth + size.X < maxLineWidth)
-		//		{
-		//			sb.Append(word + " ");
-		//			lineWidth += size.X + spaceWidth;
-		//		}
-		//		else
-		//		{
-		//			sb.Append("\n" + word + " ");
-		//			lineWidth = size.X + spaceWidth;
-		//		}
-		//	}
-
-		//	return sb.ToString();
-		//}
 	}
 }

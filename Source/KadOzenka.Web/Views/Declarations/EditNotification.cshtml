@@ -58,6 +58,14 @@
         </div>
     </div>
     <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(m => m.RejectionReason)
+        </div>
+        <div class="col-sm-8">
+            @Html.TextAreaFor(m => m.RejectionReason, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+        </div>
+    </div>
+    <div class="form-group">
         <div class="col-sm-12">
             <button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
         </div>
@@ -68,6 +76,9 @@
 <script type="text/javascript">
     $(document).ready(function () {
         setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
+        var value = $('#Type').data('kendoDropDownList').value();
+        changeRejectionReasonVisability(value);
+        $('#Type').data('kendoDropDownList').bind("change", onTypeChanged);
 
         $('#save').on('click',
             function () {
@@ -150,5 +161,21 @@
                 $(displayField).val("");
             }
         });
+    }
+
+    function onTypeChanged(e) {
+        var value = this.value();
+        changeRejectionReasonVisability(value);
+    }
+
+    function changeRejectionReasonVisability(value) {
+        if (value == '@UvedType.Item4.GetEnumCode()' || value == '@UvedType.Item5.GetEnumCode()') {
+            $('#RejectionReason').show();
+            $('label[for="RejectionReason"]').show();
+        } else {
+            $('#RejectionReason').val('');
+            $('#RejectionReason').hide();
+            $('label[for="RejectionReason"]').hide();
+        }
     }
 </script>
