@@ -1330,11 +1330,5 @@ namespace KadOzenka.Web.Controllers
         }
 		#endregion
 
-
-		public ActionResult GetAllAttachmentsReport(long objectId)
-		{
-			return RedirectToAction("AttachmentView", "Sud", new { objectId, registerId = OMOtchet.GetRegisterId() });
-		}
-
 	}
 }
