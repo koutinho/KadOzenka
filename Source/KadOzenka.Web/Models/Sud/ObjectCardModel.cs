@@ -80,6 +80,9 @@ namespace KadOzenka.Web.Models.Sud
 		[Range(1, int.MaxValue, ErrorMessage = "Форма собственности обязательное поле")]
 		public TypeOfOwnership? TypeOfOwnership { get; set; }
 
+		[Display(Name = "Исключение")]
+		public bool? IsException { get; set; }
+
 		public bool IsEditPermission { get; set; }
 		public bool IsApprovePermission { get; set; }
 
@@ -115,7 +118,8 @@ namespace KadOzenka.Web.Models.Sud
 				Drs = omDrs?.DrsDrs,
 				DrsOwner = omDrs?.DrsOwner,
 				ApplicantType = omObject.ApplicantType_Code,
-				TypeOfOwnership = omObject.TypeOfOwnership_Code
+				TypeOfOwnership = omObject.TypeOfOwnership_Code,
+				IsException = Convert.ToBoolean(omObject.Exception)
 			};
 			return model;
 		}
@@ -143,6 +147,7 @@ namespace KadOzenka.Web.Models.Sud
 			omObject.Workstat = model.AdditionalAnalysisRequired.GetValueOrDefault(false) ? ProcessingStatus.Processed.GetEnumDescription() : ProcessingStatus.InWork.GetEnumDescription();
 			omObject.ApplicantType_Code = model.ApplicantType.GetValueOrDefault();
 			omObject.TypeOfOwnership_Code = model.TypeOfOwnership.GetValueOrDefault();
+			omObject.Exception = Convert.ToInt16(model.IsException);
 
 			omDrs.DrsGroup = model.DrsGroup;
 			omDrs.DrsSq1 = model.Basement;

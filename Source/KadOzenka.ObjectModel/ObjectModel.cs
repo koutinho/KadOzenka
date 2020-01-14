@@ -12281,6 +12281,46 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private long? _exception;
+        /// <summary>
+        /// 31501500 Исключение (EXCEPTION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501500)]
+        public long? Exception
+        {
+            get
+            {
+                CheckPropertyInited("Exception");
+                return _exception;
+            }
+            set
+            {
+                _exception = value;
+                NotifyPropertyChanged("Exception");
+            }
+        }
+
+
+        private long? _additionalanalysis;
+        /// <summary>
+        /// 31501600 Дополнительный анализ (ADDITIONAL_ANALYSIS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501600)]
+        public long? AdditionalAnalysis
+        {
+            get
+            {
+                CheckPropertyInited("AdditionalAnalysis");
+                return _additionalanalysis;
+            }
+            set
+            {
+                _additionalanalysis = value;
+                NotifyPropertyChanged("AdditionalAnalysis");
+            }
+        }
+
     }
 }
 
