@@ -16705,26 +16705,6 @@ namespace ObjectModel.Declarations
         }
 
 
-        private string _address;
-        /// <summary>
-        /// 50500600 Почтовый адрес  (ADDRESS)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 50500600)]
-        public string Address
-        {
-            get
-            {
-                CheckPropertyInited("Address");
-                return _address;
-            }
-            set
-            {
-                _address = value;
-                NotifyPropertyChanged("Address");
-            }
-        }
-
-
         private string _mail;
         /// <summary>
         /// 50500700 Адрес электронной почты (MAIL)
