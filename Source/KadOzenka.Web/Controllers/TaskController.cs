@@ -606,17 +606,18 @@ namespace KadOzenka.Web.Controllers
 
 		#region Единица оценки
 
-		public ActionResult Unit(long unitId)
+		public ActionResult Unit(long modelId)
 		{
 			UnitDto dto = new UnitDto();			
 
-			OMUnit unit = OMUnit.Where(x => x.Id == unitId)
+			OMUnit unit = OMUnit.Where(x => x.ModelId == modelId)
+				//OMUnit.Where(x => x.Id == unitId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
 			if (unit != null)
 			{
-				dto.Id = unitId;
+				dto.Id = unit.Id;
 
 				dto.CadastralNumber = unit.CadastralNumber;
 				dto.CadastralBlock = unit.CadastralBlock;
