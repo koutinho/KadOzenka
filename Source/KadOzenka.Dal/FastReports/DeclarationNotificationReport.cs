@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Core.Shared.Extensions;
 using DeepMorphy;
+using DocumentFormat.OpenXml.Office2010.ExcelAc;
+using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using Platform.Reports;
 
@@ -67,6 +70,26 @@ namespace KadOzenka.Dal.FastReports
 			result.Append(words.Last());
 
 			return result.ToString();
+		}
+
+		public string FormAddress(OMSubject subject)
+		{
+			if (subject == null)
+			{
+				return string.Empty;
+			}
+
+			var addressParts = new List<string>
+			{
+				subject.Zip,
+				subject.City.Replace(" ", "&nbsp;"),
+				subject.Street.Replace(" ", "&nbsp;"),
+				subject.House.Replace(" ", "&nbsp;"),
+				subject.Building.Replace(" ", "&nbsp;"),
+				subject.Flat.Replace(" ", "&nbsp;")
+			};
+
+			return string.Join(", ", addressParts.Where(x => !string.IsNullOrWhiteSpace(x)));
 		}
 	}
 }

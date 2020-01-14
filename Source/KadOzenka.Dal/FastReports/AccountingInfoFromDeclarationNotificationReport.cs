@@ -111,7 +111,7 @@ namespace KadOzenka.Dal.FastReports
 
 			dataSet.Tables[0].Rows.Add(
 				ownerName,
-				owner.Address,
+				FormAddress(owner),
 				declaration.DateIn?.ToString("dd.MM.yyyy"),
 				$"{declaration.NumIn}/{book?.Prefics}",
 				userIspName,

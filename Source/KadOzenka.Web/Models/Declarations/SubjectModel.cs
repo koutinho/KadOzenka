@@ -61,6 +61,42 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = "Телефон")]
 		public string Phone { get; set; }
 
+		/// <summary>
+		/// Индекс (ZIP)
+		/// </summary>
+		[Display(Name = "Индекс")]
+		public string Zip { get; set; }
+
+		/// <summary>
+		/// Город (CITY)
+		/// </summary>
+		[Display(Name = "Город")]
+		public string City { get; set; }
+
+		/// <summary>
+		/// Улица (STREET)
+		/// </summary>
+		[Display(Name = "Улица")]
+		public string Street { get; set; }
+
+		/// <summary>
+		/// Дом (HOUSE)
+		/// </summary>
+		[Display(Name = "Дом")]
+		public string House { get; set; }
+
+		/// <summary>
+		/// Строение (BUILDING)
+		/// </summary>
+		[Display(Name = "Строение")]
+		public string Building { get; set; }
+
+		/// <summary>
+		/// Квартира (FLAT)
+		/// </summary>
+		[Display(Name = "Квартира")]
+		public string Flat { get; set; }
+
 		public static SubjectModel FromEntity(OMSubject entity)
 		{
 			if (entity == null)
@@ -81,7 +117,13 @@ namespace KadOzenka.Web.Models.Declarations
 				MiddleName = entity.O_Name,
 				Address = entity.Address,
 				Mail = entity.Mail,
-				Phone = entity.Telefon
+				Phone = entity.Telefon,
+				Zip = entity.Zip,
+				City = entity.City,
+				Street = entity.Street,
+				House = entity.House,
+				Building = entity.Building,
+				Flat = entity.Flat
 			};
 		}
 
@@ -94,6 +136,12 @@ namespace KadOzenka.Web.Models.Declarations
 			entity.Address = subjectViewModel.Address;
 			entity.Mail = subjectViewModel.Mail;
 			entity.Telefon = subjectViewModel.Phone;
+			entity.Zip = subjectViewModel.Zip;
+			entity.City = subjectViewModel.City;
+			entity.Street = subjectViewModel.Street;
+			entity.House = subjectViewModel.House;
+			entity.Building = subjectViewModel.Building;
+			entity.Flat = subjectViewModel.Flat;
 
 			if (subjectViewModel.Type != null)
 			{
