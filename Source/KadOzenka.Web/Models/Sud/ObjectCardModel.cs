@@ -101,7 +101,7 @@ namespace KadOzenka.Web.Models.Sud
 				NameCenter = omObject.NameCenter,
 				StatDgi = omObject.StatDgi,
 				Owner = omObject.Owner,
-				AdditionalAnalysisRequired = Convert.ToBoolean(omObject?.Workstat_Code),
+				AdditionalAnalysisRequired = Convert.ToBoolean(omObject.AdditionalAnalysis),
 				DrsGroup = omDrs?.DrsGroup,
 				Basement = omDrs?.DrsSq1,
 				Socle = omDrs?.DrsSq2,
@@ -144,7 +144,7 @@ namespace KadOzenka.Web.Models.Sud
 			omObject.NameCenter = model.NameCenter;
 			omObject.StatDgi = model.StatDgi;
 			omObject.Owner = model.Owner;
-			omObject.Workstat = model.AdditionalAnalysisRequired.GetValueOrDefault(false) ? ProcessingStatus.Processed.GetEnumDescription() : ProcessingStatus.InWork.GetEnumDescription();
+			omObject.AdditionalAnalysis = Convert.ToInt16(model.AdditionalAnalysisRequired);
 			omObject.ApplicantType_Code = model.ApplicantType.GetValueOrDefault();
 			omObject.TypeOfOwnership_Code = model.TypeOfOwnership.GetValueOrDefault();
 			omObject.Exception = Convert.ToInt16(model.IsException);

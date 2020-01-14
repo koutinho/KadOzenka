@@ -13,6 +13,7 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.LongProcess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Shared;
@@ -81,6 +82,9 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult EditObjectCard(ObjectCardModel data)
 		{
+			AdditionalAnalysisChecker.TestQuery();
+			return NoContent();
+
 			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT, true, false, true);
 			if (data == null)
 			{
@@ -583,7 +587,6 @@ namespace KadOzenka.Web.Controllers
 		{
 			List<OMDict> dictList = OMDict
 				.Where(x => x.Type == type && x.Name != string.Empty)
-				.OrderBy(x => x.Name)
 				.SelectAll()
 				.Execute().ToList();
 
