@@ -24,6 +24,12 @@
           </Parameters>
       </Button>
 
+    <Button Caption="Единица оценки" NavigateURL="~/Task/Unit" Icon="icon-contract">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectID]" />
+      </Parameters>
+    </Button>
+
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
   </Buttons>
   

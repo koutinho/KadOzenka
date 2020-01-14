@@ -606,12 +606,11 @@ namespace KadOzenka.Web.Controllers
 
 		#region Единица оценки
 
-		public ActionResult Unit(long modelId)
+		public ActionResult Unit(long objectId)
 		{
 			UnitDto dto = new UnitDto();			
 
-			OMUnit unit = OMUnit.Where(x => x.ModelId == modelId)
-				//OMUnit.Where(x => x.Id == unitId)
+			OMUnit unit = OMUnit.Where(x => x.ObjectId == objectId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
@@ -682,27 +681,34 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetExplication(long id)
 		{
+			List<UnitExplicationDto> result = new List<UnitExplicationDto>();
+
 			List<OMExplication> explications = OMExplication.Where(x => x.ObjectId == id)
 				.SelectAll()
 				.Execute();
 
-			List<long> groupIds = explications.Select(x => x.GroupId).ToList();
-
-			List<OMGroup> groups = OMGroup.Where(x => groupIds.Contains(x.Id))
-				.Select(x => x.GroupName)
-				.Execute();
-
-			List<UnitExplicationDto> result = explications.Select(x => new UnitExplicationDto
+			if (explications.Any())
 			{
-				Id = x.Id,
-				GroupId = x.GroupId,		
-				Group = groups.Find(y => y.Id == x.GroupId).GroupName,
-				Square = x.Square,
-				Upks = x.Upks,
-				Kc = x.Kc,
-				Analog = x.NameAnalog.ToString()
-			}).ToList();
-					   
+				List<long> groupIds = explications.Select(x => x.GroupId).ToList();
+
+				List<OMGroup> groups = OMGroup.Where(x => groupIds.Contains(x.Id))
+					.Select(x => x.GroupName)
+					.Execute();
+
+				if (groups.Any())
+				{
+					result = explications.Select(x => new UnitExplicationDto
+					{
+						Id = x.Id,
+						GroupId = x.GroupId,
+						Group = groups.Find(y => y.Id == x.GroupId).GroupName,
+						Square = x.Square,
+						Upks = x.Upks,
+						Kc = x.Kc,
+						Analog = x.NameAnalog.ToString()
+					}).ToList();
+				}
+			}
 			return Json(result);
 		}
 
