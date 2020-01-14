@@ -505,7 +505,7 @@ namespace KadOzenka.Web.Controllers
 			return result;
 		}
 
-		public JsonResult GetModelFactorName(long modelId)
+		public JsonResult GetModelFactorName(long? modelId)
 		{			
 			OMModel model = OMModel.Where(x => x.Id == modelId)
 				.Select(x => x.GroupId).ExecuteFirstOrDefault();
@@ -600,6 +600,165 @@ namespace KadOzenka.Web.Controllers
 		{
 			markCatalog.Destroy();
 			return Json(markCatalog);
+		}
+
+		#endregion
+
+		#region Единица оценки
+
+		public ActionResult Unit(long unitId)
+		{
+			UnitDto dto = new UnitDto();			
+
+			OMUnit unit = OMUnit.Where(x => x.Id == unitId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (unit != null)
+			{
+				dto.Id = unitId;
+
+				dto.CadastralNumber = unit.CadastralNumber;
+				dto.CadastralBlock = unit.CadastralBlock;
+				dto.PropertyType = unit.PropertyType;
+				dto.Square = unit.Square;
+				dto.Status = unit.Status;
+				dto.UnitCreationDate = unit.CreationDate;
+
+				dto.UpksPre = unit.UpksPre;
+				dto.CadastralCostPre = unit.CadastralCostPre;
+				dto.Upks = unit.Upks;
+				dto.CadastralCost = unit.CadastralCost;
+				dto.StatusRepeatCalc = unit.StatusRepeatCalc;
+				dto.StatusResultCalc = unit.StatusResultCalc;
+				dto.ParentCalcType = unit.ParentCalcType;
+				dto.ParentCalcNumber = unit.ParentCalcNumber;
+
+				OMTask task = OMTask.Where(x => x.Id == unit.TaskId)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+
+				if (task != null)
+				{
+					dto.TourId = task.TourId;
+					dto.NoteType = task.NoteType;
+					dto.DocumentId = task.DocumentId;
+					dto.TaskCreationDate = task.CreationDate;
+					
+					dto.ResponseDocId = task.ResponseDocId;
+
+					OMTour tour = OMTour.Where(x => x.Id == dto.TourId)
+						.Select(x => x.Year)
+						.ExecuteFirstOrDefault();
+					dto.Tour = tour?.Year;
+				}
+
+				OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+
+				if (group != null)
+				{
+					dto.GroupName = group.GroupName;
+				}
+
+				OMCostRosreestr costRosreestr = OMCostRosreestr.Where(x => x.IdObject == unit.Id)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+
+				if (costRosreestr != null)
+				{
+					dto.Datevaluation = costRosreestr.Datevaluation;
+					dto.CostValue = costRosreestr.Costvalue;
+					dto.DocName = costRosreestr.Docname;
+					dto.DocNumber = costRosreestr.Docnumber;
+					dto.DocDate = costRosreestr.Docdate;
+				}
+			}
+
+			return View(dto);
+		}
+
+		public JsonResult GetExplication(long id)
+		{
+			List<OMExplication> explications = OMExplication.Where(x => x.ObjectId == id)
+				.SelectAll()
+				.Execute();
+
+			List<long> groupIds = explications.Select(x => x.GroupId).ToList();
+
+			List<OMGroup> groups = OMGroup.Where(x => groupIds.Contains(x.Id))
+				.Select(x => x.GroupName)
+				.Execute();
+
+			List<UnitExplicationDto> result = explications.Select(x => new UnitExplicationDto
+			{
+				Id = x.Id,
+				GroupId = x.GroupId,		
+				Group = groups.Find(y => y.Id == x.GroupId).GroupName,
+				Square = x.Square,
+				Upks = x.Upks,
+				Kc = x.Kc,
+				Analog = x.NameAnalog.ToString()
+			}).ToList();
+					   
+			return Json(result);
+		}
+
+		public JsonResult GetUnitFactors(long id)
+		{
+			OMUnit unit = OMUnit.Where(x => x.Id == id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (unit != null)
+			{
+				OMModel model = OMModel.Where(x => x.Id == unit.ModelId)
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+
+				if (model != null)
+				{
+					if (model.ModelFactor.Count == 0)
+						model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+
+					List<UnitFactorsDto> factors = model.ModelFactor.Select(x => new UnitFactorsDto
+					{
+						Id = x.Id,
+						FactorId = x.FactorId,
+						Weight = x.Weight
+					}).ToList();
+
+					List<long?> factorIds = factors.Select(x => x.FactorId).ToList();
+					if (factorIds.Any())
+					{
+						var sqlResult = GetModelFactorNameSql(factorIds);
+						foreach (var factorDto in factors)
+						{
+							factorDto.Factor = sqlResult[factorDto.FactorId];
+						}						
+					}
+
+					return Json(factors);
+				}
+			}
+
+			return Json(new List<UnitFactorsDto>());
+		}
+
+		public JsonResult GetFactorsList(long id)
+		{
+			OMUnit unit = OMUnit.Where(x => x.Id == id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (unit != null)
+			{
+				var result = GetModelFactorName(unit.ModelId);
+				return result;
+			}
+
+			return Json(new List<SelectListItem>());
 		}
 
 		#endregion
