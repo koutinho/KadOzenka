@@ -44,12 +44,6 @@ namespace KadOzenka.Web.Models.Declarations
 		public string MiddleName { get; set; }
 
 		/// <summary>
-		/// Почтовый адрес
-		/// </summary>
-		[Display(Name = "Почтовый адрес")]
-		public string Address { get; set; }
-
-		/// <summary>
 		/// Адрес электронной почты
 		/// </summary>
 		[Display(Name = "Адрес электронной почты")]
@@ -115,7 +109,6 @@ namespace KadOzenka.Web.Models.Declarations
 				Surname = entity.F_Name,
 				FirstName = entity.I_Name,
 				MiddleName = entity.O_Name,
-				Address = entity.Address,
 				Mail = entity.Mail,
 				Phone = entity.Telefon,
 				Zip = entity.Zip,
@@ -133,7 +126,6 @@ namespace KadOzenka.Web.Models.Declarations
 			entity.F_Name = subjectViewModel.Surname;
 			entity.I_Name = subjectViewModel.FirstName;
 			entity.O_Name = subjectViewModel.MiddleName;
-			entity.Address = subjectViewModel.Address;
 			entity.Mail = subjectViewModel.Mail;
 			entity.Telefon = subjectViewModel.Phone;
 			entity.Zip = subjectViewModel.Zip;
