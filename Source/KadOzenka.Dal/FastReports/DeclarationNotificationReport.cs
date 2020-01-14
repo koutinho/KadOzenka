@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.FastReports
 				if (results[i].BestTag["чр"] == "предл" || results[i].BestTag["чр"] == "союз" ||
 				    results[i].BestTag["чр"] == "част" || results[i].BestTag["чр"] == "мест")
 				{
-					result.Append("&nbsp;");
+					result.Append("\u00A0");
 				}
 				else
 				{
@@ -82,11 +82,11 @@ namespace KadOzenka.Dal.FastReports
 			var addressParts = new List<string>
 			{
 				subject.Zip,
-				subject.City.Replace(" ", "&nbsp;"),
-				subject.Street.Replace(" ", "&nbsp;"),
-				subject.House.Replace(" ", "&nbsp;"),
-				subject.Building.Replace(" ", "&nbsp;"),
-				subject.Flat.Replace(" ", "&nbsp;")
+				subject.City.Replace(" ", "\u00A0"),
+				subject.Street.Replace(" ", "\u00A0"),
+				subject.House.Replace(" ", "\u00A0"),
+				subject.Building.Replace(" ", "\u00A0"),
+				subject.Flat.Replace(" ", "\u00A0")
 			};
 
 			return string.Join(", ", addressParts.Where(x => !string.IsNullOrWhiteSpace(x)));

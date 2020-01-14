@@ -105,11 +105,11 @@ namespace KadOzenka.Dal.FastReports
 			var reason = PrepareText(notification.RejectionReason);
 
 			var mainData =
-				"	В&nbsp;соответствии с&nbsp;Приказом Минэкономразвития от&nbsp;04.06.2019 № 318 «Об&nbsp;утверждении Порядка рассмотрения декларации о&nbsp;характеристиках объекта недвижимости, " +
-				"в&nbsp;том числе ее&nbsp;формы» (далее – Приказ) ГБУ «Центр имущественных платежей и&nbsp;жилищного страхования» провело проверку декларации" +
-				"о&nbsp;характеристиках объекта недвижимости на&nbsp;" + GetObjectTypeString(declaration.TypeObj_Code) +
-				" с&nbsp;кадастровым номером " + declaration.CadastralNumObj +
-				" и&nbsp;сообщает." + System.Environment.NewLine + reason;
+				"\u0009В\u00A0соответствии с\u00A0Приказом Минэкономразвития от\u00A004.06.2019 № 318 «Об\u00A0утверждении Порядка рассмотрения декларации о\u00A0характеристиках объекта недвижимости, " +
+				"в\u00A0том числе ее\u00A0формы» (далее – Приказ) ГБУ «Центр имущественных платежей и\u00A0жилищного страхования» провело проверку декларации" +
+				"о\u00A0характеристиках объекта недвижимости на\u00A0" + GetObjectTypeString(declaration.TypeObj_Code) +
+				" с\u00A0кадастровым номером " + declaration.CadastralNumObj +
+				" и\u00A0сообщает." + System.Environment.NewLine + "\u0009" + reason;
 
 			dataSet.Tables[0].Rows.Add(
 				ownerName,
