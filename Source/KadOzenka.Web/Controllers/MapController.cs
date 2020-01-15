@@ -21,10 +21,15 @@ namespace KadOzenka.Web.Controllers
     public class MapController : BaseController
     {
 	    private readonly CoreUiService _coreUiService;
+        private readonly RegistersService _registersService;
 
-	    public string MarketObjectsRegisterViewId => "MarketObjects";
+        public string MarketObjectsRegisterViewId => "MarketObjects";
 
-	    public MapController(CoreUiService coreUiService) => _coreUiService = coreUiService;
+        public MapController(CoreUiService coreUiService, RegistersService registersService)
+        {
+            _coreUiService = coreUiService;
+            _registersService = registersService;
+        }
 
 	    public ActionResult Index(long? objectId)
 	    {
@@ -99,19 +104,61 @@ namespace KadOzenka.Web.Controllers
 
         public JsonResult FindFilters()
         {
-            var marketSegmentList = OMReferenceItem.Where(x => x.ReferenceId == 114)
-                                                   .OrderBy(x => x.Value)
-                                                   .SelectAll()
-                                                   .Execute()
-                                                   .OrderBy(x => x.ItemId)
-                                                   .Select(x => new { Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name });
-            var dealTypeList = OMReferenceItem.Where(x => x.ReferenceId == 110)
-                                              .OrderBy(x => x.Value)
-                                              .SelectAll()
-                                              .Execute()
-                                              .OrderBy(x => x.ItemId)
-                                              .Select(x => new { Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name });
-            return Json(new { marketSegmentList = marketSegmentList, dealTypeList = dealTypeList});
+            var userFilter = _coreUiService.GetSearchFilter(MarketObjectsRegisterViewId);
+            var filters = JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition);
+            string typeControl="value", type="REFERENCE";
+            long[] dealTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+            long[] marketSegments = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+            var commertialMarketSegmentList =
+                OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId)
+                    .OrderBy(x => x.Value).SelectAll().Execute().Where(x => int.Parse(x.Code) < 100)
+                    .OrderBy(x => int.Parse(x.Code)).Select(x => new { 
+                        Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name,
+                        Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
+                    });
+            var propertyMarketSegmentList =
+                OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId)
+                    .OrderBy(x => x.Value).SelectAll().Execute().Where(x => int.Parse(x.Code) >= 100 && int.Parse(x.Code) < 200)
+                    .OrderBy(x => int.Parse(x.Code)).Select(x => new {
+                        Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name,
+                        Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
+                    });
+            var dealTypeList = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId)
+                    .OrderBy(x => x.Value).SelectAll().Execute()
+                    .OrderBy(x => x.ItemId).Select(x => new { 
+                        Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name,
+                        Selected = dealTypes == null ? false : dealTypes.Contains(x.ItemId) ? true : false 
+                    });
+            return Json(new { 
+                commertialMarketFilter = new
+                {
+                    typeControl = typeControl, type = type,
+                    text = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Name,
+                    commertialMarketSegmentList = commertialMarketSegmentList,
+                    referenceId = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId,
+                    id = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Id
+                },
+                propertyMarketFilter = new {
+                    typeControl = typeControl, type = type,
+                    text = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Name,
+                    propertyMarketSegmentList = propertyMarketSegmentList,
+                    referenceId = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId,
+                    id = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Id,
+                },
+                dealTypeFilter = new {
+                    typeControl = typeControl, type = type,
+                    text = OMCoreObject.GetAttributeData(y => y.DealType).Name,
+                    dealTypeList = dealTypeList, 
+                    referenceId = OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId,
+                    id = OMCoreObject.GetAttributeData(y => y.DealType).Id
+                }
+            });
+        }
+
+        public JsonResult SetFilters(string filter)
+        {
+            new CoreUiController(_coreUiService, _registersService).SaveSearchFilter(MarketObjectsRegisterViewId, filter);
+            return Json(new{ });
         }
 
         private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)
@@ -143,15 +190,6 @@ namespace KadOzenka.Web.Controllers
 					{
 						var list = filter.ValueLongArrayCasted.Select(y => ((DealType)y).GetEnumDescription()).ToList();
 						query.And(x => list.Contains(x.DealType));
-					}
-				}
-				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id))
-				{
-					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyType).Id);
-					if (filter.ValueLongArrayCasted != null)
-					{
-						var list = filter.ValueLongArrayCasted.Select(y => ((PropertyTypes)y).GetEnumDescription()).ToList();
-						query.And(x => list.Contains(x.PropertyType));
 					}
 				}
 				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id))

@@ -50,3 +50,13 @@ function GetFilterData() {
         success: function (filterInfo) { refreshFilterWidget(filterInfo); }
     });
 };
+
+function SetFilterData(filter) {
+    $.ajax({
+        type: "GET",
+        url: "Map/SetFilters",
+        data: { filter: filter },
+        contentType: 'application/json; charset=utf-8',
+        success: function () { GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null); }
+    });
+};

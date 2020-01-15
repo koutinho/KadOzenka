@@ -23,3 +23,38 @@ function getPropertyType(source) {
         case "Росреестр": return "Rosreestr";
     }
 };
+
+function generateNewFilter(filterInfo) {
+    var AllDealTypes = Array.from(document.getElementById("dealTypePanel").getElementsByClassName("filterButton")),
+        AllMarketSegmentTypes =
+            Array.from(document.getElementById("propertyMarketSegmentPanel").getElementsByClassName("filterButton")).concat(
+            Array.from(document.getElementById("commercialMarketSegmentPanel").getElementsByClassName("filterButton")));
+    var filterDealTypes = {}, filterMarketSegments = {}, result = [], selectedDealTypes = [], selectedMarketSegments = [];
+    AllDealTypes.forEach(x => { if (!x.classList.contains("inactive")) selectedDealTypes.push({ id: x.getAttribute("elementId"), text: x.getAttribute("elementValue") }); });
+    AllMarketSegmentTypes.forEach(x => { if (!x.classList.contains("inactive")) selectedMarketSegments.push({ id: x.getAttribute("elementId"), text: x.getAttribute("elementValue") }); });
+    if (selectedDealTypes.length == AllDealTypes.length) selectedDealTypes = [];
+    if (selectedMarketSegments.length == AllMarketSegmentTypes.length) selectedMarketSegments = [];
+    if (selectedDealTypes.length != 0) {
+        filterDealTypes = {
+            typeControl: filterInfo.dealTypeFilter.typeControl,
+            type: filterInfo.dealTypeFilter.type,
+            text: `${filterInfo.dealTypeFilter.text}: ${selectedDealTypes.map(function (x) { return x.text; }).join(', ')}`,
+            value: selectedDealTypes.map(function (x) { return parseInt(x.id); }),
+            referenceId: filterInfo.dealTypeFilter.referenceId,
+            id: filterInfo.dealTypeFilter.id
+        };
+    }
+    if (selectedMarketSegments.length != 0) {
+        filterMarketSegments = {
+            typeControl: filterInfo.commertialMarketFilter.typeControl,
+            type: filterInfo.commertialMarketFilter.type,
+            text: `${filterInfo.commertialMarketFilter.text}: ${selectedMarketSegments.map(function (x) { return x.text; }).join(', ')}`,
+            value: selectedMarketSegments.map(function (x) { return parseInt(x.id); }),
+            referenceId: filterInfo.commertialMarketFilter.referenceId,
+            id: filterInfo.commertialMarketFilter.id
+        };
+    }
+    if (filterDealTypes) result.push(filterDealTypes);
+    if (filterMarketSegments) result.push(filterMarketSegments);
+    return JSON.stringify(result);
+};

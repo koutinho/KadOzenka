@@ -52,85 +52,35 @@ function creatFilterWidget() {
         },
         _onGetChildElement: function (parentDomContainer) {
             this._$content = $(`
-                <div id="filterControl" class="filterControl">
-                    <div id="filterImage" class="filterImage"></div>
-                    <div id="filterContainer" class="filterContainer">
-                        <div id="dealTypeFilter" class="filterMainButton">
-                            <div class="filterHeader">
-                                Тип сделки
-                                <div id="DealTypeFilterCounter" class="filterCounter Hidden">99</div>
-                            </div>
-                            <div id="dealTypefilterBody" class="filterBody"></div>
-                        </div>
-                        <div id="marketSegmentFilter" class="filterMainButton">
-                            <div class="filterHeader">
-                                Сегмент рынка
-                                <div id="DealTypeFilterCounter" class="filterCounter Hidden">99</div>
-                            </div>
-                            <div id="marketSegmentfilterBody" class="filterBody"></div>
-                        </div>
-                        <div id="priceFilter" class="filterMainButton">
-                            <div class="filterHeader">Цена</div>
-                            <div class="filterBody">
-                                <input id="PriceFromFilterTextBox" class="filterBodyTextBox" type="text" placeholder="Цена от">
-                                <input id="PriceToFilterTextBox" class="filterBodyTextBox" type="text" placeholder="Цена до">
-                                <div id="SearchPriceFilterButton" class="filterBodyRealButton">Применить</div>
-                            </div>
-                        </div>
-                        <div id="metroFilter" class="filterMainButton">
-                            <div class="filterHeader">Метро</div>
-                            <div class="filterBody">
-                            </div>
+                 <div id="filterControl" class="filterControl">
+                    <div id="filterImage" class="filterImage inactive"></div>
+                    <div id="allFiltersContainer" class="allFiltersContainer inactive">
+                        <div id="dealTypePanel" class="filterPanel"></div>
+                        <div id="propertyMarketSegmentPanel" class="filterPanel"></div>
+                        <div id="commercialMarketSegmentPanel" class="filterPanel"></div>
+                        <div id="layersPanel" class="filterPanel">
+                             <div id="districtLayerFilterButton" class="layerButton filterButton inactive">Округа</div>
+                             <div id="regionLayerFilterButton" class="layerButton filterButton inactive">Районы</div>
+                             <div id="zoneLayerFilterButton" class="layerButton filterButton inactive">Зоны</div>
+                             <div id="quartalLayerFilterButton" class="layerButton filterButton inactive">Кварталы</div>
                         </div>
                     </div>
-                </div>
-            `).appendTo(parentDomContainer);
-        }
-    });
-};
-
-function creatLayerWidget() {
-    layerWidgetClass = function (options) {
-        layerWidgetClass.superclass.constructor.call(this, options);
-        this._$content = null;
-        this._geocoderDeferred = null;
-    };
-    ymaps.util.augment(layerWidgetClass, ymaps.collection.Item, {
-        onAddToMap: function (map) {
-            layerWidgetClass.superclass.onAddToMap.call(this, map);
-            this._lastCenter = null;
-            this.getParent().getChildElement(this).then(this._onGetChildElement, this);
-        },
-        _onGetChildElement: function (parentDomContainer) {
-            this._$content = $(`
-                <div id="layerControl" class="filterControl">
-                    <div id="layerImage" class="layerImage"></div>
-                    <div id="layerContainer" class="filterContainer">
-                        <div id="districtLayer" class="filterMainButton">
-                            <div id="districtLayerHeader" class="filterHeader">Округа</div>
-                        </div>
-                        <div id="regionLayer" class="filterMainButton">
-                            <div id="regionLayerHeader" class="filterHeader">Районы</div>
-                        </div>
-                        <div id="zoneLayer" class="filterMainButton">
-                            <div id="zoneLayerHeader" class="filterHeader">Зоны</div>
-                        </div>
-                        <div id="quartalLayer" class="filterMainButton">
-                            <div id="quartalLayerHeader" class="filterHeader">Кварталы</div>
-                        </div>
-                    </div>
-                </div>
+                 </div>
             `).appendTo(parentDomContainer);
             this.addEventListeners();
         },
         addEventListeners: function () {
-            document.getElementById("districtLayerHeader").addEventListener("click", function (e) { changeMapType(MapZoneType.district, e.target); });
-            document.getElementById("regionLayerHeader").addEventListener("click", function (e) { changeMapType(MapZoneType.region, e.target); });
-            document.getElementById("zoneLayerHeader").addEventListener("click", function (e) { changeMapType(MapZoneType.zone, e.target); });
-            document.getElementById("quartalLayerHeader").addEventListener("click", function (e) { changeMapType(MapZoneType.quartal, e.target); });
+            document.getElementById("filterImage").addEventListener("click", function (e) {
+                document.getElementById("filterImage").classList.toggle("inactive");
+                document.getElementById("allFiltersContainer").classList.toggle("inactive");
+            });
+            document.getElementById("districtLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.district, e.target); });
+            document.getElementById("regionLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.region, e.target); });
+            document.getElementById("zoneLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.zone, e.target); });
+            document.getElementById("quartalLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.quartal, e.target); });
         }
     });
-};
+}
 
 function createLoadWmsWidget() {
     loadWmsClass = function (options) {
@@ -166,8 +116,6 @@ function addFilterWidget(position) {
     map.controls.add(new filterWidgetClass(), { float: 'none', position });
     GetFilterData();
 };
-
-function addLayerWidget(position) { map.controls.add(new layerWidgetClass(), { float: 'none', position }); };
 
 function addTargetWidget(position) {
     if (!document.getElementById("targetControl")) {

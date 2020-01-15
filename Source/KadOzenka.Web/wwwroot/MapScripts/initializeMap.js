@@ -27,32 +27,12 @@ function initMap() {
     createDisplayCountWidget();
     createTargetWidget();
     creatFilterWidget();
-    creatLayerWidget();
     AppData.defaultRemoveElements.forEach(x => map.controls.remove(x));
     changeDefaultControlPosition(map);
     addDisplayCountWidget(countWidgetPosition);
     addFilterWidget(filterWidgetPosition);
-    addLayerWidget(layerWidgetPosition);
     GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
     map.events.add('boundschange', function (event) { ChangeBounds(event); });
-    //var projection = map.options.get('projection');        
-    //console.log(projection.fromGlobalPixels([315392, 162816], 11));
-    //console.log(projection.fromGlobalPixels([318464, 162816], 11));
-    //console.log(projection.fromGlobalPixels([318464, 166912], 11));
-    //console.log(projection.fromGlobalPixels([315392, 166912], 11));
-    //map.geoObjects.add(new ymaps.GeoObject({
-    //    geometry: {
-    //        type: "Polygon",
-    //        coordinates: [
-    //            [
-    //                [56.347639626746336, 36.5625],
-    //                [56.347639626746336, 38.67187499999999],
-    //                [54.75350830256672, 38.67187499999999],
-    //                [54.75350830256672, 36.5625]
-    //            ]
-    //        ]
-    //    }
-    //}));
 };
 
 function changeDefaultControlPosition(map) { map.controls.get("rulerControl").options.set({position:{bottom: 10, right: 10}}); };

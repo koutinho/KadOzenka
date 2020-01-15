@@ -68,7 +68,6 @@ body {
     width: calc(100%-350px);
 }
 
-
 .MapContainer .Data .DataContentContainer {
     margin: 5px;
 }
@@ -211,178 +210,87 @@ body {
     background-position: 7px 7px;
 }
 
-.filterControl {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .filterControl .filterImage {
-    background: #4590ff;
-    height: 36px;
-    width: 36px;
-    border-radius: 22px;
-    border: solid 1px #5c9eff;
-    color: #fff;
-    cursor: pointer;
-    background-image: url("/MapIcons/filterWhite.svg");
-    background-size: 22px 22px;
-    background-repeat: no-repeat;
-    background-position: 7px 9px;
-    z-index: 2;
-}
-
-.filterControl .layerImage {
-    background: #4590ff;
-    height: 36px;
-    width: 36px;
-    border-radius: 22px;
-    border: solid 1px #5c9eff;
-    color: #fff;
-    cursor: pointer;
-    background-image: url("/MapIcons/layers.svg");
-    background-size: 22px 22px;
-    background-repeat: no-repeat;
-    background-position: 7px 7px;
-    z-index: 2;
-}
-
-.filterControl .filterContainer {
-    border: solid 1px #5c9eff;
-    color: #4590ff;
-    min-height: 26px;
     background: #fff;
-    margin-left: -7px;
-    z-index: 1;
-    border-radius: 0px 14px 14px 0px;
-    display: flex;
-    display: none; /*Закомментировать тут*/
-    align-items: center;
-    justify-content: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 22px;
+    background: #4590ff;
+    cursor: pointer;
+    border: solid 1px #5c9eff;
+    background-image: url("/MapIcons/hide-filter-arrow.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+    z-index: 2;
 }
 
-.filterControl .filterContainer .filterMainButton {
+.filterControl .filterImage.inactive {
+    background: #fff;
+    background-image: url("/MapIcons/show-filter-arrow-filled.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .filterImage.inactive:hover {
+    background: #edf5ff;
+    background-image: url("/MapIcons/show-filter-arrow-filled.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .allFiltersContainer.inactive {
+    display: none;
+}
+
+.filterControl .allFiltersContainer .filterPanel {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    max-width: 800px;
+    white-space: nowrap;
+}
+
+.filterControl .allFiltersContainer .filterPanel .filterButton {
+    display: inline-flex;
     height: 26px;
     line-height: 26px;
-    cursor: pointer;
-    min-width: 208px;
-}
-
-.filterControl .filterContainer .filterMainButton .filterHeader {
-    /*border-left: solid 1px #5c9eff;*/
-    width: 100%;
-    text-align: center;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-}
-
-.filterControl .filterContainer .filterMainButton .filterHeader .filterCounter {
-    background: red;
-    font-size: 12px;
-    height: 16px;
-    width: 16px;
-    border-radius: 8px;
-    color: #fff;
+    padding: 0px 15px;
+    background: #5c9eff;
+    border-radius: 13px;
+    vertical-align:central;
     text-align:center;
-    line-height: 16px;
-    margin-left: 6px;
-}
-
-.filterControl .filterContainer .filterMainButton .filterBody {
-    background: #fff;
     border: solid 1px #5c9eff;
-    border-radius: 0px 0px 13px 13px;
-    display: none; /*Закомментировать тут*/
-    max-width: 208px;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
 }
 
-.filterControl .filterContainer .filterMainButton .filterBody .filterBodyTextBox {
-    width: 182px;
-    border: none;
-    margin-left: 13px;
-    margin-right: 13px;
-    margin-top: 5px;
-    border-bottom: solid 1px  #4590ff;
-    color: #4590ff;
-}
-
-.filterControl .filterContainer .filterMainButton .filterBody .filterBodyRealButton {
-    border-radius: 3px;
-    width: 120px;
-    text-align: center;
+.filterControl .allFiltersContainer .filterPanel .filterButton.inactive {
     background: #fff;
-    color: #4590ff;
-    border: solid 1px #5c9eff;
-    margin: auto;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    color: #5c9eff;
 }
 
-.filterControl .filterContainer .filterMainButton .filterBody .filterBodyRealButton:hover {
-    color: #fff;
-    background: #4590ff;
+.filterControl .allFiltersContainer .filterPanel .filterButton.inactive:hover {
+    background: #edf5ff;
+    color: #5c9eff;
 }
 
-.filterControl .filterContainer .filterMainButton .filterBody .filterBodyTextBox:last-child {
-    margin-bottom: 5px;
-}
-
-.filterControl .filterContainer .filterMainButton .filterBody input:focus.filterBodyTextBox {
-    outline: none;
-}
-
-.filterControl .filterContainer .filterMainButton .filterBody .filterBodyTextBox::placeholder {
-    color: #4590ff;
-}
-
-.filterControl .filterContainer .filterMainButton .filterBody .filterBodyButton {
-    text-align: center;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
-.filterControl .filterContainer .filterMainButton .filterBody .filterBodyButton:last-child {
-    border-radius: 0px 0px 13px 13px;
-}
-
-.filterControl .filterContainer .filterMainButton .filterBody .filterBodyButton:hover {
-    color: #fff;
-    background: #4590ff;
-}
-
-.filterControl .filterContainer .filterMainButton:first-child .filterHeader {
-    padding-left: 8px;
-    width: 200px;
-}
-
-.filterControl .filterContainer .filterMainButton:last-child .filterHeader {
-    border-radius: 0px 14px 14px 0px;
-}
-
-.filterControl .filterContainer .filterMainButton .filterHeader:hover {
-    color: #fff;
-    background: #4590ff;
-}
-
-.filterControl .filterContainer .filterMainButton .filterHeader.active {
-    color: #fff;
-    background: #4590ff;
-}
-
-.filterControl .filterContainer .filterMainButton:hover .filterBody{
-    display: block;
-}
-
-.filterControl:hover .filterContainer{
-    display: flex;
+.filterControl .allFiltersContainer .filterPanel .filterButton:not(:first-child) {
+    margin-left: 10px;
 }
 
 .sliderGalleryContainer {
-	width: 324px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+    width: 324px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sliderGallery {

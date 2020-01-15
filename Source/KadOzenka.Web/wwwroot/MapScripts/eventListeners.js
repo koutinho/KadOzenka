@@ -48,19 +48,37 @@ function removeTarget(placemark) {
 };
 
 function refreshFilterWidget(filterInfo) {
-    var dealTypeData = '', marketSegmentData = '';
-    filterInfo.dealTypeList.forEach(x => { dealTypeData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
-    filterInfo.marketSegmentList.forEach(x => { marketSegmentData += `<div id="${x.Name}FilterButton" class="filterBodyButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`; });
-    document.getElementById('dealTypefilterBody').innerHTML = dealTypeData;
-    document.getElementById('marketSegmentfilterBody').innerHTML = marketSegmentData;
+    var dealTypeData = '', commertialMarketSegmentData = '', propertyMarketSegmentData = '';
+    filterInfo.dealTypeFilter.dealTypeList.forEach(x => dealTypeData +=
+        `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
+    filterInfo.propertyMarketFilter.propertyMarketSegmentList.forEach(x => propertyMarketSegmentData +=
+        `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
+    filterInfo.commertialMarketFilter.commertialMarketSegmentList.forEach(x => commertialMarketSegmentData += 
+        `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
+    document.getElementById('dealTypePanel').innerHTML = dealTypeData;
+    document.getElementById('propertyMarketSegmentPanel').innerHTML = propertyMarketSegmentData;
+    document.getElementById('commercialMarketSegmentPanel').innerHTML = commertialMarketSegmentData;
+    listenFilter(filterInfo.dealTypeFilter.dealTypeList, filterInfo);
+    listenFilter(filterInfo.propertyMarketFilter.propertyMarketSegmentList, filterInfo);
+    listenFilter(filterInfo.commertialMarketFilter.commertialMarketSegmentList, filterInfo);
+};
+
+function listenFilter(initialList, filterInfo) {
+    initialList.forEach(x => {
+        document.getElementById(`${x.Name}FilterButton`).addEventListener('click', function (e) {
+            this.classList.toggle("inactive");
+            refreshCurrentToken();
+            SetFilterData(generateNewFilter(filterInfo));
+        });
+    });
 };
 
 function toTarget() { if (clusterSelected) map.setCenter(clusterSelected.coords, clusterSelected.zoom, "map"); };
 
 function changeMapType(type, element) {
-    Array.from(document.getElementsByClassName("filterHeader")).forEach(x => { if (x.id != element.id) x.classList.remove("active"); });
-    element.classList.toggle("active");
-    changeLayer(element.classList.contains("active") ? type : 0);
+    Array.from(document.getElementsByClassName("layerButton")).forEach(x => { if (x.id != element.id) x.classList.add("inactive"); });
+    element.classList.toggle("inactive");
+    changeLayer(!element.classList.contains("inactive") ? type : 0);
 }
 
 function changeLayer(type) {
