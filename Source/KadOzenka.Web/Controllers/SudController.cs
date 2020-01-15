@@ -82,9 +82,6 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult EditObjectCard(ObjectCardModel data)
 		{
-			AdditionalAnalysisChecker.TestQuery();
-			return NoContent();
-
 			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT, true, false, true);
 			if (data == null)
 			{
