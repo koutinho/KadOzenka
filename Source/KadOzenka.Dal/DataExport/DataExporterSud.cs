@@ -136,7 +136,7 @@ namespace KadOzenka.Dal.DataExport
                 {
                     curIndex++;
                     if (curIndex % 40 == 0) Console.WriteLine(curIndex);
-                    string Kn = obj.Kn.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+                    string Kn = obj.Kn?.Replace("\n", "").Replace("\r", "").Replace(" ", "");
                     string Type = (obj.Typeobj_Code == ObjectModel.Directory.Sud.SudObjectType.Site) ? "0" : "1";
                     int yearapp = obj.Date.ParseToDateTime().Year;
                     if (yearapp >= 2019) yearapp = 2019;
