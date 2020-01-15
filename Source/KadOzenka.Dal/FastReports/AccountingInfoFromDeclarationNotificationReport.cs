@@ -108,6 +108,7 @@ namespace KadOzenka.Dal.FastReports
 					  "в\u00A0том числе ее\u00A0формы» ГБУ «Центр имущественных платежей и\u00A0жилищного страхования» направляет уведомление " +
 				"об\u00A0учете информации, содержащейся в\u00A0декларации о\u00A0характеристиках объекта недвижимости на\u00A0" + GetObjectTypeString(declaration.TypeObj_Code) + " с\u00A0кадастровым номером "
 					  + declaration.CadastralNumObj + ".";
+			mainData = mainData.Replace(" ", "\u0020");
 
 			dataSet.Tables[0].Rows.Add(
 				ownerName,
