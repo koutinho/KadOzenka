@@ -342,7 +342,7 @@ namespace KadOzenka.Dal.DataImport
         {
             #region Сохранение данных ГКН
             //Площадь
-            SetAttributeValue_Numeric(2, Convert.ToDecimal(current.Area), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Дата образования
             SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Назначение здания
@@ -373,7 +373,7 @@ namespace KadOzenka.Dal.DataImport
             //Адрес
             SetAttributeValue_String(600, xmlAdress.GetTextAdress(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровая стоимость
-            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, Convert.ToDecimal(current.CadastralCost.Value), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, current.CadastralCost.Value.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровый квартал
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Земельный участок
@@ -426,7 +426,7 @@ namespace KadOzenka.Dal.DataImport
                         Docnumber = current.CadastralCost.DocNumber,
                         Docname = current.CadastralCost.DocName,
                         IdObject = koUnit.Id,
-                        Costvalue = Convert.ToDecimal(current.CadastralCost.Value),
+                        Costvalue = current.CadastralCost.Value.ParseToDecimal(),
                         Revisalstatementdate = (current.CadastralCost.RevisalStatementDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.RevisalStatementDate,
                     };
                     cost.Save();
@@ -570,7 +570,7 @@ namespace KadOzenka.Dal.DataImport
             //Наименование участка
             SetAttributeValue_String(1, current.Name.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Площадь
-            SetAttributeValue_Numeric(2, Convert.ToDecimal(current.Area), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Дата образования
             SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Тип объекта
@@ -580,7 +580,7 @@ namespace KadOzenka.Dal.DataImport
             //Адрес
             SetAttributeValue_String(600, xmlAdress.GetTextAdress(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровая стоимость
-            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, Convert.ToDecimal(current.CadastralCost.Value), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, current.CadastralCost.Value.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровый квартал
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Категория земель
@@ -637,7 +637,7 @@ namespace KadOzenka.Dal.DataImport
                         Docnumber = current.CadastralCost.DocNumber,
                         Docname = current.CadastralCost.DocName,
                         IdObject = koUnit.Id,
-                        Costvalue = Convert.ToDecimal(current.CadastralCost.Value),
+                        Costvalue = current.CadastralCost.Value.ParseToDecimal(),
                         Revisalstatementdate = (current.CadastralCost.RevisalStatementDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.RevisalStatementDate,
                     };
                     cost.Save();
@@ -868,7 +868,7 @@ namespace KadOzenka.Dal.DataImport
             //Адрес
             SetAttributeValue_String(600, xmlAdress.GetTextAdress(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровая стоимость
-            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, Convert.ToDecimal(current.CadastralCost.Value), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, current.CadastralCost.Value.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровый квартал
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Земельный участок
@@ -920,7 +920,7 @@ namespace KadOzenka.Dal.DataImport
                         Docnumber = current.CadastralCost.DocNumber,
                         Docname = current.CadastralCost.DocName,
                         IdObject = koUnit.Id,
-                        Costvalue = Convert.ToDecimal(current.CadastralCost.Value),
+                        Costvalue = current.CadastralCost.Value.ParseToDecimal(),
                         Revisalstatementdate = (current.CadastralCost.RevisalStatementDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.RevisalStatementDate,
                     };
                     cost.Save();
@@ -1034,7 +1034,7 @@ namespace KadOzenka.Dal.DataImport
         {
             #region Сохранение данных ГКН
             //Процент готовности
-            SetAttributeValue_Numeric(46, (current.DegreeReadiness == string.Empty || current.DegreeReadiness == null) ? (decimal?)null : Convert.ToDecimal(current.DegreeReadiness), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            SetAttributeValue_Numeric(46, (current.DegreeReadiness == string.Empty || current.DegreeReadiness == null) ? (decimal?)null : current.DegreeReadiness.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Площадь
             SetAttributeValue_String(44, xmlCodeNameValue.GetNames(current.KeyParameters), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Дата образования
@@ -1049,7 +1049,7 @@ namespace KadOzenka.Dal.DataImport
             //Адрес
             SetAttributeValue_String(600, xmlAdress.GetTextAdress(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровая стоимость
-            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, Convert.ToDecimal(current.CadastralCost.Value), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, current.CadastralCost.Value.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровый квартал
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Земельный участок
@@ -1103,7 +1103,7 @@ namespace KadOzenka.Dal.DataImport
                         Docnumber = current.CadastralCost.DocNumber,
                         Docname = current.CadastralCost.DocName,
                         IdObject = koUnit.Id,
-                        Costvalue = Convert.ToDecimal(current.CadastralCost.Value),
+                        Costvalue = current.CadastralCost.Value.ParseToDecimal(),
                         Revisalstatementdate = (current.CadastralCost.RevisalStatementDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.RevisalStatementDate,
                     };
                     cost.Save();
@@ -1214,7 +1214,7 @@ namespace KadOzenka.Dal.DataImport
         {
             #region Сохранение данных ГКН
             //Площадь
-            SetAttributeValue_Numeric(2, Convert.ToDecimal(current.Area), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Дата образования
             SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Назначение помещения
@@ -1253,7 +1253,7 @@ namespace KadOzenka.Dal.DataImport
             //Адрес
             SetAttributeValue_String(600, xmlAdress.GetTextAdress(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровая стоимость
-            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, Convert.ToDecimal(current.CadastralCost.Value), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, current.CadastralCost.Value.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             //Кадастровый квартал
             SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
 
@@ -1325,7 +1325,7 @@ namespace KadOzenka.Dal.DataImport
                         Docnumber = current.CadastralCost.DocNumber,
                         Docname = current.CadastralCost.DocName,
                         IdObject = koUnit.Id,
-                        Costvalue = Convert.ToDecimal(current.CadastralCost.Value),
+                        Costvalue = current.CadastralCost.Value.ParseToDecimal(),
                         Revisalstatementdate = (current.CadastralCost.RevisalStatementDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.RevisalStatementDate,
                     };
                     cost.Save();
