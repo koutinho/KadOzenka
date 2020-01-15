@@ -1287,7 +1287,7 @@ namespace KadOzenka.Dal.XmlParser
                     case "CadastralCost":
                         #region Кадастровая стоимость
                         obj.CadastralCost = new xmlCost();
-                        if (xnChild.Attributes["Value"] != null) obj.CadastralCost.Value = Convert.ToDouble(xnChild.Attributes["Value"].InnerText);
+                        if (xnChild.Attributes["Value"] != null) obj.CadastralCost.Value = xnChild.Attributes["Value"].InnerText.ParseToDouble();
                         foreach (XmlNode xnChild1 in xnChild.ChildNodes)
                         {
                             if (xnChild1.Name == "DateValuation")
