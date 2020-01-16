@@ -24,6 +24,7 @@ using System.IO;
 using KadOzenka.Dal.XmlParser;
 using KadOzenka.BlFrontEnd.PostgresToMongo;
 using System;
+using KadOzenka.BlFrontEnd.GbuTest;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -67,7 +68,11 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseDistricts(); });
             consoleHelper.AddCommand("20", "Тест конвертации из Postgres в Mongo", () => { ConvertToMongo.Convert(20000); });
 
-            consoleHelper.AddCommand("200", "Импорт данных KO (БД) Модель 2016", MSExporter.DoLoadBd2016Model);
+			consoleHelper.AddCommand("21", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
+
+			consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
+
+			consoleHelper.AddCommand("200", "Импорт данных KO (БД) Модель 2016", MSExporter.DoLoadBd2016Model);
             consoleHelper.AddCommand("201", "Импорт данных KO (БД) Объекты и факторы 2016 ОНС", MSExporter.DoLoadBd2016Unit_Uncomplited);
             consoleHelper.AddCommand("202", "Импорт данных KO (БД) Объекты и факторы 2016 Сооружения", MSExporter.DoLoadBd2016Unit_Construction);
             consoleHelper.AddCommand("203", "Импорт данных KO (БД) Объекты и факторы 2016 Здания", MSExporter.DoLoadBd2016Unit_Building);
@@ -130,9 +135,6 @@ namespace KadOzenka.BlFrontEnd
                 xml.Load("c:\\WORK\\cod2.xml");
                 KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
             });
-
-            consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
-        }
-
+		}
     }
 }
