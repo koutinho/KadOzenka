@@ -58,6 +58,14 @@
         </div>
     </div>
     <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(m => m.RejectionReasonType)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoEnumDropDownListFor(m => m.RejectionReasonType, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
         <div class="col-sm-4">
             @Html.CustomLabelFor(m => m.RejectionReason)
         </div>
@@ -170,6 +178,42 @@
 
     function changeRejectionReasonVisability(value) {
         if (value == '@UvedType.Item4.GetEnumCode()' || value == '@UvedType.Item5.GetEnumCode()') {
+            $('#RejectionReason').show();
+            $('label[for="RejectionReason"]').show();
+
+            if (value == '@UvedType.Item5.GetEnumCode()') {
+                let rejectionReasonType = $('#RejectionReasonType').data('kendoDropDownList');
+                rejectionReasonType.bind("change", onRejectionReasonTypeChanged);
+                rejectionReasonType.trigger("change");
+                rejectionReasonType.wrapper.show();
+                $('label[for="RejectionReasonType"]').show();
+            } else {
+                let rejectionReasonType = $('#RejectionReasonType').data('kendoDropDownList');
+                rejectionReasonType.unbind("change", onRejectionReasonTypeChanged);
+                rejectionReasonType.value('@RejectionReasonType.None.GetEnumCode()');
+                rejectionReasonType.wrapper.hide();
+                $('label[for="RejectionReasonType"]').hide();
+            }
+        } else {
+            $('#RejectionReason').val('');
+            $('#RejectionReason').hide();
+            $('label[for="RejectionReason"]').hide();
+
+            let rejectionReasonType = $('#RejectionReasonType').data('kendoDropDownList');
+            rejectionReasonType.unbind("change", onRejectionReasonTypeChanged);
+            rejectionReasonType.value('@RejectionReasonType.None.GetEnumCode()');
+            rejectionReasonType.wrapper.hide();
+            $('label[for="RejectionReasonType"]').hide();
+        }
+    }
+
+    function onRejectionReasonTypeChanged(e) {
+        var value = this.value();
+        changeRejectionReasonAvailability(value);
+    }
+
+    function changeRejectionReasonAvailability(value) {
+        if (value == '@RejectionReasonType.Other.GetEnumCode()') {
             $('#RejectionReason').show();
             $('label[for="RejectionReason"]').show();
         } else {

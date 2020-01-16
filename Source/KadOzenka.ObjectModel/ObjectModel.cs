@@ -17218,6 +17218,61 @@ namespace ObjectModel.Declarations
             }
         }
 
+
+        private string _rejectionreasontype;
+        /// <summary>
+        /// 50601000 Тип причины отказа для уведомления об отказе декларации ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50601000)]
+        public string RejectionReasonType
+        {
+            get
+            {
+                CheckPropertyInited("RejectionReasonType");
+                return _rejectionreasontype;
+            }
+            set
+            {
+                _rejectionreasontype = value;
+                NotifyPropertyChanged("RejectionReasonType");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.RejectionReasonType _rejectionreasontype_Code;
+        /// <summary>
+        /// 50601000 Тип причины отказа для уведомления об отказе декларации (справочный код) (REJECTION_REASON_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50601000)]
+        public ObjectModel.Directory.Declarations.RejectionReasonType RejectionReasonType_Code
+        {
+            get
+            {
+                CheckPropertyInited("RejectionReasonType_Code");
+                return this._rejectionreasontype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_rejectionreasontype))
+                    {
+                         _rejectionreasontype = descr;
+                    }
+                }
+                else
+                {
+                     _rejectionreasontype = descr;
+                }
+
+                this._rejectionreasontype_Code = value;
+                NotifyPropertyChanged("RejectionReasonType");
+                NotifyPropertyChanged("RejectionReasonType_Code");
+            }
+        }
+
     }
 }
 

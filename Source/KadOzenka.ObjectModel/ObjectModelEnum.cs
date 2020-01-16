@@ -1533,6 +1533,59 @@ namespace ObjectModel.Directory.Declarations
     }
 }
 
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Тип причины отказа для уведомлления об отказе декларации (511)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 511)]
+    public enum RejectionReasonType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
+		/// заявитель, подавший декларацию, не является правообладателем объекта недвижимости, в отношении которого подается декларация (1)
+		/// </summary>
+		[Description("заявитель, подавший декларацию, не является правообладателем объекта недвижимости, в отношении которого подается декларация")]
+        [EnumCode("1")]
+        ApplicantIsNotObjectTypeOwner = 1,
+		/// <summary>
+		/// к декларации не приложены документы, предусмотренные пунктом 2 настоящего Приказа (2)
+		/// </summary>
+		[Description("к декларации не приложены документы, предусмотренные пунктом 2 настоящего Приказа")]
+        [EnumCode("2")]
+        DocumentsAreNotAttached = 2,
+		/// <summary>
+		/// декларация не соответствует форме, предусмотренной приложением № 2 к настоящему Приказу (3)
+		/// </summary>
+		[Description("декларация не соответствует форме, предусмотренной приложением № 2 к настоящему Приказу")]
+        [EnumCode("3")]
+        DeclarationDoesNotMatchForm = 3,
+		/// <summary>
+		/// декларация не заверена в соответствии с пунктом 3 настоящего Приказа (4)
+		/// </summary>
+		[Description("декларация не заверена в соответствии с пунктом 3 настоящего Приказа")]
+        [EnumCode("4")]
+        DeclarationIsNotCertified  = 4,
+		/// <summary>
+		/// декларация и прилагаемые к ней документы представлены не в соответствии с требованиями, предусмотренными пунктом 4 настоящего Приказа (5)
+		/// </summary>
+		[Description("декларация и прилагаемые к ней документы представлены не в соответствии с требованиями, предусмотренными пунктом 4 настоящего Приказа")]
+        [EnumCode("5")]
+        DeclarationAndDocumentsDoNotMeetRequirements = 5,
+		/// <summary>
+		/// иное (вручную) (6)
+		/// </summary>
+		[Description("иное (вручную)")]
+        [EnumCode("6")]
+        Other = 6,
+    }
+}
+
 namespace ObjectModel.Directory.Common
 {
     /// <summary>

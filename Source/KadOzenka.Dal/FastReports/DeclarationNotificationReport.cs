@@ -81,12 +81,12 @@ namespace KadOzenka.Dal.FastReports
 
 			var addressParts = new List<string>
 			{
-				subject.Zip,
-				subject.City?.Replace(" ", "\u00A0"),
 				subject.Street?.Replace(" ", "\u00A0"),
 				subject.House?.Replace(" ", "\u00A0"),
 				subject.Building?.Replace(" ", "\u00A0"),
-				subject.Flat?.Replace(" ", "\u00A0")
+				subject.Flat?.Replace(" ", "\u00A0"),
+				subject.City?.Replace(" ", "\u00A0"),
+				subject.Zip
 			};
 
 			return string.Join(", ", addressParts.Where(x => !string.IsNullOrWhiteSpace(x)));

@@ -76,7 +76,7 @@ namespace KadOzenka.Dal.FastReports
 				var inflected = petrovich.InflectTo(Case.Dative);
 				ownerName = inflected.LastName;
 				if (!string.IsNullOrWhiteSpace(inflected.FirstName) &&
-					!string.IsNullOrWhiteSpace(inflected.MiddleName))
+				    !string.IsNullOrWhiteSpace(inflected.MiddleName))
 				{
 					ownerName += $" {inflected.FirstName.Trim()[0]}.{inflected.MiddleName.Trim()[0]}.";
 				}
@@ -102,13 +102,14 @@ namespace KadOzenka.Dal.FastReports
 				userIspName += $" {userIsp.Surname.Trim()[0]}.{userIsp.Patronymic.Trim()[0]}.";
 			}
 
-			var reason = PrepareText(notification.RejectionReason);
-
+			var reason = GetRejectionReason(notification);
 			var mainData =
-					  "\u0009В\u00A0соответствии с\u00A0пунктом 8 приказа Минэкономразвития от\u00A004.06.2019 № 318 «Об\u00A0утверждении Порядка рассмотрения декларации о\u00A0характеристиках объекта недвижимости, " +
-					  "в\u00A0том числе ее\u00A0формы» (далее – Приказ) ГБУ «Центр имущественных платежей и\u00A0жилищного страхования» провело проверку декларации" +
-				"о\u00A0характеристиках объекта недвижимости на\u00A0" + GetObjectTypeString(declaration.TypeObj_Code) + " с\u00A0кадастровым номером " + declaration.CadastralNumObj +
-					  " и\u00A0сообщает." + System.Environment.NewLine + "\u0009Декларация проверку не\u00A0прошла и\u00A0не\u00A0подлежит рассмотрению, т.к. " + reason + @"."
+				"\u0009В\u00A0соответствии с\u00A0пунктом 8 приказа Минэкономразвития от\u00A004.06.2019 №\u00A0318 «Об\u00A0утверждении Порядка рассмотрения декларации о\u00A0характеристиках объекта недвижимости, " +
+				"в\u00A0том числе ее\u00A0формы» (далее – Приказ) ГБУ «Центр имущественных платежей и\u00A0жилищного страхования» провело проверку декларации" +
+				"о\u00A0характеристиках объекта недвижимости на\u00A0" + GetObjectTypeString(declaration.TypeObj_Code) +
+				" с\u00A0кадастровым номером " + declaration.CadastralNumObj +
+				" и\u00A0сообщает." + System.Environment.NewLine +
+				"\u0009Декларация проверку не\u00A0прошла и\u00A0не\u00A0подлежит рассмотрению, т.к. " + reason + @"."
 				+ System.Environment.NewLine + System.Environment.NewLine + "\u0009Приложение: перечень документов";
 			mainData = mainData.Replace(" ", "\u0020");
 
@@ -121,6 +122,21 @@ namespace KadOzenka.Dal.FastReports
 				mainData);
 
 			return dataSet;
+		}
+
+		private string GetRejectionReason(OMUved notification)
+		{
+			var reason = string.Empty;
+			if (notification.RejectionReasonType_Code == RejectionReasonType.Other)
+			{
+				reason = notification.RejectionReason;
+			}
+			else if (notification.RejectionReasonType_Code != RejectionReasonType.None)
+			{
+				reason = notification.RejectionReasonType_Code.GetEnumDescription();
+			}
+
+			return PrepareText(reason);
 		}
 	}
 }
