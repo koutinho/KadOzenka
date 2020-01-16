@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.FastReports
 	{
 		protected override string TemplateName(NameValueCollection query)
 		{
-			return "AccountingInfoFromDeclarationNotificationReport";
+			return nameof(AccountingInfoFromDeclarationNotificationReport);
 		}
 
 		public override string GetTitle(long? objectId)

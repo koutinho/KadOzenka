@@ -46,19 +46,19 @@ namespace KadOzenka.Dal.FastReports
 
 		public string PrepareText(string text)
 		{
-			if (string.IsNullOrWhiteSpace(text))
+			if (string.IsNullOrWhiteSpace(text.Trim()))
 			{
 				return string.Empty;
 			}
 
 			var result = new StringBuilder();
-			var words = text.Split(' ').ToList();
+			var words = text.Trim().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 			var results = MorphAnalyzer.Parse(words).ToArray();
 			for (var i = 0; i < words.Count() - 1; i++)
 			{
 				result.Append(words[i]);
 				if (results[i].BestTag["чр"] == "предл" || results[i].BestTag["чр"] == "союз" ||
-				    results[i].BestTag["чр"] == "част" || results[i].BestTag["чр"] == "мест")
+				    results[i].BestTag["чр"] == "част" || results[i].BestTag["чр"] == "мест" || results[i].BestTag["чр"] == "межд")
 				{
 					result.Append("\u00A0");
 				}

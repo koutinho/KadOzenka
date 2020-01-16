@@ -50,9 +50,7 @@
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
                         <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="And" />
-                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об учете информации из декларации" AndOr="And"/>
-                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об отказе в учете информации из декларации" AndOr="And"/>
-                        <Condition Key="[50600600]" Operation="NotEqual" Value="Уведомление об отказе в рассмотрении декларации и возврате документов" AndOr="And"/>
+                        <Condition Key="[50600600]" Operation="Equal" Value="Значение отсутствует" AndOr="And"/>
                     </Conditions>
                 </ConditionGroup>
             </ConditionGroups>

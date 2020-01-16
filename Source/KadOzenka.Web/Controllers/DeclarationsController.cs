@@ -852,6 +852,9 @@ namespace KadOzenka.Web.Controllers
 				case UvedType.Item4:
 					reportType = 1003;
 					break;
+				case UvedType.Item1:
+					reportType = 1004;
+					break;
 				default:
 					throw new Exception(
 						$"Тип уведомления '{omUved?.Type_Code.GetEnumDescription()}' не поддерживает формирование по шаблону");
