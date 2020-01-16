@@ -6160,7 +6160,7 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 219 Реестр хранения факторов тура (ko_tour_factor_register)
+    /// 219 Реестр хранения факторов тура (KO_TOUR_FACTOR_REGISTER)
     /// </summary>
     [RegisterInfo(RegisterID = 219)]
     [Serializable]
@@ -6278,6 +6278,78 @@ namespace ObjectModel.KO
             {
                 _registerid = value;
                 NotifyPropertyChanged("RegisterId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 220 Связи документов (KO_DOCUMENT_LINK)
+    /// </summary>
+    [RegisterInfo(RegisterID = 220)]
+    [Serializable]
+    public partial class OMDocumentLink : OMBaseClass<OMDocumentLink>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 22000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 22000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _maindocid;
+        /// <summary>
+        /// 22000200 Идентификатор основного документа (MAIN_DOC_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22000200)]
+        public long MainDocId
+        {
+            get
+            {
+                CheckPropertyInited("MainDocId");
+                return _maindocid;
+            }
+            set
+            {
+                _maindocid = value;
+                NotifyPropertyChanged("MainDocId");
+            }
+        }
+
+
+        private long _linkdocid;
+        /// <summary>
+        /// 22000300 Идентификатор связанного документа (LINK_DOC_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22000300)]
+        public long LinkDocId
+        {
+            get
+            {
+                CheckPropertyInited("LinkDocId");
+                return _linkdocid;
+            }
+            set
+            {
+                _linkdocid = value;
+                NotifyPropertyChanged("LinkDocId");
             }
         }
 
