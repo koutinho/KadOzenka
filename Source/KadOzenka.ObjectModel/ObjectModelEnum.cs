@@ -1373,9 +1373,9 @@ namespace ObjectModel.Directory.Declarations
         [EnumCode("4")]
         Construction = 4,
 		/// <summary>
-		/// Машиноместо (5)
+		/// Машино-место (5)
 		/// </summary>
-		[Description("Машиноместо")]
+		[Description("Машино-место")]
         [EnumCode("5")]
         ParkingPlace = 5,
 		/// <summary>
