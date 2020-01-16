@@ -55,6 +55,12 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 		[Display(Name = "Непринятые хар-ки")]
 		public string RejectedCharacteristic { get; set; }
 
+		/// <summary>
+		/// Контрольный срок (CHECK_TIME)
+		/// </summary>
+		[Display(Name = "Контрольный срок")]
+		public DateTime? CheckTime { get; set; }
+
 		public static DeclarationFormalCheckModel FromEntity(OMDeclaration entity, OMResult result)
 		{
 			if (entity == null)
@@ -74,7 +80,8 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 				DateCheckPlan = entity.DateCheckPlan,
 				DateCheckFact = entity.DateCheckFact,
 				ApprovedCharacteristic = result.TextYes,
-				RejectedCharacteristic = result.TextNo
+				RejectedCharacteristic = result.TextNo,
+				CheckTime = entity.CheckTime
 			};
 		}
 
@@ -96,6 +103,7 @@ namespace KadOzenka.Web.Models.Declarations.DeclarationTabModel
 			entity.DateCheckFact = declarationViewModel.DateCheckFact;
 			result.TextYes = declarationViewModel.ApprovedCharacteristic;
 			result.TextNo = declarationViewModel.RejectedCharacteristic;
+			entity.CheckTime = declarationViewModel.CheckTime;
 		}
 	}
 }

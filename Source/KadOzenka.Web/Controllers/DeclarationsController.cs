@@ -33,6 +33,11 @@ namespace KadOzenka.Web.Controllers
 		/// </summary>
 		public static int DaysDiffBetweenDateCheckPlanAndDurationDateIn => 10;
 
+		/// <summary>
+		/// Контрольный срок составляет 5 рабочих дней со дня поступления декларации
+		/// </summary>
+		public static int CheckTimeDaysCount => 5;
+
 		#region Declarations
 
 		[HttpGet]

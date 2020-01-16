@@ -11096,7 +11096,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 31000100 ID (ID)
+        /// 31000100 Статус идентификатора (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 31000100)]
         public long Id
@@ -11116,7 +11116,7 @@ namespace ObjectModel.Sud
 
         private long _name;
         /// <summary>
-        /// 31000200 NAME (NAME)
+        /// 31000200 Статус Наименования (NAME)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000200)]
         public long Name
@@ -11136,7 +11136,7 @@ namespace ObjectModel.Sud
 
         private long _number;
         /// <summary>
-        /// 31000300 NUMBER (NUMBER)
+        /// 31000300 Статус Номера (NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000300)]
         public long Number
@@ -11156,7 +11156,7 @@ namespace ObjectModel.Sud
 
         private long _date;
         /// <summary>
-        /// 31000400 DATE (DATE)
+        /// 31000400 Статуса Даты (DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000400)]
         public long Date
@@ -11176,7 +11176,7 @@ namespace ObjectModel.Sud
 
         private long _suddate;
         /// <summary>
-        /// 31000500 SUD_DATE (SUD_DATE)
+        /// 31000500 Статус Даты заседания (SUD_DATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000500)]
         public long SudDate
@@ -11196,7 +11196,7 @@ namespace ObjectModel.Sud
 
         private long _status;
         /// <summary>
-        /// 31000600 Статус (STATUS)
+        /// 31000600 Статус Статуса дела (STATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000600)]
         public long Status
@@ -11216,7 +11216,7 @@ namespace ObjectModel.Sud
 
         private long? _astatus;
         /// <summary>
-        /// 31000700 ASTATUS (ASTATUS)
+        /// 31000700 Статус Итоговый (ASTATUS)
         /// </summary>
         [RegisterAttribute(AttributeID = 31000700)]
         public long? Astatus
@@ -14500,6 +14500,26 @@ namespace ObjectModel.Declarations
                 this._purposedec_Code = value;
                 NotifyPropertyChanged("PurposeDec");
                 NotifyPropertyChanged("PurposeDec_Code");
+            }
+        }
+
+
+        private DateTime? _checktime;
+        /// <summary>
+        /// 50103300 Контрольный срок (CHECK_TIME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50103300)]
+        public DateTime? CheckTime
+        {
+            get
+            {
+                CheckPropertyInited("CheckTime");
+                return _checktime;
+            }
+            set
+            {
+                _checktime = value;
+                NotifyPropertyChanged("CheckTime");
             }
         }
 

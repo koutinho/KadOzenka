@@ -268,6 +268,8 @@
                 { "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
             jQuery("#FormalCheckModel_DateCheckFact").kendoDatePicker(
                 { "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+            jQuery("#FormalCheckModel_CheckTime").kendoDatePicker(
+                { "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
 
             $('#save').on('click',
                 function() {
@@ -309,6 +311,11 @@
                             } else {
                                 $('#FormalCheckModel_DateCheckPlan').val(null);
                             }
+                            if (response.data.FormalCheckModel && response.data.FormalCheckModel.CheckTime) {
+                                $('#FormalCheckModel_CheckTime').val(kendo.toString(new Date(response.data.FormalCheckModel.CheckTime), "dd.MM.yyyy"));
+						    } else {
+                                $('#FormalCheckModel_CheckTime').val(null);
+						    }
 							Common.ShowMessage(response.Success);
                             $('.attachment-declaration').removeClass('hidden');
                             var tabStrip = $("#tabstrip-wrap").kendoTabStrip().data("kendoTabStrip");
