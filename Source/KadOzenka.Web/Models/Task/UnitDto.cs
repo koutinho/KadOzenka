@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectModel.Directory;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,12 +10,15 @@ namespace KadOzenka.Web.Models.Task
 	public class UnitDto
 	{
 		public long? Id { get; set; }
-
+		public long? ObjectId { get; set; }
+		public long? TaskId { get; set; }
+		public long? CostRosreestrId { get; set; }
+		
 		[DisplayName("Тур оценки")]
-		public long? TourId { get; set; }
 		public long? Tour { get; set; }
+		public long? TourId { get; set; }		
 		[DisplayName("Тип статьи")]
-		public string NoteType { get; set; }
+		public KoNoteType? NoteType { get; set; }		
 		[DisplayName("Входящий документ")]
 		public long? DocumentId { get; set; }
 		public string Document { get; set; }
@@ -26,16 +30,17 @@ namespace KadOzenka.Web.Models.Task
 		[DisplayName("Кадастровый квартал")]
 		public string CadastralBlock { get; set; }
 		[DisplayName("Тип объекта")]
-		public string PropertyType { get; set; }
+		public PropertyTypes? PropertyType { get; set; }	
 		[DisplayName("Площать")]
 		public decimal? Square { get; set; }
 		[DisplayName("Статус задания")]
-		public string Status { get; set; }
+		public KoUnitStatus? Status { get; set; }	
 		[DisplayName("Дата оценки")]
 		public DateTime? UnitCreationDate { get; set; }
 
 		[DisplayName("Наименование группы")]
 		public string GroupName { get; set; }
+		public long? GroupId { get; set; }
 		[DisplayName("УПКС (предварительный)")]
 		public decimal? UpksPre { get; set; }
 		[DisplayName("КС (предварительная)")]
@@ -45,11 +50,11 @@ namespace KadOzenka.Web.Models.Task
 		[DisplayName("КС (окончательная)")]
 		public decimal? CadastralCost { get; set; }
 		[DisplayName("Статус расчета")]
-		public string StatusRepeatCalc { get; set; }
+		public KoStatusRepeatCalc? StatusRepeatCalc { get; set; }		
 		[DisplayName("Анализ стоимости")]
-		public string StatusResultCalc { get; set; }
+		public KoStatusResultCalc? StatusResultCalc { get; set; }		
 		[DisplayName("Тип объекта, по которому рассчитана КС")]
-		public string ParentCalcType { get; set; }
+		public KoParentCalcType? ParentCalcType { get; set; }		
 		[DisplayName("Номер объекта, по которому рассчитана КС")]
 		public string ParentCalcNumber { get; set; }
 		[DisplayName("Исходящий документ")]
