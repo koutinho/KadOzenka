@@ -13,6 +13,7 @@ using ObjectModel.Common;
 using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Linq;
+using ObjectModel.Directory.Sud;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -493,7 +494,7 @@ namespace KadOzenka.Dal.DataImport
 										Date = sDate,
 										Name = sName,
 										Number = sNumber,
-										Status = (lStatus == -1) ? 0 : lStatus,
+										Status_Code = (CourtStatus) ((lStatus == -1) ? 0 : lStatus),
 										SudDate = sDateAct,
 									};
 									sud_sud.SaveAndCheckParam();
@@ -508,7 +509,7 @@ namespace KadOzenka.Dal.DataImport
 									sNumber = (sNumber == string.Empty) ? sud_sud.Number : sNumber;
 									sDate = (sDate == null) ? sud_sud.Date : sDate;
 									sDateAct = (sDateAct == null) ? sud_sud.SudDate : sDateAct;
-									lStatus = (lStatus == -1) ? sud_sud.Status : lStatus;
+									lStatus = (lStatus == -1) ? (long)sud_sud.Status_Code : lStatus;
 
 									if ((sud_sud.Date != sDate) && (sDate != null))
 									{
@@ -522,7 +523,7 @@ namespace KadOzenka.Dal.DataImport
 									{
 										errorSud.colIndex.Add(19);
 									}
-									if ((sud_sud.Status != lStatus) && (lStatus != -1))
+									if (((long)sud_sud.Status_Code != lStatus) && (lStatus != -1))
 									{
 										errorSud.colIndex.Add(20);
 									}
@@ -530,7 +531,7 @@ namespace KadOzenka.Dal.DataImport
 									sud_sud.Date = sDate;
 									sud_sud.Name = sName;
 									sud_sud.Number = sNumber;
-									sud_sud.Status = lStatus;
+									sud_sud.Status_Code = (CourtStatus)lStatus;
 									sud_sud.SudDate = sDateAct;
 									sud_sud.SaveAndCheckParam();
 								}

@@ -1037,6 +1037,47 @@ namespace ObjectModel.Directory.Sud
     }
 }
 
+namespace ObjectModel.Directory.Sud
+{
+    /// <summary>
+    /// Статус судебного решения (304)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 304)]
+    public enum CourtStatus : long
+    {
+		/// <summary>
+		/// Без статуса (0)
+		/// </summary>
+		[Description("Без статуса")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
+		/// Отказано (1)
+		/// </summary>
+		[Description("Отказано")]
+        [EnumCode("1")]
+        Denied = 1,
+		/// <summary>
+		/// Удовлетворено (2)
+		/// </summary>
+		[Description("Удовлетворено")]
+        [EnumCode("2")]
+        Satisfied = 2,
+		/// <summary>
+		/// Приостановлено (3)
+		/// </summary>
+		[Description("Приостановлено")]
+        [EnumCode("3")]
+        Paused = 3,
+		/// <summary>
+		/// Частично удовлетворено (4)
+		/// </summary>
+		[Description("Частично удовлетворено")]
+        [EnumCode("4")]
+        PartiallySatisfied = 4,
+    }
+}
+
 namespace ObjectModel.Directory.Commission
 {
     /// <summary>

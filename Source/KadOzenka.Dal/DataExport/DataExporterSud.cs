@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Sud;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -74,7 +75,7 @@ namespace KadOzenka.Dal.DataExport
                     }
                     if (last != null && lastsud != null)
                     {
-                        if (lastsud.Status == 1 || lastsud.Status == 4)
+                        if (lastsud.Status_Code == CourtStatus.Denied || lastsud.Status_Code == CourtStatus.PartiallySatisfied)
                         {
                             #region Заголовок объекта
                             List<object> value = new List<object>();
@@ -166,7 +167,7 @@ namespace KadOzenka.Dal.DataExport
                     }
                     if (last != null && lastsud != null)
                     {
-                        if (lastsud.Status == 1 || lastsud.Status == 4)
+                        if (lastsud.Status_Code == CourtStatus.Denied || lastsud.Status_Code == CourtStatus.PartiallySatisfied)
                         {
                             lock (locked)
                             {
@@ -597,21 +598,7 @@ namespace KadOzenka.Dal.DataExport
                     if (sud != null)
                     {
                         value.Add(sud.Name);
-                        string Status = "Без статуса";
-                        switch (sud.Status)
-                        {
-                            case 1: Status = "Отказано";
-                                break;
-                            case 2: Status = "Удовлетворено";
-                                break;
-                            case 3: Status = "Приостановлено";
-                                break;
-                            case 4: Status = "Частично удовлетворено";
-                                break;
-                            default:
-                                break;
-                        }
-                        value.Add(Status);
+                        value.Add(sud.Status);
                         value.Add(sud.Number);
                         value.Add(sud.Date);
                         value.Add(sud.SudDate);
@@ -934,10 +921,10 @@ namespace KadOzenka.Dal.DataExport
                         {
                             if (link.Sud != null)
                             {
-                                if (link.Sud.Status == 0) zu_none++;
-                                if (link.Sud.Status == 1) zu_yes++;
-                                if (link.Sud.Status == 2) zu_no++;
-                                if (link.Sud.Status == 3) zu_stop++;
+                                if (link.Sud.Status_Code == CourtStatus.None) zu_none++;
+                                if (link.Sud.Status_Code == CourtStatus.Denied) zu_yes++;
+                                if (link.Sud.Status_Code == CourtStatus.Satisfied) zu_no++;
+                                if (link.Sud.Status_Code == CourtStatus.Paused) zu_stop++;
                             }
                         }
                         break;
@@ -946,10 +933,10 @@ namespace KadOzenka.Dal.DataExport
                         {
                             if (link.Sud != null)
                             {
-                                if (link.Sud.Status == 0) bld_none++;
-                                if (link.Sud.Status == 1) bld_yes++;
-                                if (link.Sud.Status == 2) bld_no++;
-                                if (link.Sud.Status == 3) bld_stop++;
+                                if (link.Sud.Status_Code == CourtStatus.None) bld_none++;
+                                if (link.Sud.Status_Code == CourtStatus.Denied) bld_yes++;
+                                if (link.Sud.Status_Code == CourtStatus.Satisfied) bld_no++;
+                                if (link.Sud.Status_Code == CourtStatus.Paused) bld_stop++;
                             }
                         }
                         break;
@@ -958,10 +945,10 @@ namespace KadOzenka.Dal.DataExport
                         {
                             if (link.Sud != null)
                             {
-                                if (link.Sud.Status == 0) flt_none++;
-                                if (link.Sud.Status == 1) flt_yes++;
-                                if (link.Sud.Status == 2) flt_no++;
-                                if (link.Sud.Status == 3) flt_stop++;
+                                if (link.Sud.Status_Code == CourtStatus.None) flt_none++;
+                                if (link.Sud.Status_Code == CourtStatus.Denied) flt_yes++;
+                                if (link.Sud.Status_Code == CourtStatus.Satisfied) flt_no++;
+                                if (link.Sud.Status_Code == CourtStatus.Paused) flt_stop++;
                             }
                         }
                         break;
@@ -972,10 +959,10 @@ namespace KadOzenka.Dal.DataExport
                         {
                             if (link.Sud != null)
                             {
-                                if (link.Sud.Status == 0) oks_none++;
-                                if (link.Sud.Status == 1) oks_yes++;
-                                if (link.Sud.Status == 2) oks_no++;
-                                if (link.Sud.Status == 3) oks_stop++;
+                                if (link.Sud.Status_Code == CourtStatus.None) oks_none++;
+                                if (link.Sud.Status_Code == CourtStatus.Denied) oks_yes++;
+                                if (link.Sud.Status_Code == CourtStatus.Satisfied) oks_no++;
+                                if (link.Sud.Status_Code == CourtStatus.Paused) oks_stop++;
                             }
                         }
                         break;
@@ -1074,7 +1061,7 @@ namespace KadOzenka.Dal.DataExport
 
                 if (sud != null)
                 {
-                    if (sud.Sud.Status == 1)
+                    if (sud.Sud.Status_Code == CourtStatus.Denied)
                     {
                         switch (obj.Typeobj_Code)
                         {

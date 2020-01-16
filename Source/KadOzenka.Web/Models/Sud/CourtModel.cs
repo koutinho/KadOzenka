@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using ObjectModel.Directory.Sud;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Models.Sud
@@ -51,7 +52,7 @@ namespace KadOzenka.Web.Models.Sud
 				Number = entity.Number,
 				Date = entity.Date,
 				SudDate = entity.SudDate,
-				Status = entity.Status.GetValueOrDefault(0)
+				Status = (long)entity.Status_Code
 			};
 		}
 
@@ -61,7 +62,7 @@ namespace KadOzenka.Web.Models.Sud
 			entity.Number = model.Number;
 			entity.Date = model.Date;
 			entity.SudDate = model.SudDate;
-			entity.Status = model.Status;
+			entity.Status_Code = (CourtStatus)(model.Status ?? 0);
 		}
 	}
 }

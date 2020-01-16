@@ -12506,12 +12506,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long? _status;
+        private string _status;
         /// <summary>
-        /// 31600600 Статус дела (Отказано, Удовлетворено, Приостановлено.....) (STATUS)
+        /// 31600600 Статус дела ()
         /// </summary>
         [RegisterAttribute(AttributeID = 31600600)]
-        public long? Status
+        public string Status
         {
             get
             {
@@ -12522,6 +12522,41 @@ namespace ObjectModel.Sud
             {
                 _status = value;
                 NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Sud.CourtStatus _status_Code;
+        /// <summary>
+        /// 31600600 Статус дела (справочный код) (STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600600)]
+        public ObjectModel.Directory.Sud.CourtStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
             }
         }
 

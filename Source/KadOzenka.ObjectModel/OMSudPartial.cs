@@ -40,7 +40,7 @@ namespace ObjectModel.Sud
 					pName = OMParam.GetParamStr(OMTableParam.Sud, Id, "name", Name, out bool aName, out cName);
 					pDate = OMParam.GetParamDate(OMTableParam.Sud, Id, "date", Date, out bool aDate, out cDate);
 					pSudDate = OMParam.GetParamDate(OMTableParam.Sud, Id, "sud_date", SudDate, out bool aSudDate, out cSudDate);
-					pStatus = OMParam.GetParamBigInt(OMTableParam.Sud, Id, "status", Status, 0, out bool aStatus, out cStatus, out bool setStatusActual);
+					pStatus = OMParam.GetParamBigInt(OMTableParam.Sud, Id, "status", (long)Status_Code, 0, out bool aStatus, out cStatus, out bool setStatusActual);
 
 					Name = (pName && !aName && cName) ? old.Name : Name;
 					Number = (pNumber && !aNumber && cNumber) ? old.Number : Number;
@@ -67,7 +67,7 @@ namespace ObjectModel.Sud
 				OMParam.AddChar(OMTableParam.Sud, this.Id, "name", Name, ProcessingStatus.Processed);
 				OMParam.AddDate(OMTableParam.Sud, this.Id, "date", Date, ProcessingStatus.Processed);
 				OMParam.AddDate(OMTableParam.Sud, this.Id, "sud_date", SudDate, ProcessingStatus.Processed);
-				OMParam.AddInt(OMTableParam.Sud, this.Id, "status", Status, ProcessingStatus.Processed);
+				OMParam.AddInt(OMTableParam.Sud, this.Id, "status", (long)Status_Code, ProcessingStatus.Processed);
 			}
 			else
 			{
@@ -186,7 +186,7 @@ namespace ObjectModel.Sud
 			Name = pName.ParamChar;
 			Date = pDate.ParamDate;
 			SudDate = pSudDate.ParamDate;
-			Status = pStatus.ParamInt;
+			Status_Code = (CourtStatus)pStatus.ParamInt;
 			Save();
 			#endregion
 
