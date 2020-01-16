@@ -70,7 +70,15 @@
             @Html.CustomLabelFor(m => m.RejectionReason)
         </div>
         <div class="col-sm-8">
-            @Html.TextAreaFor(m => m.RejectionReason, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+            @Html.TextAreaFor(m => m.RejectionReason, 5, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(m => m.Annex)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoTextBoxFor(m => m.Annex, isReadonly: false)
         </div>
     </div>
     <div class="form-group">
@@ -86,6 +94,7 @@
         setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
         var value = $('#Type').data('kendoDropDownList').value();
         changeRejectionReasonVisability(value);
+        changeAnnexVisability(value);
         $('#Type').data('kendoDropDownList').bind("change", onTypeChanged);
 
         $('#save').on('click',
@@ -174,6 +183,7 @@
     function onTypeChanged(e) {
         var value = this.value();
         changeRejectionReasonVisability(value);
+        changeAnnexVisability(value);
     }
 
     function changeRejectionReasonVisability(value) {
@@ -220,6 +230,17 @@
             $('#RejectionReason').val('');
             $('#RejectionReason').hide();
             $('label[for="RejectionReason"]').hide();
+        }
+    }
+
+    function changeAnnexVisability(value) {
+        if (value == '@UvedType.Item1.GetEnumCode()' || value == '@UvedType.Item5.GetEnumCode()') {
+            $('#Annex').show();
+            $('label[for="Annex"]').show();
+        } else {
+            $('#Annex').val('');
+            $('#Annex').hide();
+            $('label[for="Annex"]').hide();
         }
     }
 </script>

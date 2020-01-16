@@ -109,8 +109,11 @@ namespace KadOzenka.Dal.FastReports
 				"о\u00A0характеристиках объекта недвижимости на\u00A0" + GetObjectTypeString(declaration.TypeObj_Code) +
 				" с\u00A0кадастровым номером " + declaration.CadastralNumObj +
 				" и\u00A0сообщает." + System.Environment.NewLine +
-				"\u0009Декларация проверку не\u00A0прошла и\u00A0не\u00A0подлежит рассмотрению, т.к. " + reason + @"."
-				+ System.Environment.NewLine + System.Environment.NewLine + "\u0009Приложение: перечень документов";
+				"\u0009Декларация проверку не\u00A0прошла и\u00A0не\u00A0подлежит рассмотрению, т.к. " + reason + @".";
+			if (!string.IsNullOrWhiteSpace(notification.Annex))
+			{
+				mainData += System.Environment.NewLine + System.Environment.NewLine + "\u0009Приложение: " + PrepareText(notification.Annex);
+			}
 			mainData = mainData.Replace(" ", "\u0020");
 
 			dataSet.Tables[0].Rows.Add(

@@ -75,6 +75,12 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = "Причина отказа")]
 		public RejectionReasonType? RejectionReasonType { get; set; }
 
+		/// <summary>
+		/// Приложение (ANNEX)
+		/// </summary>
+		[Display(Name = "Приложение")]
+		public string Annex { get; set; }
+
 		public static NotificationModel FromEntity(OMUved entity, OMBook book)
 		{
 			if (entity == null)
@@ -98,7 +104,8 @@ namespace KadOzenka.Web.Models.Declarations
 				MailNumber = entity.MailNum,
 				MailDate = entity.MailDate,
 				RejectionReason = entity.RejectionReason,
-				RejectionReasonType = entity.RejectionReasonType_Code
+				RejectionReasonType = entity.RejectionReasonType_Code,
+				Annex = entity.Annex
 			};
 		}
 
@@ -113,6 +120,7 @@ namespace KadOzenka.Web.Models.Declarations
 			entity.MailDate = notificationViewModel.MailDate;
 			entity.RejectionReason = notificationViewModel.RejectionReason;
 			entity.RejectionReasonType_Code = notificationViewModel.RejectionReasonType.GetValueOrDefault();
+			entity.Annex = notificationViewModel.Annex;
 		}
 	}
 }
