@@ -444,7 +444,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                         Id = NullConvertor.DBToInt64(myOleDbDataReader["id"]),
                         Name = NullConvertor.ToString(myOleDbDataReader["name"]),
                         Number = NullConvertor.ToString(myOleDbDataReader["number"]),
-                        Status = NullConvertor.DBToInt(myOleDbDataReader["status"])
+                        Status_Code = (CourtStatus)NullConvertor.DBToInt(myOleDbDataReader["status"])
                     };
 
                     if (NullConvertor.DBToDateTime(myOleDbDataReader["date"], out DateTime date)) sudObject.Date = date;
@@ -1436,7 +1436,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                                         Date = sDate,
                                         Name = sName,
                                         Number = sNumber,
-                                        Status = (lStatus == -1) ? 0 : lStatus,
+                                        Status_Code = (CourtStatus)((lStatus == -1) ? 0 : lStatus),
                                         SudDate = sDateAct,
                                     };
                                     sud_sud.SaveAndCheckParam();
@@ -1451,7 +1451,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                                     sNumber = (sNumber == string.Empty) ? sud_sud.Number : sNumber;
                                     sDate = (sDate == null) ? sud_sud.Date : sDate;
                                     sDateAct = (sDateAct == null) ? sud_sud.SudDate : sDateAct;
-                                    lStatus = (lStatus == -1) ? sud_sud.Status : lStatus;
+                                    lStatus = (lStatus == -1) ? (long)sud_sud.Status_Code : lStatus;
 
                                     if ((sud_sud.Date != sDate) && (sDate != null))
                                     {
@@ -1465,7 +1465,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                                     {
                                         errorSud.colIndex.Add(19);
                                     }
-                                    if ((sud_sud.Status != lStatus) && (lStatus != -1))
+                                    if ((sud_sud.Status_Code != (CourtStatus)lStatus) && (lStatus != -1))
                                     {
                                         errorSud.colIndex.Add(20);
                                     }
@@ -1473,7 +1473,7 @@ namespace KadOzenka.BlFrontEnd.ExportSud
                                     sud_sud.Date = sDate;
                                     sud_sud.Name = sName;
                                     sud_sud.Number = sNumber;
-                                    sud_sud.Status = lStatus;
+                                    sud_sud.Status_Code = (CourtStatus)lStatus;
                                     sud_sud.SudDate = sDateAct;
                                     sud_sud.SaveAndCheckParam();
                                 }
