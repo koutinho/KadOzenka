@@ -17959,5 +17959,45 @@ namespace ObjectModel.Common
             }
         }
 
-    }
+
+		private long? _registerid;
+		/// <summary>
+		/// 80101300 ИД регистра (REGISTER_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 80101300)]
+		public long? RegisterId
+		{
+			get
+			{
+				CheckPropertyInited("RegisterId");
+				return _registerid;
+			}
+			set
+			{
+				_registerid = value;
+				NotifyPropertyChanged("RegisterId");
+			}
+		}
+
+
+		private long? _objectid;
+		/// <summary>
+		/// 80101400 ИД объекта (OBJECT_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 80101400)]
+		public long? ObjectId
+		{
+			get
+			{
+				CheckPropertyInited("ObjectId");
+				return _objectid;
+			}
+			set
+			{
+				_objectid = value;
+				NotifyPropertyChanged("ObjectId");
+			}
+		}
+
+	}
 }

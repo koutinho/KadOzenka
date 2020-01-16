@@ -17,10 +17,13 @@
                 e.data = { objectId: '@ViewBag.ObjectId'}
             },
 
-		    success: function (e) {
-			    if (e.operation === "upload") {
-				    Common.ShowMessage("Файл успешно загружен");
-			    }
+            success: function (e) {
+                if (e.operation === "upload") {                    
+                    Common.ShowMessage("Загрузка успешно добавлена в очередь, по результатам загрузки будет отправлено сообщение");
+                    setTimeout(function () {
+                        Common.UI.CloseWindow('registerModalWindow', window.parent);
+                    }, 1000);
+                }
 		    },
 		    validation: {
 			    allowedExtensions: ['.xml']

@@ -12,6 +12,7 @@ using KadOzenka.Dal.DataImport;
 using Core.Main.FileStorages;
 using Core.ErrorManagment;
 using System.IO;
+using Core.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -120,22 +121,21 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult ImportGkn(IFormFile file, long objectId)
 		{
+			//SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
 			try
 			{
-				ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
-				string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-
-				using (Stream fileStream = file.OpenReadStream())
+				using (var stream = file.OpenReadStream())
 				{
-					DataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);
+					DataImporterGknLongProcess.AddImportToQueue(ObjectModel.KO.OMTask.GetRegisterId(), "Tasks", file.FileName, stream, ObjectModel.KO.OMTask.GetRegisterId(), objectId);
 				}
 			}
-			catch (Exception ex)
+			catch (Exception e)
 			{
-				ErrorManager.LogError(ex);
+				ErrorManager.LogError(e);
 				return BadRequest();
 			}
-			return Ok();
+
+			return NoContent();			
 		}
 
 		[HttpGet]
