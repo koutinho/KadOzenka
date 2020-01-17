@@ -1334,11 +1334,15 @@ input#addressInput:focus {
 	background-color: #a588cc;
 }
 
-.dropdown-main-menu .fa-tasks {
+.dropdown-main-menu .fa-globe {
+	background-color: #6599ff;
+}
+
+.dropdown-main-menu .fa-chart-line {
 	background-color: #009688;
 }
 
-.dropdown-main-menu .fa-sign {
+.dropdown-main-menu .fa-landmark {
 	background-color: #b5b5b5;
 }
 

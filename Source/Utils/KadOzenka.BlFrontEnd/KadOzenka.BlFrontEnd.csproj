@@ -46,7 +46,7 @@
     <PackageReference Include="MongoDB.Driver" Version="2.10.0" />
     <PackageReference Include="Npgsql" Version="4.0.4" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />
-    <PackageReference Include="Platform" Version="1.0.178" />
+    <PackageReference Include="Platform" Version="1.0.180" />
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="79.0.3945.3600" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.0" />
