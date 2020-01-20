@@ -10,7 +10,6 @@ using Core.UI.Registers.Reports.Model;
 using DeepMorphy;
 using NPetrovich;
 using ObjectModel.Core.SRD;
-using ObjectModel.Declaration;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using Platform.Reports;

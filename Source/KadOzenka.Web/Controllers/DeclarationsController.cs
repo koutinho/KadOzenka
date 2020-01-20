@@ -12,7 +12,6 @@ using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using Core.Shared.Extensions;
-using DevExpress.Office.Utils;
 using Newtonsoft.Json;
 using ObjectModel.Core.Reports;
 
@@ -917,5 +916,86 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion Notifications
+
+		#region Signatories
+
+		[HttpGet]
+		public ActionResult EditSignatory(long signatoryId)
+		{
+			var signatory = OMSignatory
+				.Where(x => x.Id == signatoryId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			var model = signatory != null
+				? SignatoryModel.FromEntity(signatory)
+				: SignatoryModel.FromEntity(null);
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult EditSignatory(SignatoryModel signatoryViewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			var signatory = OMSignatory
+				.Where(x => x.Id == signatoryViewModel.Id)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (signatoryViewModel.Id != -1 && signatory == null)
+			{
+				return NotFound();
+			}
+			if (signatory == null)
+			{
+				signatory = new OMSignatory();
+			}
+			SignatoryModel.ToEntity(signatoryViewModel, ref signatory);
+
+			long id;
+			using (var ts = new TransactionScope())
+			{
+				try
+				{
+					id = signatory.Save();
+					ts.Complete();
+				}
+				catch (Exception e)
+				{
+					return Json(new
+					{
+						Errors =
+							new
+							{
+								Control = string.Empty,
+								e.Message
+							}
+					});
+				}
+			}
+
+			signatoryViewModel.Id = id;
+			return Json(new { Success = "Сохранено успешно", data = signatoryViewModel });
+		}
+
+		#endregion Signatories
 	}
 }

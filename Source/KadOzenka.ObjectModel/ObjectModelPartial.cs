@@ -2332,7 +2332,7 @@ namespace ObjectModel.Declarations
     }
 }
 
-namespace ObjectModel.Declaration
+namespace ObjectModel.Declarations
 {
     /// <summary>
     /// 508 Подписант
