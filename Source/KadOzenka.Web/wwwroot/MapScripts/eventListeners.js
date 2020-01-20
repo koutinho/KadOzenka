@@ -84,6 +84,7 @@ function changeMapType(type, element) {
 function changeLayer(type) {
     if(type != null) currentLayer = type;
     map.geoObjects.remove(SOM);
+    if (imgLayer != null) map.layers.remove(imgLayer);
     switch (currentLayer) {
         case MapZoneType.district:
             setCurrentLayer('/MapJSONData/districts.min.json');
@@ -95,9 +96,15 @@ function changeLayer(type) {
             setCurrentLayer('/MapJSONData/zones.min.json');
             break;
         case MapZoneType.quartal:
-            setCurrentLayer('/MapJSONData/quartal.json');
+            setQuartalTiles();
+            //setCurrentLayer('/MapJSONData/quartal.json');
             break;
     }
+}
+
+function setQuartalTiles() {
+    imgLayer = new ymaps.Layer(imgTileSettings.imgUrlTemplate, { tileTransparent: imgTileSettings.tileTransparent });
+    map.layers.add(imgLayer);
 }
 
 function setCurrentLayer(url) {

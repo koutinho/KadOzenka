@@ -19,6 +19,12 @@ namespace KadOzenka.Dal.XmlParser
             public string description { get; set; } = "Многоугольник";
         }
 
+        private class ParsedData
+        {
+            public string Number { get; set; }
+            public List<List<List<int>>> Coordinates { get; set; }
+        }
+
         private class Options
         {
             public bool fill { get; set; } = true;
@@ -36,7 +42,8 @@ namespace KadOzenka.Dal.XmlParser
             public List<List<List<double>>> coordinates { get; set; } = new List<List<List<double>>>();
         }
 
-        private class Feature {
+        private class Feature 
+        {
             public string type { get; set; } = "Feature";
             public int id { get; set; }
             public Geometry geometry { get; set; } = new Geometry();
@@ -71,10 +78,48 @@ namespace KadOzenka.Dal.XmlParser
                 }
                 i++;
             }
-            File.WriteAllText($@"{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFolder"]}{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFile"]}", 
+            File.WriteAllText($@"{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFolder"]}{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFile"]}",
                               JsonConvert.SerializeObject(geoObjects, Newtonsoft.Json.Formatting.Indented));
-            File.WriteAllText($@"{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFolder"]}{ConfigurationManager.AppSettings["DestinyJSONMINCoordinatesFile"]}", 
+            File.WriteAllText($@"{ConfigurationManager.AppSettings["DestinyJSONCoordinatesFolder"]}{ConfigurationManager.AppSettings["DestinyJSONMINCoordinatesFile"]}",
                               JsonConvert.SerializeObject(geoObjects, Newtonsoft.Json.Formatting.None));
+        }
+
+        public static string parseToJson(XmlDocument xDoc, int zoom, int deltaX, int deltaY)
+        {
+            Console.WriteLine($"{zoom}\t{deltaX}\t{deltaY}");
+            XmlElement xRoot = xDoc.DocumentElement;
+            List<ParsedData> result = new List<ParsedData>();
+            int i = 0;
+            CoordinatesConverter converter = new CoordinatesConverter();
+            foreach (XmlNode xnode in xRoot.SelectNodes("Objects/Object"))
+            {
+                result.Add(new ParsedData());
+                result.ElementAt(i).Number = xnode.SelectNodes("Number")[0].InnerText;
+                result.ElementAt(i).Coordinates = new List<List<List<int>>>();
+                XmlNodeList nodeList = xnode.SelectNodes("Conturs");
+                foreach(XmlNode conturs in nodeList)
+                {
+                    XmlNodeList contursList = conturs.SelectNodes("Contur");
+                    int j = 0;
+                    foreach(XmlNode contur in contursList)
+                    {
+                        result.ElementAt(i).Coordinates.Add(new List<List<int>>());
+                        XmlNodeList points = contur.SelectNodes("Points/Point");
+                        int k = 0;
+                        foreach (XmlNode point in points)
+                        {
+                            double x = double.Parse(point.SelectNodes("X")[0].InnerText.Replace('.', ',')), y = double.Parse(point.SelectNodes("Y")[0].InnerText.Replace('.', ','));
+                            result.ElementAt(i).Coordinates.ElementAt(j).Add(new List<int>());
+                            result.ElementAt(i).Coordinates.ElementAt(j).ElementAt(k).Add(converter.getGlobalPixelsForLatitude(x, zoom) - deltaX);
+                            result.ElementAt(i).Coordinates.ElementAt(j).ElementAt(k).Add(converter.getGlobalPixelsForLongitude(y, zoom) - deltaY);
+                            k++;
+                        }
+                        j++;
+                    }
+                }
+                i++;
+            }
+            return JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented);
         }
 
     }

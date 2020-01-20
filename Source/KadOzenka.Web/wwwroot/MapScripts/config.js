@@ -129,6 +129,11 @@ var targetWidgetPosition = {
     left: 10
 }
 
+var imgTileSettings = {
+    imgUrlTemplate: 'Map/cadastralTiles?x=%x&y=%y&z=%z',
+    tileTransparent: true
+}
+
 const MapZoneType = { "district": 1, "region": 2, "zone": 3, "quartal": 4 };
 Object.freeze(MapZoneType);
 
@@ -137,4 +142,5 @@ var clusterSelected = null;
 var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 var currentLayer = null;
 var SOM = null;
+var imgLayer = null;
 var clustererData = null;

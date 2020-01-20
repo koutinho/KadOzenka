@@ -25,6 +25,7 @@ using KadOzenka.Dal.XmlParser;
 using KadOzenka.BlFrontEnd.PostgresToMongo;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
+using ImageProccessor;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -58,7 +59,7 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("9", "Процедура создания тестовых скриншотов", () => { new Selenium().MakeScreenshot(); });
             consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
             consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
-            consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().RefreshAllData(1000, true); });
+            consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().RefreshAllData(15000, true); });
             consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
             consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(100); });
             consoleHelper.AddCommand("15", "Тест автоматического формирования исключений", () => { new TestAutoExclusions().TryParse(); });
@@ -67,8 +68,10 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
             consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseDistricts(); });
             consoleHelper.AddCommand("20", "Тест конвертации из Postgres в Mongo", () => { ConvertToMongo.Convert(20000); });
+            consoleHelper.AddCommand("21", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
+            consoleHelper.AddCommand("22", "Генерация тайлов для карты", () => { new CoordinatesConverter().GenerateInitialImages(); });
 
-			consoleHelper.AddCommand("21", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
+            consoleHelper.AddCommand("30", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
 
 			consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
 

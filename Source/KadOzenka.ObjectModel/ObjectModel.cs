@@ -17371,7 +17371,7 @@ namespace ObjectModel.Declarations
     }
 }
 
-namespace ObjectModel.Declarations
+namespace ObjectModel.Declaration
 {
     /// <summary>
     /// 507 Связь типов причин отказа и уведомлений об отказе и возврате документов (DECLARATIONS_UVED_REJECTION_REASON_TYPE)
@@ -17475,25 +17475,12 @@ namespace ObjectModel.Declarations
             }
         }
 
-    }
-}
-
-namespace ObjectModel.Declaration
-{
-    /// <summary>
-    /// 508 Подписант (DECLARATIONS_SIGNATORY)
-    /// </summary>
-    [RegisterInfo(RegisterID = 508)]
-    [Serializable]
-    public partial class OMSignatory : OMBaseClass<OMSignatory>
-    {
-
-        private long _id;
+        private DateTime? _creationdate;
         /// <summary>
-        /// 50801000 Идентификатор (ID)
+        /// 50700300 Дата добавления (CREATION_DATE)
         /// </summary>
-        [PrimaryKey(AttributeID = 50801000)]
-        public long Id
+        [RegisterAttribute(AttributeID = 50700300)]
+        public DateTime? CreationDate
         {
             get
             {

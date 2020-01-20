@@ -20,7 +20,7 @@ namespace KadOzenka.Web.Controllers
 {
     public class MapController : BaseController
     {
-	    private readonly CoreUiService _coreUiService;
+        private readonly CoreUiService _coreUiService;
         private readonly RegistersService _registersService;
 
         public string MarketObjectsRegisterViewId => "MarketObjects";
@@ -31,74 +31,74 @@ namespace KadOzenka.Web.Controllers
             _registersService = registersService;
         }
 
-	    public ActionResult Index(long? objectId)
-	    {
-		    if (objectId.HasValue)
-		    {
-			    var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
-			    return View(MapObjectDto.OMMap(marketObject));
-			}
-		    return View(new MapObjectDto());
-	    }
+        public ActionResult Index(long? objectId)
+        {
+            if (objectId.HasValue)
+            {
+                var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
+                return View(MapObjectDto.OMMap(marketObject));
+            }
+            return View(new MapObjectDto());
+        }
 
-	    public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude,
-		    decimal? bottomLongitude, int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, string token, long? objectId)
-	    {
-		    var query = OMCoreObject
-                .Where(x => 
-                    x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess && 
-                    x.Lng != null && 
-                    x.Lat != null && 
+        public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude,
+            decimal? bottomLongitude, int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, string token, long? objectId)
+        {
+            var query = OMCoreObject
+                .Where(x =>
+                    x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess &&
+                    x.Lng != null &&
+                    x.Lat != null &&
                     (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
-		    if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
-		    else PrepareQueryByUserFilter(query);
-		    if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
-		    if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
-		    if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
-		    if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
-		    if (mapZoom < minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
-		    var point = new List<object>();
-		    var analogItem = query.Select(x => new {x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code, x.PropertyMarketSegment}).Execute().ToList();
-		    analogItem.ForEach(x => 
-                point.Add(new 
-                { 
-                    points = new[] {x.Lat, x.Lng},
-                    id = x.Id, 
-                    segment=FormSegment(x.PropertyMarketSegment) 
+            if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
+            else PrepareQueryByUserFilter(query);
+            if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
+            if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
+            if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
+            if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
+            if (mapZoom < minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
+            var point = new List<object>();
+            var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code, x.PropertyMarketSegment }).Execute().ToList();
+            analogItem.ForEach(x =>
+                point.Add(new
+                {
+                    points = new[] { x.Lat, x.Lng },
+                    id = x.Id,
+                    segment = FormSegment(x.PropertyMarketSegment)
                 })
             );
-            return Json(new { token=token, arr=point, allCount=query.ExecuteCount() });
-	    }
+            return Json(new { token = token, arr = point, allCount = query.ExecuteCount() });
+        }
 
-		public JsonResult RequiredInfo()
+        public JsonResult RequiredInfo()
         {
             List<long> ids = JsonConvert.DeserializeObject<List<long>>(new StreamReader(HttpContext.Request.Body).ReadToEnd());
-	        List<object> allData = new List<object>();
-	        if (ids.Count > 0)
-	        {
-		        OMCoreObject.Where(x => ids.Contains(x.Id)).SelectAll().Execute().Take(ids.Count <= 20 ? ids.Count : 20).ToList().ForEach(x => {
-			        allData.Add(new
-			        {
+            List<object> allData = new List<object>();
+            if (ids.Count > 0)
+            {
+                OMCoreObject.Where(x => ids.Contains(x.Id)).SelectAll().Execute().Take(ids.Count <= 20 ? ids.Count : 20).ToList().ForEach(x => {
+                    allData.Add(new
+                    {
                         segment = FormSegment(x.PropertyMarketSegment),
                         dealType = x.DealType,
                         source = x.Market,
                         price = x.Price,
-				        area = x.Area,
+                        area = x.Area,
                         areaLand = x.AreaLand,
                         roomsCount = x.RoomsCount,
                         link = x.Url,
-				        metro = x.Metro,
-				        address = x.Address,
-				        images = x.Images,
-				        id = x.Id,
+                        metro = x.Metro,
+                        address = x.Address,
+                        images = x.Images,
+                        id = x.Id,
                         floor = x.FloorNumber,
                         floorCount = x.FloorsCount,
                         cadastralNumber = x.CadastralNumber,
                         parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
-				        lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy")
-			        });
-		        });
-			}
+                        lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy")
+                    });
+                });
+            }
             return Json(allData);
         }
 
@@ -106,13 +106,13 @@ namespace KadOzenka.Web.Controllers
         {
             var userFilter = _coreUiService.GetSearchFilter(MarketObjectsRegisterViewId);
             var filters = JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition);
-            string typeControl="value", type="REFERENCE";
+            string typeControl = "value", type = "REFERENCE";
             long[] dealTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
             long[] marketSegments = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
             var commertialMarketSegmentList =
                 OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute().Where(x => int.Parse(x.Code) < 100)
-                    .OrderBy(x => int.Parse(x.Code)).Select(x => new { 
+                    .OrderBy(x => int.Parse(x.Code)).Select(x => new {
                         Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name,
                         Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
                     });
@@ -125,11 +125,11 @@ namespace KadOzenka.Web.Controllers
                     });
             var dealTypeList = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute()
-                    .OrderBy(x => x.ItemId).Select(x => new { 
+                    .OrderBy(x => x.ItemId).Select(x => new {
                         Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name,
-                        Selected = dealTypes == null ? false : dealTypes.Contains(x.ItemId) ? true : false 
+                        Selected = dealTypes == null ? false : dealTypes.Contains(x.ItemId) ? true : false
                     });
-            return Json(new { 
+            return Json(new {
                 commertialMarketFilter = new
                 {
                     typeControl = typeControl, type = type,
@@ -148,7 +148,7 @@ namespace KadOzenka.Web.Controllers
                 dealTypeFilter = new {
                     typeControl = typeControl, type = type,
                     text = OMCoreObject.GetAttributeData(y => y.DealType).Name,
-                    dealTypeList = dealTypeList, 
+                    dealTypeList = dealTypeList,
                     referenceId = OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId,
                     id = OMCoreObject.GetAttributeData(y => y.DealType).Id
                 }
@@ -158,7 +158,13 @@ namespace KadOzenka.Web.Controllers
         public JsonResult SetFilters(string filter)
         {
             new CoreUiController(_coreUiService, _registersService).SaveSearchFilter(MarketObjectsRegisterViewId, filter);
-            return Json(new{ });
+            return Json(new { });
+        }
+
+        public ActionResult cadastralTiles(int x, int y, int z)
+        {
+            try { return base.File($@"~/imgLayer/{z}/{x}_{y}.png", "image/png"); }
+            catch (Exception) { return null; }
         }
 
         private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)
