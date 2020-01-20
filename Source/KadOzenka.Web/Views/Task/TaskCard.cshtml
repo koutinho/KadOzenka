@@ -1,0 +1,73 @@
+﻿@using Platform.Web.Models.CoreAttachment
+@model KadOzenka.Web.Models.Task.TaskModel
+
+<form>
+    <div class="form-group">
+        <div class="k-content col-sm-12">
+            <div id="tabstrip-wrap">
+            </div>
+        </div>
+    </div>
+
+    <ul id="ls_panelbar" class="panelbar">
+        <li id="SectionAttachment" data-expand>
+            <span>Образы</span>
+            <div class="form-group col-sm-12">
+                <div>
+                    @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+                        new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
+                </div>
+            </div>
+        </li>
+
+        <li id="SectionXMLFiles" data-expand>
+            <span>XML-Файлы</span>
+            <div>
+            </div>
+        </li>
+    </ul>
+</form>
+
+
+
+@section styles {
+    <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+    <style>
+        #ls_panelbar {
+            width: 99% !important;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+}
+
+@section scripts {
+    <script src="~/js/jquery.fancybox.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+            panelbar.expand('li[data-expand]');
+            $("#navigation-menu a").mPageScroll2id({
+                highlightSelector: "#navigation-menu a"
+            });
+
+            var tabStrip = $("#tabstrip-wrap").kendoTabStrip().data("kendoTabStrip");
+            tabStrip.append(
+                [
+                    {
+                        text: "Основные данные",
+                        contentUrl: "@Url.Action("TaskMainInfo", "Task", new { taskId = Model.Id })"
+                    },
+                    {
+                        text: "Объекты",
+                        contentUrl: "@Url.Action("Objects", "Task")"
+                    }
+                ]
+            );
+            tabStrip.select(0);
+        });
+
+    </script>
+}

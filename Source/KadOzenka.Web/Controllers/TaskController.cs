@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -14,14 +15,55 @@ using ObjectModel.Core.SRD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.Tasks;
 
 namespace KadOzenka.Web.Controllers
 {
 	public class TaskController : Controller
     {
-		#region Туры
+        public TaskService TaskService { get; set; }
 
-		[HttpGet]
+        public TaskController()
+        {
+            TaskService = new TaskService();
+        }
+
+        #region Task Card
+
+        [HttpGet]
+        public ActionResult TaskCard(long taskId)
+        {
+            var taskModel = new TaskModel
+            {
+                Id = taskId
+            };
+
+            return View(taskModel);
+        }
+
+        [HttpGet]
+        public ActionResult TaskMainInfo(long taskId)
+        {
+            var taskDto = TaskService.GetTaskById(taskId);
+            if (taskDto == null)
+                return NotFound();
+
+            var taskModel = TaskModel.ToModel(taskDto);
+
+            return PartialView("~/Views/Task/Partials/TaskMainInfo.cshtml", taskModel);
+        }
+
+        [HttpGet]
+        public ActionResult Objects()
+        {
+            return new EmptyResult();
+        }
+
+        #endregion
+
+        #region Туры
+
+        [HttpGet]
 		public IActionResult TourEstimates()
 		{
 			return View();
