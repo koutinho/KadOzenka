@@ -58,11 +58,52 @@
         </div>
     </div>
     <div class="form-group">
-        <div class="col-sm-3">
-            @Html.CustomLabelFor(m => m.RejectionReasonType)
-        </div>
-        <div class="col-sm-9">
-            @Html.KendoEnumDropDownListFor(m => m.RejectionReasonType, isReadonly: false)
+        <div class="col-sm-12">
+            <fieldset id="rejectionReasonTypesFieldset">
+                <legend>Причина отказа</legend>
+                <div class="row">
+                    <div class="col-sm-6">
+                        @(Html.Kendo().CheckBox()
+                                      .Name(nameof(RejectionReasonType) + RejectionReasonType.ApplicantIsNotObjectTypeOwner.GetEnumCode())
+                                      .Label(RejectionReasonType.ApplicantIsNotObjectTypeOwner.GetEnumDescription())
+                                      .Checked(Model.RejectionReasonTypes != null && Model.RejectionReasonTypes.Any(x => x == RejectionReasonType.ApplicantIsNotObjectTypeOwner)))
+                    </div>
+                    <div class="col-sm-6">
+                        @(Html.Kendo().CheckBox()
+                                      .Name(nameof(RejectionReasonType) + RejectionReasonType.DocumentsAreNotAttached.GetEnumCode())
+                                      .Label(RejectionReasonType.DocumentsAreNotAttached.GetEnumDescription())
+                                      .Checked(Model.RejectionReasonTypes != null && Model.RejectionReasonTypes.Any(x => x == RejectionReasonType.DocumentsAreNotAttached)))
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        @(Html.Kendo().CheckBox()
+                                      .Name(nameof(RejectionReasonType) + RejectionReasonType.DeclarationDoesNotMatchForm.GetEnumCode())
+                                      .Label(RejectionReasonType.DeclarationDoesNotMatchForm.GetEnumDescription())
+                                      .Checked(Model.RejectionReasonTypes != null && Model.RejectionReasonTypes.Any(x => x == RejectionReasonType.DeclarationDoesNotMatchForm)))
+                    </div>
+                    <div class="col-sm-6">
+                        @(Html.Kendo().CheckBox()
+                                      .Name(nameof(RejectionReasonType) + RejectionReasonType.DeclarationIsNotCertified.GetEnumCode())
+                                      .Label(RejectionReasonType.DeclarationIsNotCertified.GetEnumDescription())
+                                      .Checked(Model.RejectionReasonTypes != null && Model.RejectionReasonTypes.Any(x => x == RejectionReasonType.DeclarationIsNotCertified)))
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        @(Html.Kendo().CheckBox()
+                                      .Name(nameof(RejectionReasonType) + RejectionReasonType.DeclarationAndDocumentsDoNotMeetRequirements.GetEnumCode())
+                                      .Label(RejectionReasonType.DeclarationAndDocumentsDoNotMeetRequirements.GetEnumDescription())
+                                      .Checked(Model.RejectionReasonTypes != null && Model.RejectionReasonTypes.Any(x => x == RejectionReasonType.DeclarationAndDocumentsDoNotMeetRequirements)))
+                    </div>
+                    <div class="col-sm-6">
+                        @(Html.Kendo().CheckBox()
+                                      .Name(nameof(RejectionReasonType) + RejectionReasonType.Other.GetEnumCode())
+                                      .Label(RejectionReasonType.Other.GetEnumDescription())
+                                      .Checked(Model.RejectionReasonTypes != null && Model.RejectionReasonTypes.Any(x => x == RejectionReasonType.Other)))
+                    </div>
+                </div>
+            </fieldset>
         </div>
     </div>
     <div class="form-group">
@@ -89,6 +130,25 @@
 </div>
 }
 
+@section styles {
+    <style>
+        fieldset#rejectionReasonTypesFieldset {
+            border: 1px solid #c8c6cc;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            padding: 0.8em;
+        }
+
+        fieldset#rejectionReasonTypesFieldset legend {
+            font-size: initial;
+        }
+
+        .k-checkbox-label {
+            font-size: medium;
+        }
+    </style>
+}
+
 <script type="text/javascript">
     $(document).ready(function () {
         setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
@@ -102,6 +162,17 @@
                 kendo.ui.progress($('body'), true);
                 var form = $('form');
                 var formObject = Common.Functions.FormToObject(form);
+                debugger;
+                let rejectionReasonTypes = Object.keys(formObject).filter((propertyName) => {
+                    return propertyName.startsWith('@nameof(RejectionReasonType)');
+                });
+                formObject['RejectionReasonTypes'] = [];
+                for (var i = 0; i < rejectionReasonTypes.length; i++) {
+                    if (formObject[rejectionReasonTypes[i]] === true) {
+                        formObject['RejectionReasonTypes'].push(
+                            rejectionReasonTypes[i].replace('@nameof(RejectionReasonType)', ''));
+                    }
+                }
 
                 $.post(form.attr('action'), formObject).done(function (response) {
                     kendo.ui.progress($('body'), false);
@@ -187,43 +258,42 @@
     }
 
     function changeRejectionReasonVisability(value) {
+        let rejectionReasonTypeFieldset = $('#rejectionReasonTypesFieldset');
+        let rejectionReasonTypeOther =
+            rejectionReasonTypeFieldset.find('#'+'@nameof(RejectionReasonType)' +
+                '@RejectionReasonType.Other.GetEnumCode()');
+
         if (value == '@UvedType.Item4.GetEnumCode()' || value == '@UvedType.Item5.GetEnumCode()') {
             $('#RejectionReason').show();
             $('label[for="RejectionReason"]').show();
 
             if (value == '@UvedType.Item5.GetEnumCode()') {
-                let rejectionReasonType = $('#RejectionReasonType').data('kendoDropDownList');
-                rejectionReasonType.bind("change", onRejectionReasonTypeChanged);
-                rejectionReasonType.trigger("change");
-                rejectionReasonType.wrapper.show();
-                $('label[for="RejectionReasonType"]').show();
+                rejectionReasonTypeOther.bind("change", onRejectionReasonTypeChanged);
+                rejectionReasonTypeOther.trigger("change");
+                rejectionReasonTypeFieldset.show();
             } else {
-                let rejectionReasonType = $('#RejectionReasonType').data('kendoDropDownList');
-                rejectionReasonType.unbind("change", onRejectionReasonTypeChanged);
-                rejectionReasonType.value('@RejectionReasonType.None.GetEnumCode()');
-                rejectionReasonType.wrapper.hide();
-                $('label[for="RejectionReasonType"]').hide();
+                rejectionReasonTypeFieldset.find('input.k-checkbox').attr('checked', false);
+                rejectionReasonTypeOther.unbind("change", onRejectionReasonTypeChanged);
+                rejectionReasonTypeFieldset.hide();
             }
         } else {
             $('#RejectionReason').val('');
             $('#RejectionReason').hide();
             $('label[for="RejectionReason"]').hide();
 
-            let rejectionReasonType = $('#RejectionReasonType').data('kendoDropDownList');
-            rejectionReasonType.unbind("change", onRejectionReasonTypeChanged);
-            rejectionReasonType.value('@RejectionReasonType.None.GetEnumCode()');
-            rejectionReasonType.wrapper.hide();
-            $('label[for="RejectionReasonType"]').hide();
+            rejectionReasonTypeFieldset.find('input.k-checkbox').attr('checked', false);
+            rejectionReasonTypeOther.unbind("change", onRejectionReasonTypeChanged);
+            rejectionReasonTypeFieldset.hide();
         }
     }
 
     function onRejectionReasonTypeChanged(e) {
-        var value = this.value();
+        var value = this.checked;
         changeRejectionReasonAvailability(value);
     }
 
     function changeRejectionReasonAvailability(value) {
-        if (value == '@RejectionReasonType.Other.GetEnumCode()') {
+        if (value) {
             $('#RejectionReason').show();
             $('label[for="RejectionReason"]').show();
         } else {

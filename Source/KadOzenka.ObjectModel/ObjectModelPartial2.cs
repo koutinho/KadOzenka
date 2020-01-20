@@ -911,24 +911,6 @@ namespace ObjectModel.Declarations
 }
 
 
-namespace ObjectModel.Declarations
-{
-    /// <summary>
-    /// 507 Таблица, содержащая информацию о скан-образах декларации
-    /// </summary>
-    public partial class OMScanData
-    {
-        /// <summary>
-        /// Ссылка на (501 Декларация)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Declarations.OMDeclaration ParentDeclaration { get; set; }
-
-    }
-}
-
-
 namespace ObjectModel.Common
 {
     /// <summary>

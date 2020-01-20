@@ -3,7 +3,7 @@
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
               ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
     <Buttons>
-        <Button Caption="Добавить" NavigateURL="/Declarations/EditNotification" WindowHeight="530" WindowWidth="800" NeedRefresh="true">
+        <Button Caption="Добавить" NavigateURL="/Declarations/EditNotification" WindowHeight="530" WindowWidth="840" NeedRefresh="true">
             <Parameters>
                 <Parameter Key="declarationId" Value="{Get:DeclarationsDeclarationId}" />
             </Parameters>
@@ -18,7 +18,7 @@
         </Button>
 
 
-        <Button Caption="Редактировать" NavigateURL="/Declarations/EditNotification" WindowHeight="530" WindowWidth="800" NeedRefresh="true">
+        <Button Caption="Редактировать" NavigateURL="/Declarations/EditNotification" WindowHeight="530" WindowWidth="840" NeedRefresh="true">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>

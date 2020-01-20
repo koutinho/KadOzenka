@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Transactions;
@@ -11,6 +12,7 @@ using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using Core.Shared.Extensions;
+using DevExpress.Office.Utils;
 using Newtonsoft.Json;
 using ObjectModel.Core.Reports;
 
@@ -645,12 +647,18 @@ namespace KadOzenka.Web.Controllers
 				.Execute().FirstOrDefault();
 
 			OMBook book = null;
+			List<OMUvedRejectionReasonType> rejectionReasonTypes = null;
 			if (uved != null)
 			{
 				book = OMBook
 					.Where(x => x.Id == uved.Book_Id)
 					.SelectAll()
 					.ExecuteFirstOrDefault();
+				if (uved.Type_Code == UvedType.Item5)
+				{
+					rejectionReasonTypes =
+						OMUvedRejectionReasonType.Where(x => x.UvedId == uved.Id).SelectAll().Execute();
+				}
 			}
 			else
 			{
@@ -661,8 +669,8 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var model = notificationId != 0 && uved != null
-				? NotificationModel.FromEntity(uved, book)
-				: NotificationModel.FromEntity(null, book);
+				? NotificationModel.FromEntity(uved, book, rejectionReasonTypes)
+				: NotificationModel.FromEntity(null, book, rejectionReasonTypes);
 			model.DeclarationId = declarationId;
 
 			return View(model);
@@ -726,6 +734,39 @@ namespace KadOzenka.Web.Controllers
 						savedReport.IsDeleted = true;
 						savedReport.Save();
 					}
+
+					if (notificationViewModel.Type.GetValueOrDefault() != UvedType.Item5)
+					{
+						var rejectionReasonTypes =
+							OMUvedRejectionReasonType.Where(x => x.UvedId == id).SelectAll().Execute();
+						foreach (var rejectionReasonType in rejectionReasonTypes)
+						{
+							rejectionReasonType.Destroy();
+						}
+					}
+				}
+
+				if (notificationViewModel.Type.GetValueOrDefault() == UvedType.Item5)
+				{
+					var existedRejectionReasonTypes =
+						OMUvedRejectionReasonType.Where(x => x.UvedId == id).SelectAll().Execute();
+					var addedRejectionReasonTypes = notificationViewModel.RejectionReasonTypes.Where(x =>
+						existedRejectionReasonTypes.All(y => y.RejectionReasonType_Code != x));
+					var deletedRejectionReasonTypes = existedRejectionReasonTypes.Where(x =>
+						notificationViewModel.RejectionReasonTypes.All(y => y != x.RejectionReasonType_Code));
+					foreach (var deletedRejectionReasonType in deletedRejectionReasonTypes)
+					{
+						deletedRejectionReasonType.Destroy();
+					}
+					foreach (var addedRejectionReasonType in addedRejectionReasonTypes)
+					{
+						var rejectionReasonType = new OMUvedRejectionReasonType
+						{
+							UvedId = id,
+							RejectionReasonType_Code = addedRejectionReasonType
+						};
+						rejectionReasonType.Save();
+					}
 				}
 
 				ts.Complete();
@@ -751,7 +792,7 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
-			return View(NotificationModel.FromEntity(omUved, book));
+			return View(omUved.Id);
 		}
 
 		[HttpPost, ActionName("DeleteNotification")]
@@ -772,6 +813,13 @@ namespace KadOzenka.Web.Controllers
 					{
 						savedReport.IsDeleted = true;
 						savedReport.Save();
+					}
+
+					var rejectionReasonTypes =
+						OMUvedRejectionReasonType.Where(x => x.UvedId == notificationId).SelectAll().Execute();
+					foreach (var rejectionReasonType in rejectionReasonTypes)
+					{
+						rejectionReasonType.Destroy();
 					}
 
 					OMUved

@@ -2148,12 +2148,6 @@ namespace ObjectModel.Declarations
         /// </summary>
         [Reference]
         public List<ObjectModel.Declarations.OMUved> Uved { get; set; }
-
-        /// <summary>
-        /// Ссылка на (507 Таблица, содержащая информацию о скан-образах декларации)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Declarations.OMScanData> ScanData { get; set; }
         public OMDeclaration()
         {
 
@@ -2169,8 +2163,6 @@ namespace ObjectModel.Declarations
             Result = new List<ObjectModel.Declarations.OMResult>();
 
             Uved = new List<ObjectModel.Declarations.OMUved>();
-
-            ScanData = new List<ObjectModel.Declarations.OMScanData>();
 
         }
         public OMDeclaration(bool trackPropertyChanging) : this()
@@ -2319,12 +2311,12 @@ namespace ObjectModel.Declarations
 namespace ObjectModel.Declarations
 {
     /// <summary>
-    /// 507 Таблица, содержащая информацию о скан-образах декларации
+    /// 507 Связь типов причин отказа и уведомлений об отказе и возврате документов
     /// </summary>
-    public partial class OMScanData
+    public partial class OMUvedRejectionReasonType
     {
 
-        public OMScanData()
+        public OMUvedRejectionReasonType()
         {
 
             Id = -1;
@@ -2333,7 +2325,7 @@ namespace ObjectModel.Declarations
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMScanData(bool trackPropertyChanging) : this()
+        public OMUvedRejectionReasonType(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

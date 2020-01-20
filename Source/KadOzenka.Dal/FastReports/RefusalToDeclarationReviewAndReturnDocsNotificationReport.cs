@@ -129,17 +129,17 @@ namespace KadOzenka.Dal.FastReports
 
 		private string GetRejectionReason(OMUved notification)
 		{
-			var reason = string.Empty;
-			if (notification.RejectionReasonType_Code == RejectionReasonType.Other)
+			var reasons = new List<string>();
+			var existedRejectionReasonTypes =
+				OMUvedRejectionReasonType.Where(x => x.UvedId == notification.Id).OrderBy(x => x.RejectionReasonType_Code).SelectAll().Execute();
+			foreach (var existedRejectionReasonType in existedRejectionReasonTypes)
 			{
-				reason = notification.RejectionReason;
-			}
-			else if (notification.RejectionReasonType_Code != RejectionReasonType.None)
-			{
-				reason = notification.RejectionReasonType_Code.GetEnumDescription();
+				reasons.Add(existedRejectionReasonType.RejectionReasonType_Code != RejectionReasonType.Other
+					? existedRejectionReasonType.RejectionReasonType_Code.GetEnumDescription()
+					: notification.RejectionReason);
 			}
 
-			return PrepareText(reason);
+			return PrepareText(string.Join("; ", reasons));
 		}
 	}
 }

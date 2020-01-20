@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 
@@ -76,12 +78,19 @@ namespace KadOzenka.Web.Models.Declarations
 		public RejectionReasonType? RejectionReasonType { get; set; }
 
 		/// <summary>
+		/// Причина отказа (REJECTION_REASON_TYPE)
+		/// </summary>
+		[Display(Name = "Причины отказа")]
+		public List<RejectionReasonType> RejectionReasonTypes { get; set; }
+
+		/// <summary>
 		/// Приложение (ANNEX)
 		/// </summary>
 		[Display(Name = "Приложение")]
 		public string Annex { get; set; }
 
-		public static NotificationModel FromEntity(OMUved entity, OMBook book)
+		public static NotificationModel FromEntity(OMUved entity, OMBook book,
+			List<OMUvedRejectionReasonType> rejectionReasonTypes)
 		{
 			if (entity == null)
 			{
@@ -89,7 +98,7 @@ namespace KadOzenka.Web.Models.Declarations
 				{
 					Id = -1,
 					BookId = book.Id,
-					BookDisplay = book.Prefics,
+					BookDisplay = book.Prefics
 				};
 			}
 
@@ -105,7 +114,8 @@ namespace KadOzenka.Web.Models.Declarations
 				MailDate = entity.MailDate,
 				RejectionReason = entity.RejectionReason,
 				RejectionReasonType = entity.RejectionReasonType_Code,
-				Annex = entity.Annex
+				Annex = entity.Annex,
+				RejectionReasonTypes = rejectionReasonTypes?.Select(x => x.RejectionReasonType_Code).ToList()
 			};
 		}
 

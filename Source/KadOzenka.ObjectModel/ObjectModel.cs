@@ -12393,6 +12393,26 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private long? _isapproved;
+        /// <summary>
+        /// 31501700 Статус утверждения объекта (IS_APPROVED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501700)]
+        public long? IsApproved
+        {
+            get
+            {
+                CheckPropertyInited("IsApproved");
+                return _isapproved;
+            }
+            set
+            {
+                _isapproved = value;
+                NotifyPropertyChanged("IsApproved");
+            }
+        }
+
     }
 }
 
@@ -17354,18 +17374,18 @@ namespace ObjectModel.Declarations
 namespace ObjectModel.Declarations
 {
     /// <summary>
-    /// 507 Таблица, содержащая информацию о скан-образах декларации (DECLARATIONS_SCAN_DATA)
+    /// 507 Связь типов причин отказа и уведомлений об отказе и возврате документов (DECLARATIONS_UVED_REJECTION_REASON_TYPE)
     /// </summary>
     [RegisterInfo(RegisterID = 507)]
     [Serializable]
-    public partial class OMScanData : OMBaseClass<OMScanData>
+    public partial class OMUvedRejectionReasonType : OMBaseClass<OMUvedRejectionReasonType>
     {
 
         private long _id;
         /// <summary>
-        /// 50700100 Идентификатор (ID)
+        /// 50701000 Идентификатор (ID)
         /// </summary>
-        [PrimaryKey(AttributeID = 50700100)]
+        [PrimaryKey(AttributeID = 50701000)]
         public long Id
         {
             get
@@ -17381,82 +17401,77 @@ namespace ObjectModel.Declarations
         }
 
 
-        private long _declarationid;
+        private long _uvedid;
         /// <summary>
-        /// 50700200 Идентификатор декларации (DECLARATION_ID)
+        /// 50702000 Идентификатор уведомления (UVED_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 50700200)]
-        public long DeclarationId
+        [RegisterAttribute(AttributeID = 50702000)]
+        public long UvedId
         {
             get
             {
-                CheckPropertyInited("DeclarationId");
-                return _declarationid;
+                CheckPropertyInited("UvedId");
+                return _uvedid;
             }
             set
             {
-                _declarationid = value;
-                NotifyPropertyChanged("DeclarationId");
+                _uvedid = value;
+                NotifyPropertyChanged("UvedId");
             }
         }
 
 
-        private DateTime? _creationdate;
+        private string _rejectionreasontype;
         /// <summary>
-        /// 50700300 Дата добавления (CREATION_DATE)
+        /// 50703000 Тип причины отказа ()
         /// </summary>
-        [RegisterAttribute(AttributeID = 50700300)]
-        public DateTime? CreationDate
+        [RegisterAttribute(AttributeID = 50703000)]
+        public string RejectionReasonType
         {
             get
             {
-                CheckPropertyInited("CreationDate");
-                return _creationdate;
+                CheckPropertyInited("RejectionReasonType");
+                return _rejectionreasontype;
             }
             set
             {
-                _creationdate = value;
-                NotifyPropertyChanged("CreationDate");
+                _rejectionreasontype = value;
+                NotifyPropertyChanged("RejectionReasonType");
             }
         }
 
 
-        private string _filename;
+        private ObjectModel.Directory.Declarations.RejectionReasonType _rejectionreasontype_Code;
         /// <summary>
-        /// 50700400 Имя файла (FILE_NAME)
+        /// 50703000 Тип причины отказа (справочный код) (REJECTION_REASON_TYPE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 50700400)]
-        public string FileName
+        [RegisterAttribute(AttributeID = 50703000)]
+        public ObjectModel.Directory.Declarations.RejectionReasonType RejectionReasonType_Code
         {
             get
             {
-                CheckPropertyInited("FileName");
-                return _filename;
+                CheckPropertyInited("RejectionReasonType_Code");
+                return this._rejectionreasontype_Code;
             }
             set
             {
-                _filename = value;
-                NotifyPropertyChanged("FileName");
-            }
-        }
+                string descr = value.GetEnumDescription();
 
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_rejectionreasontype))
+                    {
+                         _rejectionreasontype = descr;
+                    }
+                }
+                else
+                {
+                     _rejectionreasontype = descr;
+                }
 
-        private string _filetype;
-        /// <summary>
-        /// 50700500 Тип файла (FILE_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 50700500)]
-        public string FileType
-        {
-            get
-            {
-                CheckPropertyInited("FileType");
-                return _filetype;
-            }
-            set
-            {
-                _filetype = value;
-                NotifyPropertyChanged("FileType");
+                this._rejectionreasontype_Code = value;
+                NotifyPropertyChanged("RejectionReasonType");
+                NotifyPropertyChanged("RejectionReasonType_Code");
             }
         }
 
