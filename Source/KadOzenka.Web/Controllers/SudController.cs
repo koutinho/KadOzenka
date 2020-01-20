@@ -1374,6 +1374,19 @@ namespace KadOzenka.Web.Controllers
 			if (RegistersVariables.CurrentList != null)
 			{
 				objects = OMObject.Where(x => RegistersVariables.CurrentList.Contains(x.Id)).SelectAll().Execute();
+
+				if (objects.Any(x => x.IsSatisfied == 1) && objects.Any(x => x.IsSatisfied == 0))
+				{
+					var modelError = new ModalDialogDetails()
+					{
+						Action = ModalDialogDetails.ActionType.None,
+						Buttons = ModalDialogDetails.ButtonType.Ok,
+						Icon = ModalDialogDetails.IconType.Warning,
+						IsProgress = false,
+						Message = "Выбраны одновременно объекты с значением удовлеворонно и отказано!"
+					};
+					return View("~/Views/Shared/ModalDialogDetails.cshtml", modelError);
+				}
 			}
 
 			if (RegistersVariables.CurrentList == null)
