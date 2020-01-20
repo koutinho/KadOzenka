@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="false" RegisterId="801" DefaultLayoutId="1008012" LinkedRegistersList="801,950,930,203" SRDFunctionTag="ADMIN.IMPORT"
+              ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="false" ShowFilterMenu="false"
+              UseMasterPage="false">
+  <Buttons>
+      <Button Caption="Скачать исходные данные" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-arrow-down">
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+              <Parameter Key="downloadResult" Value="false" />
+          </Parameters>
+      </Button>
+    
+      <Button Caption="Скачать результат" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-file-download">
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+              <Parameter Key="downloadResult" Value="true" />
+          </Parameters>
+          <!--<ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                  <Conditions>
+                      <Condition Key="[80100300]" Operation="NotEqual" Value="2" />
+                  </Conditions>
+              </ConditionGroup>
+          </ConditionGroups>-->
+      </Button>
+    
+      <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart" OpenInNewWindow="false" Icon="fas fa-undo-alt"
+              NeedRefresh="true" WindowHeight="200" WindowWidth="400">
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+          </Parameters>
+      </Button>
+  </Buttons>
+</RegisterView>

@@ -41,5 +41,10 @@
         <Parameter Key="20100400" Value="[ObjectId]" />
       </Parameters>
     </Tab>
+    <Tab Caption="Журнал загрузки" NavigateURL="/RegistersView/KoTaskGknFilesCard?Transition=1">
+      <Parameters>
+        <Parameter Key="80101400" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
 	</Tabs>
 </RegisterView>
