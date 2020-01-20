@@ -8,7 +8,9 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
+using ObjectModel.Declarations;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Declarations;
 using ObjectModel.Directory.Sud;
 using ObjectModel.Sud;
 
@@ -123,6 +125,74 @@ namespace KadOzenka.Dal.Gadgets
 				data.Rows.Add("SudResh", "Решения", reshCount);
 			}
 			
+			return data;
+		}
+
+		/// <summary>
+		/// Декларации по типам объектов
+		/// </summary>
+		/// <returns></returns>
+		public static DataTable DeclarationsObjectTypesWidget()
+		{
+			string linkParam = "Transition=1&50101200={Type}";
+
+			var objects = OMDeclaration.Where(GetQuery("DeclarationsDeclaration"))
+				.GroupBy(x => x.TypeObj_Code)
+				.ExecuteSelect(x => new
+				{
+					x.TypeObj_Code,
+					Count = QSExtensions.Count<OMDeclaration>(y => 1)
+				});
+
+			var data = new DataTable();
+
+			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.Site.GetEnumCode()),
+				"Земельные участоки",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Site)?.Count ?? 0);
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.Building.GetEnumCode()),
+				"Здания",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Building)?.Count ?? 0);
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.Room.GetEnumCode()),
+				"Помещения",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Room)?.Count ?? 0);
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.Construction.GetEnumCode()),
+				"Сооружения",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Construction)?.Count ?? 0);
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.ParkingPlace.GetEnumCode()),
+				"Машино-места",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.ParkingPlace)?.Count ?? 0);
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.Ons.GetEnumCode()),
+				"ОНС",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Ons)?.Count ?? 0);
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.Ens.GetEnumCode()),
+				"Единые недвижимые комплексы",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Ens)?.Count ?? 0);
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.Pik.GetEnumCode()),
+				"Производственно имущественный комплексы",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Pik)?.Count ?? 0);
+
+			data.Rows.Add(
+				linkParam.Replace("{Type}", ObjectType.Other.GetEnumCode()),
+				"Иное",
+				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Other)?.Count ?? 0);
+
 			return data;
 		}
 	}
