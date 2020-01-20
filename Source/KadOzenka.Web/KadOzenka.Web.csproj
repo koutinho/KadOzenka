@@ -287,6 +287,7 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
+    <Folder Include="wwwroot\imgLayer\" />
   </ItemGroup>
 
   <ItemGroup>
