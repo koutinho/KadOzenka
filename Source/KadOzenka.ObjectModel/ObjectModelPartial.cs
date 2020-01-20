@@ -2332,6 +2332,30 @@ namespace ObjectModel.Declarations
     }
 }
 
+namespace ObjectModel.Declaration
+{
+    /// <summary>
+    /// 508 Подписант
+    /// </summary>
+    public partial class OMSignatory
+    {
+
+        public OMSignatory()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSignatory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

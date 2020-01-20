@@ -12394,22 +12394,22 @@ namespace ObjectModel.Sud
         }
 
 
-        private long? _isapproved;
+        private long? _issatisfied;
         /// <summary>
-        /// 31501700 Статус утверждения объекта (IS_APPROVED)
+        /// 31501700 Статус удовлетворения объекта (IS_SATISFIED)
         /// </summary>
         [RegisterAttribute(AttributeID = 31501700)]
-        public long? IsApproved
+        public long? IsSatisfied
         {
             get
             {
-                CheckPropertyInited("IsApproved");
-                return _isapproved;
+                CheckPropertyInited("IsSatisfied");
+                return _issatisfied;
             }
             set
             {
-                _isapproved = value;
-                NotifyPropertyChanged("IsApproved");
+                _issatisfied = value;
+                NotifyPropertyChanged("IsSatisfied");
             }
         }
 
@@ -17472,6 +17472,78 @@ namespace ObjectModel.Declarations
                 this._rejectionreasontype_Code = value;
                 NotifyPropertyChanged("RejectionReasonType");
                 NotifyPropertyChanged("RejectionReasonType_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Declaration
+{
+    /// <summary>
+    /// 508 Подписант (DECLARATIONS_SIGNATORY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 508)]
+    [Serializable]
+    public partial class OMSignatory : OMBaseClass<OMSignatory>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50801000 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50801000)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _fullname;
+        /// <summary>
+        /// 50802000 ФИО (FULL_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50802000)]
+        public string FullName
+        {
+            get
+            {
+                CheckPropertyInited("FullName");
+                return _fullname;
+            }
+            set
+            {
+                _fullname = value;
+                NotifyPropertyChanged("FullName");
+            }
+        }
+
+
+        private string _position;
+        /// <summary>
+        /// 50803000 Должность (POSITION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50803000)]
+        public string Position
+        {
+            get
+            {
+                CheckPropertyInited("Position");
+                return _position;
+            }
+            set
+            {
+                _position = value;
+                NotifyPropertyChanged("Position");
             }
         }
 

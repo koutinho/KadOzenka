@@ -11,6 +11,8 @@ using Core.Main.FileStorages;
 using Core.Register.DAL;
 using Core.Shared.Extensions;
 using Core.SRD;
+using Core.UI.Registers.CoreUI.Registers;
+using Core.UI.Registers.Models.CoreUi;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.LongProcess;
@@ -1360,6 +1362,58 @@ namespace KadOzenka.Web.Controllers
 			}
 			return RedirectToAction("AttachmentView", "CoreAttachment",
 				new { objectId, registerId = OMSud.GetRegisterId() });
+		}
+
+		#endregion
+
+		#region Approval Object
+
+		public ActionResult SatisfiedObject(int idObject, bool isCancel)
+		{
+			var objects = new List<OMObject>();
+			if (RegistersVariables.CurrentList != null)
+			{
+				objects = OMObject.Where(x => RegistersVariables.CurrentList.Contains(x.Id)).SelectAll().Execute();
+			}
+
+			if (RegistersVariables.CurrentList == null)
+			{
+				objects = OMObject.Where(x => x.Id == idObject).SelectAll().Execute();
+			}
+
+			if (objects.Count == 0)
+			{
+				var modelError = new ModalDialogDetails()
+				{
+					Action = ModalDialogDetails.ActionType.None,
+					Buttons = ModalDialogDetails.ButtonType.Ok,
+					Icon = ModalDialogDetails.IconType.Warning,
+					IsProgress = false,
+					Message = "Объекты не найдены!"
+				};
+				return View("~/Views/Shared/ModalDialogDetails.cshtml", modelError);
+			}
+
+
+			using (var ts = new TransactionScope())
+			{
+				foreach (var omObject in objects)
+				{
+					omObject.IsSatisfied = isCancel ? 0 : 1;
+					omObject.SaveAndCheckParam();
+				}
+				ts.Complete();
+			}
+
+			var model = new ModalDialogDetails()
+			{
+				Action = ModalDialogDetails.ActionType.Reload,
+				Buttons = ModalDialogDetails.ButtonType.Ok,
+				Icon = ModalDialogDetails.IconType.Ok,
+				IsProgress = false,
+				Message = "Объекты изменены!"
+			};
+			return View("~/Views/Shared/ModalDialogDetails.cshtml", model);
 		}
 
 		#endregion

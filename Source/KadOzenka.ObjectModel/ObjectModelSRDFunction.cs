@@ -156,6 +156,9 @@ namespace ObjectModel.SRD
               public const string SUD_EXPORT = "SUD.EXPORT";
                 
               // Добавление декларации (523)
+              public const string DECLARATIONS_CREATE = "DECLARATIONS.CREATE";
+                
+              // Декларации Редактирование (524)
               public const string DECLARATIONS_EDIT = "DECLARATIONS.EDIT";
                 
               // Доступ к веб-интерфейсу (12344)

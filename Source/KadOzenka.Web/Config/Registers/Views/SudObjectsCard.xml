@@ -8,7 +8,8 @@
     <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />
-        <Parameter Key="RegisterId" Value="[RegisterId]" />
+        <Parameter Key="RegisterId" Value="[Reg
+				   isterId]" />
       </Parameters>
     </Button>
 
@@ -19,6 +20,34 @@
         <Parameter Key="NotSetTitle" Value="true" />
       </Parameters>
     </Button>
+
+	  <Button Caption="Удовлетворить" NavigateURL="~/Sud/SatisfiedObject?isCancel=false" Icon="icon-contract" WindowTitleTemplate="Информация" WindowHeight="150" WindowWidth="500" >
+		  <Parameters>
+			  <Parameter Key="idObject" Value="[ObjectID]" />
+		  </Parameters>
+		  <ConditionGroups>
+			  <ConditionGroup HideOrDisable="Disable">
+				  <Conditions>
+					  <Condition Key="[31600600]" Operation="NotEqual" Value="Частично удовлетворено" AndOr="Or"/>
+					  <Condition Key="[31501700]" Operation="Equal" Value="1" AndOr="Or"/>
+				  </Conditions>
+			  </ConditionGroup>
+		  </ConditionGroups>
+	  </Button>
+
+	  <Button Caption="Отказать" NavigateURL="~/Sud/SatisfiedObject?isCancel=true" Icon="icon-contract" WindowTitleTemplate="Информация" WindowHeight="150" WindowWidth="500">
+		  <Parameters>
+			  <Parameter Key="idObject" Value="[ObjectID]" />
+		  </Parameters>
+		  <ConditionGroups>
+			  <ConditionGroup HideOrDisable="Disable">
+				  <Conditions>
+					  <Condition Key="[31600600]" Operation="NotEqual" Value="Частично удовлетворено" AndOr="Or"/>
+					  <Condition Key="[31501700]" Operation="NotEqual" Value="1" AndOr="Or"/>
+				  </Conditions>
+			  </ConditionGroup>
+		  </ConditionGroups>
+	  </Button>
     
   </Buttons>
 
