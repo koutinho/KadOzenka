@@ -498,6 +498,13 @@ namespace ObjectModel.KO
         [XmlIgnore]
         public ObjectModel.KO.OMTour ParentTour { get; set; }
 
+        /// <summary>
+        /// Ссылка на (963 Экземпляры технологическох документов)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.TD.OMInstance ParentInstance { get; set; }
+
     }
 }
 

@@ -2308,7 +2308,7 @@ namespace ObjectModel.Declarations
     }
 }
 
-namespace ObjectModel.Declaration
+namespace ObjectModel.Declarations
 {
     /// <summary>
     /// 507 Связь типов причин отказа и уведомлений об отказе и возврате документов
