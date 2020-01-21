@@ -150,7 +150,7 @@ namespace KadOzenka.Dal.Gadgets
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", ObjectType.Site.GetEnumCode()),
-				"Земельные участоки",
+				"Земельные участки",
 				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Site)?.Count ?? 0);
 
 			data.Rows.Add(
@@ -185,7 +185,7 @@ namespace KadOzenka.Dal.Gadgets
 
 			data.Rows.Add(
 				linkParam.Replace("{Type}", ObjectType.Pik.GetEnumCode()),
-				"Производственно имущественный комплексы",
+				"Производственно имущественные комплексы",
 				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Pik)?.Count ?? 0);
 
 			data.Rows.Add(
