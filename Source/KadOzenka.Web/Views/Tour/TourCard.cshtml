@@ -1,0 +1,95 @@
+﻿<div class="flex-content">
+    <div class="k-content wide flex-tree-list">
+        <div id="treeList"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var dataSource = new kendo.data.TreeListDataSource({
+			transport: {
+				read: {
+					url: "@Url.Action("GetGroupsForTour", "Tour", new {tourId = ViewBag.TourId})",
+					dataType: "json"
+				}
+			},
+			schema: {
+				model: {
+					id: "Id",
+					parentId: "ParentId",
+					fields: {
+                        ParentId: { field: "ParentId", nullable: true },
+                        Id: { field: "Id", type: "number" }
+                    },
+					expanded: true
+				}
+			}
+		});
+
+		$("#treeList").kendoTreeList({
+            dataSource: dataSource,
+            selectable: true,
+            columns: [
+                {
+                    field: "GroupName", title: "Имя группы", headerAttributes: {
+                        style: "display: none"
+                    }
+                }
+			]
+        });
+
+        $("#treeList").data("kendoTreeList").dataSource.filter({ field: "TourId", operator: "equals", value: @ViewBag.TourId });
+
+    });
+</script>
+
+@section styles {
+    <style>
+
+        .flex-content {
+            display: flex;
+            height: 100%;
+        }
+
+        .flex-tree-list {
+            margin: 10px;
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: auto;
+            align-items: stretch;
+        }
+
+        .flex-list-buttons {
+            margin: 10px;
+        }
+
+        button {
+            width: 10rem;
+            margin-bottom: 5px !important;
+        }
+
+        .tour p:hover {
+            background: #eaeef7;
+        }
+
+        .tour p {
+            padding: 5px;
+        }
+
+        #treeList {
+            height: 100%;
+            /*overflow: auto;*/
+        }
+
+        .selected {
+            background: #eaeef7;
+        }
+
+        .control-label {
+            margin-bottom: 0px;
+            font-weight: normal;
+            vertical-align: sub;
+        }
+    </style>
+}

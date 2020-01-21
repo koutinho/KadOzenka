@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using DevExpress.DataProcessing;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.Tour;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +21,35 @@ namespace KadOzenka.Web.Controllers
             TourService = new TourService();
         }
 
-        #region Карточка задачи
+        #region Карточка тура
 
         [HttpGet]
-        public ActionResult TourCard(long taskId)
+        public ActionResult TourCard(long tourId)
         {
-            return new EmptyResult();
+            ViewBag.TourId = tourId;
+            return View();
+        }
+
+        public JsonResult GetGroupsForTour(long tourId)
+        {
+            var tour = TourService.GetTourById(tourId);
+
+            var groupModels = new List<GroupTreeModel>();
+            var newParent = new GroupTreeModel
+            {
+                Id = 0,
+                GroupName = tour.Year.ToString(),
+                TourId = tour.Id
+            };
+            groupModels.Add(newParent);
+
+            var groups = TourService.GetGroups(newParent.Id);
+            groups.ForEach(x =>
+            {
+                groupModels.Add(GroupTreeModel.ToModel(x));
+            });
+
+            return Json(groupModels);
         }
 
         #endregion
@@ -114,13 +138,7 @@ namespace KadOzenka.Web.Controllers
             var groupModels = new List<GroupTreeModel>();
             groups.ForEach(x =>
             {
-                groupModels.Add(new GroupTreeModel
-                {
-                    Id = x.Id,
-                    GroupName = x.GroupName,
-                    ParentId = x.ParentId,
-                    TourId = x.TourId
-                });
+                groupModels.Add(GroupTreeModel.ToModel(x));
             });
 
             return Json(groupModels);
@@ -321,11 +339,16 @@ namespace KadOzenka.Web.Controllers
 			return Json(mechanism);
 		}
 
-		#endregion
+        
+        #region Support Methods
+
+        #endregion
+
+        #endregion
 
         #region Метки
 
-		public ActionResult MarkCatalog()
+        public ActionResult MarkCatalog()
 		{			
 			return View();
 		}

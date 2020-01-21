@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Tours.Dto;
@@ -8,7 +9,23 @@ namespace KadOzenka.Dal.Tours
 {
     public class TourService
     {
-        public List<GroupTreeDto> GetGroups()
+        public TourDto GetTourById(long? tourId)
+        {
+            if(tourId == null)
+                throw new Exception("Не передан идентификатор Тура для поиска");
+
+            var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
+            if(tour == null)
+                throw new Exception($"Не найден Тур с id='{tourId}'");
+
+            return new TourDto
+            {
+                Id = tour.Id,
+                Year = tour.Year
+            };
+        }
+
+        public List<GroupTreeDto> GetGroups(long? mainParentId = null)
         {
             var query = new QSQuery
             {
@@ -40,7 +57,7 @@ namespace KadOzenka.Dal.Tours
             var oks = new GroupTreeDto
             {
                 Id = (long)KoGroupAlgoritm.MainOKS,
-                ParentId = null,
+                ParentId = mainParentId,
                 GroupName = "Основная группа ОКС"
             };
             groups.Add(oks);
@@ -48,7 +65,7 @@ namespace KadOzenka.Dal.Tours
             var parcel = new GroupTreeDto
             {
                 Id = (long)KoGroupAlgoritm.MainParcel,
-                ParentId = null,
+                ParentId = mainParentId,
                 GroupName = "Основная группа Участки"
             };
             groups.Add(parcel);
