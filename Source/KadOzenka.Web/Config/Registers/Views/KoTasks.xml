@@ -10,18 +10,10 @@
 				<Parameter Key="RegisterId" Value="[RegisterId]" />
 			</Parameters>
 		</Button>
-    <Button Caption="Туры оценки" NavigateURL="/Task/TourEstimates" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
-		</Button>
-    <Button Caption="Группы" NavigateURL="/Task/Groups" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
-    </Button>
-    <Button Caption="Значения меток" NavigateURL="/Task/MarkCatalog" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
-    </Button>
     <Button Caption="Импорт данных ГКН" NavigateURL="/DataImport/ImportGkn" WindowHeight="120" WindowWidth="800" Icon="fas fa-code">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
       </Parameters>
-    </Button>
-    <Button Caption="Импорт классификатора ЦОД" NavigateURL="/DataImport/ImportCod" WindowHeight="250" WindowWidth="800" Icon="fas fa-code">
     </Button>
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
 	</Buttons>

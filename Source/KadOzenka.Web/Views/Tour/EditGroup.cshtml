@@ -1,0 +1,230 @@
+﻿@model KadOzenka.Web.Models.Task.GroupDto
+
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Тур оценки")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                                        .Name("RatingTour")
+                                        .DataTextField("Text")
+                                        .DataValueField("Value")                                       
+            )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Тип объекта")
+        </div>
+        <div class="col-sm-9">
+            <div class="radio-inline">
+                <input type="radio" id="OKS" name="ObjType" class="custom-control-input" checked>ОКС
+            </div>
+            <div class="radio-inline">
+                <input type="radio" id="Parcel" name="ObjType" class="custom-control-input">Земельные участки
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Родительская группа")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                                                .Name("ParentGroup")
+                                                .DataTextField("Text")
+                                                .DataValueField("Value")
+			)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Механизм группировки")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                                                .Name("GroupingMechanism")
+                                                .DataTextField("Text")
+                                                .DataValueField("Value")
+            )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabel("Наименование")
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoTextBoxFor(x=>x.Name, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-8">
+            <button class="btn btn-default btn-block" id="cancel">Отмена</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-default btn-block" id="save">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#save').on('click', function () {
+
+            var errorStr = "";
+            if ($('[name="GroupingMechanism"]').data("kendoDropDownList").value() == '') {
+                errorStr += "Не указан механизм группировки. ";
+            }
+            if ($('#Name').val() == '') {
+                errorStr += "Не указано наименование группы. ";
+            }
+            if (errorStr != '') {
+                Common.ShowError(errorStr);
+                return;
+            }
+
+            kendo.ui.progress($('body'), true);
+
+            var dto = {
+                Id: '@Model.Id',
+                RatingTourId: $('[name="RatingTour"]').data("kendoDropDownList").value(),
+                ObjType: $('input[name="ObjType"]:checked')[0].id,
+                ParentGroupId: $('[name="ParentGroup"]').data("kendoDropDownList").value(),
+                GroupingMechanismId: $('[name="GroupingMechanism"]').data("kendoDropDownList").value(),
+                Name: $('#Name').val()
+            };
+
+            $.ajax({
+                url: '@Url.Action("EditGroup", "Tour")',
+                type: 'POST',
+                data: dto,
+                success: function () {
+                    kendo.ui.progress($('body'), false);
+                    Common.ShowMessage('Сохранение выполнено');
+                    Common.UI.CloseWindow('editGroupWindow', window.parent, true);
+                },
+                error: function (response) {
+                    kendo.ui.progress($('body'), false);
+                    Common.ShowError(response.responseText);
+                }
+            });
+        });
+
+        $('#cancel').on('click', function () {
+            Common.UI.CloseWindow('editGroupWindow', window.parent);
+        });
+
+        $('[name="RatingTour"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRatingTours", "Tour")',
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        function ParentGroupDropDownInit() {         
+
+            if ($('input[name="ObjType"]:checked').length == 0)
+                return;
+            var parentType = $('input[name="ObjType"]:checked')[0].id;
+
+            $('[name="ParentGroup"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: "--Выберите родительскую группу--",
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetParentGroup", "Tour")',
+                            data: { type: parentType, id: '@Model.Id' },
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+        }
+
+        function GroupingMechanismDropDownInit() {
+
+            var parentIsSet = $('[name="ParentGroup"]').data("kendoDropDownList").value() != '';
+
+            $('[name="GroupingMechanism"]')
+                .kendoDropDownList({
+                    dataTextField: 'Text',
+                    dataValueField: 'Value',
+                    optionLabel: "--Выберите механизм группировки--",
+                    dataSource:
+                    {
+                        transport: {
+                            read: {
+                                url: '@Url.Action("GetGroupingMechanism", "Tour")',
+                                data: { parentIsSet },
+                                dataType: 'json'
+                            }
+                        }
+                    }
+                });
+        }
+
+        ParentGroupDropDownInit();
+        GroupingMechanismDropDownInit();
+
+        var ratingTourDropdownlist = $('[name="RatingTour"]').data("kendoDropDownList");
+        var parentGroupDropdownlist = $('[name="ParentGroup"]').data("kendoDropDownList");
+        var groupingMechanismDropdownlist = $('[name="GroupingMechanism"]').data("kendoDropDownList");
+
+
+        @if(Model.Id.HasValue)
+        {
+        <Text>
+        ratingTourDropdownlist.bind("dataBound", function () {
+            ratingTourDropdownlist.select(function (dataItem) {
+                return dataItem.Value == '@Model.RatingTourId';
+            });
+        });
+
+        var objType = '#@Model.ObjType';
+        $(objType).attr("checked", true);
+
+        ParentGroupDropDownInit();
+
+        $('[name="ParentGroup"]').data("kendoDropDownList").bind("dataBound", function () {           
+
+            $('[name="ParentGroup"]').data("kendoDropDownList").select(function (dataItem) {          
+                return dataItem.Value == '@Model.ParentGroupId';
+            });
+
+            GroupingMechanismDropDownInit();
+
+            $('[name="GroupingMechanism"]').data("kendoDropDownList").bind("dataBound", function () {
+            
+                $('[name="GroupingMechanism"]').data("kendoDropDownList").select(function (dataItem) {                
+                    return dataItem.Value == '@Model.GroupingMechanismId';
+                });
+            });
+        });
+        </Text>
+        }
+
+        $('[name="ParentGroup"]').data("kendoDropDownList").bind('change', GroupingMechanismDropDownInit);
+
+        $('[name="ObjType"]').on('change', function () {
+            ParentGroupDropDownInit();
+
+            $('[name="ParentGroup"]').data("kendoDropDownList").bind("dataBound", function () {
+                 GroupingMechanismDropDownInit();
+            });
+        });        
+    });
+</script>

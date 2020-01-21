@@ -40,7 +40,7 @@
 		var dataSource = new kendo.data.TreeListDataSource({
 			transport: {
 				read: {
-					url: "@Url.Action("GetGroups", "Task")",
+					url: "@Url.Action("GetGroups", "Tour")",
 					dataType: "json"
 				}
 			},
@@ -78,7 +78,7 @@
                 {
                     transport: {
                         read: {
-                            url: '@Url.Action("GetRatingTours", "Task")',
+                            url: '@Url.Action("GetRatingTours", "Tour")',
                             dataType: 'json'
                         }
                     }
@@ -116,7 +116,7 @@
         }
 
         $('.add-group').on('click', function () {
-            Common.UI.ShowWindow('Оценочная группа', '@Url.Action("EditGroup","Task")', 'editGroupWindow');
+            Common.UI.ShowWindow('Оценочная группа', '@Url.Action("EditGroup", "Tour")', 'editGroupWindow');
         });
 
         $('.edit-group').on('click', function () {
@@ -125,7 +125,7 @@
             if (row.length > 0) {
                 var data = treeList.dataItem(row);
                 Common.UI.ShowWindow('Оценочная группа',
-                    '@Url.Action("EditGroup", "Task")' + '?id=' + data.Id,
+                    '@Url.Action("EditGroup", "Tour")' + '?id=' + data.Id,
                     'editGroupWindow',
                     function (e, param) {
                         if (param == true) {
@@ -157,7 +157,7 @@
                     onSuccess: function () {
                         kendo.ui.progress($('body'), true);
                         $.ajax({
-                            url: '@Url.Action("DeleteGroup","Task")',
+                            url: '@Url.Action("DeleteGroup", "Tour")',
                             type: 'POST',
                             data: { id: data.Id },
                             success: function (response) {
