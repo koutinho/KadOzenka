@@ -14,6 +14,16 @@ namespace KadOzenka.Web.Controllers
 {
 	public class TourController : Controller
     {
+        #region Карточка задачи
+
+        [HttpGet]
+        public ActionResult TourCard(long taskId)
+        {
+            return new EmptyResult();
+        }
+
+        #endregion
+
         #region Туры
 
         [HttpGet]
