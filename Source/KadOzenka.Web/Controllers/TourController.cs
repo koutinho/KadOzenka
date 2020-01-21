@@ -5,6 +5,7 @@ using System.Linq;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Web.Models.Task;
+using KadOzenka.Web.Models.Tour;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory;

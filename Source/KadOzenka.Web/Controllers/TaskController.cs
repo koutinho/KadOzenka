@@ -15,6 +15,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.DataImporterLayout;
+using KadOzenka.Web.Models.Tour;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
