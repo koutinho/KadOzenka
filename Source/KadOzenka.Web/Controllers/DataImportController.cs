@@ -13,6 +13,7 @@ using Core.Main.FileStorages;
 using Core.ErrorManagment;
 using System.IO;
 using Core.SRD;
+using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -112,21 +113,35 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult ImportGkn(long? objectId)
+		public ActionResult ImportGkn()
 		{
-			ViewBag.ObjectId = objectId;
-			return View();
+			UploadGknDto dto = new UploadGknDto();
+			return View(dto);
 		}
 
 		[HttpPost]
-		public ActionResult ImportGkn(IFormFile file, long objectId)
+		public ActionResult ImportGkn(List<IFormFile> files, UploadGknDto dto)
 		{
 			//SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
+
+			OMTask task = new OMTask
+			{
+				TourId = dto.TourId,
+				DocumentId = dto.DocNumber,
+				CreationDate = dto.DocDate ?? DateTime.Now,
+				NoteType_Code = dto.NoteType ?? ObjectModel.Directory.KoNoteType.None,
+				Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
+			};
+			task.Save();
+
 			try
 			{
-				using (var stream = file.OpenReadStream())
+				foreach (var file in files)
 				{
-					DataImporterGknLongProcess.AddImportToQueue(ObjectModel.KO.OMTask.GetRegisterId(), "Tasks", file.FileName, stream, ObjectModel.KO.OMTask.GetRegisterId(), objectId);
+					using (var stream = file.OpenReadStream())
+					{
+						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), task.Id);
+					}
 				}
 			}
 			catch (Exception e)

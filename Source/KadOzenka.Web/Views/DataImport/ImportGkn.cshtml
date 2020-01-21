@@ -1,30 +1,121 @@
-﻿<div>
-    <input name="file" id="file" type="file" aria-label="files" />
+﻿@model KadOzenka.Web.Models.DataUpload.UploadGknDto
+
+<div>
+    <ul id="ls_panelbar" class="panelbar">
+        <li id="MainData" data-expand>
+            <span>Основные данные</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            @Html.CustomLabel("Тур")
+                        </div>
+                        <div class="col-sm-9">
+                            <input id="Tour" name="Tour" editmode="true" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            @Html.CustomLabel("Номер документа")
+                        </div>
+                        <div class="col-sm-9">
+                            @Html.KendoNumericTextBoxFor(x=>x.DocNumber, isReadonly: false)                            
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            @Html.CustomLabel("Дата документа")
+                        </div>
+                        <div class="col-sm-9">
+                            @Html.KendoDatePickerFor(x=>x.DocDate, isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            @Html.CustomLabel("Тип статьи")
+                        </div>
+                        <div class="col-sm-9">
+                            @Html.KendoEnumDropDownListFor(x=>x.NoteType, isReadonly: false)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+
+        <li id="Images" data-expand>
+            <span>Образы</span>
+        </li>
+
+        <li id="XmlFiles" data-expand>
+            <span>XML-файлы</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <form id="fileForm">
+                        <input name="files" id="files" type="file" aria-label="files" />
+                    </form>                    
+                </div>
+            </div>            
+        </li>
+    </ul>
+
+    <div class="col-sm-12"><button class="k-button" id="load">Загрузить</button></div>
 </div>
 
 <script>
     $(document).ready(function () {
-        $('#file').kendoUpload({
-		    multiple: false,
-		    localization: {
-			    select: 'Загрузить файл'
-		    },
-		    async: {
-                autoUpload: true,                
-                saveUrl: '@Url.Action("ImportGkn", "DataImport")'                
-            },
-            upload: function (e) {
-                e.data = { objectId: '@ViewBag.ObjectId'}
-            },
 
-            success: function (e) {
-                if (e.operation === "upload") {                    
+        var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+        panelbar.expand('li[data-expand]');
+
+        $('#load').on('click', function () {            
+            var formData = new FormData($('#fileForm').get(0));
+
+            formData.set('DocNumber', $('[name="DocNumber"]').val());
+            var date = $('[name="DocDate"]').data().kendoDatePicker.value();
+            if (date != null) {
+                formData.set('DocDate', date.toDateString());
+            }
+            formData.set('TourId', $('[name="Tour"]').val());
+            formData.set('NoteType', $('[name="NoteType"]').val());
+
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (e) {
+                    kendo.ui.progress($('body'), false);
                     Common.ShowMessage("Загрузка успешно добавлена в очередь, по результатам загрузки будет отправлено сообщение");
-                    setTimeout(function () {
-                        Common.UI.CloseWindow('registerModalWindow', window.parent);
-                    }, 1000);
+                },
+                error: function (e) {                    
+                    kendo.ui.progress($('body'), false);
+                    var msg = e.responseText ? e.responseText : 'Ошибка загрузки. Обратитесь к администратору.'
+                    Common.ShowError(msg);
                 }
-		    },
+            });
+        });
+
+        $('[name="Tour"]')
+            .kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                dataSource:
+                {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetRatingTours", "Task")',
+                            dataType: 'json'
+                        }
+                    }
+                }
+            });
+
+        $('#files').kendoUpload({
+		    multiple: true,
+		    localization: {
+			    select: 'Выбрать файлы'
+		    },		    
 		    validation: {
 			    allowedExtensions: ['.xml']
 		    },
