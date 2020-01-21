@@ -107,39 +107,70 @@ namespace KadOzenka.Web.Controllers
             var userFilter = _coreUiService.GetSearchFilter(MarketObjectsRegisterViewId);
             var filters = JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition);
             string typeControl = "value", type = "REFERENCE";
+            long[] propertyTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
             long[] dealTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
             long[] marketSegments = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+            var propertyTypeList =
+                OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId)
+                    .OrderBy(x => x.Value).SelectAll().Execute()
+                    .OrderBy(x => int.Parse(x.Code)).Select(x => new {
+                        Id = x.ItemId,
+                        Code = x.Code,
+                        Value = x.Value,
+                        Name = x.Name,
+                        Selected = propertyTypes == null ? false : propertyTypes.Contains(x.ItemId) ? true : false
+                    });
             var commertialMarketSegmentList =
                 OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute().Where(x => int.Parse(x.Code) < 100)
                     .OrderBy(x => int.Parse(x.Code)).Select(x => new {
-                        Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name,
+                        Id = x.ItemId, 
+                        Code = x.Code, 
+                        Value = x.Value, 
+                        Name = x.Name,
                         Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
                     });
             var propertyMarketSegmentList =
                 OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute().Where(x => int.Parse(x.Code) >= 100 && int.Parse(x.Code) < 200)
                     .OrderBy(x => int.Parse(x.Code)).Select(x => new {
-                        Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name,
+                        Id = x.ItemId, 
+                        Code = x.Code, 
+                        Value = x.Value, 
+                        Name = x.Name,
                         Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
                     });
             var dealTypeList = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute()
                     .OrderBy(x => x.ItemId).Select(x => new {
-                        Id = x.ItemId, Code = x.Code, Value = x.Value, Name = x.Name,
+                        Id = x.ItemId, 
+                        Code = x.Code, 
+                        Value = x.Value, 
+                        Name = x.Name,
                         Selected = dealTypes == null ? false : dealTypes.Contains(x.ItemId) ? true : false
                     });
             return Json(new {
+                propertyTypeFilter = new
+                {
+                    typeControl = typeControl,
+                    type = type,
+                    text = OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).Name,
+                    propertyTypeList = propertyTypeList,
+                    referenceId = OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId,
+                    id = OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).Id
+                },
                 commertialMarketFilter = new
                 {
-                    typeControl = typeControl, type = type,
+                    typeControl = typeControl, 
+                    type = type,
                     text = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Name,
                     commertialMarketSegmentList = commertialMarketSegmentList,
                     referenceId = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId,
                     id = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Id
                 },
                 propertyMarketFilter = new {
-                    typeControl = typeControl, type = type,
+                    typeControl = typeControl, 
+                    type = type,
                     text = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Name,
                     propertyMarketSegmentList = propertyMarketSegmentList,
                     referenceId = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId,
@@ -180,7 +211,16 @@ namespace KadOzenka.Web.Controllers
 			if (userFilter != null && !string.IsNullOrEmpty(userFilter.Condition))
 			{
 				var filters = JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition);
-				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id))
+                if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyTypesCIPJS).Id))
+                {
+                    var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyTypesCIPJS).Id);
+                    if (filter.ValueLongArrayCasted != null)
+                    {
+                        var list = filter.ValueLongArrayCasted.Select(y => ((PropertyTypesCIPJS)y).GetEnumDescription()).ToList();
+                        query.And(x => list.Contains(x.PropertyTypesCIPJS));
+                    }
+                }
+                if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id))
 				{
 					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
 					if (filter.ValueLongArrayCasted != null)

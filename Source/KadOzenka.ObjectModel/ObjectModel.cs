@@ -1528,6 +1528,61 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _propertytypescipjs;
+        /// <summary>
+        /// 10007700 Тип объекта недвижимости по ЦИПЖС (PROPERTY_TYPETS_CIPJS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007700)]
+        public string PropertyTypesCIPJS
+        {
+            get
+            {
+                CheckPropertyInited("PropertyTypesCIPJS");
+                return _propertytypescipjs;
+            }
+            set
+            {
+                _propertytypescipjs = value;
+                NotifyPropertyChanged("PropertyTypesCIPJS");
+            }
+        }
+
+
+        private PropertyTypesCIPJS _propertytypescipjs_Code;
+        /// <summary>
+        /// 10007700 Тип объекта недвижимости по ЦИПЖС (справочный код) (PROPERTY_TYPETS_CIPJS_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007700)]
+        public PropertyTypesCIPJS PropertyTypesCIPJS_Code
+        {
+            get
+            {
+                CheckPropertyInited("PropertyTypesCIPJS_Code");
+                return this._propertytypescipjs_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_propertytypescipjs))
+                    {
+                         _propertytypescipjs = descr;
+                    }
+                }
+                else
+                {
+                     _propertytypescipjs = descr;
+                }
+
+                this._propertytypescipjs_Code = value;
+                NotifyPropertyChanged("PropertyTypesCIPJS");
+                NotifyPropertyChanged("PropertyTypesCIPJS_Code");
+            }
+        }
+
     }
 }
 

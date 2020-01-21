@@ -113,6 +113,12 @@ namespace ObjectModel.Directory
 		[Description("Иной объект недвижимости")]
         [EnumCode("002001010000")]
         Other = 12,
+		/// <summary>
+		/// Сооружения, ОНС, ЕНК, и иные ОН (802)
+		/// </summary>
+		[Description("Сооружения, ОНС, ЕНК, и иные ОН")]
+        [EnumCode("002001010001")]
+        OtherMore = 802,
     }
 }
 
@@ -515,6 +521,48 @@ namespace ObjectModel.Directory
 		[Description("Выставлено на электронные торги")]
         [EnumCode("17")]
         Auction = 801,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Виды объектов недвижимости ЦИПЖС (118)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 118)]
+    public enum PropertyTypesCIPJS : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+
+		/// <summary>
+		/// Земельные участки (803)
+		/// </summary>
+		[Description("Земельные участки")]
+        [EnumCode("1")]
+        LandArea = 803,
+		/// <summary>
+		/// Здания (804)
+		/// </summary>
+		[Description("Здания")]
+        [EnumCode("2")]
+        Buildings = 804,
+		/// <summary>
+		/// Помещения (805)
+		/// </summary>
+		[Description("Помещения")]
+        [EnumCode("3")]
+        Placements = 805,
+		/// <summary>
+		/// Сооружения, ОНС, ЕНК и иные ОН (806)
+		/// </summary>
+		[Description("Сооружения, ОНС, ЕНК и иные ОН")]
+        [EnumCode("4")]
+        OtherAndMore = 806,
     }
 }
 

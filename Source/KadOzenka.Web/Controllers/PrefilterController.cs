@@ -71,7 +71,7 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult PropertyTypeList()
 		{
 			var propertyTypeId = OMCoreObject
-				.GetAttributeData(x => x.PropertyType)
+				.GetAttributeData(x => x.PropertyTypesCIPJS)
 				.ReferenceId;
 			var propertyTypeList = OMReferenceItem
 				.Where(x => x.ReferenceId == propertyTypeId)
@@ -102,6 +102,23 @@ namespace KadOzenka.Web.Controllers
 			else
 			{
 				var subFilters = new List<string>();
+
+                if (model.PropertyTypeItemIds?.Length > 0)
+                {
+                    var propertyType = OMCoreObject
+                        .GetAttributeData(x => x.PropertyTypesCIPJS);
+                    var filterModel = new FilterModel
+                    {
+                        TypeControl = "value",
+                        Type = "REFERENCE",
+                        Text =
+                            $"{propertyType.Name}: {string.Join(", ", model.PropertyTypeItemIds.Select(x => ((PropertyTypesCIPJS)x).GetEnumDescription()))}",
+                        Value = model.PropertyTypeItemIds,
+                        ReferenceId = propertyType.ReferenceId,
+                        Id = propertyType.Id,
+                    };
+                    subFilters.Add(filterModel.ConvertToString());
+                }
 
 				if (model.MarketSegmentItemIds?.Length > 0)
 				{

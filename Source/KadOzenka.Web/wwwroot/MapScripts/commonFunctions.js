@@ -26,13 +26,16 @@ function getPropertyType(source) {
 
 function generateNewFilter(filterInfo) {
     var AllDealTypes = Array.from(document.getElementById("dealTypePanel").getElementsByClassName("filterButton")),
+        AllPropertyTypes = Array.from(document.getElementById("propertyTypePanel").getElementsByClassName("filterButton")),
         AllMarketSegmentTypes =
             Array.from(document.getElementById("propertyMarketSegmentPanel").getElementsByClassName("filterButton")).concat(
             Array.from(document.getElementById("commercialMarketSegmentPanel").getElementsByClassName("filterButton")));
-    var filterDealTypes = {}, filterMarketSegments = {}, result = [], selectedDealTypes = [], selectedMarketSegments = [];
+    var filterDealTypes = {}, filterPropertyTypes, filterMarketSegments = {}, result = [], selectedDealTypes = [], selectedPropertyTypes = [], selectedMarketSegments = [];
     AllDealTypes.forEach(x => { if (!x.classList.contains("inactive")) selectedDealTypes.push({ id: x.getAttribute("elementId"), text: x.getAttribute("elementValue") }); });
+    AllPropertyTypes.forEach(x => { if (!x.classList.contains("inactive")) selectedPropertyTypes.push({ id: x.getAttribute("elementId"), text: x.getAttribute("elementValue") }) });
     AllMarketSegmentTypes.forEach(x => { if (!x.classList.contains("inactive")) selectedMarketSegments.push({ id: x.getAttribute("elementId"), text: x.getAttribute("elementValue") }); });
     if (selectedDealTypes.length == AllDealTypes.length) selectedDealTypes = [];
+    if (selectedPropertyTypes.length == AllPropertyTypes.length) selectedPropertyTypes = [];
     if (selectedMarketSegments.length == AllMarketSegmentTypes.length) selectedMarketSegments = [];
     if (selectedDealTypes.length != 0) {
         filterDealTypes = {
@@ -42,6 +45,16 @@ function generateNewFilter(filterInfo) {
             value: selectedDealTypes.map(function (x) { return parseInt(x.id); }),
             referenceId: filterInfo.dealTypeFilter.referenceId,
             id: filterInfo.dealTypeFilter.id
+        };
+    }
+    if (selectedPropertyTypes.length != 0) {
+        filterPropertyTypes = {
+            typeControl: filterInfo.propertyTypeFilter.typeControl,
+            type: filterInfo.propertyTypeFilter.type,
+            text: `${filterInfo.propertyTypeFilter.text}: ${selectedPropertyTypes.map(function (x) { return x.text; }).join(', ')}`,
+            value: selectedPropertyTypes.map(function (x) { return parseInt(x.id); }),
+            referenceId: filterInfo.propertyTypeFilter.referenceId,
+            id: filterInfo.propertyTypeFilter.id
         };
     }
     if (selectedMarketSegments.length != 0) {
@@ -54,6 +67,7 @@ function generateNewFilter(filterInfo) {
             id: filterInfo.commertialMarketFilter.id
         };
     }
+    if (filterPropertyTypes) result.push(filterPropertyTypes);
     if (filterDealTypes) result.push(filterDealTypes);
     if (filterMarketSegments) result.push(filterMarketSegments);
     return JSON.stringify(result);

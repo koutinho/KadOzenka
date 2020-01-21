@@ -56,6 +56,7 @@ function creatFilterWidget() {
                     <div id="filterImage" class="filterImage inactive"></div>
                     <div id="allFiltersContainer" class="allFiltersContainer inactive">
                         <div id="dealTypePanel" class="filterPanel"></div>
+                        <div id="propertyTypePanel" class="filterPanel"></div>
                         <div id="propertyMarketSegmentPanel" class="filterPanel"></div>
                         <div id="commercialMarketSegmentPanel" class="filterPanel"></div>
                         <div id="layersPanel" class="filterPanel">

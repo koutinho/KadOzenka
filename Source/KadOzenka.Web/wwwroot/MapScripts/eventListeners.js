@@ -48,17 +48,21 @@ function removeTarget(placemark) {
 };
 
 function refreshFilterWidget(filterInfo) {
-    var dealTypeData = '', commertialMarketSegmentData = '', propertyMarketSegmentData = '';
+    var propertyTypeData = '', dealTypeData = '', commertialMarketSegmentData = '', propertyMarketSegmentData = '';
+    filterInfo.propertyTypeFilter.propertyTypeList.forEach(x => propertyTypeData +=
+        `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
     filterInfo.dealTypeFilter.dealTypeList.forEach(x => dealTypeData +=
         `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
     filterInfo.propertyMarketFilter.propertyMarketSegmentList.forEach(x => propertyMarketSegmentData +=
         `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
     filterInfo.commertialMarketFilter.commertialMarketSegmentList.forEach(x => commertialMarketSegmentData += 
         `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
+    document.getElementById('propertyTypePanel').innerHTML = propertyTypeData;
     document.getElementById('dealTypePanel').innerHTML = dealTypeData;
     document.getElementById('propertyMarketSegmentPanel').innerHTML = propertyMarketSegmentData;
     document.getElementById('commercialMarketSegmentPanel').innerHTML = commertialMarketSegmentData;
     listenFilter(filterInfo.dealTypeFilter.dealTypeList, filterInfo);
+    listenFilter(filterInfo.propertyTypeFilter.propertyTypeList, filterInfo);
     listenFilter(filterInfo.propertyMarketFilter.propertyMarketSegmentList, filterInfo);
     listenFilter(filterInfo.commertialMarketFilter.commertialMarketSegmentList, filterInfo);
 };

@@ -20,7 +20,9 @@
     </div>
 </script>
 <script type="text/javascript">
+
     $(document).ready(function () {
+
         var metroDataSource = new kendo.data.DataSource({
             transport: {
                 read: function(options) {
@@ -55,11 +57,40 @@
             resizable: false,
             items: [
                 { template: "<input id='dealTypeDropdown'/>" },
+                { template: "<input id='propertyTypeDropdown'/>" },
                 { template: "<input id='marketSegmentDropdown'/>" },
                 { template: "<input id='priceFromInput' placeholder='от' autocomplete='off'/>" },
                 { template: "<input id='priceToInput' placeholder='до' autocomplete='off'/>" },
                 { template: "<input id='addressInput' type='text' placeholder='Метро' autocomplete='off' style='width: 100%;'/>" }
             ]
+        });
+
+        $("#propertyTypeDropdown").kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Id",
+            template: $("#CheckboxTemplate").html(),
+            dataSource: {
+                transport: {
+                    read: function(options) {
+                        $.ajax({
+                            url: '@Url.Action("PropertyTypeList", "Prefilter")',
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            success: function (result) {
+                                result.unshift({ Name: "[Выбрать все]", Id: "" });
+                                options.success(result);
+                            },
+                            error: function(result) {
+                                options.error(result);
+                            }
+                        });
+                    }
+                }
+            },
+            dataBound: objectTypeDropdownDataBound,
+            select: function (e) {
+                e.preventDefault();
+            }
         });
 
         $("#marketSegmentDropdown").kendoDropDownList({
@@ -125,6 +156,7 @@
             decimals: 0,
             spinners: false
         });
+
         $("#priceToInput").kendoNumericTextBox({
             format: "c0",
             min: 0,
@@ -155,6 +187,10 @@
 
     function dealTypeDropdownDataBound(e) {
         addItemHandlers(e, $("#dealTypeDropdown").data("kendoDropDownList"), "Тип сделки");
+    }
+
+    function objectTypeDropdownDataBound(e) {
+        addItemHandlers(e, $("#propertyTypeDropdown").data("kendoDropDownList"), "Тип Объекта недвижимости");
     }
 
     function marketSegmentDropdownDataBound(e) {
@@ -197,37 +233,29 @@
         var items= [];
         dropdownData.list.find(".check-input").each(function() {
             var $input = $(this);
-            if($input.val() != "" && $input.is(':checked'))
-                items.push($input.next().text());
+            if($input.val() != "" && $input.is(':checked')) items.push($input.next().text());
         });
 
-        $(dropdownData.list.find(".check-input")[0])
-            .prop("checked", items.length === dropdownData.list.find(".check-input").length - 1);
+        $(dropdownData.list.find(".check-input")[0]).prop("checked", items.length === dropdownData.list.find(".check-input").length - 1);
 
-        if (items.length > 0) {
-            dropdownData.text(label + ": " + items.join(", "));
-        } else {
-            dropdownData.text(label);
-        }
+        if (items.length > 0) { dropdownData.text(label + ": " + items.join(", ")); }
+        else { dropdownData.text(label); }
     }
 
     function сonfigureSearchFilter(e, newWindowLocation) {
         Common.ClearNotification();
         kendo.ui.progress($('#prefilter'), true);
-        var marketIds = $.map($("#marketSegmentDropdown").data("kendoDropDownList").list.find(".check-input:checked"), function (item) {
-            return item.value;
-        });
-        var dealTypeIds = $.map($("#dealTypeDropdown").data("kendoDropDownList").list.find(".check-input:checked"), function (item) {
-            return item.value;
-        });
+        var propertyTypeItemIds = $.map($("#propertyTypeDropdown").data("kendoDropDownList").list.find(".check-input:checked"), function (item) { return item.value; });
+        var marketIds = $.map($("#marketSegmentDropdown").data("kendoDropDownList").list.find(".check-input:checked"), function (item) { return item.value; });
+        var dealTypeIds = $.map($("#dealTypeDropdown").data("kendoDropDownList").list.find(".check-input:checked"), function (item) { return item.value; });
         var priceFrom = $("#priceFromInput").val();
         var priceTo = $("#priceToInput").val();
         var metro = $("#addressInput").data("kendoAutoComplete").value();
-
         $.ajax({
             type: 'POST',
             url: '@Url.Action("ConfigureSearchFilter", "Prefilter")',
             data: {
+                propertyTypeItemIds: propertyTypeItemIds,
                 marketSegmentItemIds: marketIds,
                 dealTypeItemIds: dealTypeIds,
                 priceFrom: priceFrom,
