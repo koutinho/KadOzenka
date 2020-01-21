@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using KadOzenka.Dal.Tasks.Dto;
+﻿using KadOzenka.Dal.Tasks.Dto;
 using ObjectModel.Core.TD;
 using ObjectModel.KO;
 
@@ -9,7 +8,7 @@ namespace KadOzenka.Dal.Tasks
     {
         public TaskDto GetTaskById(long taskId)
         {
-            var task = OMTask.Where(x => x.Id == taskId).SelectAll().Execute().FirstOrDefault();
+            var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
             if (task == null)
                 return null;
 
@@ -37,8 +36,7 @@ namespace KadOzenka.Dal.Tasks
             if (documentId == null)
                 return null;
 
-            var document = OMInstance.Where(x => x.Id == documentId).SelectAll().Execute()
-                .FirstOrDefault();
+            var document = OMInstance.Where(x => x.Id == documentId).SelectAll().ExecuteFirstOrDefault();
             if (document == null)
                 return null;
 

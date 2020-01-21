@@ -31,7 +31,7 @@ namespace KadOzenka.Web.Controllers
             DataImporterService = new DataImporterService();
         }
 
-        #region Task Card
+        #region Карточка задачи
 
         [HttpGet]
         public ActionResult TaskCard(long taskId)
