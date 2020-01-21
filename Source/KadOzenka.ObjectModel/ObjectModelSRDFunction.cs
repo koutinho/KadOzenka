@@ -161,6 +161,33 @@ namespace ObjectModel.SRD
               // Декларации Редактирование (524)
               public const string DECLARATIONS_EDIT = "DECLARATIONS.EDIT";
                 
+              // Декларации Редактирование: блок «Подача декларации» (525)
+              public const string DECLARATIONS_EDIT_SUPPLYBLOCK = "DECLARATIONS.EDIT.SUPPLYBLOCK";
+                
+              // Декларации Редактирование: блок «Обработка декларации» (526)
+              public const string DECLARATIONS_EDIT_PROCESSINGBLOCK = "DECLARATIONS.EDIT.PROCESSINGBLOCK";
+                
+              // Декларации Редактирование: изменение статуса декларации (527)
+              public const string DECLARATIONS_EDIT_STATUS = "DECLARATIONS.EDIT.STATUS";
+                
+              // Декларации Редактирование: вкладка «Формальная проверка/уведомление» (528)
+              public const string DECLARATIONS_EDIT_FORMALCHECKING = "DECLARATIONS.EDIT.FORMALCHECKING";
+                
+              // Декларации Редактирование: внесение информации о характеристиках (529)
+              public const string DECLARATIONS_EDIT_CHARACTERISTICS = "DECLARATIONS.EDIT.CHARACTERISTICS";
+                
+              // Декларации Редактирование: установление утверждения значения характеристики (530)
+              public const string DECLARATIONS_EDIT_CHARACTERISTICS_APPROVE = "DECLARATIONS.EDIT.CHARACTERISTICS.APPROVE";
+                
+              // Декларации Редактирование: формирование всех типов уведомлений (кроме уведомления о принятии) (531)
+              public const string DECLARATIONS_EDIT_NOTIFICATIONS = "DECLARATIONS.EDIT.NOTIFICATIONS";
+                
+              // Декларации Редактирование: формирование уведомления о принятии (532)
+              public const string DECLARATIONS_EDIT_APPROVENOTIFICATION = "DECLARATIONS.EDIT.APPROVENOTIFICATION";
+                
+              // Декларации Редактирование: прикрепление образов (533)
+              public const string DECLARATIONS_EDIT_ATTACHMENTS = "DECLARATIONS.EDIT.ATTACHMENTS";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 
