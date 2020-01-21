@@ -47,7 +47,11 @@ namespace KadOzenka.Web.Models.MarketObject
 		public decimal? Longitude { get; set; }
 		public ProcessStep ProcessType { get; set; }
 		public MarketTypes MarketType { get; set; }
-		public decimal? PricePerSquareMeter { get; set; }
+        public string CIPJSType { get; set; }
+        public PropertyTypesCIPJS CIPJSTypeCode { get; set; }
+        public string MarketSegment { get; set; }
+        public MarketSegment MarketSegmentCode { get; set; }
+        public decimal? PricePerSquareMeter { get; set; }
 
 		public static CoreObjectDto OMMap(OMCoreObject entity)
 		{
@@ -82,11 +86,14 @@ namespace KadOzenka.Web.Models.MarketObject
 				Longitude = entity.Lng,
 				ProcessType = entity.ProcessType_Code,
 				MarketType = entity.Market_Code,
-				PricePerSquareMeter =
+                CIPJSType = entity.PropertyTypesCIPJS,
+                CIPJSTypeCode = entity.PropertyTypesCIPJS_Code,
+                MarketSegment = entity.PropertyMarketSegment,
+                MarketSegmentCode = entity.PropertyMarketSegment_Code,
+                PricePerSquareMeter =
 					entity.DealType_Code != ObjectModel.Directory.DealType.RentDeal &&
 					entity.DealType_Code != ObjectModel.Directory.DealType.RentSuggestion
-						? GetPricePerSquareMeter(entity)
-						: (decimal?) null
+						? GetPricePerSquareMeter(entity) : (decimal?) null
 			};
 			if (entity.PriceHistory?.Count > 0)
 			{
@@ -120,27 +127,15 @@ namespace KadOzenka.Web.Models.MarketObject
 				//	dto.PriceHistories.Add(historyDto);
 				//}
 			}
-
 			return dto;
 		}
 
 		private static decimal? GetPricePerSquareMeter(OMCoreObject entity)
 		{
 			decimal? result;
-			if (entity.PropertyType_Code == PropertyTypes.Stead && entity.Price.HasValue && entity.AreaLand.HasValue &&
-			    entity.AreaLand != 0)
-			{
-				result = entity.Price / (entity.AreaLand * 100);
-			}
-			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
-			{
-				result = entity.Price / entity.Area;
-			}
-			else
-			{
-				result = (decimal?) null;
-			}
-
+			if (entity.PropertyType_Code == PropertyTypes.Stead && entity.Price.HasValue && entity.AreaLand.HasValue && entity.AreaLand != 0) result = entity.Price / (entity.AreaLand * 100);
+			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0) result = entity.Price / entity.Area;
+			else result = (decimal?) null;
 			return result;
 		}
 	}
