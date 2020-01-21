@@ -270,11 +270,16 @@ body {
     -khtml-user-select: none;
     -webkit-user-select: none;
     -o-user-select: none;
+    opacity: 0.75;
 }
 
 .filterControl .allFiltersContainer .filterPanel .filterButton.inactive {
     background: #fff;
     color: #5c9eff;
+}
+
+.filterControl .allFiltersContainer .filterPanel .filterButton:hover {
+    opacity: 1;
 }
 
 .filterControl .allFiltersContainer .filterPanel .filterButton.inactive:hover {
