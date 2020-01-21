@@ -155,38 +155,68 @@ namespace ObjectModel.SRD
               // Выгрузка данных (522)
               public const string SUD_EXPORT = "SUD.EXPORT";
                 
-              // Добавление декларации (523)
-              public const string DECLARATIONS_CREATE = "DECLARATIONS.CREATE";
+              // Декларации (523)
+              public const string DECLARATIONS_DECLARATION = "DECLARATIONS.DECLARATION";
                 
-              // Декларации Редактирование (524)
-              public const string DECLARATIONS_EDIT = "DECLARATIONS.EDIT";
+              // Декларации Создание (524)
+              public const string DECLARATIONS_DECLARATION_CREATE = "DECLARATIONS.DECLARATION.CREATE";
                 
-              // Декларации Редактирование: блок «Подача декларации» (525)
-              public const string DECLARATIONS_EDIT_SUPPLYBLOCK = "DECLARATIONS.EDIT.SUPPLYBLOCK";
+              // Декларации Редактирование (525)
+              public const string DECLARATIONS_DECLARATION_EDIT = "DECLARATIONS.DECLARATION.EDIT";
                 
-              // Декларации Редактирование: блок «Обработка декларации» (526)
-              public const string DECLARATIONS_EDIT_PROCESSINGBLOCK = "DECLARATIONS.EDIT.PROCESSINGBLOCK";
+              // Декларации Редактирование: блок «Подача декларации» (526)
+              public const string DECLARATIONS_DECLARATION_EDIT_SUPPLY_BLOCK = "DECLARATIONS.DECLARATION.EDIT.SUPPLY_BLOCK";
                 
-              // Декларации Редактирование: изменение статуса декларации (527)
-              public const string DECLARATIONS_EDIT_STATUS = "DECLARATIONS.EDIT.STATUS";
+              // Декларации Редактирование: блок «Обработка декларации» (527)
+              public const string DECLARATIONS_DECLARATION_EDIT_PROCESSING_BLOCK = "DECLARATIONS.DECLARATION.EDIT.PROCESSING_BLOCK";
                 
-              // Декларации Редактирование: вкладка «Формальная проверка/уведомление» (528)
-              public const string DECLARATIONS_EDIT_FORMALCHECKING = "DECLARATIONS.EDIT.FORMALCHECKING";
+              // Декларации Редактирование: изменение статуса декларации (528)
+              public const string DECLARATIONS_DECLARATION_EDIT_STATUS = "DECLARATIONS.DECLARATION.EDIT.STATUS";
                 
-              // Декларации Редактирование: внесение информации о характеристиках (529)
-              public const string DECLARATIONS_EDIT_CHARACTERISTICS = "DECLARATIONS.EDIT.CHARACTERISTICS";
+              // Декларации Редактирование: вкладка «Формальная проверка/уведомление» (529)
+              public const string DECLARATIONS_DECLARATION_EDIT_FORMAL_CHECKING = "DECLARATIONS.DECLARATION.EDIT.FORMAL_CHECKING";
                 
-              // Декларации Редактирование: установление утверждения значения характеристики (530)
-              public const string DECLARATIONS_EDIT_CHARACTERISTICS_APPROVE = "DECLARATIONS.EDIT.CHARACTERISTICS.APPROVE";
+              // Декларации Редактирование: внесение информации о характеристиках (530)
+              public const string DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS = "DECLARATIONS.DECLARATION.EDIT.CHARACTERISTICS";
                 
-              // Декларации Редактирование: формирование всех типов уведомлений (кроме уведомления о принятии) (531)
-              public const string DECLARATIONS_EDIT_NOTIFICATIONS = "DECLARATIONS.EDIT.NOTIFICATIONS";
+              // Декларации Редактирование: формирование уведомлений (531)
+              public const string DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS = "DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS";
                 
               // Декларации Редактирование: формирование уведомления о принятии (532)
-              public const string DECLARATIONS_EDIT_APPROVENOTIFICATION = "DECLARATIONS.EDIT.APPROVENOTIFICATION";
+              public const string DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION = "DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS.APPROVE_NOTIFICATION";
                 
-              // Декларации Редактирование: прикрепление образов (533)
-              public const string DECLARATIONS_EDIT_ATTACHMENTS = "DECLARATIONS.EDIT.ATTACHMENTS";
+              // Декларации Редактирование: формирование остальных уведомлений (533)
+              public const string DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS = "DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS.OTHER_NOTIFICATIONS";
+                
+              // Декларации Редактирование: прикрепление образов (534)
+              public const string DECLARATIONS_DECLARATION_EDIT_ATTACHMENTS = "DECLARATIONS.DECLARATION.EDIT.ATTACHMENTS";
+                
+              // Книги (535)
+              public const string DECLARATIONS_BOOK = "DECLARATIONS.BOOK";
+                
+              // Книги Создание (536)
+              public const string DECLARATIONS_BOOK_CREATE = "DECLARATIONS.BOOK.CREATE";
+                
+              // Книги Редактирование (537)
+              public const string DECLARATIONS_BOOK_EDIT = "DECLARATIONS.BOOK.EDIT";
+                
+              // Субъекты (538)
+              public const string DECLARATIONS_SUBJECT = "DECLARATIONS.SUBJECT";
+                
+              // Субъекты Создание (539)
+              public const string DECLARATIONS_SUBJECT_CREATE = "DECLARATIONS.SUBJECT.CREATE";
+                
+              // Субъекты Редактирование (540)
+              public const string DECLARATIONS_SUBJECT_EDIT = "DECLARATIONS.SUBJECT.EDIT";
+                
+              // Подписанты (541)
+              public const string DECLARATIONS_SIGNATORY = "DECLARATIONS.SIGNATORY";
+                
+              // Подписанты Создание (542)
+              public const string DECLARATIONS_SIGNATORY_CREATE = "DECLARATIONS.SIGNATORY.CREATE";
+                
+              // Подписанты Редактирование (543)
+              public const string DECLARATIONS_SIGNATORY_EDIT = "DECLARATIONS.SIGNATORY.EDIT";
                 
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";

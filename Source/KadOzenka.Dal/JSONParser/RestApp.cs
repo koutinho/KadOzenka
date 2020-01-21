@@ -213,13 +213,7 @@ namespace KadOzenka.Dal.JSONParser
                         default: return MarketSegment.NoSegment;
                     }
                 case "Загородная недвижимость":
-                    switch (subCategory)
-                    {
-                        case "Дом": 
-                        case "Таунхаус": return MarketSegment.IZHS;
-                        case "Участок": return MarketSegment.Land;
-                    }
-                    break;
+                    return MarketSegment.IZHS;
             }
             return MarketSegment.MZHS;
         }

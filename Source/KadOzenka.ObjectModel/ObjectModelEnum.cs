@@ -306,18 +306,6 @@ namespace ObjectModel.Directory
         [EnumCode("7")]
         PublicCatering = 795,
 		/// <summary>
-		/// Земельные участки (796)
-		/// </summary>
-		[Description("Земельные участки")]
-        [EnumCode("103")]
-        Land = 796,
-		/// <summary>
-		/// Коммерческая земля (797)
-		/// </summary>
-		[Description("Коммерческая земля")]
-        [EnumCode("8")]
-        CommertialLand = 797,
-		/// <summary>
 		/// Без сегмента (798)
 		/// </summary>
 		[Description("Без сегмента")]
