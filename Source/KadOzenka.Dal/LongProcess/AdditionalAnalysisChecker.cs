@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Threading;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Sud;
 
@@ -11,23 +14,11 @@ namespace KadOzenka.Dal.LongProcess
 {
 	public class AdditionalAnalysisChecker: ILongProcess
 	{
-		public static void TestQuery()
-		{
-			var test = new QSJoin {JoinType = QSJoinType.Inner};
-			test.RegisterId = 316;
-			QSQuery query = new QSQuery();
-			query.Joins = new List<QSJoin>{test};
 
-			//var data = OMObject.Where(x => x.SudLink[0]).Select(x => new
-			//{
-			//	x.SudLink
-			//}).Execute();
-
-		}
-		
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			OMObject.Where(x => x.SudLink.FindAll(y => y.Sud.SudDate > x.Date));
+			DbCommand command = DBMngr.Main.GetStoredProcCommand("additional_analysis_checker");
+			DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 		}
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
