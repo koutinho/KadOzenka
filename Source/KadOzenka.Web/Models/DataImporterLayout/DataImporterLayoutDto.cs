@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using Core.Main.FileStorages;
 using Core.Register;
-using Core.Register.Enums;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
@@ -17,12 +17,19 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 	public class DataImporterLayoutDto
 	{
 		public long? Id { get; set; }
-		public string UserName { get; set; }
+
+        [Display(Name = "Автор")]
+        public string UserName { get; set; }
+
 		public ImportStatus? Status { get; set; }
-		public DateTime? DateCreated { get; set; }
+
+        [Display(Name = "Дата создания")]
+        public DateTime? DateCreated { get; set; }
 		public DateTime? DateStarted { get; set; }
 		public DateTime? DateFinished { get; set; }
-		public string TemplateFileName { get; set; }
+
+        [Display(Name = "Имя файла")]
+        public string TemplateFileName { get; set; }
 		public long? ErrorId { get; set; }
 		public long? MainRegisterId { get; set; }
 		public string RegisterViewId { get; set; }

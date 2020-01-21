@@ -10,12 +10,7 @@
 				<Parameter Key="RegisterId" Value="[RegisterId]" />
 			</Parameters>
 		</Button>
-    <Button Caption="Просмотр" NavigateURL="/Task/TaskCard" Icon="fas fa-edit">
-      <Parameters>
-        <Parameter Key="TaskId" Value="[ObjectID]" />
-      </Parameters>
-    </Button>
-		<Button Caption="Туры оценки" NavigateURL="/Task/TourEstimates" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+    <Button Caption="Туры оценки" NavigateURL="/Task/TourEstimates" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
 		</Button>
     <Button Caption="Группы" NavigateURL="/Task/Groups" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
     </Button>

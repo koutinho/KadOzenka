@@ -2,30 +2,33 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Practices.EnterpriseLibrary.Data;
-using ObjectModel.Core.SRD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.Web.Models.DataImporterLayout;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 
 namespace KadOzenka.Web.Controllers
 {
 	public class TaskController : Controller
     {
         public TaskService TaskService { get; set; }
+        public DataImporterService DataImporterService { get; set; }
 
         public TaskController()
         {
             TaskService = new TaskService();
+            DataImporterService = new DataImporterService();
         }
 
         #region Task Card
@@ -33,30 +36,33 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult TaskCard(long taskId)
         {
-            var taskModel = new TaskModel
-            {
-                Id = taskId
-            };
-
-            return View(taskModel);
-        }
-
-        [HttpGet]
-        public ActionResult TaskMainInfo(long taskId)
-        {
             var taskDto = TaskService.GetTaskById(taskId);
             if (taskDto == null)
                 return NotFound();
 
             var taskModel = TaskModel.ToModel(taskDto);
 
-            return PartialView("~/Views/Task/Partials/TaskMainInfo.cshtml", taskModel);
+            return View(taskModel);
         }
 
         [HttpGet]
-        public ActionResult Objects()
+        public ActionResult GetXmlDocuments([DataSourceRequest]DataSourceRequest request, long taskId)
         {
-            return new EmptyResult();
+            var importDataLogsDto = DataImporterService.GetCommonDataLog(OMTask.GetRegisterId(), taskId);
+
+            var result = new List<DataImporterLayoutDto>();
+            importDataLogsDto.ForEach(x =>
+            {
+                result.Add(new DataImporterLayoutDto
+                {
+                    Id = x.Id,
+                    DateCreated = x.CreationDate,
+                    UserName = x.Author,
+                    TemplateFileName = x.FileName
+                });
+            });
+
+            return Json(result.ToDataSourceResult(request));
         }
 
         #endregion

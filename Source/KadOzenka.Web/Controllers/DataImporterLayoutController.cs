@@ -32,7 +32,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public FileContentResult Download(long importId, bool downloadResult)
+		public FileContentResult Download(long importId, bool downloadResult, bool withXmlExtension)
 		{
 			var import = OMImportDataLog
 				.Where(x => x.Id == importId)
@@ -53,7 +53,14 @@ namespace KadOzenka.Web.Controllers
 			templateFile.Read(bytes);
 			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
 
-			return File(bytes, contentType, fileName.Replace(importId.ToString(), Path.GetFileNameWithoutExtension(import.DataFileName)) + "." + fileExtension);
+            //костыль используется в карточке задания (TaskCard), есть задача на доделывание
+            if (withXmlExtension)
+            {
+                fileExtension = "xml";
+                contentType = "application/xml";
+            }
+
+            return File(bytes, contentType, fileName.Replace(importId.ToString(), Path.GetFileNameWithoutExtension(import.DataFileName)) + "." + fileExtension);
 		}
 
 		[HttpGet]
