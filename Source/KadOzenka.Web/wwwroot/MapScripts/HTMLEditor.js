@@ -44,7 +44,7 @@
                 <div class="Name">Площадь</div>
                 <div class="Value">${getArea(cartData.segment, cartData.area, cartData.areaLand)}</div>
             </div>
-            ${!(cartData.areaLand != null && (cartData.segment == 3 || cartData.segment == 14)) ? "" : `
+            ${!(cartData.areaLand != null && ((cartData.segment == 3 && cartData.area) || cartData.segment == 14)) ? "" : `
                 <div class="Container">
                     <div class="Name">Площадь ЗУ</div>
                     <div class="Value">${numberWithSpaces(cartData.areaLand)}&nbsp;сот.</div>
@@ -64,7 +64,7 @@
                 <div class="Name">Дата&nbsp;актуального&nbsp;обновления</div>
                 <div class="Value">${cartData.lastUpdateDate == null ? cartData.parserTime : cartData.lastUpdateDate}</div >
             </div>
-            ${(cartData.segment == 12 || cartData.segment == 13) ? "" : `
+            ${(cartData.segment == 3 && !cartData.area) ? "" : `
                 <div class="Container">
                     <div class="Name">Кадастровый&nbsp;номер${cartData.source == "Росреестр" ? "" : "&nbsp;здания" }</div>
                     <div class="Value">${cartData.cadastralNumber}</div>

@@ -5,13 +5,14 @@
 };
 
 function getArea(segment, area, area_land) {
-    if (segment == 12 || segment == 13) return `${numberWithSpaces(area_land)}&nbsp;сот.`;
+    console.log(segment, area, area_land);
+    if (segment == 3 && !area) return `${numberWithSpaces(area_land)}&nbsp;сот.`;
     else return `${numberWithSpaces(area)}&nbsp;м²`;
 };
 
-function getAreaNumber(segment, area, area_land) { return (segment == 12 || segment == 13) ? area_land : area; };
+function getAreaNumber(segment, area, area_land) { return (segment == 3 && !area) ? area_land : area; };
 
-function getAreaType(segment, area, area_land) { return (segment == 12 || segment == 13) ? "сот." : "м²"; };
+function getAreaType(segment, area, area_land) { return (segment == 3 && !area) ? "сот." : "м²"; };
 
 function getFloor(floor, floorCount) { return floor == null ? `${floorCount}` : `${floor}&nbsp;из&nbsp;${floorCount}`; };
 

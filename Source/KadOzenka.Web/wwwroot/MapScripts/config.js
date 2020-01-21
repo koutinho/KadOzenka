@@ -11,7 +11,7 @@ var MapSettings = {
     center: [55.76, 37.64],
     zoom: 9,
     minClusterZoom: 15,
-    maxLoadedObjectsCount: 1,
+    maxLoadedObjectsCount: 500,
     leftMenuMaxValues: 20
 };
 
