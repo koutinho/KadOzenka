@@ -9,11 +9,11 @@
       </Parameters>
     </Button>
 
-    <Button Caption="Добавить" NavigateURL="/Declarations/EditDeclaration" Icon="fas fa-plus">
+    <Button Caption="Добавить" NavigateURL="/Declarations/EditDeclaration" Icon="fas fa-plus" SRDFunctionTAG="DECLARATIONS.DECLARATION.CREATE">
        <Parameters></Parameters>
     </Button>
 
-    <Button Caption="Редактировать" NavigateURL="/Declarations/EditDeclaration" Icon="fas fa-edit">
+    <Button Caption="Редактировать" NavigateURL="/Declarations/EditDeclaration" Icon="fas fa-edit" SRDFunctionTAG="DECLARATIONS.DECLARATION.EDIT">
         <Parameters>
             <Parameter Key="declarationId" Value="[ObjectID]" />
         </Parameters>

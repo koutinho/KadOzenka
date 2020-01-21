@@ -3,12 +3,12 @@
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
-        <Button Caption="Добавить" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-plus">
+        <Button Caption="Добавить" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTAG="DECLARATIONS.SIGNATORY.CREATE">
             <Parameters></Parameters>
         </Button>
 
 
-        <Button Caption="Редактировать" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-edit">
+        <Button Caption="Редактировать" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTAG="DECLARATIONS.SIGNATORY.EDIT">
             <Parameters>
                 <Parameter Key="signatoryId" Value="[ObjectID]" />
             </Parameters>

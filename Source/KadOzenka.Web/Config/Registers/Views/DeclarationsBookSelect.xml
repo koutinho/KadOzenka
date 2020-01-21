@@ -4,11 +4,11 @@
     <Buttons>
       <Button Caption="Выбрать" NavigateURL="/" />
       
-      <Button Caption="Добавить" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Добавить" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" SRDFunctionTAG="DECLARATIONS.BOOK.CREATE">
         <Parameters></Parameters>
       </Button>
       
-      <Button Caption="Редактировать" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800">
+      <Button Caption="Редактировать" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" SRDFunctionTAG="DECLARATIONS.BOOK.EDIT">
         <Parameters>
           <Parameter Key="bookId" Value="[ObjectID]" />
         </Parameters>

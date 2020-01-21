@@ -145,53 +145,55 @@ namespace KadOzenka.Dal.Gadgets
 				});
 
 			var data = new DataTable();
-
 			data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.Site.GetEnumCode()),
-				"Земельные участки",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Site)?.Count ?? 0);
+			if (SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS))
+			{
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.Site.GetEnumCode()),
+					"Земельные участки",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Site)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.Building.GetEnumCode()),
-				"Здания",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Building)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.Building.GetEnumCode()),
+					"Здания",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Building)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.Room.GetEnumCode()),
-				"Помещения",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Room)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.Room.GetEnumCode()),
+					"Помещения",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Room)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.Construction.GetEnumCode()),
-				"Сооружения",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Construction)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.Construction.GetEnumCode()),
+					"Сооружения",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Construction)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.ParkingPlace.GetEnumCode()),
-				"Машино-места",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.ParkingPlace)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.ParkingPlace.GetEnumCode()),
+					"Машино-места",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.ParkingPlace)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.Ons.GetEnumCode()),
-				"ОНС",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Ons)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.Ons.GetEnumCode()),
+					"ОНС",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Ons)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.Ens.GetEnumCode()),
-				"Единые недвижимые комплексы",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Ens)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.Ens.GetEnumCode()),
+					"Единые недвижимые комплексы",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Ens)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.Pik.GetEnumCode()),
-				"Производственно имущественные комплексы",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Pik)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.Pik.GetEnumCode()),
+					"Производственно имущественные комплексы",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Pik)?.Count ?? 0);
 
-			data.Rows.Add(
-				linkParam.Replace("{Type}", ObjectType.Other.GetEnumCode()),
-				"Иное",
-				objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Other)?.Count ?? 0);
+				data.Rows.Add(
+					linkParam.Replace("{Type}", ObjectType.Other.GetEnumCode()),
+					"Иное",
+					objects.FirstOrDefault(x => x.TypeObj_Code == ObjectType.Other)?.Count ?? 0);
+			}
 
 			return data;
 		}

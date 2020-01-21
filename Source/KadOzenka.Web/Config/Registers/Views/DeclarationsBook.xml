@@ -3,12 +3,12 @@
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
-        <Button Caption="Добавить" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
+        <Button Caption="Добавить" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTAG="DECLARATIONS.BOOK.CREATE">
             <Parameters></Parameters>
         </Button>
 
 
-        <Button Caption="Редактировать" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit">
+        <Button Caption="Редактировать" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTAG="DECLARATIONS.BOOK.EDIT">
             <Parameters>
                 <Parameter Key="bookId" Value="[ObjectID]" />
             </Parameters>
