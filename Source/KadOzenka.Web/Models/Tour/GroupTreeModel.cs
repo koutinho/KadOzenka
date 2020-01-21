@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Web.Models.Tour
 {
-	public class GroupTreeDto
+	public class GroupTreeModel
 	{
 		public long? Id { get; set; }
 		public long? ParentId { get; set; }
