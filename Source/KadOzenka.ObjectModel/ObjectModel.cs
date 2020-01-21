@@ -4583,7 +4583,7 @@ namespace ObjectModel.KO
 
         private long? _responsedocid;
         /// <summary>
-        /// 20300600 Идентификатор исходящего документа (response_document_id)
+        /// 20300600 Идентификатор исходящего документа (RESPONSE_DOCUMENT_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 20300600)]
         public long? ResponseDocId
@@ -4652,6 +4652,26 @@ namespace ObjectModel.KO
                 this._status_Code = value;
                 NotifyPropertyChanged("Status");
                 NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+
+        private DateTime? _estimationdate;
+        /// <summary>
+        /// 20300800 Дата оценки (ESTIMATION_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20300800)]
+        public DateTime? EstimationDate
+        {
+            get
+            {
+                CheckPropertyInited("EstimationDate");
+                return _estimationdate;
+            }
+            set
+            {
+                _estimationdate = value;
+                NotifyPropertyChanged("EstimationDate");
             }
         }
 
