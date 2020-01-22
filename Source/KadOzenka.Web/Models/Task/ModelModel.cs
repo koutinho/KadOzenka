@@ -8,6 +8,7 @@ namespace KadOzenka.Web.Models.Task
     {
         public long Id { get; set; }
         public long? GroupId { get; set; }
+        public bool IsPartial { get; set; }
 
         [Display(Name= "Наименование")]
         public string Name { get; set; }

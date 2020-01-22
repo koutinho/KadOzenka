@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
@@ -83,6 +82,7 @@ namespace KadOzenka.Web.Controllers
         {
             var modelDto = ModelService.GetModelByGroupId(groupId);
             var model = ModelModel.ToModel(modelDto);
+            model.IsPartial = true;
 
             return PartialView("~/Views/Task/Model.cshtml", model);
         }

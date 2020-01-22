@@ -51,14 +51,7 @@
                     }
                 }
             ],
-            change: function () {
-                var treeList = $("#treeList").data("kendoTreeList");
-                var row = treeList.select();
-                if (row.length > 0) {
-                    var data = treeList.dataItem(row);
-                    $('#mainContent').load(data.UrlForEdit);
-                }
-            }
+            change: UpdateMainContent
         });
 
         $("#treeList").data("kendoTreeList").dataSource.filter({ field: "TourId", operator: "equals", value: @ViewBag.TourId });
@@ -66,6 +59,18 @@
         $('#mainContent').load('@Url.Action("TourSubCard", "Tour", new {tourId = ViewBag.TourId })');
 
     });
+
+    function UpdateMainContent() {
+        console.log("UpdateMainContent");
+
+        var treeList = $("#treeList").data("kendoTreeList");
+        var row = treeList.select();
+        if (row.length > 0) {
+            var data = treeList.dataItem(row);
+            $('#mainContent').load(data.UrlForEdit);
+        }
+    }
+
 </script>
 
 @section styles {

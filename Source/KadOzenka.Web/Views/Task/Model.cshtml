@@ -62,11 +62,9 @@
                 {
                     type: 'button',
                     text: '',
-                    attributes: { title: "Обновить (не реализовано)" },
+                    attributes: { title: "Обновить" },
                     icon: 'refresh',
-                    click: function () {
-                        //TODO
-                    }
+                    click: UpdateView
                 },
                 {
                     type: 'button',
@@ -84,15 +82,15 @@
                             A0: $('#A0').val()
                         };
 
-                        kendo.ui.progress($('body'), true); 
+                        kendo.ui.progress($('body'), true);
 
                         $.ajax({
                             type: 'POST',
                             url: '@Url.Action("Model", "Task")',
-                            data: dto,                            
+                            data: dto,
                             success: function (e) {
-                                kendo.ui.progress($('body'), false);                                
-                                Common.ShowMessage('Сохранено');                                                               
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowMessage('Сохранено');
                             },
                             error: function (e) {
                                 kendo.ui.progress($('body'), false);
@@ -133,7 +131,7 @@
         });
 
 
-       
+
 
 
 
@@ -169,16 +167,17 @@
             selectable: true
         });
 
+
         $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', AlgTypeChanged);
         function AlgTypeChanged() {
             var algType = this.value();
             $.ajax({
                 url: '@Url.Action("GetFormula", "Task")' + '?modelId=@Model.Id&algType=' + algType,
-                type: 'POST',                
-                success: function (e) { 
+                type: 'POST',
+                success: function (e) {
                     $('#Formula').val(e.formula);
                 },
-                error: function (e) {                    
+                error: function (e) {
                     Common.ShowError(e.responseText);
                 }
             });
@@ -190,24 +189,24 @@
             var row = grid.select();
             if (row.length == 0) {
                 $('#edit-factor').addClass('k-state-disabled');
-                $('#remove-factor').addClass('k-state-disabled');                
+                $('#remove-factor').addClass('k-state-disabled');
             }
             else {
                 $('#edit-factor').removeClass('k-state-disabled');
-                $('#remove-factor').removeClass('k-state-disabled');                
+                $('#remove-factor').removeClass('k-state-disabled');
             }
         }
 
         $('#edit-factor').addClass('k-state-disabled');
-        $('#remove-factor').addClass('k-state-disabled');  
+        $('#remove-factor').addClass('k-state-disabled');
 
         $('#add-factor').on('click', function () {
             Common.UI.ShowWindow('Редактирование фактора',
                 '@Url.Action("EditModelFactor", "Task")' + '?modelId=@Model.Id',
                 'editFactorWindow',
-                function (e, param) {                        
-                        if (param == true) {                            
-                            location.reload();
+                function (e, param) {
+                        if (param == true) {
+                            UpdateView();
                         }
                     },
                 800, 400);
@@ -221,9 +220,9 @@
                 Common.UI.ShowWindow('Редактирование фактора',
                     '@Url.Action("EditModelFactor", "Task")' + '?id=' + data.Id + '&modelId=@Model.Id',
                     'editFactorWindow',
-                    function (e, param) {                        
-                        if (param == true) {                            
-                            location.reload();
+                    function (e, param) {
+                        if (param == true) {
+                            UpdateView();
                         }
                     },
                     800, 400
@@ -232,12 +231,10 @@
         });
 
         $('#remove-factor').on('click', function () {
-
             var grid = $("#grid").data("kendoGrid");
             var row = grid.select();
             if (row.length > 0) {
                 var data = grid.dataItem(row);
-
                 Common.UI.ShowConfirm({
                     title: '',
                     content: 'Удалить фактор?',
@@ -249,9 +246,9 @@
                             data: { id: data.Id },
                             success: function (response) {
                                 kendo.ui.progress($('body'), false);
-                                if (response.Success) {                                                                        
+                                if (response.Success) {
                                     Common.ShowMessage(response.Success);
-                                    location.reload();
+                                    UpdateView();
                                 }
                             },
                             error: function (response) {
@@ -264,6 +261,23 @@
             }
         });
     });
+
+    function UpdateView() {
+        @{
+            if (!Model.IsPartial)
+            {
+                <text>location.reload();</text>
+            }
+            else
+            {
+                <text>
+                    //метод из TourCard
+                    UpdateMainContent();
+                </text>
+            }
+        }
+    }
+
 </script>
 
 <style>
