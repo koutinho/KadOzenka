@@ -1,10 +1,10 @@
-﻿@model ObjectModel.KO.OMModel
+﻿@model KadOzenka.Web.Models.Task.ModelModel
 
 <div id="toolbar"></div>
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.CustomLabel("Наименование")
+            @Html.CustomLabelFor(x => x.Name)
         </div>
         <div class="col-sm-10">
             @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
@@ -12,7 +12,7 @@
     </div>
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.CustomLabel("Описание")
+            @Html.CustomLabelFor(x => x.Description)
         </div>
         <div class="col-sm-10">
             @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
@@ -20,15 +20,15 @@
     </div>
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.CustomLabel("Алгоритм расчета")
+            @Html.CustomLabelFor(x => x.AlgorithmTypeCode)
         </div>
         <div class="col-sm-10">
-            @Html.KendoEnumDropDownListFor(x => x.AlgoritmType_Code, isReadonly: false)
+            @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false)
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.CustomLabel("Формула")
+            @Html.CustomLabelFor(x => x.Formula)
         </div>
         <div class="col-sm-10">
             @Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
@@ -36,7 +36,7 @@
     </div>
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.CustomLabel("Свободный член")
+            @Html.CustomLabelFor(x => x.A0)
         </div>
         <div class="col-sm-10">
             @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
@@ -76,15 +76,18 @@
                             GroupId: '@Model.GroupId',
                             Name: $('#Name').val(),
                             Description: $('#Description').val(),
-                            AlgoritmType_Code: $('#AlgoritmType_Code').val(),
+                            AlgoritmType_Code: $('#AlgorithmTypeCode').val(),
                             Formula: $('#Formula').val(),
                             A0: $('#A0').val()
                         };
+
+                        console.log("???" + dto);
 
                         kendo.ui.progress($('body'), true); 
 
                         $.ajax({
                             type: 'POST',
+                            url: '@Url.Action("Model", "Task")',
                             data: dto,                            
                             success: function (e) {
                                 kendo.ui.progress($('body'), false);                                
@@ -133,7 +136,7 @@
             selectable: true
         });
 
-        $('#AlgoritmType_Code').data('kendoDropDownList').bind('change', AlgTypeChanged);
+        $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', AlgTypeChanged);
 
         function AlgTypeChanged() {
             var algType = this.value();

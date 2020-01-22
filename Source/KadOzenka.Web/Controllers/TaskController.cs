@@ -11,6 +11,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.DataImporterLayout;
 using Kendo.Mvc.Extensions;
@@ -21,11 +22,13 @@ namespace KadOzenka.Web.Controllers
 	public class TaskController : Controller
     {
         public TaskService TaskService { get; set; }
+        public ModelService ModelService { get; set; }
         public DataImporterService DataImporterService { get; set; }
 
         public TaskController()
         {
             TaskService = new TaskService();
+            ModelService = new ModelService();
             DataImporterService = new DataImporterService();
         }
 
@@ -68,18 +71,23 @@ namespace KadOzenka.Web.Controllers
         #region Модель
 
 		public ActionResult Model(long groupId)
-		{
-			OMModel model = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
-
-			if (model == null)
-			{
-				throw new Exception("Модель не найдена");
-			}
-
-			return View(model); 
+        {
+            var modelDto = ModelService.GetModelByGroupId(groupId);
+            var model = ModelModel.ToModel(modelDto);
+            
+            return View(model); 
 		}
 
-		[HttpPost]
+        [HttpGet]
+        public ActionResult PartialModel(long groupId)
+        {
+            var modelDto = ModelService.GetModelByGroupId(groupId);
+            var model = ModelModel.ToModel(modelDto);
+
+            return PartialView("~/Views/Task/Model.cshtml", model);
+        }
+
+        [HttpPost]
 		public ActionResult Model(OMModel model)
 		{			
 			model.Formula = model.GetFormulaFull(true);
