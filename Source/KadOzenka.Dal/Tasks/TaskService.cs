@@ -44,6 +44,7 @@ namespace KadOzenka.Dal.Tasks
             {
                 Id = document.Id,
                 RegNumber = document.RegNumber,
+                Description = document.Description,
                 CreationDate = document.CreateDate
             };
         }

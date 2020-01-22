@@ -16,6 +16,9 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Номер документа")]
         public string IncomingDocumentRegNumber { get; set; }
 
+        [Display(Name = "Наименование документа")]
+        public string IncomingDocumentDescription { get; set; }
+
         [Display(Name = "Дата документа")]
         public DateTime? IncomingDocumentDate { get; set; }
 
@@ -36,6 +39,7 @@ namespace KadOzenka.Web.Models.Task
                 Id = task.Id,
                 CreationDate = task.CreationDate,
                 IncomingDocumentRegNumber = task.IncomingDocument?.RegNumber,
+                IncomingDocumentDescription = task.IncomingDocument?.Description,
                 IncomingDocumentDate = task.IncomingDocument?.CreationDate,
                 NoteType = task.NoteType,
                 TourYear = task.Tour?.Year,

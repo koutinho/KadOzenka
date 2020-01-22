@@ -9,5 +9,7 @@ namespace KadOzenka.Dal.Tasks.Dto
         public DateTime? CreationDate { get; set; }
 
         public string RegNumber { get; set; }
+
+        public string Description { get; set; }
     }
 }

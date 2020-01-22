@@ -30,6 +30,14 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.IncomingDocumentDescription)
+                    </div>
+                    <div class="col-sm-10">
+                        @Html.TextAreaFor(x => x.IncomingDocumentDescription, new { @class = "k-textbox", style= "resize: none;", @readonly = true, rows = 5, cols = 30 })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
                         @Html.CustomLabelFor(m => m.NoteType)
                     </div>
                     <div class="col-sm-4">

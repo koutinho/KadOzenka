@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using System.Transactions;
-using Core.Register.QuerySubsystem;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,7 +13,6 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.DataImporterLayout;
-using KadOzenka.Web.Models.Tour;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
