@@ -8,6 +8,8 @@ namespace KadOzenka.Dal.Tasks.Dto
 
         public DateTime? CreationDate { get; set; }
 
+        public DateTime? EstimationDate { get; set; }
+
         public TourDto Tour { get; set; }
 
         public string NoteType { get; set; }

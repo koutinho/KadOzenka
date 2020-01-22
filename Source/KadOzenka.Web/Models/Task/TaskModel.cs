@@ -13,6 +13,9 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Дата загрузки")]
         public DateTime? CreationDate { get; set; }
 
+        [Display(Name = "Дата изменения сведения (дата оценки)")]
+        public DateTime? EstimationDate { get; set; }
+
         [Display(Name = "Номер документа")]
         public string IncomingDocumentRegNumber { get; set; }
 
@@ -38,6 +41,7 @@ namespace KadOzenka.Web.Models.Task
             {
                 Id = task.Id,
                 CreationDate = task.CreationDate,
+                EstimationDate = task.EstimationDate,
                 IncomingDocumentRegNumber = task.IncomingDocument?.RegNumber,
                 IncomingDocumentDescription = task.IncomingDocument?.Description,
                 IncomingDocumentDate = task.IncomingDocument?.CreationDate,

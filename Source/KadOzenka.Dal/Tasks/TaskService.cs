@@ -20,6 +20,7 @@ namespace KadOzenka.Dal.Tasks
             {
                 Id = task.Id,
                 CreationDate = task.CreationDate,
+                EstimationDate = task.EstimationDate,
                 Tour = tour,
                 NoteType = task.NoteType,
                 Status = task.Status,
