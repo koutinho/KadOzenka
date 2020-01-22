@@ -5,7 +5,7 @@
         <li id="MainData" data-expand>
             <span>Основные данные</span>
             <div>
-                <div class="form-horizontal col-sm-12">
+                <div class="form-horizontal col-sm-12" style="margin-top:10px;">
                     <div class="form-group">
                         <div class="col-sm-3">
                             @Html.CustomLabel("Тур")
@@ -19,7 +19,7 @@
                             @Html.CustomLabel("Номер документа")
                         </div>
                         <div class="col-sm-9">
-                            @Html.KendoNumericTextBoxFor(x=>x.DocNumber, isReadonly: false)                            
+                            @Html.KendoNumericTextBoxFor(x => x.DocNumber, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
@@ -27,7 +27,7 @@
                             @Html.CustomLabel("Дата документа")
                         </div>
                         <div class="col-sm-9">
-                            @Html.KendoDatePickerFor(x=>x.DocDate, isReadonly: false)
+                            @Html.KendoDatePickerFor(x => x.DocDate, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
@@ -35,7 +35,7 @@
                             @Html.CustomLabel("Тип статьи")
                         </div>
                         <div class="col-sm-9">
-                            @Html.KendoEnumDropDownListFor(x=>x.NoteType, isReadonly: false)
+                            @Html.KendoEnumDropDownListFor(x => x.NoteType, isReadonly: false)
                         </div>
                     </div>
                 </div>
@@ -52,13 +52,21 @@
                 <div class="form-horizontal col-sm-12">
                     <form id="fileForm">
                         <input name="files" id="files" type="file" aria-label="files" />
-                    </form>                    
+                    </form>
                 </div>
-            </div>            
+            </div>
         </li>
     </ul>
 
-    <div class="col-sm-12"><button class="k-button" id="load">Загрузить</button></div>
+    <div class="static-nav">
+        <nav id="navigation-menu">
+            <a href="#MainData">Основные данные</a>
+            <a href="#Images">Образы</a>
+            <a href="#XmlFiles">XML-файлы</a>            
+        </nav>
+        <div id="toolbar"></div>
+    </div>
+
 </div>
 
 <script>
@@ -67,34 +75,80 @@
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
         panelbar.expand('li[data-expand]');
 
-        $('#load').on('click', function () {            
-            var formData = new FormData($('#fileForm').get(0));
-
-            formData.set('DocNumber', $('[name="DocNumber"]').val());
-            var date = $('[name="DocDate"]').data().kendoDatePicker.value();
-            if (date != null) {
-                formData.set('DocDate', date.toDateString());
-            }
-            formData.set('TourId', $('[name="Tour"]').val());
-            formData.set('NoteType', $('[name="NoteType"]').val());
-
-            kendo.ui.progress($('body'), true);
-            $.ajax({
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (e) {
-                    kendo.ui.progress($('body'), false);
-                    Common.ShowMessage("Загрузка успешно добавлена в очередь, по результатам загрузки будет отправлено сообщение");
-                },
-                error: function (e) {                    
-                    kendo.ui.progress($('body'), false);
-                    var msg = e.responseText ? e.responseText : 'Ошибка загрузки. Обратитесь к администратору.'
-                    Common.ShowError(msg);
-                }
-            });
+        $("#navigation-menu a").mPageScroll2id({
+            highlightSelector: "#navigation-menu a"
         });
+
+        var toolbar = $("#toolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'load',
+                    text: '',
+                    click: function () {
+                        var message = [];
+                        if (files.getFiles().length == 0) {
+                            message += 'Необходимо выбрать как минимум один файл<br>';
+                        }
+                        if ($('[name="DocNumber"]').val() == 0) {
+                            message += 'Необходимо заполнить номер документа<br>';
+                        }                        
+                        if ($('[name="DocDate"]').data().kendoDatePicker.value() == null) {
+                            message += 'Необходимо заполнить дату документа<br>';
+                        }
+                        if ($('[name="NoteType"]').val() == 0) {
+                            message += 'Необходимо заполнить тип статьи<br>';
+                        }
+                        if (message.length != 0) {
+                            Common.ShowError(message);
+                            return;
+                        }
+
+                        var formData = new FormData($('#fileForm').get(0));
+
+                        formData.set('DocNumber', $('[name="DocNumber"]').val());
+                        var date = $('[name="DocDate"]').data().kendoDatePicker.value();                       
+                        formData.set('DocDate', date.toDateString());                       
+                        formData.set('TourId', $('[name="Tour"]').val());
+                        formData.set('NoteType', $('[name="NoteType"]').val());
+
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (e) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowMessage("Загрузка успешно добавлена в очередь, по результатам загрузки будет отправлено сообщение");
+                            },
+                            error: function (e) {
+                                kendo.ui.progress($('body'), false);
+                                var msg = e.responseText ? e.responseText : 'Ошибка загрузки. Обратитесь к администратору.'
+                                Common.ShowError(msg);
+                            }
+                        });
+                    },
+                    icon: 'upload',
+                    hidden: false
+                }
+            ]
+        });
+
+        $("#toolbar").kendoTooltip({
+            filter: "a.k-button",
+            content: function (e) {
+                switch ($(e.target).attr('id')) {
+                    case "load":
+                        return "Загрузить";
+                    case "print":
+                        return "Печать";
+                }
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });        
 
         $('[name="Tour"]')
             .kendoDropDownList({
@@ -111,7 +165,7 @@
                 }
             });
 
-        $('#files').kendoUpload({
+        var files = $('#files').kendoUpload({
 		    multiple: true,
 		    localization: {
 			    select: 'Выбрать файлы'

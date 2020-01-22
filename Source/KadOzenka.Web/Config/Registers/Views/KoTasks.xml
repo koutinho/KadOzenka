@@ -10,7 +10,7 @@
 				<Parameter Key="RegisterId" Value="[RegisterId]" />
 			</Parameters>
 		</Button>
-    <Button Caption="Импорт данных ГКН" NavigateURL="/DataImport/ImportGkn" WindowHeight="120" WindowWidth="800" Icon="fas fa-code">
+    <Button Caption="Импорт данных ГКН" NavigateURL="/DataImport/ImportGkn" Icon="fas fa-code">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
       </Parameters>
