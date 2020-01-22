@@ -65,41 +65,66 @@ namespace KadOzenka.Dal.FastReports
 				.Where(x => x.Id == notification.Declaration_Id)
 				.SelectAll()
 				.Execute().FirstOrDefault();
+
 			if (declaration == null)
 			{
 				throw new Exception($"Декларация не найдена");
 			}
 
+			OMSubject subject = null;
+			SendUvedType uvedType = SendUvedType.None;
+			var agent = OMSubject
+				.Where(x => x.Id == declaration.Agent_Id)
+				.SelectAll()
+				.Execute().FirstOrDefault();
 			var owner = OMSubject
 				.Where(x => x.Id == declaration.Owner_Id)
 				.SelectAll()
 				.Execute().FirstOrDefault();
-			if (owner == null)
+			if (owner != null && agent != null)
 			{
-				throw new Exception($"Заявитель не найден");
+				subject = agent;
+				uvedType = declaration.UvedTypeAgent_Code;
 			}
-
-			var ownerName = string.Empty;
-			if (owner.Type_Code == SubjectType.Fl)
+			else if (owner != null || agent != null)
 			{
-				var petrovich = new Petrovich
+				if (owner != null)
 				{
-					FirstName = owner.I_Name,
-					LastName = owner.F_Name,
-					MiddleName = owner.O_Name,
-					AutoDetectGender = true
-				};
-				var inflected = petrovich.InflectTo(Case.Dative);
-				ownerName = inflected.LastName;
-				if (!string.IsNullOrWhiteSpace(inflected.FirstName) &&
-					!string.IsNullOrWhiteSpace(inflected.MiddleName))
+					subject = owner;
+					uvedType = declaration.UvedTypeOwner_Code;
+				}
+				if (agent != null)
 				{
-					ownerName += $" {inflected.FirstName.Trim()[0]}.{inflected.MiddleName.Trim()[0]}.";
+					subject = agent;
+					uvedType = declaration.UvedTypeAgent_Code;
 				}
 			}
 			else
 			{
-				ownerName = owner.Name;
+				throw new Exception($"В декларации отсутствуют Заявитель и Представитель заявителя");
+			}
+
+			var subjectName = string.Empty;
+			if (subject.Type_Code == SubjectType.Fl)
+			{
+				var petrovich = new Petrovich
+				{
+					FirstName = subject.I_Name,
+					LastName = subject.F_Name,
+					MiddleName = subject.O_Name,
+					AutoDetectGender = true
+				};
+				var inflected = petrovich.InflectTo(Case.Dative);
+				subjectName = inflected.LastName;
+				if (!string.IsNullOrWhiteSpace(inflected.FirstName) &&
+					!string.IsNullOrWhiteSpace(inflected.MiddleName))
+				{
+					subjectName += $" {inflected.FirstName.Trim()[0]}.{inflected.MiddleName.Trim()[0]}.";
+				}
+			}
+			else
+			{
+				subjectName = subject.Name;
 			}
 
 			var book = OMBook
@@ -126,8 +151,8 @@ namespace KadOzenka.Dal.FastReports
 			}
 
 			dataSet.Tables[0].Rows.Add(
-				ownerName,
-				FormAddress(owner),
+				subjectName,
+				FormAddress(subject, uvedType),
 				declaration.DateIn?.ToString("dd.MM.yyyy"),
 				$"{declaration.NumIn}/{book?.Prefics}",
 				userIspName,
@@ -193,24 +218,32 @@ namespace KadOzenka.Dal.FastReports
 			return result.ToString();
 		}
 
-		public string FormAddress(OMSubject subject)
+		public string FormAddress(OMSubject subject, SendUvedType uvedType)
 		{
 			if (subject == null)
 			{
 				return string.Empty;
 			}
 
-			var addressParts = new List<string>
+			string address = string.Empty;
+			if (uvedType == SendUvedType.Email)
 			{
-				subject.Street?.Replace(" ", "\u00A0"),
-				subject.House?.Replace(" ", "\u00A0"),
-				subject.Building?.Replace(" ", "\u00A0"),
-				subject.Flat?.Replace(" ", "\u00A0"),
-				subject.City?.Replace(" ", "\u00A0"),
-				subject.Zip
-			};
+				address = subject.Mail;
+			} else
+			{
+				var addressParts = new List<string>
+				{
+					subject.Street?.Replace(" ", "\u00A0"),
+					subject.House?.Replace(" ", "\u00A0"),
+					subject.Building?.Replace(" ", "\u00A0"),
+					subject.Flat?.Replace(" ", "\u00A0"),
+					subject.City?.Replace(" ", "\u00A0"),
+					subject.Zip
+				};
+				address = string.Join(", ", addressParts.Where(x => !string.IsNullOrWhiteSpace(x)));
+			}
 
-			return string.Join(", ", addressParts.Where(x => !string.IsNullOrWhiteSpace(x)));
+			return address;
 		}
 	}
 }
