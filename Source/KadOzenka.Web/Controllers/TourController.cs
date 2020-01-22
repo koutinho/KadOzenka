@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using Core.Shared.Extensions;
 using DevExpress.DataProcessing;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Models.Tour;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -33,23 +35,57 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetGroupsForTour(long tourId)
         {
             var tour = TourService.GetTourById(tourId);
-
-            var groupModels = new List<GroupTreeModel>();
             var newParent = new GroupTreeModel
             {
                 Id = 0,
                 GroupName = tour.Year.ToString(),
-                TourId = tour.Id
+                TourId = tour.Id,
+                UrlForEdit = Url.Action("TourSubCard", "Tour", new { tourId = tour.Id })
             };
-            groupModels.Add(newParent);
+            var groupModels = new List<GroupTreeModel> {newParent};
 
             var groups = TourService.GetGroups(newParent.Id);
             groups.ForEach(x =>
             {
-                groupModels.Add(GroupTreeModel.ToModel(x));
+                var treeModel = GroupTreeModel.ToModel(x);
+                treeModel.UrlForEdit = Url.Action("GroupSubCard", "Tour", new { groupId = treeModel.Id});
+                groupModels.Add(treeModel);
             });
 
             return Json(groupModels);
+        }
+
+        [HttpGet]
+        public ActionResult TourSubCard(long tourId)
+        {
+            var tour = TourService.GetTourById(tourId);
+            var tourModel = TourModel.ToModel(tour);
+
+            return PartialView("~/Views/Tour/Partials/TourSubCard.cshtml", tourModel);
+        }
+
+        [HttpGet]
+        public ActionResult GroupSubCard(long groupId)
+        {
+            var groupDto = new GroupDto{Id = groupId};
+            switch (groupId)
+            {
+                case (long)KoGroupAlgoritm.MainParcel:
+                    groupDto.Name = KoGroupAlgoritm.MainParcel.GetEnumDescription();
+                    break;
+
+                case (long)KoGroupAlgoritm.MainOKS:
+                    groupDto.Name = KoGroupAlgoritm.MainOKS.GetEnumDescription();
+                    break;
+
+                default:
+                    groupDto = TourService.GetGroupById(groupId);
+                    break;
+            }
+
+            var groupModel = GroupModel.ToModel(groupDto);
+
+            return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
         }
 
         #endregion
@@ -146,7 +182,7 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult EditGroup(long? id)
 		{
-			GroupDto dto = new GroupDto();
+			GroupModel dto = new GroupModel();
 
 			if (id.HasValue)
 			{
@@ -197,7 +233,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult EditGroup(GroupDto dto)
+		public ActionResult EditGroup(GroupModel dto)
 		{
 			OMGroup group = null;
 			OMTourGroup tourGroup = null;

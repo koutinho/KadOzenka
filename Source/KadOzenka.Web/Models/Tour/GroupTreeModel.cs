@@ -8,6 +8,7 @@ namespace KadOzenka.Web.Models.Tour
 		public long? ParentId { get; set; }
 		public string GroupName { get; set; }
 		public long? TourId { get; set; }
+        public string UrlForEdit { get; set; }
 
 
         public static GroupTreeModel ToModel(GroupTreeDto tree)

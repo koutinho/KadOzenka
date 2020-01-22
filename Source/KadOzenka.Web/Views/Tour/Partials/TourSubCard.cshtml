@@ -1,0 +1,19 @@
+﻿@model KadOzenka.Web.Models.Tour.TourModel
+
+<div class="container">
+    <div class="row" style="padding-top: 2%;">
+        <span>Настройка тура</span>
+    </div>
+    <div class="row">
+        <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.Year)
+                </div>
+                <div class="col-sm-9">
+                    @Html.KendoNumericTextBoxFor(x => x.Year)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

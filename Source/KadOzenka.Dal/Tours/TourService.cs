@@ -9,6 +9,8 @@ namespace KadOzenka.Dal.Tours
 {
     public class TourService
     {
+        #region Tours
+
         public TourDto GetTourById(long? tourId)
         {
             if(tourId == null)
@@ -25,6 +27,27 @@ namespace KadOzenka.Dal.Tours
             };
         }
 
+        #endregion
+
+
+        #region Groups
+
+        public GroupDto GetGroupById(long? groupId)
+        {
+            if (groupId == null)
+                throw new Exception("Не передан идентификатор Группы для поиска");
+
+            var group = OMGroup.Where(x => x.Id == groupId).SelectAll().ExecuteFirstOrDefault();
+            if (group == null)
+                throw new Exception($"Не найдена Группа с id='{groupId}'");
+
+            return new GroupDto
+            {
+                Id = group.Id,
+                Name = group.GroupName
+            };
+        }
+
         public List<GroupTreeDto> GetGroups(long? mainParentId = null)
         {
             var query = new QSQuery
@@ -35,7 +58,7 @@ namespace KadOzenka.Dal.Tours
                     new QSJoin
                     {
                         RegisterId = OMTourGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple()
+                        JoinCondition = new QSConditionSimple
                         {
                             ConditionType = QSConditionType.Equal,
                             LeftOperand = OMGroup.GetColumn(x => x.Id),
@@ -102,5 +125,7 @@ namespace KadOzenka.Dal.Tours
 
             return groups;
         }
+
+        #endregion
     }
 }

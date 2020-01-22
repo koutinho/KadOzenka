@@ -1,6 +1,15 @@
 ﻿<div class="flex-content">
-    <div class="k-content wide flex-tree-list">
-        <div id="treeList"></div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="k-content wide flex-tree-list col-sm-5">
+                <div id="treeList"></div>
+            </div>
+            <div class="col-sm-6">
+                <div id="mainContent">
+
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -20,7 +29,9 @@
 					parentId: "ParentId",
 					fields: {
                         ParentId: { field: "ParentId", nullable: true },
-                        Id: { field: "Id", type: "number" }
+                        Id: { field: "Id", type: "number" },
+                        TourId: { field: "TourId", type: "number" },
+                        UrlForEdit: { field: "UrlForEdit", type: "string" }
                     },
 					expanded: true
 				}
@@ -34,19 +45,31 @@
                 {
                     field: "GroupName", title: "Имя группы", headerAttributes: {
                         style: "display: none"
+                    },
+                    attributes: {
+                        "class": "col-sm-4"
                     }
                 }
-			]
+            ],
+            change: function () {
+                var treeList = $("#treeList").data("kendoTreeList");
+                var row = treeList.select();
+                if (row.length > 0) {
+                    var data = treeList.dataItem(row);
+                    $('#mainContent').load(data.UrlForEdit);
+                }
+            }
         });
 
         $("#treeList").data("kendoTreeList").dataSource.filter({ field: "TourId", operator: "equals", value: @ViewBag.TourId });
+
+        $('#mainContent').load('@Url.Action("TourSubCard", "Tour", new {tourId = ViewBag.TourId })');
 
     });
 </script>
 
 @section styles {
     <style>
-
         .flex-content {
             display: flex;
             height: 100%;
