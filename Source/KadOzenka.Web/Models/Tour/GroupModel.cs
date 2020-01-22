@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Tours.Dto;
 
 namespace KadOzenka.Web.Models.Tour

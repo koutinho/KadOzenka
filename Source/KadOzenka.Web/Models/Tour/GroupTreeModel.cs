@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Tours.Dto;
+﻿using KadOzenka.Dal.Groups.Dto;
+using KadOzenka.Dal.Tours.Dto;
 
 namespace KadOzenka.Web.Models.Tour
 {

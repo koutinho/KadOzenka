@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.Tours.Dto
+﻿namespace KadOzenka.Dal.Groups.Dto
 {
     public class GroupDto
     {

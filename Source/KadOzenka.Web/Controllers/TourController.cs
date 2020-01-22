@@ -4,6 +4,8 @@ using System.Linq;
 using System.Transactions;
 using Core.Shared.Extensions;
 using DevExpress.DataProcessing;
+using KadOzenka.Dal.Groups.Dto;
+using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Models.Tour;
@@ -17,10 +19,12 @@ namespace KadOzenka.Web.Controllers
 	public class TourController : Controller
     {
         public TourService TourService { get; set; }
+        public GroupService GroupService { get; set; }
 
         public TourController()
         {
             TourService = new TourService();
+            GroupService = new GroupService();
         }
 
         #region Карточка тура
@@ -44,7 +48,7 @@ namespace KadOzenka.Web.Controllers
             };
             var groupModels = new List<GroupTreeModel> {newParent};
 
-            var groups = TourService.GetGroups(newParent.Id);
+            var groups = GroupService.GetGroups(newParent.Id);
             groups.ForEach(x =>
             {
                 var treeModel = GroupTreeModel.ToModel(x);
@@ -79,7 +83,7 @@ namespace KadOzenka.Web.Controllers
                     break;
 
                 default:
-                    groupDto = TourService.GetGroupById(groupId);
+                    groupDto = GroupService.GetGroupById(groupId);
                     break;
             }
 
@@ -169,7 +173,7 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetGroups()
         {
-            var groups = TourService.GetGroups();
+            var groups = GroupService.GetGroups();
 
             var groupModels = new List<GroupTreeModel>();
             groups.ForEach(x =>
