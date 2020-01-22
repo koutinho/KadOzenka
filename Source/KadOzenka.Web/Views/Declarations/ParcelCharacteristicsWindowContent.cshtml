@@ -17,7 +17,7 @@
                     @Html.CustomLabelFor(m => m.Address)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.Address, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.Address, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
                     @Html.CustomLabelFor(m => m.Square)
                 </div>
                 <div class="col-sm-7">
-                    @Html.KendoNumericTextBoxFor(m => m.Square, precision: 2, isReadonly: false)
+                    @Html.KendoNumericTextBoxFor(m => m.Square, precision: 2, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -47,7 +47,7 @@
                     @Html.CustomLabelFor(m => m.LandCategory)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.LandCategory, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.LandCategory, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -62,7 +62,7 @@
                     @Html.CustomLabelFor(m => m.PermittedUseType)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.PermittedUseType, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.PermittedUseType, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -77,7 +77,7 @@
                     @Html.CustomLabelFor(m => m.FactUse)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.FactUse, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.FactUse, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@
                     @Html.CustomLabelFor(m => m.NaturalObjectsInformation)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.NaturalObjectsInformation, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.NaturalObjectsInformation, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -107,7 +107,7 @@
                     @Html.CustomLabelFor(m => m.ZonesWithSpecialUsingConditionsInformation)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.ZonesWithSpecialUsingConditionsInformation, 4, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.ZonesWithSpecialUsingConditionsInformation, 4, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -122,7 +122,7 @@
                     @Html.CustomLabelFor(m => m.ProtectedNaturalZonesInformation)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.ProtectedNaturalZonesInformation, 4, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.ProtectedNaturalZonesInformation, 4, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -137,7 +137,7 @@
                     @Html.CustomLabelFor(m => m.EconomicZonesInformation)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.EconomicZonesInformation, 4, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.EconomicZonesInformation, 4, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -152,7 +152,7 @@
                     @Html.CustomLabelFor(m => m.EstablishedEasementsInformation)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.EstablishedEasementsInformation, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.EstablishedEasementsInformation, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -167,7 +167,7 @@
                     @Html.CustomLabelFor(m => m.DistanceFromPavedRoads)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.DistanceFromPavedRoads, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.DistanceFromPavedRoads, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -182,7 +182,7 @@
                     @Html.CustomLabelFor(m => m.PrecenceOfAccessRoads)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.PrecenceOfAccessRoads, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.PrecenceOfAccessRoads, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -197,7 +197,7 @@
                     @Html.CustomLabelFor(m => m.CommunicationsDescription)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.CommunicationsDescription, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.CommunicationsDescription, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -217,7 +217,7 @@
                     @Html.CustomLabelFor(m => m.ConnectionToPowerGrids)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToPowerGrids, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToPowerGrids, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -232,7 +232,7 @@
                     @Html.CustomLabelFor(m => m.AvailabilityConnectionToPowerGrids)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToPowerGrids, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToPowerGrids, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -247,7 +247,7 @@
                     @Html.CustomLabelFor(m => m.ElectricPower)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.ElectricPower, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.ElectricPower, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -267,7 +267,7 @@
                     @Html.CustomLabelFor(m => m.ConnectionToGasGrids)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToGasGrids, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToGasGrids, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -282,7 +282,7 @@
                     @Html.CustomLabelFor(m => m.AvailabilityConnectionToGasGrids)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToGasGrids, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToGasGrids, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -297,7 +297,7 @@
                     @Html.CustomLabelFor(m => m.GasPower)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.GasPower, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.GasPower, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -317,7 +317,7 @@
                     @Html.CustomLabelFor(m => m.ConnectionToWaterSupply)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterSupply, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterSupply, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -332,7 +332,7 @@
                     @Html.CustomLabelFor(m => m.AvailabilityConnectionToWaterSupply)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterSupply, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterSupply, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -352,7 +352,7 @@
                     @Html.CustomLabelFor(m => m.ConnectionToHeatSupply)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToHeatSupply, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToHeatSupply, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -367,7 +367,7 @@
                     @Html.CustomLabelFor(m => m.AvailabilityConnectionToHeatSupply)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToHeatSupply, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToHeatSupply, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -387,7 +387,7 @@
                     @Html.CustomLabelFor(m => m.ConnectionToWaterDisposal)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterDisposal, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.ConnectionToWaterDisposal, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -402,7 +402,7 @@
                     @Html.CustomLabelFor(m => m.AvailabilityConnectionToWaterDisposal)
                 </div>
                 <div class="col-sm-3">
-                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterDisposal, isReadonly: false)
+                    @Html.KendoEnumDropDownListFor(m => m.AvailabilityConnectionToWaterDisposal, isReadonly: !Model.IsEditDeclarationCharacteristics)
                 </div>
             </div>
         </div>
@@ -417,7 +417,7 @@
                     @Html.CustomLabelFor(m => m.NearestWaterbodyDistance)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.NearestWaterbodyDistance, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.NearestWaterbodyDistance, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -432,7 +432,7 @@
                     @Html.CustomLabelFor(m => m.NearestRecreationalZoneDistance)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.NearestRecreationalZoneDistance, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.NearestRecreationalZoneDistance, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -447,7 +447,7 @@
                     @Html.CustomLabelFor(m => m.RailwaysDistance)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.RailwaysDistance, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.RailwaysDistance, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -462,7 +462,7 @@
                     @Html.CustomLabelFor(m => m.RailwayStationsDistance)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.RailwayStationsDistance, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.RailwayStationsDistance, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -477,7 +477,7 @@
                     @Html.CustomLabelFor(m => m.MiningZoneDistance)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.MiningZoneDistance, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.MiningZoneDistance, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -492,7 +492,7 @@
                     @Html.CustomLabelFor(m => m.TypeOfLand)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.TypeOfLand, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.TypeOfLand, 1, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -507,7 +507,7 @@
                     @Html.CustomLabelFor(m => m.SoilConditionIndicators)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.SoilConditionIndicators, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.SoilConditionIndicators, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
@@ -522,14 +522,14 @@
                     @Html.CustomLabelFor(m => m.DisadvantagesPresence)
                 </div>
                 <div class="col-sm-7">
-                    @Html.TextAreaFor(m => m.DisadvantagesPresence, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode="true" })
+                    @Html.TextAreaFor(m => m.DisadvantagesPresence, 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = Model.IsEditDeclarationCharacteristics ? "true" : "false" })
                 </div>
             </div>
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-12">
-            <button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+            <button disabled="@(!Model.IsEditDeclarationCharacteristics)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
         </div>
     </div>
 </div>
@@ -537,7 +537,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        debugger;
+	    $('textarea[editmode="false"]').attr("readonly", "true");
         $('#save').on('click',
             function() {
                 kendo.ui.progress($('body'), true);

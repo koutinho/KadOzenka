@@ -89,6 +89,9 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = "Приложение")]
 		public string Annex { get; set; }
 
+		public bool IsEditApproveNotifications { get; set; }
+		public bool IsEditOtherNotifications { get; set; }
+
 		public static NotificationModel FromEntity(OMUved entity, OMBook book,
 			List<OMUvedRejectionReasonType> rejectionReasonTypes)
 		{

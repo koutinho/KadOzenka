@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="500" LinkedRegistersList="501" DefaultLayoutId="1005001"
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
-              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
+              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="DECLARATIONS.BOOK">
     <Buttons>
-        <Button Caption="Добавить" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTAG="DECLARATIONS.BOOK.CREATE">
+        <Button Caption="Добавить" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTag="DECLARATIONS.BOOK.CREATE">
             <Parameters></Parameters>
         </Button>
 
 
-        <Button Caption="Редактировать" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTAG="DECLARATIONS.BOOK.EDIT">
+        <Button Caption="Редактировать" NavigateURL="/Declarations/EditBook" WindowHeight="500" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTag="DECLARATIONS.BOOK.EDIT">
             <Parameters>
                 <Parameter Key="bookId" Value="[ObjectID]" />
             </Parameters>

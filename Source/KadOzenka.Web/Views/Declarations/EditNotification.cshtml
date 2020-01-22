@@ -124,7 +124,7 @@
     </div>
     <div class="form-group">
         <div class="col-sm-12">
-            <button style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+            <button style="float: right" id="save" disabled="@(((!Model.IsEditApproveNotifications && Model.Type.GetValueOrDefault() == UvedType.Item1)||(!Model.IsEditOtherNotifications && Model.Type.GetValueOrDefault() != UvedType.Item1)) ? true : false)" class="k-button" type="button">Сохранить</button>
         </div>
     </div>
 </div>
@@ -150,167 +150,176 @@
 }
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
-        var value = $('#Type').data('kendoDropDownList').value();
-        changeRejectionReasonVisability(value);
-        changeAnnexVisability(value);
-        $('#Type').data('kendoDropDownList').bind("change", onTypeChanged);
+	var isEditApproveNotifications = @(Model.IsEditApproveNotifications ? "true" : "false");
+	var isEditOtherNotifications = @(Model.IsEditOtherNotifications ? "true" : "false");
 
-        $('#save').on('click',
-            function () {
-                kendo.ui.progress($('body'), true);
-                var form = $('form');
-                var formObject = Common.Functions.FormToObject(form);
-                debugger;
-                let rejectionReasonTypes = Object.keys(formObject).filter((propertyName) => {
-                    return propertyName.startsWith('@nameof(RejectionReasonType)');
-                });
-                formObject['RejectionReasonTypes'] = [];
-                for (var i = 0; i < rejectionReasonTypes.length; i++) {
-                    if (formObject[rejectionReasonTypes[i]] === true) {
-                        formObject['RejectionReasonTypes'].push(
-                            rejectionReasonTypes[i].replace('@nameof(RejectionReasonType)', ''));
-                    }
-                }
+	$(document).ready(function () {
+		setOnBlurHandlerForAutocomplete('#@Html.IdFor(m => m.BookId)', '#@Html.IdFor(m => m.BookDisplay)');
+		var value = $('#Type').data('kendoDropDownList').value();
+		changeRejectionReasonVisability(value);
+		changeAnnexVisability(value);
+		$('#Type').data('kendoDropDownList').bind("change", onTypeChanged);
 
-                $.post(form.attr('action'), formObject).done(function (response) {
-                    kendo.ui.progress($('body'), false);
-                    if (response.Errors) {
-                        var errors = $.map(distinctErrors(response.Errors),
-                            function(el) {
-                                return el.Message;
-                            });
-                        Common.ShowError(errors);
-                        return;
-                    }
+		$('#save').on('click',
+			function () {
+				kendo.ui.progress($('body'), true);
+				var form = $('form');
+				var formObject = Common.Functions.FormToObject(form);
+				debugger;
+				let rejectionReasonTypes = Object.keys(formObject).filter((propertyName) => {
+					return propertyName.startsWith('@nameof(RejectionReasonType)');
+				});
+				formObject['RejectionReasonTypes'] = [];
+				for (var i = 0; i < rejectionReasonTypes.length; i++) {
+					if (formObject[rejectionReasonTypes[i]] === true) {
+						formObject['RejectionReasonTypes'].push(
+							rejectionReasonTypes[i].replace('@nameof(RejectionReasonType)', ''));
+					}
+				}
 
-                    if (response.Success && response.data) {
-                        $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
-                        Common.ShowMessage(response.Success);
-                    }
-                });
-            });
-    });
+				$.post(form.attr('action'), formObject).done(function (response) {
+					kendo.ui.progress($('body'), false);
+					if (response.Errors) {
+						var errors = $.map(distinctErrors(response.Errors),
+							function(el) {
+								return el.Message;
+							});
+						Common.ShowError(errors);
+						return;
+					}
 
-    function distinctErrors(errors) {
-        var result = [];
-        $.each(errors, function(index, event) {
-            var events = $.grep(result, function (e) {
-                return event.Message === e.Message;
-            });
-            if (events.length === 0) {
-                result.push(event);
-            }
-        });
+					if (response.Success && response.data) {
+						$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+						Common.ShowMessage(response.Success);
+					}
+				});
+			});
+	});
 
-        return result;
-    }
+	function distinctErrors(errors) {
+		var result = [];
+		$.each(errors, function(index, event) {
+			var events = $.grep(result, function (e) {
+				return event.Message === e.Message;
+			});
+			if (events.length === 0) {
+				result.push(event);
+			}
+		});
 
-    function selectBookEvent() {
-        $('#@Html.IdFor(m => m.BookId)').val(this.e.dataItem.Id);
-    }
-    function clearBookEvent() {
-        $('#@Html.IdFor(m => m.BookId)').val(0);
-    }
+		return result;
+	}
 
-    function editBook () {
-        var contentUrl = '@Url.Action("DeclarationsBookSelect", "RegistersView")';
-        var title = 'Выбор Книги';
+	function selectBookEvent() {
+		$('#@Html.IdFor(m => m.BookId)').val(this.e.dataItem.Id);
+	}
+	function clearBookEvent() {
+		$('#@Html.IdFor(m => m.BookId)').val(0);
+	}
 
-        var callbackFn = function (item) {
-            kendo.ui.progress($('body'), true);
-            $('[name="BookId"]').val(item.ID);
-            $.ajax({
-                type: 'GET',
-                url: '@Url.Action("GetBookData", "Declarations")',
-                data: { 'bookId': item.ID },
-                dataType: 'json',
-                success: function (response) {
-                    if (response && !$.isEmptyObject(response)) {
-                        console.log('response', response.data);
-                        $('#@Html.IdFor(m => m.BookDisplay)').val(response.data.Value);
-                    }
-                    kendo.ui.progress($('body'), false);
-                }
-            });
-        }
-        Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBook.GetRegisterId()');
-    };
+	function editBook () {
+		var contentUrl = '@Url.Action("DeclarationsBookSelect", "RegistersView")';
+		var title = 'Выбор Книги';
 
-    function setOnBlurHandlerForAutocomplete(idField, displayField) {
-        $(displayField).on('blur', function () {
-            if ($(displayField).val() === "") {
-                $(idField).val(0);
-                return;
-            }
+		var callbackFn = function (item) {
+			kendo.ui.progress($('body'), true);
+			$('[name="BookId"]').val(item.ID);
+			$.ajax({
+				type: 'GET',
+				url: '@Url.Action("GetBookData", "Declarations")',
+				data: { 'bookId': item.ID },
+				dataType: 'json',
+				success: function (response) {
+					if (response && !$.isEmptyObject(response)) {
+						console.log('response', response.data);
+						$('#@Html.IdFor(m => m.BookDisplay)').val(response.data.Value);
+					}
+					kendo.ui.progress($('body'), false);
+				}
+			});
+		}
+		Common.UI.ChooseWindow(title, contentUrl, callbackFn, 'Grid-@OMBook.GetRegisterId()');
+	};
 
-            if ($(idField).val() === "0" || $(idField).val() === "") {
-                $(displayField).val("");
-            }
-        });
-    }
+	function setOnBlurHandlerForAutocomplete(idField, displayField) {
+		$(displayField).on('blur', function () {
+			if ($(displayField).val() === "") {
+				$(idField).val(0);
+				return;
+			}
 
-    function onTypeChanged(e) {
-        var value = this.value();
-        changeRejectionReasonVisability(value);
-        changeAnnexVisability(value);
-    }
+			if ($(idField).val() === "0" || $(idField).val() === "") {
+				$(displayField).val("");
+			}
+		});
+	}
 
-    function changeRejectionReasonVisability(value) {
-        let rejectionReasonTypeFieldset = $('#rejectionReasonTypesFieldset');
-        let rejectionReasonTypeOther =
-            rejectionReasonTypeFieldset.find('#'+'@nameof(RejectionReasonType)' +
-                '@RejectionReasonType.Other.GetEnumCode()');
+	function onTypeChanged(e) {
+		var value = this.value();
+		if ((!isEditApproveNotifications && value == '@UvedType.Item1.GetEnumCode()') ||
+			(!isEditOtherNotifications && value != '@UvedType.Item1.GetEnumCode()')) {
+			$('#save').attr("disabled", true);
+		} else {
+			$('#save').attr("disabled", false);
+		}
+		changeRejectionReasonVisability(value);
+		changeAnnexVisability(value);
+	}
 
-        if (value == '@UvedType.Item4.GetEnumCode()' || value == '@UvedType.Item5.GetEnumCode()') {
-            $('#RejectionReason').show();
-            $('label[for="RejectionReason"]').show();
+	function changeRejectionReasonVisability(value) {
+		let rejectionReasonTypeFieldset = $('#rejectionReasonTypesFieldset');
+		let rejectionReasonTypeOther =
+			rejectionReasonTypeFieldset.find('#'+'@nameof(RejectionReasonType)' +
+				'@RejectionReasonType.Other.GetEnumCode()');
 
-            if (value == '@UvedType.Item5.GetEnumCode()') {
-                rejectionReasonTypeOther.bind("change", onRejectionReasonTypeChanged);
-                rejectionReasonTypeOther.trigger("change");
-                rejectionReasonTypeFieldset.show();
-            } else {
-                rejectionReasonTypeFieldset.find('input.k-checkbox').attr('checked', false);
-                rejectionReasonTypeOther.unbind("change", onRejectionReasonTypeChanged);
-                rejectionReasonTypeFieldset.hide();
-            }
-        } else {
-            $('#RejectionReason').val('');
-            $('#RejectionReason').hide();
-            $('label[for="RejectionReason"]').hide();
+		if (value == '@UvedType.Item4.GetEnumCode()' || value == '@UvedType.Item5.GetEnumCode()') {
+			$('#RejectionReason').show();
+			$('label[for="RejectionReason"]').show();
 
-            rejectionReasonTypeFieldset.find('input.k-checkbox').attr('checked', false);
-            rejectionReasonTypeOther.unbind("change", onRejectionReasonTypeChanged);
-            rejectionReasonTypeFieldset.hide();
-        }
-    }
+			if (value == '@UvedType.Item5.GetEnumCode()') {
+				rejectionReasonTypeOther.bind("change", onRejectionReasonTypeChanged);
+				rejectionReasonTypeOther.trigger("change");
+				rejectionReasonTypeFieldset.show();
+			} else {
+				rejectionReasonTypeFieldset.find('input.k-checkbox').attr('checked', false);
+				rejectionReasonTypeOther.unbind("change", onRejectionReasonTypeChanged);
+				rejectionReasonTypeFieldset.hide();
+			}
+		} else {
+			$('#RejectionReason').val('');
+			$('#RejectionReason').hide();
+			$('label[for="RejectionReason"]').hide();
 
-    function onRejectionReasonTypeChanged(e) {
-        var value = this.checked;
-        changeRejectionReasonAvailability(value);
-    }
+			rejectionReasonTypeFieldset.find('input.k-checkbox').attr('checked', false);
+			rejectionReasonTypeOther.unbind("change", onRejectionReasonTypeChanged);
+			rejectionReasonTypeFieldset.hide();
+		}
+	}
 
-    function changeRejectionReasonAvailability(value) {
-        if (value) {
-            $('#RejectionReason').show();
-            $('label[for="RejectionReason"]').show();
-        } else {
-            $('#RejectionReason').val('');
-            $('#RejectionReason').hide();
-            $('label[for="RejectionReason"]').hide();
-        }
-    }
+	function onRejectionReasonTypeChanged(e) {
+		var value = this.checked;
+		changeRejectionReasonAvailability(value);
+	}
 
-    function changeAnnexVisability(value) {
-        if (value == '@UvedType.Item1.GetEnumCode()' || value == '@UvedType.Item5.GetEnumCode()') {
-            $('#Annex').show();
-            $('label[for="Annex"]').show();
-        } else {
-            $('#Annex').val('');
-            $('#Annex').hide();
-            $('label[for="Annex"]').hide();
-        }
-    }
+	function changeRejectionReasonAvailability(value) {
+		if (value) {
+			$('#RejectionReason').show();
+			$('label[for="RejectionReason"]').show();
+		} else {
+			$('#RejectionReason').val('');
+			$('#RejectionReason').hide();
+			$('label[for="RejectionReason"]').hide();
+		}
+	}
+
+	function changeAnnexVisability(value) {
+		if (value == '@UvedType.Item1.GetEnumCode()' || value == '@UvedType.Item5.GetEnumCode()') {
+			$('#Annex').show();
+			$('label[for="Annex"]').show();
+		} else {
+			$('#Annex').val('');
+			$('#Annex').hide();
+			$('label[for="Annex"]').hide();
+		}
+	}
 </script>

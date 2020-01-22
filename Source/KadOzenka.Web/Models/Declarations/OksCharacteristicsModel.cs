@@ -229,6 +229,8 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = AvailabilityConnectionToWaterDisposalName)]
 		public HarAvailability? AvailabilityConnectionToWaterDisposal { get; set; }
 
+		public bool IsEditDeclarationCharacteristics { get; set; }
+
 		public string GetAcceptedCharacteristics()
 		{
 			return GetCharacteristicsString(HarAvailability.Exists);

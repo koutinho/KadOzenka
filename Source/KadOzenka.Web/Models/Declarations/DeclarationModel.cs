@@ -173,6 +173,14 @@ namespace KadOzenka.Web.Models.Declarations
 
 		public DeclarationFormalCheckModel FormalCheckModel { get; set; }
 
+		public bool IsEditDeclaration { get; set; }
+		public bool IsCreateDeclaration { get; set; }
+		public bool IsEditDeclarationSupplyBlock { get; set; }
+		public bool IsEditDeclarationProcessingBlock { get; set; }
+		public bool IsEditDeclarationStatus { get; set; }
+		public bool IsEditDeclarationFormalChecking { get; set; }
+		public bool IsEditDeclarationAttachments { get; set; }
+
 		public static DeclarationModel FromEntity(OMDeclaration entity, OMSubject owner, OMSubject agent, OMBook book, OMUser userIsp, OMResult result)
 		{
 			if (entity == null)

@@ -23,6 +23,9 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = "Должность")]
 		public string Position { get; set; }
 
+		public bool IsEditSignatory { get; set; }
+		public bool IsCreateSignatory { get; set; }
+
 		public static SignatoryModel FromEntity(OMSignatory entity)
 		{
 			if (entity == null)

@@ -48,6 +48,9 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = "Тип")]
 		public long? Type { get; set; }
 
+		public bool IsEditBook { get; set; }
+		public bool IsCreateBook { get; set; }
+
 
 
 		public static BookModel FromEntity(OMBook entity)

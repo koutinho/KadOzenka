@@ -100,6 +100,21 @@ namespace KadOzenka.Web.Controllers
 				? DeclarationModel.FromEntity(declaration, owner, agent, book, userIsp, result)
 				: DeclarationModel.FromEntity(null, null, null, null, userIsp, null);
 
+			model.IsCreateDeclaration =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_CREATE);
+			model.IsEditDeclaration =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT);
+			model.IsEditDeclarationSupplyBlock =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_SUPPLY_BLOCK);
+			model.IsEditDeclarationProcessingBlock =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_PROCESSING_BLOCK);
+			model.IsEditDeclarationStatus =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_STATUS);
+			model.IsEditDeclarationFormalChecking =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_FORMAL_CHECKING);
+			model.IsEditDeclarationAttachments =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_ATTACHMENTS);
+
 			return View(model);
 		}
 
@@ -140,10 +155,14 @@ namespace KadOzenka.Web.Controllers
 			}
 			if (omDeclaration == null)
 			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_CREATE, true, false, true);
 				omDeclaration = new OMDeclaration();
 				omDeclaration.UserReg_Id = SRDSession.GetCurrentUserId();
 				omResult = new OMResult();
-
+			}
+			else
+			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT, true, false, true);
 			}
 			DeclarationModel.ToEntity(declarationViewModel, ref omDeclaration, ref omResult);
 
@@ -172,6 +191,20 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			declarationViewModel.Id = id;
+			declarationViewModel.IsCreateDeclaration =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_CREATE);
+			declarationViewModel.IsEditDeclaration =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT);
+			declarationViewModel.IsEditDeclarationSupplyBlock =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_SUPPLY_BLOCK);
+			declarationViewModel.IsEditDeclarationProcessingBlock =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_PROCESSING_BLOCK);
+			declarationViewModel.IsEditDeclarationStatus =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_STATUS);
+			declarationViewModel.IsEditDeclarationFormalChecking =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_FORMAL_CHECKING);
+			declarationViewModel.IsEditDeclarationAttachments =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_ATTACHMENTS);
 			return Json(new { Success = "Сохранено успешно", data = declarationViewModel });
 		}
 
@@ -229,7 +262,14 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult GetNotificationTabContent(long declarationId)
 		{
-			return PartialView("~/Views/Declarations/DeclarationTabContent/NotificationContent.cshtml", declarationId);
+			var declaration = OMDeclaration
+				.Where(x => x.Id == declarationId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			var model = DeclarationNotificationModel.FromEntity(declaration);
+			model.IsEditApproveNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION);
+			model.IsEditOtherNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS);
+			return PartialView("~/Views/Declarations/DeclarationTabContent/NotificationContent.cshtml", model);
 		}
 
 		public ActionResult GetCharacteristicTabContent(long declarationId)
@@ -283,6 +323,8 @@ namespace KadOzenka.Web.Controllers
 				? ParcelCharacteristicsModel.FromEntity(characteristic)
 				: ParcelCharacteristicsModel.FromEntity(null);
 			model.DeclarationId = declarationId;
+			model.IsEditDeclarationCharacteristics =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
 
 			return View("~/Views/Declarations/ParcelCharacteristicsWindowContent.cshtml", model);
 		}
@@ -290,6 +332,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult EditParcelCharacteristics(ParcelCharacteristicsModel parcelCharacteristicsViewModel)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS, true, false, true);
 			if (!ModelState.IsValid)
 			{
 				return Json(new
@@ -348,6 +391,8 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			parcelCharacteristicsViewModel.Id = id;
+			parcelCharacteristicsViewModel.IsEditDeclarationCharacteristics =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
 			return Json(new { Success = "Сохранено успешно", data = parcelCharacteristicsViewModel });
 		}
 
@@ -371,6 +416,8 @@ namespace KadOzenka.Web.Controllers
 				? OksCharacteristicsModel.FromEntity(characteristic)
 				: OksCharacteristicsModel.FromEntity(null);
 			model.DeclarationId = declarationId;
+			model.IsEditDeclarationCharacteristics =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
 
 			return View("~/Views/Declarations/OksCharacteristicsWindowContent.cshtml", model);
 		}
@@ -378,6 +425,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult EditOksCharacteristics(OksCharacteristicsModel oksCharacteristicsViewModel)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS, true, false, true);
 			if (!ModelState.IsValid)
 			{
 				return Json(new
@@ -436,6 +484,8 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			oksCharacteristicsViewModel.Id = id;
+			oksCharacteristicsViewModel.IsEditDeclarationCharacteristics =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
 			return Json(new { Success = "Сохранено успешно", data = oksCharacteristicsViewModel });
 		}
 
@@ -472,6 +522,10 @@ namespace KadOzenka.Web.Controllers
 				? BookModel.FromEntity(book) 
 				: BookModel.FromEntity(null);
 
+			model.IsCreateBook =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_BOOK_CREATE);
+			model.IsEditBook =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_BOOK_EDIT);
 			return View(model);
 		}
 
@@ -508,7 +562,12 @@ namespace KadOzenka.Web.Controllers
 			}
 			if (omBook == null)
 			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_BOOK_CREATE, true, false, true);
 				omBook = new OMBook();
+			}
+			else
+			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_BOOK_EDIT, true, false, true);
 			}
 			BookModel.ToEntity(bookViewModel, ref omBook);
 
@@ -535,6 +594,10 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			bookViewModel.Id = id;
+			bookViewModel.IsCreateBook =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_BOOK_CREATE);
+			bookViewModel.IsEditBook =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_BOOK_EDIT);
 			return Json(new { Success = "Сохранено успешно", data = bookViewModel });
 		}
 
@@ -552,6 +615,10 @@ namespace KadOzenka.Web.Controllers
 			var model = subject != null
 				? SubjectModel.FromEntity(subject)
 				: SubjectModel.FromEntity(null);
+			model.IsCreateSubject =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SUBJECT_CREATE);
+			model.IsEditSubject =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SUBJECT_EDIT);
 
 			return View(model);
 		}
@@ -589,7 +656,12 @@ namespace KadOzenka.Web.Controllers
 			}
 			if (omSubject == null)
 			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SUBJECT_CREATE, true, false, true);
 				omSubject = new OMSubject();
+			}
+			else
+			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SUBJECT_EDIT, true, false, true);
 			}
 			SubjectModel.ToEntity(subjectViewModel, ref omSubject);
 
@@ -616,6 +688,10 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			subjectViewModel.Id = id;
+			subjectViewModel.IsCreateSubject =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SUBJECT_CREATE);
+			subjectViewModel.IsEditSubject =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SUBJECT_EDIT);
 			return Json(new { Success = "Сохранено успешно", data = subjectViewModel });
 		}
 
@@ -671,6 +747,8 @@ namespace KadOzenka.Web.Controllers
 				? NotificationModel.FromEntity(uved, book, rejectionReasonTypes)
 				: NotificationModel.FromEntity(null, book, rejectionReasonTypes);
 			model.DeclarationId = declarationId;
+			model.IsEditApproveNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION);
+			model.IsEditOtherNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS);
 
 			return View(model);
 		}
@@ -711,6 +789,21 @@ namespace KadOzenka.Web.Controllers
 			if (omUved == null)
 			{
 				omUved = new OMUved();
+				SRDSession.Current.CheckAccessToFunction(
+					notificationViewModel.Type.GetValueOrDefault() == UvedType.Item1
+						? ObjectModel.SRD.SRDCoreFunctions
+							.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION
+						: ObjectModel.SRD.SRDCoreFunctions
+							.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS, true, false, true);
+			}
+			else
+			{
+				SRDSession.Current.CheckAccessToFunction(
+					omUved.Type_Code == UvedType.Item1
+						? ObjectModel.SRD.SRDCoreFunctions
+							.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION
+						: ObjectModel.SRD.SRDCoreFunctions
+							.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS, true, false, true);
 			}
 			var isNotificationTypeChanged = notificationViewModel.Type.GetValueOrDefault() != omUved.Type_Code;
 
@@ -749,22 +842,25 @@ namespace KadOzenka.Web.Controllers
 				{
 					var existedRejectionReasonTypes =
 						OMUvedRejectionReasonType.Where(x => x.UvedId == id).SelectAll().Execute();
-					var addedRejectionReasonTypes = notificationViewModel.RejectionReasonTypes.Where(x =>
+					var addedRejectionReasonTypes = notificationViewModel.RejectionReasonTypes?.Where(x =>
 						existedRejectionReasonTypes.All(y => y.RejectionReasonType_Code != x));
 					var deletedRejectionReasonTypes = existedRejectionReasonTypes.Where(x =>
-						notificationViewModel.RejectionReasonTypes.All(y => y != x.RejectionReasonType_Code));
+						notificationViewModel.RejectionReasonTypes != null && notificationViewModel.RejectionReasonTypes.All(y => y != x.RejectionReasonType_Code));
 					foreach (var deletedRejectionReasonType in deletedRejectionReasonTypes)
 					{
 						deletedRejectionReasonType.Destroy();
 					}
-					foreach (var addedRejectionReasonType in addedRejectionReasonTypes)
+					if (addedRejectionReasonTypes != null)
 					{
-						var rejectionReasonType = new OMUvedRejectionReasonType
+						foreach (var addedRejectionReasonType in addedRejectionReasonTypes)
 						{
-							UvedId = id,
-							RejectionReasonType_Code = addedRejectionReasonType
-						};
-						rejectionReasonType.Save();
+							var rejectionReasonType = new OMUvedRejectionReasonType
+							{
+								UvedId = id,
+								RejectionReasonType_Code = addedRejectionReasonType
+							};
+							rejectionReasonType.Save();
+						}
 					}
 				}
 
@@ -772,6 +868,8 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			notificationViewModel.Id = id;
+			notificationViewModel.IsEditApproveNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION);
+			notificationViewModel.IsEditOtherNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS);
 			return Json(new { Success = "Сохранено успешно", data = notificationViewModel });
 		}
 
@@ -797,6 +895,21 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost, ActionName("DeleteNotification")]
 		public IActionResult Delete(long notificationId)
 		{
+			var omUved = OMUved
+				.Where(x => x.Id == notificationId)
+				.SelectAll()
+				.Execute().FirstOrDefault();
+			if (omUved == null)
+			{
+				throw new Exception($"Уведомление с ИД {notificationId} не найдено");
+			}
+
+			SRDSession.Current.CheckAccessToFunction(
+				omUved.Type_Code == UvedType.Item1
+					? ObjectModel.SRD.SRDCoreFunctions
+						.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION
+					: ObjectModel.SRD.SRDCoreFunctions
+						.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS, true, false, true);
 			using (var ts = new TransactionScope())
 			{
 				try
@@ -821,10 +934,7 @@ namespace KadOzenka.Web.Controllers
 						rejectionReasonType.Destroy();
 					}
 
-					OMUved
-						.Where(x => x.Id == notificationId)
-						.ExecuteFirstOrDefault()
-						.Destroy();
+					omUved.Destroy();
 
 					ts.Complete();
 				}
@@ -929,6 +1039,10 @@ namespace KadOzenka.Web.Controllers
 			var model = signatory != null
 				? SignatoryModel.FromEntity(signatory)
 				: SignatoryModel.FromEntity(null);
+			model.IsCreateSignatory =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SIGNATORY_CREATE);
+			model.IsEditSignatory =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SIGNATORY_EDIT);
 
 			return View(model);
 		}
@@ -966,7 +1080,12 @@ namespace KadOzenka.Web.Controllers
 			}
 			if (signatory == null)
 			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SIGNATORY_CREATE, true, false, true);
 				signatory = new OMSignatory();
+			}
+			else
+			{
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SIGNATORY_EDIT, true, false, true);
 			}
 			SignatoryModel.ToEntity(signatoryViewModel, ref signatory);
 
@@ -993,6 +1112,10 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			signatoryViewModel.Id = id;
+			signatoryViewModel.IsCreateSignatory =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SIGNATORY_CREATE);
+			signatoryViewModel.IsEditSignatory =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_SIGNATORY_EDIT);
 			return Json(new { Success = "Сохранено успешно", data = signatoryViewModel });
 		}
 

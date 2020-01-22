@@ -91,6 +91,9 @@ namespace KadOzenka.Web.Models.Declarations
 		[Display(Name = "Квартира")]
 		public string Flat { get; set; }
 
+		public bool IsEditSubject { get; set; }
+		public bool IsCreateSubject { get; set; }
+
 		public static SubjectModel FromEntity(OMSubject entity)
 		{
 			if (entity == null)

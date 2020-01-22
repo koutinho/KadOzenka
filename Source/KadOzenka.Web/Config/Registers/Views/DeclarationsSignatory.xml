@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="508" LinkedRegistersList="" DefaultLayoutId="1005081"
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
-              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
+              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="DECLARATIONS.SIGNATORY">
     <Buttons>
-        <Button Caption="Добавить" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTAG="DECLARATIONS.SIGNATORY.CREATE">
+        <Button Caption="Добавить" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTag="DECLARATIONS.SIGNATORY.CREATE">
             <Parameters></Parameters>
         </Button>
 
 
-        <Button Caption="Редактировать" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTAG="DECLARATIONS.SIGNATORY.EDIT">
+        <Button Caption="Редактировать" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-edit" SRDFunctionTag="DECLARATIONS.SIGNATORY.EDIT">
             <Parameters>
                 <Parameter Key="signatoryId" Value="[ObjectID]" />
             </Parameters>
