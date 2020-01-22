@@ -27,7 +27,7 @@
 						    @Html.KendoEnumDropDownListFor(m => m.OwnerType, isReadonly: !Model.IsEditDeclarationSupplyBlock)
 					    </div>
 				    </div>
-				    <div class="form-group">
+				    <div class="form-group form-group-with-frame">
 					    <div class="col-sm-2">
 						    @Html.CustomLabelFor(m => m.OwnerId)
 					    </div>
@@ -49,7 +49,7 @@
 						    @Html.KendoEnumDropDownListFor(m => m.UvedTypeOwner, isReadonly: !Model.IsEditDeclarationSupplyBlock)
 					    </div>
 				    </div>
-				    <div class="form-group">
+				    <div class="form-group form-group-with-frame">
 					    <div class="col-sm-2">
 						    @Html.CustomLabelFor(m => m.AgentId)
 					    </div>
@@ -242,6 +242,15 @@
         }
 		.hidden {
 			display: none;
+		}
+
+		.form-group-with-frame {
+			border: 1px solid #c8c6cc;
+			border-radius: 6px;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			margin-right: 0 !important;
+			margin-left: 0px !important;
 		}
     </style>
 }
