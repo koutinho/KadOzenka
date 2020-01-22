@@ -1,6 +1,7 @@
-function initCluster(coordinates, zoom) {
+function initCluster(coordinates, zoom, size) {
     map.geoObjects.remove(clustererData);
-    if (zoom >= MapSettings.minClusterZoom) {
+    if (pointsData) pointsData.forEach(x => { map.geoObjects.remove(x); });
+    if (zoom >= MapSettings.minClusterZoom || size <= MapSettings.maxObjectsCount) {
         clustererData = new ymaps.Clusterer({
             clusterIconLayout: ClusterSettings.layout,
             clusterIconPieChartRadius: ClusterSettings.pieChartRadius,
@@ -45,6 +46,12 @@ function initCluster(coordinates, zoom) {
         clustererData.add(geoObjects);
         clustererData.events.add('click', function (event) { clickOnCluster(event); });
         map.geoObjects.add(clustererData);
+    }
+    else {
+        pointsData = [];
+        coordinates.forEach(x => pointsData.push(new ymaps.Placemark(x.points, {}, PointsGeoObjectSettings)));
+        pointsData.forEach(x => { map.geoObjects.add(x); });
+        console.log(pointsData.length);
     }
     if (clusterSelected) map.geoObjects.add(clusterSelected.geoObject);
 };

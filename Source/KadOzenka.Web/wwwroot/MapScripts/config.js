@@ -12,6 +12,7 @@ var MapSettings = {
     zoom: 9,
     minClusterZoom: 15,
     maxLoadedObjectsCount: 500,
+    maxObjectsCount: 7500,
     leftMenuMaxValues: 20
 };
 
@@ -44,6 +45,13 @@ var SelectedGeoObjectSettings = {
 	iconImageSize: [30, 30],
 	iconImageOffset: [-15, -15]
 };
+
+var PointsGeoObjectSettings = {
+    iconLayout: 'default#image',
+    iconImageHref: 'MapIcons/mapDot.svg',
+    iconImageSize: [7, 7],
+    iconImageOffset: [0, 0]
+}
 
 var SelectedTargetWidget = {
     iconLayout: 'default#image',
@@ -144,3 +152,4 @@ var currentLayer = null;
 var SOM = null;
 var imgLayer = null;
 var clustererData = null;
+var pointsData = null;

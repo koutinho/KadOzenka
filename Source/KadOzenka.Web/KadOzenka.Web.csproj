@@ -20,8 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Views\Tour\GroupCard.cshtml" />
-    <Content Remove="Views\Tour\TourSubCard.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
     <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
   </ItemGroup>
@@ -119,13 +117,9 @@
     <None Remove="Config\Registers\Views\CoreSRDUserSession.xml" />
     <None Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <None Remove="Config\Registers\Views\DataImporter.xml" />
-    <None Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
     <None Remove="Config\Registers\Views\GbuObjects.xml" />
     <None Remove="Config\Registers\Views\InspectorPersonSelect.xml" />
     <None Remove="Config\Registers\Views\KoObjectsCard.xml" />
-    <None Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
-    <None Remove="Config\Registers\Views\KoTasks.xml" />
-    <None Remove="Config\Registers\Views\KoTours.xml" />
     <None Remove="Config\Registers\Views\MarketObjects.xml" />
     <None Remove="Config\Registers\Views\Payments.xml" />
     <None Remove="Config\Registers\Views\PrimaryMatchingSelect.xml" />
@@ -134,6 +128,7 @@
     <None Remove="Config\Registers\SearchPanels\DamagePayment.xml" />
     <None Remove="Config\Registers\Views\DamagePayment.xml" />
     <None Remove="Config\Registers\Views\SudObjects.xml" />
+    <None Remove="Config\Registers\Views\SudObjectsCard.xml" />
     <None Remove="Config\Reports\RegisterOfPayment.frx" />
     <None Remove="Config\Reports\SubmitDocForApproval.frx" />
     <None Remove="Config\Reports\СalculationReport.frx" />
@@ -218,22 +213,10 @@
     <Content Include="Config\Registers\Views\DataExporterByTemplate.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\DeclarationsSignatory.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Config\Registers\Views\KoTaskGknFilesCard.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Config\Registers\Views\DataImporter.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\GbuObjects.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Config\Registers\Views\KoTours.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Config\Registers\Views\KoTasks.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\MarketObjects.xml">
@@ -263,7 +246,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" PrivateAssets="All" />
     <PackageReference Include="Platform.Reports" Version="1.0.18" />
-    <PackageReference Include="Platform.Web" Version="1.0.318" />
+    <PackageReference Include="Platform.Web" Version="1.0.319" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
@@ -304,6 +287,7 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
+    <Folder Include="wwwroot\imgLayer\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -519,17 +503,14 @@
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBookSelect.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubject.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoObjectsCard.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudObjectsCard.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
   </ItemGroup>
@@ -540,9 +521,5 @@
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
-  <ItemGroup>
-    <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
-    <None Include="Views\Tour\Partials\TourSubCard.cshtml" />
-  </ItemGroup>
 
 </Project>

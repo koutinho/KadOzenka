@@ -12,6 +12,7 @@ function GetClusterData(bounds, zoom, token, objectId) {
             mapZoom: zoom,
             minClusterZoom: MapSettings.minClusterZoom,
             maxLoadedObjectsCount: MapSettings.maxLoadedObjectsCount,
+            maxObjectsCount: MapSettings.maxObjectsCount,
             token: token,
             objectId: objectId
 		},
@@ -20,7 +21,7 @@ function GetClusterData(bounds, zoom, token, objectId) {
             if (result.token == currentToken) {
                 ids = [];
                 result.arr.slice(0, MapSettings.leftMenuMaxValues).forEach(x => { if (x.id != undefined) ids.push(x.id); });
-                initCluster(result.arr, zoom);
+                initCluster(result.arr, zoom, result.allCount);
                 changeObjectsCount(result.allCount);
             }
         }

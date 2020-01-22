@@ -5,7 +5,6 @@
 };
 
 function getArea(segment, area, area_land) {
-    console.log(segment, area, area_land);
     if (segment == 3 && !area) return `${numberWithSpaces(area_land)}&nbsp;сот.`;
     else return `${numberWithSpaces(area)}&nbsp;м²`;
 };

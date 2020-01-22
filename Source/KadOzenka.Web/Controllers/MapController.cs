@@ -42,7 +42,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude, 
-            int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, string token, long? objectId)
+            int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, int maxObjectsCount, string token, long? objectId)
         {
             var query = OMCoreObject
                 .Where(x =>
@@ -56,11 +56,12 @@ namespace KadOzenka.Web.Controllers
             if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
             if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
             if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
-            if (mapZoom < minClusterZoom) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
+            int size = query.ExecuteCount();
+            if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
             var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code, x.PropertyMarketSegment }).Execute().ToList();
             analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment) }));
-            return Json(new { token = token, arr = point, allCount = query.ExecuteCount() });
+            return Json(new { token = token, arr = point, allCount = size });
         }
 
         public JsonResult RequiredInfo()

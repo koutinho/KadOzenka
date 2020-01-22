@@ -4,9 +4,7 @@
         <div class="DataItemContainer">
             <div class="Container">
                 <div class="Header">
-                    <div class="Text">
-                        ${SegmentType[cartData.segment].type}&nbsp;${getArea(cartData.segment, cartData.area, cartData.areaLand)}
-                    </div>
+                    <div class="Text">${SegmentType[cartData.segment].type}&nbsp;${getArea(cartData.segment, cartData.area, cartData.areaLand)}</div>
                     <div class="Content">
                         <a style="margin-left: auto;" href="/ObjectCard?ObjId=${cartData.id}&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true">
                             <div class="Card"></div>
