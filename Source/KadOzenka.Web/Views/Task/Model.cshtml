@@ -42,21 +42,14 @@
             @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
         </div>
     </div>
+    
+    <div style="padding-top: 2%;">
+        <div id="factorToolbar"></div>
+    </div>
+
     <div style="display: flex;">
         <div style="align-items: stretch">
             <div id="grid"></div>
-        </div>
-
-        <div class="col-sm-2 factor-buttons" style="padding-right:0px;">
-            <button class="btn btn-default" id="add-factor">
-                Добавить
-            </button>
-            <button class="btn btn-default" id="edit-factor">
-                Изменить
-            </button>
-            <button class="btn btn-default" id="remove-factor">
-                Удалить
-            </button>
         </div>
     </div>
 </div>
@@ -68,9 +61,19 @@
             items: [
                 {
                     type: 'button',
-                    text: 'Сохранить',                    
-                    click: function () {                        
-
+                    text: '',
+                    attributes: { title: "Обновить (не реализовано)" },
+                    icon: 'refresh',
+                    click: function () {
+                        //TODO
+                    }
+                },
+                {
+                    type: 'button',
+                    text: '',
+                    attributes: { title: "Сохранить" },
+                    icon: 'save',
+                    click: function () {
                         var dto = {
                             Id: '@Model.Id',
                             GroupId: '@Model.GroupId',
@@ -80,8 +83,6 @@
                             Formula: $('#Formula').val(),
                             A0: $('#A0').val()
                         };
-
-                        console.log("???" + dto);
 
                         kendo.ui.progress($('body'), true); 
 
@@ -102,6 +103,39 @@
                 }
             ]
         });
+        $('#factorToolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'add-factor',
+                    text: '',
+                    attributes: { title: "Добавить" },
+                    icon: 'add'
+                },
+                {
+                    type: 'button',
+                    id: 'edit-factor',
+                    text: '',
+                    attributes: { title: "Изменить" },
+                    icon: 'edit'
+                },
+                {
+                    type: 'button',
+                    id: 'remove-factor',
+                    text: '',
+                    attributes: { title: "Удалить" },
+                    icon: 'delete'
+                }
+            ]
+        });
+        $(".k-toolbar [title]").kendoTooltip({
+            position:"top"
+        });
+
+
+       
+
+
 
         var gridDataSource = new kendo.data.DataSource({
             transport: {
@@ -113,7 +147,6 @@
                 }
             }
         });
-
         $('#grid').kendoGrid({
             dataSource: gridDataSource,
             columns: [
@@ -137,10 +170,8 @@
         });
 
         $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', AlgTypeChanged);
-
         function AlgTypeChanged() {
             var algType = this.value();
-            
             $.ajax({
                 url: '@Url.Action("GetFormula", "Task")' + '?modelId=@Model.Id&algType=' + algType,
                 type: 'POST',                
@@ -154,9 +185,7 @@
         }
 
         $("#grid").data("kendoGrid").bind('change', GridChanged);
-
         function GridChanged() {
-            
             var grid = $("#grid").data("kendoGrid");
             var row = grid.select();
             if (row.length == 0) {
