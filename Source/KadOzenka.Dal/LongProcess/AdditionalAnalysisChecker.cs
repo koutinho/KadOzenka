@@ -17,8 +17,8 @@ namespace KadOzenka.Dal.LongProcess
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			DbCommand command = DBMngr.Main.GetStoredProcCommand("additional_analysis_checker");
-			DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+			DbCommand command = DBMngr.Main.GetStoredProcCommand("additional_analysis_checker", 0);
+			DBMngr.Main.ExecuteNonQuery(command);
 		}
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
