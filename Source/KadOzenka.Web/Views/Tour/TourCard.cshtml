@@ -26,8 +26,19 @@
                     <label>Основная группа:</label>
                 </div>
                 <div class="col-sm-7 col-sm-offset-1">
-                    <input id="mainGroupId" type="text" style="display: none"/>
+                    <input id="mainGroupId" type="text" style="display: none" />
                     <label id="mainGroupName"></label>
+                </div>
+            </div>
+        </div>
+        <div id="groupForm" class="form-group">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label>Группа:</label>
+                </div>
+                <div class="col-sm-7 col-sm-offset-1">
+                    <input id="groupId" type="text" style="display: none" />
+                    <label id="groupName"></label>
                 </div>
             </div>
         </div>
@@ -87,14 +98,17 @@
             UpdateTour(true);
         });
 
-        $("#add-group").click(function (e) {
+
+        $("#add-group").click(function () {
+            $("#groupForm").hide();
             ShowAddGroupModal();
         });
-        $("#saveGroup").click(function () {
-            SaveGroup();
+        $("#add-subgroup").click(function () {
+            $("#groupForm").show();
+            ShowAddSubGroupModal();
         });
-
-        $("#add-subgroup").click(function (e) {
+        $("#saveGroup").click(function () {
+            SaveGroup($("#groupForm").is(":visible"));
         });
 
         var dataSource = new kendo.data.TreeListDataSource({
@@ -221,16 +235,7 @@
             if (data.GroupType != "2")
                 ShowInfoWindow("Нужно выбрать основную группу из дерева");
             else {
-                var algorithmId = data.Id;
-
-                //ищем корень дерева с Туром
-                var treeList = $("#treeList").data("kendoTreeList");
-                var rows = $("tr.k-treelist-group", treeList.tbody);
-                if (rows.length > 0) {
-                    var root = rows[0];
-                    $("#tourYear").html(GetDataFromRowInTree(root).GroupName);
-                }
-
+                FillYear();
                 //заполняем данные для основной группы
                 $("#mainGroupId").val(data.Id);
                 $("#mainGroupName").html(data.GroupName);
@@ -240,12 +245,54 @@
         }
     }
 
-    function SaveGroup() {
+    function ShowAddSubGroupModal() {
+        var row = GetSelectedRowInTree();
+        if (row.length <= 0) {
+            ShowInfoWindow("Для добавления подгруппы нужно выбрать строку из дерева c неосновной группой");
+        } else {
+            var data = GetDataFromRowInTree(row);
+            if (data.GroupType != "3")
+                ShowInfoWindow("Нужно выбрать неосновную группу из дерева");
+            else {
+                FillYear();
+
+                //ищем основную группу в дереве
+                var treeList = $("#treeList").data("kendoTreeList");
+                var rows = $("tr.k-treelist-group", treeList.tbody);
+                if (rows.length > 0) {
+                    rows.each(function() {
+                        var currentRowData = GetDataFromRowInTree(this);
+                        if (currentRowData.Id == data.ParentId) {
+                            $("#mainGroupId").val(currentRowData.Id);
+                            $("#mainGroupName").html(currentRowData.GroupName);
+                        }
+                    });
+                }
+
+                $("#groupId").val(data.Id);
+                $("#groupName").html(data.GroupName);
+                var modal = $("#groupAdditionModal");
+                ShowModal(modal);
+            }
+        }
+    }
+
+    function FillYear() {
+        //ищем корень дерева с Туром
+        var treeList = $("#treeList").data("kendoTreeList");
+        var rows = $("tr.k-treelist-group", treeList.tbody);
+        if (rows.length > 0) {
+            var root = rows[0];
+            $("#tourYear").html(GetDataFromRowInTree(root).GroupName);
+        }
+    }
+
+    function SaveGroup(isSubGroup) {
         kendo.ui.progress($('body'), true);
         var dto = {
             Id: null,
             RatingTourId: '@ViewBag.TourId',
-            ParentGroupId: null,
+            ParentGroupId: !isSubGroup ? null : $('#groupId').val(),
             GroupingMechanismId: $('#mainGroupId').val(),
             Name: $('#addGroupInput').val()
         };
