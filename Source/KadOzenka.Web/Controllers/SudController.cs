@@ -1309,7 +1309,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportStatisticCheck()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS, true, false, true);
 			var file = DataExporterSud.ExportStatisticCheck();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 		        "Статистика по положительным судебным решениям" + ".xlsx");
@@ -1317,7 +1317,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportStatistic()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS, true, false, true);
 			var file = DataExporterSud.ExportStatistic();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика сводная" + ".xlsx");
@@ -1325,7 +1325,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportStatisticObject()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS, true, false, true);
 			var file = DataExporterSud.ExportStatisticObject();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика по объектам недвижимости" + ".xlsx");

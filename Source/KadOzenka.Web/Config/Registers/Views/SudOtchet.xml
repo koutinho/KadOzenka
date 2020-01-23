@@ -3,7 +3,7 @@
               ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
     <Buttons>
-	    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+	    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract" SRDFunctionTAG="SUD.OTCHET.HISTORY">
 		    <Parameters>
 			    <Parameter Key="ObjectId" Value="[ObjectID]" />
 			    <Parameter Key="RegisterId" Value="[RegisterId]" />
