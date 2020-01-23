@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Core.Register.DAL;
 using Core.Shared.Misc;
@@ -13,7 +14,7 @@ using ObjectModel.Directory.Declarations;
 
 namespace KadOzenka.Web.Models.Declarations
 {
-	public class DeclarationModel
+	public class DeclarationModel : IValidatableObject
 	{
 		/// <summary>
 		/// Идентификатор (ID)
@@ -89,24 +90,28 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Кадастровый номер объекта (CADASTRAL_NUM_OBJ)
 		/// </summary>
 		[Display(Name = "Кадастровый номер")]
+		[Required(ErrorMessage = "Поле Кадастровый номер обязательное")]
 		public string CadastralObjectNumber { get; set; }
 
 		/// <summary>
 		/// Тип объекта (TYPE_OBJ)
 		/// </summary>
 		[Display(Name = "Тип объекта")]
+		[Required(ErrorMessage = "Поле Тип объекта обязательное")]
 		public ObjectType? ObjectType { get; set; }
 
 		/// <summary>
 		/// Входящая дата ГБУ (DATE_IN)
 		/// </summary>
 		[Display(Name = "Входящая дата ГБУ")]
+		[Required(ErrorMessage = "Поле Входящая дата ГБУ обязательное")]
 		public DateTime? DateIn { get; set; }
 
 		/// <summary>
 		/// Входящий номер (NUM_IN)
 		/// </summary>
 		[Display(Name = "Входящий №")]
+		[Required(ErrorMessage = "Поле Входящий № обязательное")]
 		public string NumberIn { get; set; }
 
 		/// <summary>
@@ -288,6 +293,89 @@ namespace KadOzenka.Web.Models.Declarations
 				entity.Status_Code = (StatusDec)declarationViewModel.Status.GetValueOrDefault();
 			}
 			DeclarationFormalCheckModel.ToEntity(declarationViewModel.FormalCheckModel, ref entity, ref result);
+		}
+
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			if (!BookId.HasValue || BookId == 0)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Поле Книга обязательное",
+						memberNames: new[] { "BookId" });
+			}
+
+			if ((!AgentId.HasValue || AgentId == 0) && (!OwnerId.HasValue || OwnerId == 0))
+			{
+				yield return
+					new ValidationResult(errorMessage: "Должен быть указан Заявитель или Представитель",
+						memberNames: new[] { "AgentId", "OwnerId" });
+			}
+
+			if (AgentId.HasValue && AgentId != 0)
+			{
+				foreach (var validationResult in ValidateSubjectNotificationType(AgentId, UvedTypeAgent, "Представителя", nameof(UvedTypeAgent))) yield return validationResult;
+			}
+
+			if (OwnerId.HasValue && OwnerId != 0)
+			{
+				foreach (var validationResult in ValidateSubjectNotificationType(OwnerId, UvedTypeOwner, "Заявителя", nameof(UvedTypeOwner))) yield return validationResult;
+			}
+
+			if (!ObjectType.HasValue || ObjectType == ObjectModel.Directory.Declarations.ObjectType.None)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Поле Тип объекта обязательное",
+						memberNames: new[] { "ObjectType" });
+			}
+		}
+
+		private IEnumerable<ValidationResult> ValidateSubjectNotificationType(long? subjectId, SendUvedType? subjectUvedType, string subjectName, string subjectUvedTypeField)
+		{
+			var subject = OMSubject
+				.Where(x => x.Id == subjectId)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+			if (subjectUvedType == SendUvedType.Email)
+			{
+				if (string.IsNullOrWhiteSpace(subject?.Mail))
+				{
+					yield return
+						new ValidationResult(
+							errorMessage:
+							$"У выбранного {subjectName} отсутствуют необходимые данные для данного Способа получения уведомления: Адрес электронной почты",
+							memberNames: new[] {subjectUvedTypeField});
+				}
+			}
+			else if (string.IsNullOrWhiteSpace(subject?.Zip) || string.IsNullOrWhiteSpace(subject?.City) ||
+			         string.IsNullOrWhiteSpace(subject?.Street) || string.IsNullOrWhiteSpace(subject?.House))
+			{
+				var emptyAddressParts = new List<string>();
+				if (string.IsNullOrWhiteSpace(subject?.Zip))
+				{
+					emptyAddressParts.Add("Индекс");
+				}
+
+				if (string.IsNullOrWhiteSpace(subject?.City))
+				{
+					emptyAddressParts.Add("Город");
+				}
+
+				if (string.IsNullOrWhiteSpace(subject?.Street))
+				{
+					emptyAddressParts.Add("Улица");
+				}
+
+				if (string.IsNullOrWhiteSpace(subject?.House))
+				{
+					emptyAddressParts.Add("Дом");
+				}
+
+				yield return
+					new ValidationResult(
+						errorMessage:
+						$"У выбранного {subjectName} отсутствуют необходимые данные для данного Способа получения уведомления: {string.Join(", ", emptyAddressParts)}",
+						memberNames: new[] { subjectUvedTypeField });
+			}
 		}
 	}
 }

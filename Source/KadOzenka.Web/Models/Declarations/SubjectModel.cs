@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 
 namespace KadOzenka.Web.Models.Declarations
 {
-	public class SubjectModel
+	public class SubjectModel : IValidatableObject
 	{
 		/// <summary>
 		/// Идентификатор (ID)
@@ -141,6 +142,22 @@ namespace KadOzenka.Web.Models.Declarations
 			if (subjectViewModel.Type != null)
 			{
 				entity.Type_Code = (SubjectType)subjectViewModel.Type;
+			}
+		}
+
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			if (Type == (int)SubjectType.Fl && (string.IsNullOrWhiteSpace(Surname) || string.IsNullOrWhiteSpace(FirstName)))
+			{
+				yield return
+					new ValidationResult(errorMessage: "Поля Фамилия, Имя обязательны для Физлица",
+						memberNames: new[] { "Surname", "FirstName" });
+			}
+			if (Type == (int)SubjectType.Ul && string.IsNullOrWhiteSpace(Name))
+			{
+				yield return
+					new ValidationResult(errorMessage: "Полe Наименование обязательно для Юрлица",
+						memberNames: new[] { "Name" });
 			}
 		}
 	}

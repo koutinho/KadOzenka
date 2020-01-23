@@ -15,12 +15,14 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Имя (FULL_NAME)
 		/// </summary>
 		[Display(Name = "Имя")]
+		[Required(ErrorMessage = "Поле Имя обязательное")]
 		public string Name { get; set; }
 
 		/// <summary>
 		/// Должность (POSITION)
 		/// </summary>
 		[Display(Name = "Должность")]
+		[Required(ErrorMessage = "Поле Должность обязательное")]
 		public string Position { get; set; }
 
 		public bool IsEditSignatory { get; set; }
