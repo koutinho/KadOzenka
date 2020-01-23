@@ -23,9 +23,24 @@
                 {
                     NotificationTitle.Top = Owner.Height + 37.8F;
                     MainText.Top = NotificationTitle.Top + NotificationTitle.Height + 26.46F;
-                    GeneralManagerLabel.Top = MainText.Top + MainText.Height + 56.7F;
-                    GeneralManagerName.Top = MainText.Top + MainText.Height + 56.7F;
+                    if(string.IsNullOrEmpty((string)Report.GetColumnValue("Data.Annex")) == false){
+                        AnnexLabel.Top = MainText.Top + MainText.Height + 18.9F;
+                        AnnexLabel.Width = 126.35F + 19.0F;
+                        Annex.Top = MainText.Top + MainText.Height + 18.9F;
+                        Annex.Left = AnnexLabel.Left + AnnexLabel.Width;
+                        Annex.Width = MainText.Width - AnnexLabel.Width;
+                        GeneralManagerLabel.Top = Annex.Top + Annex.Height + 56.7F;
+                        GeneralManagerName.Top = Annex.Top + Annex.Height + 56.7F;
+                    } else {
+                        Annex.Visible = false;
+                        AnnexLabel.Visible = false;
+                        GeneralManagerLabel.Top = MainText.Top + MainText.Height + 56.7F;
+                        GeneralManagerName.Top = MainText.Top + MainText.Height + 56.7F;
+                    }
                     MainText.HorzAlign=HorzAlign.Justify;
+                    AnnexLabel.HorzAlign=HorzAlign.Justify;
+                    AnnexLabel.FirstTabOffset = 35.5F;
+                     //AnnexLabel.FirstLineIndent = 35.5F;
                     //Data1.Height = 600.06F;
                 }
 
@@ -33,6 +48,8 @@
                 {
                     UserIspName.Top=763.56F;
                    // Data1.Height = 600.06F;
+                     AnnexLabel.FirstTabOffset = 35.5F;
+                    //AnnexLabel.FirstLineIndent = 35.5F;
                 }
             }
 
@@ -44,6 +61,8 @@
       <TextObject Name="Owner" Left="378" Width="283.5" Height="86.94" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="[Data.OwnerName]&#13;&#10; &#13;&#10;[Data.OwnerAddress]" Font="Times New Roman, 13pt" HtmlTags="true"/>
       <TextObject Name="NotificationTitle" Top="124.74" Width="661.5" Height="45.36" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="Уведомление&#13;&#10;о принятии декларации о характеристиках объекта недвижимости &#13;&#10;от [Data.DeclarationDateIn] № [Data.DeclarationNumber]" HorzAlign="Center" Font="Times New Roman, 13pt"/>
       <TextObject Name="MainText" Top="198.45" Width="661.5" Height="179.55" CanGrow="true" CanShrink="true" GrowToBottom="true" WordWrap="true" HtmlTags="true" Text="[Data.MainData]" FirstTabOffset="35.5" HorzAlign="Justify" Font="Times New Roman, 13pt"/>
+      <TextObject Name="AnnexLabel" FirstLineIndent="35.5" Top="378" Width="120.85‬" Height="18.9" CanGrow="true" CanShrink="true" GrowToBottom="true" WordWrap="true" HtmlTags="true" Text="[Data.AnnexLabel]" FirstTabOffset="35.5" TabWidth="35.5" HorzAlign="Justify" Font="Times New Roman, 13pt"  />
+      <TextObject Name="Annex" Left="122.85" Top="378" Width="537.8" Height="35" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="[Data.Annex]" HorzAlign="Justify" Font="Times New Roman, 13pt" FirstTabOffset="35.5" HtmlTags="true"/>
       <TextObject Name="GeneralManagerLabel" Top="434.7" Width="349" Height="18.9" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="[Data.SignatoryPosition]" Font="Times New Roman, 13pt"/>
       <TextObject Name="GeneralManagerName" Left="360.55" Top="434.7" Width="300.89" CanGrow="true" CanShrink="true" GrowToBottom="true" Height="18.9" Text="[Data.SignatoryName]" HorzAlign="Right" Font="Times New Roman, 13pt"/>
       <TextObject Name="UserIspName" Top="763.56" Width="387.45" Height="18.9" CanGrow="true" CanShrink="true" GrowToBottom="true" Text="[Data.UserIspName]" Font="Times New Roman, 12pt" TextFill.Color="DarkGray"/>

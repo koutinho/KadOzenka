@@ -49,6 +49,8 @@ namespace KadOzenka.Dal.FastReports
 			dataSet.Tables[0].Columns.Add("DeclarationNumber");
 			dataSet.Tables[0].Columns.Add("UserIspName");
 			dataSet.Tables[0].Columns.Add("MainData");
+			dataSet.Tables[0].Columns.Add("AnnexLabel");
+			dataSet.Tables[0].Columns.Add("Annex");
 			dataSet.Tables[0].Columns.Add("SignatoryPosition");
 			dataSet.Tables[0].Columns.Add("SignatoryName");
 
@@ -157,10 +159,17 @@ namespace KadOzenka.Dal.FastReports
 				$"{declaration.NumIn}/{book?.Prefics}",
 				userIspName,
 				GetMainData(declaration, notification),
+				"\u0009Приложение:",
+				GetAnnex(notification),
 				signatory.Position,
 				signatory.FullName);
 
 			return dataSet;
+		}
+
+		public virtual string GetAnnex(OMUved notification)
+		{
+			return null;
 		}
 
 		public abstract string GetMainData(OMDeclaration declaration, OMUved notification);

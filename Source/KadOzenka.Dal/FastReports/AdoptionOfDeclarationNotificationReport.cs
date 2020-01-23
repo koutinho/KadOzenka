@@ -28,15 +28,29 @@ namespace KadOzenka.Dal.FastReports
 			{
 				mainData += System.Environment.NewLine +
 				            "\u0009Информация о\u00A0результатах рассмотрения декларации будет направлена Вам " +
-				            PrepareText(declaration.UvedTypeOwner_Code.GetEnumDescription().ToLower());
+				            PrepareText(declaration.UvedTypeOwner_Code.GetEnumDescription().ToLower()) + ".";
 			}
-			if (!string.IsNullOrWhiteSpace(notification.Annex))
-			{
-				mainData += System.Environment.NewLine + System.Environment.NewLine + "\u0009Приложение: " + PrepareText(notification.Annex);
-			}
+			
 			mainData = mainData.Replace(" ", "\u0020");
 
 			return mainData;
+		}
+
+		public override string GetAnnex(OMUved notification)
+		{
+			string annex = null;
+			if (!string.IsNullOrWhiteSpace(notification.Annex))
+			{
+				var annexDocs = notification.Annex.Split("\n");
+				annex += PrepareText(annexDocs[0]);
+				for (var i = 1; i < annexDocs.Length; i++)
+				{
+					annex += System.Environment.NewLine + PrepareText(annexDocs[i]);
+				}
+				annex = annex.Replace(" ", "\u0020");
+			}
+
+			return annex;
 		}
 	}
 }
