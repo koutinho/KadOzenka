@@ -218,6 +218,21 @@ namespace ObjectModel.SRD
               // Подписанты Редактирование (543)
               public const string DECLARATIONS_SIGNATORY_EDIT = "DECLARATIONS.SIGNATORY.EDIT";
                 
+              // Просмотр истории изменения всех полей (544)
+              public const string SUD_OBJECTS_HISTORY = "SUD.OBJECTS.HISTORY";
+                
+              // Просмотр статистики (545)
+              public const string SUD_OBJECTS_STATISTICS = "SUD.OBJECTS.STATISTICS";
+                
+              // Просмотр истории изменения всех полей (546)
+              public const string SUD_OTCHET_HISTORY = "SUD.OTCHET.HISTORY";
+                
+              // Просмотр истории изменения всех полей (547)
+              public const string SUD_ZAK_HISTORY = "SUD.ZAK.HISTORY";
+                
+              // Просмотр истории изменения всех полей (548)
+              public const string SUD_RESH_HISTORY = "SUD.RESH.HISTORY";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 
