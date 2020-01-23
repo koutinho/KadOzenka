@@ -103,30 +103,18 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult TourEstimates([FromForm]int id, [FromForm]string year)
-		{
-			if (string.IsNullOrEmpty(year))
-			{
-				return Json(new { Error = "Поле не должно быть пустым" });
-			}
+		public IActionResult TourEstimates(TourModel tourModel)
+        {
+            if (tourModel == null)
+                throw new Exception("Не передана модель для сохранения Тура");
 
-			var tour = OMTour.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			var tourDto = TourModel.FromModel(tourModel);
 
-			if (tour == null)
-			{
-				tour = new OMTour();
-			}
+            var id = tourModel.Id == -1 
+                ? TourService.AddTour(tourDto) 
+                : TourService.UpdateTour(tourDto);
 
-			tour.Year = int.Parse(year);
-
-			int idSave;
-			using (var ts = new TransactionScope())
-			{
-				idSave = tour.Save();
-				ts.Complete();
-			}
-
-			return Json(new { Success = "Сохранение выполненно", Id = idSave });
+            return Json(new { Success = "Сохранение выполненно", Id = id });
 		}
 
 

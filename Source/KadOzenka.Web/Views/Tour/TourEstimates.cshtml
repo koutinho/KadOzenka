@@ -86,7 +86,7 @@
 				$('.add-tour').attr('disabled', true);
 				$('.remove-tour').attr('disabled', true);
 			}
-			
+
 		});
 
 	$('.add-tour').on('click',
@@ -113,44 +113,43 @@
 
 	function updateTour(isAdd) {
 		kendo.ui.progress($('body'), true);
-
-		var data = !isAdd
+        var data = !isAdd
 			? {
 				id: $('input.edit-input-id-hidden').val(),
 				year: $('input.edit-input').val()
 			} : {
-				id: "",
+				id: -1,
 				year: $('input.add-input').val()
 			}
-
-		console.log(data);
-		$.post("@Url.Action("TourEstimates", "Tour")", data).done(function (response) {
-			kendo.ui.progress($('body'), false);
-			if (response.Error) {
-				Common.ShowError(response.Error);
-				return;
-			}
-
-			if (response.Success) {
-				$('.edit-tour').attr('disabled', false);
-				$('.add-tour').attr('disabled', false);
-				$('.remove-tour').attr('disabled', false);
-				if (isAdd && response.Id) {
-					var list = $("#listView").data("kendoListView");
-					list.dataSource.insert(0, {
-						Id: response.Id, 
-						Text: $('input.add-input').val()
-					});
-					$('input.add-input').val("");
-					$("#myDialog").data("kendoWindow").close();
-				} else {
-					$("#listView").data("kendoListView").save();
-				}
-				
-				Common.ShowMessage(response.Success);
-			}
-		});
-	}
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("TourEstimates", "Tour")',
+            data: data,
+            success: function (response) {
+                $('.edit-tour').attr('disabled', false);
+                $('.add-tour').attr('disabled', false);
+                $('.remove-tour').attr('disabled', false);
+                if (isAdd && response.Id) {
+                    var list = $("#listView").data("kendoListView");
+                    list.dataSource.insert(0, {
+                        Id: response.Id,
+                        Text: $('input.add-input').val()
+                    });
+                    $('input.add-input').val("");
+                    $("#myDialog").data("kendoWindow").close();
+                } else {
+                    $("#listView").data("kendoListView").save();
+                }
+                Common.ShowMessage(response.Success);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 
 	function removeTour() {
 		kendo.ui.progress($('body'), true);

@@ -1,5 +1,29 @@
 ﻿<div class="flex-content">
+    <!-- Модальное окно для добавления Тура -->
+    <div id="tourAdditionModal" style="display: none;">
+        <div class="form-group" style="padding: 5px">
+            <label for="addInput"> Наименование </label>
+            <input id="addInput" class="form-control add-input" required="required" type="number" name="addTour"/>
+            <button class="btn btn-default" style="margin-top: 10px;" id="saveTour"> Сохранить </button>
+        </div>
+    </div>
+
     <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-5">
+                @(Html.Kendo().ToolBar()
+                    .Name("additionToolbar")
+                    .Items(items =>
+                    {
+                        items.Add().Type(CommandType.SplitButton).Icon("add").Text("").MenuButtons(menuButtons =>
+                        {
+                            menuButtons.Add().Text("Тур").Id("add-tour");
+                            menuButtons.Add().Text("Группа").Id("add-group");
+                            menuButtons.Add().Text("Подгруппа").Id("add-subgroup");
+                        });
+                    }))
+            </div>
+        </div>
         <div class="row">
             <div class="k-content wide flex-tree-list col-sm-5">
                 <div id="treeList"></div>
@@ -13,8 +37,22 @@
     </div>
 </div>
 
+
 <script type="text/javascript">
     $(document).ready(function () {
+
+        $('#additionToolbar').removeClass("k-widget");
+
+        $("#add-tour").click(function () {
+            ShowTourAdditionModal();
+        });
+        $("#saveTour").click(function (e) {
+            UpdateTour(true);
+        });
+        $("#add-group").click(function (e) {
+        });
+        $("#add-subgroup").click(function (e) {
+        });
 
         var dataSource = new kendo.data.TreeListDataSource({
 			transport: {
@@ -37,8 +75,7 @@
 				}
 			}
 		});
-
-		$("#treeList").kendoTreeList({
+        $("#treeList").kendoTreeList({
             dataSource: dataSource,
             selectable: true,
             columns: [
@@ -61,14 +98,52 @@
     });
 
     function UpdateMainContent() {
-        console.log("UpdateMainContent");
-
         var treeList = $("#treeList").data("kendoTreeList");
         var row = treeList.select();
         if (row.length > 0) {
             var data = treeList.dataItem(row);
             $('#mainContent').load(data.UrlForEdit);
         }
+    }
+
+    function ShowTourAdditionModal() {
+        var dial = $("#tourAdditionModal");
+        if (!dial.data("kendoWindow")) {
+            dial.kendoWindow({
+                visible: false,
+                resizable: false,
+                modal: true
+            }).data("kendoWindow").center();
+        }
+        dial.data("kendoWindow").open();
+    }
+
+    function UpdateTour(isAddition) {
+        kendo.ui.progress($('body'), true);
+        var data = !isAddition
+            ? {
+                id: $('input.edit-input-id-hidden').val(),
+                year: $('input.edit-input').val()
+            } : {
+                id: -1,
+                year: $('input.add-input').val()
+            }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("TourEstimates", "Tour")',
+            data: data,
+            success: function (response) {
+                $("#tourAdditionModal").data("kendoWindow").close();
+                Common.ShowMessage(response.Success);
+                window.parent.location.reload(); 
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
 </script>

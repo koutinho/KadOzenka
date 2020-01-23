@@ -5,6 +5,8 @@ namespace KadOzenka.Web.Models.Tour
 {
     public class TourModel
     {
+        public long Id { get; set; }
+
         [Display(Name = "Наименование")]
         public long? Year { get; set; }
 
@@ -12,6 +14,16 @@ namespace KadOzenka.Web.Models.Tour
         {
             return new TourModel
             {
+                Id = tour.Id,
+                Year = tour.Year
+            };
+        }
+
+        public static TourDto FromModel(TourModel tour)
+        {
+            return new TourDto
+            {
+                Id = tour.Id,
                 Year = tour.Year
             };
         }
