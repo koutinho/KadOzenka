@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using Core.Shared.Extensions;
-using DevExpress.DataProcessing;
+using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
-using KadOzenka.Dal.Tasks;
+using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Tours;
-using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Models.Tour;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -44,7 +43,8 @@ namespace KadOzenka.Web.Controllers
                 Id = 0,
                 GroupName = tour.Year.ToString(),
                 TourId = tour.Id,
-                UrlForEdit = Url.Action("TourSubCard", "Tour", new { tourId = tour.Id })
+                UrlForEdit = Url.Action("TourSubCard", "Tour", new { tourId = tour.Id }),
+                GroupType = GroupType.Undefined
             };
             var groupModels = new List<GroupTreeModel> {newParent};
 
@@ -172,6 +172,7 @@ namespace KadOzenka.Web.Controllers
             return Json(groupModels);
 		}
 
+        [HttpGet]
 		public ActionResult EditGroup(long? id)
 		{
 			GroupModel dto = new GroupModel();
@@ -225,34 +226,19 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult EditGroup(GroupModel dto)
-		{
-			OMGroup group = null;
-			OMTourGroup tourGroup = null;
+		public ActionResult EditGroup(GroupModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Name))
+                throw new Exception("Не заполнено имя группы");
 
-			if (dto.Id.HasValue)
-			{
-				group = OMGroup.Where(x => x.Id == dto.Id.Value)
-					.SelectAll().ExecuteFirstOrDefault();
-				tourGroup = OMTourGroup.Where(x => x.GroupId == dto.Id.Value)
-					.SelectAll().ExecuteFirstOrDefault();
-			}
-			else
-			{
-				group = new OMGroup();
-				tourGroup = new OMTourGroup();
-			}
+            var groupDto = GroupModel.FromModel(model);
 
-			group.GroupName = dto.Name;
-			group.ParentId = dto.ParentGroupId.HasValue ? dto.ParentGroupId : -1;
-			group.GroupAlgoritm_Code = (KoGroupAlgoritm)dto.GroupingMechanismId;
-			group.Save();
+            if (model.Id.HasValue)
+                GroupService.UpdateGroup(groupDto);
+            else
+                GroupService.AddGroup(groupDto);
 
-			tourGroup.GroupId = group.Id;
-			tourGroup.TourId = dto.RatingTourId.Value;
-			tourGroup.Save();	
-
-			return Ok();
+            return Ok();
 		}
 
 		[HttpPost]

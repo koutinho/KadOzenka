@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Groups.Dto;
-using KadOzenka.Dal.Tours.Dto;
 
 namespace KadOzenka.Web.Models.Tour
 {
@@ -24,6 +23,18 @@ namespace KadOzenka.Web.Models.Tour
             {
                 Id = group.Id,
                 Name = group.Name
+            };
+        }
+
+        public static GroupDto FromModel(GroupModel group)
+        {
+            return new GroupDto
+            {
+                Id = group.Id,
+                Name = group.Name,
+                GroupingMechanismId = group.GroupingMechanismId,
+                ParentGroupId = group.ParentGroupId,
+                RatingTourId = group.RatingTourId
             };
         }
     }

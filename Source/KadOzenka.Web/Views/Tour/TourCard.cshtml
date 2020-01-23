@@ -2,9 +2,45 @@
     <!-- Модальное окно для добавления Тура -->
     <div id="tourAdditionModal" style="display: none;">
         <div class="form-group" style="padding: 5px">
-            <label for="addInput"> Наименование </label>
-            <input id="addInput" class="form-control add-input" required="required" type="number" name="addTour"/>
+            <label for="addTourInput"> Наименование </label>
+            <input id="addTourInput" class="form-control" required="required" type="number" name="addTour"/>
             <button class="btn btn-default" style="margin-top: 10px;" id="saveTour"> Сохранить </button>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для добавления Группы/Подгруппы -->
+    <div id="groupAdditionModal" style="display: none; padding: 5%;">
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label>Тур:</label>
+                </div>
+                <div class="col-sm-7 col-sm-offset-1">
+                    <label id="tourYear"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label>Основная группа:</label>
+                </div>
+                <div class="col-sm-7 col-sm-offset-1">
+                    <input id="mainGroupId" type="text" style="display: none"/>
+                    <label id="mainGroupName"></label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="addGroupInput"> Наименование </label>
+                </div>
+                <div class="col-sm-7 col-sm-offset-1">
+                    <input id="addGroupInput" class="form-control" required="required" type="text" name="addGroupInput" />
+                    <button class="btn btn-default" style="margin-top: 10px;" id="saveGroup"> Сохранить </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -44,13 +80,20 @@
         $('#additionToolbar').removeClass("k-widget");
 
         $("#add-tour").click(function () {
-            ShowTourAdditionModal();
+            var modal = $("#tourAdditionModal");
+            ShowModal(modal);
         });
-        $("#saveTour").click(function (e) {
+        $("#saveTour").click(function () {
             UpdateTour(true);
         });
+
         $("#add-group").click(function (e) {
+            ShowAddGroupModal();
         });
+        $("#saveGroup").click(function () {
+            SaveGroup();
+        });
+
         $("#add-subgroup").click(function (e) {
         });
 
@@ -67,9 +110,11 @@
 					parentId: "ParentId",
 					fields: {
                         ParentId: { field: "ParentId", nullable: true },
-                        Id: { field: "Id", type: "number" },
-                        TourId: { field: "TourId", type: "number" },
-                        UrlForEdit: { field: "UrlForEdit", type: "string" }
+                        Id: { field: "Id", type: "number", nullable: true },
+                        TourId: { field: "TourId", type: "number", nullable: true },
+                        UrlForEdit: { field: "UrlForEdit", type: "string" },
+                        GroupName: { field: "GroupName", type: "string" },
+                        GroupType: { field: "GroupType", type: "string" }
                     },
 					expanded: true
 				}
@@ -98,24 +143,44 @@
     });
 
     function UpdateMainContent() {
-        var treeList = $("#treeList").data("kendoTreeList");
-        var row = treeList.select();
+        var row = GetSelectedRowInTree();
         if (row.length > 0) {
-            var data = treeList.dataItem(row);
+            var data = GetDataFromRowInTree(row);
             $('#mainContent').load(data.UrlForEdit);
         }
     }
 
-    function ShowTourAdditionModal() {
-        var dial = $("#tourAdditionModal");
-        if (!dial.data("kendoWindow")) {
-            dial.kendoWindow({
+    function GetSelectedRowInTree() {
+        var treeList = $("#treeList").data("kendoTreeList");
+        return treeList.select();
+    }
+
+    function GetDataFromRowInTree(row) {
+        var treeList = $("#treeList").data("kendoTreeList");
+        var data = treeList.dataItem(row);
+        return data;
+    }
+
+    function ShowInfoWindow(message) {
+        Common.UI.ShowInfo({
+            content: message,
+            onSuccess: function() {
+                Common.UI.CloseWindow('Dashboard', window.parent);
+            }
+        });
+    }
+
+    function ShowModal(modal) {
+        if (!modal.data("kendoWindow")) {
+            modal.kendoWindow({
                 visible: false,
-                resizable: false,
-                modal: true
+                resizable: true,
+                modal: true,
+                width: '50%',
+                height: '50%'
             }).data("kendoWindow").center();
         }
-        dial.data("kendoWindow").open();
+        modal.data("kendoWindow").open();
     }
 
     function UpdateTour(isAddition) {
@@ -123,10 +188,11 @@
         var data = !isAddition
             ? {
                 id: $('input.edit-input-id-hidden').val(),
-                year: $('input.edit-input').val()
-            } : {
+                year: $('#addTourInput').val()
+            }
+            : {
                 id: -1,
-                year: $('input.add-input').val()
+                year: $('#addTourInput').val()
             }
         $.ajax({
             type: 'POST',
@@ -141,6 +207,61 @@
                 Common.ShowError(response.responseText);
             },
             complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    function ShowAddGroupModal() {
+        var row = GetSelectedRowInTree();
+        if (row.length <= 0) {
+            ShowInfoWindow("Для добавления группы нужно выбрать строку из дерева c основной группой");
+        } else {
+            var data = GetDataFromRowInTree(row);
+            if (data.GroupType != "2")
+                ShowInfoWindow("Нужно выбрать основную группу из дерева");
+            else {
+                var algorithmId = data.Id;
+
+                //ищем корень дерева с Туром
+                var treeList = $("#treeList").data("kendoTreeList");
+                var rows = $("tr.k-treelist-group", treeList.tbody);
+                if (rows.length > 0) {
+                    var root = rows[0];
+                    $("#tourYear").html(GetDataFromRowInTree(root).GroupName);
+                }
+
+                //заполняем данные для основной группы
+                $("#mainGroupId").val(data.Id);
+                $("#mainGroupName").html(data.GroupName);
+                var modal = $("#groupAdditionModal");
+                ShowModal(modal);
+            }
+        }
+    }
+
+    function SaveGroup() {
+        kendo.ui.progress($('body'), true);
+        var dto = {
+            Id: null,
+            RatingTourId: '@ViewBag.TourId',
+            ParentGroupId: null,
+            GroupingMechanismId: $('#mainGroupId').val(),
+            Name: $('#addGroupInput').val()
+        };
+
+        $.ajax({
+            url: '@Url.Action("EditGroup", "Tour")',
+            type: 'POST',
+            data: dto,
+            success: function () {
+                Common.ShowMessage('Сохранение выполнено');
+                $("#groupAdditionModal").data("kendoWindow").close();
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
                 kendo.ui.progress($('body'), false);
             }
         });

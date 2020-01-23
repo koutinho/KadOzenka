@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Transactions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Groups.Dto;
+using KadOzenka.Dal.Groups.Dto.Consts;
+using KadOzenka.Dal.Tours;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tasks
+namespace KadOzenka.Dal.Groups
 {
     public class GroupService
     {
+        private TourService TourService { get; set; }
+
+        public GroupService()
+        {
+            TourService = new TourService();
+        }
+
+
         public GroupDto GetGroupById(long? groupId)
         {
-            if (groupId == null)
-                throw new Exception("Не передан идентификатор Группы для поиска");
-
-            var group = OMGroup.Where(x => x.Id == groupId).SelectAll().ExecuteFirstOrDefault();
-            if (group == null)
-                throw new Exception($"Не найдена Группа с id='{groupId}'");
+            var group = GetGroupByIdInternal(groupId);
 
             return new GroupDto
             {
@@ -59,7 +65,8 @@ namespace KadOzenka.Dal.Tasks
             {
                 Id = (long)KoGroupAlgoritm.MainOKS,
                 ParentId = mainParentId,
-                GroupName = "Основная группа ОКС"
+                GroupName = "Основная группа ОКС",
+                GroupType = GroupType.Main
             };
             groups.Add(oks);
 
@@ -67,7 +74,8 @@ namespace KadOzenka.Dal.Tasks
             {
                 Id = (long)KoGroupAlgoritm.MainParcel,
                 ParentId = mainParentId,
-                GroupName = "Основная группа Участки"
+                GroupName = "Основная группа Участки",
+                GroupType = GroupType.Main
             };
             groups.Add(parcel);
 
@@ -89,10 +97,13 @@ namespace KadOzenka.Dal.Tasks
                     {
                         str.ParentId = parcel.Id;
                     }
+
+                    str.GroupType = GroupType.Group;
                 }
                 else
                 {
                     str.ParentId = parent;
+                    str.GroupType = GroupType.SubGroup;
                 }
 
                 str.GroupName = row["GroupName"].ToString();
@@ -103,5 +114,65 @@ namespace KadOzenka.Dal.Tasks
 
             return groups;
         }
+
+        public int AddGroup(GroupDto groupDto)
+        {
+            var tour = TourService.GetTourById(groupDto.RatingTourId);
+
+            var group = new OMGroup();
+            var tourGroup = new OMTourGroup();
+
+            return SetGroupFields(groupDto, group, tourGroup);
+        }
+
+        public int UpdateGroup(GroupDto groupDto)
+        {
+            var tour = TourService.GetTourById(groupDto.RatingTourId);
+
+            var group = OMGroup.Where(x => x.Id == groupDto.Id)
+                .SelectAll().ExecuteFirstOrDefault();
+
+            var tourGroup = OMTourGroup.Where(x => x.GroupId == groupDto.Id)
+                .SelectAll().ExecuteFirstOrDefault();
+
+            return SetGroupFields(groupDto, group, tourGroup);
+        }
+
+
+        #region Support Methods
+
+        private int SetGroupFields(GroupDto groupDto, OMGroup group, OMTourGroup tourGroup)
+        {
+            int groupId;
+            using (var ts = new TransactionScope())
+            {
+                group.GroupName = groupDto.Name;
+                group.ParentId = groupDto.ParentGroupId ?? -1;
+                group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingMechanismId;
+                groupId = group.Save();
+
+                tourGroup.GroupId = group.Id;
+                tourGroup.TourId = groupDto.RatingTourId.Value;
+                tourGroup.Save();
+
+                ts.Complete();
+            }
+
+            return groupId;
+        }
+
+        private OMGroup GetGroupByIdInternal(long? groupId)
+        {
+            if (groupId == null)
+                throw new Exception("Не передан идентификатор Группы для поиска");
+
+            var group = OMGroup.Where(x => x.Id == groupId).SelectAll().ExecuteFirstOrDefault();
+            if (group == null)
+                throw new Exception($"Не найдена Группа с id='{groupId}'");
+
+            return group;
+        }
+
+        #endregion
     }
 }
