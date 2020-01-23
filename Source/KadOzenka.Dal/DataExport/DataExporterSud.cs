@@ -54,7 +54,7 @@ namespace KadOzenka.Dal.DataExport
                     if (curIndex % 40 == 0) Console.WriteLine(curIndex);
 
 
-                    string Kn = obj.Kn.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+                    string Kn = obj.Kn?.Replace("\n", "").Replace("\r", "").Replace(" ", "");
 
 
 
@@ -528,7 +528,7 @@ namespace KadOzenka.Dal.DataExport
             List<object> value = new List<object>();
 
             #region Заголовок объекта
-            value.Add(obj.Kn.Replace("\n", "").Replace("\r", "").Replace(" ", ""));
+            value.Add(obj.Kn?.Replace("\n", "").Replace("\r", "").Replace(" ", ""));
             value.Add(obj.Typeobj);
             value.Add(obj.Adres);
             value.Add(obj.Square);
