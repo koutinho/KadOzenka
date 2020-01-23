@@ -95,7 +95,7 @@
             ShowModal(modal);
         });
         $("#saveTour").click(function () {
-            UpdateTour(true);
+            SaveTour();
         });
 
 
@@ -197,17 +197,13 @@
         modal.data("kendoWindow").open();
     }
 
-    function UpdateTour(isAddition) {
+    function SaveTour() {
         kendo.ui.progress($('body'), true);
-        var data = !isAddition
-            ? {
-                id: $('input.edit-input-id-hidden').val(),
-                year: $('#addTourInput').val()
-            }
-            : {
-                id: -1,
-                year: $('#addTourInput').val()
-            }
+        var data = {
+            id: -1,
+            year: $('#addTourInput').val()
+        };
+
         $.ajax({
             type: 'POST',
             url: '@Url.Action("TourEstimates", "Tour")',
