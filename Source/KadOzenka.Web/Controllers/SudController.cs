@@ -220,7 +220,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var links = OMOtchetLink.Where(x => x.IdObject == reportLinkViewModel.SudObjectId &&
-			                                 x.IdOtchet == reportLinkViewModel.IdReport).Execute();
+			                                 x.IdOtchet == reportLinkViewModel.IdReport && x.Id != reportLinkViewModel.Id).Execute();
 			if (links.Any())
 			{
 				return Json(new
@@ -398,7 +398,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var links = OMZakLink.Where(x => x.IdObject == conclusionLinkViewModel.SudObjectId &&
-			                                 x.IdZak == conclusionLinkViewModel.IdConclusion).Execute();
+			                                 x.IdZak == conclusionLinkViewModel.IdConclusion && x.Id != conclusionLinkViewModel.Id).Execute();
 			if (links.Any())
 			{
 				return Json(new { Errors = links.Select(x => new
@@ -733,6 +733,11 @@ namespace KadOzenka.Web.Controllers
 				? courtLink.IdObject.GetValueOrDefault()
 				: sudObjectId;
 
+			var currentSudObjectId = courtLink != null && courtLinkId != 0 ? courtLink.IdObject.GetValueOrDefault() : sudObjectId;
+
+			model.SquareObject = OMObject.Where(x => x.Id == currentSudObjectId).Select(x => x.Square)
+				.ExecuteFirstOrDefault().Square.GetValueOrDefault();
+
 			model.IsEditCourt =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_EDIT);
 
@@ -765,7 +770,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var links = OMSudLink.Where(x => x.IdObject == courtLinkViewModel.ObjectId &&
-			                                    x.IdSud == courtLinkViewModel.SudId).Execute();
+			                                    x.IdSud == courtLinkViewModel.SudId && x.Id != courtLinkViewModel.Id).Execute();
 			if (links.Any())
 			{
 				return Json(new

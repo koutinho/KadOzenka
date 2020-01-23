@@ -28,7 +28,7 @@
 				@Html.CustomLabelFor(m => m.Uprs)
 			</div>
 			<div class="col-sm-4">
-				@Html.KendoNumericTextBoxFor(m => m.Uprs, 2, isReadonly: false)
+				@Html.KendoNumericTextBoxFor(m => m.Uprs, 2)
 			</div>
 		</div>
 		<div class="form-group">
@@ -229,5 +229,19 @@
 			$(`.edit-button-${"@Html.IdFor(m => m.SudNumber)"}`).off('click').attr('disabled', true);
 			$(`.add-button-${"@Html.IdFor(m => m.SudNumber)"}`).off('click').attr('disabled', true);
 		}
+
+		var numerictextbox = $("#@Html.IdFor(m => m.Rs)").data("kendoNumericTextBox");
+		var squareObject = parseFloat("@Model.SquareObject");
+		numerictextbox.bind("change",
+			function() {
+				var value = this.value();
+				if (squareObject && squareObject !== 0) {
+					$("#@Html.IdFor(m => m.Uprs)").data("kendoNumericTextBox").value(value / squareObject);
+				} else {
+					Common.ShowError(
+						`Удельная стоимость не будет расчитана, т.к не корректная площадь объекта: ${squareObject}`);
+				}
+			});
+
 	});
 </script>

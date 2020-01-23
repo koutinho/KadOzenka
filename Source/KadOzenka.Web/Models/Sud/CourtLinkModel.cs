@@ -41,7 +41,7 @@ namespace KadOzenka.Web.Models.Sud
 
 
 		/// <summary>
-		/// Рыночная стоимость
+		/// Удельный показатель
 		/// </summary>
 		[Display(Name = "Удельный показатель")]
 		[Required(ErrorMessage = "Поле удельный показатель обязательное")]
@@ -62,6 +62,7 @@ namespace KadOzenka.Web.Models.Sud
 
 		public bool IsEditCourt { get; set; }
 		public bool IsEditCourtLink { get; set; }
+		public decimal SquareObject { get; set; }
 		public static CourtLinkModel FromEntity(OMSudLink omSudLink, OMSud omSud)
 		{
 			var res = new CourtLinkModel

@@ -11,6 +11,7 @@ namespace KadOzenka.Web.Models.Sud
 	{
 		public long Id { get; set; }
 		[Display(Name = "Кадастровый номер")]
+		[Required(ErrorMessage = "Кадастровый номер обязательное поле")]
 		public string Kn { get; set; }
 
 		[Display(Name = "Дата определения стоимости")]
@@ -76,8 +77,6 @@ namespace KadOzenka.Web.Models.Sud
 		public ApplicantType? ApplicantType { get; set; }
 
 		[Display(Name = "Форма собственности")]
-		[Required(ErrorMessage = "Форма собственности обязательное поле")]
-		[Range(1, int.MaxValue, ErrorMessage = "Форма собственности обязательное поле")]
 		public TypeOfOwnership? TypeOfOwnership { get; set; }
 
 		[Display(Name = "Исключение")]
