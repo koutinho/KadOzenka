@@ -4,10 +4,24 @@
     <div class="row" style="padding-top: 2%;">
         <b>Настройка группы</b>
     </div>
-    <div class="row" style="padding: 3% 0;">
-        <span>@Model.Name</span>
+    <div class="form-horizontal row" style="padding-top: 5%;">
+        @Html.HiddenFor(x => x.Id, new { id = "updateGroupInputId" })
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.Name)
+            </div>
+            <div class="col-sm-8 col-sm-offset-1">
+                @Html.TextAreaFor(x => x.Name, new { @class = "k-textbox col-sm-8", id = "updateGroupNameId", style = "resize: none; width: 100%;", rows = 3 })
+            </div>
+        </div>
     </div>
     <div class="row">
+        <div class="col-sm-2 col-sm-offset-9">
+            <button class="btn btn-default" id="updateGroupBtn">Сохранить</button>
+        </div>
+    </div>
+
+    <div class="row" style="padding-top: 3%">
         <div class="form-horizontal col-sm-12" style="margin-top: 10px">
             <div class="form-group col-sm-12">
                 <div id="modelContent">
@@ -36,6 +50,30 @@
                 $('#modelContent').append("<span style='color:red;'>Модель для группы не найдена</span>");
                 kendo.ui.progress($('body'), false);
             }
+        });
+
+        $("#updateGroupBtn").click(function() {
+            kendo.ui.progress($('body'), true);
+            var data = {
+                id: $('#updateGroupInputId').val(),
+                name: $('#updateGroupNameId').val()
+            };
+            $.ajax({
+                type: 'PATCH',
+                url: '@Url.Action("PatchGroup", "Tour")',
+                data: data,
+                success: function (response) {
+                    Common.ShowMessage("Данные обновлены");
+                    //метод из TourCard
+                    ReloadTourCartTab();
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
         });
 
     });

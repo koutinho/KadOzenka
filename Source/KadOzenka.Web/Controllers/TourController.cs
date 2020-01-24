@@ -241,7 +241,29 @@ namespace KadOzenka.Web.Controllers
             return Ok();
 		}
 
-		[HttpPost]
+        [HttpPatch]
+        public ActionResult PatchGroup(GroupModel model)
+        {
+            //пока реализовано только имя
+            if (string.IsNullOrWhiteSpace(model.Name))
+                throw new Exception("Не заполнено имя группы");
+
+            //TODO перенести в сервис
+            var group = OMGroup.Where(x => x.Id == model.Id).ExecuteFirstOrDefault();
+            if (group == null)
+                throw new Exception($"Группа с id='{model.Id}' не найдена");
+
+            using (var ts = new TransactionScope())
+            {
+                group.GroupName = model.Name;
+                group.Save();
+                ts.Complete();
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
 		public IActionResult DeleteGroup(long id)
 		{
 			OMGroup group = OMGroup.Where(x => x.Id == id)
