@@ -92,6 +92,15 @@ namespace KadOzenka.Web.Controllers
             return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
         }
 
+        [HttpGet]
+        public ActionResult MarksGrid(long groupId, long factorId)
+        {
+            //TODO переделать на модель
+            ViewBag.GroupId = groupId;
+            ViewBag.FactorId = factorId;
+            return View();
+        }
+
         #endregion
 
         #region Туры
@@ -375,11 +384,6 @@ namespace KadOzenka.Web.Controllers
 			return Json(mechanism);
 		}
 
-        
-        #region Support Methods
-
-        #endregion
-
         #endregion
 
         #region Метки
@@ -389,7 +393,7 @@ namespace KadOzenka.Web.Controllers
 			return View();
 		}
 
-		public JsonResult GetMarkCatalog(long? groupId, long? factorId)
+        public JsonResult GetMarkCatalog(long? groupId, long? factorId)
 		{			
 			List<OMMarkCatalog> markCatalog = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId)
 				.SelectAll().Execute();			

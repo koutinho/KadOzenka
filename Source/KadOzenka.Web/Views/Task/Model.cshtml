@@ -42,7 +42,7 @@
             @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
         </div>
     </div>
-    
+
     <div style="padding-top: 2%;">
         <div id="factorToolbar"></div>
     </div>
@@ -123,6 +123,13 @@
                     text: '',
                     attributes: { title: "Удалить" },
                     icon: 'delete'
+                },
+                {
+                    type: 'button',
+                    id: 'show-marks',
+                    text: '',
+                    attributes: { title: "Метки" },
+                    icon: 'clock'
                 }
             ]
         });
@@ -149,7 +156,7 @@
             dataSource: gridDataSource,
             columns: [
                 {
-                    field: 'Factor', title: 'Фактор', width: 100
+                    field: 'Factor', title: 'Фактор'
                 }, {
                     field: 'SignDiv', title: 'Деление', template: "#=SignDiv ? 'Да' : 'Нет'#", width: 100
                 }, {
@@ -196,15 +203,18 @@
             if (row.length == 0) {
                 $('#edit-factor').addClass('k-state-disabled');
                 $('#remove-factor').addClass('k-state-disabled');
+                $('#show-marks').addClass('k-state-disabled');
             }
             else {
                 $('#edit-factor').removeClass('k-state-disabled');
                 $('#remove-factor').removeClass('k-state-disabled');
+                $('#show-marks').removeClass('k-state-disabled');
             }
         }
 
         $('#edit-factor').addClass('k-state-disabled');
         $('#remove-factor').addClass('k-state-disabled');
+        $('#show-marks').addClass('k-state-disabled');
 
         $('#add-factor').on('click', function () {
             Common.UI.ShowWindow('Редактирование фактора',
@@ -266,6 +276,18 @@
                 });
             }
         });
+
+        $('#show-marks').on('click', function () {
+            var grid = $("#grid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                var groupId = '@Model.GroupId';
+                var factorId = data.FactorId;
+                window.open('@Url.Action("MarksGrid", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId);
+            }
+        });
+
     });
 
     function UpdateView() {
