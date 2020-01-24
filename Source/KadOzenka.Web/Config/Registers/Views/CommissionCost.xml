@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="400" DefaultLayoutId="1004001" AllowSearchPanelResize="false" Description="Решения комисии" IsBasic="false"
-              OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false">
+              OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowRowMenu="true">
   <Buttons>
       <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
           <Parameters>
@@ -23,4 +23,8 @@
           </Parameters>
       </Tab>
   </Tabs>
+
+  <RowMenuButtons>
+    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+  </RowMenuButtons>
 </RegisterView>

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="200" DefaultLayoutId="1002001" LinkedRegistersList="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,200" AllowSearchPanelResize="false" IsBasic="false"
               OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
-              ShowActualDate="false" SearchPanel="" SearchPanelWindowHeight="654">
+              ShowActualDate="false" SearchPanel="" SearchPanelWindowHeight="654" ShowRowMenu="true">
 
   <Buttons>
     <Button Caption="Все данные" NavigateURL="~/GbuObject/AllDataTree" Icon="icon-contract">
@@ -40,5 +40,8 @@
       </Parameters>
     </Tab>
   </Tabs>
-  
+
+  <RowMenuButtons>
+    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+  </RowMenuButtons>
 </RegisterView>

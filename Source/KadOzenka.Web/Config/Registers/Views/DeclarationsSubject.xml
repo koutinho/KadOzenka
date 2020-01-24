@@ -1,12 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="505" LinkedRegistersList="" DefaultLayoutId="1005051"
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
-              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="DECLARATIONS.SUBJECT">
+              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" ShowRowMenu="true" SRDFunctionTag="DECLARATIONS.SUBJECT">
     <Buttons>
         <Button Caption="Добавить" NavigateURL="/Declarations/EditSubject" WindowHeight="640" WindowWidth="900" Icon="fas fa-plus" SRDFunctionTag="DECLARATIONS.SUBJECT.CREATE">
             <Parameters></Parameters>
         </Button>
-
 
         <Button Caption="Редактировать" NavigateURL="/Declarations/EditSubject" WindowHeight="640" WindowWidth="900" Icon="fas fa-edit" SRDFunctionTag="DECLARATIONS.SUBJECT.EDIT">
             <Parameters>
@@ -14,5 +13,14 @@
             </Parameters>
         </Button>
     </Buttons>
+  
     <StatusBarConfiguration StatusBarEnabled="false" />
+
+    <RowMenuButtons>
+      <Button Caption="Редактировать" Icon="fas fa-edit" OpenInRadWindow="true" WindowWidth="900" WindowHeight="640" NavigateURL="~/Declarations/EditSubject">
+        <Parameters>
+          <Parameter Key="subjectId" Value="[ObjectId]" />
+        </Parameters>
+      </Button>
+    </RowMenuButtons>
 </RegisterView>

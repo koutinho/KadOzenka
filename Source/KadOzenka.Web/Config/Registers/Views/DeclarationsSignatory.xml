@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="508" LinkedRegistersList="" DefaultLayoutId="1005081"
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
-              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="DECLARATIONS.SIGNATORY">
+              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" ShowRowMenu="true" SRDFunctionTag="DECLARATIONS.SIGNATORY">
     <Buttons>
         <Button Caption="Добавить" NavigateURL="/Declarations/EditSignatory" WindowHeight="200" WindowWidth="800" Icon="fas fa-plus" SRDFunctionTag="DECLARATIONS.SIGNATORY.CREATE">
             <Parameters></Parameters>
@@ -15,4 +15,12 @@
         </Button>
     </Buttons>
     <StatusBarConfiguration StatusBarEnabled="false" />
+
+    <RowMenuButtons>
+      <Button Caption="Редактировать" Icon="fas fa-edit" OpenInRadWindow="true" WindowWidth="800" WindowHeight="200" NavigateURL="~/Declarations/EditSignatory">
+        <Parameters>
+          <Parameter Key="signatoryId" Value="[ObjectId]" />
+        </Parameters>
+      </Button>
+    </RowMenuButtons>
 </RegisterView>

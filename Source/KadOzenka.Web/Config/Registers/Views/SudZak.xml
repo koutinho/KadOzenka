@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="300" LinkedRegistersList="300,312" DefaultLayoutId="1003001" 
               IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
-              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" SRDFunctionTag="">
+              ShowSettingsPanel="true" UseMasterPage="true" SearchPanel="" ShowRowMenu="true" SRDFunctionTag="">
     <Buttons>
 		<Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract" SRDFunctionTAG="SUD.ZAK.HISTORY">
 			<Parameters>
@@ -28,5 +28,14 @@
         </Parameters>
       </Button>
     </Buttons>
+  
     <StatusBarConfiguration StatusBarEnabled="false" />
+
+  <RowMenuButtons>
+    <Button Caption="Редактировать" Icon="fas fa-edit" OpenInRadWindow="true" WindowWidth="800" WindowHeight="500" NavigateURL="~/Sud/EditConclusion">
+      <Parameters>
+        <Parameter Key="conclusionId" Value="[ObjectId]" />
+      </Parameters>
+    </Button>
+  </RowMenuButtons>
 </RegisterView>

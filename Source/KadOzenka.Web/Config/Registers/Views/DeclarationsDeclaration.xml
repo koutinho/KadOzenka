@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="501" DefaultLayoutId="1005011" LinkedRegistersList="500,501,505,506,950" AllowSearchPanelResize="false" IsBasic="false"
-              OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" SRDFunctionTag="DECLARATIONS.DECLARATION">
+              OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" 
+              ShowRowMenu="true" SRDFunctionTag="DECLARATIONS.DECLARATION">
   <Buttons>
     <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
       <Parameters>
@@ -29,4 +30,13 @@
           </Parameters>
       </Tab>
   </Tabs>
+
+  <RowMenuButtons>
+    <!--<Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>-->
+    <Button Caption="Редактировать" Icon="fas fa-edit" OpenInRadWindow="true" NavigateURL="~/Declarations/EditDeclaration">
+      <Parameters>
+        <Parameter Key="declarationId" Value="[ObjectId]" />
+      </Parameters>
+    </Button>
+  </RowMenuButtons>
 </RegisterView>

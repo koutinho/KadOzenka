@@ -44,4 +44,8 @@
       </Parameters>
     </Tab>
   </Tabs>
+
+  <RowMenuButtons>
+    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+  </RowMenuButtons>
 </RegisterView>
