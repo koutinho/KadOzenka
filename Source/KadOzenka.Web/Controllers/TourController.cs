@@ -72,14 +72,17 @@ namespace KadOzenka.Web.Controllers
         public ActionResult GroupSubCard(long groupId)
         {
             var groupDto = new GroupDto{Id = groupId};
+            var isReadOnly = false;
             switch (groupId)
             {
                 case (long)KoGroupAlgoritm.MainParcel:
                     groupDto.Name = KoGroupAlgoritm.MainParcel.GetEnumDescription();
+                    isReadOnly = true;
                     break;
 
                 case (long)KoGroupAlgoritm.MainOKS:
                     groupDto.Name = KoGroupAlgoritm.MainOKS.GetEnumDescription();
+                    isReadOnly = true;
                     break;
 
                 default:
@@ -88,6 +91,7 @@ namespace KadOzenka.Web.Controllers
             }
 
             var groupModel = GroupModel.ToModel(groupDto);
+            groupModel.IsReadOnly = isReadOnly;
 
             return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
         }

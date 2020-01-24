@@ -36,6 +36,17 @@
 <script type="text/javascript">
     $(document).ready(function () {
 
+        @{
+            if (Model.IsReadOnly)
+            {
+                <text>
+                    console.log("readonly");
+                    $("#updateGroupNameId").prop("disabled", true);
+                    $("#updateGroupBtn").prop( "disabled", true);
+                </text>
+            }
+        }
+
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',

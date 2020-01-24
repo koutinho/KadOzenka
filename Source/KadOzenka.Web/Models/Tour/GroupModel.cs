@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Groups.Dto;
+using KadOzenka.Dal.Groups.Dto.Consts;
 
 namespace KadOzenka.Web.Models.Tour
 {
@@ -15,6 +16,8 @@ namespace KadOzenka.Web.Models.Tour
 
         [Display(Name = "Наименование")]
 		public string Name { get; set; }
+
+        public bool IsReadOnly { get; set; }
 
 
         public static GroupModel ToModel(GroupDto group)
