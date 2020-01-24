@@ -7,10 +7,10 @@
     <div class="form-horizontal row" style="padding-top: 5%;">
         @Html.HiddenFor(x => x.Id, new {id = "updateTourInputId" })
         <div class="form-group">
-            <div class="col-sm-4">
+            <div class="col-sm-2">
                 @Html.CustomLabelFor(x => x.Year)
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-4 col-sm-offset-1">
                 @Html.KendoNumericTextBoxFor(x => x.Year, id: "updateTourInputYear", isReadonly: false)
             </div>
         </div>
@@ -37,7 +37,8 @@
                 data: data,
                 success: function (response) {
                     Common.ShowMessage(response.Success);
-                    window.parent.location.reload(); 
+                    //метод из TourCard
+                    ReloadTourCartTab();
                 },
                 error: function (response) {
                     Common.ShowError(response.responseText);

@@ -149,7 +149,7 @@
             dataSource: gridDataSource,
             columns: [
                 {
-                    field: 'Factor', title: 'Фактор'
+                    field: 'Factor', title: 'Фактор', width: 100
                 }, {
                     field: 'SignDiv', title: 'Деление', template: "#=SignDiv ? 'Да' : 'Нет'#", width: 100
                 }, {
@@ -162,10 +162,16 @@
                     field: 'Weight', title: 'Вес', width: 250
                 }
             ],
-            height: "30em",
+            pageable: true,
             scrollable: true,
             selectable: true
         });
+
+        var grid = $("#grid").data("kendoGrid");
+        var numberOfPages = 5;
+        if ('@Model.IsPartial' == "True")
+            numberOfPages = 2;
+        grid.dataSource.pageSize(numberOfPages);
 
 
         $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', AlgTypeChanged);

@@ -1,7 +1,7 @@
 ﻿<div class="flex-content">
     <!-- Модальное окно для добавления Тура -->
-    <div id="tourAdditionModal" style="display: none;">
-        <div class="form-group" style="padding: 5px">
+    <div id="tourAdditionModal" style="display: none;  padding: 2%;">
+        <div class="form-group">
             <label for="addTourInput"> Наименование </label>
             <input id="addTourInput" class="form-control" required="required" type="number" name="addTour"/>
             <button class="btn btn-default" style="margin-top: 10px;" id="saveTour"> Сохранить </button>
@@ -9,7 +9,7 @@
     </div>
     
     <!-- Модальное окно для добавления Группы/Подгруппы -->
-    <div id="groupAdditionModal" style="display: none; padding: 5%;">
+    <div id="groupAdditionModal" style="display: none; padding: 2%;">
         <div class="form-group">
             <div class="row">
                 <div class="col-sm-4">
@@ -48,7 +48,7 @@
                     <label for="addGroupInput"> Наименование </label>
                 </div>
                 <div class="col-sm-7 col-sm-offset-1">
-                    <input id="addGroupInput" class="form-control" required="required" type="text" name="addGroupInput" />
+                    <textarea id="addGroupInput" class="form-control" required="required" name="addGroupInput" rows="3"></textarea>
                     <button class="btn btn-default" style="margin-top: 10px;" id="saveGroup"> Сохранить </button>
                 </div>
             </div>
@@ -56,24 +56,23 @@
     </div>
 
     <div class="container-fluid">
+        <!-- Дерево и правая панель для редактирования -->
         <div class="row">
-            <div class="col-sm-5">
+            <div class="k-content wide flex-tree-list col-sm-5">
+                <div id="treeList" class="height-constraint"></div>
                 @(Html.Kendo().ToolBar()
                     .Name("additionToolbar")
                     .Items(items =>
                     {
-                        items.Add().Type(CommandType.SplitButton).Icon("add").Text("").MenuButtons(menuButtons =>
-                        {
-                            menuButtons.Add().Text("Тур").Id("add-tour");
-                            menuButtons.Add().Text("Группа").Id("add-group");
-                            menuButtons.Add().Text("Подгруппа").Id("add-subgroup");
-                        });
+                        items.Add().Type(CommandType.SplitButton).Text("")
+                            .Icon("add").HtmlAttributes(new { style = "color: green;" })
+                            .MenuButtons(menuButtons =>
+                            {
+                                menuButtons.Add().Text("Тур").Id("add-tour");
+                                menuButtons.Add().Text("Группа").Id("add-group");
+                                menuButtons.Add().Text("Подгруппа").Id("add-subgroup");
+                            });
                     }))
-            </div>
-        </div>
-        <div class="row">
-            <div class="k-content wide flex-tree-list col-sm-5">
-                <div id="treeList"></div>
             </div>
             <div class="col-sm-6">
                 <div id="mainContent">
@@ -92,7 +91,7 @@
 
         $("#add-tour").click(function () {
             var modal = $("#tourAdditionModal");
-            ShowModal(modal);
+            ShowModal(modal, '25%', '15%');
         });
         $("#saveTour").click(function () {
             SaveTour();
@@ -136,14 +135,12 @@
 		});
         $("#treeList").kendoTreeList({
             dataSource: dataSource,
+            height: "90%",
             selectable: true,
             columns: [
                 {
                     field: "GroupName", title: "Имя группы", headerAttributes: {
                         style: "display: none"
-                    },
-                    attributes: {
-                        "class": "col-sm-4"
                     }
                 }
             ],
@@ -184,14 +181,14 @@
         });
     }
 
-    function ShowModal(modal) {
+    function ShowModal(modal, width, height) {
         if (!modal.data("kendoWindow")) {
             modal.kendoWindow({
                 visible: false,
                 resizable: true,
                 modal: true,
-                width: '50%',
-                height: '50%'
+                width: width,
+                height: height
             }).data("kendoWindow").center();
         }
         modal.data("kendoWindow").open();
@@ -236,7 +233,7 @@
                 $("#mainGroupId").val(data.Id);
                 $("#mainGroupName").html(data.GroupName);
                 var modal = $("#groupAdditionModal");
-                ShowModal(modal);
+                ShowModal(modal, '50%', '30%');
             }
         }
     }
@@ -268,7 +265,7 @@
                 $("#groupId").val(data.Id);
                 $("#groupName").html(data.GroupName);
                 var modal = $("#groupAdditionModal");
-                ShowModal(modal);
+                ShowModal(modal, '50%', '30%');
             }
         }
     }
@@ -300,6 +297,7 @@
             success: function () {
                 Common.ShowMessage('Сохранение выполнено');
                 $("#groupAdditionModal").data("kendoWindow").close();
+                ReloadTourCartTab();
             },
             error: function (response) {
                 Common.ShowError(response.responseText);
@@ -310,10 +308,23 @@
         });
     }
 
+    function ReloadTourCartTab() {
+        window.location.replace('@Url.Action("TourCard", "Tour", new { tourId = ViewBag.TourId})');
+    }
+
 </script>
 
 @section styles {
     <style>
+        .border {
+            border: 1px solid #969696;
+        }
+
+        .height-constraint {
+            max-height: 90%;
+            max-height: 90vh;
+        } 
+
         .flex-content {
             display: flex;
             height: 100%;
@@ -342,11 +353,6 @@
 
         .tour p {
             padding: 5px;
-        }
-
-        #treeList {
-            height: 100%;
-            /*overflow: auto;*/
         }
 
         .selected {
