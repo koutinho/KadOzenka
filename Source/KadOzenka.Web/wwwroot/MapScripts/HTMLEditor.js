@@ -4,7 +4,7 @@
         <div class="DataItemContainer">
             <div class="Container">
                 <div class="Header">
-                    <div class="Text">${SegmentType[cartData.segment].type}&nbsp;${getArea(cartData.segment, cartData.area, cartData.areaLand)}</div>
+                    <div class="Text">${CIPJSType[cartData.segment][0].type}&nbsp;${getArea(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
                     <div class="Content">
                         <a style="margin-left: auto;" href="/ObjectCard?ObjId=${cartData.id}&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true">
                             <div class="Card"></div>
@@ -28,8 +28,8 @@
             </div>
             ${(cartData.dealType != 'Предложение-продажа' && cartData.dealType != 'Сделка купли-продажи') ? "" : `
                 <div class="Container">
-                    <div class="Name">Цена за ${getAreaType(cartData.segment, cartData.area, cartData.areaLand)}</div>
-                    <div class="Value">${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.segment, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.segment, cartData.area, cartData.areaLand)}</div>
+                    <div class="Name">Цена за ${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
+                    <div class="Value">${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.propertyType, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
                 </div>
             `}
             ${cartData.floor == null && cartData.floorCount == null ? "" : `
@@ -40,9 +40,9 @@
             `}
             <div class="Container">
                 <div class="Name">Площадь</div>
-                <div class="Value">${getArea(cartData.segment, cartData.area, cartData.areaLand)}</div>
+                <div class="Value">${getArea(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
             </div>
-            ${!(cartData.areaLand != null && ((cartData.segment == 3 && cartData.area) || cartData.segment == 14)) ? "" : `
+            ${!(cartData.areaLand != null && (cartData.segment == 0 && cartData.area)) ? "" : `
                 <div class="Container">
                     <div class="Name">Площадь ЗУ</div>
                     <div class="Value">${numberWithSpaces(cartData.areaLand)}&nbsp;сот.</div>
@@ -62,7 +62,7 @@
                 <div class="Name">Дата&nbsp;актуального&nbsp;обновления</div>
                 <div class="Value">${cartData.lastUpdateDate == null ? cartData.parserTime : cartData.lastUpdateDate}</div >
             </div>
-            ${(cartData.segment == 3 && !cartData.area) ? "" : `
+            ${(cartData.segment == 0 && !cartData.area) ? "" : `
                 <div class="Container">
                     <div class="Name">Кадастровый&nbsp;номер${cartData.source == "Росреестр" ? "" : "&nbsp;здания" }</div>
                     <div class="Value">${cartData.cadastralNumber}</div>

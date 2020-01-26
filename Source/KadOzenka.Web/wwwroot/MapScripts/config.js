@@ -67,44 +67,85 @@ var SelectedTargetOnCard = {
     iconImageOffset: [-25, -25]
 }
 
-var PropType = [
-    { id: 0, name: 'warehouse', color: '#5206af', type: 'Склад' }, 
-    { id: 1, name: 'parking', color: '#0d2db0', type: 'Гараж' }, 
-    { id: 2, name: 'trading', color: '#0177a1', type: 'Торговая' }, 
-    { id: 3, name: 'free', color: '#8341d7', type: 'Свободного назначения' },
-    { id: 4, name: 'office', color: '#4762d7', type: 'Офис' }, 
-    { id: 5, name: 'business', color: '#9a6ad7', type: 'Готовый бизнес' }, 
-    { id: 6, name: 'production', color: '#6f82d7', type: 'Производственная' }, 
-    { id: 7, name: 'uncompleted', color: '#acadad', type: 'ОНС' }, 
-    { id: 8, name: 'building', color: '#37a8d1', type: 'Здание' }, 
-    { id: 9, name: 'otherCommertial', color: '#62b3d1', type: 'Иная коммерческая недвижимость' }, 
-    { id: 10, name: 'flatSecondary', color: '#007730', type: 'Квартира' }, 
-    { id: 11, name: 'flatNew', color: '#1c894e', type: 'Квартира' }, 
-    { id: 12, name: 'roomSecondary', color: '#00b74e', type: 'Комната на вторичке' }, 
-    { id: 13, name: 'roomNew', color: '#34db7f', type: 'Комната в новостройке' }, 
-    { id: 14, name: 'subarbanArea', color: '#a75000', type: 'Земельный участок' }, 
-    { id: 15, name: 'townhouse', color: '#c0772c', type: 'Таунхаус' }, 
-    { id: 16, name: 'house', color: '#ff7d00', type: 'Загородный дом' }, 
-    { id: 17, name: 'otherSubarban', color: '#ffb874', type: 'Иной вид недвижимости' }, 
-    { id: 18, name: 'studio', color: '#62db98', type: 'Квартира' }
-];
-
-var SegmentType = [
-    { id: 0, name: 'appartment', color: '#a68a90', type: 'Апартаменты' },
-    { id: 1, name: 'box', color: '#d95891', type: 'Гаражи' },
-    { id: 2, name: 'hotel', color: '#54f5db', type: 'Гостиницы' },
-    { id: 3, name: 'IZHS', color: '#417c55', type: 'ИЖС' },
-    { id: 4, name: 'parking', color: '#872187', type: 'Машиноместа' },
-    { id: 5, name: 'MZHS', color: '#cb9d2c', type: 'МЖС' },
-    { id: 6, name: 'Offices', color: '#471942', type: 'Офисы' },
-    { id: 7, name: 'Warehouse', color: '#dcc209', type: 'Производство и склады' },
-    { id: 8, name: 'Gardens', color: '#b40495', type: 'Садоводческое, огородническое и дачное использование' },
-    { id: 9, name: 'Sanatorium', color: '#b6b369', type: 'Санатории' },
-    { id: 10, name: 'Traiding', color: '#d27f4d', type: 'Торговля' },
-    { id: 11, name: 'publicCatering', color: '#1b62da', type: 'Общепит' },
-    { id: 12, name: 'OrdinarLand', color: '#e997ae', type: 'Земельные участки' },
-    { id: 13, name: 'CommercialLand', color: '#67a3a0', type: 'Коммерческая земля' },
-    { id: 14, name: 'NoSegment', color: '#c4dc66', type: 'Без сегмента' }
+var CIPJSType = [
+    [
+        { id: 0, name: 'IZHS', color: '#045C1F', type: 'ИЖС', dealType: 'Предложение-продажа' },
+        { id: 1, name: 'IZHS', color: '#078B2E', type: 'ИЖС', dealType: 'Сделка купли-продажи' },
+        { id: 2, name: 'IZHS', color: '#4BAF69', type: 'ИЖС', dealType: 'Предложение-аренда' },
+        { id: 3, name: 'IZHS', color: '#A5D7B4', type: 'ИЖС', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 4, name: 'MZHS', color: '#00663B', type: 'МЖС', dealType: 'Предложение-продажа' },
+        { id: 5, name: 'MZHS', color: '#00B268', type: 'МЖС', dealType: 'Сделка купли-продажи' },
+        { id: 6, name: 'MZHS', color: '#00FF95', type: 'МЖС', dealType: 'Предложение-аренда' },
+        { id: 7, name: 'MZHS', color: '#66FFBF', type: 'МЖС', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 8, name: 'Appartment', color: '#006166', type: 'Апартаменты', dealType: 'Предложение-продажа' },
+        { id: 9, name: 'Appartment', color: '#00AAB2', type: 'Апартаменты', dealType: 'Сделка купли-продажи' },
+        { id: 10, name: 'Appartment', color: '#32F5FF', type: 'Апартаменты', dealType: 'Предложение-аренда' },
+        { id: 11, name: 'Appartment', color: '#CCFCFF', type: 'Апартаменты', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 12, name: 'Sanatorium', color: '#00224C', type: 'Санатории', dealType: 'Предложение-продажа' },
+        { id: 13, name: 'Sanatorium', color: '#0050B2', type: 'Санатории', dealType: 'Сделка купли-продажи' },
+        { id: 14, name: 'Sanatorium', color: '#0073FF', type: 'Санатории', dealType: 'Предложение-аренда' },
+        { id: 15, name: 'Sanatorium', color: '#7Fb9FF', type: 'Санатории', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 16, name: 'Gardens', color: '#4C004A', type: 'Садовническое, огородническое и дачное использование', dealType: 'Предложение-продажа' },
+        { id: 17, name: 'Gardens', color: '#990095', type: 'Садовническое, огородническое и дачное использование', dealType: 'Сделка купли-продажи' },
+        { id: 18, name: 'Gardens', color: '#FF00F9', type: 'Садовническое, огородническое и дачное использование', dealType: 'Предложение-аренда' },
+        { id: 19, name: 'Gardens', color: '#FFD2FD', type: 'Садовническое, огородническое и дачное использование', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 20, name: 'Parking', color: '#66003A', type: 'Машиноместа', dealType: 'Предложение-продажа' },
+        { id: 21, name: 'Parking', color: '#B20066', type: 'Машиноместа', dealType: 'Сделка купли-продажи' },
+        { id: 22, name: 'Parking', color: '#FF0093', type: 'Машиноместа', dealType: 'Предложение-аренда' },
+        { id: 23, name: 'Parking', color: '#FF99D3', type: 'Машиноместа', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 24, name: 'Box', color: '#4C000B', type: 'Гаражи', dealType: 'Предложение-продажа' },
+        { id: 25, name: 'Box', color: '#B2001A', type: 'Гаражи', dealType: 'Сделка купли-продажи' },
+        { id: 26, name: 'Box', color: '#FF0026', type: 'Гаражи', dealType: 'Предложение-аренда' },
+        { id: 27, name: 'Box', color: '#FF7F92', type: 'Гаражи', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 28, name: 'Hotel', color: '#4F1200', type: 'Гостиницы', dealType: 'Предложение-продажа' },
+        { id: 29, name: 'Hotel', color: '#BF2D00', type: 'Гостиницы', dealType: 'Сделка купли-продажи' },
+        { id: 30, name: 'Hotel', color: '#FF3A00', type: 'Гостиницы', dealType: 'Предложение-аренда' },
+        { id: 31, name: 'Hotel', color: '#FF9C7F', type: 'Гостиницы', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 32, name: 'Warehouse', color: '#661700', type: 'Производство и склады', dealType: 'Предложение-продажа' },
+        { id: 33, name: 'Warehouse', color: '#CC2E00', type: 'Производство и склады', dealType: 'Сделка купли-продажи' },
+        { id: 34, name: 'Warehouse', color: '#FF6132', type: 'Производство и склады', dealType: 'Предложение-аренда' },
+        { id: 35, name: 'Warehouse', color: '#FFB099', type: 'Производство и склады', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 36, name: 'Office', color: '#4C2C00', type: 'Офисы', dealType: 'Предложение-продажа' },
+        { id: 37, name: 'Office', color: '#995900', type: 'Офисы', dealType: 'Сделка купли-продажи' },
+        { id: 38, name: 'Office', color: '#FF9500', type: 'Офисы', dealType: 'Предложение-аренда' },
+        { id: 39, name: 'Office', color: '#FFCA7F', type: 'Офисы', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 40, name: 'Traiding', color: '#664F00', type: 'Торговля', dealType: 'Предложение-продажа' },
+        { id: 41, name: 'Traiding', color: '#CC9F00', type: 'Торговля', dealType: 'Сделка купли-продажи' },
+        { id: 42, name: 'Traiding', color: '#FFC700', type: 'Торговля', dealType: 'Предложение-аренда' },
+        { id: 43, name: 'Traiding', color: '#FFE899', type: 'Торговля', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 44, name: 'PublicCatering', color: '#666004', type: 'Общепит', dealType: 'Предложение-продажа' },
+        { id: 45, name: 'PublicCatering', color: '#B2A807', type: 'Общепит', dealType: 'Сделка купли-продажи' },
+        { id: 46, name: 'PublicCatering', color: '#FFF10A', type: 'Общепит', dealType: 'Предложение-аренда' },
+        { id: 47, name: 'PublicCatering', color: '#FFFAB5', type: 'Общепит', dealType: 'Сделка-аренда' }
+    ],
+    [
+        { id: 48, name: 'NoSegment', color: '#4C4C4C', type: 'Без сегмента', dealType: 'Предложение-продажа' },
+        { id: 49, name: 'NoSegment', color: '#868686', type: 'Без сегмента', dealType: 'Сделка купли-продажи' },
+        { id: 50, name: 'NoSegment', color: '#C0C0C0', type: 'Без сегмента', dealType: 'Предложение-аренда' },
+        { id: 51, name: 'NoSegment', color: '#DFDFDF', type: 'Без сегмента', dealType: 'Сделка-аренда' }
+    ]
 ];
 
 var ObjectTypes = {

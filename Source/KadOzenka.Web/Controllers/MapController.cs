@@ -59,8 +59,14 @@ namespace KadOzenka.Web.Controllers
             int size = query.ExecuteCount();
             if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
-            var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code, x.PropertyMarketSegment }).Execute().ToList();
-            analogItem.ForEach(x => point.Add(new { points = new[] { x.Lat, x.Lng }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment) }));
+            var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code, x.PropertyMarketSegment, x.DealType, x.PropertyTypesCIPJS }).Execute().ToList();
+            analogItem.ForEach(x => point.Add(new { 
+                points = new[] { x.Lat, x.Lng }, 
+                id = x.Id, 
+                segment = FormSegment(x.PropertyMarketSegment), 
+                dealType = FormDealType(x.DealType), 
+                propertyType = x.PropertyTypesCIPJS 
+            }));
             return Json(new { token = token, arr = point, allCount = size });
         }
 
@@ -75,6 +81,7 @@ namespace KadOzenka.Web.Controllers
                     {
                         segment = FormSegment(x.PropertyMarketSegment),
                         dealType = x.DealType,
+                        propertyType = x.PropertyTypesCIPJS,
                         source = x.Market,
                         price = x.Price,
                         area = x.Area,
@@ -294,22 +301,33 @@ namespace KadOzenka.Web.Controllers
         {
             switch (marketSegment)
             {
-                case "Апартаменты": return 0;
-                case "Гаражи": return 1;
-                case "Гостиницы": return 2;
-                case "ИЖС": return 3;
-                case "Машиноместа": return 4;
-                case "МЖС": return 5;
-                case "Офисы": return 6;
-                case "Производство и склады": return 7;
-                case "Садоводческое, огородническое и дачное использование": return 8;
-                case "Санатории": return 9;
+                case "ИЖС": return 0;
+                case "МЖС": return 1;
+                case "Апартаменты": return 2;
+                case "Санатории": return 3;
+                case "Садоводческое, огородническое и дачное использование": return 4;
+                case "Машиноместа": return 5;
+                case "Гаражи": return 6;
+                case "Гостиницы": return 7;
+                case "Производство и склады": return 8;
+                case "Офисы": return 9;
                 case "Торговля": return 10;
                 case "Общепит": return 11;
-                case "Земельные участки": return 12;
-                case "Коммерческая земля": return 13;
+                case "Без сегмента": return 12;
             }
-            return 14;
+            return 13;
+        }
+
+        private int FormDealType(string dealType)
+        {
+            switch (dealType)
+            {
+                case "Предложение-продажа": return 0;
+                case "Сделка купли-продажи": return 1;
+                case "Предложение-аренда": return 2;
+                case "Сделка-аренда": return 3;
+            }
+            return 0;
         }
 
     }

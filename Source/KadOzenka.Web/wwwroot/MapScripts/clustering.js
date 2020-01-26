@@ -31,7 +31,7 @@ function initCluster(coordinates, zoom, size) {
             });
         }
         for (var i = 0, len = AllControllersData.length; i < len; i++) {
-            var color = SegmentType[AllControllersData[i].segment].color;
+            var color = CIPJSType[AllControllersData[i].segment][AllControllersData[i].dealType].color;
             geoObjects[i] = new ymaps.Placemark(
                 AllControllersData[i].points, {
                 data: [{ weight: 1, color: color, id: AllControllersData[i].id }]
