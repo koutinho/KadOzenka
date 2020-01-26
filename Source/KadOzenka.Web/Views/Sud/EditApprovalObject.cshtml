@@ -79,16 +79,66 @@
                     new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.StatDgi.GetEnumDescription(), isActual = Model.StatDgi != null }, isReadonly: Model.StatDgi != null)
             </div>
         </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.Owner)
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListFor(m => m.Owner, "GetApprovalFieldData", "Sud",
-					new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.Owner.GetEnumDescription(), isActual = Model.Owner != null },
-					isReadonly: Model.Owner != null)
-            </div>
-        </div>
+	    <div class="form-group">
+		    <div class="col-sm-2">
+			    @Html.CustomLabelFor(m => m.Owner)
+		    </div>
+		    <div class="col-sm-10">
+			    @Html.KendoDropDownListFor(m => m.Owner, "GetApprovalFieldData", "Sud",
+				    new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.Owner.GetEnumDescription(), isActual = Model.Owner != null },
+				    isReadonly: Model.Owner != null)
+		    </div>
+	    </div>
+	    <div class="form-group">
+		    <div class="col-sm-2">
+			    @Html.CustomLabelFor(m => m.ApplicantType)
+		    </div>
+		    <div class="col-sm-10">
+			    @Html.KendoDropDownListFor(m => m.ApplicantType, "GetApprovalFieldData", "Sud",
+				    new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.ApplicantType.GetEnumDescription(), isActual = Model.ApplicantType != null },
+				    isReadonly: Model.ApplicantType != null)
+		    </div>
+	    </div>
+	    <div class="form-group">
+		    <div class="col-sm-2">
+			    @Html.CustomLabelFor(m => m.TypeOfOwnership)
+		    </div>
+		    <div class="col-sm-10">
+			    @Html.KendoDropDownListFor(m => m.TypeOfOwnership, "GetApprovalFieldData", "Sud",
+				    new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.TypeOfOwnership.GetEnumDescription(), isActual = Model.TypeOfOwnership != null },
+				    isReadonly: Model.TypeOfOwnership != null)
+		    </div>
+	    </div>
+	    <div class="form-group">
+		    <div class="col-sm-2">
+			    @Html.CustomLabelFor(m => m.IsException)
+		    </div>
+		    <div class="col-sm-10">
+			    @Html.KendoDropDownListFor(m => m.IsException, "GetApprovalFieldData", "Sud",
+				    new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.IsException.GetEnumDescription(), isActual = Model.IsException != null },
+				    isReadonly: Model.IsException != null)
+		    </div>
+	    </div>
+	    <div class="form-group">
+		    <div class="col-sm-2">
+			    @Html.CustomLabelFor(m => m.AdditionalAnalysisRequired)
+		    </div>
+		    <div class="col-sm-10">
+			    @Html.KendoDropDownListFor(m => m.AdditionalAnalysisRequired, "GetApprovalFieldData", "Sud",
+				    new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.AdditionalAnalysisRequired.GetEnumDescription(), isActual = Model.AdditionalAnalysisRequired != null },
+				    isReadonly: Model.AdditionalAnalysisRequired != null)
+		    </div>
+	    </div>
+	    <div class="form-group">
+		    <div class="col-sm-2">
+			    @Html.CustomLabelFor(m => m.IsSatisfied)
+		    </div>
+		    <div class="col-sm-10">
+			    @Html.KendoDropDownListFor(m => m.IsSatisfied, "GetApprovalFieldData", "Sud",
+				    new { idTable = OMTableParam.Object, objectId = Model.Id, paramName = ParamNameEnum.IsSatisfied.GetEnumDescription(), isActual = Model.IsSatisfied != null },
+				    isReadonly: Model.IsSatisfied != null)
+		    </div>
+	    </div>
         <div class="form-group">
             <div class="col-sm-12">
                 <button style="float: right" disabled="@Model.IsDisableButton" id="save" class="k-button" type="button">Утвердить</button>

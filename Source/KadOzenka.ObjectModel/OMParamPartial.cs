@@ -60,7 +60,12 @@ namespace ObjectModel.Sud
                         case "adres":       return ParamChar;
                         case "typeobj":     return (ParamInt==null) ? string.Empty:((Directory.Sud.SudObjectType)ParamInt).GetEnumDescription();
                         case "name_center": return ParamChar;
-                        default:            return string.Empty;
+                        case "applicanttype": return (ParamInt == null) ? string.Empty : ((Directory.Sud.ApplicantType)ParamInt).GetEnumDescription();
+                        case "typeofownership": return (ParamInt == null) ? string.Empty : ((Directory.Sud.TypeOfOwnership)ParamInt).GetEnumDescription();
+                        case "exception": return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
+                        case "additional_analysis": return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
+                        case "is_satisfied": return (ParamInt == null) ? string.Empty : ((ParamInt == 1) ? "Да" : "Нет");
+						default:            return string.Empty;
                     }
                 case 2://Otchet
                     switch (ParamName)

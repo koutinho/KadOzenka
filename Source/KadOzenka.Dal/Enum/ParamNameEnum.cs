@@ -68,5 +68,15 @@ namespace KadOzenka.Dal.Enum
         RecSoglas,
         [Description("id_zak")]
         IdConclusion,
-    }
+        [Description("applicanttype")]
+		ApplicantType,
+		[Description("typeofownership")]
+		TypeOfOwnership,
+		[Description("exception")]
+		IsException,
+		[Description("additional_analysis")]
+		AdditionalAnalysisRequired,
+		[Description("is_satisfied")]
+		IsSatisfied,
+	}
 }

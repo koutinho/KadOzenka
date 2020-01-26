@@ -715,7 +715,7 @@ namespace ObjectModel.Market
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 200 Объект кадастровой оценки
+    /// 200 Объект кадастра
     /// </summary>
     public partial class OMMainObject
     {
@@ -860,7 +860,7 @@ namespace ObjectModel.Gbu
         public List<ObjectModel.Gbu.OMSource23> Source23 { get; set; }
 
         /// <summary>
-        /// Ссылка на (201 Единица кадастровой оценки)
+        /// Ссылка на (201 Единица оценки)
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMUnit> Unit { get; set; }
@@ -931,11 +931,35 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 201 Единица кадастровой оценки
+    /// 201 Единица оценки
     /// </summary>
     public partial class OMUnit
     {
 
+
+        /// <summary>
+        /// Ссылка на (250 Параметры расчета для ОКС 2018 года)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMUnitParamsOks2018> UnitParamsOks2018 { get; set; }
+
+        /// <summary>
+        /// Ссылка на (251 Параметры расчета для ЗУ 2018 года)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMUnitParamsZu2018> UnitParamsZu2018 { get; set; }
+
+        /// <summary>
+        /// Ссылка на (252 Параметры расчета для ОКС 2016 года)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMUnitParamsOks2016> UnitParamsOks2016 { get; set; }
+
+        /// <summary>
+        /// Ссылка на (253 Параметры расчета для ЗУ 2016 года)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMUnitParamsZu2016> UnitParamsZu2016 { get; set; }
         public OMUnit()
         {
 
@@ -943,6 +967,14 @@ namespace ObjectModel.KO
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            UnitParamsOks2018 = new List<ObjectModel.KO.OMUnitParamsOks2018>();
+
+            UnitParamsZu2018 = new List<ObjectModel.KO.OMUnitParamsZu2018>();
+
+            UnitParamsOks2016 = new List<ObjectModel.KO.OMUnitParamsOks2016>();
+
+            UnitParamsZu2016 = new List<ObjectModel.KO.OMUnitParamsZu2016>();
 
         }
         public OMUnit(bool trackPropertyChanging) : this()
@@ -962,7 +994,7 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (201 Единица кадастровой оценки)
+        /// Ссылка на (201 Единица оценки)
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMUnit> Unit { get; set; }
@@ -1002,7 +1034,7 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (201 Единица кадастровой оценки)
+        /// Ссылка на (201 Единица оценки)
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMUnit> Unit { get; set; }
@@ -1034,7 +1066,7 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (201 Единица кадастровой оценки)
+        /// Ссылка на (201 Единица оценки)
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMUnit> Unit { get; set; }
@@ -1090,7 +1122,7 @@ namespace ObjectModel.KO
 
 
         /// <summary>
-        /// Ссылка на (201 Единица кадастровой оценки)
+        /// Ссылка на (201 Единица оценки)
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMUnit> Unit { get; set; }

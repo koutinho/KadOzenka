@@ -5,6 +5,7 @@ using System.Linq;
 using Core.Shared.Extensions;
 using DevExpress.DataProcessing;
 using KadOzenka.Dal.Enum;
+using ObjectModel.Directory.Sud;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Models.Sud
@@ -49,7 +50,27 @@ namespace KadOzenka.Web.Models.Sud
         [Display(Name = "Заказчик / Истец")]
         public string Owner { get; set; }
 
-        public bool IsDisableButton { get; set; }
+        [Display(Name = "Тип заявителя")]
+        [Required(ErrorMessage = "Тип заявителя обязательное поле")]
+        public string ApplicantType { get; set; }
+
+        [Display(Name = "Форма собственности")]
+        [Required(ErrorMessage = "Форма собственности обязательное поле")]
+		public string TypeOfOwnership { get; set; }
+
+        [Display(Name = "Исключение")]
+        [Required(ErrorMessage = "Исключение обязательное поле")]
+		public string IsException { get; set; }
+
+		[Display(Name = "Требуется дополнительный анализ")]
+		[Required(ErrorMessage = "Требуется дополнительный анализ обязательное поле")]
+		public string AdditionalAnalysisRequired { get; set; }
+
+		[Display(Name = "Статус удовлетворения объекта")]
+		[Required(ErrorMessage = "Статус удовлетворения объекта обязательное поле")]
+		public string IsSatisfied { get; set; }
+
+		public bool IsDisableButton { get; set; }
         public static EditApprovalObjectModel FromEntity(List<OMParam> param)
         {
             var model = new EditApprovalObjectModel
@@ -62,12 +83,19 @@ namespace KadOzenka.Web.Models.Sud
                 Adres = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Adres.GetEnumDescription())?.Pid.ToString(),
                 NameCenter = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.NameCenter.GetEnumDescription())?.Pid.ToString(),
                 StatDgi = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.StatDgi.GetEnumDescription())?.Pid.ToString(),
-                Owner = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Owner.GetEnumDescription())?.Pid.ToString()
+                Owner = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Owner.GetEnumDescription())?.Pid.ToString(),
+                ApplicantType = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.ApplicantType.GetEnumDescription())?.Pid.ToString(),
+                TypeOfOwnership = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.TypeOfOwnership.GetEnumDescription())?.Pid.ToString(),
+                AdditionalAnalysisRequired = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.AdditionalAnalysisRequired.GetEnumDescription())?.Pid.ToString(),
+                IsException = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.IsException.GetEnumDescription())?.Pid.ToString(),
+                IsSatisfied = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.IsSatisfied.GetEnumDescription())?.Pid.ToString()
             };
 
             model.IsDisableButton = model.Kn != null && model.Date != null && model.Square != null &&
                                     model.Kc != null && model.TypeObj != null && model.Adres != null
-                                    && model.NameCenter != null && model.StatDgi != null && model.Owner != null;
+                                    && model.NameCenter != null && model.StatDgi != null && model.Owner != null 
+                                    && model.ApplicantType != null && model.TypeOfOwnership != null 
+                                    && model.AdditionalAnalysisRequired != null && model.IsException != null && model.IsSatisfied != null;
 
             return model;
         }

@@ -14,7 +14,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource1
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -32,7 +32,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource2
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -50,7 +50,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource3
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -68,7 +68,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource4
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -86,7 +86,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource5
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -104,7 +104,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource6
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -122,7 +122,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource7
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -140,7 +140,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource8
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -158,7 +158,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource9
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -176,7 +176,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource10
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -194,7 +194,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource11
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -212,7 +212,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource12
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -230,7 +230,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource13
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -248,7 +248,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource14
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -266,7 +266,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource15
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -284,7 +284,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource16
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -302,7 +302,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource17
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -320,7 +320,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource18
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -338,7 +338,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource19
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -356,7 +356,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource20
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -374,7 +374,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource21
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -392,7 +392,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource22
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -410,7 +410,7 @@ namespace ObjectModel.Gbu
     public partial class OMSource23
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -441,12 +441,12 @@ namespace ObjectModel.Market
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 201 Единица кадастровой оценки
+    /// 201 Единица оценки
     /// </summary>
     public partial class OMUnit
     {
         /// <summary>
-        /// Ссылка на (200 Объект кадастровой оценки)
+        /// Ссылка на (200 Объект кадастра)
         /// </summary>
         [ParentRegister]
         [XmlIgnore]
@@ -583,6 +583,78 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMGroup ParentGroup { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 250 Параметры расчета для ОКС 2018 года
+    /// </summary>
+    public partial class OMUnitParamsOks2018
+    {
+        /// <summary>
+        /// Ссылка на (201 Единица оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMUnit ParentUnit { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 251 Параметры расчета для ЗУ 2018 года
+    /// </summary>
+    public partial class OMUnitParamsZu2018
+    {
+        /// <summary>
+        /// Ссылка на (201 Единица оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMUnit ParentUnit { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 252 Параметры расчета для ОКС 2016 года
+    /// </summary>
+    public partial class OMUnitParamsOks2016
+    {
+        /// <summary>
+        /// Ссылка на (201 Единица оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMUnit ParentUnit { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 253 Параметры расчета для ЗУ 2016 года
+    /// </summary>
+    public partial class OMUnitParamsZu2016
+    {
+        /// <summary>
+        /// Ссылка на (201 Единица оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMUnit ParentUnit { get; set; }
 
     }
 }

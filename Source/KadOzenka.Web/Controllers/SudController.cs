@@ -10,6 +10,7 @@ using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register.DAL;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
@@ -899,8 +900,13 @@ namespace KadOzenka.Web.Controllers
             OMParam pStatDgi = OMParam.Where(x => x.Pid == long.Parse(model.StatDgi)).SelectAll().ExecuteFirstOrDefault();
             OMParam pAdres = OMParam.Where(x => x.Pid == long.Parse(model.Adres)).SelectAll().ExecuteFirstOrDefault();
             OMParam pOwner = OMParam.Where(x => x.Pid == long.Parse(model.Owner)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pApplicantType = OMParam.Where(x => x.Pid == long.Parse(model.ApplicantType)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pTypeOfOwnership = OMParam.Where(x => x.Pid == long.Parse(model.TypeOfOwnership)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pAdditionalAnalysisRequired = OMParam.Where(x => x.Pid == long.Parse(model.AdditionalAnalysisRequired)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pException = OMParam.Where(x => x.Pid == long.Parse(model.IsException)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pSatisfied = OMParam.Where(x => x.Pid == long.Parse(model.IsSatisfied)).SelectAll().ExecuteFirstOrDefault();
 
-            sudObject.UpdateAndCheckParam(pKn, pType, pSquare, pKc, pDate, pNameCenter, pStatDgi, pAdres, pOwner);
+            sudObject.UpdateAndCheckParam(pKn, pType, pSquare, pKc, pDate, pNameCenter, pStatDgi, pAdres, pOwner, pApplicantType, pTypeOfOwnership, pAdditionalAnalysisRequired, pException, pSatisfied);
 
             return Json(new { Success = "Утверждено успешно" });
         }

@@ -3613,7 +3613,7 @@ namespace ObjectModel.Market
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 200 Объект кадастровой оценки (GBU_MAIN_OBJECT)
+    /// 200 Объект кадастра (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 200)]
     [Serializable]
@@ -3740,7 +3740,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 201 Единица кадастровой оценки (KO_UNIT)
+    /// 201 Единица оценки (KO_UNIT)
     /// </summary>
     [RegisterInfo(RegisterID = 201)]
     [Serializable]
@@ -4079,7 +4079,7 @@ namespace ObjectModel.KO
 
         private string _statusrepeatcalc;
         /// <summary>
-        /// 20101400 Cтатус расчета (STATUS_REPEAT_CALC)
+        /// 20101400 Статус расчета (STATUS_REPEAT_CALC)
         /// </summary>
         [RegisterAttribute(AttributeID = 20101400)]
         public string StatusRepeatCalc
@@ -4099,7 +4099,7 @@ namespace ObjectModel.KO
 
         private KoStatusRepeatCalc _statusrepeatcalc_Code;
         /// <summary>
-        /// 20101400 Cтатус расчета (справочный код) (STATUS_REPEAT_CALC_CODE)
+        /// 20101400 Статус расчета (справочный код) (STATUS_REPEAT_CALC_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20101400)]
         public KoStatusRepeatCalc StatusRepeatCalc_Code
@@ -10368,6 +10368,106 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private bool _applicanttype;
+        /// <summary>
+        /// 30501200 Тип заявителя (APPLICANT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30501200)]
+        public bool ApplicantType
+        {
+            get
+            {
+                CheckPropertyInited("ApplicantType");
+                return _applicanttype;
+            }
+            set
+            {
+                _applicanttype = value;
+                NotifyPropertyChanged("ApplicantType");
+            }
+        }
+
+
+        private bool _typeofownership;
+        /// <summary>
+        /// 30501300 Форма собственности (TYPE_OF_OWNERSHIP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30501300)]
+        public bool TypeOfOwnership
+        {
+            get
+            {
+                CheckPropertyInited("TypeOfOwnership");
+                return _typeofownership;
+            }
+            set
+            {
+                _typeofownership = value;
+                NotifyPropertyChanged("TypeOfOwnership");
+            }
+        }
+
+
+        private bool _exception;
+        /// <summary>
+        /// 30501400 Исключение (EXCEPTION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30501400)]
+        public bool Exception
+        {
+            get
+            {
+                CheckPropertyInited("Exception");
+                return _exception;
+            }
+            set
+            {
+                _exception = value;
+                NotifyPropertyChanged("Exception");
+            }
+        }
+
+
+        private bool _additionalanalysis;
+        /// <summary>
+        /// 30501500 Дополнительный анализ (ADDITIONAL_ANALYSIS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30501500)]
+        public bool AdditionalAnalysis
+        {
+            get
+            {
+                CheckPropertyInited("AdditionalAnalysis");
+                return _additionalanalysis;
+            }
+            set
+            {
+                _additionalanalysis = value;
+                NotifyPropertyChanged("AdditionalAnalysis");
+            }
+        }
+
+
+        private bool _issatisfied;
+        /// <summary>
+        /// 30501600 Статус удовлетворения объекта (IS_SATISFIED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 30501600)]
+        public bool IsSatisfied
+        {
+            get
+            {
+                CheckPropertyInited("IsSatisfied");
+                return _issatisfied;
+            }
+            set
+            {
+                _issatisfied = value;
+                NotifyPropertyChanged("IsSatisfied");
+            }
+        }
+
     }
 }
 
@@ -12301,7 +12401,7 @@ namespace ObjectModel.Sud
 
         private bool _approvestatus;
         /// <summary>
-        /// 31501200 Статус утверждения ()
+        /// 31501200 Утверждено ()
         /// </summary>
         [RegisterAttribute(AttributeID = 31501200)]
         public bool ApproveStatus
