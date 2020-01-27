@@ -11,6 +11,7 @@ using ObjectModel.Core.Shared;
 using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
+using Platform.CalendarHolidays;
 
 namespace KadOzenka.Web.Models.Declarations
 {
