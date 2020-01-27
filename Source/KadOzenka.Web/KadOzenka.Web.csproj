@@ -20,6 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Tour\GroupCard.cshtml" />
+    <Content Remove="Views\Tour\TourSubCard.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
     <Content Remove="wwwroot\MapScripts\jquery-3.4.1.min.js" />
   </ItemGroup>
@@ -117,10 +119,14 @@
     <None Remove="Config\Registers\Views\CoreSRDUserSession.xml" />
     <None Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <None Remove="Config\Registers\Views\DataImporter.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
     <None Remove="Config\Registers\Views\GbuObjects.xml" />
     <None Remove="Config\Registers\Views\InspectorPersonSelect.xml" />
     <None Remove="Config\Registers\Views\KoObjects.xml" />
     <None Remove="Config\Registers\Views\KoObjectsCard.xml" />
+    <None Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
+    <None Remove="Config\Registers\Views\KoTasks.xml" />
+    <None Remove="Config\Registers\Views\KoTours.xml" />
     <None Remove="Config\Registers\Views\MarketObjects.xml" />
     <None Remove="Config\Registers\Views\Payments.xml" />
     <None Remove="Config\Registers\Views\PrimaryMatchingSelect.xml" />
@@ -129,7 +135,6 @@
     <None Remove="Config\Registers\SearchPanels\DamagePayment.xml" />
     <None Remove="Config\Registers\Views\DamagePayment.xml" />
     <None Remove="Config\Registers\Views\SudObjects.xml" />
-    <None Remove="Config\Registers\Views\SudObjectsCard.xml" />
     <None Remove="Config\Reports\RegisterOfPayment.frx" />
     <None Remove="Config\Reports\SubmitDocForApproval.frx" />
     <None Remove="Config\Reports\СalculationReport.frx" />
@@ -214,6 +219,12 @@
     <Content Include="Config\Registers\Views\DataExporterByTemplate.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\Registers\Views\DeclarationsSignatory.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoTaskGknFilesCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\Registers\Views\DataImporter.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -282,6 +293,18 @@
     </None>
     <None Update="Config\Registers\Views\PfhdFact.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\AdoptionOfDeclarationNotificationReport.frx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
@@ -503,14 +526,17 @@
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBookSelect.xml" />
+    <ConfigPath Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubject.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoObjectsCard.xml" />
+    <ConfigPath Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
+    <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
-    <ConfigPath Remove="Config\Registers\Views\SudObjectsCard.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
   </ItemGroup>
@@ -521,5 +547,9 @@
   <Target Name="CopyConfigFiles" AfterTargets="Publish">
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
+  <ItemGroup>
+    <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
+    <None Include="Views\Tour\Partials\TourSubCard.cshtml" />
+  </ItemGroup>
 
 </Project>
