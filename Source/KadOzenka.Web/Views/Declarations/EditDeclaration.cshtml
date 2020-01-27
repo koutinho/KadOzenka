@@ -294,21 +294,40 @@
                 ]
             );
             tabStrip.select(0);
-            jQuery("#FormalCheckModel_DateCheckPlan").kendoDatePicker(
-				{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+            
 			if (jQuery("#FormalCheckModel_DateCheckPlan").attr("editmode") == "false") {
-				jQuery("#FormalCheckModel_DateCheckPlan").data("kendoDatePicker").enable(false);
+				$("#FormalCheckModel_DateCheckPlan").addClass("k-textbox");
+				if ($("#FormalCheckModel_DateCheckPlan").val()) {
+					$('#FormalCheckModel_DateCheckPlan').val(kendo.toString(new Date($("#FormalCheckModel_DateCheckPlan").val()), "dd.MM.yyyy"));
+				}
+				$("#FormalCheckModel_DateCheckPlan").attr("readonly", true);
+			} else {
+				jQuery("#FormalCheckModel_DateCheckPlan").kendoDatePicker(
+					{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
 			}
-            jQuery("#FormalCheckModel_DateCheckFact").kendoDatePicker(
-				{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+           
 			if (jQuery("#FormalCheckModel_DateCheckFact").attr("editmode") == "false") {
-				jQuery("#FormalCheckModel_DateCheckFact").data("kendoDatePicker").enable(false);
-	        }
-            jQuery("#FormalCheckModel_CheckTime").kendoDatePicker(
-				{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+				$("#FormalCheckModel_DateCheckFact").addClass("k-textbox");
+				if ($("#FormalCheckModel_DateCheckFact").val()) {
+					$('#FormalCheckModel_DateCheckFact').val(kendo.toString(new Date($("#FormalCheckModel_DateCheckFact").val()), "dd.MM.yyyy"));
+				}
+				$("#FormalCheckModel_DateCheckFact").attr("readonly", true);
+			} else {
+				jQuery("#FormalCheckModel_DateCheckFact").kendoDatePicker(
+					{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
+			}
+
 			if (jQuery("#FormalCheckModel_CheckTime").attr("editmode") == "false") {
-				jQuery("#FormalCheckModel_CheckTime").data("kendoDatePicker").enable(false);
+				$("#FormalCheckModel_CheckTime").addClass("k-textbox");
+				if ($("#FormalCheckModel_CheckTime").val()) {
+					$('#FormalCheckModel_CheckTime').val(kendo.toString(new Date($("#FormalCheckModel_CheckTime").val()), "dd.MM.yyyy"));
+		        }
+				$("#FormalCheckModel_CheckTime").attr("readonly", true);
+	        } else {
+				jQuery("#FormalCheckModel_CheckTime").kendoDatePicker(
+			        { "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
 	        }
+
 	        $('textarea[editmode="false"]').attr("readonly", "true");
             $('#save').on('click',
                 function() {
