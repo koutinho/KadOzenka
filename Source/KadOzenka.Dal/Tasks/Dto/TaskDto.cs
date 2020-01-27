@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ObjectModel.Directory;
+using System;
 
 namespace KadOzenka.Dal.Tasks.Dto
 {
@@ -12,7 +13,7 @@ namespace KadOzenka.Dal.Tasks.Dto
 
         public TourDto Tour { get; set; }
 
-        public string NoteType { get; set; }
+        public KoNoteType NoteType { get; set; }
 
         public string Status { get; set; }
 

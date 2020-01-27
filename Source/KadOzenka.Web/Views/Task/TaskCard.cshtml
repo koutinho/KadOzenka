@@ -49,7 +49,7 @@
                         @Html.CustomLabelFor(m => m.NoteType)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoTextBoxFor(m => m.NoteType)
+                        @Html.KendoEnumDropDownListFor(m => m.NoteType)
                     </div>
                 </div>
                 <div class="form-group">
@@ -83,6 +83,11 @@
 
         <li id="SectionXMLFiles" data-expand>
             <span>XML-Файлы</span>
+            <div class="form-group col-sm-12">
+                <div class="form-horizontal col-sm-12">
+                    <input name="files" id="files" type="file" aria-label="files" />
+                </div>
+            </div>
             <div class="form-group col-sm-12">
                 <div style="padding: 1%;">
                     @(Html.Kendo().Grid<KadOzenka.Web.Models.DataImporterLayout.DataImporterLayoutDto>()
@@ -136,6 +141,35 @@
             $("#navigation-menu a").mPageScroll2id({
                 highlightSelector: "#navigation-menu a"
             });
+
+            var files = $('#files').kendoUpload({
+                multiple: true,
+                localization: {
+                    select: 'Загрузить XML'
+                },
+                validation: {
+                    allowedExtensions: ['.xml']
+                },
+                async: {
+                    autoUpload: true,
+                    saveUrl: '@Url.Action("ImportGknFromTask", "DataImport")'
+                },
+                upload: function (e) {
+                    e.data = { taskId: '@Model.Id' }
+                },
+                success: function (e) {
+                    if (e.operation === "upload") {
+                        Common.ShowMessage("Загрузка успешно добавлена в очередь, по результатам загрузки будет отправлено сообщение");
+                    }
+                },
+                error: function (e) {
+                    if (e.XMLHttpRequest.responseText) {
+                        Common.ShowError(e.XMLHttpRequest.responseText);
+                    } else {
+                        Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошибок)");
+                    }
+                }
+            }).data('kendoUpload');
         });
     </script>
 }

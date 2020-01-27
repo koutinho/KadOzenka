@@ -14,6 +14,8 @@ using Core.ErrorManagment;
 using System.IO;
 using Core.SRD;
 using ObjectModel.KO;
+using KadOzenka.Web.Models.Task;
+using ObjectModel.Core.TD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -115,20 +117,28 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult ImportGkn()
 		{
-			UploadGknDto dto = new UploadGknDto();
+			TaskModel dto = new TaskModel();
 			return View(dto);
 		}
 
 		[HttpPost]
-		public ActionResult ImportGkn(List<IFormFile> files, UploadGknDto dto)
+		public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto)
 		{
 			//SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
 
+			OMInstance instance = new OMInstance
+			{
+				RegNumber = dto.IncomingDocumentRegNumber,
+				Description = dto.IncomingDocumentDescription,
+				CreateDate = dto.IncomingDocumentDate ?? DateTime.Now
+			};
+			instance.Save();
+
 			OMTask task = new OMTask
 			{
-				TourId = dto.TourId,
-				DocumentId = dto.DocNumber,
-				CreationDate = dto.DocDate ?? DateTime.Now,
+				TourId = dto.TourYear,
+				DocumentId = instance.Id,
+				CreationDate = dto.IncomingDocumentDate ?? DateTime.Now,
 				NoteType_Code = dto.NoteType ?? ObjectModel.Directory.KoNoteType.None,
 				Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
 			};
@@ -150,7 +160,35 @@ namespace KadOzenka.Web.Controllers
 				return BadRequest();
 			}
 
-			return NoContent();			
+			string Msg = "Задание на оценку успешно создано. ";
+			if (files.Any())
+			{
+				Msg += "Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение";
+			}
+
+			return Json(new { Msg });
+		}
+
+		[HttpPost]
+		public ActionResult ImportGknFromTask(List<IFormFile> files, long taskId)
+		{
+			try
+			{
+				foreach (var file in files)
+				{
+					using (var stream = file.OpenReadStream())
+					{
+						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), taskId);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return NoContent();
 		}
 
 		[HttpGet]

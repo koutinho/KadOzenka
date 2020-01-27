@@ -22,7 +22,7 @@ namespace KadOzenka.Dal.Tasks
                 CreationDate = task.CreationDate,
                 EstimationDate = task.EstimationDate,
                 Tour = tour,
-                NoteType = task.NoteType,
+                NoteType = task.NoteType_Code,
                 Status = task.Status,
                 ResponseDocument = responseDocument,
                 IncomingDocument = incomingDocument

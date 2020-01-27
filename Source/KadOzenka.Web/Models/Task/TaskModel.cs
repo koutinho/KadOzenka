@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Tasks.Dto;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
@@ -26,7 +27,7 @@ namespace KadOzenka.Web.Models.Task
         public DateTime? IncomingDocumentDate { get; set; }
 
         [Display(Name = "Тип статьи")]
-        public string NoteType { get; set; }
+        public KoNoteType? NoteType { get; set; }
 
         [Display(Name = "Тур")]
         public long? TourYear { get; set; }

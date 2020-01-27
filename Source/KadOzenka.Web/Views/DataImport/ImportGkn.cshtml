@@ -1,5 +1,6 @@
-﻿@model KadOzenka.Web.Models.DataUpload.UploadGknDto
+﻿@model KadOzenka.Web.Models.Task.TaskModel
 
+<div id="toolbar"></div>
 <div>
     <ul id="ls_panelbar" class="panelbar">
         <li id="MainData" data-expand>
@@ -8,7 +9,7 @@
                 <div class="form-horizontal col-sm-12" style="margin-top:10px;">
                     <div class="form-group">
                         <div class="col-sm-3">
-                            @Html.CustomLabel("Тур")
+                            @Html.CustomLabelFor(x => x.TourYear)
                         </div>
                         <div class="col-sm-9">
                             <input id="Tour" name="Tour" editmode="true" />
@@ -16,36 +17,47 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-3">
-                            @Html.CustomLabel("Номер документа")
+                            @Html.CustomLabelFor(x => x.IncomingDocumentRegNumber)
                         </div>
                         <div class="col-sm-9">
-                            @Html.KendoNumericTextBoxFor(x => x.DocNumber, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.IncomingDocumentRegNumber, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-3">
-                            @Html.CustomLabel("Дата документа")
+                            @Html.CustomLabelFor(m => m.IncomingDocumentDate)
                         </div>
                         <div class="col-sm-9">
-                            @Html.KendoDatePickerFor(x => x.DocDate, isReadonly: false)
+                            @Html.KendoDatePickerFor(x => x.IncomingDocumentDate, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-3">
-                            @Html.CustomLabel("Тип статьи")
+                            @Html.CustomLabelFor(m => m.NoteType)
                         </div>
                         <div class="col-sm-9">
                             @Html.KendoEnumDropDownListFor(x => x.NoteType, isReadonly: false)
                         </div>
                     </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            @Html.CustomLabelFor(m => m.EstimationDate)
+                        </div>
+                        <div class="col-sm-9">
+                            @Html.KendoDatePickerFor(m => m.EstimationDate, format: "dd.MM.yyyy", isReadonly: false)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-3">
+                            @Html.CustomLabelFor(m => m.IncomingDocumentDescription)
+                        </div>
+                        <div class="col-sm-9">
+                            @Html.TextBoxAreaFor(x => x.IncomingDocumentDescription, rowCount: 3, colCount: 3)
+                        </div>
+                    </div>
                 </div>
             </div>
         </li>
-
-        <li id="Images" data-expand>
-            <span>Образы</span>
-        </li>
-
         <li id="XmlFiles" data-expand>
             <span>XML-файлы</span>
             <div>
@@ -56,44 +68,28 @@
                 </div>
             </div>
         </li>
-    </ul>
-
-    <div class="static-nav">
-        <nav id="navigation-menu">
-            <a href="#MainData">Основные данные</a>
-            <a href="#Images">Образы</a>
-            <a href="#XmlFiles">XML-файлы</a>            
-        </nav>
-        <div id="toolbar"></div>
-    </div>
-
+    </ul> 
 </div>
 
 <script>
     $(document).ready(function () {
 
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
-        panelbar.expand('li[data-expand]');
-
-        $("#navigation-menu a").mPageScroll2id({
-            highlightSelector: "#navigation-menu a"
-        });
+        panelbar.expand('li[data-expand]');        
 
         var toolbar = $("#toolbar").kendoToolBar({
             items: [
                 {
                     type: 'button',
-                    id: 'load',
-                    text: '',
+                    id: 'check',
+                    text: 'Сохранить',
                     click: function () {
                         var message = [];
-                        if (files.getFiles().length == 0) {
-                            message += 'Необходимо выбрать как минимум один файл<br>';
-                        }
-                        if ($('[name="DocNumber"]').val() == 0) {
+                        
+                        if ($('[name="IncomingDocumentRegNumber"]').val() == 0) {
                             message += 'Необходимо заполнить номер документа<br>';
                         }                        
-                        if ($('[name="DocDate"]').data().kendoDatePicker.value() == null) {
+                        if ($('[name="IncomingDocumentDate"]').data().kendoDatePicker.value() == null) {
                             message += 'Необходимо заполнить дату документа<br>';
                         }
                         if ($('[name="NoteType"]').val() == 0) {
@@ -106,11 +102,16 @@
 
                         var formData = new FormData($('#fileForm').get(0));
 
-                        formData.set('DocNumber', $('[name="DocNumber"]').val());
-                        var date = $('[name="DocDate"]').data().kendoDatePicker.value();                       
-                        formData.set('DocDate', date.toDateString());                       
-                        formData.set('TourId', $('[name="Tour"]').val());
-                        formData.set('NoteType', $('[name="NoteType"]').val());
+                        formData.set('IncomingDocumentRegNumber', $('[name="IncomingDocumentRegNumber"]').val());
+                        var date = $('[name="IncomingDocumentDate"]').data().kendoDatePicker.value();                       
+                        formData.set('IncomingDocumentDate', date.toDateString());                       
+                        formData.set('TourYear', $('[name="Tour"]').val());
+                        formData.set('NoteType', $('[name="NoteType"]').val());                       
+                        var estdate = $('[name="EstimationDate"]').data().kendoDatePicker.value();
+                        if (estdate != null) {
+                            formData.set('EstimationDate', estdate.toDateString());
+                        }
+                        formData.set('IncomingDocumentDescription', $('[name="IncomingDocumentDescription"]').val());
 
                         kendo.ui.progress($('body'), true);
                         $.ajax({
@@ -120,7 +121,10 @@
                             contentType: false,
                             success: function (e) {
                                 kendo.ui.progress($('body'), false);
-                                Common.ShowMessage("Загрузка успешно добавлена в очередь, по результатам загрузки будет отправлено сообщение");
+                                Common.ShowMessage(e.Msg);
+                                setTimeout(function () {
+                                    Common.UI.CloseWindow('MainMenuWindow', window.parent);
+                                }, 1000);
                             },
                             error: function (e) {
                                 kendo.ui.progress($('body'), false);
@@ -133,22 +137,7 @@
                     hidden: false
                 }
             ]
-        });
-
-        $("#toolbar").kendoTooltip({
-            filter: "a.k-button",
-            content: function (e) {
-                switch ($(e.target).attr('id')) {
-                    case "load":
-                        return "Загрузить";
-                    case "print":
-                        return "Печать";
-                }
-            },
-            position: "top",
-            autoHide: true,
-            showAfter: 500
-        });        
+        });             
 
         $('[name="Tour"]')
             .kendoDropDownList({
@@ -158,7 +147,7 @@
                 {
                     transport: {
                         read: {
-                            url: '@Url.Action("GetRatingTours", "Task")',
+                            url: '@Url.Action("GetRatingTours", "Tour")',
                             dataType: 'json'
                         }
                     }
