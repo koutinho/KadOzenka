@@ -119,6 +119,7 @@
     <None Remove="Config\Registers\Views\DataImporter.xml" />
     <None Remove="Config\Registers\Views\GbuObjects.xml" />
     <None Remove="Config\Registers\Views\InspectorPersonSelect.xml" />
+    <None Remove="Config\Registers\Views\KoObjects.xml" />
     <None Remove="Config\Registers\Views\KoObjectsCard.xml" />
     <None Remove="Config\Registers\Views\MarketObjects.xml" />
     <None Remove="Config\Registers\Views\Payments.xml" />
@@ -219,10 +220,10 @@
     <Content Include="Config\Registers\Views\GbuObjects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\MarketObjects.xml">
+    <Content Include="Config\Registers\Views\KoObjects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\KoObjectsCard.xml">
+    <Content Include="Config\Registers\Views\MarketObjects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\SudObjectsCard.xml">
@@ -287,7 +288,6 @@
   <ItemGroup>
     <Folder Include="Config\LeftPanel\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
-    <Folder Include="wwwroot\imgLayer\" />
   </ItemGroup>
 
   <ItemGroup>
