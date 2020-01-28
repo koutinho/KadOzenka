@@ -109,16 +109,16 @@ namespace ObjectModel.KO
     {
         public OMUnit Unit { get; set; }
         public OMTask Task { get; set; }
-        public bool isActual { get; set; }
-        public bool isBad { get; set; }
+        public bool IsActual { get; set; }
+        public bool IsBad { get; set; }
         public Core.TD.OMInstance InputDoc { get; set; }
         public Core.TD.OMInstance OutputDoc { get; set; }
 
         public HistoryUnit(OMUnit unit)
         {
             Unit = unit;
-            isBad = (Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorInData || Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorTechnical);
-            isActual = false;
+            IsBad = (Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorInData || Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorTechnical);
+            IsActual = false;
             Task = OMTask.Where(x=>x.Id==unit.TaskId).SelectAll().ExecuteFirstOrDefault();
             if (Task!=null)
             {
@@ -169,7 +169,7 @@ namespace ObjectModel.KO
                     }
                     else break;
                 }
-                Items[indexActual].isActual = true;
+                Items[indexActual].IsActual = true;
             }
             return Items;
         }
@@ -194,13 +194,12 @@ namespace ObjectModel.KO
                     }
                     else break;
                 }
-                Items[indexActual].isActual = true;
+                Items[indexActual].IsActual = true;
             }
             return Items;
         }
 
     }
-
     public partial class OMUnit
     {
         public long OldId { get; set; }
@@ -424,6 +423,24 @@ namespace ObjectModel.KO
                 else
                     return null;
             }
+        }
+        public static List<ObjectModel.KO.OMGroup> GetListGroupTour(long tourId, ObjectModel.Directory.KoGroupAlgoritm GroupAlgoritm)
+        {
+            List<ObjectModel.KO.OMGroup> res = new List<ObjectModel.KO.OMGroup>();
+            List<ObjectModel.KO.OMTourGroup> tourGroups = ObjectModel.KO.OMTourGroup.Where(x => x.TourId == tourId).SelectAll().Execute();
+            foreach (ObjectModel.KO.OMTourGroup tourGroup in tourGroups)
+            {
+                ObjectModel.KO.OMGroup group = ObjectModel.KO.OMGroup.Where(x => x.Id == tourGroup.GroupId).SelectAll().ExecuteFirstOrDefault();
+                if (group != null)
+                {
+                    ObjectModel.KO.OMGroup parentgroup = ObjectModel.KO.OMGroup.Where(x => x.Id == group.ParentId).SelectAll().ExecuteFirstOrDefault();
+                    if (parentgroup != null)
+                    {
+                        if (parentgroup.GroupAlgoritm_Code == GroupAlgoritm) res.Add(group);
+                    }
+                }
+            }
+            return res;
         }
         private static void GetMinValue(ref ALLStatOKS minKR, ref ALLStatOKS minKS, long tourId, string kk, PropertyTypes type, List<long> calcChildGroups, out decimal upks, out string parentCalcObject, out KoParentCalcType parentCalcType)
         {
@@ -1171,8 +1188,7 @@ namespace ObjectModel.KO
                                         }
                                         else
                                         {
-                                            decimal d = 0;
-                                            bool dok = decimal.TryParse(factorValue, out d);
+                                            bool dok = decimal.TryParse(factorValue, out decimal d);
                                             if (!dok)
                                                 strerror = strerror + "Неверное значение фактора " + factorName + " : " + factorValue + Environment.NewLine;
 
@@ -1273,8 +1289,7 @@ namespace ObjectModel.KO
                                         }
                                         else
                                         {
-                                            decimal d = 0;
-                                            bool dok = decimal.TryParse(factorValue, out d);
+                                            bool dok = decimal.TryParse(factorValue, out decimal d);
                                             if (!dok)
                                                 strerror = strerror + "Неверное значение фактора " + factorName + " : " + factorValue + Environment.NewLine;
 

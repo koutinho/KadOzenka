@@ -161,6 +161,114 @@ namespace KadOzenka.Dal.DataImport
             }
         }
 
+
+        /// <summary>
+        /// Импорт группы из Excel
+        /// tourId - Идентификатор тура
+        /// unitStatus - статус единицы оценки
+        /// </summary>
+        public static Stream ImportDataGroupNumberFromExcel(ExcelFile excelFile, string registerViewId, int mainRegisterId, long tourId, ObjectModel.Directory.KoUnitStatus unitStatus)
+        {
+            var mainWorkSheet = excelFile.Worksheets[0];
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 10
+            };
+
+            int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+
+            mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
+            mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+            List<ObjectModel.KO.OMGroup> parcelGroup = ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainParcel);
+            List<ObjectModel.KO.OMGroup> oksGroup = ObjectModel.KO.OMGroup.GetListGroupTour(tourId, ObjectModel.Directory.KoGroupAlgoritm.MainOKS);
+
+            Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+            {
+                try
+                {
+                    if (row.Index != 0) //все, кроме заголовков
+                    {
+                        string cadastralNumber = mainWorkSheet.Rows[row.Index].Cells[0].Value.ParseToString();
+                        string numberGroup = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString();
+                        bool findGroup = false;
+                        ObjectModel.KO.OMUnit unit = ObjectModel.KO.OMUnit.Where(x => x.TourId == tourId && x.Status_Code == unitStatus).SelectAll().ExecuteFirstOrDefault();
+                        if (unit!=null)
+                        {
+                            if (unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Stead)
+                            {
+                                ObjectModel.KO.OMGroup group = parcelGroup.Find(x => x.Number == numberGroup);
+                                if (group != null)
+                                {
+                                    unit.GroupId = group.Id;
+                                    unit.Save();
+                                    findGroup = true;
+                                }
+                            }
+                            else
+                            {
+                                ObjectModel.KO.OMGroup group = oksGroup.Find(x => x.GroupName == numberGroup);
+                                if (group != null)
+                                {
+                                    unit.GroupId = group.Id;
+                                    unit.Save();
+                                    findGroup = true;
+                                }
+                            }
+
+                        }
+
+
+
+
+
+                        if (findGroup)
+                        {
+                            try
+                            {
+                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Группа обновлена");
+                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.LightGreen));
+                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                            }
+                            catch
+                            {
+
+                            }
+
+                        }
+                        else
+                        {
+                            try
+                            {
+                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Указанная группа не найдена");
+                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.Yellow));
+                                mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                            }
+                            catch
+                            {
+
+                            }
+
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    long errorId = ErrorManager.LogError(ex);
+                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
+                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.Red));
+                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                }
+            });
+            MemoryStream streamResult = new MemoryStream();
+            excelFile.Save(streamResult, SaveOptions.XlsxDefault);
+            streamResult.Seek(0, SeekOrigin.Begin);
+            SaveImportFile(streamResult, excelFile, registerViewId, mainRegisterId, true);
+            return streamResult;
+        }
+
     }
 }
 

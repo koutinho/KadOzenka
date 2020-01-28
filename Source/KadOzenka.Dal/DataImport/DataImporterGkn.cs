@@ -47,6 +47,7 @@ namespace KadOzenka.Dal.DataImport
                 MaxDegreeOfParallelism = 10
             };
 
+
             Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Constructions, options, item => ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
@@ -182,10 +183,14 @@ namespace KadOzenka.Dal.DataImport
                     bool prTypeObjectCheck = prev.PropertyType_Code == koUnit.PropertyType_Code;
                     //Признак не поменялось ли наименование объекта
                     bool prNameObjectCheck = false;
-                    List<long> sourceIds = new List<long>();
-                    sourceIds.Add(2);
-                    List<long> attribIds = new List<long>();
-                    attribIds.Add(19);
+                    List<long> sourceIds = new List<long>
+                    {
+                        2
+                    };
+                    List<long> attribIds = new List<long>
+                    {
+                        19
+                    };
 
                     List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(prev.ObjectId.Value, sourceIds, attribIds);
                     List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds);
