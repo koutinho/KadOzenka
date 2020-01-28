@@ -4802,6 +4802,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private string _number;
+        /// <summary>
+        /// 20500500 Номер (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20500500)]
+        public string Number
+        {
+            get
+            {
+                CheckPropertyInited("Number");
+                return _number;
+            }
+            set
+            {
+                _number = value;
+                NotifyPropertyChanged("Number");
+            }
+        }
+
     }
 }
 
