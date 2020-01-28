@@ -114,8 +114,8 @@ namespace KadOzenka.Dal.DataImport
 				Subject = $"Результат загрузки данных в реестр: {RegisterCache.GetRegisterData((int)import.MainRegisterId).Description} от ({import.DateCreated.GetString()})",
 				Message = $@"Загрузка файла ""{import.DataFileName}"" была завершена.
 Статус загрузки: {import.Status_Code.GetEnumDescription()}
-
-<a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",
+<a href=""/Task/TaskCard?TaskId={import.ObjectId}"">Перейти к заданию на оценку</a>
+< a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",
 				IsUrgent = true,
 				IsEmail = true
 			});
