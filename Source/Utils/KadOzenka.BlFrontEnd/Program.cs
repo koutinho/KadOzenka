@@ -26,6 +26,8 @@ using KadOzenka.BlFrontEnd.PostgresToMongo;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
 using ImageProccessor;
+using KadOzenka.Dal.YandexParser;
+using ObjectModel.Directory;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -74,6 +76,25 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("30", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
 
 			consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
+	        consoleHelper.AddCommand("101", "Тест Парсинга объектов-аналогов с сайта Яндекс-Недвижимость (тестовая категория - Покупка офисного помещения)", () =>
+	        {
+		        var checker = new YandexChecker();
+		        var testRequest =
+			        new FormMarketObjectsRequest
+			        {
+				        ObjectsListUrl =
+					        "https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/ofis/?hasFurniture=NO",
+				        DealType = DealType.SaleSuggestion,
+				        MarketSegment = MarketSegment.Office,
+				        PropertyTypeCIPJS = PropertyTypesCIPJS.Placements,
+				        PropertyType = PropertyTypes.Pllacement,
+				        Subcategory = "Офисная"
+			        };
+
+				checker.Test(testRequest);
+			    //checker.FormMarketObjects();
+
+	        });
 
 			consoleHelper.AddCommand("200", "Импорт данных KO (БД) Модель 2016", MSExporter.DoLoadBd2016Model);
             consoleHelper.AddCommand("201", "Импорт данных KO (БД) Объекты и факторы 2016 ОНС", MSExporter.DoLoadBd2016Unit_Uncomplited);
@@ -138,6 +159,13 @@ namespace KadOzenka.BlFrontEnd
                 xml.Load("c:\\WORK\\cod2.xml");
                 KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
             });
+
+	        //consoleHelper.AddCommand("402", "Импорт данных ЦОД из Xml", () =>
+	        //{
+		       // XmlDocument xml = new XmlDocument();
+		       // xml.Load("c:\\WORK\\cod2.xml");
+		       // KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
+	        //});
 		}
     }
 }
