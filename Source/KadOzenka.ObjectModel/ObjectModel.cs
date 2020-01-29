@@ -15000,7 +15000,7 @@ namespace ObjectModel.Declarations
 
         private long _id;
         /// <summary>
-        /// 50200100  (ID)
+        /// 50200100 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 50200100)]
         public long Id
@@ -15020,7 +15020,7 @@ namespace ObjectModel.Declarations
 
         private long? _declaration_id;
         /// <summary>
-        /// 50200200  (DECLARATION_ID)
+        /// 50200200 Идентификатор декларации (DECLARATION_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 50200200)]
         public long? Declaration_Id
@@ -16062,7 +16062,7 @@ namespace ObjectModel.Declarations
 
         private long _id;
         /// <summary>
-        /// 50300100  (ID)
+        /// 50300100 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 50300100)]
         public long Id
@@ -16082,7 +16082,7 @@ namespace ObjectModel.Declarations
 
         private long? _declaration_id;
         /// <summary>
-        /// 50300200  (DECLARATION_ID)
+        /// 50300200 Идентификатор декларации (DECLARATION_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 50300200)]
         public long? Declaration_Id
@@ -17124,7 +17124,7 @@ namespace ObjectModel.Declarations
 
         private long _declaration_id;
         /// <summary>
-        /// 50400100  (DECLARATION_ID)
+        /// 50400100 Идентификатор декларации (DECLARATION_ID)
         /// </summary>
         [PrimaryKey(AttributeID = 50400100)]
         public long Declaration_Id
@@ -17196,7 +17196,7 @@ namespace ObjectModel.Declarations
 
         private long _id;
         /// <summary>
-        /// 50500100  (ID)
+        /// 50500100 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 50500100)]
         public long Id
@@ -17256,7 +17256,7 @@ namespace ObjectModel.Declarations
 
         private string _i_name;
         /// <summary>
-        /// 50500400 Имя, отчество физического лица/представителя заявителя (I_NAME)
+        /// 50500400 Имя физического лица/представителя заявителя (I_NAME)
         /// </summary>
         [RegisterAttribute(AttributeID = 50500400)]
         public string I_Name
@@ -17523,7 +17523,7 @@ namespace ObjectModel.Declarations
 
         private long _id;
         /// <summary>
-        /// 50600100  (ID)
+        /// 50600100 Идентификатор (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 50600100)]
         public long Id
@@ -17543,7 +17543,7 @@ namespace ObjectModel.Declarations
 
         private long _declaration_id;
         /// <summary>
-        /// 50600200  (DECLARATION_ID)
+        /// 50600200 Идентификатор декларации (DECLARATION_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 50600200)]
         public long Declaration_Id
@@ -17563,7 +17563,7 @@ namespace ObjectModel.Declarations
 
         private long _book_id;
         /// <summary>
-        /// 50600300  (BOOK_ID)
+        /// 50600300 Идентификатор книги (BOOK_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 50600300)]
         public long Book_Id
