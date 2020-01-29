@@ -253,21 +253,22 @@ namespace KadOzenka.Web.Models.Declarations
 								DeclarationsController.DurationWorkDaysCountForRejectedDeclaration)
 							: CalendarHolidays.GetDateFromWorkDays(declarationViewModel.DateIn.Value.AddDays(-1),
 								DeclarationsController.DurationWorkDaysCount);
-					declarationViewModel.FormalCheckModel.CheckTime = CalendarHolidays.GetDateFromWorkDays(
+					declarationViewModel.FormalCheckModel.DateCheckPlan = CalendarHolidays.GetDateFromWorkDays(
 						declarationViewModel.DateIn.Value.AddDays(-1),
-						DeclarationsController.CheckTimeDaysCount);
+						DeclarationsController.DateCheckPlanDaysCount);
 				}
 				else
 				{
 					declarationViewModel.DurationDateIn = null;
-					declarationViewModel.FormalCheckModel.CheckTime = null;
+					declarationViewModel.FormalCheckModel.DateCheckPlan = null;
 				}
 			}
 			if (entity.DurationIn != declarationViewModel.DurationDateIn)
 			{
-				declarationViewModel.FormalCheckModel.DateCheckPlan = (StatusDec)declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection 
-					? declarationViewModel.DurationDateIn 
-					: declarationViewModel.DurationDateIn?.GetStartWorkDate(DeclarationsController.DaysDiffBetweenDateCheckPlanAndDurationDateIn - 1);
+				declarationViewModel.FormalCheckModel.CheckTime = (StatusDec)declarationViewModel.Status.GetValueOrDefault() == StatusDec.Rejection
+					? declarationViewModel.DurationDateIn
+					: declarationViewModel.DurationDateIn?.GetStartWorkDate(
+						DeclarationsController.DaysDiffBetweenDateCheckTimeAndDurationDateIn - 1);
 			}
 
 			entity.OwnerType_Code = declarationViewModel.OwnerType.GetValueOrDefault();

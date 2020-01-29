@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using ObjectModel.Declarations;
+using ObjectModel.Directory.Declarations;
 
 namespace KadOzenka.Dal.FastReports
 {
@@ -15,7 +16,7 @@ namespace KadOzenka.Dal.FastReports
 			return ReportType.Title;
 		}
 
-		public override string GetMainData(OMDeclaration declaration, OMUved notification)
+		public override string GetMainData(OMDeclaration declaration, OMUved notification, SendUvedType uvedType)
 		{
 			var mainData =
 				"\u0009В\u00A0соответствии с\u00A0пунктом 13 приказа Минэкономразвития от\u00A004.06.2019 №\u00A0318 «Об\u00A0утверждении Порядка рассмотрения декларации о\u00A0характеристиках объекта недвижимости, " +

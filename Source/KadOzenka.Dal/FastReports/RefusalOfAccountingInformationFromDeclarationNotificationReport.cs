@@ -1,5 +1,6 @@
 ﻿using System.Collections.Specialized;
 using ObjectModel.Declarations;
+using ObjectModel.Directory.Declarations;
 
 namespace KadOzenka.Dal.FastReports
 {
@@ -15,7 +16,7 @@ namespace KadOzenka.Dal.FastReports
 			return ReportType.Title;
 		}
 
-		public override string GetMainData(OMDeclaration declaration, OMUved notification)
+		public override string GetMainData(OMDeclaration declaration, OMUved notification, SendUvedType uvedType)
 		{
 			var reason = PrepareText(notification.RejectionReason);
 			var mainData =

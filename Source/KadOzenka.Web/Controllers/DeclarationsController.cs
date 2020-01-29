@@ -30,14 +30,14 @@ namespace KadOzenka.Web.Controllers
 		public static int DurationWorkDaysCountForRejectedDeclaration => 5;
 
 		/// <summary>
-		/// Плановая дата рассмотрения должна быть за 5 дней до окончания срока рассмотрения
+		/// Плановая дата рассмотрения должна быть +5 раб.дней к "Вх. дате ГБУ"
 		/// </summary>
-		public static int DaysDiffBetweenDateCheckPlanAndDurationDateIn => 5;
+		public static int DateCheckPlanDaysCount => 5;
 
 		/// <summary>
-		/// Контрольный срок составляет 10 рабочих дней со дня поступления декларации
+		/// "Контрольный срок" должен быть -10 рабочих дней от "Срок рассмотрения"
 		/// </summary>
-		public static int CheckTimeDaysCount => 10;
+		public static int DaysDiffBetweenDateCheckTimeAndDurationDateIn => 10;
 
 		#region Declarations
 

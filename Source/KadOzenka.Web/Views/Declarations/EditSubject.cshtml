@@ -89,9 +89,9 @@
                     <div class="col-sm-2">
                         @Html.CustomLabelFor(m => m.Flat)
                     </div>
-                    <div class="col-sm-4">
-                        @Html.TextBoxFor(m => m.Flat, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
-                    </div>
+	                <div class="col-sm-4">
+		                @Html.KendoNumericTextBoxFor(m => m.Flat, 0, false)
+	                </div>
                 </div>
             </div>
         </fieldset>

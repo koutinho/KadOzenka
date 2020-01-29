@@ -298,7 +298,7 @@
 			if (jQuery("#FormalCheckModel_DateCheckPlan").attr("editmode") == "false") {
 				$("#FormalCheckModel_DateCheckPlan").addClass("k-textbox");
 				if ($("#FormalCheckModel_DateCheckPlan").val()) {
-					$('#FormalCheckModel_DateCheckPlan').val(kendo.toString(new Date($("#FormalCheckModel_DateCheckPlan").val()), "dd.MM.yyyy"));
+					$('#FormalCheckModel_DateCheckPlan').val(kendo.toString(kendo.parseDate($("#FormalCheckModel_DateCheckPlan").val()), "dd.MM.yyyy"));
 				}
 				$("#FormalCheckModel_DateCheckPlan").attr("readonly", true);
 			} else {
@@ -309,18 +309,17 @@
 			if (jQuery("#FormalCheckModel_DateCheckFact").attr("editmode") == "false") {
 				$("#FormalCheckModel_DateCheckFact").addClass("k-textbox");
 				if ($("#FormalCheckModel_DateCheckFact").val()) {
-					$('#FormalCheckModel_DateCheckFact').val(kendo.toString(new Date($("#FormalCheckModel_DateCheckFact").val()), "dd.MM.yyyy"));
+					$('#FormalCheckModel_DateCheckFact').val(kendo.toString(kendo.parseDate($("#FormalCheckModel_DateCheckFact").val()), "dd.MM.yyyy"));
 				}
 				$("#FormalCheckModel_DateCheckFact").attr("readonly", true);
 			} else {
 				jQuery("#FormalCheckModel_DateCheckFact").kendoDatePicker(
 					{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
 			}
-
 			if (jQuery("#FormalCheckModel_CheckTime").attr("editmode") == "false") {
 				$("#FormalCheckModel_CheckTime").addClass("k-textbox");
 				if ($("#FormalCheckModel_CheckTime").val()) {
-					$('#FormalCheckModel_CheckTime').val(kendo.toString(new Date($("#FormalCheckModel_CheckTime").val()), "dd.MM.yyyy"));
+					$('#FormalCheckModel_CheckTime').val(kendo.toString(kendo.parseDate($("#FormalCheckModel_CheckTime").val()), "dd.MM.yyyy"));
 		        }
 				$("#FormalCheckModel_CheckTime").attr("readonly", true);
 	        } else {
@@ -359,19 +358,18 @@
 								var url = grid.dataSource.transport.options.read.url.replace('objectId=-1', `objectId=${response.data.Id}`);
 								grid.dataSource.transport.options.read.url = url;
 							}
-
                             if (response.data.DurationDateIn) {
-                                $('#DurationDateIn').val(kendo.toString(new Date(response.data.DurationDateIn), "dd.MM.yyyy"));
+								$('#DurationDateIn').val(kendo.toString(kendo.parseDate(response.data.DurationDateIn), "dd.MM.yyyy"));
                             } else {
                                 $('#DurationDateIn').val(null);
                             }
                             if (response.data.FormalCheckModel && response.data.FormalCheckModel.DateCheckPlan) {
-                                $('#FormalCheckModel_DateCheckPlan').val(kendo.toString(new Date(response.data.FormalCheckModel.DateCheckPlan), "dd.MM.yyyy"));
+								$('#FormalCheckModel_DateCheckPlan').val(kendo.toString(kendo.parseDate(response.data.FormalCheckModel.DateCheckPlan), "dd.MM.yyyy"));
                             } else {
                                 $('#FormalCheckModel_DateCheckPlan').val(null);
                             }
                             if (response.data.FormalCheckModel && response.data.FormalCheckModel.CheckTime) {
-                                $('#FormalCheckModel_CheckTime').val(kendo.toString(new Date(response.data.FormalCheckModel.CheckTime), "dd.MM.yyyy"));
+								$('#FormalCheckModel_CheckTime').val(kendo.toString(kendo.parseDate(response.data.FormalCheckModel.CheckTime), "dd.MM.yyyy"));
 						    } else {
                                 $('#FormalCheckModel_CheckTime').val(null);
 						    }

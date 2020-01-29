@@ -158,7 +158,7 @@ namespace KadOzenka.Dal.FastReports
 				declaration.DateIn?.ToString("dd.MM.yyyy"),
 				$"{declaration.NumIn}/{book?.Prefics}",
 				userIspName,
-				GetMainData(declaration, notification),
+				GetMainData(declaration, notification, uvedType),
 				"\u0009Приложение:",
 				GetAnnex(notification),
 				signatory.Position,
@@ -172,7 +172,7 @@ namespace KadOzenka.Dal.FastReports
 			return null;
 		}
 
-		public abstract string GetMainData(OMDeclaration declaration, OMUved notification);
+		public abstract string GetMainData(OMDeclaration declaration, OMUved notification, SendUvedType uvedType);
 
 		public string GetObjectTypeString(ObjectType objectType)
 		{
@@ -245,7 +245,7 @@ namespace KadOzenka.Dal.FastReports
 					subject.Street?.Replace(" ", "\u00A0"),
 					subject.House?.Replace(" ", "\u00A0"),
 					subject.Building?.Replace(" ", "\u00A0"),
-					subject.Flat?.Replace(" ", "\u00A0"),
+					!string.IsNullOrWhiteSpace(subject.Flat) ? "кв.\u00A0" + subject.Flat : null,
 					subject.City?.Replace(" ", "\u00A0"),
 					subject.Zip
 				};

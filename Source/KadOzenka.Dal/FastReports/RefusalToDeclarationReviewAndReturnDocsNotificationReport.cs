@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.FastReports
 			return ReportType.Title;
 		}
 
-		public override string GetMainData(OMDeclaration declaration, OMUved notification)
+		public override string GetMainData(OMDeclaration declaration, OMUved notification, SendUvedType uvedType)
 		{
 			var reason = GetRejectionReason(notification);
 			var mainData =

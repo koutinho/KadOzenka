@@ -90,7 +90,7 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Квартира (FLAT)
 		/// </summary>
 		[Display(Name = "Квартира")]
-		public string Flat { get; set; }
+		public ulong? Flat { get; set; }
 
 		public bool IsEditSubject { get; set; }
 		public bool IsCreateSubject { get; set; }
@@ -104,8 +104,7 @@ namespace KadOzenka.Web.Models.Declarations
 					Id = -1
 				};
 			}
-
-			return new SubjectModel
+			var subject = new SubjectModel
 			{
 				Id = entity.Id,
 				Type = (long)entity.Type_Code,
@@ -120,8 +119,14 @@ namespace KadOzenka.Web.Models.Declarations
 				Street = entity.Street,
 				House = entity.House,
 				Building = entity.Building,
-				Flat = entity.Flat
 			};
+			if (!string.IsNullOrWhiteSpace(entity.Flat))
+			{
+				ulong.TryParse(entity.Flat, out var flat);
+				subject.Flat = flat;
+			}
+
+			return subject;
 		}
 
 		public static void ToEntity(SubjectModel subjectViewModel, ref OMSubject entity)
@@ -137,7 +142,7 @@ namespace KadOzenka.Web.Models.Declarations
 			entity.Street = subjectViewModel.Street;
 			entity.House = subjectViewModel.House;
 			entity.Building = subjectViewModel.Building;
-			entity.Flat = subjectViewModel.Flat;
+			entity.Flat = subjectViewModel.Flat?.ToString();
 
 			if (subjectViewModel.Type != null)
 			{
