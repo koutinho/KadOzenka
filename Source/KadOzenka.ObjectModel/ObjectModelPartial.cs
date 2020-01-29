@@ -2084,6 +2084,30 @@ namespace ObjectModel.Sud
     }
 }
 
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 318 Результаты выполнения процесса дополнительного анализа
+    /// </summary>
+    public partial class OMDopAnalisLog
+    {
+
+        public OMDopAnalisLog()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMDopAnalisLog(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Commission
 {
     /// <summary>

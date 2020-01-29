@@ -2,10 +2,17 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using Core.Messages;
 using Core.Register.LongProcessManagment;
-using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
+using Core.SRD;
+using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.Enum;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Sud;
@@ -14,11 +21,20 @@ namespace KadOzenka.Dal.LongProcess
 {
 	public class AdditionalAnalysisChecker: ILongProcess
 	{
-
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			DbCommand command = DBMngr.Main.GetStoredProcCommand("additional_analysis_checker", 0);
-			DBMngr.Main.ExecuteNonQuery(command);
+			DbCommand command = DBMngr.Main.GetStoredProcCommand("additional_analysis_checker", processQueue.Id);
+			DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
+
+			var res = dt.Rows[0].ItemArray[0];
+			if (res.ParseToInt() == 0)
+			{
+				SendResultNotificationWithoutChange(processType.Parameters.Split(";").Select(x => x.ParseToLong()).ToArray());
+			}
+			else
+			{
+				SendResultNotification(processQueue.Id, res.ParseToInt(), processType.Parameters.Split(";").Select(x => x.ParseToLong()).ToArray());
+			}
 		}
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
@@ -29,6 +45,101 @@ namespace KadOzenka.Dal.LongProcess
 		public bool Test()
 		{
 			return true;
+		}
+
+		internal static void SendResultNotificationWithoutChange(long[] userIds)
+		{
+			new MessageService().SendMessages(new MessageDto
+			{
+				UserIds = userIds,
+				Subject = $"Результат проверки объектов от: {DateTime.Now.Date}",
+				Message = @"Процесс дополнительного анализа завершен успешно, объектов подходящих под критерии дополнительного анализа не обнаружено",
+				IsUrgent = true,
+				IsEmail = true
+			});
+		}
+
+		internal static void SendResultNotification(long queueId, long additionalCheckCount, long[] userIds)
+		{
+			new MessageService().SendMessages(new MessageDto
+			{
+				UserIds = userIds,
+				Subject = $"Результат проверки объектов от: {DateTime.Now.Date})",
+				Message = $@"Процесс дополнительного анализа завершен успешно. Объекты удовлетворяющие условию: <a href=""/Sud/GetReportAdditionalCheck?idProcess={queueId}"">{additionalCheckCount}</a>",
+				IsUrgent = true,
+				IsEmail = true
+			});
+		}
+
+
+		/// <summary>
+		/// Выгрузка данных по результатам проверки доп анализа объектов
+		/// </summary>
+		public static Stream GetReportAdditionalCheck(int idProcess)
+		{
+			ExcelFile excelTemplate = new ExcelFile();
+
+			var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты для доп. анализа");
+
+			DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "Кадастровый номер объекта", "Тип объекта", "Адрес", "Дата определения", "Кадастровая стоимость", "№ дела", @"Причина установки признака ""Требуется дополнительный анализ""" });
+
+			mainWorkSheet.Columns[0].SetWidth(200, LengthUnit.Pixel);
+			mainWorkSheet.Columns[1].SetWidth(150, LengthUnit.Pixel);
+			mainWorkSheet.Columns[2].SetWidth(300, LengthUnit.Pixel);
+			mainWorkSheet.Columns[3].SetWidth(200, LengthUnit.Pixel);
+			mainWorkSheet.Columns[4].SetWidth(200, LengthUnit.Pixel);
+			mainWorkSheet.Columns[5].SetWidth(200, LengthUnit.Pixel);
+			mainWorkSheet.Columns[6].SetWidth(500, LengthUnit.Pixel);
+			List<OMDopAnalisLog> objs = OMDopAnalisLog.Where(x => x.IdProcess == idProcess).SelectAll().Execute();
+			int curIndex = 0;
+			if (objs.Count > 0)
+			{
+				CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+				ParallelOptions options = new ParallelOptions
+				{
+					CancellationToken = cancelTokenSource.Token,
+					MaxDegreeOfParallelism = 20
+				};
+
+				object locked = new object();
+				List<List<object>> values = new List<List<object>>();
+
+				Parallel.ForEach(objs, options, obj =>
+				{
+					curIndex++;
+					if (curIndex % 40 == 0) Console.WriteLine(curIndex);
+
+
+					string Kn = obj.Kn?.Replace("\n", "").Replace("\r", "").Replace(" ", "");
+					List<object> value = new List<object>();
+					value.Add(Kn);
+					value.Add(obj.TypeObj);
+					value.Add(obj.Address);
+					value.Add(obj.DateDefinition.GetValueOrDefault().ToShortDateString());
+					value.Add(obj.Kc);
+					value.Add(obj.SudNumber);
+					value.Add(((CaseAdditionalCheckerEnum)obj.ParameterCase).GetEnumDescription());
+
+
+					lock (locked)
+					{
+								values.Add(value);
+					}
+				});
+
+				int row = 1;
+				foreach (List<object> value in values)
+				{
+					DataExportCommon.AddRow(mainWorkSheet, row, value.ToArray());
+					row++;
+				}
+				Console.WriteLine(values.Count);
+			}
+
+			MemoryStream stream = new MemoryStream();
+			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
+			return stream;
 		}
 	}
 }

@@ -77,6 +77,6 @@ namespace KadOzenka.Dal.Enum
 		[Description("additional_analysis")]
 		AdditionalAnalysisRequired,
 		[Description("is_satisfied")]
-		IsSatisfied,
-	}
+		IsSatisfied
+    }
 }

@@ -13,6 +13,7 @@ using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.LongProcess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory.Sud;
@@ -1431,6 +1432,18 @@ namespace KadOzenka.Web.Controllers
 				Message = "Объекты изменены!"
 			};
 			return View("~/Views/Shared/ModalDialogDetails.cshtml", model);
+		}
+
+		#endregion
+
+		#region Report By Additional checker
+
+		public FileResult GetReportAdditionalCheck(int idProcess)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+			var file = AdditionalAnalysisChecker.GetReportAdditionalCheck(idProcess);
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"Результат проставления признака доп. анализа" + ".xlsx");
 		}
 
 		#endregion

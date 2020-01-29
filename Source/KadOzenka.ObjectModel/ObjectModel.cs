@@ -13065,6 +13065,253 @@ namespace ObjectModel.Sud
     }
 }
 
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 318 Результаты выполнения процесса дополнительного анализа (SUD_DOPANALIZ_LOG)
+    /// </summary>
+    [RegisterInfo(RegisterID = 318)]
+    [Serializable]
+    public partial class OMDopAnalisLog : OMBaseClass<OMDopAnalisLog>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 31800100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 31800100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _idobject;
+        /// <summary>
+        /// 31800200 Ид объекта (ID_OBJECT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31800200)]
+        public long IdObject
+        {
+            get
+            {
+                CheckPropertyInited("IdObject");
+                return _idobject;
+            }
+            set
+            {
+                _idobject = value;
+                NotifyPropertyChanged("IdObject");
+            }
+        }
+
+
+        private string _kn;
+        /// <summary>
+        /// 31800300 Кадастровый номер объекта (KN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31800300)]
+        public string Kn
+        {
+            get
+            {
+                CheckPropertyInited("Kn");
+                return _kn;
+            }
+            set
+            {
+                _kn = value;
+                NotifyPropertyChanged("Kn");
+            }
+        }
+
+
+        private string _address;
+        /// <summary>
+        /// 31800400 Адрес объекта (ADDRESS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31800400)]
+        public string Address
+        {
+            get
+            {
+                CheckPropertyInited("Address");
+                return _address;
+            }
+            set
+            {
+                _address = value;
+                NotifyPropertyChanged("Address");
+            }
+        }
+
+
+        private DateTime? _datedefinition;
+        /// <summary>
+        /// 31800500 Дата определения (DATE_DEFINITION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31800500)]
+        public DateTime? DateDefinition
+        {
+            get
+            {
+                CheckPropertyInited("DateDefinition");
+                return _datedefinition;
+            }
+            set
+            {
+                _datedefinition = value;
+                NotifyPropertyChanged("DateDefinition");
+            }
+        }
+
+
+        private decimal? _kc;
+        /// <summary>
+        /// 31800600 Оспариваемая КС (KC)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31800600)]
+        public decimal? Kc
+        {
+            get
+            {
+                CheckPropertyInited("Kc");
+                return _kc;
+            }
+            set
+            {
+                _kc = value;
+                NotifyPropertyChanged("Kc");
+            }
+        }
+
+
+        private string _sudnumber;
+        /// <summary>
+        /// 31800700 Номер судебного дела (SUD_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31800700)]
+        public string SudNumber
+        {
+            get
+            {
+                CheckPropertyInited("SudNumber");
+                return _sudnumber;
+            }
+            set
+            {
+                _sudnumber = value;
+                NotifyPropertyChanged("SudNumber");
+            }
+        }
+
+
+        private long _parametercase;
+        /// <summary>
+        /// 31800800 Признак по которому был установлен параметр доп анализа (PARAMETER_CASE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31800800)]
+        public long ParameterCase
+        {
+            get
+            {
+                CheckPropertyInited("ParameterCase");
+                return _parametercase;
+            }
+            set
+            {
+                _parametercase = value;
+                NotifyPropertyChanged("ParameterCase");
+            }
+        }
+
+
+        private long _idprocess;
+        /// <summary>
+        /// 31800900 Уникальные номер процесса, который запустил процедуру доп анализа (ID_PROCESS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31800900)]
+        public long IdProcess
+        {
+            get
+            {
+                CheckPropertyInited("IdProcess");
+                return _idprocess;
+            }
+            set
+            {
+                _idprocess = value;
+                NotifyPropertyChanged("IdProcess");
+            }
+        }
+
+
+        private string _typeobj;
+        /// <summary>
+        /// 31801000 Тип объекта ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31801000)]
+        public string TypeObj
+        {
+            get
+            {
+                CheckPropertyInited("TypeObj");
+                return _typeobj;
+            }
+            set
+            {
+                _typeobj = value;
+                NotifyPropertyChanged("TypeObj");
+            }
+        }
+
+
+        private ObjectModel.Directory.Sud.SudObjectType _typeobj_Code;
+        /// <summary>
+        /// 31801000 Тип объекта (справочный код) (TYPEOBJ)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31801000)]
+        public ObjectModel.Directory.Sud.SudObjectType TypeObj_Code
+        {
+            get
+            {
+                CheckPropertyInited("TypeObj_Code");
+                return this._typeobj_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_typeobj))
+                    {
+                         _typeobj = descr;
+                    }
+                }
+                else
+                {
+                     _typeobj = descr;
+                }
+
+                this._typeobj_Code = value;
+                NotifyPropertyChanged("TypeObj");
+                NotifyPropertyChanged("TypeObj_Code");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Commission
 {
     /// <summary>
