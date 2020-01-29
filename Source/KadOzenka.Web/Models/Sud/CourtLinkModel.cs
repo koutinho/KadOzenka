@@ -35,8 +35,6 @@ namespace KadOzenka.Web.Models.Sud
 		/// Рыночная стоимость
 		/// </summary>
 		[Display(Name = "Рыночная стоимость")]
-		[Required(ErrorMessage = "Поле рыночная стоимость обязательное")]
-		[Range(0.00001, long.MaxValue, ErrorMessage = "Недопустимое значение рыночной стоимости")]
 		public decimal? Rs { get; set; }
 
 
@@ -44,8 +42,6 @@ namespace KadOzenka.Web.Models.Sud
 		/// Удельный показатель
 		/// </summary>
 		[Display(Name = "Удельный показатель")]
-		[Required(ErrorMessage = "Поле удельный показатель обязательное")]
-		[Range(0.00001, long.MaxValue, ErrorMessage = "Недопустимое значение удельного показателя")]
 		public decimal? Uprs { get; set; }
 
 		/// <summary>
