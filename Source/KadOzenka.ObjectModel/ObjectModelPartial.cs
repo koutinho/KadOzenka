@@ -2236,6 +2236,12 @@ namespace ObjectModel.Declarations
     public partial class OMHarOKS
     {
 
+
+        /// <summary>
+        /// Ссылка на (509 Характеристики ОКС. Дополнительная информация)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMHarOKSAdditionalInfo> HarOKSAdditionalInfo { get; set; }
         public OMHarOKS()
         {
 
@@ -2243,6 +2249,8 @@ namespace ObjectModel.Declarations
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            HarOKSAdditionalInfo = new List<ObjectModel.Declarations.OMHarOKSAdditionalInfo>();
 
         }
         public OMHarOKS(bool trackPropertyChanging) : this()
@@ -2260,6 +2268,12 @@ namespace ObjectModel.Declarations
     public partial class OMHarParcel
     {
 
+
+        /// <summary>
+        /// Ссылка на (510 Характеристики ЗУ. Дополнительная информация)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Declarations.OMHarParcelAdditionalInfo> HarParcelAdditionalInfo { get; set; }
         public OMHarParcel()
         {
 
@@ -2267,6 +2281,8 @@ namespace ObjectModel.Declarations
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            HarParcelAdditionalInfo = new List<ObjectModel.Declarations.OMHarParcelAdditionalInfo>();
 
         }
         public OMHarParcel(bool trackPropertyChanging) : this()
@@ -2406,6 +2422,54 @@ namespace ObjectModel.Declarations
 
         }
         public OMSignatory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 509 Характеристики ОКС. Дополнительная информация
+    /// </summary>
+    public partial class OMHarOKSAdditionalInfo
+    {
+
+        public OMHarOKSAdditionalInfo()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMHarOKSAdditionalInfo(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 510 Характеристики ЗУ. Дополнительная информация
+    /// </summary>
+    public partial class OMHarParcelAdditionalInfo
+    {
+
+        public OMHarParcelAdditionalInfo()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMHarParcelAdditionalInfo(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

@@ -17992,6 +17992,300 @@ namespace ObjectModel.Declarations
     }
 }
 
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 509 Характеристики ОКС. Дополнительная информация (DECLARATIONS_HAR_OKS_ADDITIONAL_INFO)
+    /// </summary>
+    [RegisterInfo(RegisterID = 509)]
+    [Serializable]
+    public partial class OMHarOKSAdditionalInfo : OMBaseClass<OMHarOKSAdditionalInfo>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 50900100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 50900100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _haroksid;
+        /// <summary>
+        /// 50900200 Идентификатор Набора характеристик (HAR_OKS_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50900200)]
+        public long HarOKSId
+        {
+            get
+            {
+                CheckPropertyInited("HarOKSId");
+                return _haroksid;
+            }
+            set
+            {
+                _haroksid = value;
+                NotifyPropertyChanged("HarOKSId");
+            }
+        }
+
+
+        private string _haroksname;
+        /// <summary>
+        /// 50900300 Наименование характеристики (HAR_OKS_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50900300)]
+        public string HarOKSName
+        {
+            get
+            {
+                CheckPropertyInited("HarOKSName");
+                return _haroksname;
+            }
+            set
+            {
+                _haroksname = value;
+                NotifyPropertyChanged("HarOKSName");
+            }
+        }
+
+
+        private string _harstatus;
+        /// <summary>
+        /// 50900400 Статус характеристики ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50900400)]
+        public string HarStatus
+        {
+            get
+            {
+                CheckPropertyInited("HarStatus");
+                return _harstatus;
+            }
+            set
+            {
+                _harstatus = value;
+                NotifyPropertyChanged("HarStatus");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarStatus _harstatus_Code;
+        /// <summary>
+        /// 50900400 Статус характеристики (справочный код) (HAR_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50900400)]
+        public ObjectModel.Directory.Declarations.HarStatus HarStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("HarStatus_Code");
+                return this._harstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_harstatus))
+                    {
+                         _harstatus = descr;
+                    }
+                }
+                else
+                {
+                     _harstatus = descr;
+                }
+
+                this._harstatus_Code = value;
+                NotifyPropertyChanged("HarStatus");
+                NotifyPropertyChanged("HarStatus_Code");
+            }
+        }
+
+
+        private bool? _isusedindeclaration;
+        /// <summary>
+        /// 50900500 Характеристика отображается в декларации (IS_USED_IN_DECLARATION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50900500)]
+        public bool? IsUsedInDeclaration
+        {
+            get
+            {
+                CheckPropertyInited("IsUsedInDeclaration");
+                return _isusedindeclaration;
+            }
+            set
+            {
+                _isusedindeclaration = value;
+                NotifyPropertyChanged("IsUsedInDeclaration");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 510 Характеристики ЗУ. Дополнительная информация (DECLARATIONS_HAR_PARCEL_ADDITIONAL_INFO)
+    /// </summary>
+    [RegisterInfo(RegisterID = 510)]
+    [Serializable]
+    public partial class OMHarParcelAdditionalInfo : OMBaseClass<OMHarParcelAdditionalInfo>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 51000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 51000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _harparcelid;
+        /// <summary>
+        /// 51000200 Идентификатор Набора характеристик (HAR_PARCEL_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 51000200)]
+        public long HarParcelId
+        {
+            get
+            {
+                CheckPropertyInited("HarParcelId");
+                return _harparcelid;
+            }
+            set
+            {
+                _harparcelid = value;
+                NotifyPropertyChanged("HarParcelId");
+            }
+        }
+
+
+        private string _harparcelname;
+        /// <summary>
+        /// 51000300 Наименование характеристики (HAR_PARCEL_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 51000300)]
+        public string HarParcelName
+        {
+            get
+            {
+                CheckPropertyInited("HarParcelName");
+                return _harparcelname;
+            }
+            set
+            {
+                _harparcelname = value;
+                NotifyPropertyChanged("HarParcelName");
+            }
+        }
+
+
+        private string _harstatus;
+        /// <summary>
+        /// 51000400 Статус характеристики ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 51000400)]
+        public string HarStatus
+        {
+            get
+            {
+                CheckPropertyInited("HarStatus");
+                return _harstatus;
+            }
+            set
+            {
+                _harstatus = value;
+                NotifyPropertyChanged("HarStatus");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.HarStatus _harstatus_Code;
+        /// <summary>
+        /// 51000400 Статус характеристики (справочный код) (HAR_STATUS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 51000400)]
+        public ObjectModel.Directory.Declarations.HarStatus HarStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("HarStatus_Code");
+                return this._harstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_harstatus))
+                    {
+                         _harstatus = descr;
+                    }
+                }
+                else
+                {
+                     _harstatus = descr;
+                }
+
+                this._harstatus_Code = value;
+                NotifyPropertyChanged("HarStatus");
+                NotifyPropertyChanged("HarStatus_Code");
+            }
+        }
+
+
+        private bool? _isusedindeclaration;
+        /// <summary>
+        /// 51000500 Характеристика отображается в декларации (IS_USED_IN_DECLARATION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 51000500)]
+        public bool? IsUsedInDeclaration
+        {
+            get
+            {
+                CheckPropertyInited("IsUsedInDeclaration");
+                return _isusedindeclaration;
+            }
+            set
+            {
+                _isusedindeclaration = value;
+                NotifyPropertyChanged("IsUsedInDeclaration");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

@@ -1663,6 +1663,35 @@ namespace ObjectModel.Directory.Declarations
     }
 }
 
+namespace ObjectModel.Directory.Declarations
+{
+    /// <summary>
+    /// Статус характеристики (512)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 512)]
+    public enum HarStatus : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        None = 0,
+		/// <summary>
+		/// Принято (1)
+		/// </summary>
+		[Description("Принято")]
+        [EnumCode("1")]
+        Accepted = 1,
+		/// <summary>
+		/// Не принято (2)
+		/// </summary>
+		[Description("Не принято")]
+        [EnumCode("2")]
+        Rejected = 2,
+    }
+}
+
 namespace ObjectModel.Directory.Common
 {
     /// <summary>

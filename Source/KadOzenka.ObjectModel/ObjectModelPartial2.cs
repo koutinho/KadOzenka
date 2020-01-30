@@ -990,6 +990,42 @@ namespace ObjectModel.Declarations
 }
 
 
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 509 Характеристики ОКС. Дополнительная информация
+    /// </summary>
+    public partial class OMHarOKSAdditionalInfo
+    {
+        /// <summary>
+        /// Ссылка на (502 Характеристики ОКС)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMHarOKS ParentHarOKS { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Declarations
+{
+    /// <summary>
+    /// 510 Характеристики ЗУ. Дополнительная информация
+    /// </summary>
+    public partial class OMHarParcelAdditionalInfo
+    {
+        /// <summary>
+        /// Ссылка на (503 Характеристики ЗУ)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Declarations.OMHarParcel ParentHarParcel { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Common
 {
     /// <summary>
