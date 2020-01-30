@@ -17,6 +17,7 @@ namespace KadOzenka.BlFrontEnd.GetSeleniumScreens
 
     class Selenium
     {
+
         readonly List<OMCoreObject> AllObjects =
 			OMCoreObject.Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr &&
 									x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep &&
@@ -51,7 +52,6 @@ namespace KadOzenka.BlFrontEnd.GetSeleniumScreens
                     bool priceIsEquals = obj.Price.Equals(price);
                     if (priceIsEquals)
                     {
-	                    //obj.ScreenShotExists = true;
 						var description = ((ChromeDriver) driver).FindElementsById("description").FirstOrDefault();
 	                    if (description != null)
 	                    {
@@ -66,35 +66,24 @@ namespace KadOzenka.BlFrontEnd.GetSeleniumScreens
 						metrics["height"] = ((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["getPageMaxHeight"]);
 						metrics["deviceScaleFactor"] = 1;
 						metrics["mobile"] = false;
-
-						//Execute the emulation Chrome Command to change browser to a custom device that is the size of the entire page
 						((ChromeDriver)driver).ExecuteChromeCommand("Emulation.setDeviceMetricsOverride", metrics);
 						((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
 						((ChromeDriver)driver).ExecuteScript(ConfigurationManager.AppSettings["hidePageScroll"]);
-
 						var screen = ((ITakesScreenshot)driver).GetScreenshot().AsByteArray;
-
 						((ChromeDriver)driver).ExecuteChromeCommand("Emulation.clearDeviceMetricsOverride", new Dictionary<string, object>());
-
 						obj.Save();
 						screenshot.Save();
-						FileStorageManager.Save(
-							new MemoryStream(screen),
-							ConfigurationManager.AppSettings["screenShotFolder"],
-							DateTime.Now,
-							$"{screenshot.Id}");
+						FileStorageManager.Save(new MemoryStream(screen), ConfigurationManager.AppSettings["screenShotFolder"], DateTime.Now, $"{screenshot.Id}");
 						breakCtr++;
                         Console.WriteLine($"{breakCtr}: {obj.Url}");
                     }
                 }
-                catch (Exception ex) 
-                {
-                    Console.WriteLine(ex.Message);
-                }
+                catch (Exception ex) { Console.WriteLine(ex.Message); }
                 if (breakCtr >= 100) break;
             }
             driver.Close();
         }
+
     }
 
 }

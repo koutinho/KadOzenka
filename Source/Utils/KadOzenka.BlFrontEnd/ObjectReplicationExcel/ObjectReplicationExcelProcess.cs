@@ -278,6 +278,300 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             workbook.Save(filePath);
         }
 
+        public static void UploadRosreestrObjectsToDatabase()
+        {
+            ExcelFile excelFile = ExcelFile.Load(@"C:\Users\silanov\Documents\Дженикс\ЦИПЖС Объекты аналоги\Росреестр (27.09.2019)\Сделки Росреестра 2018, 2019.xlsx", new XlsxLoadOptions());
+            ExcelWorksheet ws = excelFile.Worksheets[0];
+            foreach(var row in ws.Rows.Skip(1))
+            {
+                OMCoreObject obj = new OMCoreObject();
+                obj.CadastralNumber = row.Cells[0].Value.ToString();
+                obj.BuildingCadastralNumber = row.Cells[1].Value.ToString().Equals("0") ? row.Cells[0].Value.ToString() : row.Cells[1].Value.ToString();
+                obj.CadastralQuartal = 
+                    row.Cells[2].Value.ToString().Equals(string.Empty) ? 
+                    getCadastralQuartal(row.Cells[1].Value.ToString().Equals("0") ? row.Cells[0].Value.ToString() : row.Cells[1].Value.ToString()) : 
+                    row.Cells[2].Value.ToString();
+                obj.Subgroup = row.Cells[3].Value.ToString();
+                obj.Group = row.Cells[5].Value.ToString();
+                obj.Address = getFormalizedAddress(row.Cells[6].Value.ToString());
+                obj.Market_Code = ObjectModel.Directory.MarketTypes.Rosreestr;
+                obj.ParserTime = DateTime.ParseExact(row.Cells[10].Value.ToString().Split(' ')[0], "dd.MM.yyyy", null);
+                detectCategories(obj, row.Cells[12].Value.ToString(), row.Cells[13].Value.ToString(), row.Cells[14].Value.ToString());
+                obj.DealType_Code = ObjectModel.Directory.DealType.SaleDeal;
+                obj.Area = decimal.Parse(row.Cells[18].Value.ToString());
+                obj.Price = long.Parse(row.Cells[19].Value.ToString());
+                obj.PricePerMeter = decimal.Parse(row.Cells[20].Value.ToString());
+                obj.QualityClass_Code = getBuildingType(row.Cells[22].Value.ToString());
+                obj.District = row.Cells[24].Value.ToString();
+                obj.Zone = long.Parse(row.Cells[25].Value.ToString());
+            }
+        }
+
+        public static ObjectModel.Directory.QualityClass getBuildingType(string buildingType)
+        {
+            switch (buildingType)
+            {
+                case "А": return ObjectModel.Directory.QualityClass.A;
+                case "А+": return ObjectModel.Directory.QualityClass.A;
+                case "В": return ObjectModel.Directory.QualityClass.B;
+                case "В+": return ObjectModel.Directory.QualityClass.Bplus;
+                case "С": return ObjectModel.Directory.QualityClass.None;
+            }
+            return ObjectModel.Directory.QualityClass.None;
+        }
+
+        public static string getCadastralQuartal(string cadastralNumber) =>
+            cadastralNumber.Substring(0, cadastralNumber.LastIndexOf(":"));
+
+        public static string getFormalizedAddress(string initialAddress)
+        {
+            Regex regexMain = new Regex("(^[0-9]{6}[ ])|" +
+              "(, кв .*)|(, кв[.] .*)|(, кв[.].*)|( кв[.].*)|( кв .*)|(,ап[.].*)|(, квартира.*)|(,кв[.][0-9].*)|" +
+              "(, административные помещен.*)|(, нежилое помещен.*)|(, нежилые помещен.*)|(, кладовое помещен.*)|(, помещен.*)|( помещен.*)|(, пом([ ]|[.]|[ещ.]|[I]).*)|" +
+              "(, м/м.*)|(, I м/м.*)|(, машиноместо.*)|(, машино-место.*)|" +
+              "(, бокс.*)|(, гараж-бокс.*)|(, гаражный бокс.*)|( гар.бокс.*)|(, гараж.*)", RegexOptions.IgnoreCase), regexSpaces = new Regex("[ ]{2,}");
+            return regexMain.Replace(regexSpaces.Replace(initialAddress, " "), string.Empty);
+        }
+
+        public static void detectCategories(OMCoreObject obj, string propType, string propUse, string curUse)
+        {
+            curUse = curUse.ToLower();
+            switch (propType)
+            {
+                case "жилой дом":
+                    obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Buildings;
+                    switch (propUse)
+                    {
+                        case "Объекты индивидуальной жилой застройки":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.IZHS;
+                            break;
+                        case "Объекты многоквартирной жилой застройки":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.MZHS;
+                            break;
+                        case "Объекты неустановленного назначения":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты садового, огородного и дачного строительства":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Garden;
+                            break;
+                        case "Объекты социальной инфраструктуры":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты, предназначенные для размещения санаториев":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Sanatorium;
+                            break;
+                    }
+                    break;
+                case "квартира":
+                    obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Placements;
+                    switch (propUse)
+                    {
+                        case "Объекты индивидуальной жилой застройки":
+                            if (curUse.Contains("дома")) obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Buildings;
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.IZHS;
+                            break;
+                        case "Объекты коммерческого назначения":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты многоквартирной жилой застройки":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.MZHS;
+                            break;
+                        case "Объекты неустановленного назначения":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты садового, огородного и дачного строительства":
+                            if (curUse.Contains("дома"))
+                            {
+                                obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Buildings;
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.IZHS;
+                            }
+                            else obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Garden;
+                            break;
+                        case "Объекты социальной инфраструктуры":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты, предназначенные для размещения административных и офисных зданий":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Office;
+                            break;
+                        case "Объекты, предназначенные для размещения гостиниц":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Hotel;
+                            break;
+                        case "Объекты, предназначенные для хранения индивидуального транспорта":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
+                            break;
+                    }
+                    break;
+                case "комната":
+                    obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Placements;
+                    switch(propUse)
+                    {
+                        case "Объекты индивидуальной жилой застройки":
+                            if (curUse.Contains("дома")) obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Buildings;
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.IZHS;
+                            break;
+                        case "Объекты многоквартирной жилой застройки":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.MZHS;
+                            break;
+                        case "Объекты неустановленного назначения":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты садового, огородного и дачного строительства":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Garden;
+                            break;
+                    }
+                    break;
+                case "машино-место":
+                    obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Placements;
+                    switch (propUse)
+                    {
+                        case "Объекты коммерческого назначения":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
+                            break;
+                        case "Объекты неустановленного назначения":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
+                            break;
+                        case "Объекты производственного назначения":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
+                            break;
+                        case "Объекты, предназначенные для хранения индивидуального транспорта":
+                            if(curUse.Contains("бокс")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Parking;
+                            else obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
+                            break;
+                    }
+                    break;
+                case "нежилое здание":
+                    obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Buildings;
+                    switch (propUse)
+                    {
+                        case "Объекты и сооружения общественного назначения":
+                            obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.OtherAndMore;
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты коммерческого назначения":
+                            if (curUse == "-" || curUse.Contains("баня") || curUse.Contains("санкомплекс") || curUse.Contains("помещение") || curUse.Contains("контора"))
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            else if (curUse.Contains("кафе") || curUse.Contains("столовая")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.PublicCatering;
+                            else if (curUse.Contains("аптека") || curUse.Contains("придорожного") || curUse.Contains("мойка") ||
+                                     curUse.Contains("торговый") || curUse.Contains("павильон") || curUse.Contains("магазин") || curUse.Contains("торговое"))
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Trading;
+                            else if (curUse.Contains("производственн") || curUse.Contains("промбаза") || curUse.Contains("складской корпус"))
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Factory;
+                            else if (curUse == "Офисно-торговое здание") obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            else obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            if(curUse.Contains("помещение")) obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Placements;
+                            break;
+                        case "Объекты неустановленного назначения":
+                            if (curUse.Contains("бытовка") || curUse.Contains("въездная") || curUse.Contains("производственный") || curUse.Contains("цех") || curUse.Contains("производственное"))
+                                obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.OtherAndMore;
+                            else if (curUse.Contains("помещение")) obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Placements;
+                            if (curUse.Contains("садовый") || curUse.Contains("сарай") || curUse.Contains("хоз") || curUse.Contains("сенной"))
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Garden;
+                            else if (curUse.Contains("бвк") || curUse.Contains("быстровозводимых") || curUse.Contains("термического") || curUse.Contains("огнеупоров"))
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Trading;
+                            else if (curUse.Contains("цех") || curUse.Contains("производственное") || curUse.Contains("производственный")) 
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Factory;
+                            else if (curUse.Contains("гостевой") || curUse == "жилое строение") obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.IZHS;
+                            else if (curUse.Contains("нежилые помещения")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.MZHS;
+                            else obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты портов, вокзалов, станций":
+                            if(curUse.Contains("павильон")) obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.OtherAndMore;
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты производственного назначения":
+                            if (curUse.Contains("помещение") && !curUse.Contains("помещением")) obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Placements;
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Factory;
+                            break;
+                        case "Объекты садового, огородного и дачного строительства":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Garden;
+                            break;
+                        case "Объекты социальной инфраструктуры":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты, предназначенные для размещения административных и офисных зданий":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Office;
+                            break;
+                        case "Объекты, предназначенные для размещения гостиниц":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Hotel;
+                            break;
+                        case "Объекты, предназначенные для размещения санаториев":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Sanatorium;
+                            break;
+                        case "Объекты, предназначенные для хранения индивидуального транспорта":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Parking;
+                            break;
+                    }
+                    break;
+                case "нежилое помещение":
+                    obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Placements;
+                    switch (propUse)
+                    {
+                        case "Объекты вспомогательного назначения":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты коммерческого назначения":
+                            if (curUse.Contains("машино")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
+                            else if (curUse.Contains("чайная")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Trading;
+                            else if (curUse.Contains("часть здания"))
+                            {
+                                obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Buildings;
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.IZHS;
+                            }
+                            else obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты многоквартирной жилой застройки":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.MZHS;
+                            break;
+                        case "Объекты неустановленного назначения":
+                            if (curUse.Contains("бокс")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
+                            else if(curUse.Contains("машино")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Parking;
+                            else if (curUse.Contains("часть здания"))
+                            {
+                                obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Buildings;
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.IZHS;
+                            }
+                            else obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты портов, вокзалов, станций":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты производственного назначения":
+                            if (curUse.Contains("бокс")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Parking;
+                            else obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Factory;
+                            break;
+                        case "Объекты садового, огородного и дачного строительства":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Garden;
+                            break;
+                        case "Объекты социальной инфраструктуры":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+                        case "Объекты, предназначенные для размещения административных и офисных зданий":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Office;
+                            break;
+                        case "Объекты, предназначенные для размещения гостиниц":
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Hotel;
+                            break;
+                        case "Объекты, предназначенные для хранения индивидуального транспорта":
+                            if (curUse.Contains("бокс")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
+                            else if (curUse.Contains("машино")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Parking;
+                            else if (curUse.Contains("мойка")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Trading;
+                            else if (curUse.Contains("часть здания"))
+                            {
+                                obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.Buildings;
+                                obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.IZHS;
+                            }
+                            else obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.NoSegment;
+                            break;
+
+                    }
+                    break;
+                case "сооружение":
+                    obj.PropertyTypesCIPJS_Code = ObjectModel.Directory.PropertyTypesCIPJS.OtherAndMore;
+                    obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Factory;
+                    break;
+            }
+        }
+
         private class ExceleData
         {
             public string address;

@@ -53,7 +53,7 @@ namespace KadOzenka.BlFrontEnd
                 service.Start();
             });
             consoleHelper.AddCommand("3", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new Data().Detect(); });
-            consoleHelper.AddCommand("4", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.StartImport);
+            consoleHelper.AddCommand("4", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
             consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
             consoleHelper.AddCommand("6", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             consoleHelper.AddCommand("7", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
@@ -83,17 +83,16 @@ namespace KadOzenka.BlFrontEnd
 			        new FormMarketObjectsRequest
 			        {
 				        ObjectsListUrl =
-					        "https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/ofis/?hasFurniture=NO",
-				        DealType = DealType.SaleSuggestion,
-				        MarketSegment = MarketSegment.Office,
+                            //"https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/ofis/?hasFurniture=NO",
+                            //"https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/torgovoe-pomeshchenie/?hasPhoto=YES&showSimilar=NO&hasFurniture=NO",
+                            "https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/sklad/?hasPhoto=YES&showSimilar=NO",
+                        DealType = DealType.SaleSuggestion,
+				        MarketSegment = MarketSegment.Factory,
 				        PropertyTypeCIPJS = PropertyTypesCIPJS.Placements,
 				        PropertyType = PropertyTypes.Pllacement,
 				        Subcategory = "Офисная"
 			        };
-
 				checker.Test(testRequest);
-			    //checker.FormMarketObjects();
-
 	        });
 
 			consoleHelper.AddCommand("200", "Импорт данных KO (БД) Модель 2016", MSExporter.DoLoadBd2016Model);
