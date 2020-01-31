@@ -14,6 +14,11 @@ using ObjectModel.Directory.Declarations;
 using Core.Shared.Extensions;
 using Newtonsoft.Json;
 using ObjectModel.Core.Reports;
+using Microsoft.AspNetCore.Http;
+using GemBox.Spreadsheet;
+using KadOzenka.Web.Models.DataUpload;
+using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.DataImport;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -411,10 +416,17 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.Declaration_Id == declarationId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
-
+			List<OMHarOKSAdditionalInfo> characteristicAdditionalInfo = null;
+			if (characteristic != null)
+			{
+				characteristicAdditionalInfo = OMHarOKSAdditionalInfo.Where(x => x.HarOKSId == characteristic.Id)
+					.SelectAll()
+					.Execute();
+			}
+			
 			var model = characteristic != null
-				? OksCharacteristicsModel.FromEntity(characteristic)
-				: OksCharacteristicsModel.FromEntity(null);
+				? OksCharacteristicsModel.FromEntity(characteristic, characteristicAdditionalInfo)
+				: OksCharacteristicsModel.FromEntity(null, null);
 			model.DeclarationId = declarationId;
 			model.IsEditDeclarationCharacteristics =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
@@ -465,16 +477,30 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception($"не найдены результаты для декларации с идентификатором {oksCharacteristicsViewModel.DeclarationId}");
 			}
 
+			List<OMHarOKSAdditionalInfo> characteristicAdditionalInfo = null;
 			if (characteristic == null)
 			{
 				characteristic = new OMHarOKS();
+				characteristicAdditionalInfo = new List<OMHarOKSAdditionalInfo>();
+			}
+			else
+			{
+				characteristicAdditionalInfo = OMHarOKSAdditionalInfo.Where(x => x.HarOKSId == characteristic.Id)
+					.SelectAll()
+					.Execute();
 			}
 
-			OksCharacteristicsModel.ToEntity(oksCharacteristicsViewModel, ref characteristic);
+			OksCharacteristicsModel.ToEntity(oksCharacteristicsViewModel, ref characteristic, ref characteristicAdditionalInfo);
 			long id;
 			using (var ts = new TransactionScope())
 			{
 				id = characteristic.Save();
+
+				foreach (var omHarOksAdditionalInfo in characteristicAdditionalInfo)
+				{
+					omHarOksAdditionalInfo.HarOKSId = id;
+					omHarOksAdditionalInfo.Save();
+				}
 
 				result.TextYes = oksCharacteristicsViewModel.GetAcceptedCharacteristics();
 				result.TextNo = oksCharacteristicsViewModel.GetRejectedCharacteristics();

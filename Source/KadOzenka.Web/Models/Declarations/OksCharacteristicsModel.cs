@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Reflection;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 
@@ -35,260 +37,257 @@ namespace KadOzenka.Web.Models.Declarations
 		/// Вид объекта недвижимости (HAR_1)
 		/// </summary>
 		[Display(Name = "Вид объекта недвижимости")]
-		public string ObjectType { get; set; }
+		public CharacteristicModel ObjectType { get; set; }
 
 		/// <summary>
 		/// Адрес (описание местоположения) (HAR_2)
 		/// </summary>
 		[Display(Name = "Адрес (описание местоположения)")]
-		public string Address { get; set; }
+		public CharacteristicModel Address { get; set; }
 
 		/// <summary>
 		/// Площадь (HAR_3)
 		/// </summary>
 		[Display(Name = "Площадь")]
-		public decimal? Square { get; set; }
+		public CharacteristicModel Square { get; set; }
 
 		/// <summary>
 		/// Тип и значение основной характеристики сооружения (HAR_4)
 		/// </summary>
 		[Display(Name = "Тип и значение основной характеристики сооружения")]
-		public string TypeAndValueMainCharacteristic { get; set; }
+		public CharacteristicModel TypeAndValueMainCharacteristic { get; set; }
 
 		/// <summary>
 		/// Степень готовности объекта незавершенного строительства (HAR_5)
 		/// </summary>
 		[Display(Name = "Степень готовности объекта незавершенного строительства")]
-		public string ReadinessDegreeOns { get; set; }
+		public CharacteristicModel ReadinessDegreeOns { get; set; }
 
 		/// <summary>
 		/// Проектируемое назначение здания, сооружения, строительство которых не завершено (для объектов незавершенного строительства) (HAR_6)
 		/// </summary>
 		[Display(Name = "Проектируемый тип и значение основной характеристики объекта незавершенного строительства")]
-		public string DesignedTypeAndValueOfMainCharacteristicsOns { get; set; }
+		public CharacteristicModel DesignedTypeAndValueOfMainCharacteristicsOns { get; set; }
 
 		/// <summary>
 		/// Проектируемое назначение здания, сооружения, строительство которых не завершено (для объектов незавершенного строительства) (HAR_7)
 		/// </summary>
 		[Display(Name = "Проектируемое назначение здания, сооружения, строительство которых не завершено (для объектов незавершенного строительства)")]
-		public string DesignedPurposeOns { get; set; }
+		public CharacteristicModel DesignedPurposeOns { get; set; }
 
 		/// <summary>
 		/// Количество этажей (HAR_8)
 		/// </summary>
 		[Display(Name = "Количество этажей")]
-		public long? FloorCount { get; set; }
+		public CharacteristicModel FloorCount { get; set; }
 
 		/// <summary>
 		/// Номер этажа здания или сооружения, на котором расположено помещение или машино-место (HAR_9)
 		/// </summary>
 		[Display(Name = "Номер этажа здания или сооружения, на котором расположено помещение или машино-место")]
-		public long? FloorNumber { get; set; }
+		public CharacteristicModel FloorNumber { get; set; }
 
 		/// <summary>
 		/// Материал наружных стен, если объектом недвижимости является здание (HAR_10)
 		/// </summary>
 		[Display(Name = "Материал наружных стен, если объектом недвижимости является здание")]
-		public string BuildingWallMaterial { get; set; }
+		public CharacteristicModel BuildingWallMaterial { get; set; }
 
 		/// <summary>
 		/// Материал основных несущих конструкций, перекрытий (HAR_11)
 		/// </summary>
 		[Display(Name = "Материал основных несущих конструкций, перекрытий")]
-		public string MainSupportingStructuresMaterial { get; set; }
+		public CharacteristicModel MainSupportingStructuresMaterial { get; set; }
 
 		/// <summary>
 		/// Материал кровли (HAR_12)
 		/// </summary>
 		[Display(Name = "Материал кровли")]
-		public string RoofMaterial { get; set; }
+		public CharacteristicModel RoofMaterial { get; set; }
 
 		/// <summary>
 		/// Год ввода в эксплуатацию объекта недвижимости  (HAR_13)
 		/// </summary>
 		[Display(Name = "Год ввода в эксплуатацию объекта недвижимости")]
-		public DateTime? CommissioningYear { get; set; }
+		public CharacteristicModel CommissioningYear { get; set; }
 
 		/// <summary>
 		/// Год завершения строительства объекта недвижимости (HAR_14)
 		/// </summary>
 		[Display(Name = "Год завершения строительства объекта недвижимости")]
-		public DateTime? CompletionYear { get; set; }
+		public CharacteristicModel CompletionYear { get; set; }
 
 		/// <summary>
 		/// Удаленность относительно ближайшей рекреационной зоны (HAR_15)
 		/// </summary>
 		[Display(Name = "Дата окончания проведения капитального ремонта")]
-		public DateTime? OverhaulCompletionYear { get; set; }
+		public CharacteristicModel OverhaulCompletionYear { get; set; }
 
 		/// <summary>
 		/// Дата окончания проведения реконструкции (HAR_16)
 		/// </summary>
 		[Display(Name = "Дата окончания проведения реконструкции")]
-		public DateTime? ReconstructionDate { get; set; }
+		public CharacteristicModel ReconstructionDate { get; set; }
 
 		/// <summary>
 		/// Вид жилого помещения (HAR_17)
 		/// </summary>
 		[Display(Name = "Вид жилого помещения")]
-		public string DwellingType { get; set; }
+		public CharacteristicModel DwellingType { get; set; }
 
 		/// <summary>
 		/// Вид или виды разрешенного использования (HAR_18)
 		/// </summary>
 		[Display(Name = "Вид или виды разрешенного использования объектов капитального строительства")]
-		public string PermittedUseType { get; set; }
+		public CharacteristicModel PermittedUseType { get; set; }
 
 		/// <summary>
 		/// Сведения о включении объекта недвижимости в единый государственный реестр объектов культурного наследия (HAR_19)
 		/// </summary>
 		[Display(Name = "Сведения о включении объекта недвижимости в единый государственный реестр объектов культурного наследия (памятников истории и культуры) народов Российской Федерации ")]
-		public string ObjectInclusionIntoCulturalHeritageInfo { get; set; }
+		public CharacteristicModel ObjectInclusionIntoCulturalHeritageInfo { get; set; }
 
 		/// <summary>
 		/// Физический износ (HAR_20)
 		/// </summary>
 		[Display(Name = "Физический износ")]
-		public string PhysicalDeterioration { get; set; }
+		public CharacteristicModel PhysicalDeterioration { get; set; }
 
 		/// <summary>
 		/// Описание коммуникаций, в том числе их удаленность (HAR_21)
 		/// </summary>
 		[Display(Name = "Описание коммуникаций, в том числе их удаленность")]
-		public string CommunicationsDescription { get; set; }
+		public CharacteristicModel CommunicationsDescription { get; set; }
 
 		/// <summary>
 		/// Наличие/отсутствие подключения к электрическим сетям (HAR_21_1_1)
 		/// </summary>
 		[Display(Name = ConnectionToPowerGridsName)]
-		public HarAvailability? ConnectionToPowerGrids { get; set; }
+		public CharacteristicModel ConnectionToPowerGrids { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к сетям (HAR_21_1_2)
 		/// </summary>
 		[Display(Name = AvailabilityConnectionToPowerGridsName)]
-		public HarAvailability? AvailabilityConnectionToPowerGrids { get; set; }
+		public CharacteristicModel AvailabilityConnectionToPowerGrids { get; set; }
 
 		/// <summary>
 		/// Мощность электрической сети (HAR_21_1_3)
 		/// </summary>
 		[Display(Name = "Мощность электрической сети")]
-		public string ElectricPower { get; set; }
+		public CharacteristicModel ElectricPower { get; set; }
 
 		/// <summary>
 		/// Наличие/отсутствие подключения к сетям газораспределения (HAR_21_2_1)
 		/// </summary>
 		[Display(Name = ConnectionToGasGridsName)]
-		public HarAvailability? ConnectionToGasGrids { get; set; }
+		public CharacteristicModel ConnectionToGasGrids { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к сетям газораспределения (HAR_21_2_2)
 		/// </summary>
 		[Display(Name = AvailabilityConnectionToGasGridsName)]
-		public HarAvailability? AvailabilityConnectionToGasGrids { get; set; }
+		public CharacteristicModel AvailabilityConnectionToGasGrids { get; set; }
 
 		/// <summary>
 		/// Мощность электрической сети (HAR_21_2_3)
 		/// </summary>
 		[Display(Name = GasPowerName)]
-		public string GasPower { get; set; }
+		public CharacteristicModel GasPower { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к системе водоснабжения (HAR_21_3_1)
 		/// </summary>
 		[Display(Name = ConnectionToWaterSupplyName)]
-		public HarAvailability? ConnectionToWaterSupply { get; set; }
+		public CharacteristicModel ConnectionToWaterSupply { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к системе водоснабжения (HAR_21_3_2)
 		/// </summary>
 		[Display(Name = AvailabilityConnectionToWaterSupplyName)]
-		public HarAvailability? AvailabilityConnectionToWaterSupply { get; set; }
+		public CharacteristicModel AvailabilityConnectionToWaterSupply { get; set; }
 
 		/// <summary>
 		/// Наличие/отсутствие централизованного подключения к системе теплоснабжения (HAR_21_4_1)
 		/// </summary>
 		[Display(Name = ConnectionToHeatSupplyName)]
-		public HarAvailability? ConnectionToHeatSupply { get; set; }
+		public CharacteristicModel ConnectionToHeatSupply { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к системе теплоснабжения (HAR_21_4_2)
 		/// </summary>
 		[Display(Name = AvailabilityConnectionToHeatSupplyName)]
-		public HarAvailability? AvailabilityConnectionToHeatSupply { get; set; }
+		public CharacteristicModel AvailabilityConnectionToHeatSupply { get; set; }
 
 		/// <summary>
 		/// Наличие/отсутствие централизованного подключения к системе теплоснабжения (HAR_21_5_1)
 		/// </summary>
 		[Display(Name = ConnectionToWaterDisposalName)]
-		public HarAvailability? ConnectionToWaterDisposal { get; set; }
+		public CharacteristicModel ConnectionToWaterDisposal { get; set; }
 
 		/// <summary>
 		/// Возможность/отсутствие возможности подключения к системе теплоснабжения (HAR_21_5_2)
 		/// </summary>
 		[Display(Name = AvailabilityConnectionToWaterDisposalName)]
-		public HarAvailability? AvailabilityConnectionToWaterDisposal { get; set; }
+		public CharacteristicModel AvailabilityConnectionToWaterDisposal { get; set; }
 
 		public bool IsEditDeclarationCharacteristics { get; set; }
 
 		public string GetAcceptedCharacteristics()
 		{
-			return GetCharacteristicsString(HarAvailability.Exists);
+			var result = new List<string>();
+			IList<PropertyInfo> props = new List<PropertyInfo>(this.GetType().GetProperties());
+			foreach (PropertyInfo prop in props)
+			{
+				if (prop.PropertyType == typeof(CharacteristicModel))
+				{
+					var propValue = prop.GetValue(this, null) as CharacteristicModel;
+					if (propValue != null && propValue.AdditionalInfo.IsShownInDeclaration.GetValueOrDefault(false)
+					                      && propValue.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.Accepted)
+					{
+						object[] attrs = prop.GetCustomAttributes(true);
+						foreach (object attr in attrs)
+						{
+							DisplayAttribute displayAttribute = attr as DisplayAttribute;
+							if (displayAttribute != null)
+							{
+								result.Add(displayAttribute.Name);
+							}
+						}
+					}
+				}
+			}
+			return string.Join(",\n", result);
 		}
 
 		public string GetRejectedCharacteristics()
 		{
-			return GetCharacteristicsString(HarAvailability.NotExists);
-		}
-
-		private string GetCharacteristicsString(HarAvailability harAvailabilityType)
-		{
 			var result = new List<string>();
-			if (ConnectionToPowerGrids.GetValueOrDefault() == harAvailabilityType)
+			IList<PropertyInfo> props = new List<PropertyInfo>(this.GetType().GetProperties());
+			foreach (PropertyInfo prop in props)
 			{
-				result.Add(ConnectionToPowerGridsName);
+				if (prop.PropertyType == typeof(CharacteristicModel))
+				{
+					var propValue = prop.GetValue(this, null) as CharacteristicModel;
+					if (propValue != null && propValue.AdditionalInfo.IsShownInDeclaration.GetValueOrDefault(false)
+					                      && propValue.AdditionalInfo.HarStatus.GetValueOrDefault(HarStatus.None) == HarStatus.Rejected)
+					{
+						object[] attrs = prop.GetCustomAttributes(true);
+						foreach (object attr in attrs)
+						{
+							DisplayAttribute displayAttribute = attr as DisplayAttribute;
+							if (displayAttribute != null)
+							{
+								result.Add(displayAttribute.Name);
+							}
+						}
+					}
+				}
 			}
-			if (AvailabilityConnectionToPowerGrids.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(AvailabilityConnectionToPowerGridsName);
-			}
-			if (ConnectionToGasGrids.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(ConnectionToGasGridsName);
-			}
-			if (AvailabilityConnectionToGasGrids.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(AvailabilityConnectionToGasGridsName);
-			}
-			if (ConnectionToWaterSupply.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(ConnectionToWaterSupplyName);
-			}
-			if (AvailabilityConnectionToWaterSupply.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(AvailabilityConnectionToWaterSupplyName);
-			}
-			if (ConnectionToHeatSupply.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(ConnectionToHeatSupplyName);
-			}
-			if (AvailabilityConnectionToHeatSupply.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(AvailabilityConnectionToHeatSupplyName);
-			}
-			if (ConnectionToWaterDisposal.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(ConnectionToWaterDisposalName);
-			}
-			if (AvailabilityConnectionToWaterDisposal.GetValueOrDefault() == harAvailabilityType)
-			{
-				result.Add(AvailabilityConnectionToWaterDisposalName);
-			}
-
 			return string.Join(",\n", result);
 		}
 
-		public static OksCharacteristicsModel FromEntity(OMHarOKS entity)
+		public static OksCharacteristicsModel FromEntity(OMHarOKS entity, List<OMHarOKSAdditionalInfo> additionalInfos)
 		{
 			if (entity == null)
 			{
@@ -301,78 +300,491 @@ namespace KadOzenka.Web.Models.Declarations
 			return new OksCharacteristicsModel
 			{
 				Id = entity.Id,
-				ObjectType = entity.Har_1,
-				Address = entity.Har_2,
-				Square = entity.Har_3,
-				TypeAndValueMainCharacteristic = entity.Har_4,
-				ReadinessDegreeOns = entity.Har_5,
-				DesignedTypeAndValueOfMainCharacteristicsOns = entity.Har_6,
-				DesignedPurposeOns = entity.Har_7,
-				FloorCount = entity.Har_8,
-				FloorNumber = entity.Har_9,
-				BuildingWallMaterial = entity.Har_10,
-				MainSupportingStructuresMaterial = entity.Har_11,
-				RoofMaterial = entity.Har_12,
-				CommissioningYear = entity.Har_13,
-				CompletionYear = entity.Har_14,
-				OverhaulCompletionYear = entity.Har_15,
-				ReconstructionDate = entity.Har_16,
-				DwellingType = entity.Har_17,
-				PermittedUseType = entity.Har_18,
-				ObjectInclusionIntoCulturalHeritageInfo = entity.Har_19,
-				PhysicalDeterioration = entity.Har_20,
-				CommunicationsDescription = entity.Har_21,
-				ConnectionToPowerGrids = entity.Har_21_1_1_Code,
-				AvailabilityConnectionToPowerGrids = entity.Har_21_1_2_Code,
-				ElectricPower = entity.Har_21_1_3,
-				ConnectionToGasGrids = entity.Har_21_2_1_Code,
-				AvailabilityConnectionToGasGrids = entity.Har_21_2_2_Code,
-				GasPower = entity.Har_21_2_3,
-				ConnectionToWaterSupply = entity.Har_21_3_1_Code,
-				AvailabilityConnectionToWaterSupply = entity.Har_21_3_2_Code,
-				ConnectionToHeatSupply = entity.Har_21_4_1_Code,
-				AvailabilityConnectionToHeatSupply = entity.Har_21_4_2_Code,
-				ConnectionToWaterDisposal = entity.Har_21_5_1_Code,
-				AvailabilityConnectionToWaterDisposal = entity.Har_21_5_2_Code,
+				ObjectType = new CharacteristicModel{Value = entity.Har_1, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_1))) },
+				Address = new CharacteristicModel { Value = entity.Har_2, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_2))) },
+				Square = new CharacteristicModel { Value = entity.Har_3, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_3))) },
+				TypeAndValueMainCharacteristic = new CharacteristicModel { Value = entity.Har_4, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_4))) },
+				ReadinessDegreeOns = new CharacteristicModel { Value = entity.Har_5, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_5))) },
+				DesignedTypeAndValueOfMainCharacteristicsOns = new CharacteristicModel { Value = entity.Har_6, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_6))) },
+				DesignedPurposeOns = new CharacteristicModel { Value = entity.Har_7, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_7))) },
+				FloorCount = new CharacteristicModel { Value = entity.Har_8, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_8))) },
+				FloorNumber = new CharacteristicModel { Value = entity.Har_9, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_9))) },
+				BuildingWallMaterial = new CharacteristicModel { Value = entity.Har_10, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_10))) },
+				MainSupportingStructuresMaterial = new CharacteristicModel { Value = entity.Har_11, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_11))) },
+				RoofMaterial = new CharacteristicModel { Value = entity.Har_12, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_13))) },
+				CommissioningYear = new CharacteristicModel { Value = entity.Har_13, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_13))) },
+				CompletionYear = new CharacteristicModel { Value = entity.Har_14, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_14))) },
+				OverhaulCompletionYear = new CharacteristicModel { Value = entity.Har_15, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_15))) },
+				ReconstructionDate = new CharacteristicModel { Value = entity.Har_16, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_16))) },
+				DwellingType = new CharacteristicModel { Value = entity.Har_17, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_17))) },
+				PermittedUseType = new CharacteristicModel { Value = entity.Har_18, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_18))) },
+				ObjectInclusionIntoCulturalHeritageInfo = new CharacteristicModel { Value = entity.Har_19, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_19))) },
+				PhysicalDeterioration = new CharacteristicModel { Value = entity.Har_20, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_20))) },
+				CommunicationsDescription = new CharacteristicModel { Value = entity.Har_21, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21))) },
+				ConnectionToPowerGrids = new CharacteristicModel { Value = entity.Har_21_1_1_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_1_1))) },
+				AvailabilityConnectionToPowerGrids = new CharacteristicModel { Value = entity.Har_21_1_2_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_1_2))) },
+				ElectricPower = new CharacteristicModel { Value = entity.Har_21_1_3, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_1_3))) },
+				ConnectionToGasGrids = new CharacteristicModel { Value = entity.Har_21_2_1_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_2_1))) },
+				AvailabilityConnectionToGasGrids = new CharacteristicModel { Value = entity.Har_21_2_2_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_2_2))) },
+				GasPower = new CharacteristicModel { Value = entity.Har_21_2_3, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_2_3))) },
+				ConnectionToWaterSupply = new CharacteristicModel { Value = entity.Har_21_3_1_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_3_1))) },
+				AvailabilityConnectionToWaterSupply = new CharacteristicModel { Value = entity.Har_21_3_2_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_3_2))) },
+				ConnectionToHeatSupply = new CharacteristicModel { Value = entity.Har_21_4_1_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_4_1))) },
+				AvailabilityConnectionToHeatSupply = new CharacteristicModel { Value = entity.Har_21_4_2_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_4_2))) },
+				ConnectionToWaterDisposal = new CharacteristicModel { Value = entity.Har_21_5_1_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_5_1))) },
+				AvailabilityConnectionToWaterDisposal = new CharacteristicModel { Value = entity.Har_21_5_2_Code, AdditionalInfo = CharacteristicAdditionalInfoModel.FromEntity(additionalInfos.FirstOrDefault(x => x.HarOKSName == nameof(entity.Har_21_5_2))) },
 			};
 		}
 
-		public static void ToEntity(OksCharacteristicsModel parcelCharacteristicsViewModel, ref OMHarOKS entity)
+		public static void ToEntity(OksCharacteristicsModel parcelCharacteristicsViewModel, ref OMHarOKS entity,
+			ref List<OMHarOKSAdditionalInfo> characteristicAdditionalInfo)
 		{
 			entity.Declaration_Id = parcelCharacteristicsViewModel.DeclarationId;
-			entity.Har_1 = parcelCharacteristicsViewModel.ObjectType;
-			entity.Har_2 = parcelCharacteristicsViewModel.Address;
-			entity.Har_3 = parcelCharacteristicsViewModel.Square;
-			entity.Har_4 = parcelCharacteristicsViewModel.TypeAndValueMainCharacteristic;
-			entity.Har_5 = parcelCharacteristicsViewModel.ReadinessDegreeOns;
-			entity.Har_6 = parcelCharacteristicsViewModel.DesignedTypeAndValueOfMainCharacteristicsOns;
-			entity.Har_7 = parcelCharacteristicsViewModel.DesignedPurposeOns;
-			entity.Har_8 = parcelCharacteristicsViewModel.FloorCount;
-			entity.Har_9 = parcelCharacteristicsViewModel.FloorNumber;
-			entity.Har_10 = parcelCharacteristicsViewModel.BuildingWallMaterial;
-			entity.Har_11 = parcelCharacteristicsViewModel.MainSupportingStructuresMaterial;
-			entity.Har_12 = parcelCharacteristicsViewModel.RoofMaterial;
-			entity.Har_13 = parcelCharacteristicsViewModel.CommissioningYear;
-			entity.Har_14 = parcelCharacteristicsViewModel.CompletionYear;
-			entity.Har_15 = parcelCharacteristicsViewModel.OverhaulCompletionYear;
-			entity.Har_16 = parcelCharacteristicsViewModel.ReconstructionDate;
-			entity.Har_17 = parcelCharacteristicsViewModel.DwellingType;
-			entity.Har_18 = parcelCharacteristicsViewModel.PermittedUseType;
-			entity.Har_19 = parcelCharacteristicsViewModel.ObjectInclusionIntoCulturalHeritageInfo;
-			entity.Har_20 = parcelCharacteristicsViewModel.PhysicalDeterioration;
-			entity.Har_21 = parcelCharacteristicsViewModel.CommunicationsDescription;
-			entity.Har_21_1_1_Code = parcelCharacteristicsViewModel.ConnectionToPowerGrids.GetValueOrDefault();
-			entity.Har_21_1_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToPowerGrids.GetValueOrDefault();
-			entity.Har_21_1_3 = parcelCharacteristicsViewModel.ElectricPower;
-			entity.Har_21_2_1_Code = parcelCharacteristicsViewModel.ConnectionToGasGrids.GetValueOrDefault();
-			entity.Har_21_2_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToGasGrids.GetValueOrDefault();
-			entity.Har_21_2_3 = parcelCharacteristicsViewModel.GasPower;
-			entity.Har_21_3_1_Code = parcelCharacteristicsViewModel.ConnectionToWaterSupply.GetValueOrDefault();
-			entity.Har_21_3_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToWaterSupply.GetValueOrDefault();
-			entity.Har_21_4_1_Code = parcelCharacteristicsViewModel.ConnectionToHeatSupply.GetValueOrDefault();
-			entity.Har_21_4_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToHeatSupply.GetValueOrDefault();
-			entity.Har_21_5_1_Code = parcelCharacteristicsViewModel.ConnectionToWaterDisposal.GetValueOrDefault();
-			entity.Har_21_5_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToWaterDisposal.GetValueOrDefault();
+
+			entity.Har_1 = parcelCharacteristicsViewModel.ObjectType.StringValue;
+			var harName = nameof(entity.Har_1);
+			var harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo { HarOKSName = harName };
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ObjectType.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ObjectType.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_2 = parcelCharacteristicsViewModel.Address.StringValue;
+			harName = nameof(entity.Har_2);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo { HarOKSName = harName };
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.Address.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.Address.AdditionalInfo,
+					ref harInfo);
+			}
+
+			entity.Har_3 = parcelCharacteristicsViewModel.Square.DecimalValue;
+			harName = nameof(entity.Har_3);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.Square.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.Square.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_4 = parcelCharacteristicsViewModel.TypeAndValueMainCharacteristic.StringValue;
+			harName = nameof(entity.Har_4);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.TypeAndValueMainCharacteristic.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.TypeAndValueMainCharacteristic.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_5 = parcelCharacteristicsViewModel.ReadinessDegreeOns.StringValue;
+			harName = nameof(entity.Har_5);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+			}
+			CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ReadinessDegreeOns.AdditionalInfo, ref harInfo);
+
+			entity.Har_6 = parcelCharacteristicsViewModel.DesignedTypeAndValueOfMainCharacteristicsOns.StringValue;
+			harName = nameof(entity.Har_6);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.DesignedTypeAndValueOfMainCharacteristicsOns.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_7 = parcelCharacteristicsViewModel.DesignedPurposeOns.StringValue;
+			harName = nameof(entity.Har_7);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.DesignedPurposeOns.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.DesignedPurposeOns.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_8 = parcelCharacteristicsViewModel.FloorCount.LongValue;
+			harName = nameof(entity.Har_8);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.FloorCount.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.FloorCount.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_9 = parcelCharacteristicsViewModel.FloorNumber.LongValue;
+			harName = nameof(entity.Har_9);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+			}
+			CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.FloorNumber.AdditionalInfo, ref harInfo);
+
+			entity.Har_10 = parcelCharacteristicsViewModel.BuildingWallMaterial.StringValue;
+			harName = nameof(entity.Har_10);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.BuildingWallMaterial.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.BuildingWallMaterial.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_11 = parcelCharacteristicsViewModel.MainSupportingStructuresMaterial.StringValue;
+			harName = nameof(entity.Har_11);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+			}
+			CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.MainSupportingStructuresMaterial.AdditionalInfo, ref harInfo);
+
+			entity.Har_12 = parcelCharacteristicsViewModel.RoofMaterial.StringValue;
+			harName = nameof(entity.Har_12);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+			}
+			CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.RoofMaterial.AdditionalInfo, ref harInfo);
+
+			entity.Har_13 = parcelCharacteristicsViewModel.CommissioningYear.DateTimeValue;
+			harName = nameof(entity.Har_13);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.CommissioningYear.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.CommissioningYear.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_14 = parcelCharacteristicsViewModel.CompletionYear.DateTimeValue;
+			harName = nameof(entity.Har_14);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.CompletionYear.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.CompletionYear.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_15 = parcelCharacteristicsViewModel.OverhaulCompletionYear.DateTimeValue;
+			harName = nameof(entity.Har_15);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.OverhaulCompletionYear.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.OverhaulCompletionYear.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_16 = parcelCharacteristicsViewModel.ReconstructionDate.DateTimeValue;
+			harName = nameof(entity.Har_16);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ReconstructionDate.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ReconstructionDate.AdditionalInfo, ref harInfo);
+			}
+			
+
+			entity.Har_17 = parcelCharacteristicsViewModel.DwellingType.StringValue;
+			harName = nameof(entity.Har_17);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.DwellingType.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.DwellingType.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_18 = parcelCharacteristicsViewModel.PermittedUseType.StringValue;
+			harName = nameof(entity.Har_18);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.PermittedUseType.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.PermittedUseType.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_19 = parcelCharacteristicsViewModel.ObjectInclusionIntoCulturalHeritageInfo.StringValue;
+			harName = nameof(entity.Har_19);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ObjectInclusionIntoCulturalHeritageInfo.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_20 = parcelCharacteristicsViewModel.PhysicalDeterioration.StringValue;
+			harName = nameof(entity.Har_20);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.PhysicalDeterioration.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.PhysicalDeterioration.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21 = parcelCharacteristicsViewModel.CommunicationsDescription.StringValue;
+			harName = nameof(entity.Har_21);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.CommunicationsDescription.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.CommunicationsDescription.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_1_1_Code = parcelCharacteristicsViewModel.ConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_1_1);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToPowerGrids.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToPowerGrids.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_1_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToPowerGrids.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_1_2);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToPowerGrids.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToPowerGrids.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_1_3 = parcelCharacteristicsViewModel.ElectricPower.StringValue;
+			harName = nameof(entity.Har_21_1_3);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ElectricPower.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ElectricPower.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_2_1_Code = parcelCharacteristicsViewModel.ConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_2_1);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToGasGrids.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToGasGrids.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_2_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToGasGrids.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_2_2);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToGasGrids.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToGasGrids.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_2_3 = parcelCharacteristicsViewModel.GasPower.StringValue;
+			harName = nameof(entity.Har_21_2_3);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.GasPower.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.GasPower.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_3_1_Code = parcelCharacteristicsViewModel.ConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_3_1);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToWaterSupply.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToWaterSupply.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_3_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToWaterSupply.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_3_2);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToWaterSupply.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToWaterSupply.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_4_1_Code = parcelCharacteristicsViewModel.ConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_4_1);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToHeatSupply.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToHeatSupply.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_4_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToHeatSupply.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_4_2);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToHeatSupply.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToHeatSupply.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_5_1_Code = parcelCharacteristicsViewModel.ConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_5_1);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToWaterDisposal.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.ConnectionToWaterDisposal.AdditionalInfo, ref harInfo);
+			}
+
+			entity.Har_21_5_2_Code = parcelCharacteristicsViewModel.AvailabilityConnectionToWaterDisposal.HarAvailabilityValue.GetValueOrDefault();
+			harName = nameof(entity.Har_21_5_2);
+			harInfo = characteristicAdditionalInfo.FirstOrDefault(x => x.HarOKSName == harName);
+			if (harInfo == null)
+			{
+				harInfo = new OMHarOKSAdditionalInfo {HarOKSName = harName};
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToWaterDisposal.AdditionalInfo, ref harInfo);
+				characteristicAdditionalInfo.Add(harInfo);
+			}
+			else
+			{
+				CharacteristicAdditionalInfoModel.ToEntity(parcelCharacteristicsViewModel.AvailabilityConnectionToWaterDisposal.AdditionalInfo, ref harInfo);
+			}
+			
 		}
 	}
 }
