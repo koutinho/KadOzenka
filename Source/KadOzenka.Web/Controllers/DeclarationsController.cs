@@ -323,10 +323,18 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.Declaration_Id == declarationId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
+			List<OMHarParcelAdditionalInfo> characteristicAdditionalInfo = null;
+			if (characteristic != null)
+			{
+				characteristicAdditionalInfo = OMHarParcelAdditionalInfo.Where(x => x.HarParcelId == characteristic.Id)
+					.SelectAll()
+					.Execute();
+			}
+
 
 			var model = characteristic != null
-				? ParcelCharacteristicsModel.FromEntity(characteristic)
-				: ParcelCharacteristicsModel.FromEntity(null);
+				? ParcelCharacteristicsModel.FromEntity(characteristic, characteristicAdditionalInfo)
+				: ParcelCharacteristicsModel.FromEntity(null, null);
 			model.DeclarationId = declarationId;
 			model.IsEditDeclarationCharacteristics =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
@@ -368,9 +376,17 @@ namespace KadOzenka.Web.Controllers
 				return NotFound();
 			}
 
+			List<OMHarParcelAdditionalInfo> characteristicAdditionalInfo = null;
 			if (characteristic == null)
 			{
 				characteristic = new OMHarParcel();
+				characteristicAdditionalInfo = new List<OMHarParcelAdditionalInfo>();
+			}
+			else
+			{
+				characteristicAdditionalInfo = OMHarParcelAdditionalInfo.Where(x => x.HarParcelId == characteristic.Id)
+					.SelectAll()
+					.Execute();
 			}
 
 			var result = OMResult
@@ -382,11 +398,16 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception($"не найдены результаты для декларации с идентификатором {parcelCharacteristicsViewModel.DeclarationId}");
 			}
 
-			ParcelCharacteristicsModel.ToEntity(parcelCharacteristicsViewModel, ref characteristic);
+			ParcelCharacteristicsModel.ToEntity(parcelCharacteristicsViewModel, ref characteristic, ref characteristicAdditionalInfo);
 			long id;
 			using (var ts = new TransactionScope())
 			{
 				id = characteristic.Save();
+				foreach (var omHarOksAdditionalInfo in characteristicAdditionalInfo)
+				{
+					omHarOksAdditionalInfo.HarParcelId = id;
+					omHarOksAdditionalInfo.Save();
+				}
 
 				result.TextYes = parcelCharacteristicsViewModel.GetAcceptedCharacteristics();
 				result.TextNo = parcelCharacteristicsViewModel.GetRejectedCharacteristics();

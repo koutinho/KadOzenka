@@ -24,7 +24,22 @@ namespace KadOzenka.Web.Models.Declarations
 			};
 		}
 
+		public static CharacteristicAdditionalInfoModel FromEntity(OMHarParcelAdditionalInfo entity)
+		{
+			return new CharacteristicAdditionalInfoModel
+			{
+				HarStatus = entity?.HarStatus_Code,
+				IsShownInDeclaration = entity?.IsUsedInDeclaration
+			};
+		}
+
 		public static void ToEntity(CharacteristicAdditionalInfoModel model, ref OMHarOKSAdditionalInfo entity)
+		{
+			entity.HarStatus_Code = model.HarStatus.GetValueOrDefault();
+			entity.IsUsedInDeclaration = model.IsShownInDeclaration;
+		}
+
+		public static void ToEntity(CharacteristicAdditionalInfoModel model, ref OMHarParcelAdditionalInfo entity)
 		{
 			entity.HarStatus_Code = model.HarStatus.GetValueOrDefault();
 			entity.IsUsedInDeclaration = model.IsShownInDeclaration;
