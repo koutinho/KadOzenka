@@ -30,6 +30,7 @@ using ObjectModel.Directory;
 
 namespace KadOzenka.BlFrontEnd
 {
+
     class Program
     {
 
@@ -49,16 +50,22 @@ namespace KadOzenka.BlFrontEnd
                 LongProcessManagementService service = new LongProcessManagementService();
                 service.Start();
             });
-            consoleHelper.AddCommand("3", "Запуск выгрузки объявлений объектов-аналогов из сторонних источников", () => { new Data().Detect(); });
-            consoleHelper.AddCommand("4", "Загрузка объектов ГБУ из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
+
+            /*Загрузка информации по сделкам росреестра из excel*/
+            consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
+            consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
+
+            /*Загрузка информации по предложениям из ЦИАН-а через RestApp*/
+            consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp", () => { new Data().Detect(); });
+            consoleHelper.AddCommand("1102", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
+            consoleHelper.AddCommand("1103", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
+            consoleHelper.AddCommand("1104", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });
+            consoleHelper.AddCommand("1105", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
+
             consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
-            consoleHelper.AddCommand("6", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
-            consoleHelper.AddCommand("7", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
-            consoleHelper.AddCommand("8", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
             consoleHelper.AddCommand("9", "Процедура создания тестовых скриншотов", () => { new Selenium().MakeScreenshot(); });
             consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
             consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
-            consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().RefreshAllData(15000, true); });
             consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
             consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(100); });
             consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.SetCadastralNumber(ConfigurationManager.AppSettings["InitialAddressFile"], ConfigurationManager.AppSettings["DefaultExceleValue"]); });
@@ -68,7 +75,6 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("20", "Тест конвертации из Postgres в Mongo", () => { ConvertToMongo.Convert(20000); });
             consoleHelper.AddCommand("21", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
             consoleHelper.AddCommand("22", "Генерация тайлов для карты", () => { new CoordinatesConverter().GenerateInitialImages(); });
-            consoleHelper.AddCommand("23", "Присвоение координат объектам росреестра из базы данных", () => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
 
             consoleHelper.AddCommand("30", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
 
@@ -134,13 +140,8 @@ namespace KadOzenka.BlFrontEnd
                 xml.Load("c:\\WORK\\cod2.xml");
                 KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
             });
-
-	        //consoleHelper.AddCommand("402", "Импорт данных ЦОД из Xml", () =>
-	        //{
-		       // XmlDocument xml = new XmlDocument();
-		       // xml.Load("c:\\WORK\\cod2.xml");
-		       // KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
-	        //});
 		}
+
     }
+
 }
