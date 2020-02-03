@@ -548,7 +548,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         {
             List<OMCoreObject> AllObjects =
                 OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.AddressStep && x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr)
-                .Select(x => new { x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code }).Execute().Take(25000).ToList();
+                            .Select(x => new { x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code }).Execute().Take(Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"])).ToList();
             int ACtr = AllObjects.Count, CCur = 0, SCtr = 0, ECtr = 0;
             AllObjects.ForEach(x => 
             {
