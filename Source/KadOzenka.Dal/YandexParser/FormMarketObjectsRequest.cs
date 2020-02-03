@@ -12,6 +12,5 @@ namespace KadOzenka.Dal.YandexParser
 		public MarketSegment MarketSegment { get; set; }
 		public PropertyTypesCIPJS PropertyTypeCIPJS { get; set; }
 		public PropertyTypes PropertyType { get; set; }
-		public string Subcategory { get; set; }
 	}
 }

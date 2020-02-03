@@ -9,7 +9,6 @@ using KadOzenka.BlFrontEnd.GetSeleniumScreens;
 using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
 using KadOzenka.Dal.RestAppParser;
 using KadOzenka.Dal.Selenium.PriceChecker;
-using KadOzenka.Dal.Test;
 using KadOzenka.BlFrontEnd.ExportKO;
 using KadOzenka.BlFrontEnd.ExportSud;
 using KadOzenka.BlFrontEnd.ExportMSSQL;
@@ -37,8 +36,6 @@ namespace KadOzenka.BlFrontEnd
         static void Main(string[] args)
         {
 			BuildQsXml.BuildSudApproveStatus();
-
-
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
             var consoleHelper = new BlFrontEndConsoleHelper();
             InitCommands(consoleHelper);
@@ -64,7 +61,6 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("12", "Процедура обновления цен", () => { new Cian().RefreshAllData(15000, true); });
             consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
             consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(100); });
-            consoleHelper.AddCommand("15", "Тест автоматического формирования исключений", () => { new TestAutoExclusions().TryParse(); });
             consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.SetCadastralNumber(ConfigurationManager.AppSettings["InitialAddressFile"], ConfigurationManager.AppSettings["DefaultExceleValue"]); });
             consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
             consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
@@ -72,28 +68,11 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("20", "Тест конвертации из Postgres в Mongo", () => { ConvertToMongo.Convert(20000); });
             consoleHelper.AddCommand("21", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
             consoleHelper.AddCommand("22", "Генерация тайлов для карты", () => { new CoordinatesConverter().GenerateInitialImages(); });
+            consoleHelper.AddCommand("23", "Присвоение координат объектам росреестра из базы данных", () => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
 
             consoleHelper.AddCommand("30", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
 
-			consoleHelper.AddCommand("100", "Контрольная проверка механизма отбора дублей", () => { new DetectDuplicatesTest.DetectDuplicatesTest().Test(); });
-	        consoleHelper.AddCommand("101", "Тест Парсинга объектов-аналогов с сайта Яндекс-Недвижимость (тестовая категория - Покупка офисного помещения)", () =>
-	        {
-		        var checker = new YandexChecker();
-		        var testRequest =
-			        new FormMarketObjectsRequest
-			        {
-				        ObjectsListUrl =
-                            //"https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/ofis/?hasFurniture=NO",
-                            //"https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/torgovoe-pomeshchenie/?hasPhoto=YES&showSimilar=NO&hasFurniture=NO",
-                            "https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/sklad/?hasPhoto=YES&showSimilar=NO",
-                        DealType = DealType.SaleSuggestion,
-				        MarketSegment = MarketSegment.Factory,
-				        PropertyTypeCIPJS = PropertyTypesCIPJS.Placements,
-				        PropertyType = PropertyTypes.Pllacement,
-				        Subcategory = "Офисная"
-			        };
-				checker.Test(testRequest);
-	        });
+	        consoleHelper.AddCommand("100", "Тест Парсинга объектов-аналогов с сайта Яндекс-Недвижимость (тестовая категория - Покупка офисного помещения)", () => {new YandexChecker().FormMarketObjects();});
 
 			consoleHelper.AddCommand("200", "Импорт данных KO (БД) Модель 2016", MSExporter.DoLoadBd2016Model);
             consoleHelper.AddCommand("201", "Импорт данных KO (БД) Объекты и факторы 2016 ОНС", MSExporter.DoLoadBd2016Unit_Uncomplited);
@@ -123,11 +102,8 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("251", "Рассчет", MSExporter.GetCalcGroup);
             consoleHelper.AddCommand("252", "История", ()=>
             {
-                List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory("77:17:0100302:62");//77:17:0100302:62  77:18:0170508:184
-                foreach (ObjectModel.KO.HistoryUnit history in histories)
-                {
-                Console.WriteLine(history.ToString());
-                }
+                List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory("77:17:0100302:62");
+                foreach (ObjectModel.KO.HistoryUnit history in histories) Console.WriteLine(history.ToString());
             });
 
             consoleHelper.AddCommand("300", "Импорт данных судебной подсистемы (БД)", SudExporter.DoLoadBd);

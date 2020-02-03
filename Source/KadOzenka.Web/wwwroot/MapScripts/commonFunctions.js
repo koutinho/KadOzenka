@@ -21,6 +21,7 @@ function getPropertyType(source) {
     switch (source) {
         case "ЦИАН": return "Cian";
         case "Росреестр": return "Rosreestr";
+        case "Яндекс недвижимость": return "Yandex";
     }
 };
 

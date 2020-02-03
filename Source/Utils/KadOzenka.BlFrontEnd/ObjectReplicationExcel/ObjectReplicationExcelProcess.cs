@@ -16,6 +16,7 @@ using System.Net;
 using System.Linq;
 using System.Text.RegularExpressions;
 using KadOzenka.Dal.Logger;
+using System.Diagnostics;
 
 namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 {
@@ -24,10 +25,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
     {
         public static string BaseDirectory
         {
-            get
-            {
-                return ConfigurationManager.AppSettings["ObjectReplicationExcelBaseFolder"];
-            }
+            get { return ConfigurationManager.AppSettings["ObjectReplicationExcelBaseFolder"]; }
         }
 
         private static Dictionary<long, OMInstance> _documents = new Dictionary<long, OMInstance>();
@@ -37,20 +35,15 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         public static void StartImport()
         {
             if (!Directory.Exists(BaseDirectory)) throw new Exception($"Директория не существует: {BaseDirectory}");
-
             LoadDocuments();
-
             LoadObjects();
-
             LoadReference();
-
             LoadAttributes();
         }
 
         private static void LoadDocuments()
         {
             var dt = GetData($"{BaseDirectory}tbDocument.xlsx");
-
             foreach (DataRow row in dt.Rows)
             {
                 OMInstance document = new OMInstance
@@ -61,9 +54,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     ApproveDate = row["date_document"].ParseToDateTime(),
                     Description = row["name_document"].ToString(),
                 };
-
                 document.Save();
-
                 _documents.Add(document.Id, document);
             }
         }
@@ -71,7 +62,6 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         private static void LoadObjects()
         {
             var dt = GetData($"{BaseDirectory}tbObject.xlsx");
-
             foreach (DataRow row in dt.Rows)
             {
                 OMMainObject gbuObject = new OMMainObject
@@ -81,7 +71,6 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     ObjectType_Code = ObjectModel.Directory.PropertyTypes.Building,
                     IsActive = row["status_object"].ParseToBoolean()
                 };
-
                 gbuObject.Save();
             }
         }
@@ -89,7 +78,6 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         private static void LoadReference()
         {
             var dt = GetData($"{BaseDirectory}DICTIONARYRECORD.xlsx");
-
             foreach (DataRow row in dt.Rows)
             {
                 OMReferenceItem refItem = new OMReferenceItem
@@ -97,9 +85,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     ItemId = row["ID_RECORD"].ParseToLong(),
                     Value = row["VAL_RECORD"].ToString()
                 };
-
                 //document.Save();
-
                 _refItems.Add(refItem.ItemId, refItem);
             }
         }
@@ -107,43 +93,32 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         private static void LoadAttributes()
         {
             var dt = GetData($"{BaseDirectory}tbFactorDateValue.xlsx");
-
             foreach (DataRow row in dt.Rows)
             {
                 var attributeValue = GetAttributeValueCommon(row);
                 attributeValue.DtValue = row["value"].ParseToDateTime();
-
                 attributeValue.Save();
             }
-
             dt = GetData($"{BaseDirectory}tbFactorDoubleValue.xlsx");
-
             foreach (DataRow row in dt.Rows)
             {
                 var attributeValue = GetAttributeValueCommon(row);
                 attributeValue.NumValue = row["value"].ParseToDecimal();
-
                 attributeValue.Save();
             }
-
             dt = GetData($"{BaseDirectory}tbFactorTextValue.xlsx");
-
             foreach (DataRow row in dt.Rows)
             {
                 var attributeValue = GetAttributeValueCommon(row);
                 attributeValue.StringValue = row["value"].ToString();
-
                 attributeValue.Save();
             }
-
             dt = GetData($"{BaseDirectory}tbFactorLinkValue.xlsx");
-
             foreach (DataRow row in dt.Rows)
             {
                 var attributeValue = GetAttributeValueCommon(row);
                 attributeValue.RefItemId = row["value"].ParseToLong();
                 attributeValue.StringValue = _refItems[attributeValue.RefItemId].Value;
-
                 attributeValue.Save();
             }
         }
@@ -160,31 +135,18 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                 ChangeUserId = row["id_user"].ParseToInt(),
                 ChangeDate = row["date_user"].ParseToDateTime(),
             };
-
             attributeValue.Ot = _documents[attributeValue.ChangeDocId].CreateDate;
-
             return attributeValue;
         }
 
         private static DataTable GetData(string filePath)
         {
             ExcelFile excelFile = ExcelFile.Load(filePath, new XlsxLoadOptions());
-
             ExcelWorksheet ws = excelFile.Worksheets[0];
-
             DataTable dt = new DataTable();
-
             ExcelRow headerRow = ws.Rows[0];
-            for (int i = 0; i < headerRow.AllocatedCells.Count; i++)
-            {
-                dt.Columns.Add(headerRow.Cells[i].Value != null ? headerRow.Cells[i].Value.ToString() : i.ToString());
-            }
-
-            ExtractToDataTableOptions options = new ExtractToDataTableOptions(1, 0, ws.Rows.Count - 1)
-            {
-                ExtractDataOptions = ExtractDataOptions.SkipEmptyRows
-            };
-
+            for (int i = 0; i < headerRow.AllocatedCells.Count; i++) dt.Columns.Add(headerRow.Cells[i].Value != null ? headerRow.Cells[i].Value.ToString() : i.ToString());
+            ExtractToDataTableOptions options = new ExtractToDataTableOptions(1, 0, ws.Rows.Count - 1){ ExtractDataOptions = ExtractDataOptions.SkipEmptyRows };
             options.ExcelCellToDataTableCellConverting += (sender, e) =>
             {
                 if (e.IsDataTableValueValid) return;
@@ -193,9 +155,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                 e.DataTableValue = e.ExcelCellValue == null ? null : e.ExcelCellValue.ToString();
                 e.Action = ExtractDataEventAction.Continue;
             };
-
             ws.ExtractToDataTable(dt, options);
-
             return dt;
         }
 
@@ -282,46 +242,50 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         {
             ExcelFile excelFile = ExcelFile.Load(@"C:\Users\silanov\Documents\Дженикс\ЦИПЖС Объекты аналоги\Росреестр (27.09.2019)\Сделки Росреестра 2018, 2019.xlsx", new XlsxLoadOptions());
             ExcelWorksheet ws = excelFile.Worksheets[0];
+            List<OMCoreObject> list = new List<OMCoreObject>(), result = new List<OMCoreObject>();
             foreach(var row in ws.Rows.Skip(1))
             {
                 OMCoreObject obj = new OMCoreObject();
                 obj.CadastralNumber = row.Cells[0].Value.ToString();
                 obj.BuildingCadastralNumber = row.Cells[1].Value.ToString().Equals("0") ? row.Cells[0].Value.ToString() : row.Cells[1].Value.ToString();
-                obj.CadastralQuartal = 
-                    row.Cells[2].Value.ToString().Equals(string.Empty) ? 
-                    getCadastralQuartal(row.Cells[1].Value.ToString().Equals("0") ? row.Cells[0].Value.ToString() : row.Cells[1].Value.ToString()) : 
-                    row.Cells[2].Value.ToString();
+                obj.CadastralQuartal = getQuartal(row.Cells[0].Value.ToString(), row.Cells[1].Value.ToString(), row.Cells[2].Value.ToString());
                 obj.Subgroup = row.Cells[3].Value.ToString();
                 obj.Group = row.Cells[5].Value.ToString();
-                obj.Address = getFormalizedAddress(row.Cells[6].Value.ToString());
+                obj.Address = row.Cells[6].Value.ToString();
                 obj.Market_Code = ObjectModel.Directory.MarketTypes.Rosreestr;
                 obj.ParserTime = DateTime.ParseExact(row.Cells[10].Value.ToString().Split(' ')[0], "dd.MM.yyyy", null);
                 detectCategories(obj, row.Cells[12].Value.ToString(), row.Cells[13].Value.ToString(), row.Cells[14].Value.ToString());
                 obj.DealType_Code = ObjectModel.Directory.DealType.SaleDeal;
                 obj.Area = decimal.Parse(row.Cells[18].Value.ToString());
-                obj.Price = long.Parse(row.Cells[19].Value.ToString());
+                obj.Price = decimal.ToInt64(decimal.Parse(row.Cells[19].Value.ToString()));
                 obj.PricePerMeter = decimal.Parse(row.Cells[20].Value.ToString());
-                obj.QualityClass_Code = getBuildingType(row.Cells[22].Value.ToString());
+                ObjectModel.Directory.QualityClass? qualityClass = getBuildingType(row.Cells[22].Value.ToString());
+                if (qualityClass != null) obj.QualityClass_Code = (ObjectModel.Directory.QualityClass)qualityClass;
                 obj.District = row.Cells[24].Value.ToString();
-                obj.Zone = long.Parse(row.Cells[25].Value.ToString());
+                obj.Zone = int.TryParse(row.Cells[25].Value.ToString(), out int n) ? (long?)long.Parse(row.Cells[25].Value.ToString()) : null;
+                obj.ProcessType_Code = ObjectModel.Directory.ProcessStep.AddressStep;
+                if (obj.PricePerMeter > 19000) list.Add(obj);
             }
+            list.GroupBy(x => x.CadastralNumber).ToList().ForEach(x => result.Add(x.OrderByDescending(y => y.ParserTime).First()));
+            result.ForEach(x => x.Save());
         }
 
-        public static ObjectModel.Directory.QualityClass getBuildingType(string buildingType)
+        public static string getQuartal(string KN, string BKN, string KQ) => KQ.Equals(string.Empty) ? getCadastralQuartal(BKN.Equals("0") ? KN : BKN) : KQ;
+
+        public static ObjectModel.Directory.QualityClass? getBuildingType(string buildingType)
         {
             switch (buildingType)
             {
                 case "А": return ObjectModel.Directory.QualityClass.A;
-                case "А+": return ObjectModel.Directory.QualityClass.A;
+                case "А+": return ObjectModel.Directory.QualityClass.Aplus;
                 case "В": return ObjectModel.Directory.QualityClass.B;
                 case "В+": return ObjectModel.Directory.QualityClass.Bplus;
-                case "С": return ObjectModel.Directory.QualityClass.None;
+                case "С": return ObjectModel.Directory.QualityClass.C;
             }
-            return ObjectModel.Directory.QualityClass.None;
+            return null;
         }
 
-        public static string getCadastralQuartal(string cadastralNumber) =>
-            cadastralNumber.Substring(0, cadastralNumber.LastIndexOf(":"));
+        public static string getCadastralQuartal(string cadastralNumber) => cadastralNumber.Substring(0, cadastralNumber.LastIndexOf(":"));
 
         public static string getFormalizedAddress(string initialAddress)
         {
@@ -578,6 +542,35 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             public List<int> ids;
             public int status;
             public int currentCounter;
+        }
+
+        public static void SetRRFDBCoordinatesByYandex() 
+        {
+            List<OMCoreObject> AllObjects =
+                OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.AddressStep && x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr)
+                .Select(x => new { x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code }).Execute().Take(25000).ToList();
+            int ACtr = AllObjects.Count, CCur = 0, SCtr = 0, ECtr = 0;
+            AllObjects.ForEach(x => 
+            {
+                CCur++;
+                try
+                {
+                    OMYandexAddress address = new Dal.JSONParser.YandexGeocoder().ParseYandexAddress(new YandexGeocoder().GetDataByAddress(getFormalizedAddress(x.Address)));
+                    x.Lng = address.Lng;
+                    x.Lat = address.Lat;
+                    x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Dealed;
+                    SCtr++;
+                }
+                catch (Exception) 
+                {
+                    x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Excluded;
+                    x.ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.NoAddress;
+                    ECtr++; 
+                }
+                x.Save();
+                ConsoleLog.WriteData("Присвоение координат объектам росреестра", ACtr, CCur, SCtr, ECtr);
+            });
+            ConsoleLog.WriteFotter("Присвоение координат объектам росреестра завершено");
         }
 
         public static void SetRRCoordinatesByYandex(string filePath)

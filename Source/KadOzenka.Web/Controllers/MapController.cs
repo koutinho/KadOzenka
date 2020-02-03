@@ -45,11 +45,7 @@ namespace KadOzenka.Web.Controllers
             int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, int maxObjectsCount, string token, long? objectId)
         {
             var query = OMCoreObject
-                .Where(x =>
-                    x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess &&
-                    x.Lng != null &&
-                    x.Lat != null &&
-                    (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
+                .Where(x => (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) && x.Lng != null && x.Lat != null && (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
             if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
             else PrepareQueryByUserFilter(query);
             if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
@@ -59,13 +55,9 @@ namespace KadOzenka.Web.Controllers
             int size = query.ExecuteCount();
             if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
-            var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.Category, x.Subcategory, x.PropertyType_Code, x.PropertyMarketSegment, x.DealType, x.PropertyTypesCIPJS }).Execute().ToList();
+            var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.PropertyMarketSegment, x.DealType, x.PropertyTypesCIPJS }).Execute().ToList();
             analogItem.ForEach(x => point.Add(new { 
-                points = new[] { x.Lat, x.Lng }, 
-                id = x.Id, 
-                segment = FormSegment(x.PropertyMarketSegment), 
-                dealType = FormDealType(x.DealType), 
-                propertyType = x.PropertyTypesCIPJS 
+                points = new[] { x.Lat, x.Lng }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment), dealType = FormDealType(x.DealType), propertyType = x.PropertyTypesCIPJS
             }));
             return Json(new { token = token, arr = point, allCount = size });
         }
@@ -203,7 +195,7 @@ namespace KadOzenka.Web.Controllers
 	    {
 		    var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
             if (marketObject == null)throw new Exception($"Ошибка! Объекта аналога с идентификатором {objectId} не существует!");
-            query.And(x => x.DealType_Code == marketObject.DealType_Code && x.PropertyType_Code == marketObject.PropertyType_Code);
+            query.And(x => x.DealType_Code == marketObject.DealType_Code && x.PropertyMarketSegment_Code == marketObject.PropertyMarketSegment_Code);
 	    }
 
 		private void PrepareQueryByUserFilter(QSQuery<OMCoreObject> query)
@@ -252,50 +244,6 @@ namespace KadOzenka.Web.Controllers
 				}
 			}
 		}
-
-		private int FormType(string category, string subCategory, PropertyTypes propertyType)
-        {
-            if (propertyType == PropertyTypes.UncompletedBuilding) return 7;
-            switch (category)
-            {
-                case "Коммерческая недвижимость":
-                    switch (subCategory)
-                    {
-                        case "Складская": return 0;
-                        case "Гараж": return 1;
-                        case "Торговая": return 2;
-                        case "Свободного назначения": return 3;
-                        case "Офисная": return 4;
-                        case "Готовый бизнес": return 5;
-                        case "Производственная": return 6;
-                        case "Здание": return 8;
-                        default: return 9;
-                    }
-                case "Квартиры":
-                    switch (subCategory)
-                    {
-                        case "Вторичное": return 10;
-                        default: return 11;
-                    }
-                case "Комнаты":
-                    switch (subCategory)
-                    {
-                        case "Вторичное": return 12;
-                        default: return 13;
-                    }
-                case "Загородная недвижимость":
-                    switch (subCategory)
-                    {
-                        case "Участок": return 14;
-                        case "Таунхаус": return 15;
-                        case "Дом": return 16;
-                        default: return 17;
-                    }
-                default:
-                    break;
-            }
-            return 18;
-        }
 
         private int FormSegment(string marketSegment)
         {

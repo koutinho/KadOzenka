@@ -53,7 +53,6 @@ namespace KadOzenka.Dal.JSONParser
                     OMCoreObject CO = new OMCoreObject();
                     CO.Url = GetURL(MarketTypes.Cian, dealType, categoryId, subCategory, marketId);
                     CO.Market_Code = MarketTypes.Cian;
-                    CO.PropertyType_Code = propertyType;
                     CO.MarketId = marketId;
                     CO.Price = price;
                     CO.ParserTime = DateTime.ParseExact(elements[i]["time"].ToString(), "yyyy-MM-dd HH:mm:ss", null);
@@ -74,9 +73,6 @@ namespace KadOzenka.Dal.JSONParser
                     CO.AreaLiving = areaLiving;
                     CO.AreaLand = areaLand;
                     CO.BuildingYear = buildingYear;
-                    CO.Category = category;
-                    CO.Subcategory = subCategory;
-                    CO.CategoryId = categoryId;
                     CO.PropertyMarketSegment_Code = GetMarketSegment(category, subCategory);
                     CO.ProcessType_Code = ProcessStep.DoNotProcessed;
                     if (exclusionStatus != null)

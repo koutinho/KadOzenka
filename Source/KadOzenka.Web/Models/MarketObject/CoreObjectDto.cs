@@ -65,7 +65,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 LastDateUpdate = entity.LastDateUpdate, // != null ? entity.LastDateUpdate : new DateTime(1970, 1, 1, 0, 0, 0, 1),
                 Address = entity.Address,
 				Metro = entity.Metro,
-				Area = entity.PropertyType_Code == PropertyTypes.Stead ? entity.AreaLand * 100 : entity.Area,
+				Area = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea ? entity.AreaLand * 100 : entity.Area,
 				Description = entity.Description,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
@@ -133,7 +133,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		private static decimal? GetPricePerSquareMeter(OMCoreObject entity)
 		{
 			decimal? result;
-			if (entity.PropertyType_Code == PropertyTypes.Stead && entity.Price.HasValue && entity.AreaLand.HasValue && entity.AreaLand != 0) result = entity.Price / (entity.AreaLand * 100);
+			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue && entity.AreaLand.HasValue && entity.AreaLand != 0) result = entity.Price / (entity.AreaLand * 100);
 			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0) result = entity.Price / entity.Area;
 			else result = (decimal?) null;
 			return result;

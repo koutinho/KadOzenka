@@ -21,11 +21,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
 
         public List<OMPriceHistory> resultList = new List<OMPriceHistory>();
         public List<OMCoreObject> AllObjects = OMCoreObject
-            .Where(x => 
-                x.Market_Code == MarketTypes.Cian && 
-                x.LastDateUpdate == null /*&& 
-                x.ProcessType_Code == ProcessStep.CadastralNumberStep && 
-                x.Category == "Коммерческая недвижимость"*/)
+            .Where(x => x.Market_Code == MarketTypes.Cian && x.LastDateUpdate == null /*&& x.ProcessType_Code == ProcessStep.CadastralNumberStep*/)
             .Select(x => new { x.Url, x.DealType_Code, x.Price, x.LastDateUpdate }).Execute();
         public List<OMScreenshots> AllScreens = OMScreenshots.Where(x => true).SelectAll().Execute();
 

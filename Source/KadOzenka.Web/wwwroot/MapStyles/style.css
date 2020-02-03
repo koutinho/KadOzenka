@@ -135,6 +135,16 @@ body {
     cursor:pointer;
 }
 
+.MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Link.Yandex {
+    background-image: url(/MapIcons/YandexLogoOnly.png);
+    background-size: 21px 31px;
+    background-repeat: no-repeat;
+    background-position: center right;
+    width: 21px;
+    height: 31px;
+    cursor:pointer;
+}
+
 .MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Link.Rosreestr {
     background-image: url(/MapIcons/rosreestrLogoOnly.png);
     background-size: 22px 31px;

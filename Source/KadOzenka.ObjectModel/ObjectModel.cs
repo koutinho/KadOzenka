@@ -404,61 +404,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _propertytype;
-        /// <summary>
-        /// 10002500 Тип объекта недвижимости (PROPERTY_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002500)]
-        public string PropertyType
-        {
-            get
-            {
-                CheckPropertyInited("PropertyType");
-                return _propertytype;
-            }
-            set
-            {
-                _propertytype = value;
-                NotifyPropertyChanged("PropertyType");
-            }
-        }
-
-
-        private PropertyTypes _propertytype_Code;
-        /// <summary>
-        /// 10002500 Тип объекта недвижимости (справочный код) (PROPERTY_TYPE_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002500)]
-        public PropertyTypes PropertyType_Code
-        {
-            get
-            {
-                CheckPropertyInited("PropertyType_Code");
-                return this._propertytype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_propertytype))
-                    {
-                         _propertytype = descr;
-                    }
-                }
-                else
-                {
-                     _propertytype = descr;
-                }
-
-                this._propertytype_Code = value;
-                NotifyPropertyChanged("PropertyType");
-                NotifyPropertyChanged("PropertyType_Code");
-            }
-        }
-
-
         private long _marketid;
         /// <summary>
         /// 10002600 Идентификатор в Источнике данных (MARKET_ID)
@@ -910,66 +855,6 @@ namespace ObjectModel.Market
             {
                 _buildingyear = value;
                 NotifyPropertyChanged("BuildingYear");
-            }
-        }
-
-
-        private string _category;
-        /// <summary>
-        /// 10004800 Категория (CATEGORY)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004800)]
-        public string Category
-        {
-            get
-            {
-                CheckPropertyInited("Category");
-                return _category;
-            }
-            set
-            {
-                _category = value;
-                NotifyPropertyChanged("Category");
-            }
-        }
-
-
-        private string _subcategory;
-        /// <summary>
-        /// 10004900 Подкатегория (SUBCATEGORY)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004900)]
-        public string Subcategory
-        {
-            get
-            {
-                CheckPropertyInited("Subcategory");
-                return _subcategory;
-            }
-            set
-            {
-                _subcategory = value;
-                NotifyPropertyChanged("Subcategory");
-            }
-        }
-
-
-        private long? _categoryid;
-        /// <summary>
-        /// 10005000 Идентификатор категории (CATEGORY_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005000)]
-        public long? CategoryId
-        {
-            get
-            {
-                CheckPropertyInited("CategoryId");
-                return _categoryid;
-            }
-            set
-            {
-                _categoryid = value;
-                NotifyPropertyChanged("CategoryId");
             }
         }
 

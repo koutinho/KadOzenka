@@ -59,28 +59,11 @@ namespace KadOzenka.Dal.DuplicateCleaner
                             x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep ||
                             x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess ||
                             x.ExclusionStatus_Code == ObjectModel.Directory.ExclusionStatus.Duplicate))
-                .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.Subcategory, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
+                .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
                 .Execute()
                 .ToList();
 
-        public void Detect(bool useTestTable = false, bool logData = true)
-        {
-	        if (useTestTable)
-	        {
-		        var inputObjects = OMCoreObjectTest
-			        .Where(x => true)
-			        .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.Subcategory, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
-			        .Execute()
-			        .ToList()
-					.Select(x => x.AsIMarketObject()).ToList();
-		        PerformProc(inputObjects, logData);
-			}
-	        else
-	        {
-		        var inputObjects = AllObjects.Select(x => x.AsIMarketObject()).ToList();
-		        PerformProc(inputObjects, logData);
-			}
-        }
+        public void Detect(bool logData = true) => PerformProc(AllObjects, logData);
 
         private OMDuplicatesHistory FormHistory(DateTime dateTime, string marketSegment, decimal areaDelta, decimal priceDelta, int commonCount, int inProgressCount, int duplicateObjects)
         {
@@ -95,11 +78,11 @@ namespace KadOzenka.Dal.DuplicateCleaner
             return result;
         }
 
-	    private void PerformProc<T>(List<T> inputObjects, bool logData = true) where T : IMarketObject
+	    private void PerformProc(List<OMCoreObject> inputObjects, bool logData = true)
 		{
-			var objs = inputObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyType_Code, x.Subcategory }).Select(grp => grp.ToList()).ToList();
-			var result = new List<List<T>>();
-			objs.ForEach(x => result.AddRange(SplitListByPersent(x.OrderBy(y => y.Area).ToList())));
+			var objs = inputObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code }).Select(grp => grp.ToList()).ToList();
+			var result = new List<List<OMCoreObject>>();
+			objs.ForEach(x => result.AddRange(SplitListByPersent<OMCoreObject>(x.OrderBy(y => y.Area).ToList())));
 			int ICur = 0, ICor = 0, IErr = 0, ICtr = result.Count, IDup = 0;
 			result.ForEach(x =>
 			{
@@ -129,12 +112,12 @@ namespace KadOzenka.Dal.DuplicateCleaner
             ConsoleLog.WriteFotter("Проверка данных на дублинование завершена");
 		}
 
-	    private List<List<T>> SplitListByPersent<T>(List<T> list) where T : IMarketObject
+	    private List<List<OMCoreObject>> SplitListByPersent<T>(List<OMCoreObject> list)
 		{
-            List<List<T>> result = new List<List<T>>();
-			T FEL = list.ElementAt(0);
+            List<List<OMCoreObject>> result = new List<List<OMCoreObject>>();
+            OMCoreObject FEL = list.ElementAt(0);
             int counter = 0;
-            result.Add(new List<T>());
+            result.Add(new List<OMCoreObject>());
             list.ForEach(x =>
             {
                 if (FEL.Area.GetValueOrDefault() >= x.Area.GetValueOrDefault() * Convert.ToDecimal(1 - AreaDelta) &&
@@ -145,7 +128,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
                 {
                     FEL = x;
                     counter++;
-                    result.Add(new List<T>());
+                    result.Add(new List<OMCoreObject>());
                     result.ElementAt(counter).Add(FEL);
                 }
             });

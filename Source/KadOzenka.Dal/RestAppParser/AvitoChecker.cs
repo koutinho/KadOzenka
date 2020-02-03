@@ -10,8 +10,7 @@ namespace KadOzenka.Dal.RestAppParser
 {
     public class AvitoChecker
     {
-        DateTime LastUpdateDate =
-            OMCoreObject.Where(x => true).Select(x => x.ParserTime).OrderByDescending(x => x.ParserTime).ExecuteFirstOrDefault().ParserTime.GetValueOrDefault();
+        DateTime LastUpdateDate = OMCoreObject.Where(x => true).Select(x => x.ParserTime).OrderByDescending(x => x.ParserTime).ExecuteFirstOrDefault().ParserTime.GetValueOrDefault();
         int restData = new JSONParser.RestApp().GetRestData(new RestApp().GetMetaInfoDataValues());
 
         public void Detect()
@@ -23,13 +22,9 @@ namespace KadOzenka.Dal.RestAppParser
             {
                 DateTime currentTime = LastUpdateDate.AddSeconds(1);
                 LastUpdateDate = LastUpdateDate.AddMinutes(delta);
-                foreach (string region in regionIDs)
-                {
-                    foreach (string category in categories)
-                    {
+                foreach (string region in regionIDs) 
+                    foreach (string category in categories) 
                         Console.WriteLine($"{new RestApp().GetAvitoDataByMultipleValues(region, category, currentTime, LastUpdateDate)}");
-                    }
-                }
             }
             Console.WriteLine(string.Join(";", regionIDs));
             Console.WriteLine(string.Join(";", categories));

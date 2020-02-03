@@ -39,25 +39,26 @@ namespace KadOzenka.Dal.YandexParser
 
 		public void FormMarketObjects()
 		{
-			FormMarketObjectsRequests.Add(new FormMarketObjectsRequest
+            //Офисы
+            FormMarketObjectsRequests.Add(new FormMarketObjectsRequest
 			{
 				ObjectsListUrl = "https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/ofis/?hasFurniture=NO",
 				DealType = DealType.SaleSuggestion,
 				MarketSegment = MarketSegment.Office,
 				PropertyTypeCIPJS = PropertyTypesCIPJS.Placements,
-				PropertyType = PropertyTypes.Pllacement,
-				Subcategory = "Офисная"
+				PropertyType = PropertyTypes.Pllacement
 			});
-			//FormMarketObjectsRequests.Add(new FormMarketObjectsRequest
-			//{
-			//	ObjectsListUrl = "https://realty.yandex.ru/moskva/snyat/kommercheskaya-nedvizhimost/ofis/?hasFurniture=NO",
-			//	DealType = DealType.RentSuggestion,
-			//	MarketSegment = MarketSegment.Office,
-			//	PropertyTypeCIPJS = PropertyTypesCIPJS.Placements,
-			//	PropertyType = PropertyTypes.Pllacement,
-			//	Subcategory = "Офисная"
-			//});
-			DoFormMarketObjects();
+            //Торговые помещения
+            FormMarketObjectsRequests.Add(new FormMarketObjectsRequest
+            {
+                ObjectsListUrl = "https://realty.yandex.ru/moskva/kupit/kommercheskaya-nedvizhimost/torgovoe-pomeshchenie/?hasPhoto=YES&showSimilar=NO&hasFurniture=NO",
+                DealType = DealType.SaleSuggestion,
+                MarketSegment = MarketSegment.Trading,
+                PropertyTypeCIPJS = PropertyTypesCIPJS.Placements,
+                PropertyType = PropertyTypes.Pllacement
+            });
+
+            DoFormMarketObjects();
 		}
 
 		public void DoFormMarketObjects()
@@ -136,13 +137,9 @@ namespace KadOzenka.Dal.YandexParser
 		{
 			var marketObject = new OMCoreObject();
 			marketObject.Market_Code = MarketTypes.YandexProterty;
-			marketObject.ProcessType_Code = ProcessStep.DoNotProcessed;
-			marketObject.CategoryId = 3;
-			marketObject.Category = "Коммерческая недвижимость";
-			marketObject.Subcategory = formMarketObjectsRequest.Subcategory;
+			marketObject.ProcessType_Code = ProcessStep.InProcess; //ProcessStep.DoNotProcessed;
 			marketObject.DealType_Code = formMarketObjectsRequest.DealType;
 			marketObject.PropertyMarketSegment_Code = formMarketObjectsRequest.MarketSegment;
-			marketObject.PropertyType_Code = formMarketObjectsRequest.PropertyType;
 			marketObject.PropertyTypesCIPJS_Code = formMarketObjectsRequest.PropertyTypeCIPJS;
 			marketObject.MarketId = obj.SelectToken("cards.offers.offerId").Value<long>();
 			marketObject.Url = objectUrl;
