@@ -1011,6 +1011,7 @@ namespace ObjectModel.Gbu.GroupingAlgoritm
     }
     #endregion
 }
+
 namespace ObjectModel.Gbu.Harmonization
 {
     /// <summary>
@@ -1128,12 +1129,6 @@ namespace ObjectModel.Gbu.Harmonization
         public List<string> ValuesFilter;
 
         /// <summary>
-        /// Простановка по кадастровому номеру
-        /// </summary>
-        public bool UseCadastralNumber;
-
-
-        /// <summary>
         /// Фактор 1 уровня 
         /// </summary>
         public long? Level1Attribute;
@@ -1173,6 +1168,15 @@ namespace ObjectModel.Gbu.Harmonization
         /// Фактор 10 уровня 
         /// </summary>
         public long? Level10Attribute;
+        /// <summary>
+        /// Значение по умолчанию 
+        /// </summary>
+        public string DefaultValue;
+        /// <summary>
+        /// Документ для значения по умолчанию 
+        /// </summary>
+        public long? IdDocument;
+
     }
     /// <summary>
     /// Гармонизация с использованием справочника ЦОД
@@ -1187,5 +1191,59 @@ namespace ObjectModel.Gbu.Harmonization
             //TODO: реализацию надо перенести из старого комплекса
         }
     }
+}
 
+namespace ObjectModel.Gbu.CodSelection
+{
+    /// <summary>
+    /// Настройки выборки из справочника ЦОД
+    /// </summary>
+    public struct CodSelectionSettings
+    {
+        /// <summary>
+        /// Идентификатор задания ЦОД
+        /// </summary>
+        public long? IdCodJob;
+
+        /// <summary>
+        /// Идентификатор атрибута, куда будет записан результат 
+        /// </summary>
+        public long? IdAttributeResult;
+        /// <summary>
+        /// Тип объекта 
+        /// </summary>
+        public PropertyTypes PropertyType;
+
+        /// <summary>
+        /// Выборка по всем объектам
+        /// </summary>
+        public bool SelectAllObject;
+        /// <summary>
+        /// Идентификатор аттрибута - фильтра
+        /// </summary>
+        public long? IdAttributeFilter;
+        /// <summary>
+        /// Список значений фильтра
+        /// </summary>
+        public List<string> ValuesFilter;
+
+        /// <summary>
+        /// Документ 
+        /// </summary>
+        public long? IdDocument;
+
+    }
+    /// <summary>
+    /// Выборка из справочника ЦОД
+    /// </summary>
+    public class CodSelection
+    {
+        /// <summary>
+        /// Выборка из справочника ЦОД по кадастровому номеру
+        /// </summary>
+        public static void SelectByCadastralNumber(CodSelectionSettings setting)
+        {
+            //TODO: реализацию надо перенести из старого комплекса
+        }
+    }
 }
