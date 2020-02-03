@@ -53,12 +53,9 @@ namespace KadOzenka.Dal.DuplicateCleaner
 
         readonly List<OMCoreObject> AllObjects =
             OMCoreObject
-                .Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && 
-                            x.LastDateUpdate != null &&
-                            x.Price > 1 && (
-                            x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep ||
+                .Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep ||
                             x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess ||
-                            x.ExclusionStatus_Code == ObjectModel.Directory.ExclusionStatus.Duplicate))
+                            x.ExclusionStatus_Code == ObjectModel.Directory.ExclusionStatus.Duplicate)
                 .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
                 .Execute()
                 .ToList();
