@@ -5,7 +5,6 @@ using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.KadNumberChecker;
 using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.DataExport;
-using KadOzenka.BlFrontEnd.GetSeleniumScreens;
 using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
 using KadOzenka.Dal.RestAppParser;
 using KadOzenka.Dal.Selenium.PriceChecker;
@@ -63,11 +62,11 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("1105", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
 
             consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
-            consoleHelper.AddCommand("9", "Процедура создания тестовых скриншотов", () => { new Selenium().MakeScreenshot(); });
+
             consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
             consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
-            consoleHelper.AddCommand("13", "Check Avito", () => { new AvitoChecker().Detect(); });
             consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(100); });
+
             consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам", () => { ObjectReplicationExcelProcess.SetCadastralNumber(ConfigurationManager.AppSettings["InitialAddressFile"], ConfigurationManager.AppSettings["DefaultExceleValue"]); });
             consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
             consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
