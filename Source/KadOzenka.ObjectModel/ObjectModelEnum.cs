@@ -389,6 +389,18 @@ namespace ObjectModel.Directory
 		[Description("В+")]
         [EnumCode("3")]
         Bplus = 762,
+		/// <summary>
+		/// A+ (901)
+		/// </summary>
+		[Description("A+")]
+        [EnumCode("4")]
+        Aplus = 901,
+		/// <summary>
+		/// C (902)
+		/// </summary>
+		[Description("C")]
+        [EnumCode("5")]
+        C = 902,
     }
 }
 
@@ -1468,9 +1480,9 @@ namespace ObjectModel.Directory.Declarations
         [EnumCode("7")]
         Ens = 7,
 		/// <summary>
-		/// Производственно имущественный комплекс (8)
+		/// Производственно-имущественный комплекс (8)
 		/// </summary>
-		[Description("Производственно имущественный комплекс")]
+		[Description("Производственно-имущественный комплекс")]
         [EnumCode("8")]
         Pik = 8,
 		/// <summary>
