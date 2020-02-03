@@ -1011,3 +1011,181 @@ namespace ObjectModel.Gbu.GroupingAlgoritm
     }
     #endregion
 }
+namespace ObjectModel.Gbu.Harmonization
+{
+    /// <summary>
+    /// Настройки простой гармонизации
+    /// </summary>
+    public struct HarmonizationSettings
+    {
+        /// <summary>
+        /// Идентификатор атрибута, куда будет записан результат 
+        /// </summary>
+        public long? IdAttributeResult;
+        /// <summary>
+        /// Тип объекта 
+        /// </summary>
+        public PropertyTypes PropertyType;
+
+        /// <summary>
+        /// Выборка по всем объектам
+        /// </summary>
+        public bool SelectAllObject;
+        /// <summary>
+        /// Идентификатор аттрибута - фильтра
+        /// </summary>
+        public long? IdAttributeFilter;
+        /// <summary>
+        /// Список значений фильтра
+        /// </summary>
+        public List<string> ValuesFilter;
+
+        /// <summary>
+        /// Фактор 1 уровня 
+        /// </summary>
+        public long? Level1Attribute;
+        /// <summary>
+        /// Фактор 2 уровня 
+        /// </summary>
+        public long? Level2Attribute;
+        /// <summary>
+        /// Фактор 3 уровня 
+        /// </summary>
+        public long? Level3Attribute;
+        /// <summary>
+        /// Фактор 4 уровня 
+        /// </summary>
+        public long? Level4Attribute;
+        /// <summary>
+        /// Фактор 5 уровня 
+        /// </summary>
+        public long? Level5Attribute;
+        /// <summary>
+        /// Фактор 6 уровня 
+        /// </summary>
+        public long? Level6Attribute;
+        /// <summary>
+        /// Фактор 7 уровня 
+        /// </summary>
+        public long? Level7Attribute;
+        /// <summary>
+        /// Фактор 8 уровня 
+        /// </summary>
+        public long? Level8Attribute;
+        /// <summary>
+        /// Фактор 9 уровня 
+        /// </summary>
+        public long? Level9Attribute;
+        /// <summary>
+        /// Фактор 10 уровня 
+        /// </summary>
+        public long? Level10Attribute;
+    }
+    /// <summary>
+    /// Простая гармонизация
+    /// </summary>
+    public class Harmonization
+    {
+        /// <summary>
+        /// Выполнение операции гармонизации
+        /// </summary>
+        public static void Run(HarmonizationSettings setting)
+        {
+            //TODO: реализацию надо перенести из старого комплекса
+        }
+    }
+
+    /// <summary>
+    /// Настройки гармонизации с использованием справочника ЦОД
+    /// </summary>
+    public struct HarmonizationCODSettings
+    {
+        /// <summary>
+        /// Идентификатор задания ЦОД
+        /// </summary>
+        public long? IdCodJob;
+
+        /// <summary>
+        /// Идентификатор атрибута, куда будет записан результат 
+        /// </summary>
+        public long? IdAttributeResult;
+        /// <summary>
+        /// Тип объекта 
+        /// </summary>
+        public PropertyTypes PropertyType;
+
+        /// <summary>
+        /// Выборка по всем объектам
+        /// </summary>
+        public bool SelectAllObject;
+        /// <summary>
+        /// Идентификатор аттрибута - фильтра
+        /// </summary>
+        public long? IdAttributeFilter;
+        /// <summary>
+        /// Список значений фильтра
+        /// </summary>
+        public List<string> ValuesFilter;
+
+        /// <summary>
+        /// Простановка по кадастровому номеру
+        /// </summary>
+        public bool UseCadastralNumber;
+
+
+        /// <summary>
+        /// Фактор 1 уровня 
+        /// </summary>
+        public long? Level1Attribute;
+        /// <summary>
+        /// Фактор 2 уровня 
+        /// </summary>
+        public long? Level2Attribute;
+        /// <summary>
+        /// Фактор 3 уровня 
+        /// </summary>
+        public long? Level3Attribute;
+        /// <summary>
+        /// Фактор 4 уровня 
+        /// </summary>
+        public long? Level4Attribute;
+        /// <summary>
+        /// Фактор 5 уровня 
+        /// </summary>
+        public long? Level5Attribute;
+        /// <summary>
+        /// Фактор 6 уровня 
+        /// </summary>
+        public long? Level6Attribute;
+        /// <summary>
+        /// Фактор 7 уровня 
+        /// </summary>
+        public long? Level7Attribute;
+        /// <summary>
+        /// Фактор 8 уровня 
+        /// </summary>
+        public long? Level8Attribute;
+        /// <summary>
+        /// Фактор 9 уровня 
+        /// </summary>
+        public long? Level9Attribute;
+        /// <summary>
+        /// Фактор 10 уровня 
+        /// </summary>
+        public long? Level10Attribute;
+    }
+    /// <summary>
+    /// Гармонизация с использованием справочника ЦОД
+    /// </summary>
+    public class HarmonizationCOD
+    {
+        /// <summary>
+        /// Выполнение операции гармонизации
+        /// </summary>
+        public static void Run(HarmonizationCODSettings setting)
+        {
+            //TODO: реализацию надо перенести из старого комплекса
+        }
+    }
+
+}
