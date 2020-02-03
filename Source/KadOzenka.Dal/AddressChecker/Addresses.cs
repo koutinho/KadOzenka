@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Text;
-using ObjectModel.Market;
-using System.Collections.Generic;
 using System.Linq;
+using ObjectModel.Market;
+using System.Configuration;
+using System.Collections.Generic;
 
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.WebRequest;
@@ -15,10 +16,10 @@ namespace KadOzenka.Dal.AddressChecker
     {
 
         List<OMCoreObject> AllObjects =
-            OMCoreObject.Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && x.ProcessType_Code == ObjectModel.Directory.ProcessStep.DoNotProcessed)
+            OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.DoNotProcessed)
                         .Select(x => new { x.Market_Code, x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code })
                         .Execute()
-                        .Take(25000)
+                        .Take(Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"]))
                         .ToList();
 
         public void Detect()
