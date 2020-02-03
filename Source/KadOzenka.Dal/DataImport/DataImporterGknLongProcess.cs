@@ -115,7 +115,7 @@ namespace KadOzenka.Dal.DataImport
 				Message = $@"Загрузка файла ""{import.DataFileName}"" была завершена.
 Статус загрузки: {import.Status_Code.GetEnumDescription()}
 <a href=""/Task/TaskCard?TaskId={import.ObjectId}"">Перейти к заданию на оценку</a>
-< a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",
+<a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",
 				IsUrgent = true,
 				IsEmail = true
 			});
