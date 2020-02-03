@@ -33,7 +33,6 @@ namespace KadOzenka.Dal.JSONParser
                     string category = elements[i]["category"].ToString();
                     string description = elements[i]["description"].ToString();
                     long marketId = long.Parse(elements[i]["Id"].ToString());
-                    //long? price = long.TryParse(elements[i]["price"].ToString(), out var tempPrice) ? tempPrice : (long?)null;
                     long? price = 1;
                     long? roomsCount = long.TryParse(elements[i]["rooms_count"].ToString(), out var tempRC) ? tempRC : (long?)null;
                     long? floorNumber = long.TryParse(elements[i]["floor_number"].ToString(), out var tempFN) ? tempFN : (long?)null;
@@ -47,7 +46,6 @@ namespace KadOzenka.Dal.JSONParser
                     decimal? areaLiving = decimal.TryParse(elements[i]["area_living"].ToString().Replace('.', ','), out var tempAL) ? tempAL : (decimal?)null;
                     decimal? areaLand = decimal.TryParse(elements[i]["area_land"].ToString().Replace('.', ','), out var tempALA) ? tempALA : (decimal?)null;
                     DealType dealType = GetDealType(elements[i]["deal_type"].ToString());
-                    PropertyTypes propertyType = GetPropertyObjectType(buildingYear, categoryId, subCategory);
                     ExclusionStatus? exclusionStatus = GetExclusionStatus(price, area, areaLand, description, category, subCategory, dealType);
 
                     OMCoreObject CO = new OMCoreObject();
@@ -73,7 +71,8 @@ namespace KadOzenka.Dal.JSONParser
                     CO.AreaLiving = areaLiving;
                     CO.AreaLand = areaLand;
                     CO.BuildingYear = buildingYear;
-                    CO.PropertyMarketSegment_Code = GetMarketSegment(category, subCategory);
+                    CO.PropertyTypesCIPJS_Code = GetPropertyObjectTypeCIPJS(categoryId, subCategory);
+                    CO.PropertyMarketSegment_Code = GetPropertyMarketSegment(categoryId, subCategory);
                     CO.ProcessType_Code = ProcessStep.DoNotProcessed;
                     if (exclusionStatus != null)
                     {
@@ -139,79 +138,34 @@ namespace KadOzenka.Dal.JSONParser
             }
         }
 
-        private PropertyTypes GetPropertyObjectType(long? buildingYear, long? categoryId, string subcategory)
+        private PropertyTypesCIPJS GetPropertyObjectTypeCIPJS(long? categoryId, string subcategory)
         {
-            try
+            switch (categoryId)
             {
-                if (buildingYear != null && buildingYear != 0 && buildingYear > DateTime.Now.Year) return PropertyTypes.UncompletedBuilding;
-                else
-                {
-                    switch (categoryId)
-                    {
-                        case 1:
-                        case 2:
-                            return PropertyTypes.Pllacement;
-                        case 3:
-                            switch (subcategory)
-                            {
-                                case "Офисная":
-                                    return PropertyTypes.Pllacement;
-                                case "Гараж":
-                                    return PropertyTypes.Parking;
-                                case "Готовый бизнес":
-                                case "Свободного назначения":
-                                case "Торговая":
-                                case "Производственная":
-                                    return PropertyTypes.Company;
-                                case "Здание":
-                                    return PropertyTypes.Building;
-                                default:
-                                    return PropertyTypes.Pllacement;
-                                    //throw new SubcategoryException($"Категория {Subcategory} не обрабатывается");
-                            }
-                        case 4:
-                            switch (subcategory)
-                            {
-                                case "Дом":
-                                    return PropertyTypes.Building;
-                                case "Участок":
-                                    return PropertyTypes.Stead;
-                                case "Таунхаус":
-                                    return PropertyTypes.Building;
-                                default:
-                                    return PropertyTypes.Building;
-                                    //throw new SubcategoryException($"Категория {Subcategory} не обрабатывается");
-                            }
-                        default:
-                            return PropertyTypes.Other;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                //ErrorManager.LogError(ex);
-                return PropertyTypes.Other;
+                case 3: return (subcategory.Equals("Производственная") || subcategory.Equals("Здание")) ? PropertyTypesCIPJS.Buildings : PropertyTypesCIPJS.Placements;
+                case 4: return subcategory.Equals("Участок") ? PropertyTypesCIPJS.LandArea : PropertyTypesCIPJS.Buildings;
+                default: return PropertyTypesCIPJS.Placements;
             }
         }
 
-        private MarketSegment GetMarketSegment(string category, string subCategory)
+        private MarketSegment GetPropertyMarketSegment(long? categoryId, string subcategory)
         {
-            switch (category)
+            switch (categoryId)
             {
-                case "Коммерческая недвижимость":
-                    switch (subCategory)
+                case 1:
+                case 2: return MarketSegment.MZHS;
+                case 3:
+                    switch (subcategory)
                     {
-                        case "Гараж": return MarketSegment.Parking;
                         case "Офисная": return MarketSegment.Office;
-                        case "Складская":
-                        case "Производственная": return MarketSegment.Factory;
+                        case "Гараж": return MarketSegment.CarParking;
                         case "Торговая": return MarketSegment.Trading;
+                        case "Производственная": return MarketSegment.Factory;
                         default: return MarketSegment.NoSegment;
                     }
-                case "Загородная недвижимость":
-                    return MarketSegment.IZHS;
+                case 4: return MarketSegment.IZHS;
+                default: return MarketSegment.NoSegment;
             }
-            return MarketSegment.MZHS;
         }
 
         private ExclusionStatus? GetExclusionStatus(long? price, decimal? area, decimal? area_land, string description, string category, string subCategory, DealType dealType)
