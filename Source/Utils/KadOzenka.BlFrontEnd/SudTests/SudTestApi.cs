@@ -86,8 +86,13 @@ namespace KadOzenka.BlFrontEnd.SudTests
 			OMParam pStatDgi = null;
 			OMParam pAdres = null;
 			OMParam pOwner = null;
+			OMParam pApplicantType = null;
+			OMParam pTypeOfOwnership = null;
+			OMParam pAdditionalAnalysis = null;
+			OMParam pException = null;
+			OMParam pSatisfied = null;
 
-			sudObject.UpdateAndCheckParam(pKn, pType, pSquare, pKc, pDate, pNameCenter, pStatDgi, pAdres, pOwner);
+			sudObject.UpdateAndCheckParam(pKn, pType, pSquare, pKc, pDate, pNameCenter, pStatDgi, pAdres, pOwner, pApplicantType, pTypeOfOwnership, pAdditionalAnalysis, pException, pSatisfied);
 		}
 
 		public static string GetObjectFieldName<TResult>(Expression<Func<OMObject, TResult>> expr)
