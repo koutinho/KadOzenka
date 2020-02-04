@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Transactions;
+using Core.ErrorManagment;
+using Core.Register;
+using Core.Register.RegisterEntities;
 using Core.SRD;
 using Core.UI.Registers.Controllers;
 using KadOzenka.Web.Models.Declarations;
@@ -12,6 +15,7 @@ using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using Core.Shared.Extensions;
+using Core.UI.Registers.CoreUI.Registers;
 using Newtonsoft.Json;
 using ObjectModel.Core.Reports;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +23,8 @@ using GemBox.Spreadsheet;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.DataImport.Dto;
+using ObjectModel.Core.Shared;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -102,7 +108,7 @@ namespace KadOzenka.Web.Controllers
 					.ExecuteFirstOrDefault();
 			}
 			var model = declaration != null
-				? DeclarationModel.FromEntity(declaration, owner, agent, book, userIsp, result)
+				? DeclarationModel.FromEntity(declaration, owner, agent, book, userIsp, result == null ? new OMResult() : result)
 				: DeclarationModel.FromEntity(null, null, null, null, userIsp, null);
 
 			model.IsCreateDeclaration =
@@ -154,6 +160,7 @@ namespace KadOzenka.Web.Controllers
 				.Where(x => x.Declaration_Id == declarationViewModel.Id)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
+			omResult = omResult == null ? new OMResult() : omResult;
 			if (declarationViewModel.Id != -1 && omDeclaration == null)
 			{
 				return NotFound();
@@ -553,6 +560,90 @@ namespace KadOzenka.Web.Controllers
 					{acceptedCharacteristics = result.TextYes, rejectedCharacteristics = result.TextNo}),
 				"application/json");
 		}
+
+		#region DataImport
+
+		[HttpGet]
+		public IActionResult DataImport()
+		{
+			ViewBag.RegisterViewId = "DeclarationsDeclaration";
+			ViewBag.MainRegisterId = 501;
+
+			return View();
+		}
+
+		public IActionResult GetImportAttributes()
+		{
+			var source = new List<object>();
+
+			List<RegistersCommon.RegisterTemplateColumn> attributesList = RegistersCommon.BuildAttributesTree("DeclarationsDeclaration");
+
+			if (attributesList.Any())
+			{
+				var filteredAttributesList =
+					attributesList.Where(x =>
+						x.ItemId == "501" ||
+						(x.ParentId == "501" && x.Description != OMDeclaration.GetAttributeData(y => y.Id).Name
+						                     && x.Description != OMDeclaration.GetAttributeData(y => y.UserIsp_Id).Name
+						                     && x.Description !=
+						                     OMDeclaration.GetAttributeData(y => y.UserReg_Id).Name)).ToList();
+				foreach (var attributeItem in filteredAttributesList)
+				{
+					RegisterAttribute attribute = RegisterCache.RegisterAttributes.ContainsKey(attributeItem.AttributeId) ?
+								RegisterCache.RegisterAttributes[attributeItem.AttributeId] : null;
+					OMReference reference = attribute != null && attribute.ReferenceId.HasValue ?
+						OMReference.Where(r => r.ReferenceId == attribute.ReferenceId.Value).Select(r => r.Description).Execute().FirstOrDefault() : null;
+					RegisterRelation relation = attribute != null ?
+						RegisterCache.RegisterRelations.Select(r => r.Value).FirstOrDefault(r => r.RegAttributeID == attribute.Id) : null;
+
+					var type = Enum.GetName(typeof(RegisterAttributeType), attributeItem.DocumentType);
+					var description = attributeItem.ParentId == null ? attributeItem.Description + $" ({attributeItem.ItemId})" : attributeItem.Description;
+					source.Add(new
+					{
+						attributeItem.AttributeId,
+						Description = description,
+						DescriptionAttribute = attribute != null ? attribute.Description : string.Empty,
+						attributeItem.ParentId,
+						attributeItem.ItemId,
+						ReferenceId = (attributeItem.ReferenceId != 0 ? attributeItem.ReferenceId : (int?)null),
+						Type = type,
+						DataTypeName = attribute != null ? attribute.Type.GetEnumDescription() : string.Empty,
+						ReferenceName = reference != null ? reference.Description : string.Empty,
+						IsPrimaryKey = attribute?.IsPrimaryKey ?? false,
+						ForeignKey = (relation != null && RegisterCache.Registers[relation.ParentRegID] != null) ?
+									RegisterCache.Registers[relation.ParentRegID].Description : string.Empty,
+						IsVirtual = attribute?.IsVirtual ?? false,
+						ColumnDbName = attribute != null ? (attribute.ValueField + (attribute.CodeField.IsNotEmpty() ?
+									string.Format(" ({0})", attribute.CodeField) : string.Empty)) : string.Empty
+					});
+				}
+			}
+
+			return Json(source);
+		}
+
+		[HttpPost]
+		public IActionResult AddImportToQueue(IFormFile file, List<DataColumnDto> columns)
+		{
+			try
+			{
+				using (var stream = file.OpenReadStream())
+				{
+					DataImporterDeclarations.AddImportToQueue(OMDeclaration.GetRegisterId(), "DeclarationsDeclaration", file.FileName, stream,
+						columns.Select(x => new DataExportColumn
+						{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey}).ToList());
+				}
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return NoContent();
+		}
+
+		#endregion DataImport
 
 		#endregion Declarations
 

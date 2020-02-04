@@ -10,6 +10,11 @@
       </Parameters>
     </Button>
 
+     <Button Caption="Загрузка данных по списку" NavigateURL="/Declarations/DataImport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
+         <Parameters>
+         </Parameters>
+     </Button>
+
     <Button Caption="Добавить" NavigateURL="/Declarations/EditDeclaration" Icon="fas fa-plus" SRDFunctionTag="DECLARATIONS.DECLARATION.CREATE">
        <Parameters></Parameters>
     </Button>
