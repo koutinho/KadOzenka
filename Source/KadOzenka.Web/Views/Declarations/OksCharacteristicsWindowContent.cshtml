@@ -277,7 +277,7 @@
                         @Html.CustomLabelFor(m => m.CommissioningYear)
                     </div>
                     <div class="col-sm-7">
-                        @Html.KendoDatePickerFor(m => m.CommissioningYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                        @Html.KendoDatePickerFor(m => m.CommissioningYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
                     </div>
                 </div>
             </div>
@@ -298,7 +298,7 @@
                         @Html.CustomLabelFor(m => m.CompletionYear)
                     </div>
                     <div class="col-sm-7">
-                        @Html.KendoDatePickerFor(m => m.CompletionYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                        @Html.KendoDatePickerFor(m => m.CompletionYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
                     </div>
                 </div>
             </div>
@@ -319,7 +319,7 @@
                         @Html.CustomLabelFor(m => m.OverhaulCompletionYear)
                     </div>
                     <div class="col-sm-7">
-                        @Html.KendoDatePickerFor(m => m.OverhaulCompletionYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                        @Html.KendoDatePickerFor(m => m.OverhaulCompletionYear.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
                     </div>
                 </div>
             </div>
@@ -340,7 +340,7 @@
                         @Html.CustomLabelFor(m => m.ReconstructionDate)
                     </div>
                     <div class="col-sm-7">
-                        @Html.KendoDatePickerFor(m => m.ReconstructionDate.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics)
+                        @Html.KendoDatePickerFor(m => m.ReconstructionDate.DateTimeValue, isReadonly: !Model.IsEditDeclarationCharacteristics, format: "yyyy")
                     </div>
                 </div>
             </div>
@@ -746,7 +746,9 @@
             $(this).data('kendoDropDownList').bind("change", onHarAvailabilityTypeChanged);;
         });
         $("input[id*='DateTimeValue'").each(function () {
-            $(this).data('kendoDatePicker').bind("change", onDateTimeChanged);;
+            var datePicker = $(this).data('kendoDatePicker');
+            //datePicker.setOptions({ format: "{0:yyyy}", parseFormats: ["yyyy", "dd.MM.yyyy", "MM.yyyy" ] });
+            datePicker.bind("change", onDateTimeChanged);
         });
 
         $("input[id*='DecimalValue'").each(function () {
@@ -773,6 +775,11 @@
                 kendo.ui.progress($('body'), true);
                 var form = $('form');
                 var formObject = Common.Functions.FormToObject(form);
+                formObject['CommissioningYear.DateTimeValue'] =
+                    kendo.toString($('#CommissioningYear_DateTimeValue').data('kendoDatePicker').value(), "dd.MM.yyyy");
+                formObject['CompletionYear.DateTimeValue'] = kendo.toString($('#CompletionYear_DateTimeValue').data('kendoDatePicker').value(), "dd.MM.yyyy");
+                formObject['OverhaulCompletionYear.DateTimeValue'] = kendo.toString($('#OverhaulCompletionYear_DateTimeValue').data('kendoDatePicker').value(), "dd.MM.yyyy");
+                formObject['ReconstructionDate.DateTimeValue'] = kendo.toString($('#ReconstructionDate_DateTimeValue').data('kendoDatePicker').value(), "dd.MM.yyyy");
 
                 $.post(form.attr('action'), formObject).done(function(response) {
                     kendo.ui.progress($('body'), false);
