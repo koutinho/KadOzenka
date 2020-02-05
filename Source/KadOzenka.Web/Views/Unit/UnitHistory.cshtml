@@ -1,0 +1,67 @@
+﻿@model long
+
+<div>
+    <div id="grid"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetUnitHistory", "Unit")' + '?unitId=@Model',
+                        dataType: "json"
+                    }
+                },
+                schema: {
+                    model: {
+                        id: "Id"                        
+                    }
+                },
+            },
+            columns: [
+                {
+                    field: "CadastralNumber",
+                    title: "Кадастровый номер",
+                    template: '<a target="_blank" href="/Unit/ObjectCard?unitId=#=Id#">#=CadastralNumber#</a>',
+                },
+                {
+                    field: "CreationDate",
+                    title: "Дата оценки",
+                    template: '#=kendo.toString(kendo.parseDate(CreationDate), "dd.MM.yyyy")#',
+                },
+                {
+                    field: "NoteType",
+                    title: "Тип статьи",
+                },
+                {
+                    field: "InputDoc",
+                    title: "Входящий документ",
+                },
+                {
+                    field: "CadastralCost",
+                    title: "Кадастровая стоимость",
+                },
+                {
+                    field: "Upks",
+                    title: "Удельный показатель",
+                },
+                {
+                    field: "Group",
+                    title: "Группа",
+                },
+                {
+                    field: "OutputDoc",
+                    title: "Исходящий документ",
+                },
+            ]
+        });
+    });
+</script>
+
+<style>
+    .k-grid td {
+        white-space: normal;
+    }
+</style>

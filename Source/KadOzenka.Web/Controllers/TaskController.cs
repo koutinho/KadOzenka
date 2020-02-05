@@ -284,79 +284,12 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult Unit(long objectId)
 		{
-			UnitDto dto = new UnitDto();
-			dto.ObjectId = objectId;
-
 			OMUnit unit = OMUnit.Where(x => x.ObjectId == objectId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
-			if (unit != null)
-			{
-				dto.Id = unit.Id;
-
-				dto.CadastralNumber = unit.CadastralNumber;
-				dto.CadastralBlock = unit.CadastralBlock;
-				dto.PropertyType = unit.PropertyType_Code;			
-				dto.Square = unit.Square;
-				dto.Status = unit.Status_Code;				
-				dto.UnitCreationDate = unit.CreationDate;
-
-				dto.UpksPre = unit.UpksPre;
-				dto.CadastralCostPre = unit.CadastralCostPre;
-				dto.Upks = unit.Upks;
-				dto.CadastralCost = unit.CadastralCost;
-				dto.StatusRepeatCalc = unit.StatusRepeatCalc_Code;			
-				dto.StatusResultCalc = unit.StatusResultCalc_Code;			
-				dto.ParentCalcType = unit.ParentCalcType_Code;			
-				dto.ParentCalcNumber = unit.ParentCalcNumber;
-
-				OMTask task = OMTask.Where(x => x.Id == unit.TaskId)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
-
-				if (task != null)
-				{
-					dto.TaskId = task.Id;
-
-					dto.TourId = task.TourId;
-					dto.NoteType = task.NoteType_Code;					
-					dto.DocumentId = task.DocumentId;
-					dto.TaskCreationDate = task.CreationDate;
-					
-					dto.ResponseDocId = task.ResponseDocId;
-
-					OMTour tour = OMTour.Where(x => x.Id == dto.TourId)
-						.Select(x => x.Year)
-						.ExecuteFirstOrDefault();
-					dto.Tour = tour?.Year;
-				}
-
-				OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
-
-				if (group != null)
-				{
-					dto.GroupName = group.GroupName;
-					dto.GroupId = group.Id;
-				}
-
-				OMCostRosreestr costRosreestr = OMCostRosreestr.Where(x => x.IdObject == unit.Id)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
-
-				if (costRosreestr != null)
-				{
-					dto.CostRosreestrId = costRosreestr.Id;
-					dto.Datevaluation = costRosreestr.Datevaluation;
-					dto.CostValue = costRosreestr.Costvalue;
-					dto.DocName = costRosreestr.Docname;
-					dto.DocNumber = costRosreestr.Docnumber;
-					dto.DocDate = costRosreestr.Docdate;
-				}
-			}
-
+			UnitDto dto = UnitDto.ToDto(unit);
+			
 			bool isEditPermission = true;
 			ViewBag.IsEditPermission = isEditPermission;
 
