@@ -52,7 +52,7 @@ namespace KadOzenka.Web.Models.Sud
         public string RecAfter { get; set; }
 
         [Required(ErrorMessage = "Выберите поле рассмотрено")]
-        [Display(Name = "Рассмотрено с Ковалевым")]
+        [Display(Name = "Утверждено")]
         public string RecSoglas { get; set; }
 
         public string NumberForTab { get; set; }

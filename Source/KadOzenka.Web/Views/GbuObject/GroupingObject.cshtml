@@ -1,0 +1,367 @@
+﻿@model KadOzenka.Web.Models.GbuObject.GroupingObject;
+
+<style>
+	#valuesFilter-list {
+		display: none !important;
+	}
+	.filter {
+		padding-top: 5px;
+	}
+</style>
+
+@using (Html.BeginForm("GroupingObject", "GbuObject", FormMethod.Post))
+{
+<div class="form-horizontal col-sm-12">
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.IdCodJob)
+		</div>
+		<div class="col-sm-10">
+			@Html.KendoAutoCopmpliteFor(m => m.IdCodJob, "", "", "", "", isReadonly: false)
+		</div>
+	</div>
+	<fieldset class="filter">
+		<div class="form-group">
+			<div class="col-sm-12">
+				@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("Все объекты").Value(true)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("По значению").Value(false)
+			</div>
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.IdAttributeFilter)
+			</div>
+			<div class="col-sm-3">
+				@Html.KendoAutoCopmpliteFor(m => m.IdAttributeFilter, "", "", "", "", isReadonly: false)
+			</div>
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.ValuesFilter)
+			</div>
+			<div class="col-sm-3">
+				<select id="valuesFilter" style="width: 100%;"></select>
+			</div>
+		</div>
+	</fieldset>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>1 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level1.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level1.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level1.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>2 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level2.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level2.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level2.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>3 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level3.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level3.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level3.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>4 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level4.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level4.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level4.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>5 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level5.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level5.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level5.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>6 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level6.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level6.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level6.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>7 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level7.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level7.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level7.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>8 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level8.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level8.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level8.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>9 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level9.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level9.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level9.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>10 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level10.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level10.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level10.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<p>11 Уровень</p>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level11.UseDictionary))
+			Справочник
+		</label>
+	</div>
+	<div class="col-sm-2">
+		<label>
+			@(Html.Kendo().CheckBoxFor(m => m.Level11.SkipDefis))
+			Игнорировать "-"
+		</label>
+	</div>
+	<div class="col-sm-2">
+		@Html.CustomLabel("Характеристика")
+	</div>
+	<div class="col-sm-6">
+		@Html.KendoAutoCopmpliteFor(m => m.Level11.IdFactor, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-2">
+		@Html.CustomLabelFor(m => m.IdAttributeResult)
+	</div>
+	<div class="col-sm-10">
+		@Html.KendoAutoCopmpliteFor(m => m.IdAttributeResult, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-2">
+		@Html.CustomLabelFor(m => m.IdAttributeSource)
+	</div>
+	<div class="col-sm-10">
+		@Html.KendoAutoCopmpliteFor(m => m.IdAttributeSource, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-2">
+		@Html.CustomLabelFor(m => m.IdAttributeDocument)
+	</div>
+	<div class="col-sm-10">
+		@Html.KendoAutoCopmpliteFor(m => m.IdAttributeDocument, "", "", "", "", isReadonly: false)
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-sm-12">
+		<button style="float: right" id="save" class="k-button" type="button">Выполнить</button>
+	</div>
+</div>
+</div>
+}
+
+<script type="text/javascript">
+	$(document).ready(function() {
+
+		function onDataBound(e) {
+			$('.k-multiselect .k-input').unbind('keyup');
+			$('.k-multiselect .k-input').on('keyup', onClickEnter);
+		}
+		function onClickEnter(e) {
+			if (e.keyCode === 13) {
+				var widget = $('#valuesFilter').getKendoMultiSelect();
+				var dataSource = widget.dataSource;
+				var input = $('.k-multiselect .k-input');
+				var value = input.val().trim();
+				if (!value || value.length === 0) {
+					return;
+				}
+				var newItem = {
+					valuesFilter: value,
+					valuesFilterName: value
+				};
+
+				dataSource.add(newItem);
+				var newValue = newItem.valuesFilter;
+				widget.value(widget.value().concat([newValue]));
+			}
+		}
+		$("#valuesFilter").kendoMultiSelect({
+			dataTextField: "valuesFilterName",
+			dataValueField: "valuesFilter",
+			dataSource: {
+				data: []
+			},
+			dataBound: onDataBound
+		});
+	});
+</script>

@@ -48,5 +48,11 @@ namespace KadOzenka.Web.Controllers
 
 			return View(sttributesValues);
 		}
+
+		[HttpGet]
+		public ActionResult GroupingObject()
+		{
+			return View();
+		}
 	}
 }

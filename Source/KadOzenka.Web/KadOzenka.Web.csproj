@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Views\GbuObject\GroupingObject.cshtml" />
     <Content Remove="Views\Tour\GroupCard.cshtml" />
     <Content Remove="Views\Tour\TourSubCard.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
@@ -548,8 +549,15 @@
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
   <ItemGroup>
+    <None Include="Views\GbuObject\GroupingObject.cshtml" />
     <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
     <None Include="Views\Tour\Partials\TourSubCard.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\GbuObject\GroupingObject.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\GbuObject\GroupingObject.cshtml" />
   </ItemGroup>
 
 </Project>
