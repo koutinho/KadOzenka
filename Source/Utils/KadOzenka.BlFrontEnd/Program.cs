@@ -53,17 +53,13 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных",
 				() => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
 
-			/*Загрузка информации по предложениям из ЦИАН-а через RestApp*/
-			consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp",
-				() => { new Data().Detect(); });
-			consoleHelper.AddCommand("1102", "Присвоение адресов не обработанным объектам сторонних маркетов",
-				() => { new Addresses().Detect(); });
-			consoleHelper.AddCommand("1103", "Присвоение кадастровых номеров объектам сторонних маркетов",
-				() => { new KadNumbers().Detect(); });
-			consoleHelper.AddCommand("1104", "Процедура обновления цен объектов-аналогов с ЦИАН-а",
-				() => { new Cian().RefreshAllData(15000, true); });
-			consoleHelper.AddCommand("1105", "Процедура проверки данных на дублирование",
-				() => { new Duplicates().Detect(); });
+            /*Загрузка информации по предложениям из ЦИАН-а через RestApp*/
+            consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp", () => { new Data().Detect(); });
+            consoleHelper.AddCommand("1102", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
+            consoleHelper.AddCommand("1103", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
+            consoleHelper.AddCommand("1104", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });
+            consoleHelper.AddCommand("1106", "Процедура обновления цен объектов-аналогов с Яндекс недвижимость", () => { new Yandex().RefreshAllData(testBoot: true); });
+            consoleHelper.AddCommand("1105", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
 
 			/*Генерация тайлов для карт яндекс*/
 			consoleHelper.AddCommand("1901", "Генерация JSON файлов с пиксельными координатами",

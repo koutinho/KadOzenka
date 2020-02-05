@@ -33,11 +33,13 @@ namespace KadOzenka.Dal.AddressChecker
                 {
                     OMYandexAddress address = new JSONParser.YandexGeocoder().ParseYandexAddress(new WebRequest.YandexGeocoder().GetDataByGeocode(x.Lng, x.Lat));
                     x.Address = address.FormalizedAddress;
+                    x.District = address.District;
                     x.ProcessType_Code = ObjectModel.Directory.ProcessStep.AddressStep;
                     YCor++;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    Console.WriteLine(ex.Message);
                     x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Excluded;
                     x.ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.NoAddress;
                     YErr++;

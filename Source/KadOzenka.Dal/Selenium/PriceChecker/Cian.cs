@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 objects.ForEach(x => 
                 {
                     driver.Navigate().GoToUrl(x.Url);
-                    File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{cntr}.png", new FullScreen().TakeScreenShot((ChromeDriver)driver));
+                    File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{cntr}.png", new FullScreen().TakeScreenShot((ChromeDriver)driver, MarketTypes.Cian));
                     cntr++;
                 });
             }
@@ -51,7 +51,6 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             if (maxCounter != 0) AllObjects = AllObjects.Take(maxCounter).ToList();
             ChromeOptions options = new ChromeOptions();
             ChromeDriverService service = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            Console.WriteLine(AllObjects.Count);
             using (ChromeDriver driver = new ChromeDriver(service, options)) 
             {
                 driver.Manage().Window.Maximize();
@@ -100,7 +99,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                     if (lastPrice == null || highPrice != lastPrice.PriceValueTo)
                                     {
                                         new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueFrom = lowPrice, PriceValueTo = highPrice }.Save();
-                                        SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, initialObject.Id, testBoot);
+                                        SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, MarketTypes.Cian, initialObject.Id, testBoot);
                                         initialObject.Price = highPrice;
                                         initialObject.LastDateUpdate = currentTime;
                                         initialObject.ExclusionStatus_Code = ExclusionStatus.IncorrectPrice;
@@ -122,7 +121,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                     if (lastPrice == null || price != lastPrice.PriceValueTo)
                                     {
                                         new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueTo = price }.Save();
-                                        SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, initialObject.Id, testBoot);
+                                        SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, MarketTypes.Cian, initialObject.Id, testBoot);
                                         initialObject.Price = price;
                                         initialObject.LastDateUpdate = currentTime;
                                         CScr++;
@@ -155,11 +154,11 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             ConsoleLog.WriteFotter("Обновление цен завершено");
         }
 
-        private void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot, DateTime screenShotData, long objectId = 0, bool testBoot = false)
+        public void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot, DateTime screenShotData, MarketTypes type, long objectId = 0, bool testBoot = false)
         {
             try
             {
-				var screenShot = new FullScreen().TakeScreenShot(driver);
+				var screenShot = new FullScreen().TakeScreenShot(driver, type);
 				if (screenShot != null) FileStorageManager.Save(new MemoryStream(screenShot), ConfigurationManager.AppSettings["screenShotFolder"], screenShotData, screenshot.Save().ToString());
                 if (testBoot) File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png", screenShot);
             }

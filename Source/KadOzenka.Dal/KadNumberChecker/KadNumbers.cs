@@ -29,6 +29,8 @@ namespace KadOzenka.Dal.KadNumberChecker
                 if (address != null)
                 {
                     x.CadastralNumber = address.CadastralNumber;
+                    x.CadastralQuartal = address.CadastralNumber.Substring(0, address.CadastralNumber.LastIndexOf(":"));
+                    x.BuildingCadastralNumber = address.CadastralNumber;
                     x.ProcessType_Code = ObjectModel.Directory.ProcessStep.CadastralNumberStep;
                     address.InitialId = x.Id;
                     address.Lng = x.Lng;

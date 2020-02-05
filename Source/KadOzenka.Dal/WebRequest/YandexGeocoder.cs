@@ -12,7 +12,7 @@ namespace KadOzenka.Dal.WebRequest
         public string GetDataByGeocode(decimal? lng, decimal? lat) =>
             new StreamReader(
                 System.Net.WebRequest.Create(string.Format(ConfigurationManager.AppSettings["geocodeLink"],
-                                                           ConfigurationManager.AppSettings["GeocodeTest000"],
+                                                           ConfigurationManager.AppSettings["GeocodeTestSpecial"],
                                                            lng.ToString().Replace(",", "."),
                                                            lat.ToString().Replace(",", ".")))
                                      .GetResponse()
@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.WebRequest
             ).ReadToEnd();
 
         public string GetDataByAddress(string address) =>
-            new StreamReader(System.Net.WebRequest.Create(string.Format(ConfigurationManager.AppSettings["geocodeLinkAddress"], ConfigurationManager.AppSettings["GeocodeTest001"], address))
+            new StreamReader(System.Net.WebRequest.Create(string.Format(ConfigurationManager.AppSettings["geocodeLinkAddress"], ConfigurationManager.AppSettings["GeocodeTest0001"], address))
                                      .GetResponse()
                                      .GetResponseStream(),
                 Encoding.UTF8).ReadToEnd();

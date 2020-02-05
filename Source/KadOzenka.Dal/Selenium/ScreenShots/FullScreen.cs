@@ -15,20 +15,33 @@ using OpenQA.Selenium.Support.UI;
 using Core.Shared.Extensions;
 using ImageProccessor;
 using System.Threading;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Selenium.ScreenShots
 {
 
     public class FullScreen
     {
-        public byte[] TakeScreenShot(ChromeDriver driver)
+        public byte[] TakeScreenShot(ChromeDriver driver, MarketTypes type)
         {
-            driver.ExecuteScript(ConfigurationManager.AppSettings["showCIANHiddenInfo"]);
-            //driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANEnterSiteScript"]);
-            //driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANAboutSiteScript"]);
-            driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANRightBanerScript"]);
-            driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
-            driver.ExecuteScript(ConfigurationManager.AppSettings["hidePageScroll"]);
+
+            switch (type)
+            {
+                case MarketTypes.Cian:
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["showCIANHiddenInfo"]);
+                    //driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANEnterSiteScript"]);
+                    //driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANAboutSiteScript"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANRightBanerScript"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeCIANBanerScript"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["hidePageScroll"]);
+                    break;
+                case MarketTypes.YandexProterty:
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeYandexRightPanel"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeYandexRelatedOffers"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeYandexBlogPosts"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeYandexFotter"]);
+                    break;
+            }
 
             var metrics = new Dictionary<string, object>();
             metrics["width"] = driver.ExecuteScript(ConfigurationManager.AppSettings["getPageMaxWidth"]);
@@ -37,7 +50,7 @@ namespace KadOzenka.Dal.Selenium.ScreenShots
 	        metrics["mobile"] = false;
 	        driver.ExecuteChromeCommand("Emulation.setDeviceMetricsOverride", metrics);
 
-            Thread.Sleep(1500);
+            if(type == MarketTypes.Cian) Thread.Sleep(1500);
             var screenShot = ((ITakesScreenshot)driver).GetScreenshot();
 
 			driver.ExecuteChromeCommand("Emulation.clearDeviceMetricsOverride", new Dictionary<string, object>());

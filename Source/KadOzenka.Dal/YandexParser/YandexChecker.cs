@@ -119,7 +119,7 @@ namespace KadOzenka.Dal.YandexParser
 			}
 		}
 
-		private void CheckCapcha(ChromeDriver driver)
+		public void CheckCapcha(ChromeDriver driver)
 		{
 			var isCapcha = driver.ExecuteScript(ConfigurationManager.AppSettings["isYandexCapchaScreen"]).ToString();
 			if (bool.Parse(isCapcha))
