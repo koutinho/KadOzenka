@@ -180,7 +180,7 @@ namespace KadOzenka.Dal.DataImport
 			foreach (var keyColumn in columns)
 			{
 				int index = columnNames.IndexOf(keyColumn.ColumnName);
-				object rowValue = row.Cells[index].Value.ToString();
+				object rowValue = row.Cells[index].Value?.ToString();
 				QSCondition condition = new QSConditionSimple
 				{
 					ConditionType = QSConditionType.Equal,

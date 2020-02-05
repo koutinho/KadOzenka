@@ -162,13 +162,12 @@ namespace KadOzenka.Dal.DataImport.Helpers
 						.Where(x => x.Id == newOwnerId)
 						.SelectAll()
 						.ExecuteFirstOrDefault();
-					if (newOwner == null && !declaration.Agent_Id.HasValue)
+					if (newOwner == null)
 					{
 						result.Add(
-							$"должен быть заполнен хотя бы один атрибут: {ownerIdAttr.Name} или {agentIdAttr.Name}");
+							$"не найден объект по указанному атрибуту: {ownerIdAttr.Name}");
 					}
-
-					if (newOwner != null)
+					else 
 					{
 						var sendUvedTypeAttr = OMDeclaration.GetAttributeData(x => x.UvedTypeOwner);
 						var sendUvedType = attrValues.ContainsKey(sendUvedTypeAttr.Id)
@@ -195,13 +194,12 @@ namespace KadOzenka.Dal.DataImport.Helpers
 						.Where(x => x.Id == newAgentId)
 						.SelectAll()
 						.ExecuteFirstOrDefault();
-					if (newAgent == null && !declaration.Owner_Id.HasValue)
+					if (newAgent == null)
 					{
 						result.Add(
-							$"должен быть заполнен хотя бы один атрибут: {ownerIdAttr.Name} или {agentIdAttr.Name}");
+							$"не найден объект по указанному атрибуту: {agentIdAttr.Name}");
 					}
-
-					if (newAgent != null)
+					else 
 					{
 						var sendUvedTypeAttr = OMDeclaration.GetAttributeData(x => x.UvedTypeAgent);
 						var sendUvedType = attrValues.ContainsKey(sendUvedTypeAttr.Id)
@@ -223,9 +221,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			var sendUvedOwnerTypeAttr = OMDeclaration.GetAttributeData(x => x.UvedTypeOwner);
 			if (attrValues.ContainsKey(sendUvedOwnerTypeAttr.Id))
 			{
-				var sendUvedOwnerType = attrValues.ContainsKey(sendUvedOwnerTypeAttr.Id)
-					? attrValues[sendUvedOwnerTypeAttr.Id].Value.ParseToStringNullable()
-					: null;
+				var sendUvedOwnerType = attrValues[sendUvedOwnerTypeAttr.Id].Value.ParseToStringNullable();
 				var ownerId = attrValues.ContainsKey(ownerIdAttr.Id)
 					? attrValues[ownerIdAttr.Id].Value.ParseToLongNullable()
 					: declaration.Owner_Id;
@@ -251,9 +247,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			var sendUvedAgentTypeAttr = OMDeclaration.GetAttributeData(x => x.UvedTypeAgent);
 			if (attrValues.ContainsKey(sendUvedAgentTypeAttr.Id))
 			{
-				var sendUvedAgentType = attrValues.ContainsKey(sendUvedAgentTypeAttr.Id)
-					? attrValues[sendUvedAgentTypeAttr.Id].Value.ParseToStringNullable()
-					: null;
+				var sendUvedAgentType = attrValues[sendUvedAgentTypeAttr.Id].Value.ParseToStringNullable();
 				var agentId = attrValues.ContainsKey(agentIdAttr.Id)
 					? attrValues[agentIdAttr.Id].Value.ParseToLongNullable()
 					: declaration.Agent_Id;
@@ -388,7 +382,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 
 		private static string ValidateSubjectNotificationType(OMSubject subject, string subjectUvedType, string subjectName)
 		{
-			if (subjectUvedType == SendUvedType.Email.GetEnumDescription())
+			if (subjectUvedType == SendUvedType.Email.GetEnumDescription() || subjectUvedType == SendUvedType.Email.GetEnumCode())
 			{
 				if (string.IsNullOrWhiteSpace(subject?.Mail))
 				{
