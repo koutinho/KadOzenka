@@ -1290,7 +1290,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportDataToExcelGbu()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_GBU, true, false, true);
 			var file = DataExporterSud.ExportDataToExcelGbu();
            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                "Выгрузка судебных решений для ГБУ" + ".xlsx");
@@ -1298,7 +1298,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportDataToXml()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_XML, true, false, true);
 			var file = DataExporterSud.ExportDataToXml();
             return File(file, "application/xml",
                 "Выгрузка судебных решений на сайт в формате XML" + ".xml");
@@ -1306,7 +1306,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportAllDataToExcel()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_ALL, true, false, true);
 			var file = DataExporterSud.ExportAllDataToExcel();
             return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "Полная выгрузка" + ".xlsx");
@@ -1314,7 +1314,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportStatisticCheck()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_TRUE, true, false, true);
 			var file = DataExporterSud.ExportStatisticCheck();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 		        "Статистика по положительным судебным решениям" + ".xlsx");
@@ -1322,7 +1322,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportStatistic()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_SUMMARY, true, false, true);
 			var file = DataExporterSud.ExportStatistic();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика сводная" + ".xlsx");
@@ -1330,7 +1330,7 @@ namespace KadOzenka.Web.Controllers
 
         public FileResult GetExportStatisticObject()
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS, true, false, true);
+	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_OBJECT, true, false, true);
 			var file = DataExporterSud.ExportStatisticObject();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика по объектам недвижимости" + ".xlsx");
@@ -1440,7 +1440,7 @@ namespace KadOzenka.Web.Controllers
 
 		public FileResult GetReportAdditionalCheck(int idProcess)
 		{
-			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT, true, false, true);
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_DOP_PARAM, true, false, true);
 			var file = AdditionalAnalysisChecker.GetReportAdditionalCheck(idProcess);
 			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Результат проставления признака доп. анализа" + ".xlsx");

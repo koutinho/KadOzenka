@@ -30,19 +30,19 @@
 
 	  <Button Caption="Выгрузка в Excel" Icon="icon-excel" OpenInRadWindow="false" Type="DropDown" SRDFunctionTAG="SUD.EXPORT">
 		  <DropDownButtons>
-			  <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT"/>
+			  <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT.EXCEL"/>
 
-			  <Button Caption="Выгрузка судебных решений для ГБУ" NavigateURL="~/Sud/GetExportDataToExcelGbu"  OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT"/>
-			  <Button Caption="Полная выгрузка в Excel" NavigateURL="~/Sud/GetExportAllDataToExcel" OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT"/>
+			  <Button Caption="Выгрузка судебных решений для ГБУ" NavigateURL="~/Sud/GetExportDataToExcelGbu"  OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT.GBU"/>
+			  <Button Caption="Полная выгрузка в Excel" NavigateURL="~/Sud/GetExportAllDataToExcel" OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT.ALL"/>
 		  </DropDownButtons>
 	  </Button>
 	  <Button Caption="Выгрузка в Xml" NavigateURL="~/Sud/GetExportDataToXml" Icon="fas fa-code"  OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT"/>
 
 	  <Button Caption="Статистика" Icon="fas fa-chart-pie" OpenInRadWindow="false" Type="DropDown" SRDFunctionTAG="SUD.OBJECTS.STATISTICS">
 		  <DropDownButtons>
-			  <Button Caption="Положительные судебные решения" NavigateURL="~/Sud/GetExportStatisticCheck" OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS"/>
-			  <Button Caption="Сводная статистика" NavigateURL="~/Sud/GetExportStatistic"  OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS"/>
-			  <Button Caption="Статистика по объектам недвижимости" NavigateURL="~/Sud/GetExportStatisticObject" OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS"/>
+			  <Button Caption="Положительные судебные решения" NavigateURL="~/Sud/GetExportStatisticCheck" OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS.TRUE"/>
+			  <Button Caption="Сводная статистика" NavigateURL="~/Sud/GetExportStatistic"  OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS.SUMMARY"/>
+			  <Button Caption="Статистика по объектам недвижимости" NavigateURL="~/Sud/GetExportStatisticObject" OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS.OBJECT"/>
 		  </DropDownButtons>
 	  </Button>
   </Buttons>

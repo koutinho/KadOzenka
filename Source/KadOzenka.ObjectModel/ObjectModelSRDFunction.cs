@@ -152,9 +152,6 @@ namespace ObjectModel.SRD
               // Загрузка данных (521)
               public const string SUD_IMPORT = "SUD.IMPORT";
                 
-              // Выгрузка данных (522)
-              public const string SUD_EXPORT = "SUD.EXPORT";
-                
               // Декларации (523)
               public const string DECLARATIONS_DECLARATION = "DECLARATIONS.DECLARATION";
                 
@@ -232,6 +229,33 @@ namespace ObjectModel.SRD
                 
               // Просмотр истории изменения всех полей (548)
               public const string SUD_RESH_HISTORY = "SUD.RESH.HISTORY";
+                
+              // Выгрузка судебных решений для ГБУ (549)
+              public const string SUD_EXPORT_GBU = "SUD.EXPORT.GBU";
+                
+              // Полная выгрузка в Excel (550)
+              public const string SUD_EXPORT_ALL = "SUD.EXPORT.ALL";
+                
+              // Положительные судебные решения (551)
+              public const string SUD_OBJECTS_STATISTICS_TRUE = "SUD.OBJECTS.STATISTICS.TRUE";
+                
+              // Сводная статистика (552)
+              public const string SUD_OBJECTS_STATISTICS_SUMMARY = "SUD.OBJECTS.STATISTICS.SUMMARY";
+                
+              // Статистика по объектам недвижимости (553)
+              public const string SUD_OBJECTS_STATISTICS_OBJECT = "SUD.OBJECTS.STATISTICS.OBJECT";
+                
+              // Выгрузка в Excel (554)
+              public const string SUD_EXPORT_EXCEL = "SUD.EXPORT.EXCEL";
+                
+              // Экспорт данных (555)
+              public const string SUD_EXPORT = "SUD.EXPORT";
+                
+              // Выгрузка отчета по доп. параметрам (556)
+              public const string SUD_EXPORT_DOP_PARAM = "SUD.EXPORT.DOP_PARAM";
+                
+              // Выгрузка в XML (557)
+              public const string SUD_EXPORT_XML = "SUD.EXPORT.XML";
                 
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
