@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -21,7 +20,7 @@ using ObjectModel.Declarations;
 using System.Data;
 using Core.RefLib;
 using KadOzenka.Dal.DataExport;
-using ObjectModel.Directory.Declarations;
+using KadOzenka.Dal.DataImport.Helpers;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -223,7 +222,16 @@ namespace KadOzenka.Dal.DataImport
 				SetAutoFilledProperties(registerObject);
 			}
 
-			var validationResult = ValidateRegisterObject(registerObject);
+			var declaration = !isNewObject
+				? OMDeclaration
+					.Where(x => x.Id == objectId)
+					.SelectAll()
+					.ExecuteFirstOrDefault()
+				: null;
+
+			var validationResult = isNewObject
+				? ValidateCreatedRegisterObject(registerObject)
+				: ValidateModifiedRegisterObject(registerObject, declaration);
 			if (validationResult.Count == 0)
 			{
 				RegisterStorage.Save(registerObject);
@@ -283,141 +291,32 @@ namespace KadOzenka.Dal.DataImport
 			registerObject.SetAttributeValue(OMDeclaration.GetAttributeData(x => x.UserIsp_Id).Id, SRDSession.GetCurrentUserId(), -1);
 		}
 
-		private static List<string> ValidateRegisterObject(RegisterObject registerObject)
+		private static List<string> ValidateModifiedRegisterObject(RegisterObject registerObject, OMDeclaration declaration)
 		{
 			var result = new List<string>();
 			var attrValues = registerObject.AttributesValues;
-
-			var bookIdAttr = OMDeclaration.GetAttributeData(x => x.Book_Id);
-			var bookId = attrValues.ContainsKey(bookIdAttr.Id) ? attrValues[bookIdAttr.Id].Value.ParseToLongNullable() : (long?) null;
-			if (!bookId.HasValue)
-			{
-				result.Add($"атрибут {bookIdAttr.Name} обязательный");
-			}
-			else
-			{
-				var book = OMBook
-					.Where(x => x.Id == bookId.Value)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
-				if (book == null)
-				{
-					result.Add($"книга с указанным ID {bookId.Value.ToString()} не найдена");
-				}
-			}
-
-			var objTypeAttr = OMDeclaration.GetAttributeData(x => x.TypeObj);
-			var objTypeVal = attrValues.ContainsKey(objTypeAttr.Id) ? attrValues[objTypeAttr.Id].Value.ParseToStringNullable() : null;
-			if (string.IsNullOrEmpty(objTypeVal))
-			{
-				result.Add($"атрибут {objTypeAttr.Name} обязательный");
-			}
-
-			var numInAttr = OMDeclaration.GetAttributeData(x => x.NumIn);
-			var numInVal = attrValues.ContainsKey(numInAttr.Id) ? attrValues[numInAttr.Id].Value.ParseToStringNullable() : null;
-			if (string.IsNullOrEmpty(numInVal))
-			{
-				result.Add($"атрибут {numInAttr.Name} обязательный");
-			}
-
-			var cadNumAttr = OMDeclaration.GetAttributeData(x => x.CadastralNumObj);
-			var cadNumVal = attrValues.ContainsKey(cadNumAttr.Id) ? attrValues[cadNumAttr.Id].Value.ParseToStringNullable() : null;
-			if (string.IsNullOrEmpty(cadNumVal))
-			{
-				result.Add($"атрибут {cadNumAttr.Name} обязательный");
-			}
-
-			var ownerIdAttr = OMDeclaration.GetAttributeData(x => x.Owner_Id);
-			var ownerId = attrValues.ContainsKey(ownerIdAttr.Id) ?  attrValues[ownerIdAttr.Id].Value.ParseToLongNullable() : (long?)null;
-			
-			var agentIdAttr = OMDeclaration.GetAttributeData(x => x.Agent_Id);
-			var agentId = attrValues.ContainsKey(agentIdAttr.Id) ? attrValues[agentIdAttr.Id].Value.ParseToLongNullable() : (long?)null;
-
-			if (!ownerId.HasValue && !agentId.HasValue)
-			{
-				result.Add($"должен быть указан хотя бы один атрибут: {ownerIdAttr.Name} или {agentIdAttr.Name}");
-			}
-			else
-			{
-				var owner = OMSubject
-					.Where(x => x.Id == ownerId)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
-				var agent = OMSubject
-					.Where(x => x.Id == agentId)
-					.SelectAll()
-					.ExecuteFirstOrDefault();
-				if (owner == null && agent == null)
-				{
-					result.Add($"не найдены объекты по указанным атрибутам: {ownerIdAttr.Name} или {agentIdAttr.Name}");
-				}
-				else
-				{
-					if (agent != null)
-					{
-						var sendUvedTypeAttr = OMDeclaration.GetAttributeData(x => x.UvedTypeAgent);
-						var sendUvedType = attrValues.ContainsKey(sendUvedTypeAttr.Id) ? attrValues[sendUvedTypeAttr.Id].Value.ParseToStringNullable() : null;
-						var validationResult = ValidateSubjectNotificationType(agent, sendUvedType, "Представителя");
-						if (!string.IsNullOrEmpty(validationResult))
-						{
-							result.Add(validationResult);
-						}
-					}
-					if (owner != null)
-					{
-						var sendUvedTypeAttr = OMDeclaration.GetAttributeData(x => x.UvedTypeOwner);
-						var sendUvedType = attrValues.ContainsKey(sendUvedTypeAttr.Id) ? attrValues[sendUvedTypeAttr.Id].Value.ParseToStringNullable() : null;
-						var validationResult = ValidateSubjectNotificationType(owner, sendUvedType, "Заявителя");
-						if (!string.IsNullOrEmpty(validationResult))
-						{
-							result.Add(validationResult);
-						}
-					}
-				}
-			}
+			DataImporterDeclarationsValidator.ValidateBookModification(attrValues, result);
+			DataImporterDeclarationsValidator.ValidateObjTypeModification(attrValues, result);
+			DataImporterDeclarationsValidator.ValidateNumberInModification(attrValues, result);
+			DataImporterDeclarationsValidator.ValidateCadastralNumberModification(attrValues, result);
+			DataImporterDeclarationsValidator.ValidateOwnerAndAgentModification(attrValues, declaration, result);
+			DataImporterDeclarationsValidator.ValidateOwnerUvedTypeModification(attrValues, declaration, result);
+			DataImporterDeclarationsValidator.ValidateAgentUvedTypeModification(attrValues, declaration, result);
 
 			return result;
 		}
 
-		private static string ValidateSubjectNotificationType(OMSubject subject, string subjectUvedType, string subjectName)
+		private static List<string> ValidateCreatedRegisterObject(RegisterObject registerObject)
 		{
-			if (subjectUvedType == SendUvedType.Email.GetEnumDescription())
-			{
-				if (string.IsNullOrWhiteSpace(subject?.Mail))
-				{
-					return
-						$"У выбранного {subjectName} отсутствуют необходимые данные для данного Способа получения уведомления: Адрес электронной почты";
-				}
-			}
-			else if (string.IsNullOrWhiteSpace(subject?.Zip) || string.IsNullOrWhiteSpace(subject?.City) ||
-			         string.IsNullOrWhiteSpace(subject?.Street) || string.IsNullOrWhiteSpace(subject?.House))
-			{
-				var emptyAddressParts = new List<string>();
-				if (string.IsNullOrWhiteSpace(subject?.Zip))
-				{
-					emptyAddressParts.Add("Индекс");
-				}
+			var result = new List<string>();
+			var attrValues = registerObject.AttributesValues;
+			DataImporterDeclarationsValidator.ValidateBookInitialFilling(attrValues, result);
+			DataImporterDeclarationsValidator.ValidateObjTypeInitialFilling(attrValues, result);
+			DataImporterDeclarationsValidator.ValidateNumberInInitialFilling(attrValues, result);
+			DataImporterDeclarationsValidator.ValidateCadastralNumberInitialFilling(attrValues, result);
+			DataImporterDeclarationsValidator.ValidateOwnerAndAgentInitialFilling(attrValues, result);
 
-				if (string.IsNullOrWhiteSpace(subject?.City))
-				{
-					emptyAddressParts.Add("Город");
-				}
-
-				if (string.IsNullOrWhiteSpace(subject?.Street))
-				{
-					emptyAddressParts.Add("Улица");
-				}
-
-				if (string.IsNullOrWhiteSpace(subject?.House))
-				{
-					emptyAddressParts.Add("Дом");
-				}
-
-				return
-					$"У выбранного {subjectName} отсутствуют необходимые данные для данного Способа получения уведомления: {string.Join(", ", emptyAddressParts)}";
-			}
-
-			return string.Empty;
+			return result;
 		}
 	}
 }
