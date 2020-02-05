@@ -138,7 +138,8 @@ namespace KadOzenka.Web.Controllers
 			{
 				TourId = dto.TourYear,
 				DocumentId = instance.Id,
-				CreationDate = dto.IncomingDocumentDate ?? DateTime.Now,
+				CreationDate = DateTime.Now,
+				EstimationDate = dto.EstimationDate,
 				NoteType_Code = dto.NoteType ?? ObjectModel.Directory.KoNoteType.None,
 				Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
 			};

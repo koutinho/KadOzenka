@@ -89,6 +89,10 @@ namespace KadOzenka.Dal.DataImport
 			import.DateFinished = DateTime.Now;
 			import.Save();
 
+			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
+			task.Status_Code = ObjectModel.Directory.KoTaskStatus.Ready;
+			task.Save();
+
 			// Отправка уведомления о завершении загрузки
 			SendResultNotification(import);
 		}
