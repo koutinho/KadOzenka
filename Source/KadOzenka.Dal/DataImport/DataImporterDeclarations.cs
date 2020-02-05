@@ -215,7 +215,12 @@ namespace KadOzenka.Dal.DataImport
 			var registerObject = new RegisterObject(OMDeclaration.GetRegisterId(), (int)objectId.GetValueOrDefault(-1));
 			foreach (var column in columns)
 			{
-				HandleColumnData(columnNames, column, mainWorkSheet, row, registerObject);
+				var parseResult = HandleColumnData(columnNames, column, mainWorkSheet, row, registerObject);
+				if (!parseResult)
+				{
+					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Не успешно: не удалось определить значение в столбце {column.ColumnName}");
+					return;
+				};
 			}
 			if (isNewObject)
 			{
@@ -243,7 +248,7 @@ namespace KadOzenka.Dal.DataImport
 			}
 		}
 
-		private static void HandleColumnData(List<string> columnNames, DataExportColumn column, ExcelWorksheet mainWorkSheet,
+		private static bool HandleColumnData(List<string> columnNames, DataExportColumn column, ExcelWorksheet mainWorkSheet,
 			ExcelRow row, RegisterObject registerObject)
 		{
 			int cell = columnNames.IndexOf(column.ColumnName);
@@ -257,8 +262,12 @@ namespace KadOzenka.Dal.DataImport
 				OMReference reference =
 					OMReference.Where(x => x.ReferenceId == attributeData.ReferenceId).ExecuteFirstOrDefault();
 				var items = ReferencesCommon.GetItems(reference.ReferenceId.ParseToLong());
-				var valueStr = value != null ? value.ToString() : string.Empty;
-				OMReferenceItem item = items.FirstOrDefault(x => x.Value == valueStr);
+				var valueStr = value != null ? value.ToString().Trim() : string.Empty;
+				OMReferenceItem item = items.FirstOrDefault(x => x.Value == valueStr || x.Code == valueStr);
+				if (item == null && !string.IsNullOrEmpty(valueStr))
+				{
+					return false;
+				}
 				if (item != null) referenceItemId = (int)item.ItemId;
 			}
 
@@ -274,7 +283,7 @@ namespace KadOzenka.Dal.DataImport
 					value = value.ParseToBooleanNullable();
 					break;
 				case RegisterAttributeType.STRING:
-					value = value.ToString();
+					value = value.ParseToStringNullable();
 					break;
 				case RegisterAttributeType.DATE:
 					value = value.ParseToDateTimeNullable();
@@ -282,6 +291,7 @@ namespace KadOzenka.Dal.DataImport
 			}
 
 			registerObject.SetAttributeValue((int)column.AttributrId, value, referenceItemId);
+			return true;
 		}
 
 		private static void SetAutoFilledProperties(RegisterObject registerObject)

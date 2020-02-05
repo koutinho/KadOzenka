@@ -19,7 +19,7 @@ namespace KadOzenka.BlFrontEnd.DataImport
 				new DataExportColumn
 				{
 					AttributrId = 50101000,
-					ColumnName = "Статус декларации",
+					ColumnName = "Статус",
 					IsKey = false
 				},
 				new DataExportColumn
@@ -48,10 +48,22 @@ namespace KadOzenka.BlFrontEnd.DataImport
 				},
 				new DataExportColumn
 				{
-					AttributrId = 50100100,
-					ColumnName = "Идентификатор",
-					IsKey = true
+					AttributrId = 50101200,
+					ColumnName = "Тип объекта",
+					IsKey = false
+				},
+				new DataExportColumn
+				{
+					AttributrId = 50100700,
+					ColumnName = "Входящий номер",
+					IsKey = false
 				}
+				//new DataExportColumn
+				//{
+				//	AttributrId = 50100100,
+				//	ColumnName = "Идентификатор",
+				//	IsKey = true
+				//}
 			};
 
 			Stream stream = DataImporterDeclarations.ImportDataFromExcel(excelFile, settings);
