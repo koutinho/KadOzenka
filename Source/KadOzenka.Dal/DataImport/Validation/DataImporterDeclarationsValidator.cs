@@ -5,11 +5,39 @@ using Core.Shared.Misc;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 
-namespace KadOzenka.Dal.DataImport.Helpers
+namespace KadOzenka.Dal.DataImport.Validation
 {
 	public static class DataImporterDeclarationsValidator
 	{
-		public static void ValidateBookModification(SerializableDictionary<int, RegisterAttributeValue> attrValues,
+		public static List<string> ValidateDeclarationModificationFromRegisterObject(RegisterObject registerObject, OMDeclaration declaration)
+		{
+			var result = new List<string>();
+			var attrValues = registerObject.AttributesValues;
+			ValidateBookModification(attrValues, result);
+			ValidateObjTypeModification(attrValues, result);
+			ValidateNumberInModification(attrValues, result);
+			ValidateCadastralNumberModification(attrValues, result);
+			ValidateOwnerAndAgentModification(attrValues, declaration, result);
+			ValidateOwnerUvedTypeModification(attrValues, declaration, result);
+			ValidateAgentUvedTypeModification(attrValues, declaration, result);
+
+			return result;
+		}
+
+		public static List<string> ValidateDeclarationCreationFromRegisterObject(RegisterObject registerObject)
+		{
+			var result = new List<string>();
+			var attrValues = registerObject.AttributesValues;
+			ValidateBookInitialFilling(attrValues, result);
+			ValidateObjTypeInitialFilling(attrValues, result);
+			ValidateNumberInInitialFilling(attrValues, result);
+			ValidateCadastralNumberInitialFilling(attrValues, result);
+			ValidateOwnerAndAgentInitialFilling(attrValues, result);
+
+			return result;
+		}
+
+		private static void ValidateBookModification(SerializableDictionary<int, RegisterAttributeValue> attrValues,
 			List<string> result)
 		{
 			var bookIdAttr = OMDeclaration.GetAttributeData(x => x.Book_Id);
@@ -34,7 +62,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateObjTypeModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
+		private static void ValidateObjTypeModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
 		{
 			var objTypeAttr = OMDeclaration.GetAttributeData(x => x.TypeObj);
 			if (attrValues.ContainsKey(objTypeAttr.Id))
@@ -47,7 +75,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateNumberInModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
+		private static void ValidateNumberInModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
 		{
 			var numInAttr = OMDeclaration.GetAttributeData(x => x.NumIn);
 			if (attrValues.ContainsKey(numInAttr.Id))
@@ -60,7 +88,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateCadastralNumberModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
+		private static void ValidateCadastralNumberModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
 		{
 			var cadNumAttr = OMDeclaration.GetAttributeData(x => x.CadastralNumObj);
 			if (attrValues.ContainsKey(cadNumAttr.Id))
@@ -73,7 +101,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateOwnerAndAgentModification(
+		private static void ValidateOwnerAndAgentModification(
 			SerializableDictionary<int, RegisterAttributeValue> attrValues, OMDeclaration declaration,
 			List<string> result)
 		{
@@ -215,7 +243,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateOwnerUvedTypeModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, OMDeclaration declaration, List<string> result)
+		private static void ValidateOwnerUvedTypeModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, OMDeclaration declaration, List<string> result)
 		{
 			var ownerIdAttr = OMDeclaration.GetAttributeData(x => x.Owner_Id);
 			var sendUvedOwnerTypeAttr = OMDeclaration.GetAttributeData(x => x.UvedTypeOwner);
@@ -241,7 +269,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateAgentUvedTypeModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, OMDeclaration declaration, List<string> result)
+		private static void ValidateAgentUvedTypeModification(SerializableDictionary<int, RegisterAttributeValue> attrValues, OMDeclaration declaration, List<string> result)
 		{
 			var agentIdAttr = OMDeclaration.GetAttributeData(x => x.Agent_Id);
 			var sendUvedAgentTypeAttr = OMDeclaration.GetAttributeData(x => x.UvedTypeAgent);
@@ -267,7 +295,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateBookInitialFilling(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
+		private static void ValidateBookInitialFilling(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
 		{
 			var bookIdAttr = OMDeclaration.GetAttributeData(x => x.Book_Id);
 			var bookId = attrValues.ContainsKey(bookIdAttr.Id) ? attrValues[bookIdAttr.Id].Value.ParseToLongNullable() : (long?)null;
@@ -288,7 +316,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateObjTypeInitialFilling(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
+		private static void ValidateObjTypeInitialFilling(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
 		{
 			var objTypeAttr = OMDeclaration.GetAttributeData(x => x.TypeObj);
 			var objTypeVal = attrValues.ContainsKey(objTypeAttr.Id) ? attrValues[objTypeAttr.Id].Value.ParseToStringNullable() : null;
@@ -298,7 +326,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateNumberInInitialFilling(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
+		private static void ValidateNumberInInitialFilling(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
 		{
 			var numInAttr = OMDeclaration.GetAttributeData(x => x.NumIn);
 			var numInVal = attrValues.ContainsKey(numInAttr.Id) ? attrValues[numInAttr.Id].Value.ParseToStringNullable() : null;
@@ -308,7 +336,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateCadastralNumberInitialFilling(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
+		private static void ValidateCadastralNumberInitialFilling(SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
 		{
 			var cadNumAttr = OMDeclaration.GetAttributeData(x => x.CadastralNumObj);
 			var cadNumVal = attrValues.ContainsKey(cadNumAttr.Id) ? attrValues[cadNumAttr.Id].Value.ParseToStringNullable() : null;
@@ -318,7 +346,7 @@ namespace KadOzenka.Dal.DataImport.Helpers
 			}
 		}
 
-		public static void ValidateOwnerAndAgentInitialFilling(
+		private static void ValidateOwnerAndAgentInitialFilling(
 			SerializableDictionary<int, RegisterAttributeValue> attrValues, List<string> result)
 		{
 			var ownerIdAttr = OMDeclaration.GetAttributeData(x => x.Owner_Id);

@@ -20,7 +20,7 @@ using ObjectModel.Declarations;
 using System.Data;
 using Core.RefLib;
 using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.DataImport.Helpers;
+using KadOzenka.Dal.DataImport.Validation;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -235,8 +235,8 @@ namespace KadOzenka.Dal.DataImport
 				: null;
 
 			var validationResult = isNewObject
-				? ValidateCreatedRegisterObject(registerObject)
-				: ValidateModifiedRegisterObject(registerObject, declaration);
+				? DataImporterDeclarationsValidator.ValidateDeclarationCreationFromRegisterObject(registerObject)
+				: DataImporterDeclarationsValidator.ValidateDeclarationModificationFromRegisterObject(registerObject, declaration);
 			if (validationResult.Count == 0)
 			{
 				RegisterStorage.Save(registerObject);
@@ -299,34 +299,6 @@ namespace KadOzenka.Dal.DataImport
 			var attrValues = registerObject.AttributesValues;
 			registerObject.SetAttributeValue(OMDeclaration.GetAttributeData(x => x.UserReg_Id).Id, SRDSession.GetCurrentUserId(), -1);
 			registerObject.SetAttributeValue(OMDeclaration.GetAttributeData(x => x.UserIsp_Id).Id, SRDSession.GetCurrentUserId(), -1);
-		}
-
-		private static List<string> ValidateModifiedRegisterObject(RegisterObject registerObject, OMDeclaration declaration)
-		{
-			var result = new List<string>();
-			var attrValues = registerObject.AttributesValues;
-			DataImporterDeclarationsValidator.ValidateBookModification(attrValues, result);
-			DataImporterDeclarationsValidator.ValidateObjTypeModification(attrValues, result);
-			DataImporterDeclarationsValidator.ValidateNumberInModification(attrValues, result);
-			DataImporterDeclarationsValidator.ValidateCadastralNumberModification(attrValues, result);
-			DataImporterDeclarationsValidator.ValidateOwnerAndAgentModification(attrValues, declaration, result);
-			DataImporterDeclarationsValidator.ValidateOwnerUvedTypeModification(attrValues, declaration, result);
-			DataImporterDeclarationsValidator.ValidateAgentUvedTypeModification(attrValues, declaration, result);
-
-			return result;
-		}
-
-		private static List<string> ValidateCreatedRegisterObject(RegisterObject registerObject)
-		{
-			var result = new List<string>();
-			var attrValues = registerObject.AttributesValues;
-			DataImporterDeclarationsValidator.ValidateBookInitialFilling(attrValues, result);
-			DataImporterDeclarationsValidator.ValidateObjTypeInitialFilling(attrValues, result);
-			DataImporterDeclarationsValidator.ValidateNumberInInitialFilling(attrValues, result);
-			DataImporterDeclarationsValidator.ValidateCadastralNumberInitialFilling(attrValues, result);
-			DataImporterDeclarationsValidator.ValidateOwnerAndAgentInitialFilling(attrValues, result);
-
-			return result;
 		}
 	}
 }
