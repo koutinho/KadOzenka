@@ -17,5 +17,8 @@ namespace KadOzenka.Web.Models.Unit
 		public long? GroupId { get; set; }
 		public string Group { get; set; }
 		public string OutputDoc { get; set; }
+
+		public bool IsActual { get; set; }
+		public bool IsBad { get; set; }
 	}
 }

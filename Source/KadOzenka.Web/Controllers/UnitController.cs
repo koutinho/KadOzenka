@@ -47,15 +47,17 @@ namespace KadOzenka.Web.Controllers
 			List<HistoryUnit> historyUnits = HistoryUnit.GetHistory(unit.CadastralNumber);
 			List<UnitHistoryDto> result = historyUnits.Select(x => new UnitHistoryDto
 			{
-				Id = x.Unit.Id,
+				Id = x.Unit.Id,				
 				CadastralNumber = x.Unit.CadastralNumber,
 				CreationDate = x.Unit.CreationDate,
 				NoteType = x.Task.NoteType,
-				InputDoc = x.InputDoc?.RegNumber + " " + x.InputDoc?.CreateDate + " " + x.InputDoc?.Description,
+				InputDoc = x.InputDoc?.RegNumber + " " + x.InputDoc?.CreateDate.ToShortDateString() + " " + x.InputDoc?.Description,
 				CadastralCost = x.Unit.CadastralCost,
 				Upks = x.Unit.Upks,
 				GroupId = x.Unit.GroupId,
-				OutputDoc = x.OutputDoc?.RegNumber + " " + x.OutputDoc?.CreateDate + " " + x.OutputDoc?.Description,
+				OutputDoc = x.OutputDoc?.RegNumber + " " + x.OutputDoc?.CreateDate.ToShortDateString() + " " + x.OutputDoc?.Description,
+				IsActual = x.IsActual,
+				IsBad = x.IsBad
 			}).ToList();
 
 			List<long?> groupIds = result.Select(x => x.GroupId).Distinct().ToList();

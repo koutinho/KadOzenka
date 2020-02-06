@@ -57,11 +57,31 @@
                 },
             ]
         });
+
+        $('#grid').data("kendoGrid").bind("dataBound", function () {
+            var grid = $("#grid").data("kendoGrid");
+            var data = grid.dataSource.data();
+            $.each(data, function (i, row) {                
+                if (row.IsActual)
+                    $('tr[data-uid="' + row.uid + '"] ').addClass("isActual");
+                if (row.IsBad)
+                    $('tr[data-uid="' + row.uid + '"] ').addClass("isBad");
+            });
+        });
     });
 </script>
 
 <style>
     .k-grid td {
         white-space: normal;
+    }
+
+    .isActual {
+        background-color: lightgreen;
+    }
+
+    .isBad {
+        background-color: red;
+        color: white;
     }
 </style>
