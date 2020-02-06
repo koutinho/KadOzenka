@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
 using ObjectModel.Common;
@@ -13,6 +14,7 @@ using ObjectModel.Core.Register;
 using ObjectModel.Directory.Common;
 using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.KO;
+using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -114,6 +116,82 @@ namespace KadOzenka.Web.Controllers
 			}
 			
 			return Json(new { success = true });
+		}
+
+		[HttpGet]
+		public ActionResult Harmonization()
+		{
+			ViewData["Attributes"] = OMAttribute.Where(x => x.RegisterId >= 2 && x.RegisterId <= 23)
+				.Select(x => new { x.Name, x.Id })
+				.Execute()
+				.Select(x => new { Text = x.Name, Value = x.Id })
+				.ToList();
+
+			var viewModel = new HarmonizationViewModel();
+			var formStorage = OMDataFormStorage
+				.Where(x => x.UserId == SRDSession.GetCurrentUserId().Value &&
+				            x.FormType_Code == DataFormStorege.Harmonization).SelectAll().ExecuteFirstOrDefault();
+			if (formStorage != null)
+			{
+				viewModel = formStorage.Data.DeserializeFromXml<HarmonizationViewModel>();
+			}
+
+			return View(viewModel);
+		}
+
+		[HttpPost]
+		public ActionResult Harmonization(HarmonizationViewModel viewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			var formStorage = OMDataFormStorage
+				.Where(x => x.UserId == SRDSession.GetCurrentUserId().Value &&
+				            x.FormType_Code == DataFormStorege.Harmonization).SelectAll().ExecuteFirstOrDefault();
+			try
+			{
+				if (formStorage != null)
+				{
+					formStorage.Data = viewModel.SerializeToXml();
+				}
+				else
+				{
+					formStorage = new OMDataFormStorage()
+					{
+						UserId = SRDSession.GetCurrentUserId().Value,
+						FormType_Code = DataFormStorege.Harmonization,
+						Data = viewModel.SerializeToXml()
+
+					};
+				}
+				formStorage.Save();
+
+				ObjectModel.Gbu.Harmonization.Harmonization.Run(viewModel.ToHarmonizationSettings());
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return Json(new { Success = "Процедура Гармонизации успешно выполнена" });
 		}
 	}
 }

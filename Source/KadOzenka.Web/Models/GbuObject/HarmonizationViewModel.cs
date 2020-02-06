@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory;
+using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
@@ -15,6 +16,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Тип объекта 
 		/// </summary>
+		[Required(ErrorMessage = "Выберете Тип объекта")]
 		public long? PropertyType { get; set; }
 
 		/// <summary>
@@ -83,5 +85,29 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Фактор 10 уровня 
 		/// </summary>
 		public long? Level10Attribute { get; set; }
+
+		public HarmonizationSettings ToHarmonizationSettings()
+		{
+			var settings = new HarmonizationSettings
+			{
+				IdAttributeResult = IdAttributeResult,
+				PropertyType = (PropertyTypes) PropertyType.GetValueOrDefault(),
+				SelectAllObject = SelectAllObject,
+				IdAttributeFilter = IdAttributeFilter,
+				ValuesFilter = ValuesFilter,
+				Level1Attribute = Level1Attribute,
+				Level2Attribute = Level2Attribute,
+				Level3Attribute = Level3Attribute,
+				Level4Attribute = Level4Attribute,
+				Level5Attribute = Level5Attribute,
+				Level6Attribute = Level6Attribute,
+				Level7Attribute = Level7Attribute,
+				Level8Attribute = Level8Attribute,
+				Level9Attribute = Level9Attribute,
+				Level10Attribute = Level10Attribute
+			};
+
+			return settings;
+		}
 	}
 }
