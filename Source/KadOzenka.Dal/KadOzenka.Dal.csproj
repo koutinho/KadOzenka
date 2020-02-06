@@ -15,7 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DeepMorphy" Version="1.2.5" />
     <PackageReference Include="FastReport.Web" Version="2018.4.1" />
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="NPetrovich" Version="1.2.0" />

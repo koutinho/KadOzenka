@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using System.Text;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.Reports.Model;
-using DeepMorphy;
 using NPetrovich;
 using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
@@ -18,11 +16,8 @@ namespace KadOzenka.Dal.FastReports
 {
 	public abstract class DeclarationNotificationReport : FastReportBase
 	{
-		protected MorphAnalyzer MorphAnalyzer {get; set; }
-
 		protected DeclarationNotificationReport()
 		{
-			MorphAnalyzer = new MorphAnalyzer();
 		}
 
 		public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
@@ -201,30 +196,31 @@ namespace KadOzenka.Dal.FastReports
 
 		public string PrepareText(string text)
 		{
-			if (string.IsNullOrWhiteSpace(text.Trim()))
-			{
-				return string.Empty;
-			}
+			return text;
+			//if (string.IsNullOrWhiteSpace(text.Trim()))
+			//{
+			//	return string.Empty;
+			//}
 
-			var result = new StringBuilder();
-			var words = text.Trim().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-			var results = MorphAnalyzer.Parse(words).ToArray();
-			for (var i = 0; i < words.Count() - 1; i++)
-			{
-				result.Append(words[i]);
-				if (results[i].BestTag["чр"] == "предл" || results[i].BestTag["чр"] == "союз" ||
-				    results[i].BestTag["чр"] == "част" || results[i].BestTag["чр"] == "мест" || results[i].BestTag["чр"] == "межд")
-				{
-					result.Append("\u00A0");
-				}
-				else
-				{
-					result.Append(" ");
-				}
-			}
-			result.Append(words.Last());
+			//var result = new StringBuilder();
+			//var words = text.Trim().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+			//var results = MorphAnalyzer.Parse(words).ToArray();
+			//for (var i = 0; i < words.Count() - 1; i++)
+			//{
+			//	result.Append(words[i]);
+			//	if (results[i].BestTag["чр"] == "предл" || results[i].BestTag["чр"] == "союз" ||
+			//	    results[i].BestTag["чр"] == "част" || results[i].BestTag["чр"] == "мест" || results[i].BestTag["чр"] == "межд")
+			//	{
+			//		result.Append("\u00A0");
+			//	}
+			//	else
+			//	{
+			//		result.Append(" ");
+			//	}
+			//}
+			//result.Append(words.Last());
 
-			return result.ToString();
+			//return result.ToString();
 		}
 
 		public string FormAddress(OMSubject subject, SendUvedType uvedType)
