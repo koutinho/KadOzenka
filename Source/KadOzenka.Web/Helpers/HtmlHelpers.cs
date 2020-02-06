@@ -100,7 +100,7 @@ namespace KadOzenka.Web.Helpers
 
 			var container = new TagBuilder("div");
 			container.AddCssClass("row");
-			//container.MergeAttribute("style", "display: flex;");
+			container.MergeAttribute("style", "display: flex;");
 			container.InnerHtml.AppendHtml(autocompleteDiv);
 			container.InnerHtml.AppendHtml(wrapButtonDiv);
 			//container.InnerHtml.AppendHtml(tooltip);

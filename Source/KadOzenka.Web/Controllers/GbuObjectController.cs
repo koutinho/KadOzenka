@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
+using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using ObjectModel.Sud;

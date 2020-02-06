@@ -10,7 +10,7 @@
             </Parameters>
         </Button>
 
-	    <Button Caption="Нормолизация данных" NavigateURL="~/GbuObject/GroupingObject" WindowHeight="800" WindowWidth="1200" Icon="fas fa-screwdriver">
+	    <Button Caption="Нормализация данных" NavigateURL="~/GbuObject/GroupingObject" WindowHeight="800" WindowWidth="1100" Icon="fas fa-screwdriver">
 		    <Parameters>
 		    </Parameters>
 	    </Button>

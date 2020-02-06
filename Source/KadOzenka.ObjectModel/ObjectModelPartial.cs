@@ -715,7 +715,7 @@ namespace ObjectModel.Market
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 200 Объект кадастра
+    /// 200 Объекты недвижимости
     /// </summary>
     public partial class OMMainObject
     {

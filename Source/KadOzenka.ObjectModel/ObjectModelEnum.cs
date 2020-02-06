@@ -1739,3 +1739,26 @@ namespace ObjectModel.Directory.Common
     }
 }
 
+namespace ObjectModel.Directory.Common
+{
+    /// <summary>
+    /// Тип формы (801)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 801)]
+    public enum DataFormStorege : long
+    {
+		/// <summary>
+		/// Нормализация (1)
+		/// </summary>
+		[Description("Нормализация")]
+        [EnumCode("1")]
+        Normalisation = 1,
+		/// <summary>
+		/// Гармонизация (2)
+		/// </summary>
+		[Description("Гармонизация")]
+        [EnumCode("2")]
+        Harmonization = 2,
+    }
+}
+

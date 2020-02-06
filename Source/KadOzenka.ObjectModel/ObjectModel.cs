@@ -3498,7 +3498,7 @@ namespace ObjectModel.Market
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 200 Объект кадастра (GBU_MAIN_OBJECT)
+    /// 200 Объекты недвижимости (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 200)]
     [Serializable]
@@ -18744,6 +18744,133 @@ namespace ObjectModel.Common
             {
                 _objectid = value;
                 NotifyPropertyChanged("ObjectId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 802 Сохраненные данные форм  (COMMON_DATA_FORM_STORAGE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 802)]
+    [Serializable]
+    public partial class OMDataFormStorage : OMBaseClass<OMDataFormStorage>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 80200100 Идентификатор (ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 80200200 ИД пользователя (ID_USER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80200200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private string _formtype;
+        /// <summary>
+        /// 80200300 Тип формы ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80200300)]
+        public string FormType
+        {
+            get
+            {
+                CheckPropertyInited("FormType");
+                return _formtype;
+            }
+            set
+            {
+                _formtype = value;
+                NotifyPropertyChanged("FormType");
+            }
+        }
+
+
+        private ObjectModel.Directory.Common.DataFormStorege _formtype_Code;
+        /// <summary>
+        /// 80200300 Тип формы (справочный код) (FORM_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80200300)]
+        public ObjectModel.Directory.Common.DataFormStorege FormType_Code
+        {
+            get
+            {
+                CheckPropertyInited("FormType_Code");
+                return this._formtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_formtype))
+                    {
+                         _formtype = descr;
+                    }
+                }
+                else
+                {
+                     _formtype = descr;
+                }
+
+                this._formtype_Code = value;
+                NotifyPropertyChanged("FormType");
+                NotifyPropertyChanged("FormType_Code");
+            }
+        }
+
+
+        private string _data;
+        /// <summary>
+        /// 80200400 Данные (DATA)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80200400)]
+        public string Data
+        {
+            get
+            {
+                CheckPropertyInited("Data");
+                return _data;
+            }
+            set
+            {
+                _data = value;
+                NotifyPropertyChanged("Data");
             }
         }
 

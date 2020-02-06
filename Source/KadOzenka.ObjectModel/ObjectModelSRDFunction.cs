@@ -248,7 +248,7 @@ namespace ObjectModel.SRD
               // Выгрузка в Excel (554)
               public const string SUD_EXPORT_EXCEL = "SUD.EXPORT.EXCEL";
                 
-              // Экспорт данных (555)
+              // Выгрузка данных (555)
               public const string SUD_EXPORT = "SUD.EXPORT";
                 
               // Выгрузка отчета по доп. параметрам (556)
