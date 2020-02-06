@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.FastReports
 			{
 				mainData += System.Environment.NewLine +
 				            "\u0009Информация о\u00A0результатах рассмотрения декларации будет направлена Вам " +
-				            PrepareText(uvedType.GetEnumDescription().ToLower()) + ".";
+				            PrepareSendUvedTypeText(uvedType) + ".";
 			}
 			
 			mainData = mainData.Replace(" ", "\u0020");

@@ -58,11 +58,36 @@ namespace KadOzenka.Dal.FastReports
 			foreach (var existedRejectionReasonType in existedRejectionReasonTypes)
 			{
 				reasons.Add(existedRejectionReasonType.RejectionReasonType_Code != RejectionReasonType.Other
-					? existedRejectionReasonType.RejectionReasonType_Code.GetEnumDescription().ToLower()[0] + existedRejectionReasonType.RejectionReasonType_Code.GetEnumDescription().Substring(1)
+					? PrepareUvedRejectionReasonTypeText(existedRejectionReasonType.RejectionReasonType_Code)
 					: notification.RejectionReason);
 			}
 
 			return PrepareText(string.Join("; ", reasons));
+		}
+
+		public string PrepareUvedRejectionReasonTypeText(RejectionReasonType reasonType)
+		{
+			string result = string.Empty;
+			switch (reasonType)
+			{
+				case RejectionReasonType.ApplicantIsNotObjectTypeOwner:
+					result = "заявитель, подавший декларацию, не\u00A0является правообладателем объекта недвижимости, в\u00A0отношении которого подается декларация";
+					break;
+				case RejectionReasonType.DocumentsAreNotAttached:
+					result = "к\u00A0декларации не\u00A0приложены документы, предусмотренные пунктом\u00A02 Приказа о\u00A0декларациях";
+					break;
+				case RejectionReasonType.DeclarationDoesNotMatchForm:
+					result = "декларация не\u00A0соответствует форме, предусмотренной приложением\u00A0№\u00A02 к\u00A0Приказу о\u00A0декларациях";
+					break;
+				case RejectionReasonType.DeclarationIsNotCertified:
+					result = "декларация не\u00A0заверена в\u00A0соответствии с\u00A0пунктом\u00A03 Приказа о\u00A0декларациях";
+					break;
+				case RejectionReasonType.DeclarationAndDocumentsDoNotMeetRequirements:
+					result = "декларация и\u00A0прилагаемые к\u00A0ней\u00A0документы представлены не\u00A0в\u00A0соответствии с\u00A0требованиями, предусмотренными пунктом\u00A04 Приказа о\u00A0декларациях";
+					break;
+			}
+
+			return result;
 		}
 	}
 }

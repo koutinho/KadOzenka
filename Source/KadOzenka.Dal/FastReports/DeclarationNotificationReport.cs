@@ -194,6 +194,25 @@ namespace KadOzenka.Dal.FastReports
 			return result;
 		}
 
+		public string PrepareSendUvedTypeText(SendUvedType uvedType)
+		{
+			string result = string.Empty;
+			switch (uvedType)
+			{
+				case SendUvedType.Email:
+					result = "на\u00A0электронный адрес";
+					break;
+				case SendUvedType.OnHands:
+					result = "на\u00A0руки";
+					break;
+				case SendUvedType.Post:
+					result = "на\u00A0почтовый адрес";
+					break;
+			}
+
+			return result;
+		}
+
 		public string PrepareText(string text)
 		{
 			return text;
