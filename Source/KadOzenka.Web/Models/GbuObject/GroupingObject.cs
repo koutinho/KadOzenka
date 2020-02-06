@@ -4,6 +4,35 @@ using ObjectModel.Gbu.GroupingAlgoritm;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
+	/// <summary>
+	/// Настройки уровня группировки
+	/// </summary>
+	public class LevelItemGroup
+	{
+		/// <summary>
+		/// Признак использования классификатора ЦОД
+		/// </summary>
+		public bool UseDictionary { get; set; }
+		/// <summary>
+		/// Признак пропуска дефиса
+		/// </summary>
+		public bool SkipDefis { get; set; }
+		/// <summary>
+		/// Идентификатор аттрибута
+		/// </summary>
+		public int? IdFactor { get; set; }
+
+		public LevelItem ConvertToLevelItem()
+		{
+			return new LevelItem
+			{
+				IdFactor = IdFactor,
+				SkipDefis = SkipDefis,
+				UseDictionary = UseDictionary
+			};
+		}
+	}
+
 	public class GroupingObject
 	{
 		/// <summary>
@@ -32,57 +61,57 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Настройки 1 уровня группировки
 		/// </summary>
-		public LevelItem Level1 { get; set; }
+		public LevelItemGroup Level1 { get; set; }
 
 		/// <summary>
 		/// Настройки 2 уровня группировки
 		/// </summary>
-		public LevelItem Level2 { get; set; }
+		public LevelItemGroup Level2 { get; set; }
 
 		/// <summary>
 		/// Настройки 3 уровня группировки
 		/// </summary>
-		public LevelItem Level3 { get; set; }
+		public LevelItemGroup Level3 { get; set; }
 
 		/// <summary>
 		/// Настройки 4 уровня группировки
 		/// </summary>
-		public LevelItem Level4 { get; set; }
+		public LevelItemGroup Level4 { get; set; }
 
 		/// <summary>
 		/// Настройки 5 уровня группировки
 		/// </summary>
-		public LevelItem Level5 { get; set; }
+		public LevelItemGroup Level5 { get; set; }
 
 		/// <summary>
 		/// Настройки 6 уровня группировки
 		/// </summary>
-		public LevelItem Level6 { get; set; }
+		public LevelItemGroup Level6 { get; set; }
 
 		/// <summary>
 		/// Настройки 7 уровня группировки
 		/// </summary>
-		public LevelItem Level7 { get; set; }
+		public LevelItemGroup Level7 { get; set; }
 
 		/// <summary>
 		/// Настройки 8 уровня группировки
 		/// </summary>
-		public LevelItem Level8 { get; set; }
+		public LevelItemGroup Level8 { get; set; }
 
 		/// <summary>
 		/// Настройки 9 уровня группировки
 		/// </summary>
-		public LevelItem Level9 { get; set; }
+		public LevelItemGroup Level9 { get; set; }
 
 		/// <summary>
 		/// Настройки 10 уровня группировки
 		/// </summary>
-		public LevelItem Level10 { get; set; }
+		public LevelItemGroup Level10 { get; set; }
 
 		/// <summary>
 		/// Настройки 11 уровня группировки
 		/// </summary>
-		public LevelItem Level11 { get; set; }
+		public LevelItemGroup Level11 { get; set; }
 
 		/// <summary>
 		/// Идентификатор атрибута, куда будет записан результат 
@@ -99,5 +128,31 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// </summary>
 		[Display(Name = "Документ")]
 		public int? IdAttributeDocument { get; set; }
+
+
+		public GroupingSettings CovertToGroupingSettings()
+		{
+			return new GroupingSettings
+			{
+				IdCodJob = IdCodJob,
+				IdAttributeDocument = IdAttributeDocument,
+				IdAttributeFilter = IdAttributeFilter,
+				IdAttributeResult = IdAttributeResult,
+				IdAttributeSource = IdAttributeSource,
+				Level1 = Level1.ConvertToLevelItem(),
+				Level10 = Level10.ConvertToLevelItem(),
+				Level11 = Level11.ConvertToLevelItem(),
+				Level2 = Level2.ConvertToLevelItem(),
+				Level3 = Level3.ConvertToLevelItem(),
+				Level4 = Level4.ConvertToLevelItem(),
+				Level5 = Level5.ConvertToLevelItem(),
+				Level6 = Level6.ConvertToLevelItem(),
+				Level7 = Level7.ConvertToLevelItem(),
+				Level8 = Level8.ConvertToLevelItem(),
+				Level9 = Level9.ConvertToLevelItem(),
+				ValuesFilter = ValuesFilter,
+				SelectAllObject = SelectAllObject
+			};
+		}
 	}
 }

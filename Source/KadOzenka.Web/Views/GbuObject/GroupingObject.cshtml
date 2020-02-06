@@ -396,29 +396,45 @@
 			function() {
 				var form = $('form');
 				var formObject = Common.Functions.FormToObject(form);
+				formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
 				console.log('formObject', formObject);
-				//kendo.ui.progress($('body'), true);
+				kendo.ui.progress($('body'), true);
 
-				@*$.post(form.attr('action'), formObject).done(function(response) {
+				$.post(form.attr('action'), formObject).done(function(response) {
 					kendo.ui.progress($('body'), false);
-					if (response.Errors) {
-						var errors = $.map(distinctErrors(response.Errors),
-							function(el) {
-								return el.Message;
-							});
-						Common.ShowError(errors);
+					if (response.Error) {
+						kendo.ui.progress($('body'), false);
+						Common.ShowError(response.Error);
 						return;
 					}
-					if (response.Success && response.data) {
-						$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
-						Common.ShowMessage(response.Success);
+					if (response.success) {
+						kendo.ui.progress($('body'), false);
+						Common.ShowMessage("Выполнено");
 					}
-				});*@
+				});
 			});
 
-		//$('#execute').on('click',
-		//	function () {
-		//		console.log($("#valuesFilter").data("kendoMultiSelect").value());
-		//	});
+		$('#save').on('click',
+			function () {
+				var form = $('form');
+				var formObject = Common.Functions.FormToObject(form);
+				formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
+				kendo.ui.progress($('body'), true);
+
+				var url = "@Url.Action("SaveTemplateGroupingObject", "GbuObject")";
+
+				$.post(url, formObject).done(function (response) {
+					kendo.ui.progress($('body'), false);
+					if (response.Error) {
+						kendo.ui.progress($('body'), false);
+						Common.ShowError(response.Error);
+						return;
+					}
+					if (response.success) {
+						kendo.ui.progress($('body'), false);
+						Common.ShowMessage("Выполнено");
+					}
+				});
+			});
 	});
 </script>

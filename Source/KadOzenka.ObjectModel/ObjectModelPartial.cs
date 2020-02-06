@@ -2523,3 +2523,27 @@ namespace ObjectModel.Common
         }
     }
 }
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 802 Сохраненные данные форм 
+    /// </summary>
+    public partial class OMDataFormStorage
+    {
+
+        public OMDataFormStorage()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMDataFormStorage(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}

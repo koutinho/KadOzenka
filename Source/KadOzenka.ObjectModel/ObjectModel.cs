@@ -18764,7 +18764,7 @@ namespace ObjectModel.Common
         /// <summary>
         /// 80200100 Идентификатор (ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 80200100)]
+        [PrimaryKey(AttributeID = 80200100)]
         public long Id
         {
             get
@@ -18822,7 +18822,7 @@ namespace ObjectModel.Common
 
         private ObjectModel.Directory.Common.DataFormStorege _formtype_Code;
         /// <summary>
-        /// 80200300 Тип формы (справочный код) (FORM_TYPE)
+        /// 80200300 Тип формы (справочный код) (FORMTYPE)
         /// </summary>
         [RegisterAttribute(AttributeID = 80200300)]
         public ObjectModel.Directory.Common.DataFormStorege FormType_Code
@@ -18857,7 +18857,7 @@ namespace ObjectModel.Common
 
         private string _data;
         /// <summary>
-        /// 80200400 Данные (DATA)
+        /// 80200400 Данные (DATA_FORM)
         /// </summary>
         [RegisterAttribute(AttributeID = 80200400)]
         public string Data
