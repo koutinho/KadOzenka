@@ -3,45 +3,48 @@
               OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
               ShowActualDate="false" SearchPanel="" SearchPanelWindowHeight="654" ShowRowMenu="true">
 
-  <Buttons>
-    <Button Caption="Все данные" NavigateURL="~/GbuObject/AllDataTree" Icon="icon-contract">
-      <Parameters>
-        <Parameter Key="ObjectId" Value="[ObjectID]" />
-      </Parameters>
-    </Button>
+    <Buttons>
+        <Button Caption="Все данные" NavigateURL="~/GbuObject/AllDataTree" Icon="icon-contract">
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
 
-      <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
-          <Parameters>
-              <Parameter Key="registerViewId" Value="GbuObjects" />
-              <Parameter Key="mainRegisterId" Value="200" />
-          </Parameters>
-      </Button>
+        <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
+            <Parameters>
+                <Parameter Key="registerViewId" Value="GbuObjects" />
+                <Parameter Key="mainRegisterId" Value="200" />
+            </Parameters>
+        </Button>
 
-      <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExport/DataExport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-up">
-          <Parameters>
-              <Parameter Key="registerViewId" Value="GbuObjects" />
-              <Parameter Key="mainRegisterId" Value="200" />
-          </Parameters>
-      </Button>
+        <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExport/DataExport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-up">
+            <Parameters>
+                <Parameter Key="registerViewId" Value="GbuObjects" />
+                <Parameter Key="mainRegisterId" Value="200" />
+            </Parameters>
+        </Button>
 
-    <Button Caption="Единица оценки" NavigateURL="~/Task/Unit" Icon="icon-contract">
-      <Parameters>
-        <Parameter Key="ObjectId" Value="[ObjectID]" />
-      </Parameters>
-    </Button>
+        <Button Caption="Единица оценки" NavigateURL="~/Task/Unit" Icon="icon-contract">
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
 
-    <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
-  </Buttons>
-  
-  <Tabs>
-    <Tab Caption="Основные данные" NavigateURL="/GbuObjects/ObjectCard">
-      <Parameters>
-        <Parameter Key="id" Value="[ObjectId]" />
-      </Parameters>
-    </Tab>
-  </Tabs>
+        <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
 
-  <RowMenuButtons>
-    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
-  </RowMenuButtons>
+        <Button Caption="Выполнить процедуру гармонизации" NavigateURL="/GbuObject/Harmonization" WindowHeight="800" WindowWidth="1000" Icon="fas fa-wrench"/>
+
+    </Buttons>
+
+    <Tabs>
+        <Tab Caption="Основные данные" NavigateURL="/GbuObjects/ObjectCard">
+            <Parameters>
+                <Parameter Key="id" Value="[ObjectId]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
+
+    <RowMenuButtons>
+        <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+    </RowMenuButtons>
 </RegisterView>

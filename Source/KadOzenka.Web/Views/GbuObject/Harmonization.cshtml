@@ -1,0 +1,169 @@
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.GbuObject.HarmonizationViewModel
+
+@using (Html.BeginForm("Harmonization", "GbuObject", FormMethod.Post))
+{
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.IdAttributeResult)
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeResult, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </div>
+    <fieldset class="attrFieldset">
+        <legend>1 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level1Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>2 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level2Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>3 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level3Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>4 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level4Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>5 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level5Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>6 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level6Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>7 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level7Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>8 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level8Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>9 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level9Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <fieldset class="attrFieldset">
+        <legend>10 уровень</legend>
+        <div class="col-sm-2">
+            @Html.CustomLabel("Характеристика")
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoDropDownListWithAutocompleteFor(m => m.Level10Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+        </div>
+    </fieldset>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button style="float: right" id="performHarmonization" class="k-button" type="button">Выполнить</button>
+        </div>
+    </div>
+</div>
+}
+
+@section styles {
+    <style>
+        fieldset.attrFieldset {
+            border: 1px solid #c8c6cc;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+
+        fieldset.attrFieldset legend {
+            font-size: initial;
+            font-style: italic;
+            margin: 0;
+        }
+    </style>
+}
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#performHarmonization').on('click',
+                function () {
+                    kendo.ui.progress($('body'), true);
+                    var form = $('form');
+                    var formObject = Common.Functions.FormToObject(form);
+                    debugger;
+                    $.post(form.attr('action'), formObject).done(function (response) {
+                        kendo.ui.progress($('body'), false);
+                        //if (response.Errors) {
+                        //    var errors = $.map(distinctErrors(response.Errors),
+                        //        function(el) {
+                        //            return el.Message;
+                        //        });
+                        //    Common.ShowError(errors);
+                        //    return;
+                        //}
+                    });
+                });
+        });
+
+        function distinctErrors(errors) {
+            var result = [];
+            $.each(errors,
+                function (index, event) {
+                    var events = $.grep(result,
+                        function (e) {
+                            return event.Message === e.Message;
+                        });
+                    if (events.length === 0) {
+                        result.push(event);
+                    }
+                });
+
+            return result;
+        }
+    </script>
+}
