@@ -5,7 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Shared.Extensions;
 using ObjectModel.Core.Register;
+using ObjectModel.KO;
+using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -54,25 +57,19 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult GroupingObject()
 		{
+			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
+			{
+				x.Id,
+				Text = x.NameJob
+			}).AsEnumerable();
+
+			ViewData["Attribute"] = OMAttribute.Where(x => x.RegisterId >=2 && x.RegisterId <= 23).SelectAll().Execute().Select(x => new
+			{
+				x.Id,
+				Text = x.Name
+			}).AsEnumerable();
+
 			return View();
-		}
-
-		[HttpGet]
-		public ActionResult Harmonization()
-		{
-			ViewData["Attributes"] = OMAttribute.Where(x => x.RegisterId >= 2 && x.RegisterId <= 23)
-				.Select(x => new { x.Name, x.Id })
-				.Execute()
-				.Select(x => new { Text = x.Name, Value = x.Id })
-				.ToList();
-		
-			return View(new HarmonizationViewModel{ IdAttributeResult = 8 });
-		}
-
-		[HttpPost]
-		public ActionResult Harmonization(HarmonizationViewModel viewModel)
-		{
-			return NoContent();
 		}
 	}
 }

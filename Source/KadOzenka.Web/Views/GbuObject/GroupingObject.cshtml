@@ -1,10 +1,12 @@
-﻿@model KadOzenka.Web.Models.GbuObject.GroupingObject;
+﻿@using System.Collections
+@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.GbuObject.GroupingObject;
 
 <style>
 	#valuesFilter-list {
 		display: none !important;
 	}
-	.filter {
+	.wrap-level {
 		padding-top: 5px;
 	}
 </style>
@@ -17,60 +19,63 @@
 			@Html.CustomLabelFor(m => m.IdCodJob)
 		</div>
 		<div class="col-sm-10">
-			@Html.KendoAutoCopmpliteFor(m => m.IdCodJob, "", "", "", "", isReadonly: false)
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodJob, (IEnumerable) ViewData["CodJob"], dataValueField: "Id")
 		</div>
 	</div>
-	<fieldset class="filter">
-		<div class="form-group">
-			<div class="col-sm-12">
-				@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("Все объекты").Value(true)
-			</div>
+<fieldset class="wrap-level">
+	<div class="form-group">
+		<div class="col-sm-12">
+			@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("Все объекты").Value(true)
 		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("По значению").Value(false)
-			</div>
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.IdAttributeFilter)
-			</div>
-			<div class="col-sm-3">
-				@Html.KendoAutoCopmpliteFor(m => m.IdAttributeFilter, "", "", "", "", isReadonly: false)
-			</div>
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.ValuesFilter)
-			</div>
-			<div class="col-sm-3">
-				<select id="valuesFilter" style="width: 100%;"></select>
-			</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("По значению").Value(false)
 		</div>
-	</fieldset>
-<div class="form-group">
-	<div class="col-sm-12">
-		<p>1 Уровень</p>
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.IdAttributeFilter)
+		</div>
+		<div class="col-sm-4">
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (IEnumerable) ViewData["Attribute"], dataValueField: "Id")
+		</div>
+		<div class="col-sm-1">
+			@Html.CustomLabelFor(m => m.ValuesFilter)
+		</div>
+		<div class="col-sm-3">
+			<select id="valuesFilter" style="width: 100%;"></select>
+		</div>
 	</div>
-	<div class="col-sm-2">
-		<label>
-			@(Html.Kendo().CheckBoxFor(m => m.Level1.UseDictionary))
-			Справочник
-		</label>
-	</div>
-	<div class="col-sm-2">
-		<label>
-			@(Html.Kendo().CheckBoxFor(m => m.Level1.SkipDefis))
-			Игнорировать "-"
-		</label>
-	</div>
-	<div class="col-sm-2">
-		@Html.CustomLabel("Характеристика")
-	</div>
-	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level1.IdFactor, "", "", "", "", isReadonly: false)
-	</div>
+</fieldset>
+<div class="col-sm-12">
+	<p>1 Уровень</p>
 </div>
-<div class="form-group">
-	<div class="col-sm-12">
-		<p>2 Уровень</p>
+<fieldset class="wrap-level">
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level1.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level1.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level1.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+		</div>
 	</div>
+</fieldset>
+<div class="col-sm-12">
+	<p>2 Уровень</p>
+</div>
+<fieldset class="wrap-level">
+<div class="form-group">
 	<div class="col-sm-2">
 		<label>
 			@(Html.Kendo().CheckBoxFor(m => m.Level2.UseDictionary))
@@ -87,13 +92,15 @@
 		@Html.CustomLabel("Характеристика")
 	</div>
 	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level2.IdFactor, "", "", "", "", isReadonly: false)
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.Level2.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
 	</div>
 </div>
+</fieldset>
+<div class="col-sm-12">
+	<p>3 Уровень</p>
+</div>
+<fieldset class="wrap-level">
 <div class="form-group">
-	<div class="col-sm-12">
-		<p>3 Уровень</p>
-	</div>
 	<div class="col-sm-2">
 		<label>
 			@(Html.Kendo().CheckBoxFor(m => m.Level3.UseDictionary))
@@ -110,13 +117,15 @@
 		@Html.CustomLabel("Характеристика")
 	</div>
 	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level3.IdFactor, "", "", "", "", isReadonly: false)
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.Level3.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
 	</div>
 </div>
+</fieldset>
+<div class="col-sm-12">
+	<p>4 Уровень</p>
+</div>
+<fieldset class="wrap-level">
 <div class="form-group">
-	<div class="col-sm-12">
-		<p>4 Уровень</p>
-	</div>
 	<div class="col-sm-2">
 		<label>
 			@(Html.Kendo().CheckBoxFor(m => m.Level4.UseDictionary))
@@ -133,82 +142,90 @@
 		@Html.CustomLabel("Характеристика")
 	</div>
 	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level4.IdFactor, "", "", "", "", isReadonly: false)
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.Level4.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
 	</div>
 </div>
-<div class="form-group">
-	<div class="col-sm-12">
-		<p>5 Уровень</p>
-	</div>
-	<div class="col-sm-2">
-		<label>
-			@(Html.Kendo().CheckBoxFor(m => m.Level5.UseDictionary))
-			Справочник
-		</label>
-	</div>
-	<div class="col-sm-2">
-		<label>
-			@(Html.Kendo().CheckBoxFor(m => m.Level5.SkipDefis))
-			Игнорировать "-"
-		</label>
-	</div>
-	<div class="col-sm-2">
-		@Html.CustomLabel("Характеристика")
-	</div>
-	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level5.IdFactor, "", "", "", "", isReadonly: false)
-	</div>
+</fieldset>
+<div class="col-sm-12">
+	<p>5 Уровень</p>
 </div>
-<div class="form-group">
-	<div class="col-sm-12">
-		<p>6 Уровень</p>
+<fieldset class="wrap-level">
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level5.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level5.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level5.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+		</div>
 	</div>
-	<div class="col-sm-2">
-		<label>
-			@(Html.Kendo().CheckBoxFor(m => m.Level6.UseDictionary))
-			Справочник
-		</label>
-	</div>
-	<div class="col-sm-2">
-		<label>
-			@(Html.Kendo().CheckBoxFor(m => m.Level6.SkipDefis))
-			Игнорировать "-"
-		</label>
-	</div>
-	<div class="col-sm-2">
-		@Html.CustomLabel("Характеристика")
-	</div>
-	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level6.IdFactor, "", "", "", "", isReadonly: false)
-	</div>
+</fieldset>
+<div class="col-sm-12">
+	<p>6 Уровень</p>
 </div>
-<div class="form-group">
-	<div class="col-sm-12">
-		<p>7 Уровень</p>
+<fieldset class="wrap-level">
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level6.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level6.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level6.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+		</div>
 	</div>
-	<div class="col-sm-2">
-		<label>
-			@(Html.Kendo().CheckBoxFor(m => m.Level7.UseDictionary))
-			Справочник
-		</label>
-	</div>
-	<div class="col-sm-2">
-		<label>
-			@(Html.Kendo().CheckBoxFor(m => m.Level7.SkipDefis))
-			Игнорировать "-"
-		</label>
-	</div>
-	<div class="col-sm-2">
-		@Html.CustomLabel("Характеристика")
-	</div>
-	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level7.IdFactor, "", "", "", "", isReadonly: false)
-	</div>
+</fieldset>
+<div class="col-sm-12">
+	<p>7 Уровень</p>
 </div>
-<div class="form-group">
-	<div class="col-sm-12">
-		<p>8 Уровень</p>
+<fieldset class="wrap-level">
+	<div class="form-group">
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level7.UseDictionary))
+				Справочник
+			</label>
+		</div>
+		<div class="col-sm-2">
+			<label>
+				@(Html.Kendo().CheckBoxFor(m => m.Level7.SkipDefis))
+				Игнорировать "-"
+			</label>
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabel("Характеристика")
+		</div>
+		<div class="col-sm-6">
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level7.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+		</div>
 	</div>
+</fieldset>
+<div class="col-sm-12">
+	<p>8 Уровень</p>
+</div>
+<fieldset class="wrap-level">
+<div class="form-group">
 	<div class="col-sm-2">
 		<label>
 			@(Html.Kendo().CheckBoxFor(m => m.Level8.UseDictionary))
@@ -225,13 +242,15 @@
 		@Html.CustomLabel("Характеристика")
 	</div>
 	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level8.IdFactor, "", "", "", "", isReadonly: false)
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.Level8.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
 	</div>
 </div>
+</fieldset>
+<div class="col-sm-12">
+	<p>9 Уровень</p>
+</div>
+<fieldset class="wrap-level">
 <div class="form-group">
-	<div class="col-sm-12">
-		<p>9 Уровень</p>
-	</div>
 	<div class="col-sm-2">
 		<label>
 			@(Html.Kendo().CheckBoxFor(m => m.Level9.UseDictionary))
@@ -248,13 +267,15 @@
 		@Html.CustomLabel("Характеристика")
 	</div>
 	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level9.IdFactor, "", "", "", "", isReadonly: false)
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.Level9.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
 	</div>
 </div>
+</fieldset>
+<div class="col-sm-12">
+	<p>10 Уровень</p>
+</div>
+<fieldset class="wrap-level">
 <div class="form-group">
-	<div class="col-sm-12">
-		<p>10 Уровень</p>
-	</div>
 	<div class="col-sm-2">
 		<label>
 			@(Html.Kendo().CheckBoxFor(m => m.Level10.UseDictionary))
@@ -271,13 +292,15 @@
 		@Html.CustomLabel("Характеристика")
 	</div>
 	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level10.IdFactor, "", "", "", "", isReadonly: false)
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.Level10.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
 	</div>
 </div>
+</fieldset>
+<div class="col-sm-12">
+	<p>11 Уровень</p>
+</div>
+<fieldset class="wrap-level">
 <div class="form-group">
-	<div class="col-sm-12">
-		<p>11 Уровень</p>
-	</div>
 	<div class="col-sm-2">
 		<label>
 			@(Html.Kendo().CheckBoxFor(m => m.Level11.UseDictionary))
@@ -294,43 +317,60 @@
 		@Html.CustomLabel("Характеристика")
 	</div>
 	<div class="col-sm-6">
-		@Html.KendoAutoCopmpliteFor(m => m.Level11.IdFactor, "", "", "", "", isReadonly: false)
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.Level11.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
 	</div>
 </div>
-<div class="form-group">
-	<div class="col-sm-2">
-		@Html.CustomLabelFor(m => m.IdAttributeResult)
+</fieldset>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.IdAttributeResult)
+		</div>
+		<div class="col-sm-10">
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeResult, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+		</div>
 	</div>
-	<div class="col-sm-10">
-		@Html.KendoAutoCopmpliteFor(m => m.IdAttributeResult, "", "", "", "", isReadonly: false)
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor(m => m.IdAttributeSource)
+		</div>
+		<div class="col-sm-10">
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeSource, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+		</div>
 	</div>
-</div>
-<div class="form-group">
-	<div class="col-sm-2">
-		@Html.CustomLabelFor(m => m.IdAttributeSource)
-	</div>
-	<div class="col-sm-10">
-		@Html.KendoAutoCopmpliteFor(m => m.IdAttributeSource, "", "", "", "", isReadonly: false)
-	</div>
-</div>
 <div class="form-group">
 	<div class="col-sm-2">
 		@Html.CustomLabelFor(m => m.IdAttributeDocument)
 	</div>
 	<div class="col-sm-10">
-		@Html.KendoAutoCopmpliteFor(m => m.IdAttributeDocument, "", "", "", "", isReadonly: false)
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeDocument, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
 	</div>
 </div>
 <div class="form-group">
-	<div class="col-sm-12">
-		<button style="float: right" id="save" class="k-button" type="button">Выполнить</button>
+	<div class="col-sm-4">
+		<button style="float: left" id="load" class="k-button" type="button">Загрузить</button>
+		<button style="float: left; margin-left: 4px;" id="save" class="k-button" type="button">Сохранить</button>
+	</div>
+
+	<div class="col-sm-2 col-sm-offset-6">
+		<button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
 	</div>
 </div>
 </div>
 }
 
 <script type="text/javascript">
-	$(document).ready(function() {
+	$(document).ready(function () {
+
+		$("#IdAttributeFilter").kendoTooltip({
+			filter: "input",
+			width: 120,
+			show: function(e) {
+				if (this.content.text() !== this.target().data("title")) {
+					this.refresh();
+				}
+			},
+			position: "top"
+		});
 
 		function onDataBound(e) {
 			$('.k-multiselect .k-input').unbind('keyup');
@@ -363,5 +403,10 @@
 			},
 			dataBound: onDataBound
 		});
+
+		$('#execute').on('click',
+			function () {
+				console.log($("#valuesFilter").data("kendoMultiSelect").value());
+			});
 	});
 </script>
