@@ -121,6 +121,7 @@
     <None Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <None Remove="Config\Registers\Views\DataImporter.xml" />
     <None Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
+    <None Remove="Config\Registers\Views\DeclarationsUved.xml" />
     <None Remove="Config\Registers\Views\GbuObjects.xml" />
     <None Remove="Config\Registers\Views\InspectorPersonSelect.xml" />
     <None Remove="Config\Registers\Views\KoObjects.xml" />
@@ -223,6 +224,12 @@
     <Content Include="Config\Registers\Views\DeclarationsSignatory.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\Registers\Views\DeclarationsUved.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoObjectsCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\Registers\Views\KoTaskGknFilesCard.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -233,6 +240,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\KoObjects.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoTasks.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoTours.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\MarketObjects.xml">
