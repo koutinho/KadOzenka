@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="315" DefaultLayoutId="1003151" LinkedRegistersList="300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317" 
               AllowSearchPanelResize="false" IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" 
-              ShowObjectCards="false" ShowActualDate="false" ShowRowMenu="true" SRDFunctionTAG="SUD.OBJECTS">
+              ShowObjectCards="false" ShowActualDate="false" ShowRowMenu="true" SRDFunctionTag="SUD.OBJECTS">
   <Buttons>
-    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract" SRDFunctionTAG="SUD.OBJECTS.HISTORY">
+    <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract" SRDFunctionTag="SUD.OBJECTS.HISTORY">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />
         <Parameter Key="RegisterId" Value="[RegisterId]" />
@@ -18,7 +18,7 @@
       </Parameters>
     </Button>
     
-	  <Button Caption="Загрузка данных" NavigateURL="~/Sud/LoadDocument" WindowHeight="200" WindowWidth="1000" Icon="fas fa-arrow-circle-down" SRDFunctionTAG="SUD.IMPORT">
+	  <Button Caption="Загрузка данных" NavigateURL="~/Sud/LoadDocument" WindowHeight="200" WindowWidth="1000" Icon="fas fa-arrow-circle-down" SRDFunctionTag="SUD.IMPORT">
 		  <Parameters>
 		  </Parameters>
 	  </Button>
@@ -28,21 +28,21 @@
           </Parameters>
       </Button>
 
-	  <Button Caption="Выгрузка в Excel" Icon="icon-excel" OpenInRadWindow="false" Type="DropDown" SRDFunctionTAG="SUD.EXPORT">
+	  <Button Caption="Выгрузка в Excel" Icon="icon-excel" OpenInRadWindow="false" Type="DropDown" SRDFunctionTag="SUD.EXPORT">
 		  <DropDownButtons>
-			  <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT.EXCEL"/>
+			  <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="SUD.EXPORT.EXCEL"/>
 
-			  <Button Caption="Выгрузка судебных решений для ГБУ" NavigateURL="~/Sud/GetExportDataToExcelGbu"  OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT.GBU"/>
-			  <Button Caption="Полная выгрузка в Excel" NavigateURL="~/Sud/GetExportAllDataToExcel" OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT.ALL"/>
+			  <Button Caption="Выгрузка судебных решений для ГБУ" NavigateURL="~/Sud/GetExportDataToExcelGbu"  OpenInRadWindow="false" SRDFunctionTag="SUD.EXPORT.GBU"/>
+			  <Button Caption="Полная выгрузка в Excel" NavigateURL="~/Sud/GetExportAllDataToExcel" OpenInRadWindow="false" SRDFunctionTag="SUD.EXPORT.ALL"/>
 		  </DropDownButtons>
 	  </Button>
-	  <Button Caption="Выгрузка в Xml" NavigateURL="~/Sud/GetExportDataToXml" Icon="fas fa-code"  OpenInRadWindow="false" SRDFunctionTAG="SUD.EXPORT"/>
+	  <Button Caption="Выгрузка в Xml" NavigateURL="~/Sud/GetExportDataToXml" Icon="fas fa-code"  OpenInRadWindow="false" SRDFunctionTag="SUD.EXPORT"/>
 
-	  <Button Caption="Статистика" Icon="fas fa-chart-pie" OpenInRadWindow="false" Type="DropDown" SRDFunctionTAG="SUD.OBJECTS.STATISTICS">
+	  <Button Caption="Статистика" Icon="fas fa-chart-pie" OpenInRadWindow="false" Type="DropDown" SRDFunctionTag="SUD.OBJECTS.STATISTICS">
 		  <DropDownButtons>
-			  <Button Caption="Положительные судебные решения" NavigateURL="~/Sud/GetExportStatisticCheck" OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS.TRUE"/>
-			  <Button Caption="Сводная статистика" NavigateURL="~/Sud/GetExportStatistic"  OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS.SUMMARY"/>
-			  <Button Caption="Статистика по объектам недвижимости" NavigateURL="~/Sud/GetExportStatisticObject" OpenInRadWindow="false" SRDFunctionTAG="SUD.OBJECTS.STATISTICS.OBJECT"/>
+			  <Button Caption="Положительные судебные решения" NavigateURL="~/Sud/GetExportStatisticCheck" OpenInRadWindow="false" SRDFunctionTag="SUD.OBJECTS.STATISTICS.TRUE"/>
+			  <Button Caption="Сводная статистика" NavigateURL="~/Sud/GetExportStatistic"  OpenInRadWindow="false" SRDFunctionTag="SUD.OBJECTS.STATISTICS.SUMMARY"/>
+			  <Button Caption="Статистика по объектам недвижимости" NavigateURL="~/Sud/GetExportStatisticObject" OpenInRadWindow="false" SRDFunctionTag="SUD.OBJECTS.STATISTICS.OBJECT"/>
 		  </DropDownButtons>
 	  </Button>
   </Buttons>
@@ -64,7 +64,7 @@
   </ObjectCardButtons>
   
   <Tabs>
-      <Tab Caption="Основные данные" NavigateURL="/Sud/ObjectCard" SRDFunctionTAG="SUD.OBJECTS.EDIT">
+      <Tab Caption="Основные данные" NavigateURL="/Sud/ObjectCard" SRDFunctionTag="SUD.OBJECTS.EDIT">
           <Parameters>
               <Parameter Key="id" Value="[ObjectId]" />
           </Parameters>

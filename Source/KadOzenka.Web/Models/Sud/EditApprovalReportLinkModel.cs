@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Shared.Extensions;
-using DevExpress.DataAccess.Native.Sql.ConnectionProviders;
 using KadOzenka.Dal.Enum;
 using ObjectModel.Sud;
 

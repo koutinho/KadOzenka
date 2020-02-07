@@ -9,6 +9,7 @@ using System.Linq;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.SRD;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.Common;
@@ -76,7 +77,21 @@ namespace KadOzenka.Web.Controllers
 					Text = x.Name
 				}).AsEnumerable();
 
-			return View();
+				return View();
+		}
+
+		public List<SelectListItem> GetTemplatesGrouping()
+		{
+			return OMDataFormStorage.Where(x =>
+					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.Normalisation)
+				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+		}
+
+		public List<SelectListItem> GetTemplatesHarmonization()
+		{
+			return OMDataFormStorage.Where(x =>
+					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.Harmonization)
+				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
 
 		[HttpPost]
@@ -87,35 +102,15 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public JsonResult SaveTemplateGroupingObject(GroupingObject model)
+		public JsonResult SaveTemplateGroupingObject(string nameTemplate, [FromForm]GroupingObject model)
 		{
-		
-			try
-			{
-				OMDataFormStorage formStorage = OMDataFormStorage
-					.Where(x => x.UserId == SRDSession.GetCurrentUserId().Value &&
-					            x.FormType_Code == DataFormStorege.Normalisation).SelectAll().ExecuteFirstOrDefault();
-				if (formStorage != null)
-				{
-					formStorage.Data = model.SerializeToXml();
-					formStorage.Save();
-					return Json(new { success = true });
-				}
+			return SaveTemplate(nameTemplate, DataFormStorege.Normalisation, model.SerializeToXml());
+		}
 
-				new OMDataFormStorage()
-				{
-					UserId = SRDSession.GetCurrentUserId().Value,
-					FormType_Code = DataFormStorege.Normalisation,
-					Data = model.SerializeToXml()
-
-				}.Save();
-			}
-			catch (Exception e)
-			{
-				return Json(new { Error = $"Сохранение не выполнено. Подробности в журнале ошибок. Ошибка: {e.Message}" });
-			}
-			
-			return Json(new { success = true });
+		[HttpPost]
+		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, [FromForm]HarmonizationViewModel viewModel)
+		{
+			return SaveTemplate(nameTemplate, DataFormStorege.Harmonization, viewModel.SerializeToXml());
 		}
 
 		[HttpGet]
@@ -193,5 +188,35 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { Success = "Процедура Гармонизации успешно выполнена" });
 		}
+
+		#region Helper
+
+		public JsonResult SaveTemplate(string nameTemplate, DataFormStorege formType, string serializeData)
+		{
+			if (string.IsNullOrEmpty(nameTemplate))
+			{
+				return Json(new { Error = "Сохранение не выполнено. Имя шаблона обязательное поле" });
+			}
+
+			try
+			{
+				new OMDataFormStorage()
+				{
+					UserId = SRDSession.GetCurrentUserId().Value,
+					FormType_Code = formType,
+					Data = serializeData,
+					TemplateName = nameTemplate,
+
+				}.Save();
+			}
+			catch (Exception e)
+			{
+				return Json(new { Error = $"Сохранение не выполнено. Подробности в журнале ошибок. Ошибка: {e.Message}" });
+			}
+
+			return Json(new { success = true });
+		}
+
+		#endregion
 	}
 }

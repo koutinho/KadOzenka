@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Shared.Extensions;
-using DevExpress.DataProcessing;
 using KadOzenka.Dal.Enum;
-using ObjectModel.Directory.Sud;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Web.Models.Sud

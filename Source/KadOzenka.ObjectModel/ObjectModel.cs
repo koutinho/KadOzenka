@@ -18874,5 +18874,25 @@ namespace ObjectModel.Common
             }
         }
 
+
+        private string _templatename;
+        /// <summary>
+        /// 80200500 Имя шаблона (TEMPLATE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80200500)]
+        public string TemplateName
+        {
+            get
+            {
+                CheckPropertyInited("TemplateName");
+                return _templatename;
+            }
+            set
+            {
+                _templatename = value;
+                NotifyPropertyChanged("TemplateName");
+            }
+        }
+
     }
 }

@@ -1,5 +1,7 @@
 ﻿@using System.Collections
 @using KadOzenka.Web.Helpers
+@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.GbuObject.GroupingObject;
 
 <style>
@@ -7,6 +9,17 @@
 		border: 1px solid #c8c6cc;
 		border-radius: 6px;
 		margin-bottom: 10px;
+	}
+
+	fieldset legend {
+		font-size: initial;
+		font-style: italic;
+		margin: 0;
+	}
+
+	.error {
+		border: 1px solid red;
+		border-color: red !important;
 	}
 
 	#valuesFilter-list {
@@ -334,12 +347,15 @@
 	</div>
 </div>
 <div class="form-group">
-	<div class="col-sm-4">
-		<button style="float: left" id="load" class="k-button" type="button">Загрузить</button>
-		<button style="float: left; margin-left: 4px;" id="save" class="k-button" type="button">Сохранить</button>
+	<div class="col-sm-7">
+		@( await Html.PartialAsync("PartialTemplateStorage", new TemplateStorageViewModel
+			{
+				ControllerName = "GbuObject",
+				ActionName = "GetTemplatesGrouping"
+			}))
 	</div>
-
-	<div class="col-sm-2 col-sm-offset-6">
+	
+	<div class="col-sm-2 col-sm-offset-3">
 		<button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
 	</div>
 </div>
@@ -348,18 +364,8 @@
 
 <script type="text/javascript">
 	$(document).ready(function () {
-
-		$("#IdAttributeFilter").kendoTooltip({
-			filter: "input",
-			width: 120,
-			show: function(e) {
-				if (this.content.text() !== this.target().data("title")) {
-					this.refresh();
-				}
-			},
-			position: "top"
-		});
-
+		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject");
+		console.log('templateStorage', templateStorage);
 		function onDataBound(e) {
 			$('.k-multiselect .k-input').unbind('keyup');
 			$('.k-multiselect .k-input').on('keyup', onClickEnter);
@@ -414,27 +420,5 @@
 				});
 			});
 
-		$('#save').on('click',
-			function () {
-				var form = $('form');
-				var formObject = Common.Functions.FormToObject(form);
-				formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
-				kendo.ui.progress($('body'), true);
-
-				var url = "@Url.Action("SaveTemplateGroupingObject", "GbuObject")";
-
-				$.post(url, formObject).done(function (response) {
-					kendo.ui.progress($('body'), false);
-					if (response.Error) {
-						kendo.ui.progress($('body'), false);
-						Common.ShowError(response.Error);
-						return;
-					}
-					if (response.success) {
-						kendo.ui.progress($('body'), false);
-						Common.ShowMessage("Выполнено");
-					}
-				});
-			});
 	});
 </script>

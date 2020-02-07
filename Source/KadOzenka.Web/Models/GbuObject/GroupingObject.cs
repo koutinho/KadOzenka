@@ -129,7 +129,6 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Документ")]
 		public int? IdAttributeDocument { get; set; }
 
-
 		public GroupingSettings CovertToGroupingSettings()
 		{
 			return new GroupingSettings

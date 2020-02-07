@@ -27,6 +27,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public IActionResult ObjectCard(long id)
 		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_EDIT, true, false, true);
 			var obj = OMObject
 				.Where(x => x.Id == id)
 				.SelectAll()

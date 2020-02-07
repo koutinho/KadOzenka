@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Core.RefLib;
-using DevExpress.CodeParser;
 using ObjectModel.Commission;
 using ObjectModel.Directory.Commission;
 

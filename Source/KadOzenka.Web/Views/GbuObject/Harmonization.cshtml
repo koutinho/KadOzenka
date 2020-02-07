@@ -1,5 +1,7 @@
 ﻿@using KadOzenka.Web.Helpers
+@using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory
+@using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.GbuObject.HarmonizationViewModel
 
 @using (Html.BeginForm("Harmonization", "GbuObject", FormMethod.Post))
@@ -144,11 +146,18 @@
                 @Html.KendoDropDownListWithAutocompleteFor(m => m.Level10Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
             </div>
         </fieldset>
-        <div class="form-group">
-            <div class="col-sm-12">
-                <button style="float: right" id="performHarmonization" class="k-button" type="button">Выполнить</button>
-            </div>
-        </div>
+	    <div class="form-group">
+		    <div class="col-sm-7">
+			    @( await Html.PartialAsync("PartialTemplateStorage", new TemplateStorageViewModel
+			{
+				ControllerName = "GbuObject",
+				ActionName = "GetTemplatesHarmonization"
+			}))
+		    </div>
+		    <div class="col-sm-2 col-sm-offset-3">
+			    <button style="float: right" id="performHarmonization" class="k-button" type="button">Выполнить</button>
+		    </div>
+	    </div>
     </div>
 }
 
@@ -186,6 +195,8 @@
 @section scripts {
     <script type="text/javascript">
         $(document).ready(function () {
+
+	        templateStorage.init(@((int)DataFormStorege.Harmonization), "SaveTemplateHarmonizationObject", "GbuObject");
 
             function onDataBound(e) {
                 $('.k-multiselect .k-input').unbind('keyup');
