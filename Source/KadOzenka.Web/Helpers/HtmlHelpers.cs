@@ -29,10 +29,12 @@ namespace KadOzenka.Web.Helpers
 
 			var htmlFieldName = ExpressionHelper.GetExpressionText(expression);
 			var name = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
+			var className = name.Replace(".", "_");
 
 			var script = "<script>" +
-			             $"function clearField{name}() {{ $('#{name}').data('kendoDropDownList').value('');}}" +
-							$"$(document).ready(function(){{$('.clear-button-{name}').on('click', clearField{name});}});" +
+						 $"function onCascade{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); $('#{className}Wrapper').data('kendoTooltip').refresh();}}}}" +
+			             $"function clearField{className}() {{ $('input.{className}').data('kendoDropDownList').value('');}}" +
+							$"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
 							"</script>";
 
 			var dataList = data.Cast<object>().ToList();
@@ -44,7 +46,7 @@ namespace KadOzenka.Web.Helpers
 			var clearTag = new TagBuilder("a");
 			clearTag.AddCssClass("k-button");
 			clearTag.AddCssClass("k-button-icon");
-			clearTag.AddCssClass($"clear-button-{name}");
+			clearTag.AddCssClass($"clear-button-{className}");
 			clearTag.InnerHtml.AppendHtml("<span class='k-icon k-i-close'></span>");
 
 			DropDownListBuilder dropDownBuilder = html.Kendo().DropDownList()
@@ -52,24 +54,22 @@ namespace KadOzenka.Web.Helpers
 				.Filter(filter)
 				.BindTo(dataSource)
 				.OptionLabel(null)
+				.Events(x =>
+					x.Cascade($"onCascade{className}")
+				)
 				.Value(modelExplorer.Model?.ToString());
 
-			//TODO: need to fix the problem with showing
 			var tooltip = html.Kendo().Tooltip()
-				.Name($"#{name}Tooltip")
-				.For($"#{name}Wrapper")
-				//.Filter(".k-dropdown")
-				//.ShowOn(TooltipShowOnEvent.Click)
-				.Width(200)
-				.Height(200)
+				.For($"#{className}Wrapper")
+				.Filter(".k-dropdown")
 				.Iframe(true)
-				//.Position(TooltipPosition.Top)
-				.Content("<div>content</div>")
+				.Position(TooltipPosition.Top)
 				.AutoHide(true);
 
 			var dropDownBuilderHtmlAttributes = new RouteValueDictionary
 			{
 				{ "style", "width: 100%;" },
+				{ "class", $"{className}" },
 			};
 
 			if (modelExplorer.Model != null)
@@ -90,7 +90,7 @@ namespace KadOzenka.Web.Helpers
 			dropDownBuilder.HtmlAttributes(dropDownBuilderHtmlAttributes);
 
 			var autocompleteDiv = new TagBuilder("div");
-			autocompleteDiv.MergeAttribute("id", $"#{name}Wrapper");
+			autocompleteDiv.MergeAttribute("id", $"{className}Wrapper");
 			autocompleteDiv.AddCssClass("col-sm-11");
 			autocompleteDiv.InnerHtml.AppendHtml(dropDownBuilder);
 
@@ -103,7 +103,7 @@ namespace KadOzenka.Web.Helpers
 			container.MergeAttribute("style", "display: flex;");
 			container.InnerHtml.AppendHtml(autocompleteDiv);
 			container.InnerHtml.AppendHtml(wrapButtonDiv);
-			//container.InnerHtml.AppendHtml(tooltip);
+			container.InnerHtml.AppendHtml(tooltip);
 
 			var writer = new StringWriter();
 			container.WriteTo(writer, HtmlEncoder.Default);
