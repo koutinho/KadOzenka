@@ -12,6 +12,11 @@
     <UserSecretsId>aspnet-CIPJS-FFB46405-E6EB-4199-9CFF-974F827463C3</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="wwwroot\Config\**" />
     <Content Remove="wwwroot\Config\**" />
@@ -284,6 +289,240 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreLongProcessQueue.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreLongProcessService.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreMessages.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterAttribute.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterLayout.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterLayoutExport.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterLayoutExportAll.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterQry.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreRegisterRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedAttachment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedDiagnostics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedErrorLog.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedReference.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSharedReferenceItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDDepartment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDRegisterAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDRole.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\SearchPanels\CoreSRDUser.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreAuditCommon.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreLongProcessQueue.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreLongProcessQueueCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreLongProcessService.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreLongProcessType.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreMessages.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreMessagesMy.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreMessagesRecipients.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterAttribute.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterAttributeCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterLayout.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterLayoutExport.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterLayoutExportAll.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterListObject.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterQry.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterQrySelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterRegister.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreRegisterRelation.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedAttachment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedDiagnostics.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedErrorLog.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedReference.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedReferenceItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSharedReferenceRegItem.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDDepartment.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDFunctionRoles.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDFunctionUsers.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRegisterAudit.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRole.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRoleFilter.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRoleSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRoleUsers.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDUser.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDUserAction.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDUserSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDUserSession.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\MappingConfiguration\DictionaryMapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\MappingConfiguration\DictionarySqlMapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\LeftPanel\Dashboard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\nach\ConfigA.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\nach\ConfigB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\strah\ConfigA.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\strah\ConfigB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectFlagInsur.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectMapBuilding.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectMapFlat.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\DeclarationsBookSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Registers\SearchPanels\InsurMfcPackages.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -291,6 +530,33 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\PfhdFact.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\SudOtchetSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\SudReshSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\CommissionCost.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\DeclarationsBook.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\DeclarationsBookSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\DeclarationsDeclaration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\DeclarationsSubject.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\DeclarationsSubjectSelect.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\Views\InsurMfcPackages.xml">
@@ -308,17 +574,101 @@
     <None Update="Config\Registers\Views\PfhdFact.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Registers\Views\SudDictOcenschik.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudDictOcenschikSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudDictOrganisations.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudDictOrganisationsSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudDictSro.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudDictSroSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudOtchet.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudOtchetLinkCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudOtchetSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudResh.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudReshLinkCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudReshSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudZak.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudZakLinkCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\Views\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\AdoptionOfDeclarationNotificationReport.frx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CalculationPagesReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CalculationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CCCReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CCC_OUReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\InformationCardReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MFCReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NotificationReport_NoSign.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisterOfPaymentOIReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisterOfPaymentReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ReturnPermIOReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\SubmitDocForApprovalReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\TestReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
@@ -328,50 +678,50 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="DevExpress.Charts.v19.1.Core">
-      <HintPath>..\_Dll\DevExpress.Charts.v19.1.Core.dll</HintPath>
+    <Reference Include="DevExpress.Charts.v19.2.Core">
+      <HintPath>..\_Dll\DevExpress.Charts.v19.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.CodeParser.v19.1">
-      <HintPath>..\_Dll\DevExpress.CodeParser.v19.1.dll</HintPath>
+    <Reference Include="DevExpress.CodeParser.v19.2">
+      <HintPath>..\_Dll\DevExpress.CodeParser.v19.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Data.v19.1">
-      <HintPath>..\_Dll\DevExpress.Data.v19.1.dll</HintPath>
+    <Reference Include="DevExpress.Data.v19.2">
+      <HintPath>..\_Dll\DevExpress.Data.v19.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.DataAccess.v19.1">
-      <HintPath>..\_Dll\DevExpress.DataAccess.v19.1.dll</HintPath>
+    <Reference Include="DevExpress.DataAccess.v19.2">
+      <HintPath>..\_Dll\DevExpress.DataAccess.v19.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Office.v19.1.Core">
-      <HintPath>..\_Dll\DevExpress.Office.v19.1.Core.dll</HintPath>
+    <Reference Include="DevExpress.Office.v19.2.Core">
+      <HintPath>..\_Dll\DevExpress.Office.v19.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Pdf.v19.1.Core">
-      <HintPath>..\_Dll\DevExpress.Pdf.v19.1.Core.dll</HintPath>
+    <Reference Include="DevExpress.Pdf.v19.2.Core">
+      <HintPath>..\_Dll\DevExpress.Pdf.v19.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.PivotGrid.v19.1.Core">
-      <HintPath>..\_Dll\DevExpress.PivotGrid.v19.1.Core.dll</HintPath>
+    <Reference Include="DevExpress.PivotGrid.v19.2.Core">
+      <HintPath>..\_Dll\DevExpress.PivotGrid.v19.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Printing.v19.1.Core">
-      <HintPath>..\_Dll\DevExpress.Printing.v19.1.Core.dll</HintPath>
+    <Reference Include="DevExpress.Printing.v19.2.Core">
+      <HintPath>..\_Dll\DevExpress.Printing.v19.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.RichEdit.v19.1.Core">
-      <HintPath>..\_Dll\DevExpress.RichEdit.v19.1.Core.dll</HintPath>
+    <Reference Include="DevExpress.RichEdit.v19.2.Core">
+      <HintPath>..\_Dll\DevExpress.RichEdit.v19.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.RichEdit.v19.1.Export">
-      <HintPath>..\_Dll\DevExpress.RichEdit.v19.1.Export.dll</HintPath>
+    <Reference Include="DevExpress.RichEdit.v19.2.Export">
+      <HintPath>..\_Dll\DevExpress.RichEdit.v19.2.Export.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Sparkline.v19.1.Core">
-      <HintPath>..\_Dll\DevExpress.Sparkline.v19.1.Core.dll</HintPath>
+    <Reference Include="DevExpress.Sparkline.v19.2.Core">
+      <HintPath>..\_Dll\DevExpress.Sparkline.v19.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Xpo.v19.1">
-      <HintPath>..\_Dll\DevExpress.Xpo.v19.1.dll</HintPath>
+    <Reference Include="DevExpress.Xpo.v19.2">
+      <HintPath>..\_Dll\DevExpress.Xpo.v19.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraCharts.v19.1">
-      <HintPath>..\_Dll\DevExpress.XtraCharts.v19.1.dll</HintPath>
+    <Reference Include="DevExpress.XtraCharts.v19.2">
+      <HintPath>..\_Dll\DevExpress.XtraCharts.v19.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraGauges.v19.1.Core">
-      <HintPath>..\_Dll\DevExpress.XtraGauges.v19.1.Core.dll</HintPath>
+    <Reference Include="DevExpress.XtraGauges.v19.2.Core">
+      <HintPath>..\_Dll\DevExpress.XtraGauges.v19.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraReports.v19.1">
-      <HintPath>..\_Dll\DevExpress.XtraReports.v19.1.dll</HintPath>
+    <Reference Include="DevExpress.XtraReports.v19.2">
+      <HintPath>..\_Dll\DevExpress.XtraReports.v19.2.dll</HintPath>
     </Reference>
     <Reference Include="Kendo.Mvc">
       <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>
