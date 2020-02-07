@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using System.Text;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.Reports.Model;
@@ -11,13 +12,15 @@ using ObjectModel.Core.SRD;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using Platform.Reports;
+using EP.Morph;
 
 namespace KadOzenka.Dal.FastReports
 {
 	public abstract class DeclarationNotificationReport : FastReportBase
 	{
-		protected DeclarationNotificationReport()
+		static DeclarationNotificationReport()
 		{
+			Morphology.Initialize(MorphLang.RU);
 		}
 
 		public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
@@ -215,31 +218,39 @@ namespace KadOzenka.Dal.FastReports
 
 		public string PrepareText(string text)
 		{
-			return text;
-			//if (string.IsNullOrWhiteSpace(text.Trim()))
-			//{
-			//	return string.Empty;
-			//}
+			if (string.IsNullOrWhiteSpace(text.Trim()))
+			{
+				return string.Empty;
+			}
 
-			//var result = new StringBuilder();
-			//var words = text.Trim().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-			//var results = MorphAnalyzer.Parse(words).ToArray();
-			//for (var i = 0; i < words.Count() - 1; i++)
-			//{
-			//	result.Append(words[i]);
-			//	if (results[i].BestTag["чр"] == "предл" || results[i].BestTag["чр"] == "союз" ||
-			//	    results[i].BestTag["чр"] == "част" || results[i].BestTag["чр"] == "мест" || results[i].BestTag["чр"] == "межд")
-			//	{
-			//		result.Append("\u00A0");
-			//	}
-			//	else
-			//	{
-			//		result.Append(" ");
-			//	}
-			//}
-			//result.Append(words.Last());
+			var result = new StringBuilder();
+			var words = text.Trim().Split(' ').Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
-			//return result.ToString();
+			for (var i = 0; i < words.Count - 1; i++)
+			{
+				result.Append(words[i]);
+				var morphResult = Morphology.Process(words[i], MorphLang.RU).FirstOrDefault();
+				if (morphResult != null && morphResult.WordForms.Count > 0)
+				{
+					var wordForm = morphResult.WordForms.First();
+					if (wordForm.Class.IsConjunction || wordForm.Class.IsMisc 
+					    || wordForm.Class.IsPersonalPronoun || wordForm.Class.IsPreposition)
+					{
+						result.Append("\u00A0");
+					}
+					else
+					{
+						result.Append(" ");
+					}
+				}
+				else
+				{
+					result.Append(" ");
+				}
+			}
+			result.Append(words.Last());
+
+			return result.ToString();
 		}
 
 		public string FormAddress(OMSubject subject, SendUvedType uvedType)

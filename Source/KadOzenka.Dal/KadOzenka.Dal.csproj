@@ -29,12 +29,56 @@
   <ItemGroup>
     <ProjectReference Include="..\ImageProccessor\ImageProccessor.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
+    <ProjectReference Include="..\Utils\EP.SdkCore\EP.Sdk.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Resources\YandexGetInitialState.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Seman\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="EP.Analyzer.Biblio.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Biblio.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Decree.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Decree.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Goods.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Goods.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Location.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Location.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Misc.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Misc.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Organization.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Organization.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Person.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Person.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Semantic.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Semantic.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Analyzer.Util.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Analyzer.Util.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Core.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Core.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Explanatory.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Explanatory.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EP.Morphology.Core">
+      <HintPath>..\Utils\EP.SdkCore\EP.Morphology.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
