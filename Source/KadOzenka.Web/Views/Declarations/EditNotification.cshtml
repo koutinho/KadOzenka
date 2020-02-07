@@ -2,6 +2,12 @@
 @using ObjectModel.Directory.Declarations
 @model KadOzenka.Web.Models.Declarations.NotificationModel
 
+<style>
+	#rejectionReasonTypesFieldset label.k-checkbox-label {
+		margin-bottom: 10px;
+	}
+</style>
+
 @using (Html.BeginForm("EditNotification", "Declarations", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.Id)
