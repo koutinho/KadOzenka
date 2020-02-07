@@ -1,4 +1,5 @@
-﻿using ObjectModel.Directory;
+﻿using ObjectModel.Core.TD;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 using System;
 using System.Collections.Generic;
@@ -109,10 +110,24 @@ namespace KadOzenka.Web.Models.Task
 
 					dto.TourId = task.TourId;
 					dto.NoteType = task.NoteType_Code;
-					dto.DocumentId = task.DocumentId;
-					dto.TaskCreationDate = task.CreationDate;
+					
+					OMInstance doc = OMInstance.Where(x => x.Id == task.DocumentId)
+						.Select(x => x.RegNumber).ExecuteFirstOrDefault();
+					if (doc != null)
+					{
+						dto.DocumentId = doc.Id;
+						dto.Document = doc.RegNumber;
+					}
 
-					dto.ResponseDocId = task.ResponseDocId;
+					OMInstance respDoc = OMInstance.Where(x => x.Id == task.ResponseDocId)
+						.Select(x => x.RegNumber).ExecuteFirstOrDefault();
+					if (respDoc != null)
+					{
+						dto.ResponseDocId = respDoc.Id;
+						dto.ResponseDoc = respDoc.RegNumber;
+					}
+
+					dto.TaskCreationDate = task.CreationDate;					
 
 					OMTour tour = OMTour.Where(x => x.Id == dto.TourId)
 						.Select(x => x.Year)

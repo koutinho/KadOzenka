@@ -337,9 +337,9 @@ namespace KadOzenka.Web.Controllers
 
 				task.TourId = dto.TourId;
 				task.NoteType_Code = dto.NoteType ?? KoNoteType.None;
-				task.DocumentId = dto.DocumentId;
+				//task.DocumentId = dto.DocumentId;
 				task.CreationDate = dto.TaskCreationDate;
-				task.ResponseDocId = dto.ResponseDocId;
+				//task.ResponseDocId = dto.ResponseDocId;
 
 				task.Save();		
 			}			

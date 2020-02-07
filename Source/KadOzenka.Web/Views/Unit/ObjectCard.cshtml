@@ -31,8 +31,8 @@
                         <div class="col-sm-3">
                             @Html.CustomLabelFor(x => x.DocumentId)
                         </div>
-                        <div class="col-sm-9">
-                            @Html.KendoTextBoxFor(x => x.DocumentId, isReadonly: false)
+                        <div class="col-sm-9">                            
+                            @Html.KendoTextBoxFor(x => x.Document, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
@@ -184,7 +184,7 @@
                             @Html.CustomLabelFor(x => x.ResponseDocId)
                         </div>
                         <div class="col-sm-9">
-                            @Html.KendoTextBoxFor(x => x.ResponseDocId, isReadonly: false)
+                            @Html.KendoTextBoxFor(x => x.ResponseDoc, isReadonly: false)
                         </div>
                     </div>
                 </div>
