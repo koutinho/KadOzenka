@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
         public List<OMScreenshots> AllScreens = OMScreenshots.Where(x => true).SelectAll().Execute();
         public List<OMCoreObject> AllObjects = OMCoreObject
             .Where(x => x.Market_Code == MarketTypes.YandexProterty && x.LastDateUpdate == null)
-            .Select(x => new { x.Url, x.DealType_Code, x.Price, x.LastDateUpdate }).Execute();
+            .Select(x => new { x.Url, x.DealType_Code, x.PropertyMarketSegment_Code, x.Price, x.LastDateUpdate }).Execute();
 
         public void RefreshAllData(int maxCounter = 0, bool testBoot = false)
         {
@@ -63,16 +63,21 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                             {
                                 long price = long.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexPrice"]).ToString());
                                 //Подбор типа ОН по этажам (если 1 показатель - здание, иначе - помещение)
-                                if (bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexContainsFloorsInfo"]).ToString()))
+                                if (bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexContainsFloorsInfo"]).ToString()) && 
+                                    initialObject.PropertyMarketSegment_Code != MarketSegment.PublicCatering &&
+                                    initialObject.PropertyMarketSegment_Code != MarketSegment.Hotel)
                                 {
-                                   if(executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexFloors"]).ToString().Split(",").Select(x => Int32.Parse(x)).Count() == 1) 
+                                   if(executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexFloors"]).ToString().Split(",").Select(x => Int32.Parse(x)).Count() == 1 || 
+                                      bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexBuildingInfo"]).ToString())) 
                                         initialObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Buildings;
                                    else initialObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
                                 }
                                 //Получение района города через крошки
                                 if(bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexDistrictInfo"]).ToString()))
                                     initialObject.District = executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexDistrict"]).ToString();
+                                //Получение актуальной цены
                                 OMPriceHistory lastPrice = OMPriceHistory.Where(x => x.InitialId == initialObject.Id).SelectAll().OrderByDescending(x => x.ChangingDate).ExecuteFirstOrDefault();
+                                //Обновление информации и снятие скриншотов
                                 if (lastPrice == null || price != lastPrice.PriceValueTo)
                                 {
                                     new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueTo = price }.Save();
