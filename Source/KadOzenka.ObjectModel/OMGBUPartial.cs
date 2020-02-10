@@ -237,6 +237,10 @@ namespace ObjectModel.Gbu.GroupingAlgoritm
         /// Список значений фильтра
         /// </summary>
         public List<string> ValuesFilter;
+        /// <summary>
+        /// Список заданий на оценку
+        /// </summary>
+        public List<long> TaskFilter;
 
         /// <summary>
         /// Настройки 1 уровня группировки
@@ -295,7 +299,9 @@ namespace ObjectModel.Gbu.GroupingAlgoritm
         /// Идентификатор атрибута, куда будут записаны документы 
         /// </summary>
         public long? IdAttributeDocument;
-
+        /// <summary>
+        /// Дата на которую делается группировка 
+        /// </summary>
         public DateTime? DateActual;
     }
 
@@ -330,6 +336,10 @@ namespace ObjectModel.Gbu.Harmonization
         /// Список значений фильтра
         /// </summary>
         public List<string> ValuesFilter;
+        /// <summary>
+        /// Список заданий на оценку
+        /// </summary>
+        public List<long> TaskFilter;
 
         /// <summary>
         /// Фактор 1 уровня 
@@ -408,6 +418,10 @@ namespace ObjectModel.Gbu.Harmonization
         /// Список значений фильтра
         /// </summary>
         public List<string> ValuesFilter;
+        /// <summary>
+        /// Список заданий на оценку
+        /// </summary>
+        public List<long> TaskFilter;
 
         /// <summary>
         /// Фактор 1 уровня 
