@@ -36,7 +36,7 @@
 			  <Button Caption="Полная выгрузка в Excel" NavigateURL="~/Sud/GetExportAllDataToExcel" OpenInRadWindow="false" SRDFunctionTag="SUD.EXPORT.ALL"/>
 		  </DropDownButtons>
 	  </Button>
-	  <Button Caption="Выгрузка в Xml" NavigateURL="~/Sud/GetExportDataToXml" Icon="fas fa-code"  OpenInRadWindow="false" SRDFunctionTag="SUD.EXPORT"/>
+	  <Button Caption="Выгрузка в Xml" NavigateURL="~/Sud/GetExportDataToXml" Icon="fas fa-code"  OpenInRadWindow="false" SRDFunctionTag="SUD.EXPORT.XML"/>
 
 	  <Button Caption="Статистика" Icon="fas fa-chart-pie" OpenInRadWindow="false" Type="DropDown" SRDFunctionTag="SUD.OBJECTS.STATISTICS">
 		  <DropDownButtons>
