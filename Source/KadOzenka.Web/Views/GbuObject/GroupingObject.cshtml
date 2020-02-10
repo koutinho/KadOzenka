@@ -31,6 +31,12 @@
 	.row {
 		padding: inherit;
 	}
+
+	.k-multiselect-wrap
+	{
+		overflow: auto;
+		max-height: 100px;
+	}
 </style>
 
 @using (Html.BeginForm("GroupingObject", "GbuObject", FormMethod.Post))
@@ -364,11 +370,30 @@
 
 <script type="text/javascript">
 
-	function test(data) {
-		console.log(data);
+	function fillForm(data) {
+	
 		data.forEach(function (val) {
-			if (Object.keys(val)[0].includes('IdFactor')) {
+			if (Object.keys(val)[0].includes('IdFactor') || Object.keys(val)[0].includes('IdAttributeResult') || Object.keys(val)[0].includes('IdCodJob')
+				|| Object.keys(val)[0].includes('IdAttributeSource') || Object.keys(val)[0].includes('IdAttributeDocument') || Object.keys(val)[0].includes('IdAttributeFilter')) {
 				$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+			}
+
+
+			if (Object.keys(val)[0].includes('ValuesFilter')) {
+				var widget = $('#valuesFilter').getKendoMultiSelect();
+				var dataSource = widget.dataSource;
+				var newItem = {
+					valuesFilter: val[Object.keys(val)[0]],
+					valuesFilterName: val[Object.keys(val)[0]]
+				};
+
+				dataSource.add(newItem);
+				var newValue = newItem.valuesFilter;
+				widget.value(widget.value().concat([newValue]));
+			}
+
+			if (Object.keys(val)[0].includes('UseDictionary') || Object.keys(val)[0].includes('SkipDefis')) {
+				$('#' + Object.keys(val)[0]).prop("checked", val[Object.keys(val)[0]]);
 			}
 
 			if (Object.keys(val)[0] === 'SelectAllObject') {
@@ -384,7 +409,7 @@
 	}
 
 	$(document).ready(function () {
-		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", test);
+		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
 		function onDataBound(e) {
 			$('.k-multiselect .k-input').unbind('keyup');
 			$('.k-multiselect .k-input').on('keyup', onClickEnter);

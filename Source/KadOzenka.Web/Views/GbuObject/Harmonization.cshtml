@@ -193,77 +193,114 @@
     </style>
 }
 @section scripts {
-    <script type="text/javascript">
-        $(document).ready(function() {
+	<script type="text/javascript">
 
-	        templateStorage.init(@((int)DataFormStorege.Harmonization), "SaveTemplateHarmonizationObject", "GbuObject");
+		function fillForm(data) {
+		data.forEach(function (val) {
+			if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
+				 Object.keys(val)[0].includes('IdAttributeFilter')) {
+				$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+			}
 
-            function onDataBound(e) {
-                $('.k-multiselect .k-input').unbind('keyup');
-                $('.k-multiselect .k-input').on('keyup', onClickEnter);
-            }
 
-            function onClickEnter(e) {
-                if (e.keyCode === 13) {
-                    var widget = $('#valuesFilter').getKendoMultiSelect();
-                    var dataSource = widget.dataSource;
-                    var input = $('.k-multiselect .k-input');
-                    var value = input.val().trim();
-                    if (!value || value.length === 0) {
-                        return;
-                    }
-                    var newItem = {
-                        valuesFilter: value,
-                        valuesFilterName: value
-                    };
+			if (Object.keys(val)[0].includes('ValuesFilter')) {
+				var widget = $('#valuesFilter').getKendoMultiSelect();
+				var dataSource = widget.dataSource;
+				var newItem = {
+					valuesFilter: val[Object.keys(val)[0]],
+					valuesFilterName: val[Object.keys(val)[0]]
+				};
 
-                    dataSource.add(newItem);
-                    var newValue = newItem.valuesFilter;
-                    widget.value(widget.value().concat([newValue]));
-                }
-            }
+				dataSource.add(newItem);
+				var newValue = newItem.valuesFilter;
+				widget.value(widget.value().concat([newValue]));
+			}
 
-            $("#valuesFilter").kendoMultiSelect({
-                dataTextField: "valuesFilterName",
-                dataValueField: "valuesFilter",
-                dataSource: {
-                    data: []
-                },
-                dataBound: onDataBound
-            });
+			if (Object.keys(val)[0] === 'SelectAllObject') {
+				console.log(true);
+				if (!!val[Object.keys(val)[0]]) {
+					$('#SelectAllObject_True').prop("checked", true);
+					return;
+				}
+				$('#SelectAllObject_False').prop("checked", true);
+			}
 
-            $('#performHarmonization').on('click',
-                function() {
-                    kendo.ui.progress($('body'), true);
-                    var form = $('form');
-                    var formObject = Common.Functions.FormToObject(form);
-                    formObject.ValuesFilter = $("#valuesFilter").data("kendoMultiSelect").value();
-                    $.post(form.attr('action'), formObject).done(function(response) {
-                        kendo.ui.progress($('body'), false);
-                        if (response.Errors) {
-                            var errors = $.map(distinctErrors(response.Errors),
-                                function(el) {
-                                    return el.Message;
-                                });
-                            Common.ShowError(errors);
-                            return;
-                        }
-                        if (response.Success) {
-                            Common.ShowMessage(response.Success);
-                        }
-                    }).fail(function(response, textStatus, errorThrown) {
-                        kendo.ui.progress($('body'), false);
-                        Common.ShowError(response.responseText);
-                    });
-                });
-        });
+			if (Object.keys(val)[0] === 'PropertyType') {
+				var id = '#PropertyType_' + val[Object.keys(val)[0]];
+				$(id).prop("checked", true);
+			}
+
+		});
+	}
+
+		$(document).ready(function () {
+
+			templateStorage.init(@((int)DataFormStorege.Harmonization), "SaveTemplateHarmonizationObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+
+			function onDataBound(e) {
+				$('.k-multiselect .k-input').unbind('keyup');
+				$('.k-multiselect .k-input').on('keyup', onClickEnter);
+			}
+			function onClickEnter(e) {
+				if (e.keyCode === 13) {
+					var widget = $('#valuesFilter').getKendoMultiSelect();
+					var dataSource = widget.dataSource;
+					var input = $('.k-multiselect .k-input');
+					var value = input.val().trim();
+					if (!value || value.length === 0) {
+						return;
+					}
+					var newItem = {
+						valuesFilter: value,
+						valuesFilterName: value
+					};
+
+					dataSource.add(newItem);
+					var newValue = newItem.valuesFilter;
+					widget.value(widget.value().concat([newValue]));
+				}
+			}
+			$("#valuesFilter").kendoMultiSelect({
+				dataTextField: "valuesFilterName",
+				dataValueField: "valuesFilter",
+				dataSource: {
+					data: []
+				},
+				dataBound: onDataBound
+			});
+
+			$('#performHarmonization').on('click',
+				function() {
+					kendo.ui.progress($('body'), true);
+					var form = $('form');
+					var formObject = Common.Functions.FormToObject(form);
+					formObject.ValuesFilter = $("#valuesFilter").data("kendoMultiSelect").value();
+					$.post(form.attr('action'), formObject).done(function(response) {
+						kendo.ui.progress($('body'), false);
+						if (response.Errors) {
+							var errors = $.map(distinctErrors(response.Errors),
+								function(el) {
+									return el.Message;
+								});
+							Common.ShowError(errors);
+							return;
+						}
+						if (response.Success) {
+							Common.ShowMessage(response.Success);
+						}
+					}).fail(function (response, textStatus, errorThrown) {
+						kendo.ui.progress($('body'), false);
+						Common.ShowError(response.responseText);
+					});
+				});
+		});
 
         function distinctErrors(errors) {
             var result = [];
             $.each(errors,
-                function(index, event) {
+                function (index, event) {
                     var events = $.grep(result,
-                        function(e) {
+                        function (e) {
                             return event.Message === e.Message;
                         });
                     if (events.length === 0) {

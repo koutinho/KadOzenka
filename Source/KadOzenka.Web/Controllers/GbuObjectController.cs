@@ -96,17 +96,24 @@ namespace KadOzenka.Web.Controllers
 
 			}
 
-			GroupingObject obj;
-
+			GroupingObject nObj = null;
+			HarmonizationViewModel hObj = null;
 			try
 			{
-				var tmp = OMDataFormStorage.Where(x =>
+				var storage = OMDataFormStorage.Where(x =>
 						x.Id == id)
 					.SelectAll().ExecuteFirstOrDefault();
+				if (storage != null && storage.FormType_Code == DataFormStorege.Normalisation)
+				{
+					nObj = storage.Data.DeserializeFromXml<GroupingObject>();
 
-				obj = OMDataFormStorage.Where(x =>
-						x.Id == id)
-					.SelectAll().ExecuteFirstOrDefault().Data.DeserializeFromXml<GroupingObject>();
+				}
+
+				if (storage != null && storage.FormType_Code == DataFormStorege.Harmonization)
+				{
+					hObj = storage.Data.DeserializeFromXml<HarmonizationViewModel>();
+				}
+
 			}
 
 			catch (Exception e)
@@ -114,15 +121,9 @@ namespace KadOzenka.Web.Controllers
 				return Json(new {error = $"Ошибка: {e.Message}"});
 			}
 
-			if (obj == null)
-			{
-				return Json(new { error = "Данные об объекте не найдены" });
-			}
-
 			return Json(new
 			{
-				data = JsonConvert.SerializeObject(obj)
-
+				data = nObj != null ? JsonConvert.SerializeObject(nObj) : JsonConvert.SerializeObject(hObj)
 			});
 		}
 
@@ -163,14 +164,6 @@ namespace KadOzenka.Web.Controllers
 				.ToList();
 
 			var viewModel = new HarmonizationViewModel();
-			var formStorage = OMDataFormStorage
-				.Where(x => x.UserId == SRDSession.GetCurrentUserId().Value &&
-				            x.FormType_Code == DataFormStorege.Harmonization).SelectAll().ExecuteFirstOrDefault();
-			if (formStorage != null)
-			{
-				viewModel = formStorage.Data.DeserializeFromXml<HarmonizationViewModel>();
-			}
-
 			return View(viewModel);
 		}
 
@@ -197,27 +190,8 @@ namespace KadOzenka.Web.Controllers
 				});
 			}
 
-			var formStorage = OMDataFormStorage
-				.Where(x => x.UserId == SRDSession.GetCurrentUserId().Value &&
-				            x.FormType_Code == DataFormStorege.Harmonization).SelectAll().ExecuteFirstOrDefault();
 			try
 			{
-				if (formStorage != null)
-				{
-					formStorage.Data = viewModel.SerializeToXml();
-				}
-				else
-				{
-					formStorage = new OMDataFormStorage()
-					{
-						UserId = SRDSession.GetCurrentUserId().Value,
-						FormType_Code = DataFormStorege.Harmonization,
-						Data = viewModel.SerializeToXml()
-
-					};
-				}
-				formStorage.Save();
-
 				ObjectModel.Gbu.Harmonization.Harmonization.Run(viewModel.ToHarmonizationSettings());
 			}
 			catch (Exception e)
