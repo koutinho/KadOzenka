@@ -61,7 +61,7 @@
             <div class="col-sm-2">
                 @Html.CustomLabel("Характеристика")
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-10">
                 @Html.KendoDropDownListWithAutocompleteFor(m => m.Level1Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
             </div>
         </fieldset>
@@ -277,18 +277,14 @@
         function attrFilterEvent(parameters) {
             setTimeout(function() {
                 changeAttributeFilterAvailability(@(Model.SelectAllObject ? "true" : "false"));
-                $('input[type="radio"][name="SelectAllObject"][value="@(Model.SelectAllObject == true)"] ').change(function() {
+                $('input[type="radio"][name="SelectAllObject"][value="True"] ').change(function() {
                     if (this.checked) {
                         changeAttributeFilterAvailability(true);
-                    } else {
-                        changeAttributeFilterAvailability(false);
                     }
                 });
-                $('input[type="radio"][name="SelectAllObject"][value="@(Model.SelectAllObject == false)"] ').change(function() {
+                $('input[type="radio"][name="SelectAllObject"][value="False"] ').change(function() {
                     if (this.checked) {
                         changeAttributeFilterAvailability(false);
-                    } else {
-                        changeAttributeFilterAvailability(true);
                     }
                 });
             }, 100);
