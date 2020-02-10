@@ -71,7 +71,7 @@ namespace KadOzenka.Dal.GbuObject
         }
         public static void RunOne(ObjectModel.Gbu.OMMainObject obj, HarmonizationSettings setting)
         {
-            DateTime dt = DateTime.Now;
+            DateTime dt = (setting.DateActual==null)?DateTime.Now:setting.DateActual.Value;
             List<long> lstIds = new List<long>();
             if (setting.Level1Attribute != null) lstIds.Add(setting.Level1Attribute.Value);
             if (setting.Level2Attribute != null) lstIds.Add(setting.Level2Attribute.Value);

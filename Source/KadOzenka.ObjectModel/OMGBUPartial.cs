@@ -295,6 +295,8 @@ namespace ObjectModel.Gbu.GroupingAlgoritm
         /// Идентификатор атрибута, куда будут записаны документы 
         /// </summary>
         public long? IdAttributeDocument;
+
+        public DateTime? DateActual;
     }
 
     #endregion
@@ -369,6 +371,8 @@ namespace ObjectModel.Gbu.Harmonization
         /// Фактор 10 уровня 
         /// </summary>
         public long? Level10Attribute;
+
+        public DateTime? DateActual;
     }
 
     /// <summary>
