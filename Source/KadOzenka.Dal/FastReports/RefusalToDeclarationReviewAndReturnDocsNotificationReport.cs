@@ -59,10 +59,10 @@ namespace KadOzenka.Dal.FastReports
 			{
 				reasons.Add(existedRejectionReasonType.RejectionReasonType_Code != RejectionReasonType.Other
 					? PrepareUvedRejectionReasonTypeText(existedRejectionReasonType.RejectionReasonType_Code)
-					: notification.RejectionReason);
+					: PrepareText(notification.RejectionReason));
 			}
 
-			return PrepareText(string.Join("; ", reasons));
+			return string.Join("; ", reasons);
 		}
 
 		public string PrepareUvedRejectionReasonTypeText(RejectionReasonType reasonType)

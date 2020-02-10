@@ -272,6 +272,7 @@ namespace KadOzenka.Dal.FastReports
 					subject.House?.Replace(" ", "\u00A0"),
 					subject.Building?.Replace(" ", "\u00A0"),
 					!string.IsNullOrWhiteSpace(subject.Flat) ? "кв.\u00A0" + subject.Flat : null,
+					System.Environment.NewLine,
 					subject.City?.Replace(" ", "\u00A0"),
 					subject.Zip
 				};
