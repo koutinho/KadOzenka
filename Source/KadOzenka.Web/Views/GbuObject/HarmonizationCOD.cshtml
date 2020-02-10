@@ -223,10 +223,9 @@
 		function fillForm(data) {
 		data.forEach(function (val) {
 			if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
-				 Object.keys(val)[0].includes('IdAttributeFilter')) {
+                Object.keys(val)[0].includes('IdAttributeFilter') || Object.keys(val)[0].includes('IdCodJob') || Object.keys(val)[0].includes('IdDocument')) {
 				$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
 			}
-
 
 			if (Object.keys(val)[0].includes('ValuesFilter')) {
 				var widget = $('#valuesFilter').getKendoMultiSelect();
@@ -253,8 +252,11 @@
 			if (Object.keys(val)[0] === 'PropertyType') {
 				var id = '#PropertyType_' + val[Object.keys(val)[0]];
 				$(id).prop("checked", true);
-			}
+            }
 
+		    if (Object.keys(val)[0].includes('DefaultValue')) {
+		        $('#' + Object.keys(val)[0]).val(val[Object.keys(val)[0]]);
+		    }
 		});
 	}
 
