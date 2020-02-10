@@ -371,7 +371,9 @@ namespace ObjectModel.Gbu.Harmonization
         /// Фактор 10 уровня 
         /// </summary>
         public long? Level10Attribute;
-
+        /// <summary>
+        /// Дата на которую делается гармонизация 
+        /// </summary>
         public DateTime? DateActual;
     }
 
@@ -455,20 +457,10 @@ namespace ObjectModel.Gbu.Harmonization
         /// Документ для значения по умолчанию 
         /// </summary>
         public long? IdDocument;
-
-    }
-    /// <summary>
-    /// Гармонизация с использованием справочника ЦОД
-    /// </summary>
-    public class HarmonizationCOD
-    {
         /// <summary>
-        /// Выполнение операции гармонизации
+        /// Дата на которую делается гармонизация 
         /// </summary>
-        public static void Run(HarmonizationCODSettings setting)
-        {
-            //TODO: реализацию надо перенести из старого комплекса
-        }
+        public DateTime? DateActual;
     }
 }
 

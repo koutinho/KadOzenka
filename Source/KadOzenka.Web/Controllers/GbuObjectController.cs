@@ -48,14 +48,14 @@ namespace KadOzenka.Web.Controllers
 
 			if (registerId != null)
 			{
-				sources = new List<long> {registerId.Value};
+				sources = new List<long> { registerId.Value };
 			}
 
 			List<long> attributes = null;
 
 			if (attributeId != null)
 			{
-				attributes = new List<long> {attributeId.Value};
+				attributes = new List<long> { attributeId.Value };
 			}
 
 			var sttributesValues = _service.GetAllAttributes(objectId, sources, attributes);
@@ -79,7 +79,7 @@ namespace KadOzenka.Web.Controllers
 					Text = x.Name
 				}).AsEnumerable();
 
-				return View();
+			return View();
 		}
 
 		public List<SelectListItem> GetTemplatesGrouping()
@@ -93,7 +93,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (id == 0)
 			{
-				return Json(new {error = "Ид равен 0"});
+				return Json(new { error = "Ид равен 0" });
 
 			}
 
@@ -125,14 +125,14 @@ namespace KadOzenka.Web.Controllers
 
 			catch (Exception e)
 			{
-				return Json(new {error = $"Ошибка: {e.Message}"});
+				return Json(new { error = $"Ошибка: {e.Message}" });
 			}
 
 			return Json(new
 			{
-				data = nObj != null ? 
+				data = nObj != null ?
 					JsonConvert.SerializeObject(nObj) :
-					hObj != null ? 
+					hObj != null ?
 						JsonConvert.SerializeObject(hObj) : JsonConvert.SerializeObject(hcObj)
 			});
 		}
@@ -273,7 +273,7 @@ namespace KadOzenka.Web.Controllers
 
 			try
 			{
-				ObjectModel.Gbu.Harmonization.HarmonizationCOD.Run(viewModel.ToHarmonizationCODSettings());
+				KadOzenka.Dal.GbuObject.HarmonizationCOD.Run(viewModel.ToHarmonizationCODSettings());
 			}
 			catch (Exception e)
 			{

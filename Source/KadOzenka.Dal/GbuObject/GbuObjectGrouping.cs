@@ -753,7 +753,7 @@ namespace KadOzenka.Dal.GbuObject
             List<ObjectModel.KO.OMCodDictionary> DictionaryItem = new List<ObjectModel.KO.OMCodDictionary>();
             if (setting.IdCodJob != null)
                 DictionaryItem = ObjectModel.KO.OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).SelectAll().Execute();
-            List<ObjectModel.Gbu.OMMainObject> objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead && x.CadastralNumber=="77:17:0100309:12509").SelectAll().Execute();
+            List<ObjectModel.Gbu.OMMainObject> objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
 
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
