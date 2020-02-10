@@ -12,34 +12,30 @@
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.Tour)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             <input id="Tour" name="Tour" editmode="true" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.NoteType)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoEnumDropDownListFor(x => x.NoteType, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.DocumentId)
                         </div>
-                        <div class="col-sm-9">                            
+                        <div class="col-sm-4">                            
                             @Html.KendoTextBoxFor(x => x.Document, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.TaskCreationDate)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoDatePickerFor(x => x.TaskCreationDate, isReadonly: false)
                         </div>
                     </div>
@@ -52,50 +48,44 @@
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.CadastralNumber)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoTextBoxFor(x => x.CadastralNumber, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.CadastralBlock)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoTextBoxFor(x => x.CadastralBlock, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.PropertyType)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoEnumDropDownListFor(x => x.PropertyType, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.Square)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoNumericTextBoxFor(x => x.Square, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.Status)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoEnumDropDownListFor(x => x.Status, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.UnitCreationDate)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoDatePickerFor(x => x.UnitCreationDate, isReadonly: false)
                         </div>
                     </div>
@@ -108,82 +98,72 @@
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.GroupName)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             <input id="GroupName" name="GroupName" editmode="true" />
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.UpksPre)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoNumericTextBoxFor(x => x.UpksPre, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.CadastralCostPre)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoNumericTextBoxFor(x => x.CadastralCostPre, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.Upks)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoNumericTextBoxFor(x => x.Upks, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.CadastralCost)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoNumericTextBoxFor(x => x.CadastralCost, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.StatusRepeatCalc)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoEnumDropDownListFor(x => x.StatusRepeatCalc, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.StatusResultCalc)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoEnumDropDownListFor(x => x.StatusResultCalc, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.ParentCalcType)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoEnumDropDownListFor(x => x.ParentCalcType, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.ParentCalcNumber)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoTextBoxFor(x => x.ParentCalcNumber, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.ResponseDocId)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoTextBoxFor(x => x.ResponseDoc, isReadonly: false)
                         </div>
                     </div>
@@ -196,40 +176,38 @@
             <div>
                 <div class="form-horizontal col-sm-12">
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.Datevaluation)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoDatePickerFor(x => x.Datevaluation, isReadonly: false)
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-3">
+                        </div>                    
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.CostValue)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-4">
                             @Html.KendoNumericTextBoxFor(x => x.CostValue, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.DocName)
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-10">
                             @Html.KendoTextBoxFor(x => x.DocName, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.DocNumber)
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-4">
                             @Html.KendoTextBoxFor(x => x.DocNumber, isReadonly: false)
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.DocDate)
                         </div>
-                        <div class="col-sm-3">
+                        <div class="col-sm-4">
                             @Html.KendoDatePickerFor(x => x.DocDate, isReadonly: false)
                         </div>
                     </div>
