@@ -363,9 +363,28 @@
 }
 
 <script type="text/javascript">
+
+	function test(data) {
+		console.log(data);
+		data.forEach(function (val) {
+			if (Object.keys(val)[0].includes('IdFactor')) {
+				$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+			}
+
+			if (Object.keys(val)[0] === 'SelectAllObject') {
+				console.log(true);
+				if (!!val[Object.keys(val)[0]]) {
+					$('#SelectAllObject_True').prop("checked", true);
+					return;
+				}
+				$('#SelectAllObject_False').prop("checked", true);
+			}
+
+		});
+	}
+
 	$(document).ready(function () {
-		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject");
-		console.log('templateStorage', templateStorage);
+		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", test);
 		function onDataBound(e) {
 			$('.k-multiselect .k-input').unbind('keyup');
 			$('.k-multiselect .k-input').on('keyup', onClickEnter);

@@ -31,15 +31,26 @@
 	var templateStorage = templateStorage ||
 	(function($) {
 		var obj = {
-			actionNameUrlSaveTemplate: "",
-			controllerNameUrlSaveTemplate: "",
-			actionNameUrlSelectedTemplate: "",
-			controllerNameUrlSelectedTemplate: "",
+			actionNameUrlSaveTemplate: null,
+			controllerNameUrlSaveTemplate: null,
+			actionNameUrlSelectedTemplate: null,
+			controllerNameUrlSelectedTemplate: null,
 			currentFormType: 0,
-			init: function (typeForm, actionNameUrlSaveTemplate, controllerNameUrlSaveTemplate, actionNameUrlSelectedTemplate, controllerNameUrlSelectedTemplate) {
+			setDataForm: null,
+			init: function (typeForm, actionNameUrlSaveTemplate, controllerNameUrlSaveTemplate, actionNameUrlSelectedTemplate, controllerNameUrlSelectedTemplate, callback) {
+				if (!actionNameUrlSaveTemplate ||
+					!controllerNameUrlSaveTemplate ||
+					!actionNameUrlSelectedTemplate ||
+					!controllerNameUrlSelectedTemplate ||
+					!callback) {
+					return;
+				}
 				this.currentFormType = typeForm;
 				this.actionNameUrlSaveTemplate = actionNameUrlSaveTemplate;
 				this.controllerNameUrlSaveTemplate = controllerNameUrlSaveTemplate;
+				this.actionNameUrlSelectedTemplate = actionNameUrlSelectedTemplate;
+				this.controllerNameUrlSelectedTemplate = controllerNameUrlSelectedTemplate;
+				this.setDataForm = callback;
 				this.subscribers();
 			},
 			subscribers: function () {
@@ -94,11 +105,51 @@
 
 				$('#select').on('click',
 					function() {
-						var url = "";
-						$.get(url).done(function(response) {
-
+						var url = "/" + self.controllerNameUrlSelectedTemplate + "/" + self.actionNameUrlSelectedTemplate + "?id=" + $('#selectedTemplate').data("kendoDropDownList").value();
+						kendo.ui.progress($('body'), true);
+						$.get(url).done(function (response) {
+							if (response.error) {
+								kendo.ui.progress($('body'), false);
+								Common.ShowError(response.Error);
+								return;
+							}
+							if (response.data && self.setDataForm) {
+								self.setDataForm(self.parseData(response.data));
+							}
+							$('.template-select-wrapper').hide(500);
+							kendo.ui.progress($('body'), false);
+							Common.ShowMessage("Данные заполнены");
 						});
 					});
+			},
+			parseData: function (data) {
+				function parseSample(obj) {
+					return Object.keys(obj).map(function (str) {
+						if (typeof (obj[str]) !== "object" || obj[str] === null) {
+							var a = {};
+							a[str] = obj[str];
+							return a;
+						}
+						return null;
+					}).filter(val => !!val);
+				}
+
+				function parseTwoLevel(obj) {
+					var res = [];
+					Object.keys(obj).forEach(function (str) {
+						if (typeof (obj[str]) === "object" && obj[str] !== null) {
+							parseSample(obj[str]).forEach(function(val) {
+								var a = {};
+								var strTmp = str + '_' + Object.keys(val)[0];
+								a[strTmp] = val[Object.keys(val)[0]];
+								res.push(a);
+							});
+						}
+					});
+					return res;
+				}
+				var jsonObj = JSON.parse(data);
+				return [...parseSample(jsonObj), ...parseTwoLevel(jsonObj)];
 			}
 		}
 		return obj;

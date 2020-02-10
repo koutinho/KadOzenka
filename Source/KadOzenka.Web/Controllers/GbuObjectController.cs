@@ -5,6 +5,7 @@ using KadOzenka.Web.Models.GbuObject;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
@@ -87,12 +88,51 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
 
+		public JsonResult GetTemplatesOneGroup(int id)
+		{
+			if (id == 0)
+			{
+				return Json(new {error = "Ид равен 0"});
+
+			}
+
+			GroupingObject obj;
+
+			try
+			{
+				var tmp = OMDataFormStorage.Where(x =>
+						x.Id == id)
+					.SelectAll().ExecuteFirstOrDefault();
+
+				obj = OMDataFormStorage.Where(x =>
+						x.Id == id)
+					.SelectAll().ExecuteFirstOrDefault().Data.DeserializeFromXml<GroupingObject>();
+			}
+
+			catch (Exception e)
+			{
+				return Json(new {error = $"Ошибка: {e.Message}"});
+			}
+
+			if (obj == null)
+			{
+				return Json(new { error = "Данные об объекте не найдены" });
+			}
+
+			return Json(new
+			{
+				data = JsonConvert.SerializeObject(obj)
+
+			});
+		}
+
 		public List<SelectListItem> GetTemplatesHarmonization()
 		{
 			return OMDataFormStorage.Where(x =>
 					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.Harmonization)
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
+
 
 		[HttpPost]
 		public JsonResult GroupingObject(GroupingObject model)
