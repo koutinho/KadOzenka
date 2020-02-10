@@ -12493,6 +12493,86 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private long? _changeuser;
+        /// <summary>
+        /// 31501800 Последний пользователь вносивший изменения (CHANGE_USER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501800)]
+        public long? ChangeUser
+        {
+            get
+            {
+                CheckPropertyInited("ChangeUser");
+                return _changeuser;
+            }
+            set
+            {
+                _changeuser = value;
+                NotifyPropertyChanged("ChangeUser");
+            }
+        }
+
+
+        private DateTime? _changedate;
+        /// <summary>
+        /// 31501900 Дата последнего изменения (CHANGE_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31501900)]
+        public DateTime? ChangeDate
+        {
+            get
+            {
+                CheckPropertyInited("ChangeDate");
+                return _changedate;
+            }
+            set
+            {
+                _changedate = value;
+                NotifyPropertyChanged("ChangeDate");
+            }
+        }
+
+
+        private long? _isremoved;
+        /// <summary>
+        /// 31502000 Признак удаленного объекта (IS_REMOVED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31502000)]
+        public long? IsRemoved
+        {
+            get
+            {
+                CheckPropertyInited("IsRemoved");
+                return _isremoved;
+            }
+            set
+            {
+                _isremoved = value;
+                NotifyPropertyChanged("IsRemoved");
+            }
+        }
+
+
+        private string _reasonforremove;
+        /// <summary>
+        /// 31502100 Причина удаления (REASON_FOR_REMOVE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31502100)]
+        public string ReasonForRemove
+        {
+            get
+            {
+                CheckPropertyInited("ReasonForRemove");
+                return _reasonforremove;
+            }
+            set
+            {
+                _reasonforremove = value;
+                NotifyPropertyChanged("ReasonForRemove");
+            }
+        }
+
     }
 }
 

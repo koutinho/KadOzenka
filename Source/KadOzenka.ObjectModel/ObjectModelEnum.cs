@@ -1759,6 +1759,12 @@ namespace ObjectModel.Directory.Common
 		[Description("Гармонизация")]
         [EnumCode("2")]
         Harmonization = 2,
+		/// <summary>
+		/// Гармонизация по классификатору ЦОД (3)
+		/// </summary>
+		[Description("Гармонизация по классификатору ЦОД")]
+        [EnumCode("3")]
+        HarmonizationCOD = 3,
     }
 }
 
