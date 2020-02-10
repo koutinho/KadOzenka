@@ -43,7 +43,7 @@
                         @Html.CustomLabelFor(m => m.IdAttributeFilter)
                     </div>
                     <div class="col-sm-9">
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (System.Collections.IEnumerable)ViewData["Attributes"])
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (System.Collections.IEnumerable)ViewData["Attributes"], dataBoundEvent: "attrFilterEvent")
                     </div>
                 </div>
                 <div class="col-sm-5">
@@ -194,7 +194,7 @@
 }
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
 
 	        templateStorage.init(@((int)DataFormStorege.Harmonization), "SaveTemplateHarmonizationObject", "GbuObject");
 
@@ -202,6 +202,7 @@
                 $('.k-multiselect .k-input').unbind('keyup');
                 $('.k-multiselect .k-input').on('keyup', onClickEnter);
             }
+
             function onClickEnter(e) {
                 if (e.keyCode === 13) {
                     var widget = $('#valuesFilter').getKendoMultiSelect();
@@ -221,6 +222,7 @@
                     widget.value(widget.value().concat([newValue]));
                 }
             }
+
             $("#valuesFilter").kendoMultiSelect({
                 dataTextField: "valuesFilterName",
                 dataValueField: "valuesFilter",
@@ -249,9 +251,9 @@
                         if (response.Success) {
                             Common.ShowMessage(response.Success);
                         }
-                    }).fail(function (response, textStatus, errorThrown) {
-                         kendo.ui.progress($('body'), false);
-                         Common.ShowError(response.responseText);
+                    }).fail(function(response, textStatus, errorThrown) {
+                        kendo.ui.progress($('body'), false);
+                        Common.ShowError(response.responseText);
                     });
                 });
         });
@@ -259,9 +261,9 @@
         function distinctErrors(errors) {
             var result = [];
             $.each(errors,
-                function (index, event) {
+                function(index, event) {
                     var events = $.grep(result,
-                        function (e) {
+                        function(e) {
                             return event.Message === e.Message;
                         });
                     if (events.length === 0) {
@@ -270,6 +272,41 @@
                 });
 
             return result;
+        }
+
+        function attrFilterEvent(parameters) {
+            setTimeout(function() {
+                changeAttributeFilterAvailability(@(Model.SelectAllObject ? "true" : "false"));
+                $('input[type="radio"][name="SelectAllObject"][value="@(Model.SelectAllObject == true)"] ').change(function() {
+                    if (this.checked) {
+                        changeAttributeFilterAvailability(true);
+                    } else {
+                        changeAttributeFilterAvailability(false);
+                    }
+                });
+                $('input[type="radio"][name="SelectAllObject"][value="@(Model.SelectAllObject == false)"] ').change(function() {
+                    if (this.checked) {
+                        changeAttributeFilterAvailability(false);
+                    } else {
+                        changeAttributeFilterAvailability(true);
+                    }
+                });
+            }, 100);
+        }
+
+        function changeAttributeFilterAvailability(areFieldsReadonly) {
+            if (areFieldsReadonly) {
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').value('');
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').enable(false);
+                $('a.clear-button-@(nameof(Model.IdAttributeFilter))').addClass('k-state-disabled');
+
+                $('#valuesFilter').data("kendoMultiSelect").value([]);
+                $('#valuesFilter').data("kendoMultiSelect").enable(false);
+            } else {
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').enable(true);
+                $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
+                $('#valuesFilter').data("kendoMultiSelect").enable(true);
+            }
         }
     </script>
 }

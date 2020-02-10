@@ -22,7 +22,7 @@ namespace KadOzenka.Web.Helpers
 	{
 		public static IHtmlContent KendoDropDownListWithAutocompleteFor<TModel, TValue>(this IHtmlHelper<TModel> html,
 			Expression<Func<TModel, TValue>> expression, IEnumerable data, string dataTextField = "Text",
-			string dataValueField = "Value", string filter = "contains", double minLength = 3)
+			string dataValueField = "Value", string filter = "contains", double minLength = 3, string dataBoundEvent = null)
 		{
 			ModelExplorer modelExplorer =
 				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
@@ -31,7 +31,14 @@ namespace KadOzenka.Web.Helpers
 			var name = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
 			var className = name.Replace(".", "_");
 
+			string onDataBound = string.Empty;
+			if (dataBoundEvent != null)
+			{
+				onDataBound =
+						$"function onDataBound{className}() {{if('{dataBoundEvent}'){dataBoundEvent}.call();}}";
+			}
 			var script = "<script>" +
+			             onDataBound +
 						 $"function onCascade{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); $('#{className}Wrapper').data('kendoTooltip').refresh();}}}}" +
 			             $"function clearField{className}() {{ $('input.{className}').data('kendoDropDownList').value('');}}" +
 							$"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
@@ -58,6 +65,10 @@ namespace KadOzenka.Web.Helpers
 					x.Cascade($"onCascade{className}")
 				)
 				.Value(modelExplorer.Model?.ToString());
+			if (dataBoundEvent != null)
+			{
+				dropDownBuilder = dropDownBuilder.Events(x => x.DataBound($"onDataBound{className}"));
+			}
 
 			var tooltip = html.Kendo().Tooltip()
 				.For($"#{className}Wrapper")
@@ -92,10 +103,12 @@ namespace KadOzenka.Web.Helpers
 			var autocompleteDiv = new TagBuilder("div");
 			autocompleteDiv.MergeAttribute("id", $"{className}Wrapper");
 			autocompleteDiv.AddCssClass("col-sm-11");
+			autocompleteDiv.MergeAttribute("style", "padding-right: 0;");
 			autocompleteDiv.InnerHtml.AppendHtml(dropDownBuilder);
 
 			var wrapButtonDiv = new TagBuilder("div");
 			wrapButtonDiv.AddCssClass("col-sm-1");
+			wrapButtonDiv.MergeAttribute("style", "padding-left: 0;");
 			wrapButtonDiv.InnerHtml.AppendHtml(clearTag);
 
 			var container = new TagBuilder("div");
