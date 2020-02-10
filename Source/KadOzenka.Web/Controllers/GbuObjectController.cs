@@ -215,7 +215,7 @@ namespace KadOzenka.Web.Controllers
 
 			try
 			{
-				ObjectModel.Gbu.Harmonization.Harmonization.Run(viewModel.ToHarmonizationSettings());
+				KadOzenka.Dal.GbuObject.Harmonization.Run(viewModel.ToHarmonizationSettings());
 			}
 			catch (Exception e)
 			{
