@@ -219,10 +219,12 @@
 			if (Object.keys(val)[0] === 'SelectAllObject') {
 				console.log(true);
 				if (!!val[Object.keys(val)[0]]) {
-					$('#SelectAllObject_True').prop("checked", true);
+                    $('#SelectAllObject_True').prop("checked", true);
+				    changeAttributeFilterAvailability(true);
 					return;
 				}
-				$('#SelectAllObject_False').prop("checked", true);
+                $('#SelectAllObject_False').prop("checked", true);
+			    changeAttributeFilterAvailability(false);
 			}
 
 			if (Object.keys(val)[0] === 'PropertyType') {
