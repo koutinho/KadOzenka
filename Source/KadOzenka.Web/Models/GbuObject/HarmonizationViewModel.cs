@@ -1,16 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory;
 using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
-	public class HarmonizationViewModel
+	public class HarmonizationViewModel : IValidatableObject
 	{
 		/// <summary>
 		/// Идентификатор атрибута, куда будет записан результат 
 		/// </summary>
 		[Display(Name = "Характеристика")]
+		[Required(ErrorMessage = "Выберете результирующую Характеристику")]
 		public long? IdAttributeResult { get; set; }
 
 		/// <summary>
@@ -35,6 +37,23 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// </summary>
 		[Display(Name = "Значение")]
 		public List<string> ValuesFilter { get; set; }
+
+		/// <summary>
+		/// Использовать Дату актуализации
+		/// </summary>
+		public bool IsDataActualUsed { get; set; }
+
+		/// <summary>
+		/// Список значений фильтра
+		/// </summary>
+		[Display(Name = "Задания на оценку")]
+		public List<long> TaskFilter { get; set; }
+
+		/// <summary>
+		/// Дата на которую делается гармонизация
+		/// </summary>
+		[Display(Name = "Дата актулизации")]
+		public DateTime? DataActual { get; set; }
 
 		/// <summary>
 		/// Фактор 1 уровня 
@@ -104,10 +123,47 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level7Attribute = Level7Attribute,
 				Level8Attribute = Level8Attribute,
 				Level9Attribute = Level9Attribute,
-				Level10Attribute = Level10Attribute
+				Level10Attribute = Level10Attribute,
+				TaskFilter = IsDataActualUsed? null: TaskFilter,
+				DateActual = IsDataActualUsed ? DataActual: null
 			};
 
 			return settings;
+		}
+
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			if (IsDataActualUsed)
+			{
+				if (!DataActual.HasValue)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
+							memberNames: new[] { nameof(DataActual) });
+				}
+			}
+			else if (TaskFilter?.Count == null || TaskFilter?.Count == 0)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Список заданий на оценку не может быть пустым",
+						memberNames: new[] { nameof(TaskFilter) });
+			}
+
+			if (!SelectAllObject)
+			{
+				if (ValuesFilter?.Count == null || ValuesFilter?.Count == 0)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Список значений фильтра не может быть пустым",
+							memberNames: new[] { nameof(ValuesFilter) });
+				}
+				if (!IdAttributeFilter.HasValue)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Поле Идентификатор атрибута-фильтра обязательное",
+							memberNames: new[] {nameof(IdAttributeFilter) });
+				}
+			}
 		}
 	}
 }

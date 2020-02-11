@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
+using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Controllers;
 
 namespace CIPJS
@@ -56,6 +57,7 @@ namespace CIPJS
             services.AddTransient<RegistersService>();
 			services.AddTransient<DashboardService>();
 			services.AddTransient<GbuObjectService>();
+			services.AddTransient<TaskService>();
             
 			services.AddHttpContextAccessor();
             services.AddSession(options =>

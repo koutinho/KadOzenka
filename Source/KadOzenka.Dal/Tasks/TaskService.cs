@@ -1,10 +1,12 @@
-﻿using KadOzenka.Dal.Tasks.Dto;
+﻿using System.Collections.Generic;
+using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.Tasks.Dto;
 using ObjectModel.Core.TD;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tasks
 {
-    public class TaskService
+	public class TaskService
     {
         public TaskDto GetTaskById(long taskId)
         {
@@ -28,6 +30,33 @@ namespace KadOzenka.Dal.Tasks
                 IncomingDocument = incomingDocument
             };
         }
+
+	    public List<TaskDocumentInfoDto> GetTaskDocumentInfoList()
+	    {
+		    var query = new QSQuery
+		    {
+			    MainRegisterID = OMTask.GetRegisterId(),
+			    Joins = new List<QSJoin>
+			    {
+				    new QSJoin
+				    {
+					    RegisterId = OMInstance.GetRegisterId(),
+					    JoinCondition = new QSConditionSimple
+					    {
+						    ConditionType = QSConditionType.Equal,
+						    LeftOperand = OMTask.GetColumn(x => x.DocumentId),
+						    RightOperand = OMInstance.GetColumn(x => x.Id)
+					    },
+					    JoinType = QSJoinType.Inner
+				    }
+			    }
+		    };
+		    query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
+		    query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
+		    query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
+
+		    return query.ExecuteQuery<TaskDocumentInfoDto>();
+		}
 
 
         #region Support Methods

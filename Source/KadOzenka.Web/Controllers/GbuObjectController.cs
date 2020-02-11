@@ -8,8 +8,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Core.ErrorManagment;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
@@ -24,10 +26,12 @@ namespace KadOzenka.Web.Controllers
 	public class GbuObjectController : BaseController
 	{
 		private readonly GbuObjectService _service;
+		private readonly TaskService _taskService;
 
-		public GbuObjectController(GbuObjectService service)
+		public GbuObjectController(GbuObjectService service, TaskService taskService)
 		{
 			_service = service;
+			_taskService = taskService;
 		}
 
 		public ActionResult AllDataTree(long objectId)
@@ -87,6 +91,14 @@ namespace KadOzenka.Web.Controllers
 			return OMDataFormStorage.Where(x =>
 					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.Normalisation)
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+		}
+
+		public List<SelectListItem> GetTasksData()
+		{
+			var documentInfoList =_taskService.GetTaskDocumentInfoList();
+			return documentInfoList
+				.Select(x => new SelectListItem(x.DocumentRegNumber, x.TaskId.ToString()))
+				.ToList();
 		}
 
 		public JsonResult GetTemplatesOneGroup(int id)
