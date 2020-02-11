@@ -47,7 +47,7 @@
                         @Html.CustomLabelFor(m => m.IdAttributeFilter)
                     </div>
                     <div class="col-sm-9">
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (System.Collections.IEnumerable)ViewData["Attributes"], dataBoundEvent: "attrFilterEvent")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (System.Collections.IEnumerable)ViewData["Attributes"], isReadonly: Model.SelectAllObject)
                     </div>
                 </div>
                 <div class="col-sm-5">
@@ -66,7 +66,7 @@
                     @Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Дата актуализации").Value(true)
                 </div>
                 <div class="col-sm-4">
-                    @Html.KendoDatePickerFor(m => m.DataActual)
+                    @(Html.Kendo().DatePickerFor(m => m.DataActual).Enable(Model.IsDataActualUsed))
                 </div>
             </div>
             <div class="form-group">
@@ -85,7 +85,7 @@
                             read.Action("GetTasksData", "GbuObject");
                         })
                         .ServerFiltering(false);
-                    }))
+                    }).Enable(!Model.IsDataActualUsed))
                 </div>
             </div>
         </fieldset>
@@ -291,7 +291,8 @@
 		$(document).ready(function () {
 
             templateStorage.init(@((int)DataFormStorege.Harmonization), "SaveTemplateHarmonizationObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
-            initIsDataActualUsedEventHandler();
+            initIsDataActualUsedChangedHandler();
+		    initSelectAllObjectChangedHandler();
 
 			function onDataBound(e) {
 				$('.k-multiselect .k-input').unbind('keyup');
@@ -322,7 +323,8 @@
 				dataSource: {
 					data: []
 				},
-				dataBound: onDataBound
+                dataBound: onDataBound,
+                enable: @(Model.SelectAllObject ? "false" : "true")
 			});
 
 			$('#performHarmonization').on('click',
@@ -368,36 +370,30 @@
             return result;
         }
 
-        function attrFilterEvent(parameters) {
-            setTimeout(function() {
-                changeAttributeFilterAvailability(@(Model.SelectAllObject ? "true" : "false"));
-                $('input[type="radio"][name="SelectAllObject"][value="True"] ').change(function() {
-                    if (this.checked) {
-                        changeAttributeFilterAvailability(true);
-                    }
-                });
-                $('input[type="radio"][name="SelectAllObject"][value="False"] ').change(function() {
-                    if (this.checked) {
-                        changeAttributeFilterAvailability(false);
-                    }
-                });
-            }, 100);
+        function initSelectAllObjectChangedHandler() {
+            $('input[type="radio"][name="SelectAllObject"][value="True"] ').change(function() {
+                if (this.checked) {
+                    changeAttributeFilterAvailability(true);
+                }
+            });
+            $('input[type="radio"][name="SelectAllObject"][value="False"] ').change(function() {
+                if (this.checked) {
+                    changeAttributeFilterAvailability(false);
+                }
+            });
         }
 
-        function initIsDataActualUsedEventHandler() {
-            setTimeout(function() {
-                    changeDataActualAvailability(@(Model.IsDataActualUsed ? "true" : "false"));
-                    $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').change(function() {
-                        if (this.checked) {
-                            changeDataActualAvailability(true);
-                        }
-                    });
-                    $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').change(function() {
-                        if (this.checked) {
-                            changeDataActualAvailability(false);
-                        }
-                    });
-                }, 100);
+        function initIsDataActualUsedChangedHandler() {
+            $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').change(function() {
+                if (this.checked) {
+                    changeDataActualAvailability(true);
+                }
+            });
+            $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').change(function() {
+                if (this.checked) {
+                    changeDataActualAvailability(false);
+                }
+            });
         }
 
         function changeDataActualAvailability(isDataActualUsed) {
