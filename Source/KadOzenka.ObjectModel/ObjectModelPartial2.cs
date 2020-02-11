@@ -879,6 +879,24 @@ namespace ObjectModel.Sud
 }
 
 
+namespace ObjectModel.Sud
+{
+    /// <summary>
+    /// 315 Объект
+    /// </summary>
+    public partial class OMObject
+    {
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Declarations
 {
     /// <summary>

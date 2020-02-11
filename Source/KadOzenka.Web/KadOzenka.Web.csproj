@@ -142,6 +142,7 @@
     <None Remove="Config\Registers\SearchPanels\DamagePayment.xml" />
     <None Remove="Config\Registers\Views\DamagePayment.xml" />
     <None Remove="Config\Registers\Views\SudObjects.xml" />
+    <None Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
     <None Remove="Config\Reports\RegisterOfPayment.frx" />
     <None Remove="Config\Reports\SubmitDocForApproval.frx" />
     <None Remove="Config\Reports\СalculationReport.frx" />
@@ -262,6 +263,7 @@
     <Content Include="Config\Registers\Views\SudObjects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\Registers\Views\SudObjectsRemoved.xml" />
   </ItemGroup>
 
 
@@ -899,6 +901,7 @@
     <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
+    <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />

@@ -83,7 +83,10 @@ namespace KadOzenka.Web.Models.Sud
 		public bool? IsException { get; set; }
 
 		public bool IsEditPermission { get; set; }
+
 		public bool IsApprovePermission { get; set; }
+
+		public bool IsRemovedObject { get; set; }
 
 
 		public static ObjectCardModel FromOM(OMObject omObject, OMDRS omDrs)
@@ -118,7 +121,8 @@ namespace KadOzenka.Web.Models.Sud
 				DrsOwner = omDrs?.DrsOwner,
 				ApplicantType = omObject.ApplicantType_Code,
 				TypeOfOwnership = omObject.TypeOfOwnership_Code,
-				IsException = Convert.ToBoolean(omObject.Exception)
+				IsException = Convert.ToBoolean(omObject.Exception),
+				IsRemovedObject = omObject.IsRemoved.GetValueOrDefault()
 			};
 			return model;
 		}

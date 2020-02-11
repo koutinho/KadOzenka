@@ -571,6 +571,10 @@
 			}*/
 			var isEditPermission = "@Model.IsEditPermission" === "True";
 			var isApprovePermission = "@Model.IsApprovePermission" === "True";
+			var isRemoved = "@Model.IsRemovedObject" === "True";
+
+			isEditPermission = isEditPermission && !isRemoved;
+			isApprovePermission = isApprovePermission && !isRemoved;
 
 			const toolbar = $("#toolbar").kendoToolBar({
 				items: [
@@ -598,7 +602,7 @@
 						toolbar.show($('#cancelBtn'));
 					},
 					icon: 'edit',
-					hidden: !isEditPermission
+					hidden: !isEditPermission && isRemoved
 					}," +
 								  @"{
 						type: 'button',

@@ -1,14 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="314" LinkedRegistersList="314,309,316,310" DefaultLayoutId="1003141" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
+<RegisterView RegisterId="314" LinkedRegistersList="314,309,316,310, 315" DefaultLayoutId="1003141" IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false" 
               ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
     <Buttons>
       <Button Caption="Добавить" NavigateURL="/Sud/EditCourtLink" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="SUD.OBJECTS.EDIT">
-        <Parameters>
+	      <ConditionGroups>
+		      <ConditionGroup HideOrDisable="Hide">
+			      <Conditions>
+				      <Condition Key="[31502000]" Operation="Equal" Value="1" AndOr="And"/>
+			      </Conditions>
+		      </ConditionGroup>
+	      </ConditionGroups>
+		  <Parameters>
             <Parameter Key="sudObjectId" Value="{Get:SudObjectId}" />
         </Parameters>
       </Button>
       <Button Caption="Редактировать" NavigateURL="/Sud/EditCourtLink" WindowHeight="450" WindowWidth="800" SRDFunctionTAG="SUD.OBJECTS.EDIT">
-        <Parameters>
+	      <ConditionGroups>
+		      <ConditionGroup HideOrDisable="Hide">
+			      <Conditions>
+				      <Condition Key="[31502000]" Operation="Equal" Value="1" AndOr="And"/>
+			      </Conditions>
+		      </ConditionGroup>
+	      </ConditionGroups>
+		  <Parameters>
           <Parameter Key="courtLinkId" Value="[ObjectID]" />
         </Parameters>
       </Button>

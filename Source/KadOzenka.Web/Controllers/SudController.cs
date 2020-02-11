@@ -7,6 +7,7 @@ using KadOzenka.Web.Models.Sud;
 using ObjectModel.Sud;
 using System.Transactions;
 using Core.ErrorManagment;
+using Core.Register.DAL;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
@@ -151,6 +152,55 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new { Success = "Сохранено успешно", ObjectId = objId.ToString() });
+		}
+
+		[HttpGet]
+		public ActionResult RemoveObject(int objectId)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_REMOVE, true, false, true);
+			if (objectId == 0)
+			{
+				return NotFound("Ид объекта не может быть 0");
+			}
+
+			ViewBag.RegistryId = OMObject.GetRegisterId();
+			return View(objectId);
+		}
+
+		[HttpPost]
+		public JsonResult RemoveObject([FromForm]int idObject, [FromForm]string reason)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_REMOVE, true, false, true);
+			if (idObject == 0)
+			{
+				return Json(new {error = "Ид объекта не может быть равен 0. Обратитесь к Администратору" });
+			}
+
+			if (string.IsNullOrEmpty(reason) &&
+			    !TdAttachmentsDAL.GetAllAttachments(idObject, OMObject.GetRegisterId()).Any())
+			{
+				return Json(new { error = "Укажите причину или загрузите файлы" });
+			}
+
+			var obj = OMObject.Where(x => x.Id == idObject).SelectAll().ExecuteFirstOrDefault();
+
+			if(obj == null)
+			{
+				return Json(new { error = "Объект не найден" });
+			}
+
+			try
+			{
+				obj.ReasonForRemove = reason;
+				obj.IsRemoved = true;
+				obj.SaveAndCheckParam();
+			}
+			catch (Exception e)
+			{
+				throw new Exception($"Ошибка при сохранении. Сообщение: {e.Message}");
+			}
+
+			return Json(new {success = "Удаление выполнено успешно."});
 		}
 		#endregion
 
@@ -1368,6 +1418,16 @@ namespace KadOzenka.Web.Controllers
 			}
 			return RedirectToAction("AttachmentView", "CoreAttachment",
 				new { objectId, registerId = OMSud.GetRegisterId() });
+		}
+
+		public ActionResult GetAllAttachmentsRemovedObject(int objectId, int isFile)
+		{
+			if (isFile == 0)
+			{
+				return NoContent();
+			}
+			return RedirectToAction("AttachmentView", "CoreAttachment",
+				new { objectId, registerId = OMObject.GetRegisterId() });
 		}
 
 		#endregion

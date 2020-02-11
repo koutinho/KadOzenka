@@ -45,6 +45,12 @@
 			  <Button Caption="Статистика по объектам недвижимости" NavigateURL="~/Sud/GetExportStatisticObject" OpenInRadWindow="false" SRDFunctionTag="SUD.OBJECTS.STATISTICS.OBJECT"/>
 		  </DropDownButtons>
 	  </Button>
+
+	  <Button Caption="Удалить объект" NeedRefresh="true"  NavigateURL="/Sud/RemoveObject" WindowHeight="300" WindowWidth="1000" Icon="fas  fa-trash-alt" SRDFunctionTag="SUD.OBJECTS.REMOVE">
+		  <Parameters>
+			  <Parameter Key="objectId" Value="[ObjectId]" />
+		  </Parameters>
+	  </Button>
   </Buttons>
 
   <ObjectCardButtons>

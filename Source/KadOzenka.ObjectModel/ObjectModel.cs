@@ -12534,12 +12534,12 @@ namespace ObjectModel.Sud
         }
 
 
-        private long? _isremoved;
+        private bool? _isremoved;
         /// <summary>
         /// 31502000 Признак удаленного объекта (IS_REMOVED)
         /// </summary>
         [RegisterAttribute(AttributeID = 31502000)]
-        public long? IsRemoved
+        public bool? IsRemoved
         {
             get
             {
@@ -12570,6 +12570,26 @@ namespace ObjectModel.Sud
             {
                 _reasonforremove = value;
                 NotifyPropertyChanged("ReasonForRemove");
+            }
+        }
+
+
+        private bool _containsattachments;
+        /// <summary>
+        /// 31502200 Признак наличия образа ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31502200)]
+        public bool ContainsAttachments
+        {
+            get
+            {
+                CheckPropertyInited("ContainsAttachments");
+                return _containsattachments;
+            }
+            set
+            {
+                _containsattachments = value;
+                NotifyPropertyChanged("ContainsAttachments");
             }
         }
 

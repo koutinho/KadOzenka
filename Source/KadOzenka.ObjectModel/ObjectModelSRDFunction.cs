@@ -257,6 +257,12 @@ namespace ObjectModel.SRD
               // Выгрузка в XML (557)
               public const string SUD_EXPORT_XML = "SUD.EXPORT.XML";
                 
+              // Удаление объектов (558)
+              public const string SUD_OBJECTS_REMOVE = "SUD.OBJECTS.REMOVE";
+                
+              // Просмотр удаленных объектов (559)
+              public const string SUD_OBJECTS_REMOVED_VIEW = "SUD.OBJECTS.REMOVED.VIEW";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 
