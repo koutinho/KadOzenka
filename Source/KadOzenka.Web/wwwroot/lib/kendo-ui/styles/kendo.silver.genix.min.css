@@ -78,20 +78,26 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+.k-checkbox-label {
+    font-family: 'Roboto', sans-serif !important;
+}
+
     .k-i-calendar:before {
         content: "\e90d";
     }
 
+.k-i-arrow-next:before,
 .k-i-arrow-60-right:before {
-    content: "\e91f";
+    content: "\e91f" !important;
 }
 
 .k-i-arrow-end-left:before {
     content: "\e906";
 }
 
+.k-i-arrow-prev:before,
 .k-i-arrow-60-left:before {
-    content: "\e91e";
+    content: "\e91e" !important;
 }
 
 .k-i-arrow-60-down:before {
@@ -3441,15 +3447,15 @@ ul.panelbar li.k-item .contentPanel {
             cursor: pointer;
         }
 
-            .rm-container ul.rm-ddl-horizontal li a {
-                text-decoration: none;
-            }
+    .rm-container ul.rm-ddl-horizontal li a {
+        text-decoration: none;
+    }
 
-            .rm-container ul.rm-ddl-horizontal li:hover {
-                border-top: solid 2px #fff;
-                border-radius: 2px;
-                padding-top: 8px;
-            }
+        .rm-container ul.rm-ddl-horizontal li:hover {
+            border-top: solid 2px #fff;
+            border-radius: 2px;
+            padding-top: 8px;
+        }
 
     .rm-container .rm-content-icon {
         font-size: 20px;
