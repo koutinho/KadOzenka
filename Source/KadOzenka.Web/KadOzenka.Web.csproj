@@ -17,6 +17,10 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
+  <!--<PropertyGroup>
+    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
+  </PropertyGroup>-->
+
   <ItemGroup>
     <Compile Remove="wwwroot\Config\**" />
     <Content Remove="wwwroot\Config\**" />
@@ -25,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Views\GbuObject\GroupingObject.cshtml" />
     <Content Remove="Views\Tour\GroupCard.cshtml" />
     <Content Remove="Views\Tour\TourSubCard.cshtml" />
     <Content Remove="wwwroot\images\magazine.png" />
@@ -734,6 +737,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\GbuObject\GroupingObject.cshtml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
     <Content Update="Views\Report\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
@@ -915,7 +921,6 @@
     <Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
   </Target>
   <ItemGroup>
-    <None Include="Views\GbuObject\GroupingObject.cshtml" />
     <None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
     <None Include="Views\Tour\Partials\TourSubCard.cshtml" />
   </ItemGroup>
