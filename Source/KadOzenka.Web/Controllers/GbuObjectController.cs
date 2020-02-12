@@ -10,6 +10,7 @@ using System.Linq;
 using Core.ErrorManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using Core.SRD;
 using KadOzenka.Dal.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -83,7 +84,7 @@ namespace KadOzenka.Web.Controllers
 					Text = x.Name
 				}).AsEnumerable();
 
-			return View();
+			return View(new GroupingObject());
 		}
 
 		public List<SelectListItem> GetTemplatesGrouping()
@@ -167,6 +168,30 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public JsonResult GroupingObject(GroupingObject model)
 		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+			List<string> errorsList = new List<string>();
+			if (model.IsDataActualUsed && model.DataActual.IsNullOrDbNull())
+			{
+				errorsList.Add("Дата актулизации обязательна");
+			}
 			PriorityGrouping.SetPriorityGroup(model.CovertToGroupingSettings());
 			return Json(new { success = true });
 		}

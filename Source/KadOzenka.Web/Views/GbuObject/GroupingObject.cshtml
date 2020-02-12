@@ -1,4 +1,5 @@
 ﻿@using System.Collections
+@using FastReport.Fonts
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory.Common
@@ -50,38 +51,40 @@
 			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodJob, (IEnumerable) ViewData["CodJob"], dataValueField: "Id")
 		</div>
 	</div>
-<fieldset class="wrap-level">
-	<div class="form-group">
-		<div class="col-sm-12">
-			@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("Все объекты").Value(true).Checked(true)
+	<fieldset class="wrap-level">
+		<div class="form-group">
+			<div class="col-sm-12">
+				@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("Все объекты").Value(true).Checked(true)
 
+			</div>
 		</div>
-	</div>
-	<div class="form-group">
-		<div class="col-sm-2">
-			@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("По значению").Value(false)
+		<div class="form-group">
+			<div class="col-sm-12">
+				@Html.Kendo().RadioButtonFor(m => m.SelectAllObject).Label("По значению").Value(false)
+			</div>
 		</div>
-		<div class="col-sm-2">
-			@Html.CustomLabelFor(m => m.IdAttributeFilter)
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.IdAttributeFilter)
+			</div>
+			<div class="col-sm-4">
+				@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (IEnumerable)ViewData["Attribute"], dataValueField: "Id", isReadonly: true)
+			</div>
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.ValuesFilter)
+			</div>
+			<div class="col-sm-4">
+				<select id="valuesFilter" style="width: 100%;"></select>
+			</div>
 		</div>
-		<div class="col-sm-4">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (IEnumerable) ViewData["Attribute"], dataValueField: "Id")
-		</div>
-		<div class="col-sm-1">
-			@Html.CustomLabelFor(m => m.ValuesFilter)
-		</div>
-		<div class="col-sm-3">
-			<select id="valuesFilter" style="width: 100%;"></select>
-		</div>
-	</div>
-</fieldset>
+	</fieldset>
 <fieldset class="wrap-level">
 	<div class="form-group">
 		<div class="col-sm-2">
-			@Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Дата актуализации").Value(true)
+			@Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Дата актуализации").Value(true).Checked(true)
 		</div>
 		<div class="col-sm-4">
-			@Html.KendoDatePickerFor(m => m.DataActual)
+			@Html.KendoDatePickerFor(m => m.DataActual, isReadonly: false)
 		</div>
 	</div>
 	<div class="form-group">
@@ -93,6 +96,7 @@
 				.DataTextField("Text")
 				.DataValueField("Value")
 				.Filter("contains")
+				.Enable(false)
 				.DataSource(source =>
 				{
 					source.Read(read =>
@@ -251,7 +255,7 @@
 				Справочник
 			</label>
 		</div>
-		<div class="col-sm-2">
+		<div class="col-sm-2">, 
 			<label>
 				@(Html.Kendo().CheckBoxFor(m => m.Level7.SkipDefis))
 				Игнорировать "-"
@@ -454,7 +458,8 @@
                 if (this.checked) {
                     changeDataActualAvailability(true);
                 }
-            });
+			});
+
             $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').change(function() {
                 if (this.checked) {
                     changeDataActualAvailability(false);
@@ -489,11 +494,12 @@
             }
         }
 
-
 	$(document).ready(function () {
 		initSelectAllObjectChangedHandler();
 		initIsDataActualUsedChangedHandler();
+
 		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+
 		function onDataBound(e) {
 			$('.k-multiselect .k-input').unbind('keyup');
 			$('.k-multiselect .k-input').on('keyup', onClickEnter);
@@ -520,6 +526,7 @@
 		$("#valuesFilter").kendoMultiSelect({
 			dataTextField: "valuesFilterName",
 			dataValueField: "valuesFilter",
+			enable: false,
 			dataSource: {
 				data: []
 			},
@@ -541,12 +548,38 @@
 						Common.ShowError(response.Error);
 						return;
 					}
+
+					if (response.Errors) {
+						kendo.ui.progress($('body'), false);
+						var errors = $.map(distinctErrors(response.Errors),
+							function(el) {
+								return el.Message;
+							});
+						Common.ShowError(errors);
+						return;
+					}
 					if (response.success) {
 						kendo.ui.progress($('body'), false);
 						Common.ShowMessage("Выполнено");
 					}
 				});
 			});
+		
+		function distinctErrors(errors) {
+			var result = [];
+			$.each(errors,
+				function (index, event) {
+					var events = $.grep(result,
+						function (e) {
+							return event.Message === e.Message;
+						});
+					if (events.length === 0) {
+						result.push(event);
+					}
+				});
+
+			return result;
+		}
 
 	});
 </script>

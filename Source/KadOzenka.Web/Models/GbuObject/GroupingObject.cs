@@ -34,18 +34,19 @@ namespace KadOzenka.Web.Models.GbuObject
 		}
 	}
 
-	public class GroupingObject
+	public class GroupingObject : IValidatableObject
 	{
 		/// <summary>
 		/// Идентификатор задания ЦОД
 		/// </summary>
 		[Display(Name = "Справочник ЦОД")]
+		[Required(ErrorMessage = "Заполните справочник ЦОД")]
 		public int? IdCodJob { get; set; }
 
 		/// <summary>
 		/// Выборка по всем объектам
 		/// </summary>
-		public bool SelectAllObject { get; set; }
+		public bool SelectAllObject { get; set; } = true;
 
 		/// <summary>
 		/// Идентификатор аттрибута - фильтра
@@ -62,7 +63,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Использовать Дату актуализации
 		/// </summary>
-		public bool IsDataActualUsed { get; set; }
+		public bool IsDataActualUsed { get; set; } = true;
 
 		/// <summary>
 		/// Список значений фильтра
@@ -135,6 +136,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Идентификатор атрибута, куда будет записан результат 
 		/// </summary>
 		[Display(Name = "Характеристика")]
+		[Required(ErrorMessage = "Заполните Характеристику")]
 		public int? IdAttributeResult { get; set; }
 		/// <summary>
 		/// Идентификатор атрибута, куда будут записаны источники 
@@ -170,6 +172,41 @@ namespace KadOzenka.Web.Models.GbuObject
 				ValuesFilter = ValuesFilter,
 				SelectAllObject = SelectAllObject
 			};
+		}
+
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			if (IsDataActualUsed)
+			{
+				if (!DataActual.HasValue)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
+							memberNames: new[] { nameof(DataActual) });
+				}
+			}
+			else if (TaskFilter?.Count == null || TaskFilter?.Count == 0)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Список заданий на оценку не может быть пустым",
+						memberNames: new[] { nameof(TaskFilter) });
+			}
+
+			if (!SelectAllObject)
+			{
+				if (ValuesFilter?.Count == null || ValuesFilter?.Count == 0)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Список значений фильтра не может быть пустым",
+							memberNames: new[] { nameof(ValuesFilter) });
+				}
+				if (!IdAttributeFilter.HasValue)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Поле Идентификатор атрибута-фильтра обязательное",
+							memberNames: new[] { nameof(IdAttributeFilter) });
+				}
+			}
 		}
 	}
 }
