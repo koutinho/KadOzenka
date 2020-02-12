@@ -448,6 +448,32 @@ namespace KadOzenka.Dal.GbuObject
 
             return res;
         }
+        private ValueItem GetValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, DateTime? date)
+        {
+            ValueItem res = new ValueItem
+            {
+                Value = string.Empty,
+                IdDocument = null,
+                AttributeName = string.Empty
+            };
+
+            List<long> lstIds = new List<long>();
+            if (idFactor != null) lstIds.Add(idFactor.Value);
+            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId.Value, null, lstIds, date);
+            if (attribs.Count > 0)
+            {
+                if (attribs[0].StringValue != string.Empty && attribs[0].StringValue != null)
+                {
+                    res.Value = attribs[0].StringValue;
+                    res.AttributeName = attribs[0].AttributeData.Name;
+                    res.IdDocument = attribs[0].ChangeDocId;
+                }
+            }
+
+
+            return res;
+        }
+
         private void AddValueFactor(ObjectModel.Gbu.OMMainObject obj, long? idFactor, long? idDoc, DateTime date, string value)
         {
             var attributeValue = new GbuObjectAttribute
@@ -465,8 +491,24 @@ namespace KadOzenka.Dal.GbuObject
             attributeValue.Save();
 
         }
-        private ValueItem GetDataLevel(LevelItem level, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary,
-            ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId)
+        private void AddValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, long? idDoc, DateTime date, string value)
+        {
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = idFactor.Value,
+                ObjectId = unit.ObjectId.Value,
+                ChangeDocId = (idDoc == null) ? -1 : idDoc.Value,
+                S = date,
+                ChangeUserId = SRDSession.Current.UserID,
+                ChangeDate = DateTime.Now,
+                Ot = date,
+                StringValue = value,
+            };
+            attributeValue.Save();
+
+        }
+        private ValueItem GetDataLevel(LevelItem level, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId)
         {
             ValueItem ValueLevel = new ValueItem();
             if (level.IdFactor != null)
@@ -518,6 +560,59 @@ namespace KadOzenka.Dal.GbuObject
             }
             return ValueLevel;
         }
+        private ValueItem GetDataLevel(LevelItem level, ObjectModel.KO.OMUnit unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> Dictionary, ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId)
+        {
+            ValueItem ValueLevel = new ValueItem();
+            if (level.IdFactor != null)
+            {
+                ValueLevel = GetValueFactor(unit, level.IdFactor, dateActual);
+                if (level.UseDictionary)
+                {
+                    if (!((ValueLevel.Value == string.Empty) || (ValueLevel.Value == "-" && level.SkipDefis)))
+                    {
+                        ObjectModel.KO.OMCodDictionary dictionaryRecord = Dictionary.Find(x => x.Value == ValueLevel.Value);
+                        if (dictionaryRecord != null)
+                        {
+                            string code = dictionaryRecord.Code.Replace(" ", "");
+                            if (code != "0")
+                            {
+                                Code = code;
+                                if (ValueLevel.IdDocument != null)
+                                {
+                                    OMInstance doc = OMInstance.Where(x => x.Id == ValueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
+                                    if (doc != null)
+                                    {
+                                        Source = doc.Description;
+                                        DocId = doc.Id;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            errorCOD = true;
+                            errorCODStr += (unit.CadastralNumber + ": " + ValueLevel.AttributeName + ". Значение: " + ValueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine);
+                        }
+                    }
+
+                }
+                else
+                {
+                    Code = ValueLevel.Value.Replace(" ", "");
+                    if (ValueLevel.IdDocument != null)
+                    {
+                        OMInstance doc = OMInstance.Where(x => x.Id == ValueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
+                        if (doc != null)
+                        {
+                            Source = doc.Description;
+                            DocId = doc.Id;
+                        }
+                    }
+                }
+            }
+            return ValueLevel;
+        }
+
         public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual)
         {
             Code_Source_01 = string.Empty;
@@ -729,8 +824,223 @@ namespace KadOzenka.Dal.GbuObject
             }
 
         }
-        #endregion
+        public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual)
+        {
+            if (unit.ObjectId != null)
+            {
+                #region Поля
+                Code_Source_01 = string.Empty;
+                Code_Source_02 = string.Empty;
+                Code_Source_03 = string.Empty;
+                Code_Source_04 = string.Empty;
+                Code_Source_05 = string.Empty;
+                Code_Source_06 = string.Empty;
+                Code_Source_07 = string.Empty;
+                Code_Source_08 = string.Empty;
+                Code_Source_09 = string.Empty;
+                Code_Source_10 = string.Empty;
+                Code_Source_11 = string.Empty;
 
+                Doc_Source_01 = string.Empty;
+                Doc_Source_02 = string.Empty;
+                Doc_Source_03 = string.Empty;
+                Doc_Source_04 = string.Empty;
+                Doc_Source_05 = string.Empty;
+                Doc_Source_06 = string.Empty;
+                Doc_Source_07 = string.Empty;
+                Doc_Source_08 = string.Empty;
+                Doc_Source_09 = string.Empty;
+                Doc_Source_10 = string.Empty;
+                Doc_Source_11 = string.Empty;
+
+                Doc_Id_01 = null;
+                Doc_Id_02 = null;
+                Doc_Id_03 = null;
+                Doc_Id_04 = null;
+                Doc_Id_05 = null;
+                Doc_Id_06 = null;
+                Doc_Id_07 = null;
+                Doc_Id_08 = null;
+                Doc_Id_09 = null;
+                Doc_Id_10 = null;
+                Doc_Id_11 = null;
+
+                bool errorCOD = false;
+                string errorCODStr = string.Empty;
+                ValueItem Level1 = new ValueItem();
+                ValueItem Level2 = new ValueItem();
+                ValueItem Level3 = new ValueItem();
+                ValueItem Level4 = new ValueItem();
+                ValueItem Level5 = new ValueItem();
+                ValueItem Level6 = new ValueItem();
+                ValueItem Level7 = new ValueItem();
+                ValueItem Level8 = new ValueItem();
+                ValueItem Level9 = new ValueItem();
+                ValueItem Level10 = new ValueItem();
+                ValueItem Level11 = new ValueItem();
+                #endregion
+
+                {
+                    Level1 = GetDataLevel(setting.Level1, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01);
+                    Level2 = GetDataLevel(setting.Level2, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02);
+                    Level3 = GetDataLevel(setting.Level3, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03);
+                    Level4 = GetDataLevel(setting.Level4, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04);
+                    Level5 = GetDataLevel(setting.Level5, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05);
+                    Level6 = GetDataLevel(setting.Level6, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06);
+                    Level7 = GetDataLevel(setting.Level7, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07);
+                    Level8 = GetDataLevel(setting.Level8, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08);
+                    Level9 = GetDataLevel(setting.Level9, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09);
+                    Level10 = GetDataLevel(setting.Level10, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10);
+                    Level11 = GetDataLevel(setting.Level11, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11);
+
+
+                    string resGroup = GetGroupCode(out string source);
+
+                    #region Результат
+                    if (!errorCOD)
+                    {
+                        if (setting.IdAttributeResult != null)
+                        {
+                            long? id_doc = null;
+                            if (source.Contains("09")) id_doc = Doc_Id_09;
+                            else
+                            if (source.Contains("07")) id_doc = Doc_Id_07;
+                            else
+                            if (source.Contains("08")) id_doc = Doc_Id_08;
+                            else
+                            if (source.Contains("01")) id_doc = Doc_Id_01;
+                            else
+                            if (source.Contains("04")) id_doc = Doc_Id_04;
+                            else
+                            if (source.Contains("03")) id_doc = Doc_Id_03;
+                            else
+                            if (source.Contains("05")) id_doc = Doc_Id_05;
+                            else
+                            if (source.Contains("06")) id_doc = Doc_Id_06;
+                            else
+                            if (source.Contains("02")) id_doc = Doc_Id_02;
+                            else
+                            if (source.Contains("10")) id_doc = Doc_Id_10;
+                            else
+                            if (source.Contains("11")) id_doc = Doc_Id_11;
+
+                            AddValueFactor(unit, setting.IdAttributeResult, id_doc, dateActual, resGroup);
+
+                            if (setting.IdAttributeSource != null)
+                            {
+                                string[] arrsource = source.Split(';');
+                                string strsource = string.Empty;
+                                foreach (string item in arrsource)
+                                {
+                                    if (item == "01")
+                                    {
+                                        strsource += (Level1.AttributeName + "; ");
+                                    }
+                                    if (item == "02")
+                                    {
+                                        strsource += (Level2.AttributeName + "; ");
+                                    }
+                                    if (item == "03")
+                                    {
+                                        strsource += (Level3.AttributeName + "; ");
+                                    }
+                                    if (item == "04")
+                                    {
+                                        strsource += (Level4.AttributeName + "; ");
+                                    }
+                                    if (item == "05")
+                                    {
+                                        strsource += (Level5.AttributeName + "; ");
+                                    }
+                                    if (item == "06")
+                                    {
+                                        strsource += (Level6.AttributeName + "; ");
+                                    }
+                                    if (item == "07")
+                                    {
+                                        strsource += (Level7.AttributeName + "; ");
+                                    }
+                                    if (item == "08")
+                                    {
+                                        strsource += (Level8.AttributeName + "; ");
+                                    }
+                                    if (item == "09")
+                                    {
+                                        strsource += (Level9.AttributeName + "; ");
+                                    }
+                                    if (item == "10")
+                                    {
+                                        strsource += (Level10.AttributeName + "; ");
+                                    }
+                                    if (item == "11")
+                                    {
+                                        strsource += (Level11.AttributeName + "; ");
+                                    }
+                                }
+                                strsource = strsource.Trim().TrimEnd(';');
+                                AddValueFactor(unit, setting.IdAttributeSource, null, dateActual, strsource);
+                            }
+                            if (setting.IdAttributeDocument != null)
+                            {
+                                string[] arrsource = source.Split(';');
+                                string strsource = string.Empty;
+                                foreach (string item in arrsource)
+                                {
+                                    if (item == "01")
+                                    {
+                                        strsource += (Doc_Source_01 + "; ");
+                                    }
+                                    if (item == "02")
+                                    {
+                                        strsource += (Doc_Source_02 + "; ");
+                                    }
+                                    if (item == "03")
+                                    {
+                                        strsource += (Doc_Source_03 + "; ");
+                                    }
+                                    if (item == "04")
+                                    {
+                                        strsource += (Doc_Source_04 + "; ");
+                                    }
+                                    if (item == "05")
+                                    {
+                                        strsource += (Doc_Source_05 + "; ");
+                                    }
+                                    if (item == "06")
+                                    {
+                                        strsource += (Doc_Source_06 + "; ");
+                                    }
+                                    if (item == "07")
+                                    {
+                                        strsource += (Doc_Source_07 + "; ");
+                                    }
+                                    if (item == "08")
+                                    {
+                                        strsource += (Doc_Source_08 + "; ");
+                                    }
+                                    if (item == "09")
+                                    {
+                                        strsource += (Doc_Source_09 + "; ");
+                                    }
+                                    if (item == "10")
+                                    {
+                                        strsource += (Doc_Source_10 + "; ");
+                                    }
+                                    if (item == "11")
+                                    {
+                                        strsource += (Doc_Source_11 + "; ");
+                                    }
+                                }
+                                strsource = strsource.Trim().TrimEnd(';');
+                                AddValueFactor(unit, setting.IdAttributeDocument, null, dateActual, strsource);
+                            }
+                        }
+                    }
+                    #endregion
+                }
+            }
+        }
+        #endregion
     }
 
     /// <summary>
@@ -749,12 +1059,6 @@ namespace KadOzenka.Dal.GbuObject
         public static void SetPriorityGroup(GroupingSettings setting)
         {
             PrioritetList = new PriorityGroupList();
-
-            List<ObjectModel.KO.OMCodDictionary> DictionaryItem = new List<ObjectModel.KO.OMCodDictionary>();
-            if (setting.IdCodJob != null)
-                DictionaryItem = ObjectModel.KO.OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).SelectAll().Execute();
-            List<ObjectModel.Gbu.OMMainObject> objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
-
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
@@ -762,7 +1066,25 @@ namespace KadOzenka.Dal.GbuObject
                 MaxDegreeOfParallelism = 1
             };
 
-            Parallel.ForEach(objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual==null)?DateTime.Now:setting.DateActual.Value); });
+            List<ObjectModel.KO.OMCodDictionary> DictionaryItem = new List<ObjectModel.KO.OMCodDictionary>();
+            if (setting.IdCodJob != null)
+                DictionaryItem = ObjectModel.KO.OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).SelectAll().Execute();
+
+            if (setting.TaskFilter.Count > 0)
+            {
+                foreach (long taskId in setting.TaskFilter)
+                {
+                    List<ObjectModel.KO.OMUnit> Objs = ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId).SelectAll().Execute();
+                    Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
+                }
+            }
+            else
+            {
+                List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
+                Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
+            }
+
+
         }
     }
 
