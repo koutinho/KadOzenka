@@ -76,6 +76,35 @@
 	</div>
 </fieldset>
 <fieldset class="wrap-level">
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Дата актуализации").Value(true)
+		</div>
+		<div class="col-sm-4">
+			@Html.KendoDatePickerFor(m => m.DataActual)
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Задания на оценку").Value(false)
+		</div>
+		<div class="col-sm-10">
+			@(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+				.DataTextField("Text")
+				.DataValueField("Value")
+				.Filter("contains")
+				.DataSource(source =>
+				{
+					source.Read(read =>
+					{
+						read.Action("GetTasksData", "GbuObject");
+					})
+						.ServerFiltering(false);
+				}))
+		</div>
+	</div>
+</fieldset>
+<fieldset class="wrap-level">
 	<legend>1 Уровень</legend>
 	<div class="form-group">
 		<div class="col-sm-2">
@@ -407,8 +436,63 @@
 
 		});
 	}
+	     function initSelectAllObjectChangedHandler() {
+            $('input[type="radio"][name="SelectAllObject"][value="True"] ').change(function() {
+                if (this.checked) {
+                    changeAttributeFilterAvailability(true);
+                }
+            });
+            $('input[type="radio"][name="SelectAllObject"][value="False"] ').change(function() {
+                if (this.checked) {
+                    changeAttributeFilterAvailability(false);
+                }
+            });
+        }
+
+        function initIsDataActualUsedChangedHandler() {
+            $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').change(function() {
+                if (this.checked) {
+                    changeDataActualAvailability(true);
+                }
+            });
+            $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').change(function() {
+                if (this.checked) {
+                    changeDataActualAvailability(false);
+                }
+            });
+        }
+
+        function changeDataActualAvailability(isDataActualUsed) {
+            if (isDataActualUsed) {
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(true);
+            } else {
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(null);
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(false);
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
+		    }
+		}
+
+        function changeAttributeFilterAvailability(areFieldsReadonly) {
+            if (areFieldsReadonly) {
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').value('');
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').enable(false);
+                $('a.clear-button-@(nameof(Model.IdAttributeFilter))').addClass('k-state-disabled');
+
+                $('#valuesFilter').data("kendoMultiSelect").value([]);
+                $('#valuesFilter').data("kendoMultiSelect").enable(false);
+            } else {
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').enable(true);
+                $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
+                $('#valuesFilter').data("kendoMultiSelect").enable(true);
+            }
+        }
+
 
 	$(document).ready(function () {
+		initSelectAllObjectChangedHandler();
+		initIsDataActualUsedChangedHandler();
 		templateStorage.init(@((int)DataFormStorege.Normalisation), "SaveTemplateGroupingObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
 		function onDataBound(e) {
 			$('.k-multiselect .k-input').unbind('keyup');
@@ -443,7 +527,7 @@
 		});
 
 		$('#execute').on('click',
-			function() {
+			function () {
 				var form = $('form');
 				var formObject = Common.Functions.FormToObject(form);
 				formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();

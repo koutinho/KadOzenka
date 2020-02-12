@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ObjectModel.Gbu.GroupingAlgoritm;
 
@@ -57,6 +58,23 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// </summary>
 		[Display(Name = "Значения")]
 		public List<string> ValuesFilter { get; set; }
+
+		/// <summary>
+		/// Использовать Дату актуализации
+		/// </summary>
+		public bool IsDataActualUsed { get; set; }
+
+		/// <summary>
+		/// Список значений фильтра
+		/// </summary>
+		[Display(Name = "Задания на оценку")]
+		public List<long> TaskFilter { get; set; }
+
+		/// <summary>
+		/// Дата на которую делается гармонизация
+		/// </summary>
+		[Display(Name = "Дата актулизации")]
+		public DateTime? DataActual { get; set; }
 
 		/// <summary>
 		/// Настройки 1 уровня группировки
