@@ -34,6 +34,6 @@
 
   <OmAssemblies>
     <string>Platform</string>
-    <string>KadOzenka.Dal</string>
+    <string>KadOzenka.ObjectModel</string>
   </OmAssemblies>
 </SystemCommon>
