@@ -185,15 +185,15 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(200, 'Gbu.MainObject', 'Объект кадастровой оценки', NULL, NULL, 'GBU_MAIN_OBJECT', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(200, 'Gbu.MainObject', 'Объекты недвижимости', NULL, NULL, 'GBU_MAIN_OBJECT', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
 on conflict (registerid) do update set
-"registername"='Gbu.MainObject', "registerdescription"='Объект кадастровой оценки', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='GBU_MAIN_OBJECT', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Gbu.MainObject', "registerdescription"='Объекты недвижимости', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='GBU_MAIN_OBJECT', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(201, 'KO.Unit', 'Единица кадастровой оценки', NULL, NULL, 'KO_UNIT', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(201, 'KO.Unit', 'Единица оценки', NULL, NULL, 'KO_UNIT', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
 on conflict (registerid) do update set
-"registername"='KO.Unit', "registerdescription"='Единица кадастровой оценки', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_UNIT', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='KO.Unit', "registerdescription"='Единица оценки', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_UNIT', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -281,9 +281,15 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(219, 'KO.TourFactorRegister', 'Реестр хранения факторов тура', NULL, NULL, 'ko_tour_factor_register', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(219, 'KO.TourFactorRegister', 'Реестр хранения факторов тура', NULL, NULL, 'KO_TOUR_FACTOR_REGISTER', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
 on conflict (registerid) do update set
-"registername"='KO.TourFactorRegister', "registerdescription"='Реестр хранения факторов тура', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='ko_tour_factor_register', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='KO.TourFactorRegister', "registerdescription"='Реестр хранения факторов тура', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_TOUR_FACTOR_REGISTER', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
+(220, 'KO.DocumentLink', 'Связи документов', NULL, NULL, 'KO_DOCUMENT_LINK', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='KO.DocumentLink', "registerdescription"='Связи документов', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_DOCUMENT_LINK', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -311,9 +317,9 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(300, 'Sud.Zak', 'Экспертное заключение', NULL, NULL, 'SUD_ZAK', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(300, 'Sud.Zak', 'Экспертное заключение', 'SUD_ZAK_A', NULL, 'SUD_ZAK', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Sud.Zak', "registerdescription"='Экспертное заключение', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='SUD_ZAK', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Sud.Zak', "registerdescription"='Экспертное заключение', "allpri_table"='SUD_ZAK_A', "object_table"=NULL, "quant_table"='SUD_ZAK', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -359,9 +365,9 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(308, 'Sud.Otchet', 'Отчеты', NULL, NULL, 'SUD_OTCHET', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(308, 'Sud.Otchet', 'Отчеты', 'SUD_OTCHET_A', NULL, 'SUD_OTCHET', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Sud.Otchet', "registerdescription"='Отчеты', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='SUD_OTCHET', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Sud.Otchet', "registerdescription"='Отчеты', "allpri_table"='SUD_OTCHET_A', "object_table"=NULL, "quant_table"='SUD_OTCHET', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -407,9 +413,9 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(316, 'Sud.Sud', 'Судебное заседание', NULL, NULL, 'SUD_SUD', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(316, 'Sud.Sud', 'Судебное заседание', 'SUD_SUD_A', NULL, 'SUD_SUD', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Sud.Sud', "registerdescription"='Судебное заседание', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='SUD_SUD', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Sud.Sud', "registerdescription"='Судебное заседание', "allpri_table"='SUD_SUD_A', "object_table"=NULL, "quant_table"='SUD_SUD', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -419,33 +425,39 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
+(318, 'Sud.DopAnalisLog', 'Результаты выполнения процесса дополнительного анализа', NULL, NULL, 'SUD_DOPANALIZ_LOG', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='Sud.DopAnalisLog', "registerdescription"='Результаты выполнения процесса дополнительного анализа', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='SUD_DOPANALIZ_LOG', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
 (400, 'Commission.Cost', 'Решение комиссий', 'COMISSION_COST_A', NULL, 'COMISSION_COST', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
 "registername"='Commission.Cost', "registerdescription"='Решение комиссий', "allpri_table"='COMISSION_COST_A', "object_table"=NULL, "quant_table"='COMISSION_COST', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(500, 'Declarations.Book', 'Книги', NULL, NULL, 'DECLARATIONS_BOOK', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(500, 'Declarations.Book', 'Книги', 'DECLARATIONS_BOOK_A', NULL, 'DECLARATIONS_BOOK', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Declarations.Book', "registerdescription"='Книги', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_BOOK', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Declarations.Book', "registerdescription"='Книги', "allpri_table"='DECLARATIONS_BOOK_A', "object_table"=NULL, "quant_table"='DECLARATIONS_BOOK', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(501, 'Declarations.Declaration', 'Декларация', NULL, NULL, 'DECLARATIONS_DECLARATION', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(501, 'Declarations.Declaration', 'Декларация', 'DECLARATIONS_DECLARATION_A', NULL, 'DECLARATIONS_DECLARATION', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Declarations.Declaration', "registerdescription"='Декларация', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_DECLARATION', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Declarations.Declaration', "registerdescription"='Декларация', "allpri_table"='DECLARATIONS_DECLARATION_A', "object_table"=NULL, "quant_table"='DECLARATIONS_DECLARATION', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(502, 'Declarations.HarOKS', 'Характеристики ОКС', NULL, NULL, 'DECLARATIONS_HAR_OKS', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(502, 'Declarations.HarOKS', 'Характеристики ОКС', 'DECLARATIONS_HAR_OKS_A', NULL, 'DECLARATIONS_HAR_OKS', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Declarations.HarOKS', "registerdescription"='Характеристики ОКС', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_HAR_OKS', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Declarations.HarOKS', "registerdescription"='Характеристики ОКС', "allpri_table"='DECLARATIONS_HAR_OKS_A', "object_table"=NULL, "quant_table"='DECLARATIONS_HAR_OKS', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(503, 'Declarations.HarParcel', 'Характеристики ЗУ', NULL, NULL, 'DECLARATIONS_HAR_PARCEL', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(503, 'Declarations.HarParcel', 'Характеристики ЗУ', 'DECLARATIONS_HAR_PARCEL_A', NULL, 'DECLARATIONS_HAR_PARCEL', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Declarations.HarParcel', "registerdescription"='Характеристики ЗУ', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_HAR_PARCEL', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Declarations.HarParcel', "registerdescription"='Характеристики ЗУ', "allpri_table"='DECLARATIONS_HAR_PARCEL_A', "object_table"=NULL, "quant_table"='DECLARATIONS_HAR_PARCEL', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -455,21 +467,39 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(505, 'Declarations.Subject', 'Субъекты', NULL, NULL, 'DECLARATIONS_SUBJECT', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(505, 'Declarations.Subject', 'Субъекты', 'DECLARATIONS_SUBJECT_A', NULL, 'DECLARATIONS_SUBJECT', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Declarations.Subject', "registerdescription"='Субъекты', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_SUBJECT', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Declarations.Subject', "registerdescription"='Субъекты', "allpri_table"='DECLARATIONS_SUBJECT_A', "object_table"=NULL, "quant_table"='DECLARATIONS_SUBJECT', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(506, 'Declarations.Uved', 'Уведомления', NULL, NULL, 'DECLARATIONS_UVED', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(506, 'Declarations.Uved', 'Уведомления', 'DECLARATIONS_UVED_A', NULL, 'DECLARATIONS_UVED', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE')
 on conflict (registerid) do update set
-"registername"='Declarations.Uved', "registerdescription"='Уведомления', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_UVED', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Declarations.Uved', "registerdescription"='Уведомления', "allpri_table"='DECLARATIONS_UVED_A', "object_table"=NULL, "quant_table"='DECLARATIONS_UVED', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE';
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
-(507, 'Declarations.ScanData', 'Таблица, содержащая информацию о скан-образах декларации', NULL, NULL, 'DECLARATIONS_SCAN_DATA', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+(507, 'Declarations.UvedRejectionReasonType', 'Связь типов причин отказа и уведомлений об отказе и возврате документов', NULL, NULL, 'DECLARATIONS_UVED_REJECTION_REASON_TYPE', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
 on conflict (registerid) do update set
-"registername"='Declarations.ScanData', "registerdescription"='Таблица, содержащая информацию о скан-образах декларации', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_SCAN_DATA', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+"registername"='Declarations.UvedRejectionReasonType', "registerdescription"='Связь типов причин отказа и уведомлений об отказе и возврате документов', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_UVED_REJECTION_REASON_TYPE', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
+(508, 'Declarations.Signatory', 'Подписант', NULL, NULL, 'DECLARATIONS_SIGNATORY', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='Declarations.Signatory', "registerdescription"='Подписант', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_SIGNATORY', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
+(509, 'Declarations.HarOKSAdditionalInfo', 'Характеристики ОКС. Дополнительная информация', NULL, NULL, 'DECLARATIONS_HAR_OKS_ADDITIONAL_INFO', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='Declarations.HarOKSAdditionalInfo', "registerdescription"='Характеристики ОКС. Дополнительная информация', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_HAR_OKS_ADDITIONAL_INFO', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
+(510, 'Declarations.HarParcelAdditionalInfo', 'Характеристики ЗУ. Дополнительная информация', NULL, NULL, 'DECLARATIONS_HAR_PARCEL_ADDITIONAL_INFO', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='Declarations.HarParcelAdditionalInfo', "registerdescription"='Характеристики ЗУ. Дополнительная информация', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='DECLARATIONS_HAR_PARCEL_ADDITIONAL_INFO', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -482,6 +512,12 @@ insert into core_register ("registerid", "registername", "registerdescription", 
 (801, 'Common.ImportDataLog', 'Журнал загрузки данных', NULL, NULL, 'COMMON_IMPORT_DATA_LOG', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
 on conflict (registerid) do update set
 "registername"='Common.ImportDataLog', "registerdescription"='Журнал загрузки данных', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='COMMON_IMPORT_DATA_LOG', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
+(802, 'Common.DataFormStorage', 'Сохраненные данные форм ', NULL, NULL, 'COMMON_DATA_FORM_STORAGE', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='Common.DataFormStorage', "registerdescription"='Сохраненные данные форм ', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='COMMON_DATA_FORM_STORAGE', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL;
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date") values
@@ -1007,6 +1043,12 @@ on conflict (referenceid) do update set
 
 --<DO>--
 insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(118, 'Виды объектов недвижимости ЦИПЖС', 1, 'Core.RefLib.Executors.ReferenceExecutor', NULL, NULL, 'PropertyTypesCIPJS', NULL, NULL)
+on conflict (referenceid) do update set
+"description"='Виды объектов недвижимости ЦИПЖС', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutor', "istree"=NULL, "defaultvalue"=NULL, "name"='PropertyTypesCIPJS', "register_id"=NULL, "simple_values"=NULL;
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
 (200, 'Статусы единицы оценки', 1, 'Core.RefLib.Executors.ReferenceExecutor', NULL, NULL, 'KoUnitStatus', NULL, NULL)
 on conflict (referenceid) do update set
 "description"='Статусы единицы оценки', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutor', "istree"=NULL, "defaultvalue"=NULL, "name"='KoUnitStatus', "register_id"=NULL, "simple_values"=NULL;
@@ -1343,7 +1385,7 @@ on conflict (referenceid) do update set
 
 --<DO>--
 insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
-(300, 'Тип объекта судебного решения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Sud.SudObjectType', NULL, '[
+(300, 'Тип объекта', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Sud.SudObjectType', NULL, '[
 	{
 		"Id": 1,
 		"Value": "Участок",
@@ -1381,7 +1423,7 @@ insert into core_reference ("referenceid", "description", "readonly", "progid", 
 	}
 ]')
 on conflict (referenceid) do update set
-"description"='Тип объекта судебного решения', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='Sud.SudObjectType', "register_id"=NULL, "simple_values"='[
+"description"='Тип объекта', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='Sud.SudObjectType', "register_id"=NULL, "simple_values"='[
 	{
 		"Id": 1,
 		"Value": "Участок",
@@ -1445,6 +1487,130 @@ on conflict (referenceid) do update set
 		"Value": "Актуальный",
 		"Name": "Processed"
 	},
+]';
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(302, 'Тип заявителя', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Sud.ApplicantType', NULL, '[
+	{
+		"Id": 1,
+		"Value": "Физическое лицо",
+		"Name": "Individual"
+	},
+	{
+		"Id": 2,
+		"Value": "Юридическое лицо",
+		"Name": "Entity"
+	}
+]')
+on conflict (referenceid) do update set
+"description"='Тип заявителя', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='Sud.ApplicantType', "register_id"=NULL, "simple_values"='[
+	{
+		"Id": 1,
+		"Value": "Физическое лицо",
+		"Name": "Individual"
+	},
+	{
+		"Id": 2,
+		"Value": "Юридическое лицо",
+		"Name": "Entity"
+	}
+]';
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(303, 'Форма собственности', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Sud.TypeOfOwnership', NULL, '[
+	{
+		"Id": 1,
+		"Value": "Федеральное имущество",
+		"Name": "FederalProperty"
+	},
+	{
+		"Id": 2,
+		"Value": "Город Москва",
+		"Name": "MoscowCity"
+	},
+	{
+		"Id": 3,
+		"Value": "Иное",
+		"Name": "Other"
+	}
+]')
+on conflict (referenceid) do update set
+"description"='Форма собственности', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='Sud.TypeOfOwnership', "register_id"=NULL, "simple_values"='[
+	{
+		"Id": 1,
+		"Value": "Федеральное имущество",
+		"Name": "FederalProperty"
+	},
+	{
+		"Id": 2,
+		"Value": "Город Москва",
+		"Name": "MoscowCity"
+	},
+	{
+		"Id": 3,
+		"Value": "Иное",
+		"Name": "Other"
+	}
+]';
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(304, 'Статус судебного решения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Sud.CourtStatus', NULL, '[
+	{
+		"Id": 0,
+		"Value": "Без статуса",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Отказано",
+		"Name": "Denied"
+	},
+	{
+		"Id": 2,
+		"Value": "Удовлетворено",
+		"Name": "Satisfied"
+	},
+	{
+		"Id": 3,
+		"Value": "Приостановлено",
+		"Name": "Paused"
+	},
+	{
+		"Id": 4,
+		"Value": "Частично удовлетворено",
+		"Name": "PartiallySatisfied"
+	}
+]')
+on conflict (referenceid) do update set
+"description"='Статус судебного решения', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='Sud.CourtStatus', "register_id"=NULL, "simple_values"='[
+	{
+		"Id": 0,
+		"Value": "Без статуса",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Отказано",
+		"Name": "Denied"
+	},
+	{
+		"Id": 2,
+		"Value": "Удовлетворено",
+		"Name": "Satisfied"
+	},
+	{
+		"Id": 3,
+		"Value": "Приостановлено",
+		"Name": "Paused"
+	},
+	{
+		"Id": 4,
+		"Value": "Частично удовлетворено",
+		"Name": "PartiallySatisfied"
+	}
 ]';
 
 --<DO>--
@@ -1879,7 +2045,7 @@ insert into core_reference ("referenceid", "description", "readonly", "progid", 
 	},
 	{
 		"Id": 5,
-		"Value": "Машиноместо",
+		"Value": "Машино-место",
 		"Name": "ParkingPlace"
 	},
 	{
@@ -1894,7 +2060,7 @@ insert into core_reference ("referenceid", "description", "readonly", "progid", 
 	},
 	{
 		"Id": 8,
-		"Value": "Производственно имущественный комплекс",
+		"Value": "Производственно-имущественный комплекс",
 		"Name": "Pik"
 	},
 	{
@@ -1932,7 +2098,7 @@ on conflict (referenceid) do update set
 	},
 	{
 		"Id": 5,
-		"Value": "Машиноместо",
+		"Value": "Машино-место",
 		"Name": "ParkingPlace"
 	},
 	{
@@ -1947,7 +2113,7 @@ on conflict (referenceid) do update set
 	},
 	{
 		"Id": 8,
-		"Value": "Производственно имущественный комплекс",
+		"Value": "Производственно-имущественный комплекс",
 		"Name": "Pik"
 	},
 	{
@@ -2131,6 +2297,122 @@ on conflict (referenceid) do update set
 
 --<DO>--
 insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(511, 'Тип причины отказа для уведомлления об отказе декларации', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Declarations.RejectionReasonType', NULL, '[
+	{
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Заявитель, подавший декларацию, не является правообладателем объекта недвижимости, в отношении которого подается декларация",
+		"Name": "ApplicantIsNotObjectTypeOwner"
+	},
+	{
+		"Id": 2,
+		"Value": "К декларации не приложены документы, предусмотренные пунктом 2 Приказа о декларациях",
+		"Name": "DocumentsAreNotAttached"
+	},
+	{
+		"Id": 3,
+		"Value": "Декларация не соответствует форме, предусмотренной приложением № 2 к Приказу о декларациях",
+		"Name": "DeclarationDoesNotMatchForm"
+	},
+	{
+		"Id": 4,
+		"Value": "Декларация не заверена в соответствии с пунктом 3 Приказа о декларациях",
+		"Name": "DeclarationIsNotCertified "
+	},
+	{
+		"Id": 5,
+		"Value": "Декларация и прилагаемые к ней документы представлены не в соответствии с требованиями, предусмотренными пунктом 4 Приказа о декларациях",
+		"Name": "DeclarationAndDocumentsDoNotMeetRequirements"
+	},
+	{
+		"Id": 6,
+		"Value": "Иное (вручную)",
+		"Name": "Other"
+	},
+]')
+on conflict (referenceid) do update set
+"description"='Тип причины отказа для уведомлления об отказе декларации', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='Declarations.RejectionReasonType', "register_id"=NULL, "simple_values"='[
+	{
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Заявитель, подавший декларацию, не является правообладателем объекта недвижимости, в отношении которого подается декларация",
+		"Name": "ApplicantIsNotObjectTypeOwner"
+	},
+	{
+		"Id": 2,
+		"Value": "К декларации не приложены документы, предусмотренные пунктом 2 Приказа о декларациях",
+		"Name": "DocumentsAreNotAttached"
+	},
+	{
+		"Id": 3,
+		"Value": "Декларация не соответствует форме, предусмотренной приложением № 2 к Приказу о декларациях",
+		"Name": "DeclarationDoesNotMatchForm"
+	},
+	{
+		"Id": 4,
+		"Value": "Декларация не заверена в соответствии с пунктом 3 Приказа о декларациях",
+		"Name": "DeclarationIsNotCertified "
+	},
+	{
+		"Id": 5,
+		"Value": "Декларация и прилагаемые к ней документы представлены не в соответствии с требованиями, предусмотренными пунктом 4 Приказа о декларациях",
+		"Name": "DeclarationAndDocumentsDoNotMeetRequirements"
+	},
+	{
+		"Id": 6,
+		"Value": "Иное (вручную)",
+		"Name": "Other"
+	},
+]';
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(512, 'Статус характеристики', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Declarations.HarStatus', NULL, '[
+	{
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Принято",
+		"Name": "Accepted"
+	},
+	{
+		"Id": 2,
+		"Value": "Не принято",
+		"Name": "Rejected"
+	},
+]')
+on conflict (referenceid) do update set
+"description"='Статус характеристики', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='Declarations.HarStatus', "register_id"=NULL, "simple_values"='[
+	{
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Принято",
+		"Name": "Accepted"
+	},
+	{
+		"Id": 2,
+		"Value": "Не принято",
+		"Name": "Rejected"
+	},
+]';
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
 (800, 'Статус импорта данных', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Common.ImportStatus', NULL, '[
 	{
 		"Id": 0,
@@ -2174,6 +2456,44 @@ on conflict (referenceid) do update set
 		"Id": 3,
 		"Value": "Ошибка",
 		"Name": "Faulted"
+	},
+]';
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(801, 'Тип формы', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'Common.DataFormStorege', NULL, '[
+	{
+		"Id": 1,
+		"Value": "Нормализация",
+		"Name": "Normalisation"
+	},
+	{
+		"Id": 2,
+		"Value": "Гармонизация",
+		"Name": "Harmonization"
+	},
+  {
+		"Id": 3,
+		"Value": "Гармонизация по классификатору ЦОД",
+		"Name": "HarmonizationCOD"
+	},
+]')
+on conflict (referenceid) do update set
+"description"='Тип формы', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='Common.DataFormStorege', "register_id"=NULL, "simple_values"='[
+	{
+		"Id": 1,
+		"Value": "Нормализация",
+		"Name": "Normalisation"
+	},
+	{
+		"Id": 2,
+		"Value": "Гармонизация",
+		"Name": "Harmonization"
+	},
+  {
+		"Id": 3,
+		"Value": "Гармонизация по классификатору ЦОД",
+		"Name": "HarmonizationCOD"
 	},
 ]';
 
@@ -6727,9 +7047,9 @@ on conflict (itemid) do update set
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(744, 114, '1', 'Апартаменты', NULL, NULL, NULL, NULL, NULL, NULL, 'Appartment')
+(744, 114, '104', 'Апартаменты', NULL, NULL, NULL, NULL, NULL, NULL, 'Appartment')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='1', "value"='Апартаменты', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Appartment';
+"referenceid"=114, "code"='104', "value"='Апартаменты', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Appartment';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
@@ -6745,51 +7065,51 @@ on conflict (itemid) do update set
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(747, 114, '4', 'ИЖС', NULL, NULL, NULL, NULL, NULL, NULL, 'IZHS')
+(747, 114, '101', 'ИЖС', NULL, NULL, NULL, NULL, NULL, NULL, 'IZHS')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='4', "value"='ИЖС', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='IZHS';
+"referenceid"=114, "code"='101', "value"='ИЖС', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='IZHS';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(748, 114, '5', 'Машиноместа', NULL, NULL, NULL, NULL, NULL, NULL, 'CarParking')
+(748, 114, '1', 'Машиноместа', NULL, NULL, NULL, NULL, NULL, NULL, 'CarParking')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='5', "value"='Машиноместа', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='CarParking';
+"referenceid"=114, "code"='1', "value"='Машиноместа', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='CarParking';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(749, 114, '6', 'МЖС', NULL, NULL, NULL, NULL, NULL, NULL, 'MZHS')
+(749, 114, '102', 'МЖС', NULL, NULL, NULL, NULL, NULL, NULL, 'MZHS')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='6', "value"='МЖС', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='MZHS';
+"referenceid"=114, "code"='102', "value"='МЖС', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='MZHS';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(750, 114, '7', 'Офисы', NULL, NULL, NULL, NULL, NULL, NULL, 'Office')
+(750, 114, '5', 'Офисы', NULL, NULL, NULL, NULL, NULL, NULL, 'Office')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='7', "value"='Офисы', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Office';
+"referenceid"=114, "code"='5', "value"='Офисы', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Office';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(751, 114, '8', 'Производство и склады', NULL, NULL, NULL, NULL, NULL, NULL, 'Factory')
+(751, 114, '4', 'Производство и склады', NULL, NULL, NULL, NULL, NULL, NULL, 'Factory')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='8', "value"='Производство и склады', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Factory';
+"referenceid"=114, "code"='4', "value"='Производство и склады', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Factory';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(752, 114, '9', 'Садоводческое, огородническое и дачное использование', NULL, NULL, NULL, NULL, NULL, NULL, 'Garden')
+(752, 114, '106', 'Садоводческое, огородническое и дачное использование', NULL, NULL, NULL, NULL, NULL, NULL, 'Garden')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='9', "value"='Садоводческое, огородническое и дачное использование', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Garden';
+"referenceid"=114, "code"='106', "value"='Садоводческое, огородническое и дачное использование', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Garden';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(753, 114, '10', 'Санатории', NULL, NULL, NULL, NULL, NULL, NULL, 'Sanatorium')
+(753, 114, '105', 'Санатории', NULL, NULL, NULL, NULL, NULL, NULL, 'Sanatorium')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='10', "value"='Санатории', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Sanatorium';
+"referenceid"=114, "code"='105', "value"='Санатории', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Sanatorium';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(754, 114, '11', 'Торговля', NULL, NULL, NULL, NULL, NULL, NULL, 'Trading')
+(754, 114, '6', 'Торговля', NULL, NULL, NULL, NULL, NULL, NULL, 'Trading')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='11', "value"='Торговля', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Trading';
+"referenceid"=114, "code"='6', "value"='Торговля', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Trading';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
@@ -6991,27 +7311,15 @@ on conflict (itemid) do update set
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(795, 114, '12', 'Общепит', NULL, NULL, NULL, NULL, NULL, NULL, 'PublicCatering')
+(795, 114, '7', 'Общепит', NULL, NULL, NULL, NULL, NULL, NULL, 'PublicCatering')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='12', "value"='Общепит', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='PublicCatering';
+"referenceid"=114, "code"='7', "value"='Общепит', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='PublicCatering';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(796, 114, '13', 'Земельные участки', NULL, NULL, NULL, NULL, NULL, NULL, 'Land')
+(798, 114, '9', 'Без сегмента', NULL, NULL, NULL, NULL, NULL, NULL, 'NoSegment')
 on conflict (itemid) do update set
-"referenceid"=114, "code"='13', "value"='Земельные участки', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Land';
-
---<DO>--
-insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(797, 114, '14', 'Коммерческая земля', NULL, NULL, NULL, NULL, NULL, NULL, 'CommertialLand')
-on conflict (itemid) do update set
-"referenceid"=114, "code"='14', "value"='Коммерческая земля', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='CommertialLand';
-
---<DO>--
-insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
-(798, 114, '15', 'Без сегмента', NULL, NULL, NULL, NULL, NULL, NULL, 'NoSegment')
-on conflict (itemid) do update set
-"referenceid"=114, "code"='15', "value"='Без сегмента', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='NoSegment';
+"referenceid"=114, "code"='9', "value"='Без сегмента', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='NoSegment';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
@@ -7030,6 +7338,48 @@ insert into core_reference_item ("itemid", "referenceid", "code", "value", "shor
 (801, 117, '17', 'Выставлено на электронные торги', NULL, NULL, NULL, NULL, NULL, NULL, 'Auction')
 on conflict (itemid) do update set
 "referenceid"=117, "code"='17', "value"='Выставлено на электронные торги', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Auction';
+
+--<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(802, 102, '002001010001', 'Сооружения, ОНС, ЕНК, и иные ОН', NULL, NULL, NULL, NULL, NULL, NULL, 'OtherMore')
+on conflict (itemid) do update set
+"referenceid"=102, "code"='002001010001', "value"='Сооружения, ОНС, ЕНК, и иные ОН', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='OtherMore';
+
+--<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(803, 118, '1', 'Земельные участки', NULL, NULL, NULL, NULL, NULL, NULL, 'LandArea')
+on conflict (itemid) do update set
+"referenceid"=118, "code"='1', "value"='Земельные участки', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='LandArea';
+
+--<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(804, 118, '2', 'Здания', NULL, NULL, NULL, NULL, NULL, NULL, 'Buildings')
+on conflict (itemid) do update set
+"referenceid"=118, "code"='2', "value"='Здания', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Buildings';
+
+--<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(805, 118, '3', 'Помещения', NULL, NULL, NULL, NULL, NULL, NULL, 'Placements')
+on conflict (itemid) do update set
+"referenceid"=118, "code"='3', "value"='Помещения', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Placements';
+
+--<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(806, 118, '4', 'Сооружения, ОНС, ЕНК и иные ОН', NULL, NULL, NULL, NULL, NULL, NULL, 'OtherAndMore')
+on conflict (itemid) do update set
+"referenceid"=118, "code"='4', "value"='Сооружения, ОНС, ЕНК и иные ОН', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='OtherAndMore';
+
+--<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(901, 116, '4', 'A+', NULL, NULL, NULL, NULL, NULL, NULL, 'Aplus')
+on conflict (itemid) do update set
+"referenceid"=116, "code"='4', "value"='A+', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='Aplus';
+
+--<DO>--
+insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
+(902, 116, '5', 'C', NULL, NULL, NULL, NULL, NULL, NULL, 'C')
+on conflict (itemid) do update set
+"referenceid"=116, "code"='5', "value"='C', "short_title"=NULL, "is_archives"=NULL, "user_name"=NULL, "date_end_change"=NULL, "date_s"=NULL, "flag"=NULL, "name"='C';
 
 --<DO>--
 insert into core_reference_item ("itemid", "referenceid", "code", "value", "short_title", "is_archives", "user_name", "date_end_change", "date_s", "flag", "name") values
@@ -9931,12 +10281,6 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(10002500, 'Тип объекта недвижимости', 100, 4, NULL, 102, 'PROPERTY_TYPE', 'PROPERTY_TYPE_CODE', NULL, NULL, 2, NULL, 'PropertyType', 0, NULL, NULL, NULL)
-on conflict (id) do update set
-"name"='Тип объекта недвижимости', "registerid"=100, "type"=4, "parentid"=NULL, "referenceid"=102, "value_field"='PROPERTY_TYPE', "code_field"='PROPERTY_TYPE_CODE', "value_template"=NULL, "primary_key"=NULL, "user_key"=2, "qscolumn"=NULL, "internal_name"='PropertyType', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (10002600, 'Идентификатор в Источнике данных', 100, 1, NULL, NULL, 'MARKET_ID', NULL, NULL, NULL, NULL, NULL, 'MarketId', 0, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Идентификатор в Источнике данных', "registerid"=100, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='MARKET_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='MarketId', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
@@ -10123,24 +10467,6 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(10004800, 'Категория', 100, 4, NULL, NULL, 'CATEGORY', NULL, NULL, NULL, NULL, NULL, 'Category', 1, NULL, NULL, NULL)
-on conflict (id) do update set
-"name"='Категория', "registerid"=100, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='CATEGORY', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Category', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(10004900, 'Подкатегория', 100, 4, NULL, NULL, 'SUBCATEGORY', NULL, NULL, NULL, NULL, NULL, 'Subcategory', 1, NULL, NULL, NULL)
-on conflict (id) do update set
-"name"='Подкатегория', "registerid"=100, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='SUBCATEGORY', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Subcategory', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(10005000, 'Идентификатор категории', 100, 1, NULL, NULL, 'CATEGORY_ID', NULL, NULL, NULL, NULL, NULL, 'CategoryId', 1, NULL, NULL, NULL)
-on conflict (id) do update set
-"name"='Идентификатор категории', "registerid"=100, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='CATEGORY_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='CategoryId', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (10005300, 'Район', 100, 4, NULL, NULL, 'DISTRICT', 'DISTRICT_CODE', NULL, NULL, NULL, NULL, 'District', 1, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Район', "registerid"=100, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='DISTRICT', "code_field"='DISTRICT_CODE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='District', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
@@ -10250,6 +10576,12 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 (10007600, 'Дата последнего обновления цены', 100, 5, NULL, NULL, 'LAST_DATE_UPDATE', NULL, NULL, NULL, NULL, NULL, 'LastDateUpdate', 1, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Дата последнего обновления цены', "registerid"=100, "type"=5, "parentid"=NULL, "referenceid"=NULL, "value_field"='LAST_DATE_UPDATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='LastDateUpdate', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(10007700, 'Тип объекта недвижимости по ЦИПЖС', 100, 4, NULL, 118, 'PROPERTY_TYPETS_CIPJS', 'PROPERTY_TYPETS_CIPJS_CODE', NULL, NULL, NULL, NULL, 'PropertyTypesCIPJS', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Тип объекта недвижимости по ЦИПЖС', "registerid"=100, "type"=4, "parentid"=NULL, "referenceid"=118, "value_field"='PROPERTY_TYPETS_CIPJS', "code_field"='PROPERTY_TYPETS_CIPJS_CODE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='PropertyTypesCIPJS', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -10895,9 +11227,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(20101400, 'Cтатус расчета', 201, 4, NULL, 209, 'STATUS_REPEAT_CALC', 'STATUS_REPEAT_CALC_CODE', NULL, NULL, NULL, NULL, 'StatusRepeatCalc', 1, NULL, NULL, NULL)
+(20101400, 'Статус расчета', 201, 4, NULL, 209, 'STATUS_REPEAT_CALC', 'STATUS_REPEAT_CALC_CODE', NULL, NULL, NULL, NULL, 'StatusRepeatCalc', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Cтатус расчета', "registerid"=201, "type"=4, "parentid"=NULL, "referenceid"=209, "value_field"='STATUS_REPEAT_CALC', "code_field"='STATUS_REPEAT_CALC_CODE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='StatusRepeatCalc', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус расчета', "registerid"=201, "type"=4, "parentid"=NULL, "referenceid"=209, "value_field"='STATUS_REPEAT_CALC', "code_field"='STATUS_REPEAT_CALC_CODE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='StatusRepeatCalc', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -10997,9 +11329,21 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(20300600, 'Идентификатор исходящего документа', 203, 1, NULL, NULL, 'RESPONSE_DOCUMENT_ID', NULL, NULL, NULL, NULL, NULL, 'ResponseDocId', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор исходящего документа', "registerid"=203, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='RESPONSE_DOCUMENT_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ResponseDocId', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (20300700, 'Статус', 203, 4, NULL, 202, 'STATUS', 'STATUS_CODE', NULL, NULL, NULL, NULL, 'Status', 1, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Статус', "registerid"=203, "type"=4, "parentid"=NULL, "referenceid"=202, "value_field"='STATUS', "code_field"='STATUS_CODE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Status', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(20300800, 'Дата оценки', 203, 5, NULL, NULL, 'ESTIMATION_DATE', NULL, NULL, NULL, NULL, NULL, 'EstimationDate', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Дата оценки', "registerid"=203, "type"=5, "parentid"=NULL, "referenceid"=NULL, "value_field"='ESTIMATION_DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='EstimationDate', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -11024,6 +11368,12 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 (20500400, 'Механизм группировки', 205, 4, NULL, 204, NULL, 'GROUP_ALGORITM', NULL, NULL, NULL, NULL, 'GroupAlgoritm', 1, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Механизм группировки', "registerid"=205, "type"=4, "parentid"=NULL, "referenceid"=204, "value_field"=NULL, "code_field"='GROUP_ALGORITM', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='GroupAlgoritm', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(20500500, 'Номер', 205, 4, NULL, NULL, 'NUMBER', NULL, NULL, NULL, NULL, NULL, 'Number', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Номер', "registerid"=205, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='NUMBER', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Number', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -11426,6 +11776,24 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 (21900400, 'Идентификатор регистра', 219, 1, NULL, NULL, 'REGISTER_ID', NULL, NULL, NULL, NULL, NULL, 'RegisterId', 1, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Идентификатор регистра', "registerid"=219, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='REGISTER_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='RegisterId', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(22000100, 'Идентификатор', 220, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор', "registerid"=220, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(22000200, 'Идентификатор основного документа', 220, 1, NULL, NULL, 'MAIN_DOC_ID', NULL, NULL, NULL, NULL, NULL, 'MainDocId', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор основного документа', "registerid"=220, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='MAIN_DOC_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='MainDocId', "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(22000300, 'Идентификатор связанного документа', 220, 1, NULL, NULL, 'LINK_DOC_ID', NULL, NULL, NULL, NULL, NULL, 'LinkDocId', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор связанного документа', "registerid"=220, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='LINK_DOC_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='LinkDocId', "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -13597,6 +13965,36 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(30501200, 'Тип заявителя', 305, 3, NULL, NULL, 'APPLICANT_TYPE', NULL, NULL, 0, NULL, NULL, 'ApplicantType', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Тип заявителя', "registerid"=305, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"='APPLICANT_TYPE', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ApplicantType', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(30501300, 'Форма собственности', 305, 3, NULL, NULL, 'TYPE_OF_OWNERSHIP', NULL, NULL, 0, NULL, NULL, 'TypeOfOwnership', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Форма собственности', "registerid"=305, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"='TYPE_OF_OWNERSHIP', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='TypeOfOwnership', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(30501400, 'Исключение', 305, 3, NULL, NULL, 'EXCEPTION', NULL, NULL, 0, NULL, NULL, 'Exception', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Исключение', "registerid"=305, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"='EXCEPTION', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Exception', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(30501500, 'Дополнительный анализ', 305, 3, NULL, NULL, 'ADDITIONAL_ANALYSIS', NULL, NULL, 0, NULL, NULL, 'AdditionalAnalysis', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Дополнительный анализ', "registerid"=305, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"='ADDITIONAL_ANALYSIS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='AdditionalAnalysis', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(30501600, 'Статус удовлетворения объекта', 305, 3, NULL, NULL, 'IS_SATISFIED', NULL, NULL, 0, NULL, NULL, 'IsSatisfied', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Статус удовлетворения объекта', "registerid"=305, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"='IS_SATISFIED', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='IsSatisfied', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (30600100, 'Идентификатор', 306, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Идентификатор', "registerid"=306, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
@@ -14055,45 +14453,45 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31000100, 'ID', 310, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+(31000100, 'Статус идентификатора', 310, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='ID', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус идентификатора', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31000200, 'NAME', 310, 1, NULL, NULL, 'NAME', NULL, NULL, 0, NULL, NULL, 'Name', 0, NULL, NULL, NULL)
+(31000200, 'Статус Наименования', 310, 1, NULL, NULL, 'NAME', NULL, NULL, 0, NULL, NULL, 'Name', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='NAME', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Name', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус Наименования', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Name', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31000300, 'NUMBER', 310, 1, NULL, NULL, 'NUMBER', NULL, NULL, 0, 1, NULL, 'Number', 0, NULL, NULL, NULL)
+(31000300, 'Статус Номера', 310, 1, NULL, NULL, 'NUMBER', NULL, NULL, 0, 1, NULL, 'Number', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='NUMBER', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='NUMBER', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=1, "qscolumn"=NULL, "internal_name"='Number', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус Номера', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='NUMBER', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=1, "qscolumn"=NULL, "internal_name"='Number', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31000400, 'DATE', 310, 1, NULL, NULL, 'DATE', NULL, NULL, 0, NULL, NULL, 'Date', 0, NULL, NULL, NULL)
+(31000400, 'Статуса Даты', 310, 1, NULL, NULL, 'DATE', NULL, NULL, 0, NULL, NULL, 'Date', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='DATE', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Date', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статуса Даты', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Date', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31000500, 'SUD_DATE', 310, 1, NULL, NULL, 'SUD_DATE', NULL, NULL, 0, NULL, NULL, 'SudDate', 0, NULL, NULL, NULL)
+(31000500, 'Статус Даты заседания', 310, 1, NULL, NULL, 'SUD_DATE', NULL, NULL, 0, NULL, NULL, 'SudDate', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='SUD_DATE', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='SUD_DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='SudDate', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус Даты заседания', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='SUD_DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='SudDate', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31000600, 'Статус', 310, 1, NULL, NULL, 'STATUS', NULL, NULL, 0, 2, NULL, 'Status', 0, NULL, NULL, NULL)
+(31000600, 'Статус Статуса дела', 310, 1, NULL, NULL, 'STATUS', NULL, NULL, 0, 2, NULL, 'Status', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Статус', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='STATUS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=2, "qscolumn"=NULL, "internal_name"='Status', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус Статуса дела', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='STATUS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=2, "qscolumn"=NULL, "internal_name"='Status', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31000700, 'ASTATUS', 310, 1, NULL, NULL, 'ASTATUS', NULL, NULL, 0, NULL, NULL, 'Astatus', 1, NULL, NULL, NULL)
+(31000700, 'Статус Итоговый', 310, 1, NULL, NULL, 'ASTATUS', NULL, NULL, 0, NULL, NULL, 'Astatus', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='ASTATUS', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ASTATUS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Astatus', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус Итоговый', "registerid"=310, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ASTATUS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Astatus', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -14373,7 +14771,7 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31501200, 'Статус утверждения', 315, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(31501200, 'Утверждено', 315, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
   <Blocks>
     <QSColumnIfBlock>
@@ -14384,7 +14782,7 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
             <ConditionType>Exists</ConditionType>
             <LeftOperand xsi:type="QSColumnQuery">
               <SubQuery>
-                <MainRegisterID>306</MainRegisterID>
+                <MainRegisterID>304</MainRegisterID>
                 <TDInstanceID>0</TDInstanceID>
                 <Columns>
                   <QSColumn xsi:type="QSColumnConstant">
@@ -14397,8 +14795,8 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                     <QSCondition xsi:type="QSConditionSimple">
                       <ConditionType>Equal</ConditionType>
                       <LeftOperand xsi:type="QSColumnSimple">
-                        <Alias>30600200</Alias>
-                        <AttributeID>30600200</AttributeID>
+                        <Alias>30400200</Alias>
+                        <AttributeID>30400200</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </LeftOperand>
@@ -14456,6 +14854,27 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                 <GroupBy />
                 <JoinType xsi:nil="true" />
                 <Joins>
+				<QSJoin>
+                    <RegisterId>306</RegisterId>
+                    <JoinType>Inner</JoinType>
+                    <JoinCondition xsi:type="QSConditionSimple">
+                      <ConditionType>Equal</ConditionType>
+                      <LeftOperand xsi:type="QSColumnSimple">
+                        <Alias>30600100</Alias>
+                        <AttributeID>30600100</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </LeftOperand>
+                      <LeftOperandLevel>0</LeftOperandLevel>
+                      <RightOperand xsi:type="QSColumnSimple">
+                        <Alias>30400300</Alias>
+                        <AttributeID>30400300</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </RightOperand>
+                      <RightOperandLevel>0</RightOperandLevel>
+                    </JoinCondition>
+                  </QSJoin>
                   <QSJoin>
                     <RegisterId>307</RegisterId>
                     <JoinType>Inner</JoinType>
@@ -14469,8 +14888,8 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                       </LeftOperand>
                       <LeftOperandLevel>0</LeftOperandLevel>
                       <RightOperand xsi:type="QSColumnSimple">
-                        <Alias>30600300</Alias>
-                        <AttributeID>30600300</AttributeID>
+                        <Alias>30400300</Alias>
+                        <AttributeID>30400300</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </RightOperand>
@@ -14488,7 +14907,7 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
             <ConditionType>Exists</ConditionType>
             <LeftOperand xsi:type="QSColumnQuery">
               <SubQuery>
-                <MainRegisterID>311</MainRegisterID>
+                <MainRegisterID>302</MainRegisterID>
                 <TDInstanceID>0</TDInstanceID>
                 <Columns>
                   <QSColumn xsi:type="QSColumnConstant">
@@ -14501,8 +14920,8 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                     <QSCondition xsi:type="QSConditionSimple">
                       <ConditionType>Equal</ConditionType>
                       <LeftOperand xsi:type="QSColumnSimple">
-                        <Alias>31100200</Alias>
-                        <AttributeID>31100200</AttributeID>
+                        <Alias>30200200</Alias>
+                        <AttributeID>30200200</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </LeftOperand>
@@ -14560,6 +14979,27 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                 <GroupBy />
                 <JoinType xsi:nil="true" />
                 <Joins>
+				  <QSJoin>
+                    <RegisterId>311</RegisterId>
+                    <JoinType>Inner</JoinType>
+                    <JoinCondition xsi:type="QSConditionSimple">
+                      <ConditionType>Equal</ConditionType>
+                      <LeftOperand xsi:type="QSColumnSimple">
+                        <Alias>31100100</Alias>
+                        <AttributeID>31100100</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </LeftOperand>
+                      <LeftOperandLevel>0</LeftOperandLevel>
+                      <RightOperand xsi:type="QSColumnSimple">
+                        <Alias>30200300</Alias>
+                        <AttributeID>30200300</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </RightOperand>
+                      <RightOperandLevel>0</RightOperandLevel>
+                    </JoinCondition>
+                  </QSJoin>
                   <QSJoin>
                     <RegisterId>312</RegisterId>
                     <JoinType>Inner</JoinType>
@@ -14573,8 +15013,8 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                       </LeftOperand>
                       <LeftOperandLevel>0</LeftOperandLevel>
                       <RightOperand xsi:type="QSColumnSimple">
-                        <Alias>31100300</Alias>
-                        <AttributeID>31100300</AttributeID>
+                        <Alias>30200300</Alias>
+                        <AttributeID>30200300</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </RightOperand>
@@ -14592,7 +15032,7 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
             <ConditionType>Exists</ConditionType>
             <LeftOperand xsi:type="QSColumnQuery">
               <SubQuery>
-                <MainRegisterID>309</MainRegisterID>
+                <MainRegisterID>314</MainRegisterID>
                 <TDInstanceID>0</TDInstanceID>
                 <Columns>
                   <QSColumn xsi:type="QSColumnConstant">
@@ -14605,8 +15045,8 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                     <QSCondition xsi:type="QSConditionSimple">
                       <ConditionType>Equal</ConditionType>
                       <LeftOperand xsi:type="QSColumnSimple">
-                        <Alias>30900200</Alias>
-                        <AttributeID>30900200</AttributeID>
+                        <Alias>31400200</Alias>
+                        <AttributeID>31400200</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </LeftOperand>
@@ -14639,8 +15079,8 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                         <QSCondition xsi:type="QSConditionSimple">
                           <ConditionType>Equal</ConditionType>
                           <LeftOperand xsi:type="QSColumnSimple">
-                            <Alias>31000600</Alias>
-                            <AttributeID>31000600</AttributeID>
+                            <Alias>31000700</Alias>
+                            <AttributeID>31000700</AttributeID>
                             <Type>Value</Type>
                             <Level xsi:nil="true" />
                           </LeftOperand>
@@ -14664,6 +15104,27 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                 <GroupBy />
                 <JoinType xsi:nil="true" />
                 <Joins>
+				  <QSJoin>
+                    <RegisterId>309</RegisterId>
+                    <JoinType>Inner</JoinType>
+                    <JoinCondition xsi:type="QSConditionSimple">
+                      <ConditionType>Equal</ConditionType>
+                      <LeftOperand xsi:type="QSColumnSimple">
+                        <Alias>30900100</Alias>
+                        <AttributeID>30900100</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </LeftOperand>
+                      <LeftOperandLevel>0</LeftOperandLevel>
+                      <RightOperand xsi:type="QSColumnSimple">
+                        <Alias>31400300</Alias>
+                        <AttributeID>31400300</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </RightOperand>
+                      <RightOperandLevel>0</RightOperandLevel>
+                    </JoinCondition>
+                  </QSJoin>
                   <QSJoin>
                     <RegisterId>310</RegisterId>
                     <JoinType>Inner</JoinType>
@@ -14677,8 +15138,8 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
                       </LeftOperand>
                       <LeftOperandLevel>0</LeftOperandLevel>
                       <RightOperand xsi:type="QSColumnSimple">
-                        <Alias>30900300</Alias>
-                        <AttributeID>30900300</AttributeID>
+                        <Alias>31400300</Alias>
+                        <AttributeID>31400300</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </RightOperand>
@@ -14768,7 +15229,7 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
   </Blocks>
 </QSColumn>', 'ApproveStatus', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Статус утверждения', "registerid"=315, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+"name"='Утверждено', "registerid"=315, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
 <QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
   <Blocks>
     <QSColumnIfBlock>
@@ -14779,7 +15240,7 @@ on conflict (id) do update set
             <ConditionType>Exists</ConditionType>
             <LeftOperand xsi:type="QSColumnQuery">
               <SubQuery>
-                <MainRegisterID>306</MainRegisterID>
+                <MainRegisterID>304</MainRegisterID>
                 <TDInstanceID>0</TDInstanceID>
                 <Columns>
                   <QSColumn xsi:type="QSColumnConstant">
@@ -14792,8 +15253,8 @@ on conflict (id) do update set
                     <QSCondition xsi:type="QSConditionSimple">
                       <ConditionType>Equal</ConditionType>
                       <LeftOperand xsi:type="QSColumnSimple">
-                        <Alias>30600200</Alias>
-                        <AttributeID>30600200</AttributeID>
+                        <Alias>30400200</Alias>
+                        <AttributeID>30400200</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </LeftOperand>
@@ -14851,6 +15312,27 @@ on conflict (id) do update set
                 <GroupBy />
                 <JoinType xsi:nil="true" />
                 <Joins>
+				<QSJoin>
+                    <RegisterId>306</RegisterId>
+                    <JoinType>Inner</JoinType>
+                    <JoinCondition xsi:type="QSConditionSimple">
+                      <ConditionType>Equal</ConditionType>
+                      <LeftOperand xsi:type="QSColumnSimple">
+                        <Alias>30600100</Alias>
+                        <AttributeID>30600100</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </LeftOperand>
+                      <LeftOperandLevel>0</LeftOperandLevel>
+                      <RightOperand xsi:type="QSColumnSimple">
+                        <Alias>30400300</Alias>
+                        <AttributeID>30400300</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </RightOperand>
+                      <RightOperandLevel>0</RightOperandLevel>
+                    </JoinCondition>
+                  </QSJoin>
                   <QSJoin>
                     <RegisterId>307</RegisterId>
                     <JoinType>Inner</JoinType>
@@ -14864,8 +15346,8 @@ on conflict (id) do update set
                       </LeftOperand>
                       <LeftOperandLevel>0</LeftOperandLevel>
                       <RightOperand xsi:type="QSColumnSimple">
-                        <Alias>30600300</Alias>
-                        <AttributeID>30600300</AttributeID>
+                        <Alias>30400300</Alias>
+                        <AttributeID>30400300</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </RightOperand>
@@ -14883,7 +15365,7 @@ on conflict (id) do update set
             <ConditionType>Exists</ConditionType>
             <LeftOperand xsi:type="QSColumnQuery">
               <SubQuery>
-                <MainRegisterID>311</MainRegisterID>
+                <MainRegisterID>302</MainRegisterID>
                 <TDInstanceID>0</TDInstanceID>
                 <Columns>
                   <QSColumn xsi:type="QSColumnConstant">
@@ -14896,8 +15378,8 @@ on conflict (id) do update set
                     <QSCondition xsi:type="QSConditionSimple">
                       <ConditionType>Equal</ConditionType>
                       <LeftOperand xsi:type="QSColumnSimple">
-                        <Alias>31100200</Alias>
-                        <AttributeID>31100200</AttributeID>
+                        <Alias>30200200</Alias>
+                        <AttributeID>30200200</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </LeftOperand>
@@ -14955,6 +15437,27 @@ on conflict (id) do update set
                 <GroupBy />
                 <JoinType xsi:nil="true" />
                 <Joins>
+				  <QSJoin>
+                    <RegisterId>311</RegisterId>
+                    <JoinType>Inner</JoinType>
+                    <JoinCondition xsi:type="QSConditionSimple">
+                      <ConditionType>Equal</ConditionType>
+                      <LeftOperand xsi:type="QSColumnSimple">
+                        <Alias>31100100</Alias>
+                        <AttributeID>31100100</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </LeftOperand>
+                      <LeftOperandLevel>0</LeftOperandLevel>
+                      <RightOperand xsi:type="QSColumnSimple">
+                        <Alias>30200300</Alias>
+                        <AttributeID>30200300</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </RightOperand>
+                      <RightOperandLevel>0</RightOperandLevel>
+                    </JoinCondition>
+                  </QSJoin>
                   <QSJoin>
                     <RegisterId>312</RegisterId>
                     <JoinType>Inner</JoinType>
@@ -14968,8 +15471,8 @@ on conflict (id) do update set
                       </LeftOperand>
                       <LeftOperandLevel>0</LeftOperandLevel>
                       <RightOperand xsi:type="QSColumnSimple">
-                        <Alias>31100300</Alias>
-                        <AttributeID>31100300</AttributeID>
+                        <Alias>30200300</Alias>
+                        <AttributeID>30200300</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </RightOperand>
@@ -14987,7 +15490,7 @@ on conflict (id) do update set
             <ConditionType>Exists</ConditionType>
             <LeftOperand xsi:type="QSColumnQuery">
               <SubQuery>
-                <MainRegisterID>309</MainRegisterID>
+                <MainRegisterID>314</MainRegisterID>
                 <TDInstanceID>0</TDInstanceID>
                 <Columns>
                   <QSColumn xsi:type="QSColumnConstant">
@@ -15000,8 +15503,8 @@ on conflict (id) do update set
                     <QSCondition xsi:type="QSConditionSimple">
                       <ConditionType>Equal</ConditionType>
                       <LeftOperand xsi:type="QSColumnSimple">
-                        <Alias>30900200</Alias>
-                        <AttributeID>30900200</AttributeID>
+                        <Alias>31400200</Alias>
+                        <AttributeID>31400200</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </LeftOperand>
@@ -15034,8 +15537,8 @@ on conflict (id) do update set
                         <QSCondition xsi:type="QSConditionSimple">
                           <ConditionType>Equal</ConditionType>
                           <LeftOperand xsi:type="QSColumnSimple">
-                            <Alias>31000600</Alias>
-                            <AttributeID>31000600</AttributeID>
+                            <Alias>31000700</Alias>
+                            <AttributeID>31000700</AttributeID>
                             <Type>Value</Type>
                             <Level xsi:nil="true" />
                           </LeftOperand>
@@ -15059,6 +15562,27 @@ on conflict (id) do update set
                 <GroupBy />
                 <JoinType xsi:nil="true" />
                 <Joins>
+				  <QSJoin>
+                    <RegisterId>309</RegisterId>
+                    <JoinType>Inner</JoinType>
+                    <JoinCondition xsi:type="QSConditionSimple">
+                      <ConditionType>Equal</ConditionType>
+                      <LeftOperand xsi:type="QSColumnSimple">
+                        <Alias>30900100</Alias>
+                        <AttributeID>30900100</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </LeftOperand>
+                      <LeftOperandLevel>0</LeftOperandLevel>
+                      <RightOperand xsi:type="QSColumnSimple">
+                        <Alias>31400300</Alias>
+                        <AttributeID>31400300</AttributeID>
+                        <Type>Value</Type>
+                        <Level xsi:nil="true" />
+                      </RightOperand>
+                      <RightOperandLevel>0</RightOperandLevel>
+                    </JoinCondition>
+                  </QSJoin>
                   <QSJoin>
                     <RegisterId>310</RegisterId>
                     <JoinType>Inner</JoinType>
@@ -15072,8 +15596,8 @@ on conflict (id) do update set
                       </LeftOperand>
                       <LeftOperandLevel>0</LeftOperandLevel>
                       <RightOperand xsi:type="QSColumnSimple">
-                        <Alias>30900300</Alias>
-                        <AttributeID>30900300</AttributeID>
+                        <Alias>31400300</Alias>
+                        <AttributeID>31400300</AttributeID>
                         <Type>Value</Type>
                         <Level xsi:nil="true" />
                       </RightOperand>
@@ -15165,6 +15689,302 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31501300, 'Тип заявителя', 315, 4, NULL, 302, NULL, 'APPLICANTTYPE', NULL, 0, NULL, NULL, 'ApplicantType', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Тип заявителя', "registerid"=315, "type"=4, "parentid"=NULL, "referenceid"=302, "value_field"=NULL, "code_field"='APPLICANTTYPE', "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ApplicantType', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31501400, 'Форма собственности', 315, 4, NULL, 303, NULL, 'TYPEOFOWNERSHIP', NULL, 0, NULL, NULL, 'TypeOfOwnership', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Форма собственности', "registerid"=315, "type"=4, "parentid"=NULL, "referenceid"=303, "value_field"=NULL, "code_field"='TYPEOFOWNERSHIP', "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='TypeOfOwnership', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31501500, 'Исключение', 315, 1, NULL, NULL, 'EXCEPTION', NULL, NULL, 0, NULL, NULL, 'Exception', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Исключение', "registerid"=315, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='EXCEPTION', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Exception', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31501600, 'Дополнительный анализ', 315, 1, NULL, NULL, 'ADDITIONAL_ANALYSIS', NULL, NULL, 0, NULL, NULL, 'AdditionalAnalysis', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Дополнительный анализ', "registerid"=315, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ADDITIONAL_ANALYSIS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='AdditionalAnalysis', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31501700, 'Статус удовлетворения объекта', 315, 1, NULL, NULL, 'IS_SATISFIED', NULL, NULL, 0, NULL, NULL, 'IsSatisfied', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Статус удовлетворения объекта', "registerid"=315, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='IS_SATISFIED', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='IsSatisfied', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31501800, 'Последний пользователь вносивший изменения', 315, 1, NULL, NULL, 'CHANGE_USER_ID', NULL, NULL, 0, NULL, NULL, 'ChangeUser', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Последний пользователь вносивший изменения', "registerid"=315, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='CHANGE_USER_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ChangeUser', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31501900, 'Дата последнего изменения', 315, 5, NULL, NULL, 'CHANGE_DATE', NULL, NULL, 0, NULL, NULL, 'ChangeDate', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Дата последнего изменения', "registerid"=315, "type"=5, "parentid"=NULL, "referenceid"=NULL, "value_field"='CHANGE_DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ChangeDate', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31502000, 'Признак удаленного объекта', 315, 3, NULL, NULL, 'IS_REMOVED', NULL, NULL, 0, NULL, NULL, 'IsRemoved', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Признак удаленного объекта', "registerid"=315, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"='IS_REMOVED', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='IsRemoved', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31502100, 'Причина удаления', 315, 4, NULL, NULL, 'REASON_FOR_REMOVE', NULL, NULL, 0, NULL, NULL, 'ReasonForRemove', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Причина удаления', "registerid"=315, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='REASON_FOR_REMOVE', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ReasonForRemove', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31502200, 'Признак наличия образа', 315, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
+  <Alias>НоваяКолонка_1</Alias>
+  <Blocks>
+    <QSColumnIfBlock>
+      <Condition xsi:type="QSConditionSimple">
+        <ConditionType>Equal</ConditionType>
+        <LeftOperand xsi:type="QSColumnQuery">
+          <Alias>НоваяКолонка_2</Alias>
+          <SubQuery>
+            <MainRegisterID>988</MainRegisterID>
+            <TDInstanceID>0</TDInstanceID>
+            <Columns>
+              <QSColumn xsi:type="QSColumnFunction">
+                <Alias>Количество</Alias>
+                <FunctionType>Count</FunctionType>
+                <Operands>
+                  <QSColumn xsi:type="QSColumnConstant">
+                    <Alias>1</Alias>
+                    <Value xsi:type="xsd:double">1</Value>
+                  </QSColumn>
+                </Operands>
+              </QSColumn>
+            </Columns>
+            <Condition xsi:type="QSConditionGroup">
+              <Type>And</Type>
+              <Conditions>
+                <QSCondition xsi:type="QSConditionSimple">
+                  <ConditionType>Equal</ConditionType>
+                  <LeftOperand xsi:type="QSColumnSimple">
+                    <Alias>98800300</Alias>
+                    <AttributeID>98800300</AttributeID>
+                    <Type>Value</Type>
+                  </LeftOperand>
+                  <LeftOperandLevel>0</LeftOperandLevel>
+                  <RightOperand xsi:type="QSColumnConstant">
+                    <Alias>315</Alias>
+                    <Value xsi:type="xsd:double">315</Value>
+                  </RightOperand>
+                  <RightOperandLevel>0</RightOperandLevel>
+                </QSCondition>
+                <QSCondition xsi:type="QSConditionSimple">
+                  <ConditionType>Equal</ConditionType>
+                  <LeftOperand xsi:type="QSColumnSimple">
+                    <Alias>98800400</Alias>
+                    <AttributeID>98800400</AttributeID>
+                    <Type>Value</Type>
+                  </LeftOperand>
+                  <LeftOperandLevel>0</LeftOperandLevel>
+                  <RightOperand xsi:type="QSColumnSimple">
+                    <Alias>31500100</Alias>
+                    <AttributeID>31500100</AttributeID>
+                    <Type>Value</Type>
+                  </RightOperand>
+                  <RightOperandLevel>1</RightOperandLevel>
+                </QSCondition>
+                <QSCondition xsi:type="QSConditionSimple">
+                  <ConditionType>Equal</ConditionType>
+                  <LeftOperand xsi:type="QSColumnSimple">
+                    <Alias>98800500</Alias>
+                    <AttributeID>98800500</AttributeID>
+                    <Type>Value</Type>
+                  </LeftOperand>
+                  <LeftOperandLevel>0</LeftOperandLevel>
+                  <RightOperand xsi:type="QSColumnConstant">
+                    <Alias>0</Alias>
+                    <Value xsi:type="xsd:double">0</Value>
+                  </RightOperand>
+                  <RightOperandLevel>0</RightOperandLevel>
+                </QSCondition>
+                <QSCondition xsi:type="QSConditionSimple">
+                  <ConditionType>Equal</ConditionType>
+                  <LeftOperand xsi:type="QSColumnSimple">
+                    <Alias>98600900</Alias>
+                    <AttributeID>98600900</AttributeID>
+                    <Type>Value</Type>
+                  </LeftOperand>
+                  <LeftOperandLevel>0</LeftOperandLevel>
+                  <RightOperand xsi:type="QSColumnConstant">
+                    <Alias>0</Alias>
+                    <Value xsi:type="xsd:double">0</Value>
+                  </RightOperand>
+                  <RightOperandLevel>0</RightOperandLevel>
+                </QSCondition>
+              </Conditions>
+            </Condition>
+            <ActualDate>0001-01-01T00:00:00</ActualDate>
+            <IsActual>false</IsActual>
+            <Distinct>false</Distinct>
+            <ManualJoin>false</ManualJoin>
+            <PackageSize>0</PackageSize>
+            <PackageIndex>0</PackageIndex>
+            <OrderBy />
+            <GroupBy />
+            <RegisterLinks />
+            <JoinType xsi:nil="true" />
+            <Joins />
+          </SubQuery>
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperand xsi:type="QSColumnConstant">
+          <Alias>0</Alias>
+          <Value xsi:type="xsd:double">0</Value>
+        </RightOperand>
+        <RightOperandLevel>0</RightOperandLevel>
+      </Condition>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>0</Alias>
+        <Value xsi:type="xsd:double">0</Value>
+      </Result>
+    </QSColumnIfBlock>
+    <QSColumnIfBlock>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>1</Alias>
+        <Value xsi:type="xsd:double">1</Value>
+      </Result>
+    </QSColumnIfBlock>
+  </Blocks>
+</QSColumn>', 'ContainsAttachments', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Признак наличия образа', "registerid"=315, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"=NULL, "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
+  <Alias>НоваяКолонка_1</Alias>
+  <Blocks>
+    <QSColumnIfBlock>
+      <Condition xsi:type="QSConditionSimple">
+        <ConditionType>Equal</ConditionType>
+        <LeftOperand xsi:type="QSColumnQuery">
+          <Alias>НоваяКолонка_2</Alias>
+          <SubQuery>
+            <MainRegisterID>988</MainRegisterID>
+            <TDInstanceID>0</TDInstanceID>
+            <Columns>
+              <QSColumn xsi:type="QSColumnFunction">
+                <Alias>Количество</Alias>
+                <FunctionType>Count</FunctionType>
+                <Operands>
+                  <QSColumn xsi:type="QSColumnConstant">
+                    <Alias>1</Alias>
+                    <Value xsi:type="xsd:double">1</Value>
+                  </QSColumn>
+                </Operands>
+              </QSColumn>
+            </Columns>
+            <Condition xsi:type="QSConditionGroup">
+              <Type>And</Type>
+              <Conditions>
+                <QSCondition xsi:type="QSConditionSimple">
+                  <ConditionType>Equal</ConditionType>
+                  <LeftOperand xsi:type="QSColumnSimple">
+                    <Alias>98800300</Alias>
+                    <AttributeID>98800300</AttributeID>
+                    <Type>Value</Type>
+                  </LeftOperand>
+                  <LeftOperandLevel>0</LeftOperandLevel>
+                  <RightOperand xsi:type="QSColumnConstant">
+                    <Alias>315</Alias>
+                    <Value xsi:type="xsd:double">315</Value>
+                  </RightOperand>
+                  <RightOperandLevel>0</RightOperandLevel>
+                </QSCondition>
+                <QSCondition xsi:type="QSConditionSimple">
+                  <ConditionType>Equal</ConditionType>
+                  <LeftOperand xsi:type="QSColumnSimple">
+                    <Alias>98800400</Alias>
+                    <AttributeID>98800400</AttributeID>
+                    <Type>Value</Type>
+                  </LeftOperand>
+                  <LeftOperandLevel>0</LeftOperandLevel>
+                  <RightOperand xsi:type="QSColumnSimple">
+                    <Alias>31500100</Alias>
+                    <AttributeID>31500100</AttributeID>
+                    <Type>Value</Type>
+                  </RightOperand>
+                  <RightOperandLevel>1</RightOperandLevel>
+                </QSCondition>
+                <QSCondition xsi:type="QSConditionSimple">
+                  <ConditionType>Equal</ConditionType>
+                  <LeftOperand xsi:type="QSColumnSimple">
+                    <Alias>98800500</Alias>
+                    <AttributeID>98800500</AttributeID>
+                    <Type>Value</Type>
+                  </LeftOperand>
+                  <LeftOperandLevel>0</LeftOperandLevel>
+                  <RightOperand xsi:type="QSColumnConstant">
+                    <Alias>0</Alias>
+                    <Value xsi:type="xsd:double">0</Value>
+                  </RightOperand>
+                  <RightOperandLevel>0</RightOperandLevel>
+                </QSCondition>
+                <QSCondition xsi:type="QSConditionSimple">
+                  <ConditionType>Equal</ConditionType>
+                  <LeftOperand xsi:type="QSColumnSimple">
+                    <Alias>98600900</Alias>
+                    <AttributeID>98600900</AttributeID>
+                    <Type>Value</Type>
+                  </LeftOperand>
+                  <LeftOperandLevel>0</LeftOperandLevel>
+                  <RightOperand xsi:type="QSColumnConstant">
+                    <Alias>0</Alias>
+                    <Value xsi:type="xsd:double">0</Value>
+                  </RightOperand>
+                  <RightOperandLevel>0</RightOperandLevel>
+                </QSCondition>
+              </Conditions>
+            </Condition>
+            <ActualDate>0001-01-01T00:00:00</ActualDate>
+            <IsActual>false</IsActual>
+            <Distinct>false</Distinct>
+            <ManualJoin>false</ManualJoin>
+            <PackageSize>0</PackageSize>
+            <PackageIndex>0</PackageIndex>
+            <OrderBy />
+            <GroupBy />
+            <RegisterLinks />
+            <JoinType xsi:nil="true" />
+            <Joins />
+          </SubQuery>
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperand xsi:type="QSColumnConstant">
+          <Alias>0</Alias>
+          <Value xsi:type="xsd:double">0</Value>
+        </RightOperand>
+        <RightOperandLevel>0</RightOperandLevel>
+      </Condition>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>0</Alias>
+        <Value xsi:type="xsd:double">0</Value>
+      </Result>
+    </QSColumnIfBlock>
+    <QSColumnIfBlock>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>1</Alias>
+        <Value xsi:type="xsd:double">1</Value>
+      </Result>
+    </QSColumnIfBlock>
+  </Blocks>
+</QSColumn>', "internal_name"='ContainsAttachments', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (31600100, 'Идентификатор', 316, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Идентификатор', "registerid"=316, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
@@ -15195,9 +16015,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(31600600, 'Статус дела (Отказано, Удовлетворено, Приостановлено.....)', 316, 1, NULL, NULL, 'STATUS', NULL, NULL, 0, 2, NULL, 'Status', 1, NULL, NULL, NULL)
+(31600600, 'Статус дела', 316, 4, NULL, 304, NULL, 'STATUS', NULL, 0, 2, NULL, 'Status', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Статус дела (Отказано, Удовлетворено, Приостановлено.....)', "registerid"=316, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='STATUS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=2, "qscolumn"=NULL, "internal_name"='Status', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Статус дела', "registerid"=316, "type"=4, "parentid"=NULL, "referenceid"=304, "value_field"=NULL, "code_field"='STATUS', "value_template"=NULL, "primary_key"=0, "user_key"=2, "qscolumn"=NULL, "internal_name"='Status', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -15506,6 +16326,66 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 (31701100, 'Статус параметра', 317, 4, NULL, 301, NULL, 'PARAM_STATUS', NULL, 0, NULL, NULL, 'ParamStatus', 0, '(1-актуальный, 0 - неактуальный)', NULL, NULL)
 on conflict (id) do update set
 "name"='Статус параметра', "registerid"=317, "type"=4, "parentid"=NULL, "referenceid"=301, "value_field"=NULL, "code_field"='PARAM_STATUS', "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ParamStatus', "is_nullable"=0, "description"='(1-актуальный, 0 - неактуальный)', "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800100, 'Идентификатор', 318, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор', "registerid"=318, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800200, 'Ид объекта', 318, 1, NULL, NULL, 'ID_OBJECT', NULL, NULL, 0, NULL, NULL, 'IdObject', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Ид объекта', "registerid"=318, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID_OBJECT', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='IdObject', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800300, 'Кадастровый номер объекта', 318, 4, NULL, NULL, 'KN', NULL, NULL, 0, NULL, NULL, 'Kn', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Кадастровый номер объекта', "registerid"=318, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='KN', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Kn', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800400, 'Адрес объекта', 318, 4, NULL, NULL, 'ADDRESS', NULL, NULL, 0, NULL, NULL, 'Address', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Адрес объекта', "registerid"=318, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='ADDRESS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Address', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800500, 'Дата определения', 318, 5, NULL, NULL, 'DATE_DEFINITION', NULL, NULL, 0, NULL, NULL, 'DateDefinition', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Дата определения', "registerid"=318, "type"=5, "parentid"=NULL, "referenceid"=NULL, "value_field"='DATE_DEFINITION', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='DateDefinition', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800600, 'Оспариваемая КС', 318, 2, NULL, NULL, 'KC', NULL, NULL, 0, NULL, NULL, 'Kc', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Оспариваемая КС', "registerid"=318, "type"=2, "parentid"=NULL, "referenceid"=NULL, "value_field"='KC', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Kc', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800700, 'Номер судебного дела', 318, 4, NULL, NULL, 'SUD_NUMBER', NULL, NULL, 0, NULL, NULL, 'SudNumber', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Номер судебного дела', "registerid"=318, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='SUD_NUMBER', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='SudNumber', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800800, 'Признак по которому был установлен параметр доп анализа', 318, 1, NULL, NULL, 'PARAMETER_CASE', NULL, NULL, 0, NULL, NULL, 'ParameterCase', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Признак по которому был установлен параметр доп анализа', "registerid"=318, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='PARAMETER_CASE', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ParameterCase', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31800900, 'Уникальные номер процесса, который запустил процедуру доп анализа', 318, 1, NULL, NULL, 'ID_PROCESS', NULL, NULL, 0, NULL, NULL, 'IdProcess', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Уникальные номер процесса, который запустил процедуру доп анализа', "registerid"=318, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID_PROCESS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='IdProcess', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(31801000, 'Тип объекта', 318, 4, NULL, 300, NULL, 'TYPEOBJ', NULL, 0, NULL, NULL, 'TypeObj', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Тип объекта', "registerid"=318, "type"=4, "parentid"=NULL, "referenceid"=300, "value_field"=NULL, "code_field"='TYPEOBJ', "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='TypeObj', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -15845,15 +16725,21 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50200100, NULL, 502, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+(50103300, 'Контрольный срок', 501, 5, NULL, NULL, 'CHECK_TIME', NULL, NULL, NULL, NULL, NULL, 'CheckTime', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=502, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Контрольный срок', "registerid"=501, "type"=5, "parentid"=NULL, "referenceid"=NULL, "value_field"='CHECK_TIME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='CheckTime', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50200200, NULL, 502, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, NULL, NULL, NULL, 'Declaration_Id', 1, NULL, NULL, NULL)
+(50200100, 'Идентификатор', 502, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=502, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Declaration_Id', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Идентификатор', "registerid"=502, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50200200, 'Идентификатор декларации', 502, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, NULL, NULL, NULL, 'Declaration_Id', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор декларации', "registerid"=502, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Declaration_Id', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -16055,15 +16941,15 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50300100, NULL, 503, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+(50300100, 'Идентификатор', 503, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=503, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Идентификатор', "registerid"=503, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50300200, NULL, 503, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, NULL, NULL, NULL, 'Declaration_Id', 1, NULL, NULL, NULL)
+(50300200, 'Идентификатор декларации', 503, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, NULL, NULL, NULL, 'Declaration_Id', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=503, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Declaration_Id', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Идентификатор декларации', "registerid"=503, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Declaration_Id', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -16265,9 +17151,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50400100, NULL, 504, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, 1, NULL, NULL, 'Declaration_Id', 0, NULL, NULL, NULL)
+(50400100, 'Идентификатор декларации', 504, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, 1, NULL, NULL, 'Declaration_Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=504, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Declaration_Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Идентификатор декларации', "registerid"=504, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Declaration_Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -16283,9 +17169,9 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50500100, NULL, 505, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+(50500100, 'Идентификатор', 505, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=505, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Идентификатор', "registerid"=505, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -16301,21 +17187,15 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50500400, 'Имя, отчество физического лица/представителя заявителя', 505, 4, NULL, NULL, 'I_NAME', NULL, NULL, NULL, 2, NULL, 'I_Name', 1, NULL, NULL, NULL)
+(50500400, 'Имя физического лица/представителя заявителя', 505, 4, NULL, NULL, 'I_NAME', NULL, NULL, NULL, 2, NULL, 'I_Name', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Имя, отчество физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='I_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=2, "qscolumn"=NULL, "internal_name"='I_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Имя физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='I_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=2, "qscolumn"=NULL, "internal_name"='I_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (50500500, 'Отчество физического лица/представителя заявителя', 505, 4, NULL, NULL, 'O_NAME', NULL, NULL, NULL, 3, NULL, 'O_Name', 1, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Отчество физического лица/представителя заявителя', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='O_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=3, "qscolumn"=NULL, "internal_name"='O_Name', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50500600, 'Почтовый адрес ', 505, 4, NULL, NULL, 'ADDRESS', NULL, NULL, NULL, NULL, NULL, 'Address', 1, NULL, NULL, NULL)
-on conflict (id) do update set
-"name"='Почтовый адрес ', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='ADDRESS', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Address', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -16337,21 +17217,57 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50600100, NULL, 506, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+(50501100, 'Индекс', 505, 4, NULL, NULL, 'ZIP', NULL, NULL, NULL, NULL, NULL, 'Zip', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=506, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Индекс', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='ZIP', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Zip', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50600200, NULL, 506, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, NULL, NULL, NULL, 'Declaration_Id', 0, NULL, NULL, NULL)
+(50501200, 'Город', 505, 4, NULL, NULL, 'CITY', NULL, NULL, NULL, NULL, NULL, 'City', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=506, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Declaration_Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Город', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='CITY', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='City', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50600300, NULL, 506, 1, NULL, NULL, 'BOOK_ID', NULL, NULL, NULL, NULL, NULL, 'Book_Id', 0, NULL, NULL, NULL)
+(50501300, 'Улица', 505, 4, NULL, NULL, 'STREET', NULL, NULL, NULL, NULL, NULL, 'Street', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"=NULL, "registerid"=506, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='BOOK_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Book_Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Улица', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='STREET', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Street', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50501400, 'Дом', 505, 4, NULL, NULL, 'HOUSE', NULL, NULL, NULL, NULL, NULL, 'House', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Дом', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='HOUSE', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='House', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50501500, 'Строение', 505, 4, NULL, NULL, 'BUILDING', NULL, NULL, NULL, NULL, NULL, 'Building', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Строение', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='BUILDING', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Building', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50501600, 'Квартира', 505, 4, NULL, NULL, 'FLAT', NULL, NULL, NULL, NULL, NULL, 'Flat', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Квартира', "registerid"=505, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='FLAT', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Flat', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50600100, 'Идентификатор', 506, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор', "registerid"=506, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50600200, 'Идентификатор декларации', 506, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, NULL, NULL, NULL, 'Declaration_Id', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор декларации', "registerid"=506, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Declaration_Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50600300, 'Идентификатор книги', 506, 1, NULL, NULL, 'BOOK_ID', NULL, NULL, NULL, NULL, NULL, 'Book_Id', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор книги', "registerid"=506, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='BOOK_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Book_Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -16385,33 +17301,117 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50700100, 'Идентификатор', 507, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+(50600900, 'Причина отказа', 506, 4, NULL, NULL, 'REJECTION_REASON', NULL, NULL, NULL, NULL, NULL, 'RejectionReason', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Причина отказа', "registerid"=506, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='REJECTION_REASON', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='RejectionReason', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50601000, 'Тип причины отказа для уведомления об отказе декларации', 506, 4, NULL, 511, NULL, 'REJECTION_REASON_TYPE', NULL, NULL, NULL, NULL, 'RejectionReasonType', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Тип причины отказа для уведомления об отказе декларации', "registerid"=506, "type"=4, "parentid"=NULL, "referenceid"=511, "value_field"=NULL, "code_field"='REJECTION_REASON_TYPE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='RejectionReasonType', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50601100, 'Приложение', 506, 4, NULL, NULL, 'ANNEX', NULL, NULL, NULL, NULL, NULL, 'Annex', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Приложение', "registerid"=506, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='ANNEX', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Annex', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50701000, 'Идентификатор', 507, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Идентификатор', "registerid"=507, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50700200, 'Идентификатор декларации', 507, 1, NULL, NULL, 'DECLARATION_ID', NULL, NULL, NULL, NULL, NULL, 'DeclarationId', 0, NULL, NULL, NULL)
+(50702000, 'Идентификатор уведомления', 507, 1, NULL, NULL, 'UVED_ID', NULL, NULL, NULL, NULL, NULL, 'UvedId', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Идентификатор декларации', "registerid"=507, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='DECLARATION_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='DeclarationId', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Идентификатор уведомления', "registerid"=507, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='UVED_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='UvedId', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50700300, 'Дата добавления', 507, 5, NULL, NULL, 'CREATION_DATE', NULL, NULL, NULL, NULL, NULL, 'CreationDate', 1, NULL, NULL, NULL)
+(50703000, 'Тип причины отказа', 507, 4, NULL, 511, NULL, 'REJECTION_REASON_TYPE', NULL, NULL, NULL, NULL, 'RejectionReasonType', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Дата добавления', "registerid"=507, "type"=5, "parentid"=NULL, "referenceid"=NULL, "value_field"='CREATION_DATE', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='CreationDate', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Тип причины отказа', "registerid"=507, "type"=4, "parentid"=NULL, "referenceid"=511, "value_field"=NULL, "code_field"='REJECTION_REASON_TYPE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='RejectionReasonType', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50700400, 'Имя файла', 507, 4, NULL, NULL, 'FILE_NAME', NULL, NULL, NULL, NULL, NULL, 'FileName', 1, NULL, NULL, NULL)
+(50801000, 'Идентификатор', 508, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Имя файла', "registerid"=507, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='FILE_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='FileName', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='Идентификатор', "registerid"=508, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(50700500, 'Тип файла', 507, 4, NULL, NULL, 'FILE_TYPE', NULL, NULL, NULL, NULL, NULL, 'FileType', 1, NULL, NULL, NULL)
+(50802000, 'ФИО', 508, 4, NULL, NULL, 'FULL_NAME', NULL, NULL, NULL, NULL, NULL, 'FullName', 1, NULL, NULL, NULL)
 on conflict (id) do update set
-"name"='Тип файла', "registerid"=507, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='FILE_TYPE', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='FileType', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+"name"='ФИО', "registerid"=508, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='FULL_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='FullName', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50803000, 'Должность', 508, 4, NULL, NULL, 'POSITION', NULL, NULL, NULL, NULL, NULL, 'Position', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Должность', "registerid"=508, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='POSITION', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Position', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50900100, 'Идентификатор', 509, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор', "registerid"=509, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50900200, 'Идентификатор Набора характеристик', 509, 1, NULL, NULL, 'HAR_OKS_ID', NULL, NULL, NULL, NULL, NULL, 'HarOKSId', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор Набора характеристик', "registerid"=509, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='HAR_OKS_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='HarOKSId', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50900300, 'Наименование характеристики', 509, 4, NULL, NULL, 'HAR_OKS_NAME', NULL, NULL, NULL, NULL, NULL, 'HarOKSName', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Наименование характеристики', "registerid"=509, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='HAR_OKS_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='HarOKSName', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50900400, 'Статус характеристики', 509, 4, NULL, 512, NULL, 'HAR_STATUS', NULL, NULL, NULL, NULL, 'HarStatus', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Статус характеристики', "registerid"=509, "type"=4, "parentid"=NULL, "referenceid"=512, "value_field"=NULL, "code_field"='HAR_STATUS', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='HarStatus', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(50900500, 'Характеристика отображается в декларации', 509, 3, NULL, NULL, 'IS_USED_IN_DECLARATION', NULL, NULL, NULL, NULL, NULL, 'IsUsedInDeclaration', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Характеристика отображается в декларации', "registerid"=509, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"='IS_USED_IN_DECLARATION', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='IsUsedInDeclaration', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(51000100, 'Идентификатор', 510, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор', "registerid"=510, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(51000200, 'Идентификатор Набора характеристик', 510, 1, NULL, NULL, 'HAR_PARCEL_ID', NULL, NULL, NULL, NULL, NULL, 'HarParcelId', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор Набора характеристик', "registerid"=510, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='HAR_PARCEL_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='HarParcelId', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(51000300, 'Наименование характеристики', 510, 4, NULL, NULL, 'HAR_PARCEL_NAME', NULL, NULL, NULL, NULL, NULL, 'HarParcelName', 0, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Наименование характеристики', "registerid"=510, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='HAR_PARCEL_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='HarParcelName', "is_nullable"=0, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(51000400, 'Статус характеристики', 510, 4, NULL, 512, NULL, 'HAR_STATUS', NULL, NULL, NULL, NULL, 'HarStatus', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Статус характеристики', "registerid"=510, "type"=4, "parentid"=NULL, "referenceid"=512, "value_field"=NULL, "code_field"='HAR_STATUS', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='HarStatus', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(51000500, 'Характеристика отображается в декларации', 510, 3, NULL, NULL, 'IS_USED_IN_DECLARATION', NULL, NULL, NULL, NULL, NULL, 'IsUsedInDeclaration', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Характеристика отображается в декларации', "registerid"=510, "type"=3, "parentid"=NULL, "referenceid"=NULL, "value_field"='IS_USED_IN_DECLARATION', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='IsUsedInDeclaration', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -16616,6 +17616,48 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 (80101200, 'ИД представления реестра', 801, 4, NULL, NULL, 'REGISTER_VIEW_ID', NULL, NULL, NULL, NULL, NULL, 'RegisterViewId', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='ИД представления реестра', "registerid"=801, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='REGISTER_VIEW_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='RegisterViewId', "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(80101300, 'ИД регистра', 801, 1, NULL, NULL, 'REGISTER_ID', NULL, NULL, NULL, NULL, NULL, 'RegisterId', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='ИД регистра', "registerid"=801, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='REGISTER_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='RegisterId', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(80101400, 'ИД объекта', 801, 1, NULL, NULL, 'OBJECT_ID', NULL, NULL, NULL, NULL, NULL, 'ObjectId', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='ИД объекта', "registerid"=801, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='OBJECT_ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ObjectId', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(80200100, 'Идентификатор', 802, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Идентификатор', "registerid"=802, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(80200200, 'ИД пользователя', 802, 1, NULL, NULL, 'ID_USER', NULL, NULL, NULL, NULL, NULL, 'UserId', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='ИД пользователя', "registerid"=802, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID_USER', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='UserId', "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(80200300, 'Тип формы', 802, 4, NULL, 801, NULL, 'FORMTYPE', NULL, NULL, NULL, NULL, 'FormType', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Тип формы', "registerid"=802, "type"=4, "parentid"=NULL, "referenceid"=801, "value_field"=NULL, "code_field"='FORMTYPE', "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='FormType', "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(80200400, 'Данные', 802, 4, NULL, NULL, 'DATA_FORM', NULL, NULL, NULL, NULL, NULL, 'Data', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Данные', "registerid"=802, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='DATA_FORM', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Data', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(80200500, 'Имя шаблона', 802, 4, NULL, NULL, 'TEMPLATE_NAME', NULL, NULL, NULL, NULL, NULL, 'TemplateName', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Имя шаблона', "registerid"=802, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='TEMPLATE_NAME', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='TemplateName', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -17330,6 +18372,12 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 (93200600, 'Идентификатор показателя дочернего реестра, в котором хранится значение внешнего ключа', 932, 1, NULL, NULL, 'KINDID', NULL, NULL, NULL, NULL, NULL, 'AttributeId', 1, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='Идентификатор показателя дочернего реестра, в котором хранится значение внешнего ключа', "registerid"=932, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='KINDID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='AttributeId', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(93200700, 'Настраиваемое условие', 932, 4, NULL, NULL, 'QSCONDITION', NULL, NULL, NULL, NULL, NULL, 'QSCondition', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='Настраиваемое условие', "registerid"=932, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='QSCONDITION', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='QSCondition', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -19923,6 +20971,12 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
+(97601500, 'url для перехода на экран параметров', 976, 4, NULL, NULL, 'PARAMETERS_SETTER_URL', NULL, NULL, NULL, NULL, NULL, 'ParametersSetterUrl', 1, NULL, NULL, NULL)
+on conflict (id) do update set
+"name"='url для перехода на экран параметров', "registerid"=976, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='PARAMETERS_SETTER_URL', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ParametersSetterUrl', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
 (97700100, 'ИД', 977, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='ИД', "registerid"=977, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='ID', "code_field"=NULL, "value_template"=NULL, "primary_key"=1, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Id', "is_nullable"=NULL, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
@@ -20444,12 +21498,6 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 (98500500, 'REFERENCEID', 985, 1, NULL, NULL, 'REFERENCEID', NULL, NULL, NULL, NULL, NULL, 'ReferenceId', 1, NULL, NULL, NULL)
 on conflict (id) do update set
 "name"='REFERENCEID', "registerid"=985, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='REFERENCEID', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='ReferenceId', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
-(98500600, 'LEVEL', 985, 1, NULL, NULL, 'LEVEL', NULL, NULL, NULL, NULL, NULL, 'Level', 1, NULL, NULL, NULL)
-on conflict (id) do update set
-"name"='LEVEL', "registerid"=985, "type"=1, "parentid"=NULL, "referenceid"=NULL, "value_field"='LEVEL', "code_field"=NULL, "value_template"=NULL, "primary_key"=NULL, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Level', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name") values
@@ -21362,670 +22410,712 @@ on conflict (id) do update set
 "name"='Параметры отчета', "registerid"=926, "type"=4, "parentid"=NULL, "referenceid"=NULL, "value_field"='SETTINGS', "code_field"=NULL, "value_template"=NULL, "primary_key"=0, "user_key"=NULL, "qscolumn"=NULL, "internal_name"='Settings', "is_nullable"=1, "description"=NULL, "layout"=NULL, "export_column_name"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(1, '1', 200, 1, NULL, 100100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(1, '1', 200, 1, NULL, 100100, NULL, NULL)
 on conflict (id) do update set
-"name"='1', "parentregister"=200, "chieldregister"=1, "cardinality"=NULL, "kindid"=100100, "parentregister_attribute_id"=NULL;
+"name"='1', "parentregister"=200, "chieldregister"=1, "cardinality"=NULL, "kindid"=100100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(2, '2', 200, 2, NULL, 200100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(2, '2', 200, 2, NULL, 200100, NULL, NULL)
 on conflict (id) do update set
-"name"='2', "parentregister"=200, "chieldregister"=2, "cardinality"=NULL, "kindid"=200100, "parentregister_attribute_id"=NULL;
+"name"='2', "parentregister"=200, "chieldregister"=2, "cardinality"=NULL, "kindid"=200100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(3, '3', 200, 3, NULL, 300100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(3, '3', 200, 3, NULL, 300100, NULL, NULL)
 on conflict (id) do update set
-"name"='3', "parentregister"=200, "chieldregister"=3, "cardinality"=NULL, "kindid"=300100, "parentregister_attribute_id"=NULL;
+"name"='3', "parentregister"=200, "chieldregister"=3, "cardinality"=NULL, "kindid"=300100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(4, '4', 200, 4, NULL, 400100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(4, '4', 200, 4, NULL, 400100, NULL, NULL)
 on conflict (id) do update set
-"name"='4', "parentregister"=200, "chieldregister"=4, "cardinality"=NULL, "kindid"=400100, "parentregister_attribute_id"=NULL;
+"name"='4', "parentregister"=200, "chieldregister"=4, "cardinality"=NULL, "kindid"=400100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(5, '5', 200, 5, NULL, 500100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(5, '5', 200, 5, NULL, 500100, NULL, NULL)
 on conflict (id) do update set
-"name"='5', "parentregister"=200, "chieldregister"=5, "cardinality"=NULL, "kindid"=500100, "parentregister_attribute_id"=NULL;
+"name"='5', "parentregister"=200, "chieldregister"=5, "cardinality"=NULL, "kindid"=500100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(6, '6', 200, 6, NULL, 600100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(6, '6', 200, 6, NULL, 600100, NULL, NULL)
 on conflict (id) do update set
-"name"='6', "parentregister"=200, "chieldregister"=6, "cardinality"=NULL, "kindid"=600100, "parentregister_attribute_id"=NULL;
+"name"='6', "parentregister"=200, "chieldregister"=6, "cardinality"=NULL, "kindid"=600100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(7, '7', 200, 7, NULL, 700100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(7, '7', 200, 7, NULL, 700100, NULL, NULL)
 on conflict (id) do update set
-"name"='7', "parentregister"=200, "chieldregister"=7, "cardinality"=NULL, "kindid"=700100, "parentregister_attribute_id"=NULL;
+"name"='7', "parentregister"=200, "chieldregister"=7, "cardinality"=NULL, "kindid"=700100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(8, '8', 200, 8, NULL, 800100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(8, '8', 200, 8, NULL, 800100, NULL, NULL)
 on conflict (id) do update set
-"name"='8', "parentregister"=200, "chieldregister"=8, "cardinality"=NULL, "kindid"=800100, "parentregister_attribute_id"=NULL;
+"name"='8', "parentregister"=200, "chieldregister"=8, "cardinality"=NULL, "kindid"=800100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(9, '9', 200, 9, NULL, 900100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(9, '9', 200, 9, NULL, 900100, NULL, NULL)
 on conflict (id) do update set
-"name"='9', "parentregister"=200, "chieldregister"=9, "cardinality"=NULL, "kindid"=900100, "parentregister_attribute_id"=NULL;
+"name"='9', "parentregister"=200, "chieldregister"=9, "cardinality"=NULL, "kindid"=900100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(10, '10', 200, 10, NULL, 1000100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(10, '10', 200, 10, NULL, 1000100, NULL, NULL)
 on conflict (id) do update set
-"name"='10', "parentregister"=200, "chieldregister"=10, "cardinality"=NULL, "kindid"=1000100, "parentregister_attribute_id"=NULL;
+"name"='10', "parentregister"=200, "chieldregister"=10, "cardinality"=NULL, "kindid"=1000100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(11, '11', 200, 11, NULL, 1100100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(11, '11', 200, 11, NULL, 1100100, NULL, NULL)
 on conflict (id) do update set
-"name"='11', "parentregister"=200, "chieldregister"=11, "cardinality"=NULL, "kindid"=1100100, "parentregister_attribute_id"=NULL;
+"name"='11', "parentregister"=200, "chieldregister"=11, "cardinality"=NULL, "kindid"=1100100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(12, '12', 200, 12, NULL, 1200100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(12, '12', 200, 12, NULL, 1200100, NULL, NULL)
 on conflict (id) do update set
-"name"='12', "parentregister"=200, "chieldregister"=12, "cardinality"=NULL, "kindid"=1200100, "parentregister_attribute_id"=NULL;
+"name"='12', "parentregister"=200, "chieldregister"=12, "cardinality"=NULL, "kindid"=1200100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(13, '13', 200, 13, NULL, 1300100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(13, '13', 200, 13, NULL, 1300100, NULL, NULL)
 on conflict (id) do update set
-"name"='13', "parentregister"=200, "chieldregister"=13, "cardinality"=NULL, "kindid"=1300100, "parentregister_attribute_id"=NULL;
+"name"='13', "parentregister"=200, "chieldregister"=13, "cardinality"=NULL, "kindid"=1300100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(14, '14', 200, 14, NULL, 1400100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(14, '14', 200, 14, NULL, 1400100, NULL, NULL)
 on conflict (id) do update set
-"name"='14', "parentregister"=200, "chieldregister"=14, "cardinality"=NULL, "kindid"=1400100, "parentregister_attribute_id"=NULL;
+"name"='14', "parentregister"=200, "chieldregister"=14, "cardinality"=NULL, "kindid"=1400100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(15, '15', 200, 15, NULL, 1500100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(15, '15', 200, 15, NULL, 1500100, NULL, NULL)
 on conflict (id) do update set
-"name"='15', "parentregister"=200, "chieldregister"=15, "cardinality"=NULL, "kindid"=1500100, "parentregister_attribute_id"=NULL;
+"name"='15', "parentregister"=200, "chieldregister"=15, "cardinality"=NULL, "kindid"=1500100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(16, '16', 200, 16, NULL, 1600100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(16, '16', 200, 16, NULL, 1600100, NULL, NULL)
 on conflict (id) do update set
-"name"='16', "parentregister"=200, "chieldregister"=16, "cardinality"=NULL, "kindid"=1600100, "parentregister_attribute_id"=NULL;
+"name"='16', "parentregister"=200, "chieldregister"=16, "cardinality"=NULL, "kindid"=1600100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(17, '17', 200, 17, NULL, 1700100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(17, '17', 200, 17, NULL, 1700100, NULL, NULL)
 on conflict (id) do update set
-"name"='17', "parentregister"=200, "chieldregister"=17, "cardinality"=NULL, "kindid"=1700100, "parentregister_attribute_id"=NULL;
+"name"='17', "parentregister"=200, "chieldregister"=17, "cardinality"=NULL, "kindid"=1700100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(18, '18', 200, 18, NULL, 1800100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(18, '18', 200, 18, NULL, 1800100, NULL, NULL)
 on conflict (id) do update set
-"name"='18', "parentregister"=200, "chieldregister"=18, "cardinality"=NULL, "kindid"=1800100, "parentregister_attribute_id"=NULL;
+"name"='18', "parentregister"=200, "chieldregister"=18, "cardinality"=NULL, "kindid"=1800100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(19, '19', 200, 19, NULL, 1900100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(19, '19', 200, 19, NULL, 1900100, NULL, NULL)
 on conflict (id) do update set
-"name"='19', "parentregister"=200, "chieldregister"=19, "cardinality"=NULL, "kindid"=1900100, "parentregister_attribute_id"=NULL;
+"name"='19', "parentregister"=200, "chieldregister"=19, "cardinality"=NULL, "kindid"=1900100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(20, '20', 200, 20, NULL, 2000100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(20, '20', 200, 20, NULL, 2000100, NULL, NULL)
 on conflict (id) do update set
-"name"='20', "parentregister"=200, "chieldregister"=20, "cardinality"=NULL, "kindid"=2000100, "parentregister_attribute_id"=NULL;
+"name"='20', "parentregister"=200, "chieldregister"=20, "cardinality"=NULL, "kindid"=2000100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(21, '21', 200, 21, NULL, 2100100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(21, '21', 200, 21, NULL, 2100100, NULL, NULL)
 on conflict (id) do update set
-"name"='21', "parentregister"=200, "chieldregister"=21, "cardinality"=NULL, "kindid"=2100100, "parentregister_attribute_id"=NULL;
+"name"='21', "parentregister"=200, "chieldregister"=21, "cardinality"=NULL, "kindid"=2100100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(22, '22', 200, 22, NULL, 2200100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(22, '22', 200, 22, NULL, 2200100, NULL, NULL)
 on conflict (id) do update set
-"name"='22', "parentregister"=200, "chieldregister"=22, "cardinality"=NULL, "kindid"=2200100, "parentregister_attribute_id"=NULL;
+"name"='22', "parentregister"=200, "chieldregister"=22, "cardinality"=NULL, "kindid"=2200100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(23, '23', 200, 23, NULL, 2300100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(23, '23', 200, 23, NULL, 2300100, NULL, NULL)
 on conflict (id) do update set
-"name"='23', "parentregister"=200, "chieldregister"=23, "cardinality"=NULL, "kindid"=2300100, "parentregister_attribute_id"=NULL;
+"name"='23', "parentregister"=200, "chieldregister"=23, "cardinality"=NULL, "kindid"=2300100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(100, 'От Объекта  аналога к истории цены', 100, 105, NULL, 10500200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(100, 'От Объекта  аналога к истории цены', 100, 105, NULL, 10500200, NULL, NULL)
 on conflict (id) do update set
-"name"='От Объекта  аналога к истории цены', "parentregister"=100, "chieldregister"=105, "cardinality"=NULL, "kindid"=10500200, "parentregister_attribute_id"=NULL;
+"name"='От Объекта  аналога к истории цены', "parentregister"=100, "chieldregister"=105, "cardinality"=NULL, "kindid"=10500200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(202, 'От Единицы кадастровой оценки к Заданию на оценку', 203, 201, NULL, 20100400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(202, 'От Единицы кадастровой оценки к Заданию на оценку', 203, 201, NULL, 20100400, NULL, NULL)
 on conflict (id) do update set
-"name"='От Единицы кадастровой оценки к Заданию на оценку', "parentregister"=203, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100400, "parentregister_attribute_id"=NULL;
+"name"='От Единицы кадастровой оценки к Заданию на оценку', "parentregister"=203, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(203, 'От Задания на оценку к Туру оценки', 202, 203, NULL, 20300500, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(203, 'От Задания на оценку к Туру оценки', 202, 203, NULL, 20300500, NULL, NULL)
 on conflict (id) do update set
-"name"='От Задания на оценку к Туру оценки', "parentregister"=202, "chieldregister"=203, "cardinality"=NULL, "kindid"=20300500, "parentregister_attribute_id"=NULL;
+"name"='От Задания на оценку к Туру оценки', "parentregister"=202, "chieldregister"=203, "cardinality"=NULL, "kindid"=20300500, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(204, 'От единицы кадастровой оценки к Туру оценки', 202, 201, NULL, 20100300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(204, 'От единицы кадастровой оценки к Туру оценки', 202, 201, NULL, 20100300, NULL, NULL)
 on conflict (id) do update set
-"name"='От единицы кадастровой оценки к Туру оценки', "parentregister"=202, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100300, "parentregister_attribute_id"=NULL;
+"name"='От единицы кадастровой оценки к Туру оценки', "parentregister"=202, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(205, 'От модели тура к Туру оценки', 202, 207, NULL, 20700200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(205, 'От модели тура к Туру оценки', 202, 207, NULL, 20700200, NULL, NULL)
 on conflict (id) do update set
-"name"='От модели тура к Туру оценки', "parentregister"=202, "chieldregister"=207, "cardinality"=NULL, "kindid"=20700200, "parentregister_attribute_id"=NULL;
+"name"='От модели тура к Туру оценки', "parentregister"=202, "chieldregister"=207, "cardinality"=NULL, "kindid"=20700200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(206, 'От единицы кадастровой оценки к Объекту кадастровой стоимости', 200, 201, NULL, 20100200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(206, 'От единицы кадастровой оценки к Объекту кадастровой стоимости', 200, 201, NULL, 20100200, NULL, NULL)
 on conflict (id) do update set
-"name"='От единицы кадастровой оценки к Объекту кадастровой стоимости', "parentregister"=200, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100200, "parentregister_attribute_id"=NULL;
+"name"='От единицы кадастровой оценки к Объекту кадастровой стоимости', "parentregister"=200, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(207, 'От модели тура к Модели', 206, 207, NULL, 20700300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(207, 'От модели тура к Модели', 206, 207, NULL, 20700300, NULL, NULL)
 on conflict (id) do update set
-"name"='От модели тура к Модели', "parentregister"=206, "chieldregister"=207, "cardinality"=NULL, "kindid"=20700300, "parentregister_attribute_id"=NULL;
+"name"='От модели тура к Модели', "parentregister"=206, "chieldregister"=207, "cardinality"=NULL, "kindid"=20700300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(208, 'От единицы кадастровой оценки к Модели', 206, 201, NULL, 20100500, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(208, 'От единицы кадастровой оценки к Модели', 206, 201, NULL, 20100500, NULL, NULL)
 on conflict (id) do update set
-"name"='От единицы кадастровой оценки к Модели', "parentregister"=206, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100500, "parentregister_attribute_id"=NULL;
+"name"='От единицы кадастровой оценки к Модели', "parentregister"=206, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100500, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(209, 'От факторов модели к Модели', 206, 210, NULL, 21000200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(209, 'От факторов модели к Модели', 206, 210, NULL, 21000200, NULL, NULL)
 on conflict (id) do update set
-"name"='От факторов модели к Модели', "parentregister"=206, "chieldregister"=210, "cardinality"=NULL, "kindid"=21000200, "parentregister_attribute_id"=NULL;
+"name"='От факторов модели к Модели', "parentregister"=206, "chieldregister"=210, "cardinality"=NULL, "kindid"=21000200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(210, 'От факторов модели к Справочнику меток', 211, 210, NULL, 21000400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(210, 'От факторов модели к Справочнику меток', 211, 210, NULL, 21000400, NULL, NULL)
 on conflict (id) do update set
-"name"='От факторов модели к Справочнику меток', "parentregister"=211, "chieldregister"=210, "cardinality"=NULL, "kindid"=21000400, "parentregister_attribute_id"=NULL;
+"name"='От факторов модели к Справочнику меток', "parentregister"=211, "chieldregister"=210, "cardinality"=NULL, "kindid"=21000400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(212, 'От модели к Группам и подгруппам', 205, 206, NULL, 20600200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(212, 'От модели к Группам и подгруппам', 205, 206, NULL, 20600200, NULL, NULL)
 on conflict (id) do update set
-"name"='От модели к Группам и подгруппам', "parentregister"=205, "chieldregister"=206, "cardinality"=NULL, "kindid"=20600200, "parentregister_attribute_id"=NULL;
+"name"='От модели к Группам и подгруппам', "parentregister"=205, "chieldregister"=206, "cardinality"=NULL, "kindid"=20600200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(213, 'От единиц кадастровой оценки к Группам и подгруппам', 205, 201, NULL, 20100600, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(213, 'От единиц кадастровой оценки к Группам и подгруппам', 205, 201, NULL, 20100600, NULL, NULL)
 on conflict (id) do update set
-"name"='От единиц кадастровой оценки к Группам и подгруппам', "parentregister"=205, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100600, "parentregister_attribute_id"=NULL;
+"name"='От единиц кадастровой оценки к Группам и подгруппам', "parentregister"=205, "chieldregister"=201, "cardinality"=NULL, "kindid"=20100600, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(214, 'От факторов группы к Группам и подгруппам', 205, 208, NULL, 20800200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(214, 'От факторов группы к Группам и подгруппам', 205, 208, NULL, 20800200, NULL, NULL)
 on conflict (id) do update set
-"name"='От факторов группы к Группам и подгруппам', "parentregister"=205, "chieldregister"=208, "cardinality"=NULL, "kindid"=20800200, "parentregister_attribute_id"=NULL;
+"name"='От факторов группы к Группам и подгруппам', "parentregister"=205, "chieldregister"=208, "cardinality"=NULL, "kindid"=20800200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(215, 'От выгрузки по шщаблону к пользователю', 950, 800, NULL, 80000200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(215, 'От выгрузки по шщаблону к пользователю', 950, 800, NULL, 80000200, NULL, NULL)
 on conflict (id) do update set
-"name"='От выгрузки по шщаблону к пользователю', "parentregister"=950, "chieldregister"=800, "cardinality"=NULL, "kindid"=80000200, "parentregister_attribute_id"=NULL;
+"name"='От выгрузки по шщаблону к пользователю', "parentregister"=950, "chieldregister"=800, "cardinality"=NULL, "kindid"=80000200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(216, 'От загрузки к пользователю', 950, 801, NULL, 80100200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(216, 'От загрузки к пользователю', 950, 801, NULL, 80100200, NULL, NULL)
 on conflict (id) do update set
-"name"='От загрузки к пользователю', "parentregister"=950, "chieldregister"=801, "cardinality"=NULL, "kindid"=80100200, "parentregister_attribute_id"=NULL;
+"name"='От загрузки к пользователю', "parentregister"=950, "chieldregister"=801, "cardinality"=NULL, "kindid"=80100200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(301, 'От Связи заключения с объектом к объекту', 315, 302, NULL, 30200200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(217, 'От задания к входящему документу', 963, 203, NULL, 20300300, NULL, NULL)
 on conflict (id) do update set
-"name"='От Связи заключения с объектом к объекту', "parentregister"=315, "chieldregister"=302, "cardinality"=NULL, "kindid"=30200200, "parentregister_attribute_id"=NULL;
+"name"='От задания к входящему документу', "parentregister"=963, "chieldregister"=203, "cardinality"=NULL, "kindid"=20300300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(302, 'От Связи заключения с объектом к заключению', 300, 302, NULL, 30200300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(250, 'От доп параметров к Ед. оценки', 201, 250, NULL, 25000100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Связи заключения с объектом к заключению', "parentregister"=300, "chieldregister"=302, "cardinality"=NULL, "kindid"=30200300, "parentregister_attribute_id"=NULL;
+"name"='От доп параметров к Ед. оценки', "parentregister"=201, "chieldregister"=250, "cardinality"=NULL, "kindid"=25000100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(303, 'От Расчета ДРС к объекту', 315, 303, NULL, 30300100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(251, 'От доп параметров к Ед. оценки', 201, 251, NULL, 25100100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Расчета ДРС к объекту', "parentregister"=315, "chieldregister"=303, "cardinality"=NULL, "kindid"=30300100, "parentregister_attribute_id"=NULL;
+"name"='От доп параметров к Ед. оценки', "parentregister"=201, "chieldregister"=251, "cardinality"=NULL, "kindid"=25100100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(304, 'От Связи отчета с объектом к объекту', 315, 304, NULL, 30400200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(252, 'От доп параметров к Ед. оценки', 201, 252, NULL, 25200100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Связи отчета с объектом к объекту', "parentregister"=315, "chieldregister"=304, "cardinality"=NULL, "kindid"=30400200, "parentregister_attribute_id"=NULL;
+"name"='От доп параметров к Ед. оценки', "parentregister"=201, "chieldregister"=252, "cardinality"=NULL, "kindid"=25200100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(305, 'От Связи отчета с объектом к отчету', 308, 304, NULL, 30400300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(253, 'От доп параметров к Ед. оценки', 201, 253, NULL, 25300100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Связи отчета с объектом к отчету', "parentregister"=308, "chieldregister"=304, "cardinality"=NULL, "kindid"=30400300, "parentregister_attribute_id"=NULL;
+"name"='От доп параметров к Ед. оценки', "parentregister"=201, "chieldregister"=253, "cardinality"=NULL, "kindid"=25300100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(306, 'От статуса к связи объекта и отчета', 304, 306, NULL, 30600100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(301, 'От Связи заключения с объектом к объекту', 315, 302, NULL, 30200200, NULL, NULL)
 on conflict (id) do update set
-"name"='От статуса к связи объекта и отчета', "parentregister"=304, "chieldregister"=306, "cardinality"=NULL, "kindid"=30600100, "parentregister_attribute_id"=NULL;
+"name"='От Связи заключения с объектом к объекту', "parentregister"=315, "chieldregister"=302, "cardinality"=NULL, "kindid"=30200200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(307, 'От Статуса отчета к отчету', 308, 307, NULL, 30700100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(302, 'От Связи заключения с объектом к заключению', 300, 302, NULL, 30200300, NULL, NULL)
 on conflict (id) do update set
-"name"='От Статуса отчета к отчету', "parentregister"=308, "chieldregister"=307, "cardinality"=NULL, "kindid"=30700100, "parentregister_attribute_id"=NULL;
+"name"='От Связи заключения с объектом к заключению', "parentregister"=300, "chieldregister"=302, "cardinality"=NULL, "kindid"=30200300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(308, 'От Связи суда и статуса к связи судебного дела и объекта', 314, 309, NULL, 30900100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(303, 'От Расчета ДРС к объекту', 315, 303, NULL, 30300100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Связи суда и статуса к связи судебного дела и объекта', "parentregister"=314, "chieldregister"=309, "cardinality"=NULL, "kindid"=30900100, "parentregister_attribute_id"=NULL;
+"name"='От Расчета ДРС к объекту', "parentregister"=315, "chieldregister"=303, "cardinality"=NULL, "kindid"=30300100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(309, 'От Статуса к судебному заседанию', 316, 310, NULL, 31000100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(304, 'От Связи отчета с объектом к объекту', 315, 304, NULL, 30400200, NULL, NULL)
 on conflict (id) do update set
-"name"='От Статуса к судебному заседанию', "parentregister"=316, "chieldregister"=310, "cardinality"=NULL, "kindid"=31000100, "parentregister_attribute_id"=NULL;
+"name"='От Связи отчета с объектом к объекту', "parentregister"=315, "chieldregister"=304, "cardinality"=NULL, "kindid"=30400200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(310, 'От Связи заключения и статуса к связи заключения с объектом', 302, 311, NULL, 31100100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(305, 'От Связи отчета с объектом к отчету', 308, 304, NULL, 30400300, NULL, NULL)
 on conflict (id) do update set
-"name"='От Связи заключения и статуса к связи заключения с объектом', "parentregister"=302, "chieldregister"=311, "cardinality"=NULL, "kindid"=31100100, "parentregister_attribute_id"=NULL;
+"name"='От Связи отчета с объектом к отчету', "parentregister"=308, "chieldregister"=304, "cardinality"=NULL, "kindid"=30400300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(311, 'От Статуса заключения к заключению', 300, 312, NULL, 31200100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(306, 'От статуса к связи объекта и отчета', 304, 306, NULL, 30600100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Статуса заключения к заключению', "parentregister"=300, "chieldregister"=312, "cardinality"=NULL, "kindid"=31200100, "parentregister_attribute_id"=NULL;
+"name"='От статуса к связи объекта и отчета', "parentregister"=304, "chieldregister"=306, "cardinality"=NULL, "kindid"=30600100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(312, 'От Связи судебного дела и объекта к объекту', 315, 314, NULL, 31400200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(307, 'От Статуса отчета к отчету', 308, 307, NULL, 30700100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Связи судебного дела и объекта к объекту', "parentregister"=315, "chieldregister"=314, "cardinality"=NULL, "kindid"=31400200, "parentregister_attribute_id"=NULL;
+"name"='От Статуса отчета к отчету', "parentregister"=308, "chieldregister"=307, "cardinality"=NULL, "kindid"=30700100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(313, 'От Связи судебного дела и объекта к судебному заседанию', 316, 314, NULL, 31400300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(308, 'От Связи суда и статуса к связи судебного дела и объекта', 314, 309, NULL, 30900100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Связи судебного дела и объекта к судебному заседанию', "parentregister"=316, "chieldregister"=314, "cardinality"=NULL, "kindid"=31400300, "parentregister_attribute_id"=NULL;
+"name"='От Связи суда и статуса к связи судебного дела и объекта', "parentregister"=314, "chieldregister"=309, "cardinality"=NULL, "kindid"=30900100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(314, 'От статуса к объекту', 315, 305, NULL, 30500100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(309, 'От Статуса к судебному заседанию', 316, 310, NULL, 31000100, NULL, NULL)
 on conflict (id) do update set
-"name"='От статуса к объекту', "parentregister"=315, "chieldregister"=305, "cardinality"=NULL, "kindid"=30500100, "parentregister_attribute_id"=NULL;
+"name"='От Статуса к судебному заседанию', "parentregister"=316, "chieldregister"=310, "cardinality"=NULL, "kindid"=31000100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(315, '205 - 212', 205, 212, NULL, 21200200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(310, 'От Связи заключения и статуса к связи заключения с объектом', 302, 311, NULL, 31100100, NULL, NULL)
 on conflict (id) do update set
-"name"='205 - 212', "parentregister"=205, "chieldregister"=212, "cardinality"=NULL, "kindid"=21200200, "parentregister_attribute_id"=NULL;
+"name"='От Связи заключения и статуса к связи заключения с объектом', "parentregister"=302, "chieldregister"=311, "cardinality"=NULL, "kindid"=31100100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(322, 'От 328 к 313', 328, 313, NULL, 313000400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(311, 'От Статуса заключения к заключению', 300, 312, NULL, 31200100, NULL, NULL)
 on conflict (id) do update set
-"name"='От 328 к 313', "parentregister"=328, "chieldregister"=313, "cardinality"=NULL, "kindid"=313000400, "parentregister_attribute_id"=NULL;
+"name"='От Статуса заключения к заключению', "parentregister"=300, "chieldregister"=312, "cardinality"=NULL, "kindid"=31200100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(500, 'От Уведомления к Декларации', 501, 506, NULL, 50600200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(312, 'От Связи судебного дела и объекта к объекту', 315, 314, NULL, 31400200, NULL, NULL)
 on conflict (id) do update set
-"name"='От Уведомления к Декларации', "parentregister"=501, "chieldregister"=506, "cardinality"=NULL, "kindid"=50600200, "parentregister_attribute_id"=NULL;
+"name"='От Связи судебного дела и объекта к объекту', "parentregister"=315, "chieldregister"=314, "cardinality"=NULL, "kindid"=31400200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(501, 'От Уведомления к Книге', 500, 506, NULL, 50600300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(313, 'От Связи судебного дела и объекта к судебному заседанию', 316, 314, NULL, 31400300, NULL, NULL)
 on conflict (id) do update set
-"name"='От Уведомления к Книге', "parentregister"=500, "chieldregister"=506, "cardinality"=NULL, "kindid"=50600300, "parentregister_attribute_id"=NULL;
+"name"='От Связи судебного дела и объекта к судебному заседанию', "parentregister"=316, "chieldregister"=314, "cardinality"=NULL, "kindid"=31400300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(502, 'От Декларации к Польвателю', 950, 501, NULL, 50100500, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(314, 'От статуса к объекту', 315, 305, NULL, 30500100, NULL, NULL)
 on conflict (id) do update set
-"name"='От Декларации к Польвателю', "parentregister"=950, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100500, "parentregister_attribute_id"=NULL;
+"name"='От статуса к объекту', "parentregister"=315, "chieldregister"=305, "cardinality"=NULL, "kindid"=30500100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(503, 'От Декларации к Книге', 500, 501, NULL, 50100200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(315, '205 - 212', 205, 212, NULL, 21200200, NULL, NULL)
 on conflict (id) do update set
-"name"='От Декларации к Книге', "parentregister"=500, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100200, "parentregister_attribute_id"=NULL;
+"name"='205 - 212', "parentregister"=205, "chieldregister"=212, "cardinality"=NULL, "kindid"=21200200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(504, 'От Декларации к Субъекту', 505, 501, NULL, 50100400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(316, 'От объектов к пользователям', 950, 315, NULL, 31501800, NULL, NULL)
 on conflict (id) do update set
-"name"='От Декларации к Субъекту', "parentregister"=505, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100400, "parentregister_attribute_id"=NULL;
+"name"='От объектов к пользователям', "parentregister"=950, "chieldregister"=315, "cardinality"=NULL, "kindid"=31501800, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(505, 'От Результата к Декларации', 501, 504, NULL, 50400100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(322, 'От 328 к 313', 328, 313, NULL, 313000400, NULL, NULL)
 on conflict (id) do update set
-"name"='От Результата к Декларации', "parentregister"=501, "chieldregister"=504, "cardinality"=NULL, "kindid"=50400100, "parentregister_attribute_id"=NULL;
+"name"='От 328 к 313', "parentregister"=328, "chieldregister"=313, "cardinality"=NULL, "kindid"=313000400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(506, 'От Характеристик ОКС к Декларации', 501, 502, NULL, 50200200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(500, 'От Уведомления к Декларации', 501, 506, NULL, 50600200, NULL, NULL)
 on conflict (id) do update set
-"name"='От Характеристик ОКС к Декларации', "parentregister"=501, "chieldregister"=502, "cardinality"=NULL, "kindid"=50200200, "parentregister_attribute_id"=NULL;
+"name"='От Уведомления к Декларации', "parentregister"=501, "chieldregister"=506, "cardinality"=NULL, "kindid"=50600200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(507, 'От Характеристик ЗУ к Декларации', 501, 503, NULL, 50300200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(501, 'От Уведомления к Книге', 500, 506, NULL, 50600300, NULL, NULL)
 on conflict (id) do update set
-"name"='От Характеристик ЗУ к Декларации', "parentregister"=501, "chieldregister"=503, "cardinality"=NULL, "kindid"=50300200, "parentregister_attribute_id"=NULL;
+"name"='От Уведомления к Книге', "parentregister"=500, "chieldregister"=506, "cardinality"=NULL, "kindid"=50600300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(508, 'От Скан-образа к Декларации', 501, 507, NULL, 50700200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(502, 'От Декларации к Польвателю', 950, 501, NULL, 50100500, NULL, NULL)
 on conflict (id) do update set
-"name"='От Скан-образа к Декларации', "parentregister"=501, "chieldregister"=507, "cardinality"=NULL, "kindid"=50700200, "parentregister_attribute_id"=NULL;
+"name"='От Декларации к Польвателю', "parentregister"=950, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100500, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(509, 'От Отчета к Уведомлению', 506, 809, NULL, 80900700, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(503, 'От Декларации к Книге', 500, 501, NULL, 50100200, NULL, NULL)
 on conflict (id) do update set
-"name"='От Отчета к Уведомлению', "parentregister"=506, "chieldregister"=809, "cardinality"=NULL, "kindid"=80900700, "parentregister_attribute_id"=NULL;
+"name"='От Декларации к Книге', "parentregister"=500, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(913, 'От объекта списка к списку', 920, 921, NULL, 92100200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(504, 'От Декларации к Субъекту', 505, 501, NULL, 50100400, NULL, NULL)
 on conflict (id) do update set
-"name"='От объекта списка к списку', "parentregister"=920, "chieldregister"=921, "cardinality"=NULL, "kindid"=92100200, "parentregister_attribute_id"=NULL;
+"name"='От Декларации к Субъекту', "parentregister"=505, "chieldregister"=501, "cardinality"=NULL, "kindid"=50100400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(914, 'От версии шаблона к шаблону', 960, 961, NULL, 96100200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(505, 'От Результата к Декларации', 501, 504, NULL, 50400100, NULL, NULL)
 on conflict (id) do update set
-"name"='От версии шаблона к шаблону', "parentregister"=960, "chieldregister"=961, "cardinality"=NULL, "kindid"=96100200, "parentregister_attribute_id"=NULL;
+"name"='От Результата к Декларации', "parentregister"=501, "chieldregister"=504, "cardinality"=NULL, "kindid"=50400100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(915, 'От экземпляра документа к версии шаблона', 961, 963, NULL, 96300200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(506, 'От Характеристик ОКС к Декларации', 501, 502, NULL, 50200200, NULL, NULL)
 on conflict (id) do update set
-"name"='От экземпляра документа к версии шаблона', "parentregister"=961, "chieldregister"=963, "cardinality"=NULL, "kindid"=96300200, "parentregister_attribute_id"=NULL;
+"name"='От Характеристик ОКС к Декларации', "parentregister"=501, "chieldregister"=502, "cardinality"=NULL, "kindid"=50200200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(916, 'От экземпляра документа к статусу', 962, 963, NULL, 96300900, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(507, 'От Характеристик ЗУ к Декларации', 501, 503, NULL, 50300200, NULL, NULL)
 on conflict (id) do update set
-"name"='От экземпляра документа к статусу', "parentregister"=962, "chieldregister"=963, "cardinality"=NULL, "kindid"=96300900, "parentregister_attribute_id"=NULL;
+"name"='От Характеристик ЗУ к Декларации', "parentregister"=501, "chieldregister"=503, "cardinality"=NULL, "kindid"=50300200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(917, 'От набора изменений к экземпляру документа', 963, 964, NULL, 96400200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(509, 'От Отчета к Уведомлению', 506, 809, NULL, 80900700, NULL, NULL)
 on conflict (id) do update set
-"name"='От набора изменений к экземпляру документа', "parentregister"=963, "chieldregister"=964, "cardinality"=NULL, "kindid"=96400200, "parentregister_attribute_id"=NULL;
+"name"='От Отчета к Уведомлению', "parentregister"=506, "chieldregister"=809, "cardinality"=NULL, "kindid"=80900700, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(918, 'От изменения к набору изменений', 964, 965, NULL, 96500200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(510, 'От Доп. Информации ОКС хар-ки к ОКС характеристике', 502, 509, NULL, 50900200, NULL, NULL)
 on conflict (id) do update set
-"name"='От изменения к набору изменений', "parentregister"=964, "chieldregister"=965, "cardinality"=NULL, "kindid"=96500200, "parentregister_attribute_id"=NULL;
+"name"='От Доп. Информации ОКС хар-ки к ОКС характеристике', "parentregister"=502, "chieldregister"=509, "cardinality"=NULL, "kindid"=50900200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(919, 'От аудита к типу аудируемого действия', 966, 967, NULL, 96700300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(511, 'От Доп. Информации ЗУ хар-ки к ЗУ характеристике', 503, 510, NULL, 51000200, NULL, NULL)
 on conflict (id) do update set
-"name"='От аудита к типу аудируемого действия', "parentregister"=966, "chieldregister"=967, "cardinality"=NULL, "kindid"=96700300, "parentregister_attribute_id"=NULL;
+"name"='От Доп. Информации ЗУ хар-ки к ЗУ характеристике', "parentregister"=503, "chieldregister"=510, "cardinality"=NULL, "kindid"=51000200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(920, 'От аудита к экземпляру документа', 963, 967, NULL, 96700200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(913, 'От объекта списка к списку', 920, 921, NULL, 92100200, NULL, NULL)
 on conflict (id) do update set
-"name"='От аудита к экземпляру документа', "parentregister"=963, "chieldregister"=967, "cardinality"=NULL, "kindid"=96700200, "parentregister_attribute_id"=NULL;
+"name"='От объекта списка к списку', "parentregister"=920, "chieldregister"=921, "cardinality"=NULL, "kindid"=92100200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(921, 'От дерева к шаблону документа', 960, 968, NULL, 96800400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(914, 'От версии шаблона к шаблону', 960, 961, NULL, 96100200, NULL, NULL)
 on conflict (id) do update set
-"name"='От дерева к шаблону документа', "parentregister"=960, "chieldregister"=968, "cardinality"=NULL, "kindid"=96800400, "parentregister_attribute_id"=NULL;
+"name"='От версии шаблона к шаблону', "parentregister"=960, "chieldregister"=961, "cardinality"=NULL, "kindid"=96100200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(922, 'От образа документа к экземпляру документа', 963, 969, NULL, 96900200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(915, 'От экземпляра документа к версии шаблона', 961, 963, NULL, 96300200, NULL, NULL)
 on conflict (id) do update set
-"name"='От образа документа к экземпляру документа', "parentregister"=963, "chieldregister"=969, "cardinality"=NULL, "kindid"=96900200, "parentregister_attribute_id"=NULL;
+"name"='От экземпляра документа к версии шаблона', "parentregister"=961, "chieldregister"=963, "cardinality"=NULL, "kindid"=96300200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(923, 'Идентификатор функции модуля(подсистемы)', 942, 940, NULL, 94000200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(916, 'От экземпляра документа к статусу', 962, 963, NULL, 96300900, NULL, NULL)
 on conflict (id) do update set
-"name"='Идентификатор функции модуля(подсистемы)', "parentregister"=942, "chieldregister"=940, "cardinality"=NULL, "kindid"=94000200, "parentregister_attribute_id"=NULL;
+"name"='От экземпляра документа к статусу', "parentregister"=962, "chieldregister"=963, "cardinality"=NULL, "kindid"=96300900, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(924, 'Внешний ключ к данным сессии', 949, 940, NULL, 94000700, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(917, 'От набора изменений к экземпляру документа', 963, 964, NULL, 96400200, NULL, NULL)
 on conflict (id) do update set
-"name"='Внешний ключ к данным сессии', "parentregister"=949, "chieldregister"=940, "cardinality"=NULL, "kindid"=94000700, "parentregister_attribute_id"=NULL;
+"name"='От набора изменений к экземпляру документа', "parentregister"=963, "chieldregister"=964, "cardinality"=NULL, "kindid"=96400200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(925, 'Идентификатор пользователя', 950, 940, NULL, 94000300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(918, 'От изменения к набору изменений', 964, 965, NULL, 96500200, NULL, NULL)
 on conflict (id) do update set
-"name"='Идентификатор пользователя', "parentregister"=950, "chieldregister"=940, "cardinality"=NULL, "kindid"=94000300, "parentregister_attribute_id"=NULL;
+"name"='От изменения к набору изменений', "parentregister"=964, "chieldregister"=965, "cardinality"=NULL, "kindid"=96500200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(927, 'Идентификатор модуля (подсистемы) системы', 942, 942, NULL, 94200400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(919, 'От аудита к типу аудируемого действия', 966, 967, NULL, 96700300, NULL, NULL)
 on conflict (id) do update set
-"name"='Идентификатор модуля (подсистемы) системы', "parentregister"=942, "chieldregister"=942, "cardinality"=NULL, "kindid"=94200400, "parentregister_attribute_id"=NULL;
+"name"='От аудита к типу аудируемого действия', "parentregister"=966, "chieldregister"=967, "cardinality"=NULL, "kindid"=96700300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(929, 'Внешний ключ к функции', 942, 946, NULL, 94600100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(920, 'От аудита к экземпляру документа', 963, 967, NULL, 96700200, NULL, NULL)
 on conflict (id) do update set
-"name"='Внешний ключ к функции', "parentregister"=942, "chieldregister"=946, "cardinality"=NULL, "kindid"=94600100, "parentregister_attribute_id"=NULL;
+"name"='От аудита к экземпляру документа', "parentregister"=963, "chieldregister"=967, "cardinality"=NULL, "kindid"=96700200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(930, 'Внешний ключ к роли', 945, 946, NULL, 94600200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(921, 'От дерева к шаблону документа', 960, 968, NULL, 96800400, NULL, NULL)
 on conflict (id) do update set
-"name"='Внешний ключ к роли', "parentregister"=945, "chieldregister"=946, "cardinality"=NULL, "kindid"=94600200, "parentregister_attribute_id"=NULL;
+"name"='От дерева к шаблону документа', "parentregister"=960, "chieldregister"=968, "cardinality"=NULL, "kindid"=96800400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(931, 'Внешний ключ к роли', 945, 947, NULL, 94700200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(922, 'От образа документа к экземпляру документа', 963, 969, NULL, 96900200, NULL, NULL)
 on conflict (id) do update set
-"name"='Внешний ключ к роли', "parentregister"=945, "chieldregister"=947, "cardinality"=NULL, "kindid"=94700200, "parentregister_attribute_id"=NULL;
+"name"='От образа документа к экземпляру документа', "parentregister"=963, "chieldregister"=969, "cardinality"=NULL, "kindid"=96900200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(932, 'Внешний ключ к правилу реестра', 947, 948, NULL, 94800200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(923, 'Идентификатор функции модуля(подсистемы)', 942, 940, NULL, 94000200, NULL, NULL)
 on conflict (id) do update set
-"name"='Внешний ключ к правилу реестра', "parentregister"=947, "chieldregister"=948, "cardinality"=NULL, "kindid"=94800200, "parentregister_attribute_id"=NULL;
+"name"='Идентификатор функции модуля(подсистемы)', "parentregister"=942, "chieldregister"=940, "cardinality"=NULL, "kindid"=94000200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(933, 'Идентификатор пользователя', 950, 949, NULL, 94900200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(924, 'Внешний ключ к данным сессии', 949, 940, NULL, 94000700, NULL, NULL)
 on conflict (id) do update set
-"name"='Идентификатор пользователя', "parentregister"=950, "chieldregister"=949, "cardinality"=NULL, "kindid"=94900200, "parentregister_attribute_id"=NULL;
+"name"='Внешний ключ к данным сессии', "parentregister"=949, "chieldregister"=940, "cardinality"=NULL, "kindid"=94000700, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(934, 'Внешний ключ к подразделению организации', 941, 950, NULL, 95000200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(925, 'Идентификатор пользователя', 950, 940, NULL, 94000300, NULL, NULL)
 on conflict (id) do update set
-"name"='Внешний ключ к подразделению организации', "parentregister"=941, "chieldregister"=950, "cardinality"=NULL, "kindid"=95000200, "parentregister_attribute_id"=NULL;
+"name"='Идентификатор пользователя', "parentregister"=950, "chieldregister"=940, "cardinality"=NULL, "kindid"=94000300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(935, 'Внешний ключ к пользователю', 950, 952, NULL, 95200100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(927, 'Идентификатор модуля (подсистемы) системы', 942, 942, NULL, 94200400, NULL, NULL)
 on conflict (id) do update set
-"name"='Внешний ключ к пользователю', "parentregister"=950, "chieldregister"=952, "cardinality"=NULL, "kindid"=95200100, "parentregister_attribute_id"=NULL;
+"name"='Идентификатор модуля (подсистемы) системы', "parentregister"=942, "chieldregister"=942, "cardinality"=NULL, "kindid"=94200400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(936, 'Внешний ключ к роли', 945, 952, NULL, 95200200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(929, 'Внешний ключ к функции', 942, 946, NULL, 94600100, NULL, NULL)
 on conflict (id) do update set
-"name"='Внешний ключ к роли', "parentregister"=945, "chieldregister"=952, "cardinality"=NULL, "kindid"=95200200, "parentregister_attribute_id"=NULL;
+"name"='Внешний ключ к функции', "parentregister"=942, "chieldregister"=946, "cardinality"=NULL, "kindid"=94600100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(938, 'От экземпляра ТД к автору', 950, 963, NULL, 96300400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(930, 'Внешний ключ к роли', 945, 946, NULL, 94600200, NULL, NULL)
 on conflict (id) do update set
-"name"='От экземпляра ТД к автору', "parentregister"=950, "chieldregister"=963, "cardinality"=NULL, "kindid"=96300400, "parentregister_attribute_id"=NULL;
+"name"='Внешний ключ к роли', "parentregister"=945, "chieldregister"=946, "cardinality"=NULL, "kindid"=94600200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(939, 'От версии шаблона к типу шаблона', 971, 961, NULL, 96101100, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(931, 'Внешний ключ к роли', 945, 947, NULL, 94700200, NULL, NULL)
 on conflict (id) do update set
-"name"='От версии шаблона к типу шаблона', "parentregister"=971, "chieldregister"=961, "cardinality"=NULL, "kindid"=96101100, "parentregister_attribute_id"=NULL;
+"name"='Внешний ключ к роли', "parentregister"=945, "chieldregister"=947, "cardinality"=NULL, "kindid"=94700200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(940, 'От ошибки к пользователю', 950, 989, NULL, 98900200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(932, 'Внешний ключ к правилу реестра', 947, 948, NULL, 94800200, NULL, NULL)
 on conflict (id) do update set
-"name"='От ошибки к пользователю', "parentregister"=950, "chieldregister"=989, "cardinality"=NULL, "kindid"=98900200, "parentregister_attribute_id"=NULL;
+"name"='Внешний ключ к правилу реестра', "parentregister"=947, "chieldregister"=948, "cardinality"=NULL, "kindid"=94800200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(941, 'От показателя к реестру', 930, 931, NULL, 93100300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(933, 'Идентификатор пользователя', 950, 949, NULL, 94900200, NULL, NULL)
 on conflict (id) do update set
-"name"='От показателя к реестру', "parentregister"=930, "chieldregister"=931, "cardinality"=NULL, "kindid"=93100300, "parentregister_attribute_id"=NULL;
+"name"='Идентификатор пользователя', "parentregister"=950, "chieldregister"=949, "cardinality"=NULL, "kindid"=94900200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(945, 'От сообщения диагностики к пользователю', 950, 992, NULL, 99200200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(934, 'Внешний ключ к подразделению организации', 941, 950, NULL, 95000200, NULL, NULL)
 on conflict (id) do update set
-"name"='От сообщения диагностики к пользователю', "parentregister"=950, "chieldregister"=992, "cardinality"=NULL, "kindid"=99200200, "parentregister_attribute_id"=NULL;
+"name"='Внешний ключ к подразделению организации', "parentregister"=941, "chieldregister"=950, "cardinality"=NULL, "kindid"=95000200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(963, 'От показателя к справочнику', 982, 931, NULL, 93100600, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(935, 'Внешний ключ к пользователю', 950, 952, NULL, 95200100, NULL, NULL)
 on conflict (id) do update set
-"name"='От показателя к справочнику', "parentregister"=982, "chieldregister"=931, "cardinality"=NULL, "kindid"=93100600, "parentregister_attribute_id"=NULL;
+"name"='Внешний ключ к пользователю', "parentregister"=950, "chieldregister"=952, "cardinality"=NULL, "kindid"=95200100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(964, 'От связи реестров к дочернему реестру', 930, 932, NULL, 93200400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(936, 'Внешний ключ к роли', 945, 952, NULL, 95200200, NULL, NULL)
 on conflict (id) do update set
-"name"='От связи реестров к дочернему реестру', "parentregister"=930, "chieldregister"=932, "cardinality"=NULL, "kindid"=93200400, "parentregister_attribute_id"=NULL;
+"name"='Внешний ключ к роли', "parentregister"=945, "chieldregister"=952, "cardinality"=NULL, "kindid"=95200200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(965, 'От связи реестров к показателю', 931, 932, NULL, 93200600, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(938, 'От экземпляра ТД к автору', 950, 963, NULL, 96300400, NULL, NULL)
 on conflict (id) do update set
-"name"='От связи реестров к показателю', "parentregister"=931, "chieldregister"=932, "cardinality"=NULL, "kindid"=93200600, "parentregister_attribute_id"=NULL;
+"name"='От экземпляра ТД к автору', "parentregister"=950, "chieldregister"=963, "cardinality"=NULL, "kindid"=96300400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(966, 'От связи реестров к родительскому реестру', 993, 932, NULL, 93200300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(939, 'От версии шаблона к типу шаблона', 971, 961, NULL, 96101100, NULL, NULL)
 on conflict (id) do update set
-"name"='От связи реестров к родительскому реестру', "parentregister"=993, "chieldregister"=932, "cardinality"=NULL, "kindid"=93200300, "parentregister_attribute_id"=NULL;
+"name"='От версии шаблона к типу шаблона', "parentregister"=971, "chieldregister"=961, "cardinality"=NULL, "kindid"=96101100, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(967, 'От раскладки к пользователю', 950, 933, NULL, 93301200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(940, 'От ошибки к пользователю', 950, 989, NULL, 98900200, NULL, NULL)
 on conflict (id) do update set
-"name"='От раскладки к пользователю', "parentregister"=950, "chieldregister"=933, "cardinality"=NULL, "kindid"=93301200, "parentregister_attribute_id"=NULL;
+"name"='От ошибки к пользователю', "parentregister"=950, "chieldregister"=989, "cardinality"=NULL, "kindid"=98900200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(968, 'От фильтра к пользователю', 950, 936, NULL, 93601000, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(941, 'От показателя к реестру', 930, 931, NULL, 93100300, NULL, NULL)
 on conflict (id) do update set
-"name"='От фильтра к пользователю', "parentregister"=950, "chieldregister"=936, "cardinality"=NULL, "kindid"=93601000, "parentregister_attribute_id"=NULL;
+"name"='От показателя к реестру', "parentregister"=930, "chieldregister"=931, "cardinality"=NULL, "kindid"=93100300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(969, 'От детализации раскладок к раскладкам', 933, 935, NULL, 93500200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(945, 'От сообщения диагностики к пользователю', 950, 992, NULL, 99200200, NULL, NULL)
 on conflict (id) do update set
-"name"='От детализации раскладок к раскладкам', "parentregister"=933, "chieldregister"=935, "cardinality"=NULL, "kindid"=93500200, "parentregister_attribute_id"=NULL;
+"name"='От сообщения диагностики к пользователю', "parentregister"=950, "chieldregister"=992, "cardinality"=NULL, "kindid"=99200200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(970, 'От автора списка к пользователю', 950, 920, NULL, 92000500, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(963, 'От показателя к справочнику', 982, 931, NULL, 93100600, NULL, NULL)
 on conflict (id) do update set
-"name"='От автора списка к пользователю', "parentregister"=950, "chieldregister"=920, "cardinality"=NULL, "kindid"=92000500, "parentregister_attribute_id"=NULL;
+"name"='От показателя к справочнику', "parentregister"=982, "chieldregister"=931, "cardinality"=NULL, "kindid"=93100600, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(971, 'От файла к образу', 986, 987, NULL, 98700200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(964, 'От связи реестров к дочернему реестру', 930, 932, NULL, 93200400, NULL, NULL)
 on conflict (id) do update set
-"name"='От файла к образу', "parentregister"=986, "chieldregister"=987, "cardinality"=NULL, "kindid"=98700200, "parentregister_attribute_id"=NULL;
+"name"='От связи реестров к дочернему реестру', "parentregister"=930, "chieldregister"=932, "cardinality"=NULL, "kindid"=93200400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(972, 'От образа к автору', 953, 986, NULL, 98600700, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(965, 'От связи реестров к показателю', 931, 932, NULL, 93200600, NULL, NULL)
 on conflict (id) do update set
-"name"='От образа к автору', "parentregister"=953, "chieldregister"=986, "cardinality"=NULL, "kindid"=98600700, "parentregister_attribute_id"=NULL;
+"name"='От связи реестров к показателю', "parentregister"=931, "chieldregister"=932, "cardinality"=NULL, "kindid"=93200600, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(973, 'От связи к образу', 986, 988, NULL, 98800200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(966, 'От связи реестров к родительскому реестру', 993, 932, NULL, 93200300, NULL, NULL)
 on conflict (id) do update set
-"name"='От связи к образу', "parentregister"=986, "chieldregister"=988, "cardinality"=NULL, "kindid"=98800200, "parentregister_attribute_id"=NULL;
+"name"='От связи реестров к родительскому реестру', "parentregister"=993, "chieldregister"=932, "cardinality"=NULL, "kindid"=93200300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(974, 'От связи к ТД', 963, 988, NULL, 98800400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(967, 'От раскладки к пользователю', 950, 933, NULL, 93301200, NULL, NULL)
 on conflict (id) do update set
-"name"='От связи к ТД', "parentregister"=963, "chieldregister"=988, "cardinality"=NULL, "kindid"=98800400, "parentregister_attribute_id"=NULL;
+"name"='От раскладки к пользователю', "parentregister"=950, "chieldregister"=933, "cardinality"=NULL, "kindid"=93301200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(975, 'От деталей фильтра к фильтру', 936, 937, NULL, 93700200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(968, 'От фильтра к пользователю', 950, 936, NULL, 93601000, NULL, NULL)
 on conflict (id) do update set
-"name"='От деталей фильтра к фильтру', "parentregister"=936, "chieldregister"=937, "cardinality"=NULL, "kindid"=93700200, "parentregister_attribute_id"=NULL;
+"name"='От фильтра к пользователю', "parentregister"=950, "chieldregister"=936, "cardinality"=NULL, "kindid"=93601000, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(976, 'Связь с дочерним справочным значением', 983, 985, NULL, 98500400, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(969, 'От детализации раскладок к раскладкам', 933, 935, NULL, 93500200, NULL, NULL)
 on conflict (id) do update set
-"name"='Связь с дочерним справочным значением', "parentregister"=983, "chieldregister"=985, "cardinality"=NULL, "kindid"=98500400, "parentregister_attribute_id"=NULL;
+"name"='От детализации раскладок к раскладкам', "parentregister"=933, "chieldregister"=935, "cardinality"=NULL, "kindid"=93500200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(982, 'От 981 к 980', 980, 981, NULL, 98100200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(970, 'От автора списка к пользователю', 950, 920, NULL, 92000500, NULL, NULL)
 on conflict (id) do update set
-"name"='От 981 к 980', "parentregister"=980, "chieldregister"=981, "cardinality"=NULL, "kindid"=98100200, "parentregister_attribute_id"=NULL;
+"name"='От автора списка к пользователю', "parentregister"=950, "chieldregister"=920, "cardinality"=NULL, "kindid"=92000500, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(983, 'От 980 к 950', 950, 980, NULL, 98000200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(971, 'От файла к образу', 986, 987, NULL, 98700200, NULL, NULL)
 on conflict (id) do update set
-"name"='От 980 к 950', "parentregister"=950, "chieldregister"=980, "cardinality"=NULL, "kindid"=98000200, "parentregister_attribute_id"=NULL;
+"name"='От файла к образу', "parentregister"=986, "chieldregister"=987, "cardinality"=NULL, "kindid"=98700200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(988, 'От очереди долгого процесса к типу', 976, 975, NULL, 97500300, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(972, 'От образа к автору', 953, 986, NULL, 98600700, NULL, NULL)
 on conflict (id) do update set
-"name"='От очереди долгого процесса к типу', "parentregister"=976, "chieldregister"=975, "cardinality"=NULL, "kindid"=97500300, "parentregister_attribute_id"=NULL;
+"name"='От образа к автору', "parentregister"=953, "chieldregister"=986, "cardinality"=NULL, "kindid"=98600700, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(1014, 'От 950 к 809', 950, 809, NULL, 80900500, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(973, 'От связи к образу', 986, 988, NULL, 98800200, NULL, NULL)
 on conflict (id) do update set
-"name"='От 950 к 809', "parentregister"=950, "chieldregister"=809, "cardinality"=NULL, "kindid"=80900500, "parentregister_attribute_id"=NULL;
+"name"='От связи к образу', "parentregister"=986, "chieldregister"=988, "cardinality"=NULL, "kindid"=98800200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(1034, 'От 933 к 956', 933, 956, NULL, 95600200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(974, 'От связи к ТД', 963, 988, NULL, 98800400, NULL, NULL)
 on conflict (id) do update set
-"name"='От 933 к 956', "parentregister"=933, "chieldregister"=956, "cardinality"=NULL, "kindid"=95600200, "parentregister_attribute_id"=NULL;
+"name"='От связи к ТД', "parentregister"=963, "chieldregister"=988, "cardinality"=NULL, "kindid"=98800400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
-insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id") values
-(1054, '975 -> 950', 950, 975, NULL, 97500200, NULL)
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(975, 'От деталей фильтра к фильтру', 936, 937, NULL, 93700200, NULL, NULL)
 on conflict (id) do update set
-"name"='975 -> 950', "parentregister"=950, "chieldregister"=975, "cardinality"=NULL, "kindid"=97500200, "parentregister_attribute_id"=NULL;
+"name"='От деталей фильтра к фильтру', "parentregister"=936, "chieldregister"=937, "cardinality"=NULL, "kindid"=93700200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(976, 'Связь с дочерним справочным значением', 983, 985, NULL, 98500400, NULL, NULL)
+on conflict (id) do update set
+"name"='Связь с дочерним справочным значением', "parentregister"=983, "chieldregister"=985, "cardinality"=NULL, "kindid"=98500400, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(982, 'От 981 к 980', 980, 981, NULL, 98100200, NULL, NULL)
+on conflict (id) do update set
+"name"='От 981 к 980', "parentregister"=980, "chieldregister"=981, "cardinality"=NULL, "kindid"=98100200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(983, 'От 980 к 950', 950, 980, NULL, 98000200, NULL, NULL)
+on conflict (id) do update set
+"name"='От 980 к 950', "parentregister"=950, "chieldregister"=980, "cardinality"=NULL, "kindid"=98000200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(988, 'От очереди долгого процесса к типу', 976, 975, NULL, 97500300, NULL, NULL)
+on conflict (id) do update set
+"name"='От очереди долгого процесса к типу', "parentregister"=976, "chieldregister"=975, "cardinality"=NULL, "kindid"=97500300, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(1014, 'От 950 к 809', 950, 809, NULL, 80900500, NULL, NULL)
+on conflict (id) do update set
+"name"='От 950 к 809', "parentregister"=950, "chieldregister"=809, "cardinality"=NULL, "kindid"=80900500, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(1034, 'От 933 к 956', 933, 956, NULL, 95600200, NULL, NULL)
+on conflict (id) do update set
+"name"='От 933 к 956', "parentregister"=933, "chieldregister"=956, "cardinality"=NULL, "kindid"=95600200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
+
+--<DO>--
+insert into core_register_relation ("id", "name", "parentregister", "chieldregister", "cardinality", "kindid", "parentregister_attribute_id", "qscondition") values
+(1054, '975 -> 950', 950, 975, NULL, 97500200, NULL, NULL)
+on conflict (id) do update set
+"name"='975 -> 950', "parentregister"=950, "chieldregister"=975, "cardinality"=NULL, "kindid"=97500200, "parentregister_attribute_id"=NULL, "qscondition"=NULL;
 
 --<DO>--
 insert into core_long_process_type ("id", "process_name", "class_name", "description") values
@@ -22068,6 +23158,24 @@ insert into core_long_process_type ("id", "process_name", "class_name", "descrip
 (7, 'DataImporterSud', 'KadOzenka.Dal.DataImport.DataImporterSud, KadOzenka.Dal', 'Импорт объектов по судебным решениям из Excel')
 on conflict (id) do update set
 "process_name"='DataImporterSud', "class_name"='KadOzenka.Dal.DataImport.DataImporterSud, KadOzenka.Dal', "description"='Импорт объектов по судебным решениям из Excel';
+
+--<DO>--
+insert into core_long_process_type ("id", "process_name", "class_name", "description") values
+(8, 'DataImporterGkn', 'KadOzenka.Dal.DataImport.DataImporterGknLongProcess, KadOzenka.Dal', 'Загрузка данных ГКН')
+on conflict (id) do update set
+"process_name"='DataImporterGkn', "class_name"='KadOzenka.Dal.DataImport.DataImporterGknLongProcess, KadOzenka.Dal', "description"='Загрузка данных ГКН';
+
+--<DO>--
+insert into core_long_process_type ("id", "process_name", "class_name", "description") values
+(9, 'AdditionalAnalysisChecker', 'KadOzenka.Dal.LongProcess.AdditionalAnalysisChecker, KadOzenka.Dal', 'Проверка необходимости устанавливать объектам параметр "требует дополнительного анализа" ')
+on conflict (id) do update set
+"process_name"='AdditionalAnalysisChecker', "class_name"='KadOzenka.Dal.LongProcess.AdditionalAnalysisChecker, KadOzenka.Dal', "description"='Проверка необходимости устанавливать объектам параметр "требует дополнительного анализа" ';
+
+--<DO>--
+insert into core_long_process_type ("id", "process_name", "class_name", "description") values
+(10, 'DataImporterDeclarations', 'KadOzenka.Dal.DataImport.DataImporterDeclarations, KadOzenka.Dal', 'Импорт данных деклараций из Excel')
+on conflict (id) do update set
+"process_name"='DataImporterDeclarations', "class_name"='KadOzenka.Dal.DataImport.DataImporterDeclarations, KadOzenka.Dal', "description"='Импорт данных деклараций из Excel';
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
@@ -22779,7 +23887,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1000976, 'Основная раскладка для типов долгих процессов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 976, 1002054, NULL, NULL, TO_TIMESTAMP('2018.12.03 20:31:47', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1000976, 'Основная раскладка для типов долгих процессов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 976, 1002054, NULL, NULL, TO_TIMESTAMP('2020.01.31 19:08:22', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>933</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -22800,7 +23908,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, 'ASC', 1, NULL, 0, NULL, NULL, NULL, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для типов долгих процессов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=976, "defaultsort"=1002054, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2018.12.03 20:31:47', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для типов долгих процессов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=976, "defaultsort"=1002054, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.31 19:08:22', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>933</MainRegisterID>
   <TDInstanceID>-1</TDInstanceID>
@@ -23213,7 +24321,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1001001, 'Основная раскладка для объектов аналогов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 100, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.11 16:09:52', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1001001, 'Основная раскладка для объектов аналогов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 100, NULL, NULL, NULL, TO_TIMESTAMP('2020.02.07 17:16:29', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>100</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23254,7 +24362,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'MarketObjects', NULL, 2, NULL)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для объектов аналогов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=100, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.11 16:09:52', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для объектов аналогов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=100, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.02.07 17:16:29', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>100</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23333,7 +24441,79 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1002031, 'Основная раскладка для представления Задания на оценку', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 203, NULL, NULL, NULL, TO_TIMESTAMP('2019.11.26 14:26:26', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1002011, 'Единицы оценки (основная раскладка для карточки задания)', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 201, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.20 16:15:16', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>201</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'KoObjectsCard', NULL, NULL, 0)
+on conflict (layoutid) do update set
+"layoutname"='Единицы оценки (основная раскладка для карточки задания)', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=201, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.20 16:15:16', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>201</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='KoObjectsCard', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1002012, 'Основная раскладка для списка единиц оценки', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 201, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.30 21:59:41', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>201</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'KoObjects', NULL, NULL, 0)
+on conflict (layoutid) do update set
+"layoutname"='Основная раскладка для списка единиц оценки', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=201, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.30 21:59:41', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>201</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='KoObjects', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1002031, 'Основная раскладка для представления Задания на оценку', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 203, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.20 15:53:30', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>203</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23355,7 +24535,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'KoObjects', NULL, 0, 0)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для представления Задания на оценку', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=203, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.11.26 14:26:26', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для представления Задания на оценку', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=203, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.20 15:53:30', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>203</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23415,7 +24595,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003021, 'Заключения объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 302, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.30 17:07:31', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003021, 'Заключения объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 302, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.13 15:48:15', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>302</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23453,7 +24633,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudZakLinkCard', NULL, NULL, 1)
 on conflict (layoutid) do update set
-"layoutname"='Заключения объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=302, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.30 17:07:31', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Заключения объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=302, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.13 15:48:15', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>302</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23493,7 +24673,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003041, 'Отчеты объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 304, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.30 15:20:35', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003041, 'Отчеты объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 304, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.13 15:46:24', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>304</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23535,7 +24715,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudOtchetLinkCard', NULL, NULL, 1)
 on conflict (layoutid) do update set
-"layoutname"='Отчеты объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=304, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.30 15:20:35', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Отчеты объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=304, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.13 15:46:24', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>304</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23651,7 +24831,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003141, 'Решения объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 314, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.30 17:34:21', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003141, 'Решения объекта', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 314, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.13 15:53:01', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>314</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23689,7 +24869,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudReshLinkCard', NULL, NULL, 1)
 on conflict (layoutid) do update set
-"layoutname"='Решения объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=314, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.30 17:34:21', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Решения объекта', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=314, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.13 15:53:01', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>314</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -23735,8 +24915,34 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <TDInstanceID>0</TDInstanceID>
   <Columns />
   <Condition xsi:type="QSConditionGroup">
-    <Type>And</Type>
-    <Conditions />
+    <Type>Or</Type>
+    <Conditions>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>Equal</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>31502000</Alias>
+          <AttributeID>31502000</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperand xsi:type="QSColumnConstant">
+          <Value xsi:type="xsd:boolean">false</Value>
+        </RightOperand>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>IsNull</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>31502000</Alias>
+          <AttributeID>31502000</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+    </Conditions>
   </Condition>
   <ActualDate>0001-01-01T00:00:00</ActualDate>
   <IsActual>false</IsActual>
@@ -23747,589 +24953,8 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <OrderBy />
   <GroupBy />
   <RegisterLinks />
-  <JoinType>Left</JoinType>
-  <Joins>
-    <QSJoin>
-      <RegisterId>314</RegisterId>
-      <JoinType>Left</JoinType>
-      <JoinCondition xsi:type="QSConditionGroup">
-        <Type>And</Type>
-        <Conditions>
-          <QSCondition xsi:type="QSConditionSimple">
-            <ConditionType>Equal</ConditionType>
-            <LeftOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_1</Alias>
-              <AttributeID>31400200</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </LeftOperand>
-            <LeftOperandLevel>0</LeftOperandLevel>
-            <RightOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_2</Alias>
-              <AttributeID>31500100</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </RightOperand>
-            <RightOperandLevel>0</RightOperandLevel>
-          </QSCondition>
-          <QSCondition xsi:type="QSConditionSimple">
-            <ConditionType>Equal</ConditionType>
-            <LeftOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_3</Alias>
-              <AttributeID>31400300</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </LeftOperand>
-            <LeftOperandLevel>0</LeftOperandLevel>
-            <RightOperand xsi:type="QSColumnQuery">
-              <Alias>Колонка_4</Alias>
-              <SubQuery>
-                <MainRegisterID>316</MainRegisterID>
-                <TDInstanceID>0</TDInstanceID>
-                <Columns>
-                  <QSColumn xsi:type="QSColumnFunction">
-                    <Alias>Колонка_4</Alias>
-                    <FunctionType>Max</FunctionType>
-                    <Operands>
-                      <QSColumn xsi:type="QSColumnSimple">
-                        <Alias>Колонка_4</Alias>
-                        <AttributeID>31600100</AttributeID>
-                        <Type>Value</Type>
-                        <Level>0</Level>
-                      </QSColumn>
-                    </Operands>
-                  </QSColumn>
-                </Columns>
-                <Condition xsi:type="QSConditionGroup">
-                  <Type>And</Type>
-                  <Conditions>
-                    <QSCondition xsi:type="QSConditionSimple">
-                      <ConditionType>Exists</ConditionType>
-                      <LeftOperand xsi:type="QSColumnQuery">
-                        <Alias>Колонка_6</Alias>
-                        <SubQuery>
-                          <MainRegisterID>314</MainRegisterID>
-                          <TDInstanceID>0</TDInstanceID>
-                          <Columns>
-                            <QSColumn xsi:type="QSColumnConstant">
-                              <Alias>Колонка_7</Alias>
-                              <Value xsi:type="xsd:long">1</Value>
-                            </QSColumn>
-                          </Columns>
-                          <Condition xsi:type="QSConditionGroup">
-                            <Type>And</Type>
-                            <Conditions>
-                              <QSCondition xsi:type="QSConditionSimple">
-                                <ConditionType>Equal</ConditionType>
-                                <LeftOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_8</Alias>
-                                  <AttributeID>31400200</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>0</Level>
-                                </LeftOperand>
-                                <LeftOperandLevel>0</LeftOperandLevel>
-                                <RightOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_9</Alias>
-                                  <AttributeID>31500100</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>1</Level>
-                                </RightOperand>
-                                <RightOperandLevel>0</RightOperandLevel>
-                              </QSCondition>
-                              <QSCondition xsi:type="QSConditionSimple">
-                                <ConditionType>Equal</ConditionType>
-                                <LeftOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_10</Alias>
-                                  <AttributeID>31400300</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>0</Level>
-                                </LeftOperand>
-                                <LeftOperandLevel>0</LeftOperandLevel>
-                                <RightOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_11</Alias>
-                                  <AttributeID>31600100</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>2</Level>
-                                </RightOperand>
-                                <RightOperandLevel>0</RightOperandLevel>
-                              </QSCondition>
-                            </Conditions>
-                          </Condition>
-                          <ActualDate>0001-01-01T00:00:00</ActualDate>
-                          <IsActual>false</IsActual>
-                          <Distinct>false</Distinct>
-                          <ManualJoin>false</ManualJoin>
-                          <PackageSize>0</PackageSize>
-                          <PackageIndex>0</PackageIndex>
-                          <OrderBy />
-                          <GroupBy />
-                          <RegisterLinks />
-                          <JoinType>Inner</JoinType>
-                          <Joins />
-                          <Parameters />
-                          <SubMapRegisters />
-                          <ExcludeLinks />
-                          <LoadRelations>false</LoadRelations>
-                        </SubQuery>
-                      </LeftOperand>
-                      <LeftOperandLevel>0</LeftOperandLevel>
-                      <RightOperandLevel>0</RightOperandLevel>
-                    </QSCondition>
-                    <QSCondition xsi:type="QSConditionSimple">
-                      <ConditionType>Equal</ConditionType>
-                      <LeftOperand xsi:type="QSColumnFunction">
-					    <FunctionType>Coalesce</FunctionType>
-                        <Operands>
-						   <QSColumn xsi:type="QSColumnSimple">
-						     <Alias>Колонка_7</Alias>
-							 <AttributeID>31600400</AttributeID>
-							 <Type>Value</Type>
-							 <Level>0</Level>
-						   </QSColumn>
-						   <QSColumn xsi:type="QSColumnConstant">
-						     <Value xsi:type="xsd:dateTime">0001-01-01T00:00:00</Value>
-						   </QSColumn>
-						</Operands>
-                      </LeftOperand>
-                      <LeftOperandLevel>0</LeftOperandLevel>
-                      <RightOperand xsi:type="QSColumnFunction">
-					    <FunctionType>Coalesce</FunctionType>
-                        <Operands>
-						   <QSColumn xsi:type="QSColumnQuery">
-						     <Alias>Колонка_8</Alias>
-								<SubQuery>
-								  <MainRegisterID>316</MainRegisterID>
-								  <TDInstanceID>0</TDInstanceID>
-								  <Columns>
-									<QSColumn xsi:type="QSColumnFunction">
-									  <Alias>Колонка_8</Alias>
-									  <FunctionType>Max</FunctionType>
-									  <Operands>
-										<QSColumn xsi:type="QSColumnSimple">
-										  <Alias>Колонка_8</Alias>
-										  <AttributeID>31600400</AttributeID>
-										  <Type>Value</Type>
-										  <Level>0</Level>
-										</QSColumn>
-									  </Operands>
-									</QSColumn>
-								  </Columns>
-								  <Condition xsi:type="QSConditionGroup">
-									<Type>And</Type>
-									<Conditions>
-									  <QSCondition xsi:type="QSConditionSimple">
-										<ConditionType>Exists</ConditionType>
-										<LeftOperand xsi:type="QSColumnQuery">
-										  <Alias>Колонка_10</Alias>
-										  <SubQuery>
-											<MainRegisterID>314</MainRegisterID>
-											<TDInstanceID>0</TDInstanceID>
-											<Columns>
-											  <QSColumn xsi:type="QSColumnConstant">
-												<Alias>Колонка_10</Alias>
-												<Value xsi:type="xsd:long">1</Value>
-											  </QSColumn>
-											</Columns>
-											<Condition xsi:type="QSConditionGroup">
-											  <Type>And</Type>
-											  <Conditions>
-												<QSCondition xsi:type="QSConditionSimple">
-												  <ConditionType>Equal</ConditionType>
-												  <LeftOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_11</Alias>
-													<AttributeID>31400200</AttributeID>
-													<Type>Value</Type>
-													<Level>0</Level>
-												  </LeftOperand>
-												  <LeftOperandLevel>0</LeftOperandLevel>
-												  <RightOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_12</Alias>
-													<AttributeID>31500100</AttributeID>
-													<Type>Value</Type>
-													<Level>1</Level>
-												  </RightOperand>
-												  <RightOperandLevel>0</RightOperandLevel>
-												</QSCondition>
-												<QSCondition xsi:type="QSConditionSimple">
-												  <ConditionType>Equal</ConditionType>
-												  <LeftOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_13</Alias>
-													<AttributeID>31400300</AttributeID>
-													<Type>Value</Type>
-													<Level>0</Level>
-												  </LeftOperand>
-												  <LeftOperandLevel>0</LeftOperandLevel>
-												  <RightOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_14</Alias>
-													<AttributeID>31600100</AttributeID>
-													<Type>Value</Type>
-													<Level>3</Level>
-												  </RightOperand>
-												  <RightOperandLevel>0</RightOperandLevel>
-												</QSCondition>
-											  </Conditions>
-											</Condition>
-											<ActualDate>0001-01-01T00:00:00</ActualDate>
-											<IsActual>false</IsActual>
-											<Distinct>false</Distinct>
-											<ManualJoin>false</ManualJoin>
-											<PackageSize>0</PackageSize>
-											<PackageIndex>0</PackageIndex>
-											<OrderBy />
-											<GroupBy />
-											<RegisterLinks />
-											<JoinType>Inner</JoinType>
-											<Joins />
-											<Parameters />
-											<SubMapRegisters />
-											<ExcludeLinks />
-											<LoadRelations>false</LoadRelations>
-										  </SubQuery>
-										</LeftOperand>
-										<LeftOperandLevel>0</LeftOperandLevel>
-										<RightOperandLevel>0</RightOperandLevel>
-									  </QSCondition>
-									</Conditions>
-								  </Condition>
-								  <ActualDate>0001-01-01T00:00:00</ActualDate>
-								  <IsActual>false</IsActual>
-								  <Distinct>false</Distinct>
-								  <ManualJoin>false</ManualJoin>
-								  <PackageSize>0</PackageSize>
-								  <PackageIndex>0</PackageIndex>
-								  <OrderBy />
-								  <GroupBy />
-								  <RegisterLinks />
-								  <JoinType>Inner</JoinType>
-								  <Joins />
-								  <Parameters />
-								  <SubMapRegisters />
-								  <ExcludeLinks />
-								  <LoadRelations>false</LoadRelations>
-								</SubQuery>
-						   </QSColumn>
-							<QSColumn xsi:type="QSColumnConstant">
-						     <Value xsi:type="xsd:dateTime">0001-01-01T00:00:00</Value>
-						   </QSColumn>
-						</Operands>
-                      </RightOperand>
-                      <RightOperandLevel>0</RightOperandLevel>
-                    </QSCondition>
-                  </Conditions>
-                </Condition>
-                <ActualDate>0001-01-01T00:00:00</ActualDate>
-                <IsActual>false</IsActual>
-                <Distinct>false</Distinct>
-                <ManualJoin>false</ManualJoin>
-                <PackageSize>0</PackageSize>
-                <PackageIndex>0</PackageIndex>
-                <OrderBy />
-                <GroupBy />
-                <RegisterLinks />
-                <JoinType>Inner</JoinType>
-                <Joins />
-                <Parameters />
-                <SubMapRegisters />
-                <ExcludeLinks />
-                <LoadRelations>false</LoadRelations>
-              </SubQuery>
-            </RightOperand>
-            <RightOperandLevel>0</RightOperandLevel>
-          </QSCondition>
-        </Conditions>
-      </JoinCondition>
-    </QSJoin>
-	    <QSJoin>
-      <RegisterId>302</RegisterId>
-      <JoinType>Left</JoinType>
-      <JoinCondition xsi:type="QSConditionGroup">
-        <Type>And</Type>
-        <Conditions>
-          <QSCondition xsi:type="QSConditionSimple">
-            <ConditionType>Equal</ConditionType>
-            <LeftOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_1</Alias>
-              <AttributeID>30200200</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </LeftOperand>
-            <LeftOperandLevel>0</LeftOperandLevel>
-            <RightOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_2</Alias>
-              <AttributeID>31500100</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </RightOperand>
-            <RightOperandLevel>0</RightOperandLevel>
-          </QSCondition>
-          <QSCondition xsi:type="QSConditionSimple">
-            <ConditionType>Equal</ConditionType>
-            <LeftOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_3</Alias>
-              <AttributeID>30200300</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </LeftOperand>
-            <LeftOperandLevel>0</LeftOperandLevel>
-            <RightOperand xsi:type="QSColumnQuery">
-              <Alias>Колонка_4</Alias>
-              <SubQuery>
-                <MainRegisterID>300</MainRegisterID>
-                <TDInstanceID>0</TDInstanceID>
-                <Columns>
-                  <QSColumn xsi:type="QSColumnFunction">
-                    <Alias>Колонка_4</Alias>
-                    <FunctionType>Max</FunctionType>
-                    <Operands>
-                      <QSColumn xsi:type="QSColumnSimple">
-                        <Alias>Колонка_4</Alias>
-                        <AttributeID>30000100</AttributeID>
-                        <Type>Value</Type>
-                        <Level>0</Level>
-                      </QSColumn>
-                    </Operands>
-                  </QSColumn>
-                </Columns>
-                <Condition xsi:type="QSConditionGroup">
-                  <Type>And</Type>
-                  <Conditions>
-                    <QSCondition xsi:type="QSConditionSimple">
-                      <ConditionType>Exists</ConditionType>
-                      <LeftOperand xsi:type="QSColumnQuery">
-                        <Alias>Колонка_6</Alias>
-                        <SubQuery>
-                          <MainRegisterID>302</MainRegisterID>
-                          <TDInstanceID>0</TDInstanceID>
-                          <Columns>
-                            <QSColumn xsi:type="QSColumnConstant">
-                              <Alias>Колонка_7</Alias>
-                              <Value xsi:type="xsd:long">1</Value>
-                            </QSColumn>
-                          </Columns>
-                          <Condition xsi:type="QSConditionGroup">
-                            <Type>And</Type>
-                            <Conditions>
-                              <QSCondition xsi:type="QSConditionSimple">
-                                <ConditionType>Equal</ConditionType>
-                                <LeftOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_8</Alias>
-                                  <AttributeID>30200200</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>0</Level>
-                                </LeftOperand>
-                                <LeftOperandLevel>0</LeftOperandLevel>
-                                <RightOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_9</Alias>
-                                  <AttributeID>31500100</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>1</Level>
-                                </RightOperand>
-                                <RightOperandLevel>0</RightOperandLevel>
-                              </QSCondition>
-                              <QSCondition xsi:type="QSConditionSimple">
-                                <ConditionType>Equal</ConditionType>
-                                <LeftOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_10</Alias>
-                                  <AttributeID>30200300</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>0</Level>
-                                </LeftOperand>
-                                <LeftOperandLevel>0</LeftOperandLevel>
-                                <RightOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_11</Alias>
-                                  <AttributeID>30000100</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>2</Level>
-                                </RightOperand>
-                                <RightOperandLevel>0</RightOperandLevel>
-                              </QSCondition>
-                            </Conditions>
-                          </Condition>
-                          <ActualDate>0001-01-01T00:00:00</ActualDate>
-                          <IsActual>false</IsActual>
-                          <Distinct>false</Distinct>
-                          <ManualJoin>false</ManualJoin>
-                          <PackageSize>0</PackageSize>
-                          <PackageIndex>0</PackageIndex>
-                          <OrderBy />
-                          <GroupBy />
-                          <RegisterLinks />
-                          <JoinType>Inner</JoinType>
-                          <Joins />
-                          <Parameters />
-                          <SubMapRegisters />
-                          <ExcludeLinks />
-                          <LoadRelations>false</LoadRelations>
-                        </SubQuery>
-                      </LeftOperand>
-                      <LeftOperandLevel>0</LeftOperandLevel>
-                      <RightOperandLevel>0</RightOperandLevel>
-                    </QSCondition>
-                    <QSCondition xsi:type="QSConditionSimple">
-                      <ConditionType>Equal</ConditionType>
-                      <LeftOperand xsi:type="QSColumnFunction">
-					    <FunctionType>Coalesce</FunctionType>
-                        <Operands>
-						   <QSColumn xsi:type="QSColumnSimple">
-						     <Alias>Колонка_7</Alias>
-							 <AttributeID>30000300</AttributeID>
-							 <Type>Value</Type>
-							 <Level>0</Level>
-						   </QSColumn>
-						   <QSColumn xsi:type="QSColumnConstant">
-						     <Value xsi:type="xsd:dateTime">0001-01-01T00:00:00</Value>
-						   </QSColumn>
-						</Operands>
-                      </LeftOperand>
-                      <LeftOperandLevel>0</LeftOperandLevel>
-                      <RightOperand xsi:type="QSColumnFunction">
-					    <FunctionType>Coalesce</FunctionType>
-                        <Operands>
-						   <QSColumn xsi:type="QSColumnQuery">
-						     <Alias>Колонка_8</Alias>
-								<SubQuery>
-								  <MainRegisterID>300</MainRegisterID>
-								  <TDInstanceID>0</TDInstanceID>
-								  <Columns>
-									<QSColumn xsi:type="QSColumnFunction">
-									  <Alias>Колонка_8</Alias>
-									  <FunctionType>Max</FunctionType>
-									  <Operands>
-										<QSColumn xsi:type="QSColumnSimple">
-										  <Alias>Колонка_8</Alias>
-										  <AttributeID>30000300</AttributeID>
-										  <Type>Value</Type>
-										  <Level>0</Level>
-										</QSColumn>
-									  </Operands>
-									</QSColumn>
-								  </Columns>
-								  <Condition xsi:type="QSConditionGroup">
-									<Type>And</Type>
-									<Conditions>
-									  <QSCondition xsi:type="QSConditionSimple">
-										<ConditionType>Exists</ConditionType>
-										<LeftOperand xsi:type="QSColumnQuery">
-										  <Alias>Колонка_10</Alias>
-										  <SubQuery>
-											<MainRegisterID>302</MainRegisterID>
-											<TDInstanceID>0</TDInstanceID>
-											<Columns>
-											  <QSColumn xsi:type="QSColumnConstant">
-												<Alias>Колонка_10</Alias>
-												<Value xsi:type="xsd:long">1</Value>
-											  </QSColumn>
-											</Columns>
-											<Condition xsi:type="QSConditionGroup">
-											  <Type>And</Type>
-											  <Conditions>
-												<QSCondition xsi:type="QSConditionSimple">
-												  <ConditionType>Equal</ConditionType>
-												  <LeftOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_11</Alias>
-													<AttributeID>30200200</AttributeID>
-													<Type>Value</Type>
-													<Level>0</Level>
-												  </LeftOperand>
-												  <LeftOperandLevel>0</LeftOperandLevel>
-												  <RightOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_12</Alias>
-													<AttributeID>31500100</AttributeID>
-													<Type>Value</Type>
-													<Level>1</Level>
-												  </RightOperand>
-												  <RightOperandLevel>0</RightOperandLevel>
-												</QSCondition>
-												<QSCondition xsi:type="QSConditionSimple">
-												  <ConditionType>Equal</ConditionType>
-												  <LeftOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_13</Alias>
-													<AttributeID>30200300</AttributeID>
-													<Type>Value</Type>
-													<Level>0</Level>
-												  </LeftOperand>
-												  <LeftOperandLevel>0</LeftOperandLevel>
-												  <RightOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_14</Alias>
-													<AttributeID>30000100</AttributeID>
-													<Type>Value</Type>
-													<Level>3</Level>
-												  </RightOperand>
-												  <RightOperandLevel>0</RightOperandLevel>
-												</QSCondition>
-											  </Conditions>
-											</Condition>
-											<ActualDate>0001-01-01T00:00:00</ActualDate>
-											<IsActual>false</IsActual>
-											<Distinct>false</Distinct>
-											<ManualJoin>false</ManualJoin>
-											<PackageSize>0</PackageSize>
-											<PackageIndex>0</PackageIndex>
-											<OrderBy />
-											<GroupBy />
-											<RegisterLinks />
-											<JoinType>Inner</JoinType>
-											<Joins />
-											<Parameters />
-											<SubMapRegisters />
-											<ExcludeLinks />
-											<LoadRelations>false</LoadRelations>
-										  </SubQuery>
-										</LeftOperand>
-										<LeftOperandLevel>0</LeftOperandLevel>
-										<RightOperandLevel>0</RightOperandLevel>
-									  </QSCondition>
-									</Conditions>
-								  </Condition>
-								  <ActualDate>0001-01-01T00:00:00</ActualDate>
-								  <IsActual>false</IsActual>
-								  <Distinct>false</Distinct>
-								  <ManualJoin>false</ManualJoin>
-								  <PackageSize>0</PackageSize>
-								  <PackageIndex>0</PackageIndex>
-								  <OrderBy />
-								  <GroupBy />
-								  <RegisterLinks />
-								  <JoinType>Inner</JoinType>
-								  <Joins />
-								  <Parameters />
-								  <SubMapRegisters />
-								  <ExcludeLinks />
-								  <LoadRelations>false</LoadRelations>
-								</SubQuery>
-						   </QSColumn>
-							<QSColumn xsi:type="QSColumnConstant">
-						     <Value xsi:type="xsd:dateTime">0001-01-01T00:00:00</Value>
-						   </QSColumn>
-						</Operands>
-                      </RightOperand>
-                      <RightOperandLevel>0</RightOperandLevel>
-                    </QSCondition>
-                  </Conditions>
-                </Condition>
-                <ActualDate>0001-01-01T00:00:00</ActualDate>
-                <IsActual>false</IsActual>
-                <Distinct>false</Distinct>
-                <ManualJoin>false</ManualJoin>
-                <PackageSize>0</PackageSize>
-                <PackageIndex>0</PackageIndex>
-                <OrderBy />
-                <GroupBy />
-                <RegisterLinks />
-                <JoinType>Inner</JoinType>
-                <Joins />
-                <Parameters />
-                <SubMapRegisters />
-                <ExcludeLinks />
-                <LoadRelations>false</LoadRelations>
-              </SubQuery>
-            </RightOperand>
-            <RightOperandLevel>0</RightOperandLevel>
-          </QSCondition>
-        </Conditions>
-      </JoinCondition>
-    </QSJoin>
-  </Joins>
+  <JoinType xsi:nil="true" />
+  <Joins />
   <Parameters />
   <SubMapRegisters />
   <ExcludeLinks />
@@ -24342,8 +24967,34 @@ on conflict (layoutid) do update set
   <TDInstanceID>0</TDInstanceID>
   <Columns />
   <Condition xsi:type="QSConditionGroup">
-    <Type>And</Type>
-    <Conditions />
+    <Type>Or</Type>
+    <Conditions>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>Equal</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>31502000</Alias>
+          <AttributeID>31502000</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperand xsi:type="QSColumnConstant">
+          <Value xsi:type="xsd:boolean">false</Value>
+        </RightOperand>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>IsNull</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>31502000</Alias>
+          <AttributeID>31502000</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+    </Conditions>
   </Condition>
   <ActualDate>0001-01-01T00:00:00</ActualDate>
   <IsActual>false</IsActual>
@@ -24354,589 +25005,8 @@ on conflict (layoutid) do update set
   <OrderBy />
   <GroupBy />
   <RegisterLinks />
-  <JoinType>Left</JoinType>
-  <Joins>
-    <QSJoin>
-      <RegisterId>314</RegisterId>
-      <JoinType>Left</JoinType>
-      <JoinCondition xsi:type="QSConditionGroup">
-        <Type>And</Type>
-        <Conditions>
-          <QSCondition xsi:type="QSConditionSimple">
-            <ConditionType>Equal</ConditionType>
-            <LeftOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_1</Alias>
-              <AttributeID>31400200</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </LeftOperand>
-            <LeftOperandLevel>0</LeftOperandLevel>
-            <RightOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_2</Alias>
-              <AttributeID>31500100</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </RightOperand>
-            <RightOperandLevel>0</RightOperandLevel>
-          </QSCondition>
-          <QSCondition xsi:type="QSConditionSimple">
-            <ConditionType>Equal</ConditionType>
-            <LeftOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_3</Alias>
-              <AttributeID>31400300</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </LeftOperand>
-            <LeftOperandLevel>0</LeftOperandLevel>
-            <RightOperand xsi:type="QSColumnQuery">
-              <Alias>Колонка_4</Alias>
-              <SubQuery>
-                <MainRegisterID>316</MainRegisterID>
-                <TDInstanceID>0</TDInstanceID>
-                <Columns>
-                  <QSColumn xsi:type="QSColumnFunction">
-                    <Alias>Колонка_4</Alias>
-                    <FunctionType>Max</FunctionType>
-                    <Operands>
-                      <QSColumn xsi:type="QSColumnSimple">
-                        <Alias>Колонка_4</Alias>
-                        <AttributeID>31600100</AttributeID>
-                        <Type>Value</Type>
-                        <Level>0</Level>
-                      </QSColumn>
-                    </Operands>
-                  </QSColumn>
-                </Columns>
-                <Condition xsi:type="QSConditionGroup">
-                  <Type>And</Type>
-                  <Conditions>
-                    <QSCondition xsi:type="QSConditionSimple">
-                      <ConditionType>Exists</ConditionType>
-                      <LeftOperand xsi:type="QSColumnQuery">
-                        <Alias>Колонка_6</Alias>
-                        <SubQuery>
-                          <MainRegisterID>314</MainRegisterID>
-                          <TDInstanceID>0</TDInstanceID>
-                          <Columns>
-                            <QSColumn xsi:type="QSColumnConstant">
-                              <Alias>Колонка_7</Alias>
-                              <Value xsi:type="xsd:long">1</Value>
-                            </QSColumn>
-                          </Columns>
-                          <Condition xsi:type="QSConditionGroup">
-                            <Type>And</Type>
-                            <Conditions>
-                              <QSCondition xsi:type="QSConditionSimple">
-                                <ConditionType>Equal</ConditionType>
-                                <LeftOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_8</Alias>
-                                  <AttributeID>31400200</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>0</Level>
-                                </LeftOperand>
-                                <LeftOperandLevel>0</LeftOperandLevel>
-                                <RightOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_9</Alias>
-                                  <AttributeID>31500100</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>1</Level>
-                                </RightOperand>
-                                <RightOperandLevel>0</RightOperandLevel>
-                              </QSCondition>
-                              <QSCondition xsi:type="QSConditionSimple">
-                                <ConditionType>Equal</ConditionType>
-                                <LeftOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_10</Alias>
-                                  <AttributeID>31400300</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>0</Level>
-                                </LeftOperand>
-                                <LeftOperandLevel>0</LeftOperandLevel>
-                                <RightOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_11</Alias>
-                                  <AttributeID>31600100</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>2</Level>
-                                </RightOperand>
-                                <RightOperandLevel>0</RightOperandLevel>
-                              </QSCondition>
-                            </Conditions>
-                          </Condition>
-                          <ActualDate>0001-01-01T00:00:00</ActualDate>
-                          <IsActual>false</IsActual>
-                          <Distinct>false</Distinct>
-                          <ManualJoin>false</ManualJoin>
-                          <PackageSize>0</PackageSize>
-                          <PackageIndex>0</PackageIndex>
-                          <OrderBy />
-                          <GroupBy />
-                          <RegisterLinks />
-                          <JoinType>Inner</JoinType>
-                          <Joins />
-                          <Parameters />
-                          <SubMapRegisters />
-                          <ExcludeLinks />
-                          <LoadRelations>false</LoadRelations>
-                        </SubQuery>
-                      </LeftOperand>
-                      <LeftOperandLevel>0</LeftOperandLevel>
-                      <RightOperandLevel>0</RightOperandLevel>
-                    </QSCondition>
-                    <QSCondition xsi:type="QSConditionSimple">
-                      <ConditionType>Equal</ConditionType>
-                      <LeftOperand xsi:type="QSColumnFunction">
-					    <FunctionType>Coalesce</FunctionType>
-                        <Operands>
-						   <QSColumn xsi:type="QSColumnSimple">
-						     <Alias>Колонка_7</Alias>
-							 <AttributeID>31600400</AttributeID>
-							 <Type>Value</Type>
-							 <Level>0</Level>
-						   </QSColumn>
-						   <QSColumn xsi:type="QSColumnConstant">
-						     <Value xsi:type="xsd:dateTime">0001-01-01T00:00:00</Value>
-						   </QSColumn>
-						</Operands>
-                      </LeftOperand>
-                      <LeftOperandLevel>0</LeftOperandLevel>
-                      <RightOperand xsi:type="QSColumnFunction">
-					    <FunctionType>Coalesce</FunctionType>
-                        <Operands>
-						   <QSColumn xsi:type="QSColumnQuery">
-						     <Alias>Колонка_8</Alias>
-								<SubQuery>
-								  <MainRegisterID>316</MainRegisterID>
-								  <TDInstanceID>0</TDInstanceID>
-								  <Columns>
-									<QSColumn xsi:type="QSColumnFunction">
-									  <Alias>Колонка_8</Alias>
-									  <FunctionType>Max</FunctionType>
-									  <Operands>
-										<QSColumn xsi:type="QSColumnSimple">
-										  <Alias>Колонка_8</Alias>
-										  <AttributeID>31600400</AttributeID>
-										  <Type>Value</Type>
-										  <Level>0</Level>
-										</QSColumn>
-									  </Operands>
-									</QSColumn>
-								  </Columns>
-								  <Condition xsi:type="QSConditionGroup">
-									<Type>And</Type>
-									<Conditions>
-									  <QSCondition xsi:type="QSConditionSimple">
-										<ConditionType>Exists</ConditionType>
-										<LeftOperand xsi:type="QSColumnQuery">
-										  <Alias>Колонка_10</Alias>
-										  <SubQuery>
-											<MainRegisterID>314</MainRegisterID>
-											<TDInstanceID>0</TDInstanceID>
-											<Columns>
-											  <QSColumn xsi:type="QSColumnConstant">
-												<Alias>Колонка_10</Alias>
-												<Value xsi:type="xsd:long">1</Value>
-											  </QSColumn>
-											</Columns>
-											<Condition xsi:type="QSConditionGroup">
-											  <Type>And</Type>
-											  <Conditions>
-												<QSCondition xsi:type="QSConditionSimple">
-												  <ConditionType>Equal</ConditionType>
-												  <LeftOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_11</Alias>
-													<AttributeID>31400200</AttributeID>
-													<Type>Value</Type>
-													<Level>0</Level>
-												  </LeftOperand>
-												  <LeftOperandLevel>0</LeftOperandLevel>
-												  <RightOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_12</Alias>
-													<AttributeID>31500100</AttributeID>
-													<Type>Value</Type>
-													<Level>1</Level>
-												  </RightOperand>
-												  <RightOperandLevel>0</RightOperandLevel>
-												</QSCondition>
-												<QSCondition xsi:type="QSConditionSimple">
-												  <ConditionType>Equal</ConditionType>
-												  <LeftOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_13</Alias>
-													<AttributeID>31400300</AttributeID>
-													<Type>Value</Type>
-													<Level>0</Level>
-												  </LeftOperand>
-												  <LeftOperandLevel>0</LeftOperandLevel>
-												  <RightOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_14</Alias>
-													<AttributeID>31600100</AttributeID>
-													<Type>Value</Type>
-													<Level>3</Level>
-												  </RightOperand>
-												  <RightOperandLevel>0</RightOperandLevel>
-												</QSCondition>
-											  </Conditions>
-											</Condition>
-											<ActualDate>0001-01-01T00:00:00</ActualDate>
-											<IsActual>false</IsActual>
-											<Distinct>false</Distinct>
-											<ManualJoin>false</ManualJoin>
-											<PackageSize>0</PackageSize>
-											<PackageIndex>0</PackageIndex>
-											<OrderBy />
-											<GroupBy />
-											<RegisterLinks />
-											<JoinType>Inner</JoinType>
-											<Joins />
-											<Parameters />
-											<SubMapRegisters />
-											<ExcludeLinks />
-											<LoadRelations>false</LoadRelations>
-										  </SubQuery>
-										</LeftOperand>
-										<LeftOperandLevel>0</LeftOperandLevel>
-										<RightOperandLevel>0</RightOperandLevel>
-									  </QSCondition>
-									</Conditions>
-								  </Condition>
-								  <ActualDate>0001-01-01T00:00:00</ActualDate>
-								  <IsActual>false</IsActual>
-								  <Distinct>false</Distinct>
-								  <ManualJoin>false</ManualJoin>
-								  <PackageSize>0</PackageSize>
-								  <PackageIndex>0</PackageIndex>
-								  <OrderBy />
-								  <GroupBy />
-								  <RegisterLinks />
-								  <JoinType>Inner</JoinType>
-								  <Joins />
-								  <Parameters />
-								  <SubMapRegisters />
-								  <ExcludeLinks />
-								  <LoadRelations>false</LoadRelations>
-								</SubQuery>
-						   </QSColumn>
-							<QSColumn xsi:type="QSColumnConstant">
-						     <Value xsi:type="xsd:dateTime">0001-01-01T00:00:00</Value>
-						   </QSColumn>
-						</Operands>
-                      </RightOperand>
-                      <RightOperandLevel>0</RightOperandLevel>
-                    </QSCondition>
-                  </Conditions>
-                </Condition>
-                <ActualDate>0001-01-01T00:00:00</ActualDate>
-                <IsActual>false</IsActual>
-                <Distinct>false</Distinct>
-                <ManualJoin>false</ManualJoin>
-                <PackageSize>0</PackageSize>
-                <PackageIndex>0</PackageIndex>
-                <OrderBy />
-                <GroupBy />
-                <RegisterLinks />
-                <JoinType>Inner</JoinType>
-                <Joins />
-                <Parameters />
-                <SubMapRegisters />
-                <ExcludeLinks />
-                <LoadRelations>false</LoadRelations>
-              </SubQuery>
-            </RightOperand>
-            <RightOperandLevel>0</RightOperandLevel>
-          </QSCondition>
-        </Conditions>
-      </JoinCondition>
-    </QSJoin>
-	    <QSJoin>
-      <RegisterId>302</RegisterId>
-      <JoinType>Left</JoinType>
-      <JoinCondition xsi:type="QSConditionGroup">
-        <Type>And</Type>
-        <Conditions>
-          <QSCondition xsi:type="QSConditionSimple">
-            <ConditionType>Equal</ConditionType>
-            <LeftOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_1</Alias>
-              <AttributeID>30200200</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </LeftOperand>
-            <LeftOperandLevel>0</LeftOperandLevel>
-            <RightOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_2</Alias>
-              <AttributeID>31500100</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </RightOperand>
-            <RightOperandLevel>0</RightOperandLevel>
-          </QSCondition>
-          <QSCondition xsi:type="QSConditionSimple">
-            <ConditionType>Equal</ConditionType>
-            <LeftOperand xsi:type="QSColumnSimple">
-              <Alias>Колонка_3</Alias>
-              <AttributeID>30200300</AttributeID>
-              <Type>Value</Type>
-              <Level>0</Level>
-            </LeftOperand>
-            <LeftOperandLevel>0</LeftOperandLevel>
-            <RightOperand xsi:type="QSColumnQuery">
-              <Alias>Колонка_4</Alias>
-              <SubQuery>
-                <MainRegisterID>300</MainRegisterID>
-                <TDInstanceID>0</TDInstanceID>
-                <Columns>
-                  <QSColumn xsi:type="QSColumnFunction">
-                    <Alias>Колонка_4</Alias>
-                    <FunctionType>Max</FunctionType>
-                    <Operands>
-                      <QSColumn xsi:type="QSColumnSimple">
-                        <Alias>Колонка_4</Alias>
-                        <AttributeID>30000100</AttributeID>
-                        <Type>Value</Type>
-                        <Level>0</Level>
-                      </QSColumn>
-                    </Operands>
-                  </QSColumn>
-                </Columns>
-                <Condition xsi:type="QSConditionGroup">
-                  <Type>And</Type>
-                  <Conditions>
-                    <QSCondition xsi:type="QSConditionSimple">
-                      <ConditionType>Exists</ConditionType>
-                      <LeftOperand xsi:type="QSColumnQuery">
-                        <Alias>Колонка_6</Alias>
-                        <SubQuery>
-                          <MainRegisterID>302</MainRegisterID>
-                          <TDInstanceID>0</TDInstanceID>
-                          <Columns>
-                            <QSColumn xsi:type="QSColumnConstant">
-                              <Alias>Колонка_7</Alias>
-                              <Value xsi:type="xsd:long">1</Value>
-                            </QSColumn>
-                          </Columns>
-                          <Condition xsi:type="QSConditionGroup">
-                            <Type>And</Type>
-                            <Conditions>
-                              <QSCondition xsi:type="QSConditionSimple">
-                                <ConditionType>Equal</ConditionType>
-                                <LeftOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_8</Alias>
-                                  <AttributeID>30200200</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>0</Level>
-                                </LeftOperand>
-                                <LeftOperandLevel>0</LeftOperandLevel>
-                                <RightOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_9</Alias>
-                                  <AttributeID>31500100</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>1</Level>
-                                </RightOperand>
-                                <RightOperandLevel>0</RightOperandLevel>
-                              </QSCondition>
-                              <QSCondition xsi:type="QSConditionSimple">
-                                <ConditionType>Equal</ConditionType>
-                                <LeftOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_10</Alias>
-                                  <AttributeID>30200300</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>0</Level>
-                                </LeftOperand>
-                                <LeftOperandLevel>0</LeftOperandLevel>
-                                <RightOperand xsi:type="QSColumnSimple">
-                                  <Alias>Колонка_11</Alias>
-                                  <AttributeID>30000100</AttributeID>
-                                  <Type>Value</Type>
-                                  <Level>2</Level>
-                                </RightOperand>
-                                <RightOperandLevel>0</RightOperandLevel>
-                              </QSCondition>
-                            </Conditions>
-                          </Condition>
-                          <ActualDate>0001-01-01T00:00:00</ActualDate>
-                          <IsActual>false</IsActual>
-                          <Distinct>false</Distinct>
-                          <ManualJoin>false</ManualJoin>
-                          <PackageSize>0</PackageSize>
-                          <PackageIndex>0</PackageIndex>
-                          <OrderBy />
-                          <GroupBy />
-                          <RegisterLinks />
-                          <JoinType>Inner</JoinType>
-                          <Joins />
-                          <Parameters />
-                          <SubMapRegisters />
-                          <ExcludeLinks />
-                          <LoadRelations>false</LoadRelations>
-                        </SubQuery>
-                      </LeftOperand>
-                      <LeftOperandLevel>0</LeftOperandLevel>
-                      <RightOperandLevel>0</RightOperandLevel>
-                    </QSCondition>
-                    <QSCondition xsi:type="QSConditionSimple">
-                      <ConditionType>Equal</ConditionType>
-                      <LeftOperand xsi:type="QSColumnFunction">
-					    <FunctionType>Coalesce</FunctionType>
-                        <Operands>
-						   <QSColumn xsi:type="QSColumnSimple">
-						     <Alias>Колонка_7</Alias>
-							 <AttributeID>30000300</AttributeID>
-							 <Type>Value</Type>
-							 <Level>0</Level>
-						   </QSColumn>
-						   <QSColumn xsi:type="QSColumnConstant">
-						     <Value xsi:type="xsd:dateTime">0001-01-01T00:00:00</Value>
-						   </QSColumn>
-						</Operands>
-                      </LeftOperand>
-                      <LeftOperandLevel>0</LeftOperandLevel>
-                      <RightOperand xsi:type="QSColumnFunction">
-					    <FunctionType>Coalesce</FunctionType>
-                        <Operands>
-						   <QSColumn xsi:type="QSColumnQuery">
-						     <Alias>Колонка_8</Alias>
-								<SubQuery>
-								  <MainRegisterID>300</MainRegisterID>
-								  <TDInstanceID>0</TDInstanceID>
-								  <Columns>
-									<QSColumn xsi:type="QSColumnFunction">
-									  <Alias>Колонка_8</Alias>
-									  <FunctionType>Max</FunctionType>
-									  <Operands>
-										<QSColumn xsi:type="QSColumnSimple">
-										  <Alias>Колонка_8</Alias>
-										  <AttributeID>30000300</AttributeID>
-										  <Type>Value</Type>
-										  <Level>0</Level>
-										</QSColumn>
-									  </Operands>
-									</QSColumn>
-								  </Columns>
-								  <Condition xsi:type="QSConditionGroup">
-									<Type>And</Type>
-									<Conditions>
-									  <QSCondition xsi:type="QSConditionSimple">
-										<ConditionType>Exists</ConditionType>
-										<LeftOperand xsi:type="QSColumnQuery">
-										  <Alias>Колонка_10</Alias>
-										  <SubQuery>
-											<MainRegisterID>302</MainRegisterID>
-											<TDInstanceID>0</TDInstanceID>
-											<Columns>
-											  <QSColumn xsi:type="QSColumnConstant">
-												<Alias>Колонка_10</Alias>
-												<Value xsi:type="xsd:long">1</Value>
-											  </QSColumn>
-											</Columns>
-											<Condition xsi:type="QSConditionGroup">
-											  <Type>And</Type>
-											  <Conditions>
-												<QSCondition xsi:type="QSConditionSimple">
-												  <ConditionType>Equal</ConditionType>
-												  <LeftOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_11</Alias>
-													<AttributeID>30200200</AttributeID>
-													<Type>Value</Type>
-													<Level>0</Level>
-												  </LeftOperand>
-												  <LeftOperandLevel>0</LeftOperandLevel>
-												  <RightOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_12</Alias>
-													<AttributeID>31500100</AttributeID>
-													<Type>Value</Type>
-													<Level>1</Level>
-												  </RightOperand>
-												  <RightOperandLevel>0</RightOperandLevel>
-												</QSCondition>
-												<QSCondition xsi:type="QSConditionSimple">
-												  <ConditionType>Equal</ConditionType>
-												  <LeftOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_13</Alias>
-													<AttributeID>30200300</AttributeID>
-													<Type>Value</Type>
-													<Level>0</Level>
-												  </LeftOperand>
-												  <LeftOperandLevel>0</LeftOperandLevel>
-												  <RightOperand xsi:type="QSColumnSimple">
-													<Alias>Колонка_14</Alias>
-													<AttributeID>30000100</AttributeID>
-													<Type>Value</Type>
-													<Level>3</Level>
-												  </RightOperand>
-												  <RightOperandLevel>0</RightOperandLevel>
-												</QSCondition>
-											  </Conditions>
-											</Condition>
-											<ActualDate>0001-01-01T00:00:00</ActualDate>
-											<IsActual>false</IsActual>
-											<Distinct>false</Distinct>
-											<ManualJoin>false</ManualJoin>
-											<PackageSize>0</PackageSize>
-											<PackageIndex>0</PackageIndex>
-											<OrderBy />
-											<GroupBy />
-											<RegisterLinks />
-											<JoinType>Inner</JoinType>
-											<Joins />
-											<Parameters />
-											<SubMapRegisters />
-											<ExcludeLinks />
-											<LoadRelations>false</LoadRelations>
-										  </SubQuery>
-										</LeftOperand>
-										<LeftOperandLevel>0</LeftOperandLevel>
-										<RightOperandLevel>0</RightOperandLevel>
-									  </QSCondition>
-									</Conditions>
-								  </Condition>
-								  <ActualDate>0001-01-01T00:00:00</ActualDate>
-								  <IsActual>false</IsActual>
-								  <Distinct>false</Distinct>
-								  <ManualJoin>false</ManualJoin>
-								  <PackageSize>0</PackageSize>
-								  <PackageIndex>0</PackageIndex>
-								  <OrderBy />
-								  <GroupBy />
-								  <RegisterLinks />
-								  <JoinType>Inner</JoinType>
-								  <Joins />
-								  <Parameters />
-								  <SubMapRegisters />
-								  <ExcludeLinks />
-								  <LoadRelations>false</LoadRelations>
-								</SubQuery>
-						   </QSColumn>
-							<QSColumn xsi:type="QSColumnConstant">
-						     <Value xsi:type="xsd:dateTime">0001-01-01T00:00:00</Value>
-						   </QSColumn>
-						</Operands>
-                      </RightOperand>
-                      <RightOperandLevel>0</RightOperandLevel>
-                    </QSCondition>
-                  </Conditions>
-                </Condition>
-                <ActualDate>0001-01-01T00:00:00</ActualDate>
-                <IsActual>false</IsActual>
-                <Distinct>false</Distinct>
-                <ManualJoin>false</ManualJoin>
-                <PackageSize>0</PackageSize>
-                <PackageIndex>0</PackageIndex>
-                <OrderBy />
-                <GroupBy />
-                <RegisterLinks />
-                <JoinType>Inner</JoinType>
-                <Joins />
-                <Parameters />
-                <SubMapRegisters />
-                <ExcludeLinks />
-                <LoadRelations>false</LoadRelations>
-              </SubQuery>
-            </RightOperand>
-            <RightOperandLevel>0</RightOperandLevel>
-          </QSCondition>
-        </Conditions>
-      </JoinCondition>
-    </QSJoin>
-  </Joins>
+  <JoinType xsi:nil="true" />
+  <Joins />
   <Parameters />
   <SubMapRegisters />
   <ExcludeLinks />
@@ -24945,7 +25015,113 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1003161, 'Судебные заседания', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 316, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.26 09:32:23', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1003152, 'Основная раскладка для карточки связанных объектов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 315, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.20 15:43:57', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>315</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <Condition xsi:type="QSConditionGroup">
+    <Type>And</Type>
+    <Conditions>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>Equal</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>31502000</Alias>
+          <AttributeID>31502000</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperand xsi:type="QSColumnConstant">
+          <Value xsi:type="xsd:boolean">false</Value>
+        </RightOperand>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>IsNull</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>31502000</Alias>
+          <AttributeID>31502000</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+    </Conditions>
+  </Condition>
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <RegisterLinks />
+  <JoinType xsi:nil="true" />
+  <Joins />
+  <Parameters />
+  <SubMapRegisters />
+  <ExcludeLinks />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'SudObjects', NULL, NULL, 0)
+on conflict (layoutid) do update set
+"layoutname"='Основная раскладка для карточки связанных объектов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=315, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.20 15:43:57', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>315</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <Condition xsi:type="QSConditionGroup">
+    <Type>And</Type>
+    <Conditions>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>Equal</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>31502000</Alias>
+          <AttributeID>31502000</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperand xsi:type="QSColumnConstant">
+          <Value xsi:type="xsd:boolean">false</Value>
+        </RightOperand>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>IsNull</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>31502000</Alias>
+          <AttributeID>31502000</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+    </Conditions>
+  </Condition>
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <RegisterLinks />
+  <JoinType xsi:nil="true" />
+  <Joins />
+  <Parameters />
+  <SubMapRegisters />
+  <ExcludeLinks />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='SudObjects', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1003161, 'Судебные заседания', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 316, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.16 15:15:09', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>316</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -24962,7 +25138,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'SudResh', NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Судебные заседания', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=316, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.26 09:32:23', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Судебные заседания', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=316, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.16 15:15:09', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>316</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -25053,7 +25229,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1005011, 'Основная для списка деклараций', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 501, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.30 11:45:13', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1005011, 'Основная для списка деклараций', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 501, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.23 10:23:10', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>501</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -25070,7 +25246,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'DeclarationsDeclaration', NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Основная для списка деклараций', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=501, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.30 11:45:13', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная для списка деклараций', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=501, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.23 10:23:10', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>501</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -25089,7 +25265,7 @@ on conflict (layoutid) do update set
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
-(1005051, 'Основная раскладка для списка субъектов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 505, NULL, NULL, NULL, TO_TIMESTAMP('2019.12.13 19:44:37', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+(1005051, 'Основная раскладка для списка субъектов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 505, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.15 14:38:28', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>505</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -25106,7 +25282,7 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, NULL, 0, NULL, 0, 'DeclarationsSubject', NULL, NULL, 0)
 on conflict (layoutid) do update set
-"layoutname"='Основная раскладка для списка субъектов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=505, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2019.12.13 19:44:37', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+"layoutname"='Основная раскладка для списка субъектов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=505, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.15 14:38:28', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <MainRegisterID>505</MainRegisterID>
   <TDInstanceID>0</TDInstanceID>
@@ -25158,6 +25334,42 @@ on conflict (layoutid) do update set
   <JoinType xsi:nil="true" />
   <LoadRelations>false</LoadRelations>
 </QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='DeclarationsUved', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1005081, 'Основная раскладка для списка подписантов', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 508, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.20 17:43:43', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>508</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'DeclarationsSignatory', NULL, NULL, 0)
+on conflict (layoutid) do update set
+"layoutname"='Основная раскладка для списка подписантов', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=508, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.20 17:43:43', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>508</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='DeclarationsSignatory', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
@@ -25240,6 +25452,282 @@ on conflict (layoutid) do update set
   <ExcludeLinks />
   <LoadRelations>false</LoadRelations>
 </QSQuery>', "isdistinct"=0, "ordertype"='DESC', "iscommon"=1, "internal_name"=NULL, "enable_minicards_mode"=1, "register_view_id"='DataImporter', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=1;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1008012, 'Журнал загрузки ГКН (Основная раскладка)', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 801, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.20 17:59:11', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>801</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'KoTaskGknFilesCard', NULL, NULL, 0)
+on conflict (layoutid) do update set
+"layoutname"='Журнал загрузки ГКН (Основная раскладка)', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=801, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.20 17:59:11', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>801</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType xsi:nil="true" />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='KoTaskGknFilesCard', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=0;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1008013, 'Загрузка файлов ГКН (для рабочего стола)', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 801, 0, NULL, NULL, TO_TIMESTAMP('2020.01.20 18:53:55', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>801</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <Condition xsi:type="QSConditionGroup">
+    <Type>And</Type>
+    <Conditions>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>Equal</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>80101300</Alias>
+          <AttributeID>80101300</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperand xsi:type="QSColumnConstant">
+          <Value xsi:type="xsd:long">203</Value>
+        </RightOperand>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+      <QSCondition xsi:type="QSConditionGroup">
+        <Type>Or</Type>
+        <Conditions>
+          <QSCondition xsi:type="QSConditionSimple">
+            <ConditionType>Equal</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>80100300</Alias>
+              <AttributeID>80100300</AttributeID>
+              <Type>Code</Type>
+              <Level xsi:nil="true" />
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperand xsi:type="QSColumnConstant">
+              <Value xsi:type="xsd:long">1</Value>
+            </RightOperand>
+            <RightOperandLevel>0</RightOperandLevel>
+          </QSCondition>
+          <QSCondition xsi:type="QSConditionSimple">
+            <ConditionType>Equal</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>80100300</Alias>
+              <AttributeID>80100300</AttributeID>
+              <Type>Code</Type>
+              <Level xsi:nil="true" />
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperand xsi:type="QSColumnConstant">
+              <Value xsi:type="xsd:string">0</Value>
+            </RightOperand>
+            <RightOperandLevel>0</RightOperandLevel>
+          </QSCondition>
+          <QSCondition xsi:type="QSConditionSimple">
+            <ConditionType>Equal</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>80100300</Alias>
+              <AttributeID>80100300</AttributeID>
+              <Type>Code</Type>
+              <Level xsi:nil="true" />
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperand xsi:type="QSColumnConstant">
+              <Value xsi:type="xsd:long">3</Value>
+            </RightOperand>
+            <RightOperandLevel>0</RightOperandLevel>
+          </QSCondition>
+          <QSCondition xsi:type="QSConditionGroup">
+            <Type>And</Type>
+            <Conditions>
+              <QSCondition xsi:type="QSConditionSimple">
+                <ConditionType>Equal</ConditionType>
+                <LeftOperand xsi:type="QSColumnSimple">
+                  <Alias>80100300</Alias>
+                  <AttributeID>80100300</AttributeID>
+                  <Type>Code</Type>
+                  <Level xsi:nil="true" />
+                </LeftOperand>
+                <LeftOperandLevel>0</LeftOperandLevel>
+                <RightOperand xsi:type="QSColumnConstant">
+                  <Value xsi:type="xsd:long">2</Value>
+                </RightOperand>
+                <RightOperandLevel>0</RightOperandLevel>
+              </QSCondition>
+              <QSCondition xsi:type="QSConditionSimple">
+                <ConditionType>Greater</ConditionType>
+                <LeftOperand xsi:type="QSColumnSimple">
+                  <Alias>80100400</Alias>
+                  <AttributeID>80100400</AttributeID>
+                  <Type>Value</Type>
+                  <Level xsi:nil="true" />
+                </LeftOperand>
+                <LeftOperandLevel>0</LeftOperandLevel>
+                <RightOperand xsi:type="QSColumnFunction">
+                  <FunctionType>BeginMonth</FunctionType>
+                  <Operands />
+                </RightOperand>
+                <RightOperandLevel>0</RightOperandLevel>
+              </QSCondition>
+            </Conditions>
+          </QSCondition>
+        </Conditions>
+      </QSCondition>
+    </Conditions>
+  </Condition>
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType>Inner</JoinType>
+  <Joins />
+  <Parameters />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, 'ASC', 0, NULL, 0, 'DataImporter', NULL, NULL, 1)
+on conflict (layoutid) do update set
+"layoutname"='Загрузка файлов ГКН (для рабочего стола)', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=801, "defaultsort"=0, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.20 18:53:55', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>801</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <Condition xsi:type="QSConditionGroup">
+    <Type>And</Type>
+    <Conditions>
+      <QSCondition xsi:type="QSConditionSimple">
+        <ConditionType>Equal</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>80101300</Alias>
+          <AttributeID>80101300</AttributeID>
+          <Type>Value</Type>
+          <Level xsi:nil="true" />
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperand xsi:type="QSColumnConstant">
+          <Value xsi:type="xsd:long">203</Value>
+        </RightOperand>
+        <RightOperandLevel>0</RightOperandLevel>
+      </QSCondition>
+      <QSCondition xsi:type="QSConditionGroup">
+        <Type>Or</Type>
+        <Conditions>
+          <QSCondition xsi:type="QSConditionSimple">
+            <ConditionType>Equal</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>80100300</Alias>
+              <AttributeID>80100300</AttributeID>
+              <Type>Code</Type>
+              <Level xsi:nil="true" />
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperand xsi:type="QSColumnConstant">
+              <Value xsi:type="xsd:long">1</Value>
+            </RightOperand>
+            <RightOperandLevel>0</RightOperandLevel>
+          </QSCondition>
+          <QSCondition xsi:type="QSConditionSimple">
+            <ConditionType>Equal</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>80100300</Alias>
+              <AttributeID>80100300</AttributeID>
+              <Type>Code</Type>
+              <Level xsi:nil="true" />
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperand xsi:type="QSColumnConstant">
+              <Value xsi:type="xsd:string">0</Value>
+            </RightOperand>
+            <RightOperandLevel>0</RightOperandLevel>
+          </QSCondition>
+          <QSCondition xsi:type="QSConditionSimple">
+            <ConditionType>Equal</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>80100300</Alias>
+              <AttributeID>80100300</AttributeID>
+              <Type>Code</Type>
+              <Level xsi:nil="true" />
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperand xsi:type="QSColumnConstant">
+              <Value xsi:type="xsd:long">3</Value>
+            </RightOperand>
+            <RightOperandLevel>0</RightOperandLevel>
+          </QSCondition>
+          <QSCondition xsi:type="QSConditionGroup">
+            <Type>And</Type>
+            <Conditions>
+              <QSCondition xsi:type="QSConditionSimple">
+                <ConditionType>Equal</ConditionType>
+                <LeftOperand xsi:type="QSColumnSimple">
+                  <Alias>80100300</Alias>
+                  <AttributeID>80100300</AttributeID>
+                  <Type>Code</Type>
+                  <Level xsi:nil="true" />
+                </LeftOperand>
+                <LeftOperandLevel>0</LeftOperandLevel>
+                <RightOperand xsi:type="QSColumnConstant">
+                  <Value xsi:type="xsd:long">2</Value>
+                </RightOperand>
+                <RightOperandLevel>0</RightOperandLevel>
+              </QSCondition>
+              <QSCondition xsi:type="QSConditionSimple">
+                <ConditionType>Greater</ConditionType>
+                <LeftOperand xsi:type="QSColumnSimple">
+                  <Alias>80100400</Alias>
+                  <AttributeID>80100400</AttributeID>
+                  <Type>Value</Type>
+                  <Level xsi:nil="true" />
+                </LeftOperand>
+                <LeftOperandLevel>0</LeftOperandLevel>
+                <RightOperand xsi:type="QSColumnFunction">
+                  <FunctionType>BeginMonth</FunctionType>
+                  <Operands />
+                </RightOperand>
+                <RightOperandLevel>0</RightOperandLevel>
+              </QSCondition>
+            </Conditions>
+          </QSCondition>
+        </Conditions>
+      </QSCondition>
+    </Conditions>
+  </Condition>
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <JoinType>Inner</JoinType>
+  <Joins />
+  <Parameters />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"='ASC', "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='DataImporter', "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=1;
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
@@ -26794,6 +27282,52 @@ insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid"
 (1095002, 'Список пользователей для ролей', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 950, NULL, 1, 'tm', TO_TIMESTAMP('2019.02.12 12:39:53', 'YYYY.MM.DD HH24:MI:SS'), NULL, 0, NULL, 1, NULL, 0, NULL, NULL, NULL, NULL)
 on conflict (layoutid) do update set
 "layoutname"='Список пользователей для ролей', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=950, "defaultsort"=NULL, "preffered"=1, "username"='tm', "createdate"=TO_TIMESTAMP('2019.02.12 12:39:53', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"=NULL, "isdistinct"=0, "ordertype"=NULL, "iscommon"=1, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"=NULL, "as_domain_id"=NULL, "column_width_type"=NULL, "is_using_extended_editor"=NULL;
+
+--<DO>--
+insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
+(1095003, 'Основная раскладка для представления Туров', 'Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', 202, NULL, NULL, NULL, TO_TIMESTAMP('2020.01.21 12:00:30', 'YYYY.MM.DD HH24:MI:SS'), '<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>202</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <RegisterLinks />
+  <JoinType xsi:nil="true" />
+  <Joins />
+  <Parameters />
+  <SubMapRegisters />
+  <ExcludeLinks />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', 0, NULL, 0, NULL, 0, 'KoTours', NULL, 0, 0)
+on conflict (layoutid) do update set
+"layoutname"='Основная раскладка для представления Туров', "layoutcomment"='Данная раскладка находится на поддержке и обновляется одновременно с установкой новой версии системы', "registerid"=202, "defaultsort"=NULL, "preffered"=NULL, "username"=NULL, "createdate"=TO_TIMESTAMP('2020.01.21 12:00:30', 'YYYY.MM.DD HH24:MI:SS'), "qsquery"='<?xml version="1.0" encoding="utf-16"?>
+<QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <MainRegisterID>202</MainRegisterID>
+  <TDInstanceID>0</TDInstanceID>
+  <Columns />
+  <ActualDate>0001-01-01T00:00:00</ActualDate>
+  <IsActual>false</IsActual>
+  <Distinct>false</Distinct>
+  <ManualJoin>false</ManualJoin>
+  <PackageSize>0</PackageSize>
+  <PackageIndex>0</PackageIndex>
+  <OrderBy />
+  <GroupBy />
+  <RegisterLinks />
+  <JoinType xsi:nil="true" />
+  <Joins />
+  <Parameters />
+  <SubMapRegisters />
+  <ExcludeLinks />
+  <LoadRelations>false</LoadRelations>
+</QSQuery>', "isdistinct"=0, "ordertype"=NULL, "iscommon"=0, "internal_name"=NULL, "enable_minicards_mode"=0, "register_view_id"='KoTours', "as_domain_id"=NULL, "column_width_type"=0, "is_using_extended_editor"=0;
 
 --<DO>--
 insert into core_layout ("layoutid", "layoutname", "layoutcomment", "registerid", "defaultsort", "preffered", "username", "createdate", "qsquery", "isdistinct", "ordertype", "iscommon", "internal_name", "enable_minicards_mode", "register_view_id", "as_domain_id", "column_width_type", "is_using_extended_editor") values
@@ -32699,13 +33233,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002203, 1001001, 0, 11, 10002701, NULL, NULL, 'Цена за кв. м', 150, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002203, 1001001, 0, 12, 10002701, NULL, NULL, 'Цена за кв. м', 150, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=11, "attributeid"=10002701, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Цена за кв. м', "headerwidth"=150, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=12, "attributeid"=10002701, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Цена за кв. м', "headerwidth"=150, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -32725,14 +33259,14 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002205, 1001001, 0, 13, 10002300, NULL, NULL, 'Источник', 100, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002205, 1001001, 0, 14, 10002300, NULL, NULL, 'Источник', 100, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=13, "attributeid"=10002300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Источник', "headerwidth"=100, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=14, "attributeid"=10002300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Источник', "headerwidth"=100, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
@@ -32963,18 +33497,6 @@ on conflict (id) do update set
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002223, 1005051, 0, 5, 50500600, NULL, NULL, 'Адрес', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1005051, "detailtype"=0, "ordinal"=5, "attributeid"=50500600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Адрес', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
 </StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
@@ -33745,13 +34267,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002254, 1001001, 0, 18, 10005900, NULL, NULL, 'Зона', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002254, 1001001, 0, 19, 10005900, NULL, NULL, 'Зона', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=18, "attributeid"=10005900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Зона', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=19, "attributeid"=10005900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Зона', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -34031,13 +34553,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002269, 1001001, 0, 19, 10007100, NULL, NULL, 'Материал стен', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002269, 1001001, 0, 20, 10007100, NULL, NULL, 'Материал стен', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=19, "attributeid"=10007100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Материал стен', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=20, "attributeid"=10007100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Материал стен', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -34135,13 +34657,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002273, 1001001, 0, 20, 10004300, NULL, NULL, 'Общая площадь', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002273, 1001001, 0, 21, 10004300, NULL, NULL, 'Общая площадь', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=20, "attributeid"=10004300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Общая площадь', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=21, "attributeid"=10004300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Общая площадь', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -34213,7 +34735,7 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002275, 1001001, 3, 14, NULL, NULL, NULL, 'Карта', 60, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002275, 1001001, 3, 15, NULL, NULL, NULL, 'Карта', 60, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Link Url="/Map?objectId=[10002000]" Target="Blank" IsNotNull="false" />
@@ -34295,7 +34817,7 @@ insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "att
 	</Blocks>
 </QSColumn>', NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=3, "ordinal"=14, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Карта', "headerwidth"=60, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=3, "ordinal"=15, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Карта', "headerwidth"=60, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Link Url="/Map?objectId=[10002000]" Target="Blank" IsNotNull="false" />
@@ -34379,13 +34901,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002276, 1001001, 0, 15, 10004700, NULL, NULL, 'Год постройки', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002276, 1001001, 0, 16, 10004700, NULL, NULL, 'Год постройки', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=15, "attributeid"=10004700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Год постройки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=16, "attributeid"=10004700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Год постройки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -34393,13 +34915,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002277, 1001001, 0, 16, 10002800, NULL, NULL, 'Дата сделки', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002277, 1001001, 0, 17, 10002800, NULL, NULL, 'Дата сделки', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=16, "attributeid"=10002800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата сделки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=17, "attributeid"=10002800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата сделки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -34407,13 +34929,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002278, 1001001, 0, 17, 10007600, NULL, NULL, 'Дата последнего обновления цены', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002278, 1001001, 0, 18, 10007600, NULL, NULL, 'Дата последнего обновления цены', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=17, "attributeid"=10007600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата последнего обновления цены', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=18, "attributeid"=10007600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата последнего обновления цены', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -34421,13 +34943,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002279, 1001001, 0, 21, 10003400, NULL, NULL, 'Описание', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002279, 1001001, 0, 22, 10003400, NULL, NULL, 'Описание', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=21, "attributeid"=10003400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Описание', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=22, "attributeid"=10003400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Описание', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -34449,14 +34971,16 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002281, 1001001, 0, 23, 10004800, NULL, NULL, 'Категория', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002281, 1001001, 0, 24, 10004800, NULL, NULL, 'Категория', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=23, "attributeid"=10004800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Категория', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=24, "attributeid"=10004800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Категория', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
@@ -34571,13 +35095,13 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002288, 1001001, 0, 22, 10006000, NULL, NULL, 'Статус обработки', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002288, 1001001, 0, 23, 10006000, NULL, NULL, 'Статус обработки', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=22, "attributeid"=10006000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус обработки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=23, "attributeid"=10006000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус обработки', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions />
@@ -34767,7 +35291,7 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002292, 1003161, 0, 3, 31000600, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002292, 1003161, 0, 3, 31000700, NULL, NULL, 'Статус', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions>
@@ -34798,7 +35322,7 @@ insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "att
   </Conditions>
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1003161, "detailtype"=0, "ordinal"=3, "attributeid"=31000600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1003161, "detailtype"=0, "ordinal"=3, "attributeid"=31000700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Conditions>
@@ -34843,74 +35367,30 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002294, 1002031, 0, 2, 20300100, NULL, NULL, 'Идентификатор', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002298, 1002031, 0, 2, 20300700, NULL, NULL, 'Статус', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=2, "attributeid"=20300100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1002031, "detailtype"=0, "ordinal"=2, "attributeid"=20300700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002295, 1002031, 0, 3, 20300300, NULL, NULL, 'Идентификатор входящего документа', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002299, 1002031, 0, 3, 20300400, NULL, NULL, 'Тип статьи', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=3, "attributeid"=20300300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор входящего документа', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1002031, "detailtype"=0, "ordinal"=3, "attributeid"=20300400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип статьи', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002296, 1002031, 0, 4, 20300600, NULL, NULL, 'Идентификатор исходящего документа', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=4, "attributeid"=20300600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор исходящего документа', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002297, 1002031, 0, 5, 20300500, NULL, NULL, 'Идентификатор тура', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=5, "attributeid"=20300500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор тура', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002298, 1002031, 0, 6, 20300700, NULL, NULL, 'Статус', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=6, "attributeid"=20300700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002299, 1002031, 0, 7, 20300400, NULL, NULL, 'Тип статьи', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1002031, "detailtype"=0, "ordinal"=7, "attributeid"=20300400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип статьи', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
@@ -35017,14 +35497,14 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002301, 1001001, 0, 12, 10003200, NULL, NULL, 'Метро', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002301, 1001001, 0, 13, 10003200, NULL, NULL, 'Метро', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
   <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=12, "attributeid"=10003200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Метро', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=13, "attributeid"=10003200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Метро', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
@@ -35033,14 +35513,14 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002302, 1001001, 0, 10, 10002700, NULL, NULL, 'Цена объекта недвижимости', 150, 1, 'ZeroDecimalDigitsWithSeparator', 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002302, 1001001, 0, 11, 10002700, NULL, NULL, 'Цена объекта недвижимости', 150, 1, 'ZeroDecimalDigitsWithSeparator', 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
   <Conditions />
 </StyleConditionItemWrapper>', NULL, 'Right', NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1001001, "detailtype"=0, "ordinal"=10, "attributeid"=10002700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Цена объекта недвижимости', "headerwidth"=150, "visible"=1, "format"='ZeroDecimalDigitsWithSeparator', "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1001001, "detailtype"=0, "ordinal"=11, "attributeid"=10002700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Цена объекта недвижимости', "headerwidth"=150, "visible"=1, "format"='ZeroDecimalDigitsWithSeparator', "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
   <Link Url="/ObjectCard?ObjId=[ObjectId]&amp;RegisterViewId=MarketObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
@@ -35399,136 +35879,6 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002316, 1005011, 3, 8, NULL, NULL, NULL, 'Регистратор', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
-  <Alias>Исполнитель</Alias>
-  <SubQuery>
-    <MainRegisterID>950</MainRegisterID>
-    <TDInstanceID>0</TDInstanceID>
-    <Columns>
-      <QSColumn xsi:type="QSColumnSimple">
-        <Alias>Колонка_1</Alias>
-        <AttributeID>95000400</AttributeID>
-        <Type>Value</Type>
-        <Level>0</Level>
-      </QSColumn>
-    </Columns>
-    <Condition xsi:type="QSConditionGroup">
-      <Type>And</Type>
-      <Conditions>
-        <QSCondition xsi:type="QSConditionSimple">
-          <ConditionType>Equal</ConditionType>
-          <LeftOperand xsi:type="QSColumnSimple">
-            <Alias>Колонка_2</Alias>
-            <AttributeID>95000100</AttributeID>
-            <Type>Value</Type>
-            <Level>0</Level>
-          </LeftOperand>
-          <LeftOperandLevel>0</LeftOperandLevel>
-          <RightOperand xsi:type="QSColumnSimple">
-            <Alias>Колонка_3</Alias>
-            <AttributeID>50100600</AttributeID>
-            <Type>Value</Type>
-            <Level>0</Level>
-          </RightOperand>
-          <RightOperandLevel>0</RightOperandLevel>
-        </QSCondition>
-      </Conditions>
-    </Condition>
-    <ActualDate>0001-01-01T00:00:00</ActualDate>
-    <IsActual>false</IsActual>
-    <Distinct>false</Distinct>
-    <ManualJoin>false</ManualJoin>
-    <PackageSize>0</PackageSize>
-    <PackageIndex>0</PackageIndex>
-    <OrderBy />
-    <GroupBy>
-      <QSGroup>
-        <Column xsi:type="QSColumnSimple">
-          <Alias>Колонка_1</Alias>
-          <AttributeID>95000400</AttributeID>
-          <Type>Value</Type>
-          <Level>0</Level>
-        </Column>
-      </QSGroup>
-    </GroupBy>
-    <JoinType>Inner</JoinType>
-    <Joins />
-    <Parameters />
-    <LoadRelations>false</LoadRelations>
-  </SubQuery>
-</QSColumn>', NULL)
-on conflict (id) do update set
-"layoutid"=1005011, "detailtype"=3, "ordinal"=8, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Регистратор', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-  <Conditions />
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
-<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
-  <Alias>Исполнитель</Alias>
-  <SubQuery>
-    <MainRegisterID>950</MainRegisterID>
-    <TDInstanceID>0</TDInstanceID>
-    <Columns>
-      <QSColumn xsi:type="QSColumnSimple">
-        <Alias>Колонка_1</Alias>
-        <AttributeID>95000400</AttributeID>
-        <Type>Value</Type>
-        <Level>0</Level>
-      </QSColumn>
-    </Columns>
-    <Condition xsi:type="QSConditionGroup">
-      <Type>And</Type>
-      <Conditions>
-        <QSCondition xsi:type="QSConditionSimple">
-          <ConditionType>Equal</ConditionType>
-          <LeftOperand xsi:type="QSColumnSimple">
-            <Alias>Колонка_2</Alias>
-            <AttributeID>95000100</AttributeID>
-            <Type>Value</Type>
-            <Level>0</Level>
-          </LeftOperand>
-          <LeftOperandLevel>0</LeftOperandLevel>
-          <RightOperand xsi:type="QSColumnSimple">
-            <Alias>Колонка_3</Alias>
-            <AttributeID>50100600</AttributeID>
-            <Type>Value</Type>
-            <Level>0</Level>
-          </RightOperand>
-          <RightOperandLevel>0</RightOperandLevel>
-        </QSCondition>
-      </Conditions>
-    </Condition>
-    <ActualDate>0001-01-01T00:00:00</ActualDate>
-    <IsActual>false</IsActual>
-    <Distinct>false</Distinct>
-    <ManualJoin>false</ManualJoin>
-    <PackageSize>0</PackageSize>
-    <PackageIndex>0</PackageIndex>
-    <OrderBy />
-    <GroupBy>
-      <QSGroup>
-        <Column xsi:type="QSColumnSimple">
-          <Alias>Колонка_1</Alias>
-          <AttributeID>95000400</AttributeID>
-          <Type>Value</Type>
-          <Level>0</Level>
-        </Column>
-      </QSGroup>
-    </GroupBy>
-    <JoinType>Inner</JoinType>
-    <Joins />
-    <Parameters />
-    <LoadRelations>false</LoadRelations>
-  </SubQuery>
-</QSColumn>', "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
 (1002317, 1005011, 3, 1, NULL, NULL, NULL, '№', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
@@ -35627,7 +35977,7 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002318, 1005011, 3, 10, NULL, NULL, NULL, 'Колонка_1', NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002318, 1005011, 3, 11, NULL, NULL, NULL, 'Колонка_1', NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>true</RowStyle>
   <Conditions>
@@ -35698,7 +36048,7 @@ insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "att
   </Blocks>
 </QSColumn>', NULL)
 on conflict (id) do update set
-"layoutid"=1005011, "detailtype"=3, "ordinal"=10, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Колонка_1', "headerwidth"=NULL, "visible"=0, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1005011, "detailtype"=3, "ordinal"=11, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Колонка_1', "headerwidth"=NULL, "visible"=0, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>true</RowStyle>
   <Conditions>
@@ -35771,38 +36121,28 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002319, 1003141, 0, 5, 31600600, NULL, NULL, 'Статус дела (Отказано, Удовлетворено, Приостановлено.....)', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002319, 1003141, 0, 5, 31600600, NULL, NULL, 'Статус дела', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1003141, "detailtype"=0, "ordinal"=5, "attributeid"=31600600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус дела (Отказано, Удовлетворено, Приостановлено.....)', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1003141, "detailtype"=0, "ordinal"=5, "attributeid"=31600600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус дела', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
 </StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
 insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002320, 1003161, 0, 4, 31600600, NULL, NULL, 'Статус дела (Отказано, Удовлетворено, Приостановлено.....)', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+(1002320, 1003161, 0, 4, 31600600, NULL, NULL, 'Статус дела', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
-"layoutid"=1003161, "detailtype"=0, "ordinal"=4, "attributeid"=31600600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус дела (Отказано, Удовлетворено, Приостановлено.....)', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+"layoutid"=1003161, "detailtype"=0, "ordinal"=4, "attributeid"=31600600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус дела', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
-
---<DO>--
-insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
-(1002321, 1005011, 0, 11, 50500600, NULL, NULL, 'Почтовый адрес ', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
-</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
-on conflict (id) do update set
-"layoutid"=1005011, "detailtype"=0, "ordinal"=11, "attributeid"=50500600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Почтовый адрес ', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
-<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
@@ -35810,11 +36150,13 @@ insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "att
 (1002322, 1005011, 0, 12, 50500300, NULL, NULL, 'Фамилия физического лица/представителя заявителя', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
 on conflict (id) do update set
 "layoutid"=1005011, "detailtype"=0, "ordinal"=12, "attributeid"=50500300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Фамилия физического лица/представителя заявителя', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
@@ -36042,6 +36384,7 @@ insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "att
 (1002328, 1003041, 0, 6, 30801200, NULL, NULL, 'Файл', NULL, 1, NULL, 3, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Link Url="Sud/GetAllAttachmentsReport?objectId=[30800100]&amp;isFile=[30801200]" Target="Self" IsNotNull="false" />
   <Conditions>
     <StyleConditionItem>
       <Id>0</Id>
@@ -36073,6 +36416,7 @@ on conflict (id) do update set
 "layoutid"=1003041, "detailtype"=0, "ordinal"=6, "attributeid"=30801200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Файл', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=3, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Link Url="Sud/GetAllAttachmentsReport?objectId=[30800100]&amp;isFile=[30801200]" Target="Self" IsNotNull="false" />
   <Conditions>
     <StyleConditionItem>
       <Id>0</Id>
@@ -36106,6 +36450,7 @@ insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "att
 (1002329, 1003021, 0, 5, 30001600, NULL, NULL, 'Файл', NULL, 1, NULL, 3, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Link Url="Sud/GetAllAttachmentsConclusion?objectId=[30000100]&amp;isFile=[30001600]" Target="Self" IsNotNull="false" />
   <Conditions>
     <StyleConditionItem>
       <Id>0</Id>
@@ -36137,6 +36482,7 @@ on conflict (id) do update set
 "layoutid"=1003021, "detailtype"=0, "ordinal"=5, "attributeid"=30001600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Файл', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=3, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Link Url="Sud/GetAllAttachmentsConclusion?objectId=[30000100]&amp;isFile=[30001600]" Target="Self" IsNotNull="false" />
   <Conditions>
     <StyleConditionItem>
       <Id>0</Id>
@@ -36170,6 +36516,7 @@ insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "att
 (1002330, 1003141, 0, 6, 31600700, NULL, NULL, 'Файл', NULL, 1, NULL, 3, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Link Url="Sud/GetAllAttachmentsCourt?objectId=[31600100]&amp;isFile=[31600700]" Target="Self" IsNotNull="false" />
   <Conditions>
     <StyleConditionItem>
       <Id>0</Id>
@@ -36201,6 +36548,7 @@ on conflict (id) do update set
 "layoutid"=1003141, "detailtype"=0, "ordinal"=6, "attributeid"=31600700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Файл', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=3, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>
+  <Link Url="Sud/GetAllAttachmentsCourt?objectId=[31600100]&amp;isFile=[31600700]" Target="Self" IsNotNull="false" />
   <Conditions>
     <StyleConditionItem>
       <Id>0</Id>
@@ -36227,6 +36575,1784 @@ on conflict (id) do update set
       <Text />
     </StyleConditionItem>
   </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002331, 1005051, 3, 5, NULL, NULL, NULL, 'Адрес', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnFunction">
+  <Alias>Колонка_2</Alias>
+  <FunctionType>Concatenation</FunctionType>
+  <Operands>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_2</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_2</Alias>
+          <AttributeID>50501100</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_3</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_1</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_18</Alias>
+              <AttributeID>50501200</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_19</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_1</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_2</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_2</Alias>
+          <AttributeID>50501200</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_3</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_5</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_3</Alias>
+              <AttributeID>50501300</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_4</Alias>
+            <Value xsi:type="xsd:string">,</Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_5</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_6</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_6</Alias>
+          <AttributeID>50501300</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_7</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_9</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_22</Alias>
+              <AttributeID>50501400</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_23</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_2</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_10</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_10</Alias>
+          <AttributeID>50501400</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_11</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_13</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_24</Alias>
+              <AttributeID>50501500</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_25</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_3</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_14</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_14</Alias>
+          <AttributeID>50501500</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_15</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_17</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_26</Alias>
+              <AttributeID>50501600</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_27</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_2</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_18</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_18</Alias>
+          <AttributeID>50501600</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_19</Alias>
+          <Value xsi:type="xsd:string">  </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+  </Operands>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1005051, "detailtype"=3, "ordinal"=5, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Адрес', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnFunction">
+  <Alias>Колонка_2</Alias>
+  <FunctionType>Concatenation</FunctionType>
+  <Operands>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_2</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_2</Alias>
+          <AttributeID>50501100</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_3</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_1</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_18</Alias>
+              <AttributeID>50501200</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_19</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_1</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_2</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_2</Alias>
+          <AttributeID>50501200</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_3</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_5</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_3</Alias>
+              <AttributeID>50501300</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_4</Alias>
+            <Value xsi:type="xsd:string">,</Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_5</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_6</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_6</Alias>
+          <AttributeID>50501300</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_7</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_9</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_22</Alias>
+              <AttributeID>50501400</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_23</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_2</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_10</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_10</Alias>
+          <AttributeID>50501400</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_11</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_13</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_24</Alias>
+              <AttributeID>50501500</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_25</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_3</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_14</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_14</Alias>
+          <AttributeID>50501500</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_15</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_17</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_26</Alias>
+              <AttributeID>50501600</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_27</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_2</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_18</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_18</Alias>
+          <AttributeID>50501600</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_19</Alias>
+          <Value xsi:type="xsd:string">  </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+  </Operands>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002332, 1005011, 3, 10, NULL, NULL, NULL, 'Почтовый адрес', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnFunction">
+  <Alias>Колонка_1</Alias>
+  <FunctionType>Concatenation</FunctionType>
+  <Operands>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_1</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_1</Alias>
+          <AttributeID>50501100</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_2</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_4</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_4</Alias>
+              <AttributeID>50501200</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_5</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_1</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_16</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_16</Alias>
+          <AttributeID>50501200</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_17</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_19</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_19</Alias>
+              <AttributeID>50501300</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_20</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_2</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_22</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_22</Alias>
+          <AttributeID>50501300</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_23</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_25</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_25</Alias>
+              <AttributeID>50501400</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_26</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_3</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_28</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_28</Alias>
+          <AttributeID>50501400</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_29</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_31</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_31</Alias>
+              <AttributeID>50501500</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_32</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_4</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_34</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_34</Alias>
+          <AttributeID>50501500</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_35</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_37</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_37</Alias>
+              <AttributeID>50501600</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_38</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_5</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_40</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_40</Alias>
+          <AttributeID>50501600</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_41</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+  </Operands>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1005011, "detailtype"=3, "ordinal"=10, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Почтовый адрес', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnFunction">
+  <Alias>Колонка_1</Alias>
+  <FunctionType>Concatenation</FunctionType>
+  <Operands>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_1</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_1</Alias>
+          <AttributeID>50501100</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_2</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_4</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_4</Alias>
+              <AttributeID>50501200</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_5</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_1</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_16</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_16</Alias>
+          <AttributeID>50501200</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_17</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_19</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_19</Alias>
+              <AttributeID>50501300</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_20</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_2</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_22</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_22</Alias>
+          <AttributeID>50501300</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_23</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_25</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_25</Alias>
+              <AttributeID>50501400</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_26</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_3</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_28</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_28</Alias>
+          <AttributeID>50501400</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_29</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_31</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_31</Alias>
+              <AttributeID>50501500</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_32</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_4</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_34</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_34</Alias>
+          <AttributeID>50501500</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_35</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnIf">
+      <Alias>Колонка_37</Alias>
+      <Blocks>
+        <QSColumnIfBlock>
+          <Condition xsi:type="QSConditionSimple">
+            <ConditionType>IsNotNull</ConditionType>
+            <LeftOperand xsi:type="QSColumnSimple">
+              <Alias>Колонка_37</Alias>
+              <AttributeID>50501600</AttributeID>
+              <Type>Value</Type>
+              <Level>0</Level>
+            </LeftOperand>
+            <LeftOperandLevel>0</LeftOperandLevel>
+            <RightOperandLevel>0</RightOperandLevel>
+          </Condition>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_38</Alias>
+            <Value xsi:type="xsd:string">, </Value>
+          </Result>
+        </QSColumnIfBlock>
+        <QSColumnIfBlock>
+          <Result xsi:type="QSColumnConstant">
+            <Alias>Колонка_5</Alias>
+            <Value xsi:type="xsd:string"> </Value>
+          </Result>
+        </QSColumnIfBlock>
+      </Blocks>
+    </QSColumn>
+    <QSColumn xsi:type="QSColumnFunction">
+      <Alias>Колонка_40</Alias>
+      <FunctionType>Coalesce</FunctionType>
+      <Operands>
+        <QSColumn xsi:type="QSColumnSimple">
+          <Alias>Колонка_40</Alias>
+          <AttributeID>50501600</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </QSColumn>
+        <QSColumn xsi:type="QSColumnConstant">
+          <Alias>Колонка_41</Alias>
+          <Value xsi:type="xsd:string"> </Value>
+        </QSColumn>
+      </Operands>
+    </QSColumn>
+  </Operands>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002333, 1003161, 3, 5, NULL, NULL, NULL, 'Объекты', NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
+  <Alias>Объекты</Alias>
+  <SubQuery>
+    <MainRegisterID>314</MainRegisterID>
+    <TDInstanceID>0</TDInstanceID>
+    <Columns>
+      <QSColumn xsi:type="QSColumnFunction">
+        <Alias>Колонка_1</Alias>
+        <FunctionType>Count</FunctionType>
+        <Operands>
+          <QSColumn xsi:type="QSColumnConstant">
+            <Alias>1</Alias>
+            <Value xsi:type="xsd:long">1</Value>
+          </QSColumn>
+        </Operands>
+      </QSColumn>
+    </Columns>
+    <Condition xsi:type="QSConditionGroup">
+      <Type>And</Type>
+      <Conditions>
+        <QSCondition xsi:type="QSConditionSimple">
+          <ConditionType>Equal</ConditionType>
+          <LeftOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_3</Alias>
+            <AttributeID>31400300</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </LeftOperand>
+          <LeftOperandLevel>0</LeftOperandLevel>
+          <RightOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_4</Alias>
+            <AttributeID>31600100</AttributeID>
+            <Type>Value</Type>
+            <Level>1</Level>
+          </RightOperand>
+          <RightOperandLevel>0</RightOperandLevel>
+        </QSCondition>
+      </Conditions>
+    </Condition>
+    <ActualDate>0001-01-01T00:00:00</ActualDate>
+    <IsActual>false</IsActual>
+    <Distinct>false</Distinct>
+    <ManualJoin>false</ManualJoin>
+    <PackageSize>0</PackageSize>
+    <PackageIndex>0</PackageIndex>
+    <OrderBy />
+    <GroupBy />
+    <JoinType>Inner</JoinType>
+    <Joins />
+    <Parameters />
+    <LoadRelations>false</LoadRelations>
+  </SubQuery>
+</QSColumn>', NULL)
+on conflict (id) do update set
+"layoutid"=1003161, "detailtype"=3, "ordinal"=5, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Объекты', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"=NULL, "enablestyle"=NULL, "textalign"=NULL, "qscolumn"='<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnQuery">
+  <Alias>Объекты</Alias>
+  <SubQuery>
+    <MainRegisterID>314</MainRegisterID>
+    <TDInstanceID>0</TDInstanceID>
+    <Columns>
+      <QSColumn xsi:type="QSColumnFunction">
+        <Alias>Колонка_1</Alias>
+        <FunctionType>Count</FunctionType>
+        <Operands>
+          <QSColumn xsi:type="QSColumnConstant">
+            <Alias>1</Alias>
+            <Value xsi:type="xsd:long">1</Value>
+          </QSColumn>
+        </Operands>
+      </QSColumn>
+    </Columns>
+    <Condition xsi:type="QSConditionGroup">
+      <Type>And</Type>
+      <Conditions>
+        <QSCondition xsi:type="QSConditionSimple">
+          <ConditionType>Equal</ConditionType>
+          <LeftOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_3</Alias>
+            <AttributeID>31400300</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </LeftOperand>
+          <LeftOperandLevel>0</LeftOperandLevel>
+          <RightOperand xsi:type="QSColumnSimple">
+            <Alias>Колонка_4</Alias>
+            <AttributeID>31600100</AttributeID>
+            <Type>Value</Type>
+            <Level>1</Level>
+          </RightOperand>
+          <RightOperandLevel>0</RightOperandLevel>
+        </QSCondition>
+      </Conditions>
+    </Condition>
+    <ActualDate>0001-01-01T00:00:00</ActualDate>
+    <IsActual>false</IsActual>
+    <Distinct>false</Distinct>
+    <ManualJoin>false</ManualJoin>
+    <PackageSize>0</PackageSize>
+    <PackageIndex>0</PackageIndex>
+    <OrderBy />
+    <GroupBy />
+    <JoinType>Inner</JoinType>
+    <Joins />
+    <Parameters />
+    <LoadRelations>false</LoadRelations>
+  </SubQuery>
+</QSColumn>', "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002334, 1003152, 2, 1, NULL, NULL, NULL, 'Столбец выбора', 5, 1, NULL, NULL, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003152, "detailtype"=2, "ordinal"=1, "attributeid"=NULL, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Столбец выбора', "headerwidth"=5, "visible"=1, "format"=NULL, "datatype"=NULL, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002335, 1003152, 0, 4, 31501000, NULL, NULL, 'Тип объекта', 20, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003152, "detailtype"=0, "ordinal"=4, "attributeid"=31501000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=20, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002336, 1003152, 0, 5, 31500900, NULL, NULL, 'Адрес', 45, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003152, "detailtype"=0, "ordinal"=5, "attributeid"=31500900, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Адрес', "headerwidth"=45, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002337, 1003152, 0, 2, 31501200, NULL, NULL, 'Утвержден', 10, 1, NULL, 3, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>&amp;nbsp;</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003152, "detailtype"=0, "ordinal"=2, "attributeid"=31501200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Утвержден', "headerwidth"=10, "visible"=1, "format"=NULL, "datatype"=3, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>0</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath />
+      <Text>&amp;nbsp;</Text>
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002338, 1003041, 0, 7, 30800100, NULL, NULL, 'Идентификатор', NULL, 0, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003041, "detailtype"=0, "ordinal"=7, "attributeid"=30800100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=0, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002339, 1003021, 0, 6, 30000100, NULL, NULL, 'Идентификатор', NULL, 0, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003021, "detailtype"=0, "ordinal"=6, "attributeid"=30000100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=0, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002340, 1003141, 0, 7, 31600100, NULL, NULL, 'Идентификатор', NULL, 0, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003141, "detailtype"=0, "ordinal"=7, "attributeid"=31600100, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Идентификатор', "headerwidth"=NULL, "visible"=0, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002341, 1003152, 0, 3, 31500200, NULL, NULL, 'Кадастровый номер объекта', 20, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, 'NotSet', NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003152, "detailtype"=0, "ordinal"=3, "attributeid"=31500200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер объекта', "headerwidth"=20, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="/ObjectCard?ObjId=[31500100]&amp;RegisterViewId=SudObjects&amp;isVertical=true&amp;useMasterPage=true" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='NotSet', "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002342, 1002012, 0, 1, 20101600, NULL, NULL, 'Кадастровый номер', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="~/Unit/ObjectCard?unitId=[ObjectId]" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002012, "detailtype"=0, "ordinal"=1, "attributeid"=20101600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Link Url="~/Unit/ObjectCard?unitId=[ObjectId]" Target="Blank" IsNotNull="false" />
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002343, 1002012, 0, 2, 20100800, NULL, NULL, 'Дата создания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002012, "detailtype"=0, "ordinal"=2, "attributeid"=20100800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата создания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002344, 1002012, 0, 3, 20101800, NULL, NULL, 'Тип объекта', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002012, "detailtype"=0, "ordinal"=3, "attributeid"=20101800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002345, 1002012, 0, 4, 20101500, NULL, NULL, 'Площадь', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002012, "detailtype"=0, "ordinal"=4, "attributeid"=20101500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Площадь', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002346, 1002012, 0, 5, 20100700, NULL, NULL, 'Статус задания', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002012, "detailtype"=0, "ordinal"=5, "attributeid"=20100700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус задания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002347, 1002012, 0, 6, 20101400, NULL, NULL, 'Cтатус расчета', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002012, "detailtype"=0, "ordinal"=6, "attributeid"=20101400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Cтатус расчета', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002348, 1001001, 0, 10, 10007700, NULL, NULL, 'Тип объекта недвижимости по ЦИПЖС', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1001001, "detailtype"=0, "ordinal"=10, "attributeid"=10007700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта недвижимости по ЦИПЖС', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002349, 1003152, 0, 6, 31501700, NULL, NULL, 'Удовлетворено', 20, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>не равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-minus</ImagePath>
+      <Text />
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1003152, "detailtype"=0, "ordinal"=6, "attributeid"=31501700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Удовлетворено', "headerwidth"=20, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>не равно</Condition>
+      <Value>1</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-minus</ImagePath>
+      <Text />
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002350, 1002011, 0, 1, 20101600, NULL, NULL, 'Кадастровый номер', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002011, "detailtype"=0, "ordinal"=1, "attributeid"=20101600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Кадастровый номер', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002351, 1002011, 0, 2, 20100800, NULL, NULL, 'Дата создания', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002011, "detailtype"=0, "ordinal"=2, "attributeid"=20100800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата создания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002352, 1002031, 0, 4, 20200200, NULL, NULL, 'Тур', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=4, "attributeid"=20200200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тур', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002353, 1002031, 0, 5, 96300500, NULL, NULL, 'Номер', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=5, "attributeid"=96300500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Номер', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002354, 1002031, 0, 6, 96300600, NULL, NULL, 'Дата', NULL, 1, NULL, 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002031, "detailtype"=0, "ordinal"=6, "attributeid"=96300600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002355, 1002011, 0, 5, 20101800, NULL, NULL, 'Тип объекта', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002011, "detailtype"=0, "ordinal"=5, "attributeid"=20101800, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Тип объекта', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002356, 1002011, 0, 3, 20101400, NULL, NULL, 'Cтатус расчета', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002011, "detailtype"=0, "ordinal"=3, "attributeid"=20101400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Cтатус расчета', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002357, 1002011, 0, 4, 20101500, NULL, NULL, 'Площадь', NULL, 1, NULL, 2, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002011, "detailtype"=0, "ordinal"=4, "attributeid"=20101500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Площадь', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=2, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002358, 1002011, 0, 6, 20100700, NULL, NULL, 'Статус задания', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1002011, "detailtype"=0, "ordinal"=6, "attributeid"=20100700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус задания', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002359, 1005081, 0, 1, 50802000, NULL, NULL, 'Имя', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005081, "detailtype"=0, "ordinal"=1, "attributeid"=50802000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Имя', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002360, 1005081, 0, 2, 50803000, NULL, NULL, 'Должность', NULL, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1005081, "detailtype"=0, "ordinal"=2, "attributeid"=50803000, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Должность', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002361, 1008012, 0, 1, 80100300, NULL, NULL, 'Статус', 10, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Создано</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-edit</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>В работе</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-play</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Завершено</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Ошибка</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-close</ImagePath>
+      <Text />
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008012, "detailtype"=0, "ordinal"=1, "attributeid"=80100300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=10, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Создано</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-edit</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>В работе</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-play</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Завершено</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-check</ImagePath>
+      <Text />
+    </StyleConditionItem>
+    <StyleConditionItem>
+      <Id>0</Id>
+      <Condition>равно</Condition>
+      <Value>Ошибка</Value>
+      <ValueId>0</ValueId>
+      <Bold>false</Bold>
+      <Underline>false</Underline>
+      <Strikethru>false</Strikethru>
+      <Italic>false</Italic>
+      <ImagePath>k-i-close</ImagePath>
+      <Text />
+    </StyleConditionItem>
+  </Conditions>
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002362, 1008012, 0, 2, 80100500, NULL, NULL, 'Дата запуска', 20, 1, 'ddMMyyyyhhmmss', 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, 'Right', NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008012, "detailtype"=0, "ordinal"=2, "attributeid"=80100500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата запуска', "headerwidth"=20, "visible"=1, "format"='ddMMyyyyhhmmss', "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='Right', "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002363, 1008012, 0, 3, 80100600, NULL, NULL, 'Дата завершения', 20, 1, 'ddMMyyyyhhmmss', 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, 'Right', NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008012, "detailtype"=0, "ordinal"=3, "attributeid"=80100600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата завершения', "headerwidth"=20, "visible"=1, "format"='ddMMyyyyhhmmss', "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='Right', "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002364, 1008012, 0, 4, 80100700, NULL, NULL, 'Имя файла данных', 50, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008012, "detailtype"=0, "ordinal"=4, "attributeid"=80100700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Имя файла данных', "headerwidth"=50, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002365, 1008013, 0, 1, 80100300, NULL, NULL, 'Статус', 10, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008013, "detailtype"=0, "ordinal"=1, "attributeid"=80100300, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Статус', "headerwidth"=10, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002366, 1008013, 0, 2, 80100500, NULL, NULL, 'Дата запуска', 15, 1, 'ddMMyyyyhhmmss', 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, 'Right', NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008013, "detailtype"=0, "ordinal"=2, "attributeid"=80100500, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата запуска', "headerwidth"=15, "visible"=1, "format"='ddMMyyyyhhmmss', "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='Right', "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002367, 1008013, 0, 3, 80100600, NULL, NULL, 'Дата завершения', 15, 1, 'ddMMyyyyhhmmss', 5, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, 'Right', NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008013, "detailtype"=0, "ordinal"=3, "attributeid"=80100600, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Дата завершения', "headerwidth"=15, "visible"=1, "format"='ddMMyyyyhhmmss', "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"='Right', "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002368, 1008013, 0, 4, 80100700, NULL, NULL, 'Имя файла данных', 40, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008013, "detailtype"=0, "ordinal"=4, "attributeid"=80100700, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Имя файла данных', "headerwidth"=40, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1002369, 1008013, 0, 5, 95000400, NULL, NULL, 'Автор', 20, 1, NULL, 4, NULL, NULL, NULL, NULL, '<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
+</StyleConditionItemWrapper>', NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1008013, "detailtype"=0, "ordinal"=5, "attributeid"=95000400, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Автор', "headerwidth"=20, "visible"=1, "format"=NULL, "datatype"=4, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"='<?xml version="1.0" encoding="utf-16"?>
+<StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RowStyle>false</RowStyle>
+  <Conditions />
 </StyleConditionItemWrapper>', "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
@@ -38706,6 +40832,12 @@ on conflict (id) do update set
 "layoutid"=10009361, "detailtype"=0, "ordinal"=4, "attributeid"=93600500, "sortbyattribute"=NULL, "referenceid"=0, "headertext"='Дата последнего изменения', "headerwidth"=10, "visible"=1, "format"='ddMMyyyyhhmmss', "datatype"=5, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=0, "style"=NULL, "enablestyle"=0, "textalign"='NotSet', "qscolumn"=NULL, "export_column_name"=NULL;
 
 --<DO>--
+insert into core_layout_details ("id", "layoutid", "detailtype", "ordinal", "attributeid", "sortbyattribute", "referenceid", "headertext", "headerwidth", "visible", "format", "datatype", "expression", "sqlexpression", "totaltext", "totaltype", "style", "enablestyle", "textalign", "qscolumn", "export_column_name") values
+(1000936104, 1095003, 0, 1, 20200200, NULL, NULL, 'Год проведения тура', NULL, 1, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (id) do update set
+"layoutid"=1095003, "detailtype"=0, "ordinal"=1, "attributeid"=20200200, "sortbyattribute"=NULL, "referenceid"=NULL, "headertext"='Год проведения тура', "headerwidth"=NULL, "visible"=1, "format"=NULL, "datatype"=1, "expression"=NULL, "sqlexpression"=NULL, "totaltext"=NULL, "totaltype"=NULL, "style"=NULL, "enablestyle"=NULL, "textalign"=NULL, "qscolumn"=NULL, "export_column_name"=NULL;
+
+--<DO>--
 insert into core_qry ("qryid", "name", "description", "datefrom", "inlist", "qry_user", "registerid", "qscondition", "iscommon", "internal_name", "register_view_id", "author", "is_using_extended_editor") values
 (1000809, 'Не удаленные отчеты', 'Данный фильтр находится на поддержке и обновляется одновременно с установкой новой версии системы', TO_TIMESTAMP('2018.10.23 00:00:00', 'YYYY.MM.DD HH24:MI:SS'), 0, NULL, 809, '<?xml version="1.0" encoding="utf-16"?>
 <QSCondition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSConditionGroup">
@@ -39595,15 +41727,213 @@ on conflict (id) do update set
 
 --<DO>--
 insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
-(522, 'Выгрузка данных', 'SUD.EXPORT', 503, NULL)
+(523, 'Декларации', 'DECLARATIONS.DECLARATION', 505, NULL)
+on conflict (id) do update set
+"functionname"='Декларации', "functiontag"='DECLARATIONS.DECLARATION', "parent_id"=505, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(524, 'Декларации Создание', 'DECLARATIONS.DECLARATION.CREATE', 523, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Создание', "functiontag"='DECLARATIONS.DECLARATION.CREATE', "parent_id"=523, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(525, 'Декларации Редактирование', 'DECLARATIONS.DECLARATION.EDIT', 523, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование', "functiontag"='DECLARATIONS.DECLARATION.EDIT', "parent_id"=523, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(526, 'Декларации Редактирование: блок «Подача декларации»', 'DECLARATIONS.DECLARATION.EDIT.SUPPLY_BLOCK', 525, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: блок «Подача декларации»', "functiontag"='DECLARATIONS.DECLARATION.EDIT.SUPPLY_BLOCK', "parent_id"=525, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(527, 'Декларации Редактирование: блок «Обработка декларации»', 'DECLARATIONS.DECLARATION.EDIT.PROCESSING_BLOCK', 525, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: блок «Обработка декларации»', "functiontag"='DECLARATIONS.DECLARATION.EDIT.PROCESSING_BLOCK', "parent_id"=525, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(528, 'Декларации Редактирование: изменение статуса декларации', 'DECLARATIONS.DECLARATION.EDIT.STATUS', 525, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: изменение статуса декларации', "functiontag"='DECLARATIONS.DECLARATION.EDIT.STATUS', "parent_id"=525, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(529, 'Декларации Редактирование: вкладка «Формальная проверка/уведомление»', 'DECLARATIONS.DECLARATION.EDIT.FORMAL_CHECKING', 525, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: вкладка «Формальная проверка/уведомление»', "functiontag"='DECLARATIONS.DECLARATION.EDIT.FORMAL_CHECKING', "parent_id"=525, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(530, 'Декларации Редактирование: внесение информации о характеристиках', 'DECLARATIONS.DECLARATION.EDIT.CHARACTERISTICS', 525, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: внесение информации о характеристиках', "functiontag"='DECLARATIONS.DECLARATION.EDIT.CHARACTERISTICS', "parent_id"=525, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(531, 'Декларации Редактирование: формирование уведомлений', 'DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS', 525, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: формирование уведомлений', "functiontag"='DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS', "parent_id"=525, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(532, 'Декларации Редактирование: формирование уведомления о принятии', 'DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS.APPROVE_NOTIFICATION', 531, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: формирование уведомления о принятии', "functiontag"='DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS.APPROVE_NOTIFICATION', "parent_id"=531, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(533, 'Декларации Редактирование: формирование остальных уведомлений', 'DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS.OTHER_NOTIFICATIONS', 531, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: формирование остальных уведомлений', "functiontag"='DECLARATIONS.DECLARATION.EDIT.NOTIFICATIONS.OTHER_NOTIFICATIONS', "parent_id"=531, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(534, 'Декларации Редактирование: прикрепление образов', 'DECLARATIONS.DECLARATION.EDIT.ATTACHMENTS', 525, NULL)
+on conflict (id) do update set
+"functionname"='Декларации Редактирование: прикрепление образов', "functiontag"='DECLARATIONS.DECLARATION.EDIT.ATTACHMENTS', "parent_id"=525, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(535, 'Книги', 'DECLARATIONS.BOOK', 505, NULL)
+on conflict (id) do update set
+"functionname"='Книги', "functiontag"='DECLARATIONS.BOOK', "parent_id"=505, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(536, 'Книги Создание', 'DECLARATIONS.BOOK.CREATE', 535, NULL)
+on conflict (id) do update set
+"functionname"='Книги Создание', "functiontag"='DECLARATIONS.BOOK.CREATE', "parent_id"=535, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(537, 'Книги Редактирование', 'DECLARATIONS.BOOK.EDIT', 535, NULL)
+on conflict (id) do update set
+"functionname"='Книги Редактирование', "functiontag"='DECLARATIONS.BOOK.EDIT', "parent_id"=535, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(538, 'Субъекты', 'DECLARATIONS.SUBJECT', 505, NULL)
+on conflict (id) do update set
+"functionname"='Субъекты', "functiontag"='DECLARATIONS.SUBJECT', "parent_id"=505, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(539, 'Субъекты Создание', 'DECLARATIONS.SUBJECT.CREATE', 538, NULL)
+on conflict (id) do update set
+"functionname"='Субъекты Создание', "functiontag"='DECLARATIONS.SUBJECT.CREATE', "parent_id"=538, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(540, 'Субъекты Редактирование', 'DECLARATIONS.SUBJECT.EDIT', 538, NULL)
+on conflict (id) do update set
+"functionname"='Субъекты Редактирование', "functiontag"='DECLARATIONS.SUBJECT.EDIT', "parent_id"=538, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(541, 'Подписанты', 'DECLARATIONS.SIGNATORY', 505, NULL)
+on conflict (id) do update set
+"functionname"='Подписанты', "functiontag"='DECLARATIONS.SIGNATORY', "parent_id"=505, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(542, 'Подписанты Создание', 'DECLARATIONS.SIGNATORY.CREATE', 541, NULL)
+on conflict (id) do update set
+"functionname"='Подписанты Создание', "functiontag"='DECLARATIONS.SIGNATORY.CREATE', "parent_id"=541, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(543, 'Подписанты Редактирование', 'DECLARATIONS.SIGNATORY.EDIT', 541, NULL)
+on conflict (id) do update set
+"functionname"='Подписанты Редактирование', "functiontag"='DECLARATIONS.SIGNATORY.EDIT', "parent_id"=541, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(544, 'Просмотр истории изменения всех полей', 'SUD.OBJECTS.HISTORY', 512, NULL)
+on conflict (id) do update set
+"functionname"='Просмотр истории изменения всех полей', "functiontag"='SUD.OBJECTS.HISTORY', "parent_id"=512, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(545, 'Просмотр статистики', 'SUD.OBJECTS.STATISTICS', 503, NULL)
+on conflict (id) do update set
+"functionname"='Просмотр статистики', "functiontag"='SUD.OBJECTS.STATISTICS', "parent_id"=503, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(546, 'Просмотр истории изменения всех полей', 'SUD.OTCHET.HISTORY', 506, NULL)
+on conflict (id) do update set
+"functionname"='Просмотр истории изменения всех полей', "functiontag"='SUD.OTCHET.HISTORY', "parent_id"=506, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(547, 'Просмотр истории изменения всех полей', 'SUD.ZAK.HISTORY', 508, NULL)
+on conflict (id) do update set
+"functionname"='Просмотр истории изменения всех полей', "functiontag"='SUD.ZAK.HISTORY', "parent_id"=508, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(548, 'Просмотр истории изменения всех полей', 'SUD.RESH.HISTORY', 510, NULL)
+on conflict (id) do update set
+"functionname"='Просмотр истории изменения всех полей', "functiontag"='SUD.RESH.HISTORY', "parent_id"=510, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(549, 'Выгрузка судебных решений для ГБУ', 'SUD.EXPORT.GBU', 555, NULL)
+on conflict (id) do update set
+"functionname"='Выгрузка судебных решений для ГБУ', "functiontag"='SUD.EXPORT.GBU', "parent_id"=555, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(550, 'Полная выгрузка в Excel', 'SUD.EXPORT.ALL', 555, NULL)
+on conflict (id) do update set
+"functionname"='Полная выгрузка в Excel', "functiontag"='SUD.EXPORT.ALL', "parent_id"=555, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(551, 'Положительные судебные решения', 'SUD.OBJECTS.STATISTICS.TRUE', 545, NULL)
+on conflict (id) do update set
+"functionname"='Положительные судебные решения', "functiontag"='SUD.OBJECTS.STATISTICS.TRUE', "parent_id"=545, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(552, 'Сводная статистика', 'SUD.OBJECTS.STATISTICS.SUMMARY', 545, NULL)
+on conflict (id) do update set
+"functionname"='Сводная статистика', "functiontag"='SUD.OBJECTS.STATISTICS.SUMMARY', "parent_id"=545, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(553, 'Статистика по объектам недвижимости', 'SUD.OBJECTS.STATISTICS.OBJECT', 545, NULL)
+on conflict (id) do update set
+"functionname"='Статистика по объектам недвижимости', "functiontag"='SUD.OBJECTS.STATISTICS.OBJECT', "parent_id"=545, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(554, 'Выгрузка в Excel', 'SUD.EXPORT.EXCEL', 555, NULL)
+on conflict (id) do update set
+"functionname"='Выгрузка в Excel', "functiontag"='SUD.EXPORT.EXCEL', "parent_id"=555, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(555, 'Выгрузка данных', 'SUD.EXPORT', 503, NULL)
 on conflict (id) do update set
 "functionname"='Выгрузка данных', "functiontag"='SUD.EXPORT', "parent_id"=503, "description"=NULL;
 
 --<DO>--
 insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
-(523, 'Добавление декларации', 'DECLARATIONS.EDIT', 505, NULL)
+(556, 'Выгрузка отчета по доп. параметрам', 'SUD.EXPORT.DOP_PARAM', 555, NULL)
 on conflict (id) do update set
-"functionname"='Добавление декларации', "functiontag"='DECLARATIONS.EDIT', "parent_id"=505, "description"=NULL;
+"functionname"='Выгрузка отчета по доп. параметрам', "functiontag"='SUD.EXPORT.DOP_PARAM', "parent_id"=555, "description"=NULL;
+
+--<DO>--
+insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
+(557, 'Выгрузка в XML', 'SUD.EXPORT.XML', 555, NULL)
+on conflict (id) do update set
+"functionname"='Выгрузка в XML', "functiontag"='SUD.EXPORT.XML', "parent_id"=555, "description"=NULL;
 
 --<DO>--
 insert into core_srd_function ("id", "functionname", "functiontag", "parent_id", "description") values
@@ -39676,5 +42006,381 @@ insert into dashboards_panel_type ("id", "name", "description", "url", "dto_clas
 (6, 'Карточка значений показателей', NULL, '~/Views/CoreUi/Dashboard/Gadgets/IndexCard.cshtml', 'PanelIndexCardDto')
 on conflict (id) do update set
 "name"='Карточка значений показателей', "description"=NULL, "url"='~/Views/CoreUi/Dashboard/Gadgets/IndexCard.cshtml', "dto_class_full_name"='PanelIndexCardDto';
+
+--<DO>--
+insert into dashboards_dashboard ("id", "user_id", "layout_type", "name", "description", "iscommon", "srd_dashboard", "subsystem") values
+(86403, 2, 100, 'Рынок недвижимости города Москвы', NULL, 1, NULL, NULL)
+on conflict (id) do update set
+"user_id"=2, "layout_type"=100, "name"='Рынок недвижимости города Москвы', "description"=NULL, "iscommon"=1, "srd_dashboard"=NULL, "subsystem"=NULL;
+
+--<DO>--
+insert into dashboards_dashboard ("id", "user_id", "layout_type", "name", "description", "iscommon", "srd_dashboard", "subsystem") values
+(829870, 2, 100, 'Test', NULL, 0, NULL, NULL)
+on conflict (id) do update set
+"user_id"=2, "layout_type"=100, "name"='Test', "description"=NULL, "iscommon"=0, "srd_dashboard"=NULL, "subsystem"=NULL;
+
+--<DO>--
+insert into dashboards_dashboard ("id", "user_id", "layout_type", "name", "description", "iscommon", "srd_dashboard", "subsystem") values
+(1647130, 2, 200, 'Судебные решения', 'Основное меню по подсистеме судебных решений', 1, NULL, 'Sud')
+on conflict (id) do update set
+"user_id"=2, "layout_type"=200, "name"='Судебные решения', "description"='Основное меню по подсистеме судебных решений', "iscommon"=1, "srd_dashboard"=NULL, "subsystem"='Sud';
+
+--<DO>--
+insert into dashboards_dashboard ("id", "user_id", "layout_type", "name", "description", "iscommon", "srd_dashboard", "subsystem") values
+(9916378, 2, 100, 'Test', NULL, 0, NULL, 'Sud')
+on conflict (id) do update set
+"user_id"=2, "layout_type"=100, "name"='Test', "description"=NULL, "iscommon"=0, "srd_dashboard"=NULL, "subsystem"='Sud';
+
+--<DO>--
+insert into dashboards_dashboard ("id", "user_id", "layout_type", "name", "description", "iscommon", "srd_dashboard", "subsystem") values
+(14421248, 2, 200, 'Тестовый рабочий стол № 2', NULL, 0, NULL, NULL)
+on conflict (id) do update set
+"user_id"=2, "layout_type"=200, "name"='Тестовый рабочий стол № 2', "description"=NULL, "iscommon"=0, "srd_dashboard"=NULL, "subsystem"=NULL;
+
+--<DO>--
+insert into dashboards_dashboard ("id", "user_id", "layout_type", "name", "description", "iscommon", "srd_dashboard", "subsystem") values
+(17604325, 2, 100, 'segfes', 'ergtfretg', 0, NULL, NULL)
+on conflict (id) do update set
+"user_id"=2, "layout_type"=100, "name"='segfes', "description"='ergtfretg', "iscommon"=0, "srd_dashboard"=NULL, "subsystem"=NULL;
+
+--<DO>--
+insert into dashboards_dashboard ("id", "user_id", "layout_type", "name", "description", "iscommon", "srd_dashboard", "subsystem") values
+(17604326, 2, 230, 'Расчетная подсистема', 'Основной рабочий стол для кадастровой оценки', 1, NULL, 'Ko')
+on conflict (id) do update set
+"user_id"=2, "layout_type"=230, "name"='Расчетная подсистема', "description"='Основной рабочий стол для кадастровой оценки', "iscommon"=1, "srd_dashboard"=NULL, "subsystem"='Ko';
+
+--<DO>--
+insert into dashboards_dashboard ("id", "user_id", "layout_type", "name", "description", "iscommon", "srd_dashboard", "subsystem") values
+(17609025, 2, 200, 'Основной рабочий стол для подсистемы деклараций', 'Меню по подсистеме деклараций', 1, 'DECLARATIONS', 'Declarations')
+on conflict (id) do update set
+"user_id"=2, "layout_type"=200, "name"='Основной рабочий стол для подсистемы деклараций', "description"='Меню по подсистеме деклараций', "iscommon"=1, "srd_dashboard"='DECLARATIONS', "subsystem"='Declarations';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(86427, 86403, 'Диаграмма', 0, 1, 2, '<PanelChartViewDto><SeriesNames>Тип объекта недвижимости;Кол-во</SeriesNames><SeriesColors>''#66CCCC'', ''#FF9999'', ''#E4E5EE''</SeriesColors><SQLQuery>SELECT 
+	PROPERTY_TYPETS_CIPJS, 
+    COUNT(1)
+FROM MARKET_CORE_OBJECT 
+	WHERE 
+		PROCESS_TYPE_CODE!=743 AND 
+		(LAST_DATE_UPDATE IS NOT NULL OR MARKET_CODE=737)
+	GROUP BY 
+    	PROPERTY_TYPETS_CIPJS 
+    ORDER BY 
+    	2 
+    DESC</SQLQuery><ChartType>BarChart</ChartType><Legend>Bottom</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><ShowSeriesDefaults>False</ShowSeriesDefaults><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>86427</Id><Title>Объекты аналоги по типам</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>')
+on conflict (id) do update set
+"dashboard_id"=86403, "title"='Диаграмма', "column_index"=0, "order_in_column"=1, "panel_type_id"=2, "settings"='<PanelChartViewDto><SeriesNames>Тип объекта недвижимости;Кол-во</SeriesNames><SeriesColors>''#66CCCC'', ''#FF9999'', ''#E4E5EE''</SeriesColors><SQLQuery>SELECT 
+	PROPERTY_TYPETS_CIPJS, 
+    COUNT(1)
+FROM MARKET_CORE_OBJECT 
+	WHERE 
+		PROCESS_TYPE_CODE!=743 AND 
+		(LAST_DATE_UPDATE IS NOT NULL OR MARKET_CODE=737)
+	GROUP BY 
+    	PROPERTY_TYPETS_CIPJS 
+    ORDER BY 
+    	2 
+    DESC</SQLQuery><ChartType>BarChart</ChartType><Legend>Bottom</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><ShowSeriesDefaults>False</ShowSeriesDefaults><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>86427</Id><Title>Объекты аналоги по типам</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(86467, 86403, 'Диаграмма', 0, 3, 2, '<PanelChartViewDto><SeriesNames>Источник;Кол-во</SeriesNames><SeriesColors>''#66CCCC'', ''#FF9999'', ''#E4E5EE''</SeriesColors><SQLQuery>SELECT 
+	t.MARKET, 
+    COUNT(1) 
+FROM MARKET_CORE_OBJECT t 
+	WHERE
+    	t.PROCESS_TYPE_CODE!=743 AND 
+		(t.LAST_DATE_UPDATE IS NOT NULL OR t.MARKET_CODE=737)
+	GROUP BY 
+    	t.MARKET 
+    ORDER BY 
+    	2 DESC</SQLQuery><ChartType>PieChart</ChartType><Legend>Bottom</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><ShowSeriesDefaults>False</ShowSeriesDefaults><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>86467</Id><Title>Объекты аналоги по Источникам</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>')
+on conflict (id) do update set
+"dashboard_id"=86403, "title"='Диаграмма', "column_index"=0, "order_in_column"=3, "panel_type_id"=2, "settings"='<PanelChartViewDto><SeriesNames>Источник;Кол-во</SeriesNames><SeriesColors>''#66CCCC'', ''#FF9999'', ''#E4E5EE''</SeriesColors><SQLQuery>SELECT 
+	t.MARKET, 
+    COUNT(1) 
+FROM MARKET_CORE_OBJECT t 
+	WHERE
+    	t.PROCESS_TYPE_CODE!=743 AND 
+		(t.LAST_DATE_UPDATE IS NOT NULL OR t.MARKET_CODE=737)
+	GROUP BY 
+    	t.MARKET 
+    ORDER BY 
+    	2 DESC</SQLQuery><ChartType>PieChart</ChartType><Legend>Bottom</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><ShowSeriesDefaults>False</ShowSeriesDefaults><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>86467</Id><Title>Объекты аналоги по Источникам</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(829882, 829870, 'Страница в системе', 0, 1, 5, '<PanelPartialViewDto><Url>~/Views/Prefilter/Prefilter.cshtml</Url><Id>-1</Id><Title>Предварительная фильтрация</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>')
+on conflict (id) do update set
+"dashboard_id"=829870, "title"='Страница в системе', "column_index"=0, "order_in_column"=1, "panel_type_id"=5, "settings"='<PanelPartialViewDto><Url>~/Views/Prefilter/Prefilter.cshtml</Url><Id>-1</Id><Title>Предварительная фильтрация</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(1148351, 86403, 'Страница в системе', 0, 0, 5, '<PanelPartialViewDto><Url>~/Views/Prefilter/Prefilter.cshtml</Url><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>')
+on conflict (id) do update set
+"dashboard_id"=86403, "title"='Страница в системе', "column_index"=0, "order_in_column"=0, "panel_type_id"=5, "settings"='<PanelPartialViewDto><Url>~/Views/Prefilter/Prefilter.cshtml</Url><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(1647136, 1647130, 'Карта сайта', 0, 4, 4, '<PanelSitemapDto><TreeViewList></TreeViewList><RootElement>Судебные решения</RootElement><Id>-1</Id><Title>Все разделы</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelSitemapDto>')
+on conflict (id) do update set
+"dashboard_id"=1647130, "title"='Карта сайта', "column_index"=0, "order_in_column"=4, "panel_type_id"=4, "settings"='<PanelSitemapDto><TreeViewList></TreeViewList><RootElement>Судебные решения</RootElement><Id>-1</Id><Title>Все разделы</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelSitemapDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(1647137, 1647130, 'Карточка значений показателей', 0, 0, 6, '<PanelIndexCardDto><BackgroundColor>#dff0d8</BackgroundColor><TextColor>#468847</TextColor><IconClass>fa-building far</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/SudObjects?{LinkParam}</LinkUrl><SourceType>Method</SourceType><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>ObjectsWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><Id>1647137</Id><Title>Объекты</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>')
+on conflict (id) do update set
+"dashboard_id"=1647130, "title"='Карточка значений показателей', "column_index"=0, "order_in_column"=0, "panel_type_id"=6, "settings"='<PanelIndexCardDto><BackgroundColor>#dff0d8</BackgroundColor><TextColor>#468847</TextColor><IconClass>fa-building far</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/SudObjects?{LinkParam}</LinkUrl><SourceType>Method</SourceType><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>ObjectsWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><Id>1647137</Id><Title>Объекты</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(1651061, 829870, 'Карточка значений показателей', 0, 2, 6, '<PanelIndexCardDto><BackgroundColor>#000000</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>k-icon</IconClass><FontSizeTitle>16px</FontSizeTitle><FontSize>20px</FontSize><LinkUrl></LinkUrl><SourceType>SQL</SourceType><SQL></SQL><Type></Type><Method></Method><WindowWidthStyle>100%</WindowWidthStyle><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>')
+on conflict (id) do update set
+"dashboard_id"=829870, "title"='Карточка значений показателей', "column_index"=0, "order_in_column"=2, "panel_type_id"=6, "settings"='<PanelIndexCardDto><BackgroundColor>#000000</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>k-icon</IconClass><FontSizeTitle>16px</FontSizeTitle><FontSize>20px</FontSize><LinkUrl></LinkUrl><SourceType>SQL</SourceType><SQL></SQL><Type></Type><Method></Method><WindowWidthStyle>100%</WindowWidthStyle><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(1651062, 1647130, 'Карточка значений показателей', 0, 1, 6, '<PanelIndexCardDto><BackgroundColor>#428bca</BackgroundColor><TextColor>#fff</TextColor><IconClass>fas fa-file-signature</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/{LinkParam}</LinkUrl><SourceType>Method</SourceType><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>СourtsWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><Id>1651062</Id><Title>Суды</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>')
+on conflict (id) do update set
+"dashboard_id"=1647130, "title"='Карточка значений показателей', "column_index"=0, "order_in_column"=1, "panel_type_id"=6, "settings"='<PanelIndexCardDto><BackgroundColor>#428bca</BackgroundColor><TextColor>#fff</TextColor><IconClass>fas fa-file-signature</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/{LinkParam}</LinkUrl><SourceType>Method</SourceType><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>СourtsWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><Id>1651062</Id><Title>Суды</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(9916381, 9916378, 'Карточка значений показателей', 0, 0, 6, '<PanelIndexCardDto><BackgroundColor>#000000</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>k-icon</IconClass><FontSizeTitle>16px</FontSizeTitle><FontSize>20px</FontSize><LinkUrl></LinkUrl><SourceType>SQL</SourceType><LoadType>Sync</LoadType><SQL>select l.msgtype as name, count(1) as value
+from core_error_log l 
+left join core_srd_user u on true
+group by l.msgtype</SQL><Type></Type><Method></Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds>5</CacheSeconds><Id>9916381</Id><Title>Проверка кэша</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>')
+on conflict (id) do update set
+"dashboard_id"=9916378, "title"='Карточка значений показателей', "column_index"=0, "order_in_column"=0, "panel_type_id"=6, "settings"='<PanelIndexCardDto><BackgroundColor>#000000</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>k-icon</IconClass><FontSizeTitle>16px</FontSizeTitle><FontSize>20px</FontSize><LinkUrl></LinkUrl><SourceType>SQL</SourceType><LoadType>Sync</LoadType><SQL>select l.msgtype as name, count(1) as value
+from core_error_log l 
+left join core_srd_user u on true
+group by l.msgtype</SQL><Type></Type><Method></Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds>5</CacheSeconds><Id>9916381</Id><Title>Проверка кэша</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(14416045, 86403, 'Страница в системе', 0, 6, 5, '<PanelPartialViewDto><Url>~/Views/CheckDuplicates/ProgressBar.cshtml</Url><Id>-1</Id><Title>Проверка на дублирование</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>')
+on conflict (id) do update set
+"dashboard_id"=86403, "title"='Страница в системе', "column_index"=0, "order_in_column"=6, "panel_type_id"=5, "settings"='<PanelPartialViewDto><Url>~/Views/CheckDuplicates/ProgressBar.cshtml</Url><Id>-1</Id><Title>Проверка на дублирование</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(14421249, 14421248, 'Карточка значений показателей', 0, 0, 6, '<PanelIndexCardDto><BackgroundColor>#dff0d8</BackgroundColor><TextColor>#468847</TextColor><IconClass>fa-building far</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/SudObjects?{LinkParam}</LinkUrl><SourceType>Method</SourceType><LoadType>None</LoadType><DisplayBlockAll>None</DisplayBlockAll><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>ObjectsWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds></CacheSeconds><Id>14421249</Id><Title>Объекты</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>')
+on conflict (id) do update set
+"dashboard_id"=14421248, "title"='Карточка значений показателей', "column_index"=0, "order_in_column"=0, "panel_type_id"=6, "settings"='<PanelIndexCardDto><BackgroundColor>#dff0d8</BackgroundColor><TextColor>#468847</TextColor><IconClass>fa-building far</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/SudObjects?{LinkParam}</LinkUrl><SourceType>Method</SourceType><LoadType>None</LoadType><DisplayBlockAll>None</DisplayBlockAll><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>ObjectsWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds></CacheSeconds><Id>14421249</Id><Title>Объекты</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(14421250, 14421248, 'Карточка значений показателей', 0, 1, 6, '<PanelIndexCardDto><BackgroundColor>#428bca</BackgroundColor><TextColor>#fff</TextColor><IconClass>fas fa-file-signature</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/{LinkParam}</LinkUrl><SourceType>Method</SourceType><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>СourtsWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><Id>1651062</Id><Title>Суды</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>')
+on conflict (id) do update set
+"dashboard_id"=14421248, "title"='Карточка значений показателей', "column_index"=0, "order_in_column"=1, "panel_type_id"=6, "settings"='<PanelIndexCardDto><BackgroundColor>#428bca</BackgroundColor><TextColor>#fff</TextColor><IconClass>fas fa-file-signature</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/{LinkParam}</LinkUrl><SourceType>Method</SourceType><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>СourtsWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><Id>1651062</Id><Title>Суды</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(14421251, 14421248, 'Карта сайта', 0, 4, 4, '<PanelSitemapDto><TreeViewList></TreeViewList><RootElement>Справка</RootElement><Id>-1</Id><Title>Все разделы</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelSitemapDto>')
+on conflict (id) do update set
+"dashboard_id"=14421248, "title"='Карта сайта', "column_index"=0, "order_in_column"=4, "panel_type_id"=4, "settings"='<PanelSitemapDto><TreeViewList></TreeViewList><RootElement>Справка</RootElement><Id>-1</Id><Title>Все разделы</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelSitemapDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17604327, 17604326, 'Карта сайта', 0, 0, 4, '<PanelSitemapDto><TreeViewList></TreeViewList><RootElement>Расчетная подсистема</RootElement><Id>-1</Id><Title>Разделы</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelSitemapDto>')
+on conflict (id) do update set
+"dashboard_id"=17604326, "title"='Карта сайта', "column_index"=0, "order_in_column"=0, "panel_type_id"=4, "settings"='<PanelSitemapDto><TreeViewList></TreeViewList><RootElement>Расчетная подсистема</RootElement><Id>-1</Id><Title>Разделы</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelSitemapDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17604328, 17604326, 'Диаграмма', 1, 0, 2, '<PanelChartViewDto><SeriesNames>Выполнено;В работе</SeriesNames><SeriesColors>''#66CCCC'', ''#F2C263''</SeriesColors><SQLQuery>select to_char(t3.createDate, ''DD.MM.YY''), t3.cntDone, t3.cntNotDone from (
+  select t2.createDate, sum(t2.cntDone) as cntDone, sum(t2.cntNotDone) as cntNotDone from (
+    select 
+    	date_trunc(''day'', t.creation_date) as createDate, 
+        (select count(1) from ko_unit u where u.task_id = t.id and u.UPKS is not null) cntDone,
+        (select count(1) from ko_unit u where u.task_id = t.id and u.UPKS is null) cntNotDone
+    from ko_task t 
+    where t.note_type_code = 1 and t.creation_date &gt; current_date - INTERVAL ''90 DAY'' 
+  ) t2 group by t2.createDate
+  order by 1
+) t3</SQLQuery><ChartType>BarChart</ChartType><Legend>Right</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>17604328</Id><Title>Ежедневная оценка объектов (количество объектов)</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>')
+on conflict (id) do update set
+"dashboard_id"=17604326, "title"='Диаграмма', "column_index"=1, "order_in_column"=0, "panel_type_id"=2, "settings"='<PanelChartViewDto><SeriesNames>Выполнено;В работе</SeriesNames><SeriesColors>''#66CCCC'', ''#F2C263''</SeriesColors><SQLQuery>select to_char(t3.createDate, ''DD.MM.YY''), t3.cntDone, t3.cntNotDone from (
+  select t2.createDate, sum(t2.cntDone) as cntDone, sum(t2.cntNotDone) as cntNotDone from (
+    select 
+    	date_trunc(''day'', t.creation_date) as createDate, 
+        (select count(1) from ko_unit u where u.task_id = t.id and u.UPKS is not null) cntDone,
+        (select count(1) from ko_unit u where u.task_id = t.id and u.UPKS is null) cntNotDone
+    from ko_task t 
+    where t.note_type_code = 1 and t.creation_date &gt; current_date - INTERVAL ''90 DAY'' 
+  ) t2 group by t2.createDate
+  order by 1
+) t3</SQLQuery><ChartType>BarChart</ChartType><Legend>Right</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>17604328</Id><Title>Ежедневная оценка объектов (количество объектов)</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17609026, 17609025, 'Карта сайта', 0, 0, 4, '<PanelSitemapDto><TreeViewList></TreeViewList><RootElement>Декларации</RootElement><Id>-1</Id><Title>Все разделы</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelSitemapDto>')
+on conflict (id) do update set
+"dashboard_id"=17609025, "title"='Карта сайта', "column_index"=0, "order_in_column"=0, "panel_type_id"=4, "settings"='<PanelSitemapDto><TreeViewList></TreeViewList><RootElement>Декларации</RootElement><Id>-1</Id><Title>Все разделы</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelSitemapDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17609027, 17609025, 'Карточка значений показателей', 1, 0, 6, '<PanelIndexCardDto><BackgroundColor>#1e30f7</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>fa-building far</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/DeclarationsDeclaration?{LinkParam}</LinkUrl><SourceType>Method</SourceType><LoadType>Sync</LoadType><DisplayBlockAll>No</DisplayBlockAll><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>DeclarationsObjectTypesWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds></CacheSeconds><Id>17609027</Id><Title>Декларации по типам объектов</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>')
+on conflict (id) do update set
+"dashboard_id"=17609025, "title"='Карточка значений показателей', "column_index"=1, "order_in_column"=0, "panel_type_id"=6, "settings"='<PanelIndexCardDto><BackgroundColor>#1e30f7</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>fa-building far</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>RegistersView/DeclarationsDeclaration?{LinkParam}</LinkUrl><SourceType>Method</SourceType><LoadType>Sync</LoadType><DisplayBlockAll>No</DisplayBlockAll><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>DeclarationsObjectTypesWidget</Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds></CacheSeconds><Id>17609027</Id><Title>Декларации по типам объектов</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17609028, 17604326, 'Список', 1, 2, 3, '<PanelRegisterViewDto><RegisterId>DataImporter</RegisterId><LayoutId>1008013</LayoutId><PageSize>10</PageSize><ShowToolbar>False</ShowToolbar><Id>17609028</Id><Title>Загрузка файлов</Title><WindowWidth></WindowWidth><WindowHeight>500</WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelRegisterViewDto>')
+on conflict (id) do update set
+"dashboard_id"=17604326, "title"='Список', "column_index"=1, "order_in_column"=2, "panel_type_id"=3, "settings"='<PanelRegisterViewDto><RegisterId>DataImporter</RegisterId><LayoutId>1008013</LayoutId><PageSize>10</PageSize><ShowToolbar>False</ShowToolbar><Id>17609028</Id><Title>Загрузка файлов</Title><WindowWidth></WindowWidth><WindowHeight>500</WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelRegisterViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17609030, 17609025, 'Диаграмма', 0, 5, 2, '<PanelChartViewDto><SeriesNames>Статус;Кол-во</SeriesNames><SeriesColors>''#bbbbbb'', ''#e8e49b'', ''#f1a4a4'', ''#a6d6a6''</SeriesColors><SQLQuery>SELECT 
+	(CASE 
+	 	WHEN t.STATUS is null or t.STATUS=0
+		THEN ''Значение отсутствует''
+		WHEN t.STATUS=1
+		THEN ''Отказ в рассмотрении''
+		WHEN t.STATUS=2
+		THEN ''Принято на рассмотрение''
+		WHEN t.STATUS=3
+		THEN ''Рассмотрено''
+	END) AS DECLARATION_STATUS, 
+    COUNT(1) 
+FROM DECLARATIONS_DECLARATION t 
+	GROUP BY 
+    	DECLARATION_STATUS
+    ORDER BY 
+    	2 DESC</SQLQuery><ChartType>PieChart</ChartType><Legend>Bottom</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>17609030</Id><Title>Диаграмма соотношения статусов деклараций</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>')
+on conflict (id) do update set
+"dashboard_id"=17609025, "title"='Диаграмма', "column_index"=0, "order_in_column"=5, "panel_type_id"=2, "settings"='<PanelChartViewDto><SeriesNames>Статус;Кол-во</SeriesNames><SeriesColors>''#bbbbbb'', ''#e8e49b'', ''#f1a4a4'', ''#a6d6a6''</SeriesColors><SQLQuery>SELECT 
+	(CASE 
+	 	WHEN t.STATUS is null or t.STATUS=0
+		THEN ''Значение отсутствует''
+		WHEN t.STATUS=1
+		THEN ''Отказ в рассмотрении''
+		WHEN t.STATUS=2
+		THEN ''Принято на рассмотрение''
+		WHEN t.STATUS=3
+		THEN ''Рассмотрено''
+	END) AS DECLARATION_STATUS, 
+    COUNT(1) 
+FROM DECLARATIONS_DECLARATION t 
+	GROUP BY 
+    	DECLARATION_STATUS
+    ORDER BY 
+    	2 DESC</SQLQuery><ChartType>PieChart</ChartType><Legend>Bottom</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>17609030</Id><Title>Диаграмма соотношения статусов деклараций</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17618028, 1647130, 'Диаграмма', 1, 0, 2, '<PanelChartViewDto><SeriesNames>Объекты;Кол-во</SeriesNames><SeriesColors>''#e8e49b'', ''#bbbbbb''</SeriesColors><SQLQuery>select t2.approve, count(1) from
+(
+SELECT (CASE
+         WHEN ((EXISTS((SELECT 1
+                         FROM SUD_OTCHETLINK L2_R304
+                         JOIN SUD_OTCHETLINKSTATUS L2_R306
+                           ON (L2_R306.ID = L2_R304.ID_OTCHET)
+                         JOIN SUD_OTCHETSTATUS L2_R307
+                           ON (L2_R307.ID = L2_R304.ID_OTCHET)
+                        WHERE (L2_R304.ID_OBJECT = L1_R315.ID AND
+                              (L2_R306.STATUS = 0 OR L2_R307.STATUS = 0)))) OR
+              EXISTS((SELECT 1
+                         FROM SUD_ZAKLINK L2_R302
+                         JOIN SUD_ZAKLINKSTATUS L2_R311
+                           ON (L2_R311.ID = L2_R302.ID_ZAK)
+                         JOIN SUD_ZAKSTATUS L2_R312
+                           ON (L2_R312.ID = L2_R302.ID_ZAK)
+                        WHERE (L2_R302.ID_OBJECT = L1_R315.ID AND
+                              (L2_R311.STATUS = 0 OR L2_R312.STATUS = 0)))) OR
+              EXISTS((SELECT 1
+                         FROM SUD_SUDLINK L2_R314
+                         JOIN SUD_SUDLINKSTATUS L2_R309
+                           ON (L2_R309.ID = L2_R314.ID_SUD)
+                         JOIN SUD_SUDSTATUS L2_R310
+                           ON (L2_R310.ID = L2_R314.ID_SUD)
+                        WHERE (L2_R314.ID_OBJECT = L1_R315.ID AND
+                              (L2_R309.STATUS = 0 OR L2_R310.ASTATUS = 0)))) OR
+              EXISTS((SELECT 1
+                         FROM SUD_OBJECTSTATUS L2_R305
+                        WHERE (L2_R305.ID = L1_R315.ID AND
+                              L2_R305.STATUS = 0))))
+              
+              ) THEN
+          ''Не утверждено''
+         ELSE
+          ''Утверждено''
+       END) AS approve
+  FROM sud_object L1_R315) t2
+ GROUP BY t2.approve
+ ORDER BY 1 DESC;</SQLQuery><ChartType>PieChart</ChartType><Legend>Bottom</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><ShowSeriesDefaults>False</ShowSeriesDefaults><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>17618028</Id><Title>Утвержденные объекты</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>')
+on conflict (id) do update set
+"dashboard_id"=1647130, "title"='Диаграмма', "column_index"=1, "order_in_column"=0, "panel_type_id"=2, "settings"='<PanelChartViewDto><SeriesNames>Объекты;Кол-во</SeriesNames><SeriesColors>''#e8e49b'', ''#bbbbbb''</SeriesColors><SQLQuery>select t2.approve, count(1) from
+(
+SELECT (CASE
+         WHEN ((EXISTS((SELECT 1
+                         FROM SUD_OTCHETLINK L2_R304
+                         JOIN SUD_OTCHETLINKSTATUS L2_R306
+                           ON (L2_R306.ID = L2_R304.ID_OTCHET)
+                         JOIN SUD_OTCHETSTATUS L2_R307
+                           ON (L2_R307.ID = L2_R304.ID_OTCHET)
+                        WHERE (L2_R304.ID_OBJECT = L1_R315.ID AND
+                              (L2_R306.STATUS = 0 OR L2_R307.STATUS = 0)))) OR
+              EXISTS((SELECT 1
+                         FROM SUD_ZAKLINK L2_R302
+                         JOIN SUD_ZAKLINKSTATUS L2_R311
+                           ON (L2_R311.ID = L2_R302.ID_ZAK)
+                         JOIN SUD_ZAKSTATUS L2_R312
+                           ON (L2_R312.ID = L2_R302.ID_ZAK)
+                        WHERE (L2_R302.ID_OBJECT = L1_R315.ID AND
+                              (L2_R311.STATUS = 0 OR L2_R312.STATUS = 0)))) OR
+              EXISTS((SELECT 1
+                         FROM SUD_SUDLINK L2_R314
+                         JOIN SUD_SUDLINKSTATUS L2_R309
+                           ON (L2_R309.ID = L2_R314.ID_SUD)
+                         JOIN SUD_SUDSTATUS L2_R310
+                           ON (L2_R310.ID = L2_R314.ID_SUD)
+                        WHERE (L2_R314.ID_OBJECT = L1_R315.ID AND
+                              (L2_R309.STATUS = 0 OR L2_R310.ASTATUS = 0)))) OR
+              EXISTS((SELECT 1
+                         FROM SUD_OBJECTSTATUS L2_R305
+                        WHERE (L2_R305.ID = L1_R315.ID AND
+                              L2_R305.STATUS = 0))))
+              
+              ) THEN
+          ''Не утверждено''
+         ELSE
+          ''Утверждено''
+       END) AS approve
+  FROM sud_object L1_R315) t2
+ GROUP BY t2.approve
+ ORDER BY 1 DESC;</SQLQuery><ChartType>PieChart</ChartType><Legend>Bottom</Legend><TemplateToolTip></TemplateToolTip><Url></Url><Seriess></Seriess><IsStacked>False</IsStacked><ShowSeriesDefaults>False</ShowSeriesDefaults><StackedGroupField></StackedGroupField><StackedSortField></StackedSortField><StackedValueField></StackedValueField><ParametersQuery></ParametersQuery><LabelValueAxisTemplate></LabelValueAxisTemplate><WordWrapCharCount></WordWrapCharCount><DisplayFormat>ZeroDecimalDigitsWithSeparator</DisplayFormat><DisplayFormatString>n0</DisplayFormatString><Id>17618028</Id><Title>Утвержденные объекты</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelChartViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17618143, 1647130, 'Быстрый поиск', 1, 2, 1, '<PanelQuickSearchDto><IconUrl></IconUrl><ReverseIconUrl></ReverseIconUrl><HeaderInfo></HeaderInfo><HeaderInfoDisplay></HeaderInfoDisplay><TitleUrl>/RegistersView/SudObjects</TitleUrl><TitleLeftUrl>Не утверждено</TitleLeftUrl><LeftUrl>/RegistersView/SudObjects?Transition=1&amp;31501200=0</LeftUrl><LeftUrlAction>False</LeftUrlAction><TitleRightUrl>Все объекты</TitleRightUrl><RightUrl>/RegistersView/SudObjects</RightUrl><RightUrlAction>False</RightUrlAction><QuickSearchRegisterId>SudObjects</QuickSearchRegisterId><QuickSearchAttributeId>31500200</QuickSearchAttributeId><QuickSearchUrlText>кадастровый номер</QuickSearchUrlText><Id>-1</Id><Title>Объекты (быстрый поиск)</Title><WindowWidth>200</WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelQuickSearchDto>')
+on conflict (id) do update set
+"dashboard_id"=1647130, "title"='Быстрый поиск', "column_index"=1, "order_in_column"=2, "panel_type_id"=1, "settings"='<PanelQuickSearchDto><IconUrl></IconUrl><ReverseIconUrl></ReverseIconUrl><HeaderInfo></HeaderInfo><HeaderInfoDisplay></HeaderInfoDisplay><TitleUrl>/RegistersView/SudObjects</TitleUrl><TitleLeftUrl>Не утверждено</TitleLeftUrl><LeftUrl>/RegistersView/SudObjects?Transition=1&amp;31501200=0</LeftUrl><LeftUrlAction>False</LeftUrlAction><TitleRightUrl>Все объекты</TitleRightUrl><RightUrl>/RegistersView/SudObjects</RightUrl><RightUrlAction>False</RightUrlAction><QuickSearchRegisterId>SudObjects</QuickSearchRegisterId><QuickSearchAttributeId>31500200</QuickSearchAttributeId><QuickSearchUrlText>кадастровый номер</QuickSearchUrlText><Id>-1</Id><Title>Объекты (быстрый поиск)</Title><WindowWidth>200</WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelQuickSearchDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17618210, 17609025, 'Страница в системе', 0, 6, 5, '<PanelPartialViewDto><Url></Url><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>')
+on conflict (id) do update set
+"dashboard_id"=17609025, "title"='Страница в системе', "column_index"=0, "order_in_column"=6, "panel_type_id"=5, "settings"='<PanelPartialViewDto><Url></Url><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17618211, 17609025, 'Страница в системе', 0, 7, 5, '<PanelPartialViewDto><Url></Url><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>')
+on conflict (id) do update set
+"dashboard_id"=17609025, "title"='Страница в системе', "column_index"=0, "order_in_column"=7, "panel_type_id"=5, "settings"='<PanelPartialViewDto><Url></Url><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17618234, 829870, 'Страница в системе', 0, 3, 5, '<PanelPartialViewDto><Url>~/Views/Prefilter/Prefilter.cshtml</Url><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>')
+on conflict (id) do update set
+"dashboard_id"=829870, "title"='Страница в системе', "column_index"=0, "order_in_column"=3, "panel_type_id"=5, "settings"='<PanelPartialViewDto><Url>~/Views/Prefilter/Prefilter.cshtml</Url><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelPartialViewDto>';
+
+--<DO>--
+insert into dashboards_panel ("id", "dashboard_id", "title", "column_index", "order_in_column", "panel_type_id", "settings") values
+(17620386, 17609025, 'Карточка значений показателей', 0, 8, 6, '<PanelIndexCardDto><BackgroundColor>#000000</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>k-icon</IconClass><FontSizeTitle>16px</FontSizeTitle><FontSize>20px</FontSize><LinkUrl></LinkUrl><SourceType>SQL</SourceType><LoadType>Sync</LoadType><DisplayBlockAll>No</DisplayBlockAll><SQL></SQL><Type></Type><Method></Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds></CacheSeconds><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>')
+on conflict (id) do update set
+"dashboard_id"=17609025, "title"='Карточка значений показателей', "column_index"=0, "order_in_column"=8, "panel_type_id"=6, "settings"='<PanelIndexCardDto><BackgroundColor>#000000</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>k-icon</IconClass><FontSizeTitle>16px</FontSizeTitle><FontSize>20px</FontSize><LinkUrl></LinkUrl><SourceType>SQL</SourceType><LoadType>Sync</LoadType><DisplayBlockAll>No</DisplayBlockAll><SQL></SQL><Type></Type><Method></Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds></CacheSeconds><Id>-1</Id><Title></Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag></SrdFunctionTag></PanelIndexCardDto>';
 
 --<DO>--
