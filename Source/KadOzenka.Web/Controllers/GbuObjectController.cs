@@ -5,10 +5,8 @@ using KadOzenka.Web.Models.GbuObject;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Core.ErrorManagment;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
@@ -18,9 +16,7 @@ using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
-using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.KO;
-using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -77,8 +73,8 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewData["Attribute"] = OMAttribute.Where(x => x.RegisterId >= 2 && x.RegisterId <= 23).SelectAll()
-				.Execute().Select(x => new
+			ViewData["Attribute"] = _service.GetGbuAttributes()
+                .Select(x => new
 				{
 					x.Id,
 					Text = x.Name

@@ -7,6 +7,7 @@ using KadOzenka.Web.Models.GbuObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ObjectModel.Core.Register;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -177,5 +178,10 @@ where a.object_id = {objectId}";
 			return result;
 		}
 
+
+        public List<OMAttribute> GetGbuAttributes()
+        {
+            return OMAttribute.Where(x => x.RegisterId >= 2 && x.RegisterId <= 23).SelectAll().Execute();
+        }
 	}
 }
