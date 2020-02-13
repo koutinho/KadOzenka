@@ -58,6 +58,24 @@ namespace KadOzenka.Dal.Tasks
 		    return query.ExecuteQuery<TaskDocumentInfoDto>();
 		}
 
+        public List<TaskDto> GetTasksByTour(long tourId)
+        {
+            var tasks = OMTask.Where(x => x.TourId == tourId)
+                .Select(x => x.Id)
+                .Select(x => x.DocumentId)
+                .Execute();
+
+            var result = new List<TaskDto>();
+
+            tasks.ForEach(x => result.Add(new TaskDto
+            {
+                Id = x.Id,
+                IncomingDocument = GetDocumentById(x.DocumentId)
+            }));
+
+            return result;
+        }
+
 
         #region Support Methods
 

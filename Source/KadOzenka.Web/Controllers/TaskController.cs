@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Text;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,11 +12,13 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.DataImporterLayout;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ObjectModel.Gbu.ExportAttribute;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -23,12 +27,14 @@ namespace KadOzenka.Web.Controllers
         public TaskService TaskService { get; set; }
         public ModelService ModelService { get; set; }
         public DataImporterService DataImporterService { get; set; }
+        public GbuObjectService GbuObjectService { get; set; }
 
         public TaskController()
         {
             TaskService = new TaskService();
             ModelService = new ModelService();
             DataImporterService = new DataImporterService();
+            GbuObjectService = new GbuObjectService();
         }
 
         #region Карточка задачи
@@ -67,9 +73,144 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
+        #region Перенос атрибутов
+
+        [HttpGet]
+        public ActionResult TransferAttributes()
+        {
+            var model = new ExportAttributesModel();
+
+            ViewData["GbuAttributes"] = GbuObjectService.GetGbuAttributes()
+                .Select(x => new
+                {
+                    x.Id,
+                    Text = x.Name
+                }).AsEnumerable();
+
+            //TODO
+            ViewData["KoAttributes"] = GbuObjectService.GetGbuAttributes()
+                .Select(x => new
+                {
+                    x.Id,
+                    Text = x.Name
+                }).AsEnumerable();
+
+            return View(model);
+        }
+
+        public JsonResult GetTasksByTour(long tourId)
+        {
+            var tasks = TaskService.GetTasksByTour(tourId);
+
+            var models = tasks.Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.IncomingDocument?.RegNumber
+            });
+
+            return Json(models);
+        }
+
+        [HttpPost]
+        public void TransferAttributes(ExportAttributesModel model)
+        {
+            if (model.TaskId == 0)
+                throw new ArgumentException("Не выбрано задание на оценку, операция прервана");
+
+            var settings = new GbuExportAttributeSettings
+            {
+                TaskFilter = new List<long> { model.TaskId },
+                Attributes = new List<ExportAttributeItem>
+                {
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO1,
+                        IdAttributeGBU = model.IdAttributeGBU1
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO2,
+                        IdAttributeGBU = model.IdAttributeGBU2
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO3,
+                        IdAttributeGBU = model.IdAttributeGBU3
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO4,
+                        IdAttributeGBU = model.IdAttributeGBU4
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO5,
+                        IdAttributeGBU = model.IdAttributeGBU5
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO6,
+                        IdAttributeGBU = model.IdAttributeGBU6
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO7,
+                        IdAttributeGBU = model.IdAttributeGBU7
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO8,
+                        IdAttributeGBU = model.IdAttributeGBU8
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO9,
+                        IdAttributeGBU = model.IdAttributeGBU9
+                    },
+                    new ExportAttributeItem
+                    {
+                        IdAttributeKO = model.IdAttributeKO10,
+                        IdAttributeGBU = model.IdAttributeGBU10
+                    }
+                }
+            };
+
+            ValidateExportAttributeItems(settings.Attributes);
+
+            ExportAttributeToKO.Run(settings);
+        }
+
+        
+        #region Support Methods
+
+        public void ValidateExportAttributeItems(List<ExportAttributeItem> item)
+        {
+            var message = new StringBuilder("Один из параметров не выбран, строки №:");
+            var withErrors = false;
+
+            for (var i = 0; i < item.Count; i++)
+            {
+                var current = item[i];
+
+                if (!((current.IdAttributeGBU == 0 && current.IdAttributeKO == 0) ||
+                      (current.IdAttributeGBU != 0 && current.IdAttributeKO != 0)))
+                {
+                    message.Append($"{i + 1}, ");
+                    withErrors = true;
+                }
+            }
+
+            if(withErrors)
+                throw new ArgumentException(message.ToString());
+        }
+
+        #endregion
+
+        #endregion
+
         #region Модель
 
-		public ActionResult Model(long groupId)
+        public ActionResult Model(long groupId)
         {
             var modelDto = ModelService.GetModelByGroupId(groupId);
             var model = ModelModel.ToModel(modelDto);

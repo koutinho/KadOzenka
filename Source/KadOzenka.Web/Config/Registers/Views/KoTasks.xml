@@ -10,6 +10,8 @@
 				<Parameter Key="RegisterId" Value="[RegisterId]" />
 			</Parameters>
 		</Button>
+    <Button Caption="Перенос атрибутов" NavigateURL="/Task/TransferAttributes" WindowHeight="700" WindowWidth="1150" Icon="fas fa-edit">
+    </Button>
     <Button Caption="Импорт данных ГКН" NavigateURL="/DataImport/ImportGkn" Icon="fas fa-code" WindowHeight="750" WindowWidth="1150">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
