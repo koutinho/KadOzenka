@@ -266,7 +266,9 @@
     <Content Include="Config\Registers\Views\SudObjects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\SudObjectsRemoved.xml" />
+    <Content Include="Config\Registers\Views\SudObjectsRemoved.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 
