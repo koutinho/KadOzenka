@@ -176,9 +176,9 @@ namespace KadOzenka.Dal.YandexParser
                             ConsoleLog.WriteData("Обработка объектов", KCtr, KCur, KKad, KErr);
 						}
 						foreach (var createdObject in createdObjects) createdObject.Save();
-						Console.WriteLine($"Парсинг для категории {formMarketObjectsRequest.ObjectsListUrl} завершен. Успешно добавлено {createdObjects.Count} объектов.");
+						Console.WriteLine($"\nПарсинг для категории {formMarketObjectsRequest.ObjectsListUrl} завершен. Добавлено объектов: {createdObjects.Count}.");
 					}
-					catch (Exception e) { Console.WriteLine($"Произошла ошибка во время парсинга категории {formMarketObjectsRequest.ObjectsListUrl}:{e.Message}"); }
+					catch (Exception e) { Console.WriteLine($"\nПроизошла ошибка во время парсинга категории {formMarketObjectsRequest.ObjectsListUrl}:{e.Message}"); }
 				}
 			}
 		}
