@@ -358,7 +358,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                             obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Office;
                             break;
                         case "Объекты, предназначенные для размещения гостиниц":
-                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Hotel;
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Appartment;
                             break;
                         case "Объекты, предназначенные для хранения индивидуального транспорта":
                             obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
@@ -513,7 +513,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                             obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Office;
                             break;
                         case "Объекты, предназначенные для размещения гостиниц":
-                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Hotel;
+                            obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.Appartment;
                             break;
                         case "Объекты, предназначенные для хранения индивидуального транспорта":
                             if (curUse.Contains("бокс")) obj.PropertyMarketSegment_Code = ObjectModel.Directory.MarketSegment.CarParking;
