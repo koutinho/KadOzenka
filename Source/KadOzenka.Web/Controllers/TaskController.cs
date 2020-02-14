@@ -118,7 +118,7 @@ namespace KadOzenka.Web.Controllers
 
             var models = koAttributes.Select(x => new
             {
-                x.Id,
+                Value = x.Id,
                 Text = x.Name
             }).AsEnumerable();
 
