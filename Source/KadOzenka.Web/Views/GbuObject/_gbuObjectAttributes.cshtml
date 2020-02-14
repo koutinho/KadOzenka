@@ -1,0 +1,136 @@
+﻿@model List<KadOzenka.Web.Models.GbuObject.ObjectAttributes.RegisterDto>
+
+@{
+    int registerCounter = 0;
+}
+@if (Model.Count == 0)
+{
+    <div>
+        <p class="text">Не найдено атрибутов по заданной Дате актуализации</p>
+    </div>
+}
+else
+{
+    <div id="registersTabstrip">
+        <ul>
+            @{
+                foreach (var m in Model)
+                {
+                    var textTab = m.Name;
+                    <li class="@(registerCounter == 0 ? "k-state-active" : "")">@(textTab)</li>
+                    registerCounter++;
+                }
+                registerCounter = 0;
+            }
+        </ul>
+        @{
+            foreach (var m in Model)
+            {
+                <div style="min-height: 710px">
+                    @Html.HiddenFor(r => r[registerCounter].Id)
+                    <div class="form-horizontal col-sm-12">
+                        <div class="form-group"></div>
+                        @{
+                            var attrCounter = 0;
+                            foreach (var mRegisterAttribute in m.RegisterAttributes)
+                            {
+
+                                if (attrCounter % 2 == 0)
+                                {
+                                    @Html.Raw("<div class='form-group'>");
+                                    <div class="col-sm-2">
+                                        @Html.CustomLabel(mRegisterAttribute.GetAttributeName())
+                                    </div>
+                                    <div class="col-sm-4">
+                                        @{
+                                            if (mRegisterAttribute.StringValue != null)
+                                            {
+                                                <div class="col-sm-12">
+                                                    @{
+                                                        @Html.KendoTextBoxFor(r => r[registerCounter].RegisterAttributes[attrCounter].StringValue, isReadonly: true)
+                                                    }
+                                                </div>
+                                            }
+                                            else if (mRegisterAttribute.NumValue.HasValue)
+                                            {
+                                                <div class="col-sm-12">
+                                                    @Html.KendoTextBoxFor(r => r[registerCounter].RegisterAttributes[attrCounter].NumValue, isReadonly: true)
+                                                </div>
+                                            }
+                                            else if (mRegisterAttribute.DtValue.HasValue)
+                                            {
+                                                <div class="col-sm-8">
+                                                    @Html.KendoDatePickerFor(r => r[registerCounter].RegisterAttributes[attrCounter].DtValue, isReadonly: true)
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-sm-2">
+                                        @Html.CustomLabel(mRegisterAttribute.GetAttributeName())
+                                    </div>
+                                    <div class="col-sm-4">
+                                        @{
+                                            if (mRegisterAttribute.StringValue != null)
+                                            {
+                                                <div class="col-sm-12">
+                                                    @{
+                                                        @Html.KendoTextBoxFor(r => r[registerCounter].RegisterAttributes[attrCounter].StringValue, isReadonly: true)
+                                                    }
+                                                </div>
+                                            }
+                                            else if (mRegisterAttribute.NumValue.HasValue)
+                                            {
+                                                <div class="col-sm-12">
+                                                    @Html.KendoTextBoxFor(r => r[registerCounter].RegisterAttributes[attrCounter].NumValue, isReadonly: true)
+                                                </div>
+                                            }
+                                            else if (mRegisterAttribute.DtValue.HasValue)
+                                            {
+                                                <div class="col-sm-8">
+                                                    @Html.KendoDatePickerFor(r => r[registerCounter].RegisterAttributes[attrCounter].DtValue, isReadonly: true)
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                    @Html.Raw("</div>");
+                                }
+
+                                if (attrCounter % 2 == 0 && attrCounter == m.RegisterAttributes.Count - 1)
+                                {
+                                    @Html.Raw("</div>");
+                                }
+                                attrCounter++;
+                            }
+                        }
+                    </div>
+                </div>
+                registerCounter++;
+            }
+        }
+    </div>
+}
+
+<style>
+    .conclusion-link-content .k-content {
+        padding: 10px !important;
+    }
+
+    .text {
+        padding: 1em;
+        text-align: center;
+        font-family: 'Roboto';
+        font-style: normal;
+        font-size: 1.2em;
+        /*color: red;*/
+    }
+</style>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#registersTabstrip").kendoTabStrip();
+    });
+</script>

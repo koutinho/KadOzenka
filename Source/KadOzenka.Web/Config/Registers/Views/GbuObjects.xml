@@ -29,9 +29,9 @@
             </Parameters>
         </Button>
 
-        <Button Caption="Единица оценки" NavigateURL="~/Task/Unit" Icon="icon-contract">
+        <Button Caption="Объект недвижимости" NavigateURL="~/GbuObject/GbuObjectCard" Icon="icon-contract" >
             <Parameters>
-                <Parameter Key="ObjectId" Value="[ObjectID]" />
+                <Parameter Key="objectId" Value="[ObjectID]" />
             </Parameters>
         </Button>
 
@@ -51,6 +51,10 @@
     </Tabs>
 
     <RowMenuButtons>
-        <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+        <Button Caption="Объект недвижимости" Icon="far fa-file-alt" NavigateURL="~/GbuObject/GbuObjectCard">
+            <Parameters>
+                <Parameter Key="objectId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
     </RowMenuButtons>
 </RegisterView>

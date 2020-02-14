@@ -7,15 +7,19 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Core.ErrorManagment;
+using Core.Register;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
+using ObjectModel.Gbu;
+using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
@@ -62,6 +66,34 @@ namespace KadOzenka.Web.Controllers
 			var sttributesValues = _service.GetAllAttributes(objectId, sources, attributes);
 
 			return View(sttributesValues);
+		}
+
+		[HttpGet]
+		public ActionResult GbuObjectCard(long objectId)
+		{
+			var obj = OMMainObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
+			return View(GbuObjectViewModel.FromEntity(obj, DateTime.Now));
+		}
+
+		public ActionResult GetGbuObjectAttributes(long objectId, DateTime? actualDate)
+		{
+			var viewModel = new List<RegisterDto>();
+
+			var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
+			var getSources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id && x.Id != 1).ToList();
+			foreach (var source in getSources)
+			{
+				var objAttributes = _service
+					.GetAllAttributes(objectId, new List<long> {source.Id}, null, actualDate ?? DateTime.Now)
+					.Where(x =>
+						x.NumValue.HasValue || x.DtValue.HasValue || !string.IsNullOrEmpty(x.StringValue)).ToList();
+				if (objAttributes.Count > 0)
+				{
+					viewModel.Add(new RegisterDto(source.Id, source.Description, objAttributes));
+				}
+			}
+
+			return PartialView("~/Views/GbuObject/_gbuObjectAttributes.cshtml", viewModel);
 		}
 
 		[HttpGet]
