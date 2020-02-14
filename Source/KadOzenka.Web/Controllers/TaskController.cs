@@ -128,12 +128,12 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         public void TransferAttributes(ExportAttributesModel model)
         {
-            if (model.TaskId == 0)
+            if (model.TaskFilter == null || model.TaskFilter.Count == 0)
                 throw new ArgumentException("Не выбрано задание на оценку, операция прервана");
 
             var settings = new GbuExportAttributeSettings
             {
-                TaskFilter = new List<long> { model.TaskId },
+                TaskFilter = model.TaskFilter,
                 Attributes = new List<ExportAttributeItem>
                 {
                     new ExportAttributeItem

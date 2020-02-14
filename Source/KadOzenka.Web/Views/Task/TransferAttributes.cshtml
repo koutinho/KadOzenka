@@ -21,14 +21,10 @@
 
         <div class="form-group">
             <div class="col-sm-2">
-                @Html.CustomLabel("Задание на оценку")
+                @Html.CustomLabelFor(x => x.TaskFilter)
             </div>
             <div class="col-sm-10">
-                @(Html.Kendo().DropDownList()
-                              .Name("task")
-                              .DataTextField("Text")
-                              .DataValueField("Value")
-                )
+                <select id="TaskFilter"></select>
             </div>
         </div>
 
@@ -220,27 +216,26 @@
 
     function initTasksList() {
         var tourId = $('#RatingTour').val();
-        kendo.ui.progress($('body'), true);
-        $('[name="task"]')
-            .kendoDropDownList({
+        var dataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetTasksByTour", "Task")',
+                    data: { tourId: tourId },
+                    dataType: 'json'
+                }
+            }
+        });
+        var tasksMultiSelect = $("#TaskFilter").data("kendoMultiSelect");
+        if (tasksMultiSelect) {
+            tasksMultiSelect.setDataSource(dataSource);
+        } else {
+            $('#TaskFilter').kendoMultiSelect({
                 dataTextField: 'Text',
                 dataValueField: 'Value',
                 optionLabel: "--Выберите задание--",
-                dataSource:
-                {
-                    transport: {
-                        read: {
-                            url: '@Url.Action("GetTasksByTour", "Task")',
-                            data: { tourId: tourId },
-                            dataType: 'json'
-                        }
-                    }
-                },
-                dataBound: function() {
-                    kendo.ui.progress($('body'), false);
-                    this.select(1);
-                }
+                dataSource: dataSource
             });
+        }
     }
 
 
@@ -271,7 +266,7 @@
     function transferAttributes() {
         var form = $('form');
         var formObject = Common.Functions.FormToObject(form);
-        formObject['TaskId'] = $("#task").data('kendoDropDownList').value();
+        formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
         formObject['ObjType'] = $('input[name="ObjType"]:checked')[0].id;
 
         kendo.ui.progress($('body'), true);

@@ -1,8 +1,12 @@
-﻿namespace KadOzenka.Web.Models.Task
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+
+namespace KadOzenka.Web.Models.Task
 {
     public class ExportAttributesModel
     {
-        public long TaskId { get; set; }
+        [Display(Name = "Задание на оценку")]
+        public List<long> TaskFilter { get; set; }
         public string ObjType { get; set; }
 
         public long IdAttributeKO1 { get; set; }
