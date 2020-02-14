@@ -207,39 +207,20 @@
             });
 
         $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initKoAttributes);
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
+        $('[name="ObjType"]').on('change', initKoAttributes);
 
-        $('[name="ObjType"]').on('change', function() {
-
-        });
-
-        $('#execute').on('click',
-            function() {
-                var form = $('form');
-                var formObject = Common.Functions.FormToObject(form);
-                formObject['TaskId'] = $("#task").data('kendoDropDownList').value();
-                formObject['ObjType'] = $('input[name="ObjType"]:checked')[0].id;
-
-                kendo.ui.progress($('body'), true);
-                $.ajax({
-                    type: 'POST',
-                    url: form.attr('action'),
-                    data: formObject,
-                    success: function() {
-                        Common.ShowMessage('Операция успешно выполнена');
-                    },
-                    error: function(response) {
-                        Common.ShowError(response.responseText);
-                    },
-                    complete: function() {
-                        kendo.ui.progress($('body'), false);
-                    }
-                });
-            });
+        $('#execute').on('click', transferAttributes);
     });
+
+
+
 
     function initTasksList() {
         var tourId = $('#RatingTour').val();
+        kendo.ui.progress($('body'), true);
         $('[name="task"]')
             .kendoDropDownList({
                 dataTextField: 'Text',
@@ -250,14 +231,63 @@
                     transport: {
                         read: {
                             url: '@Url.Action("GetTasksByTour", "Task")',
-                            data: { tourId: tourId},
+                            data: { tourId: tourId },
                             dataType: 'json'
                         }
                     }
                 },
-                dataBound: function () {
+                dataBound: function() {
+                    kendo.ui.progress($('body'), false);
                     this.select(1);
                 }
             });
+    }
+
+
+    function initKoAttributes() {
+        var tourId = $('#RatingTour').val();
+        var objectType = $('input[name="ObjType"]:checked')[0].id;
+
+        var koAttributesSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetKoAttributes", "Task")',
+                    data: { tourId: tourId, objectType: objectType },
+                    dataType: 'json'
+                }
+            }
+        });
+        $('[name^="IdAttributeKO"]').each(function() {
+            $(this).kendoDropDownList({
+                dataTextField: 'Text',
+                dataValueField: 'Value',
+                optionLabel: " ",
+                dataSource: koAttributesSource
+            });
+        });
+    }
+
+
+    function transferAttributes() {
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject['TaskId'] = $("#task").data('kendoDropDownList').value();
+        formObject['ObjType'] = $('input[name="ObjType"]:checked')[0].id;
+
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: formObject,
+            success: function() {
+                Common.ShowMessage('Операция успешно выполнена');
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 </script>

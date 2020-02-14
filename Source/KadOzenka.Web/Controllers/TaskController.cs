@@ -14,6 +14,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Model;
+using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.DataImporterLayout;
 using Kendo.Mvc.Extensions;
@@ -28,6 +29,7 @@ namespace KadOzenka.Web.Controllers
         public ModelService ModelService { get; set; }
         public DataImporterService DataImporterService { get; set; }
         public GbuObjectService GbuObjectService { get; set; }
+        public KoService KoService { get; set; }
 
         public TaskController()
         {
@@ -35,6 +37,7 @@ namespace KadOzenka.Web.Controllers
             ModelService = new ModelService();
             DataImporterService = new DataImporterService();
             GbuObjectService = new GbuObjectService();
+            KoService = new KoService();
         }
 
         #region Карточка задачи
@@ -87,13 +90,7 @@ namespace KadOzenka.Web.Controllers
                     Text = x.Name
                 }).AsEnumerable();
 
-            //TODO
-            ViewData["KoAttributes"] = GbuObjectService.GetGbuAttributes()
-                .Select(x => new
-                {
-                    x.Id,
-                    Text = x.Name
-                }).AsEnumerable();
+            ViewData["KoAttributes"] = new List<string>();
 
             return View(model);
         }
@@ -107,6 +104,23 @@ namespace KadOzenka.Web.Controllers
                 Value = x.Id.ToString(),
                 Text = x.IncomingDocument?.RegNumber
             });
+
+            return Json(models);
+        }
+
+        public JsonResult GetKoAttributes(long tourId, string objectType)
+        {
+            var objTypeEnum = string.Equals(objectType, "oks", StringComparison.InvariantCultureIgnoreCase)
+                ? ObjectType.Oks
+                : ObjectType.ZU;
+
+            var koAttributes = KoService.GetKoAttributes(tourId, objTypeEnum);
+
+            var models = koAttributes.Select(x => new
+            {
+                x.Id,
+                Text = x.Name
+            }).AsEnumerable();
 
             return Json(models);
         }
