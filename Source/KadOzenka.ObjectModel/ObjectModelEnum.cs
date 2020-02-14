@@ -1765,6 +1765,12 @@ namespace ObjectModel.Directory.Common
 		[Description("Гармонизация по классификатору ЦОД")]
         [EnumCode("3")]
         HarmonizationCOD = 3,
+		/// <summary>
+		/// Выборка из справочника ЦОД (4)
+		/// </summary>
+		[Description("Выборка из справочника ЦОД")]
+        [EnumCode("4")]
+        UnloadingFromDict = 4,
     }
 }
 

@@ -19,13 +19,13 @@ using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
 using ObjectModel.Gbu;
-using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
 	public class GbuObjectController : BaseController
 	{
+		#region initialization
 		private readonly GbuObjectService _service;
 		private readonly TaskService _taskService;
 
@@ -34,6 +34,9 @@ namespace KadOzenka.Web.Controllers
 			_service = service;
 			_taskService = taskService;
 		}
+		#endregion
+
+		#region Object Card
 
 		public ActionResult AllDataTree(long objectId)
 		{
@@ -84,7 +87,7 @@ namespace KadOzenka.Web.Controllers
 			foreach (var source in getSources)
 			{
 				var objAttributes = _service
-					.GetAllAttributes(objectId, new List<long> {source.Id}, null, actualDate ?? DateTime.Now)
+					.GetAllAttributes(objectId, new List<long> { source.Id }, null, actualDate ?? DateTime.Now)
 					.Where(x =>
 						x.NumValue.HasValue || x.DtValue.HasValue || !string.IsNullOrEmpty(x.StringValue)).ToList();
 				if (objAttributes.Count > 0)
@@ -96,6 +99,9 @@ namespace KadOzenka.Web.Controllers
 			return PartialView("~/Views/GbuObject/_gbuObjectAttributes.cshtml", viewModel);
 		}
 
+		#endregion
+
+		#region GroupingObject
 		[HttpGet]
 		public ActionResult GroupingObject()
 		{
@@ -106,7 +112,7 @@ namespace KadOzenka.Web.Controllers
 			}).AsEnumerable();
 
 			ViewData["Attribute"] = _service.GetGbuAttributes()
-                .Select(x => new
+				.Select(x => new
 				{
 					x.Id,
 					Text = x.Name
@@ -115,6 +121,39 @@ namespace KadOzenka.Web.Controllers
 			return View(new GroupingObject());
 		}
 
+		[HttpPost]
+		public JsonResult GroupingObject(GroupingObject model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+			List<string> errorsList = new List<string>();
+			if (model.IsDataActualUsed && model.DataActual.IsNullOrDbNull())
+			{
+				errorsList.Add("Дата актулизации обязательна");
+			}
+			PriorityGrouping.SetPriorityGroup(model.CovertToGroupingSettings());
+			return Json(new { success = true });
+		}
+		#endregion
+
+		#region Getting Templates
 		public List<SelectListItem> GetTemplatesGrouping()
 		{
 			return OMDataFormStorage.Where(x =>
@@ -122,13 +161,20 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
 
-		public List<SelectListItem> GetTasksData()
+		public List<SelectListItem> GetTemplatesHarmonization()
 		{
-			var documentInfoList =_taskService.GetTaskDocumentInfoList();
-			return documentInfoList
-				.Select(x => new SelectListItem(x.DocumentRegNumber, x.TaskId.ToString()))
-				.ToList();
+			return OMDataFormStorage.Where(x =>
+					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.Harmonization)
+				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
+
+		public List<SelectListItem> GetTemplatesHarmonizationCOD()
+		{
+			return OMDataFormStorage.Where(x =>
+					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.HarmonizationCOD)
+				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+		}
+
 
 		public JsonResult GetTemplatesOneGroup(int id)
 		{
@@ -178,69 +224,9 @@ namespace KadOzenka.Web.Controllers
 			});
 		}
 
-		public List<SelectListItem> GetTemplatesHarmonization()
-		{
-			return OMDataFormStorage.Where(x =>
-					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.Harmonization)
-				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-		}
+		#endregion
 
-		public List<SelectListItem> GetTemplatesHarmonizationCOD()
-		{
-			return OMDataFormStorage.Where(x =>
-					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.HarmonizationCOD)
-				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-		}
-
-
-		[HttpPost]
-		public JsonResult GroupingObject(GroupingObject model)
-		{
-			if (!ModelState.IsValid)
-			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
-			}
-			List<string> errorsList = new List<string>();
-			if (model.IsDataActualUsed && model.DataActual.IsNullOrDbNull())
-			{
-				errorsList.Add("Дата актулизации обязательна");
-			}
-			PriorityGrouping.SetPriorityGroup(model.CovertToGroupingSettings());
-			return Json(new { success = true });
-		}
-
-		[HttpPost]
-		public JsonResult SaveTemplateGroupingObject(string nameTemplate, [FromForm]GroupingObject model)
-		{
-			return SaveTemplate(nameTemplate, DataFormStorege.Normalisation, model.SerializeToXml());
-		}
-
-		[HttpPost]
-		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, [FromForm]HarmonizationViewModel viewModel)
-		{
-			return SaveTemplate(nameTemplate, DataFormStorege.Harmonization, viewModel.SerializeToXml());
-		}
-
-		[HttpPost]
-		public JsonResult SaveTemplateHarmonizationCODObject(string nameTemplate, [FromForm]HarmonizationCODViewModel viewModel)
-		{
-			return SaveTemplate(nameTemplate, DataFormStorege.HarmonizationCOD, viewModel.SerializeToXml());
-		}
+		#region Harmonization
 
 		[HttpGet]
 		public ActionResult Harmonization()
@@ -291,6 +277,9 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Success = "Процедура Гармонизации успешно выполнена" });
 		}
 
+		#endregion
+
+		#region HarmonizationCOD
 		[HttpGet]
 		public ActionResult HarmonizationCOD()
 		{
@@ -347,6 +336,16 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new { Success = "Процедура Гармонизации по классификатору ЦОД успешно выполнена" });
+		}
+
+		#endregion
+
+		public List<SelectListItem> GetTasksData()
+		{
+			var documentInfoList = _taskService.GetTaskDocumentInfoList();
+			return documentInfoList
+				.Select(x => new SelectListItem(x.DocumentRegNumber, x.TaskId.ToString()))
+				.ToList();
 		}
 
 		#region Helper
