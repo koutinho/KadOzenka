@@ -22,8 +22,16 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
         public List<OMPriceHistory> resultList = new List<OMPriceHistory>();
         public List<OMCoreObject> AllObjects = OMCoreObject
             .Where(x => x.Market_Code == MarketTypes.Cian && x.LastDateUpdate == null)
-            .Select(x => new { x.Url, x.DealType_Code, x.Price, x.LastDateUpdate }).Execute();
-        public List<OMScreenshots> AllScreens = OMScreenshots.Where(x => true).SelectAll().Execute();
+            .Select(x => new { x.Url, x.DealType_Code, x.PropertyMarketSegment_Code, x.Price, x.LastDateUpdate })
+            .Execute();
+        public List<OMCoreObject> NoCadastralNumbersData = OMCoreObject
+            .Where(x => x.CadastralNumber != null && x.BuildingCadastralNumber == null && x.PropertyTypesCIPJS_Code != PropertyTypesCIPJS.LandArea)
+            .SelectAll()
+            .Execute();
+        public List<OMScreenshots> AllScreens = OMScreenshots
+            .Where(x => true)
+            .SelectAll()
+            .Execute();
 
         public void Test(int count)
         {
@@ -44,6 +52,18 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                     cntr++;
                 });
             }
+        }
+
+        public void SetCadastralNumbers()
+        {
+            int i = 0, lng = NoCadastralNumbersData.Count; 
+            NoCadastralNumbersData.ForEach(x => {
+                x.BuildingCadastralNumber = x.CadastralNumber;
+                x.CadastralQuartal = x.CadastralNumber.Substring(0, x.CadastralNumber.LastIndexOf(":"));
+                x.Save();
+                i++;
+                Console.Write($"\r{i}/{lng}");
+            });
         }
 
         public void RefreshAllData(int maxCounter = 0, bool testBoot = false)
@@ -120,6 +140,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                     OMPriceHistory lastPrice = OMPriceHistory.Where(x => x.InitialId == initialObject.Id).SelectAll().OrderByDescending(x => x.ChangingDate).ExecuteFirstOrDefault();
                                     if (lastPrice == null || price != lastPrice.PriceValueTo)
                                     {
+                                        ProcessNoSegmentObjectType(initialObject, executor.ExecuteScript("return document.querySelector('h1[data-name=\"OfferTitle\"]').innerText.split(',')[0];").ToString().ToLower());
                                         new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueTo = price }.Save();
                                         SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, MarketTypes.Cian, initialObject.Id, testBoot);
                                         initialObject.Price = price;
@@ -144,7 +165,11 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         }
                         OCor++;
                     }
-                    catch (Exception) { OErr++; }
+                    catch (Exception ex) 
+                    {
+                        Console.WriteLine("\n" + ex.Message);
+                        OErr++; 
+                    }
                     OCur++;
                     ConsoleLog.WriteData("Обновление цен", OCtr, OCur, OCor, OErr, nspErr: NErr, unpub: NPub, screen: CScr, auc: NAuc);
                 }
@@ -152,6 +177,66 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 ConsoleLog.LogError(errorLog.ToArray(), "Присвоение координат объектам из исходного файла");
             }
             ConsoleLog.WriteFotter("Обновление цен завершено");
+        }
+
+        public void ProcessNoSegmentObjectType(OMCoreObject reqObject, string header)
+        {
+            if (reqObject.PropertyMarketSegment_Code == MarketSegment.NoSegment) 
+            {
+                if (header.Contains("апартамент")) reqObject.PropertyMarketSegment_Code = MarketSegment.Appartment;
+                else if (header.Contains("здание")) reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Buildings;
+                else if (header.Contains("офис"))
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.Office;
+                }
+                else if (header.Contains("готовый бизнес")) reqObject.PropertyMarketSegment_Code = MarketSegment.Trading;
+                else if (header.Contains("общепит"))
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.PublicCatering;
+                }
+                else if (header.Contains("cклад"))
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Buildings;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.Factory;
+                }
+                else if (header.Contains("торговая площадь"))
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.Trading;
+                }
+                else if (header.Contains("бытовые услуги"))
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.Trading;
+                }
+                else if (header.Contains("автосервис"))
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.Trading;
+                }
+                else if (header.Contains("гараж")) 
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Buildings;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.Parking;
+                }
+                else if (header.Contains("производство")) 
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Buildings;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.Factory;
+                }
+                else if (header.Contains("машиноместо")) 
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.CarParking;
+                }
+                else if(header.Contains("свободное назначение"))
+                {
+                    reqObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
+                    reqObject.PropertyMarketSegment_Code = MarketSegment.NoSegment;
+                }
+            }
         }
 
         public void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot, DateTime screenShotData, MarketTypes type, long objectId = 0, bool testBoot = false)

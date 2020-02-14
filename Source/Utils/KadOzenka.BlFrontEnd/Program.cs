@@ -53,12 +53,15 @@ namespace KadOzenka.BlFrontEnd
 
             /*Загрузка информации по предложениям из ЦИАН-а через RestApp*/
             consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp", () => { new Data().Detect(); });
-            consoleHelper.AddCommand("1107", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexChecker().FormMarketObjects(); });
-            consoleHelper.AddCommand("1102", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
-            consoleHelper.AddCommand("1103", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
-            consoleHelper.AddCommand("1104", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });
+            consoleHelper.AddCommand("1102", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexChecker().FormMarketObjects(); });
+            consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
+            consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
+            consoleHelper.AddCommand("1105", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });
             consoleHelper.AddCommand("1106", "Процедура обновления цен объектов-аналогов с Яндекс недвижимость", () => { new Yandex().RefreshAllData(testBoot: true); });
-            consoleHelper.AddCommand("1105", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
+            consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
+
+            /*Вспомогательные функции*/
+            consoleHelper.AddCommand("1108", "Присвоение кадастровых номеров", () => { new Cian().SetCadastralNumbers(); });
 
 			/*Генерация тайлов для карт яндекс*/
 			consoleHelper.AddCommand("1901", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
