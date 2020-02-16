@@ -5,7 +5,7 @@
         <div class="DataItemContainer">
             <div class="Container">
                 <div class="Header">
-                    <div class="Text">${CIPJSType[cartData.segment][0].type}&nbsp;${getArea(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
+                    <div class="Text">${CIPJSType[cartData.segment][0].type}${cartData.area ? `&nbsp;${getArea(cartData.propertyType, cartData.area, cartData.areaLand)}` : ""}</div>
                     <div class="Content">
                         <a style="margin-left: auto;" href="/ObjectCard?ObjId=${cartData.id}&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true">
                             <div class="Card"></div>
@@ -30,7 +30,7 @@
             ${(cartData.dealType != 'Предложение-продажа' && cartData.dealType != 'Сделка купли-продажи') ? "" : `
                 <div class="Container">
                     <div class="Name">Цена за ${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
-                    <div class="Value">${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.propertyType, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
+                    <div class="Value">${cartData.area ? `${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.propertyType, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}` : "—"}</div>
                 </div>
             `}
             ${cartData.floor == null && cartData.floorCount == null ? "" : `
@@ -41,7 +41,7 @@
             `}
             <div class="Container">
                 <div class="Name">Площадь</div>
-                <div class="Value">${getArea(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
+                <div class="Value">${cartData.area ? getArea(cartData.propertyType, cartData.area, cartData.areaLand) : "—"}</div>
             </div>
             ${!(cartData.areaLand != null && (cartData.segment == 0 && cartData.area)) ? "" : `
                 <div class="Container">
