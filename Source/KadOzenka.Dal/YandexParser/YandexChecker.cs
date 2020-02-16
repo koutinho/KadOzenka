@@ -188,7 +188,7 @@ namespace KadOzenka.Dal.YandexParser
 			var isCapcha = driver.ExecuteScript(ConfigurationManager.AppSettings["isYandexCapchaScreen"]).ToString();
 			if (bool.Parse(isCapcha))
 			{
-				Console.WriteLine($"Обнаружена капча! Обработайте запрос со страницы браузера и нажмите любую клавишу для продолжения парсинга...");
+				Console.WriteLine($"\nОбнаружена капча! Обработайте запрос со страницы браузера и нажмите любую клавишу для продолжения парсинга...");
 				Console.ReadKey();
 				Console.WriteLine($"Парсинг возобновлен...");
 			}
