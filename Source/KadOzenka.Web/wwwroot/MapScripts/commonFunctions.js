@@ -13,7 +13,7 @@ function getAreaNumber(propertyType, area, area_land) { return (propertyType == 
 
 function getAreaType(propertyType, area, area_land) { return (propertyType == "Земельные участки" && !area) ? "сот." : "м²"; };
 
-function getFloor(floor, floorCount) { return floor == null ? `${floorCount}` : `${floor}&nbsp;из&nbsp;${floorCount}`; };
+function getFloor(floor, floorCount) { return floorCount != null ? floor == null ? `${floorCount}` : `${floor}&nbsp;из&nbsp;${floorCount}` : `${floor}`; };
 
 function refreshCurrentToken() { currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); };
 
