@@ -15,6 +15,11 @@
 		    </Parameters>
 	    </Button>
 
+	    <Button Caption="Выборка из справочника ЦОД" NavigateURL="~/GbuObject/UnloadingFromDict" WindowHeight="400" WindowWidth="1000" Icon="fas fa-book">
+		    <Parameters>
+		    </Parameters>
+	    </Button>
+
         <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
             <Parameters>
                 <Parameter Key="registerViewId" Value="GbuObjects" />

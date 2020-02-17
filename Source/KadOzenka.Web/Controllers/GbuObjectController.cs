@@ -19,6 +19,7 @@ using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
 using ObjectModel.Gbu;
+using ObjectModel.Gbu.CodSelection;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
@@ -161,6 +162,12 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
 
+		public List<SelectListItem> GetTemplatesUnloadingForm()
+		{
+			return OMDataFormStorage.Where(x =>
+					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.UnloadingFromDict)
+				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+		}
 		public List<SelectListItem> GetTemplatesHarmonization()
 		{
 			return OMDataFormStorage.Where(x =>
@@ -184,28 +191,34 @@ namespace KadOzenka.Web.Controllers
 
 			}
 
-			GroupingObject nObj = null;
-			HarmonizationViewModel hObj = null;
-			HarmonizationCODViewModel hcObj = null;
 			try
 			{
 				var storage = OMDataFormStorage.Where(x =>
 						x.Id == id)
 					.SelectAll().ExecuteFirstOrDefault();
+
 				if (storage != null && storage.FormType_Code == DataFormStorege.Normalisation)
 				{
-					nObj = storage.Data.DeserializeFromXml<GroupingObject>();
-
+					var nObj = storage.Data.DeserializeFromXml<GroupingObject>();
+					return Json(new { data = JsonConvert.SerializeObject(nObj) });
 				}
 
 				if (storage != null && storage.FormType_Code == DataFormStorege.Harmonization)
 				{
-					hObj = storage.Data.DeserializeFromXml<HarmonizationViewModel>();
+					var hObj = storage.Data.DeserializeFromXml<HarmonizationViewModel>();
+					return Json(new { data = JsonConvert.SerializeObject(hObj) });
 				}
 
 				if (storage != null && storage.FormType_Code == DataFormStorege.HarmonizationCOD)
 				{
-					hcObj = storage.Data.DeserializeFromXml<HarmonizationCODViewModel>();
+					var hcObj = storage.Data.DeserializeFromXml<HarmonizationCODViewModel>();
+					return Json(new { data = JsonConvert.SerializeObject(hcObj) });
+				}
+
+				if (storage != null && storage.FormType_Code == DataFormStorege.UnloadingFromDict)
+				{
+					var unObj = storage.Data.DeserializeFromXml<UnloadingFromDicViewModel>();
+					return Json(new {data = JsonConvert.SerializeObject(unObj) });
 				}
 
 			}
@@ -215,13 +228,35 @@ namespace KadOzenka.Web.Controllers
 				return Json(new { error = $"Ошибка: {e.Message}" });
 			}
 
-			return Json(new
-			{
-				data = nObj != null ?
-					JsonConvert.SerializeObject(nObj) :
-					hObj != null ?
-						JsonConvert.SerializeObject(hObj) : JsonConvert.SerializeObject(hcObj)
-			});
+			return Json(new { error = "Не найдено соответсвующего типа формы" });
+		}
+
+		#endregion
+
+		#region Save Template
+
+		[HttpPost]
+		public JsonResult SaveTemplateGroupingObject(string nameTemplate, [FromForm]GroupingObject model)
+		{
+			return SaveTemplate(nameTemplate, DataFormStorege.Normalisation, model.SerializeToXml());
+		}
+
+		[HttpPost]
+		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, [FromForm]HarmonizationViewModel viewModel)
+		{
+			return SaveTemplate(nameTemplate, DataFormStorege.Harmonization, viewModel.SerializeToXml());
+		}
+
+		[HttpPost]
+		public JsonResult SaveTemplateHarmonizationCODObject(string nameTemplate, [FromForm]HarmonizationCODViewModel viewModel)
+		{
+			return SaveTemplate(nameTemplate, DataFormStorege.HarmonizationCOD, viewModel.SerializeToXml());
+		}
+
+		[HttpPost]
+		public JsonResult SaveTemplateUnloading(string nameTemplate, [FromForm]UnloadingFromDicViewModel viewModel)
+		{
+			return SaveTemplate(nameTemplate, DataFormStorege.UnloadingFromDict, viewModel.SerializeToXml());
 		}
 
 		#endregion
@@ -340,6 +375,63 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
+		#region Unloading From Dict
+
+		[HttpGet]
+		public ActionResult UnloadingFromDict()
+		{
+			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
+			{
+				x.Id,
+				Text = x.NameJob
+			}).AsEnumerable();
+
+			ViewData["Attribute"] = _service.GetGbuAttributes()
+				.Select(x => new
+				{
+					x.Id,
+					Text = x.Name
+				}).AsEnumerable();
+
+			ViewData["Document"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
+			{
+				x.Id,
+				Text = x.Description
+			}).AsEnumerable();
+
+			return View(new UnloadingFromDicViewModel());
+		}
+
+		[HttpPost]
+		public JsonResult UnloadingFromDict(UnloadingFromDicViewModel viewModel)
+		{
+
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			CodSelection.SelectByCadastralNumber(viewModel.ToCodSelectionSettings());
+
+			return Json(new {success = "Успешно выполнено"});
+		}
+
+		#endregion
 		public List<SelectListItem> GetTasksData()
 		{
 			var documentInfoList = _taskService.GetTaskDocumentInfoList();
