@@ -191,29 +191,5 @@ namespace KadOzenka.Web.Controllers
 
 			return NoContent();
 		}
-
-		[HttpGet]
-		public ActionResult ImportCod()
-		{			
-			return View();
-		}
-
-		[HttpPost]
-		public ActionResult ImportCod(IFormFile file, long codId, bool deleteOld)
-		{
-			try
-			{
-				using (Stream fileStream = file.OpenReadStream())
-				{
-					DataImporterCod.ImportDataCodFromXml(fileStream, codId, deleteOld);
-				}
-			}
-			catch (Exception ex)
-			{
-				ErrorManager.LogError(ex);
-				return BadRequest();
-			}
-			return Ok();
-		}
 	}
 }

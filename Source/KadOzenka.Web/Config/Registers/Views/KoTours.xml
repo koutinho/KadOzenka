@@ -13,9 +13,6 @@
 
     <Button Caption="Значения меток" NavigateURL="/Tour/MarkCatalog" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
     </Button>
-
-    <Button Caption="Импорт классификатора ЦОД" NavigateURL="/DataImport/ImportCod" WindowHeight="250" WindowWidth="800" Icon="fas fa-code">
-    </Button>
   </Buttons>
 
   <Tabs>

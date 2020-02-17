@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="215" DefaultLayoutId="1002151" LinkedRegistersList="" 
+              AllowSearchPanelResize="false" Description="Справочники ЦОД" IsBasic="false"
+              OpenEmpty="false" UseSubMap="true" JoinType="Left"
+              ShowListsMenu="false" ShowActualDate="false"
+              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" ShowRowMenu="true">
+	<Buttons>
+	    <Button Caption="Добавить" NavigateURL="/GbuCod/CodJobObjectCard" WindowHeight="200" WindowWidth="840" Icon="fas fa-plus">
+	    </Button>
+
+	    <Button Caption="Удалить" NavigateURL="/GbuCod/DeleteCodJob" WindowHeight="180" WindowWidth="840" Icon="fas fa-trash-alt">
+	        <ConditionGroups>
+	            <ConditionGroup HideOrDisable="Disable">
+	                <Conditions>
+	                    <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+	                </Conditions>
+	            </ConditionGroup>
+	        </ConditionGroups>
+	        <Parameters>
+	            <Parameter Key="codJobId" Value="[ObjectID]" />
+	        </Parameters>
+	    </Button>
+
+	    <Button Caption="Импорт классификатора ЦОД" NavigateURL="/GbuCod/ImportCod" WindowHeight="320" WindowWidth="840" Icon="fas fa-code">
+	        <ConditionGroups>
+	            <ConditionGroup HideOrDisable="Disable">
+	                <Conditions>
+	                    <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+	                </Conditions>
+	            </ConditionGroup>
+	        </ConditionGroups>
+	        <Parameters>
+	            <Parameter Key="codJobId" Value="[ObjectID]" />
+	        </Parameters>
+	    </Button>
+  </Buttons>
+
+  <Tabs>
+    <Tab Caption="Карточка справочника" NavigateURL="/GbuCod/CodJobObjectCard">
+      <Parameters>
+        <Parameter Key="id" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
+
+  <RowMenuButtons>
+    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+  </RowMenuButtons>
+</RegisterView>
