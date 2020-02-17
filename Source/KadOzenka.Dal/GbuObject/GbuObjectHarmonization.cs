@@ -36,7 +36,9 @@ namespace KadOzenka.Dal.GbuObject
             };
 
 
-            if (setting.TaskFilter.Count > 0)
+            bool useTask = false;
+            if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
+            if (useTask)
             {
                 foreach(long taskId in setting.TaskFilter)
                 {

@@ -39,7 +39,10 @@ namespace KadOzenka.Dal.GbuObject
             if (setting.IdCodJob != null)
                 DictionaryItem = ObjectModel.KO.OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).SelectAll().Execute();
 
-            if (setting.TaskFilter.Count > 0)
+            bool useTask = false;
+            if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
+
+            if (useTask)
             {
                 foreach (long taskId in setting.TaskFilter)
                 {
