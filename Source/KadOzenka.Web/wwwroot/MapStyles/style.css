@@ -8,13 +8,33 @@ body {
 }
 
 .Button {
-    background-color: #4590ff !important;
-    cursor: pointer;
+    background-color: #F8F9FC !important;
+    color: #5c9eff;
     border-radius: 3px;
     padding: 3px 12px;
     margin: 15px;
     color: #fff;
     display: flex;
+    border: solid 1px #5c9eff;
+}
+
+.Button:hover {
+    background-color: #edf5ff !important;
+    cursor: pointer;
+    color: #5c9eff;
+}
+
+.Button.blocked {
+    color: #bababa !important;
+    border-color: #bababa !important;
+}
+
+.Button.blocked:hover {
+    background-color: #F8F9FC !important;
+}
+
+.DataContentController .Button {
+    color: #5c9eff;
 }
 
 .ButtonMap {
@@ -68,8 +88,17 @@ body {
     width: calc(100%-350px);
 }
 
+.MapContainer .Data .DataContentController {
+    margin: 13px;
+    display: flex;
+    justify-content: space-between;
+}
+
 .MapContainer .Data .DataContentContainer {
-    margin: 5px;
+    margin: 5px 0px 5px 5px;
+    position: absolute;
+    height: calc(100% - 65px);
+    overflow: scroll;
 }
 
 .MapContainer .Data .DataContentContainer .DataItemContainer {

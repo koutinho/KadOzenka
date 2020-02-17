@@ -11,7 +11,16 @@
 <body>
     <div id="container" class="MapContainer">
         <div id="data" class="Data Hidden">
-            <div id="dataContentController" class="DataContentController"></div>
+            <div id="dataContentController" class="DataContentController">
+                <div class="switch">
+                    <input class="cmn-toggle cmn-toggle-round" id="cbEditMode" type="checkbox">
+                    <label for="cbEditMode" style="float: left;" title="Редактировать"></label>
+                    <span class="lp-con-el" style="display: inline;">
+                        <label class="switch-text" style="margin-left: 9px; font-weight:normal;">Редактировать</label>
+                    </span>
+                </div>
+                <div class="Button blocked" style="width:fit-content; display:inline-block; margin:0px;">Сохранить</div>
+            </div>
             <div id="dataContentContainer" class="DataContentContainer"></div>
         </div>
         <div id="map" class="Map"></div>
@@ -59,4 +68,5 @@
 @section styles {
     <link rel="stylesheet" href="~/MapStyles/style.css" />
     <link rel="stylesheet" href="~/MapStyles/elemens.css" />
+    <link rel="stylesheet" href="~/MapStyles/custom.css" />
 }
