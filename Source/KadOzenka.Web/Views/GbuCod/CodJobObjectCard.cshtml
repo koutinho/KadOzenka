@@ -31,13 +31,10 @@
 
 @if (Model.Id != -1)
 {
-    <div style="height: auto; @(Model.Id == -1 ? "hidden" : "")">
-        <div class="form-horizontal col-sm-12">
-            <div class="form-group"></div>
-            <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/GbuCodDictionary?Transition=1&21400200=" + @Model.Id)"
-                 data-param-CodJobId="@Model.Id" data-param-Pageable="true" data-param-Scrollable="true" data-param-ShowFilterMenuOnToolbar="true"
-                 data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid214"></div>
-        </div>
+    <div style="height: auto;">
+        <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/GbuCodDictionary?Transition=1&21400200=" + @Model.Id)"
+             data-param-CodJobId="@Model.Id" data-param-Pageable="true" data-param-Scrollable="true"
+             data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid214"></div>
     </div>
 }
 

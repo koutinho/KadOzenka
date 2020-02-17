@@ -2,9 +2,9 @@
 <RegisterView RegisterId="214" LinkedRegistersList="215" DefaultLayoutId="1002141"
               IsBasic="false" ShowActualDate="false" ShowObjectCards="false"
               UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false"
-              ShowFilterMenuOnToolbar="true">
+               SearchPanel="GbuCodDictionary">
     <Buttons>
-        <Button Caption="Добавить" NavigateURL="/GbuCod/CodDictionaryObjectCard" WindowHeight="320" WindowWidth="840">
+        <Button Caption="Добавить" NavigateURL="/GbuCod/CodDictionaryObjectCard" WindowHeight="380" WindowWidth="840">
             <Parameters>
                 <Parameter Key="jobId" Value="{Get:CodJobId}" />
             </Parameters>
@@ -17,7 +17,7 @@
                 </ConditionGroup>
             </ConditionGroups>
         </Button>
-        <Button Caption="Редактировать" NavigateURL="/GbuCod/CodDictionaryObjectCard" WindowHeight="320" WindowWidth="840">
+        <Button Caption="Редактировать" NavigateURL="/GbuCod/CodDictionaryObjectCard" WindowHeight="380" WindowWidth="840">
             <ConditionGroups>
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
