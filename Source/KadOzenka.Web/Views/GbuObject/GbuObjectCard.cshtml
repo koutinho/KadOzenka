@@ -71,7 +71,7 @@
             });
 
             updatePartialArea(@(Model.Id.ToString()),
-                '@(Model.DateActual.HasValue ? Model.DateActual.ToString() : string.Empty)');
+                '@(Model.DateActual.HasValue ? Model.DateActual?.ToString("dd.MM.yyyy") : string.Empty)');
             $('#searchAttributes').on('click',
                 () => { updatePartialArea($('#@Html.IdFor(m => m.Id)').val(), $('#DateActual').val()); }
             );
