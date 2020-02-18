@@ -291,8 +291,6 @@ namespace KadOzenka.Dal.FastReports
 				{
 					address += subject.Zip;
 				}
-
-				return address;
 			}
 
 			return address;
