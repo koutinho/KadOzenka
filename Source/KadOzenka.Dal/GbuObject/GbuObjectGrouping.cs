@@ -826,6 +826,10 @@ namespace KadOzenka.Dal.GbuObject
         }
         public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual)
         {
+            lock (PriorityGrouping.locked)
+            {
+                PriorityGrouping.CurrentCount++;
+            }
             if (unit.ObjectId != null)
             {
                 #region Поля
@@ -1049,6 +1053,30 @@ namespace KadOzenka.Dal.GbuObject
     public class PriorityGrouping
     {
         /// <summary>
+        /// Объект для блокировки счетчика в многопоточке
+        /// </summary>
+        public static object locked;
+
+
+        /// <summary>
+        /// Общее количество итераций
+        /// </summary>
+        public static int MaxIteration = 0;
+        /// <summary>
+        /// Текушая  итерация
+        /// </summary>
+        public static int CurrentIteration = 0;
+        /// <summary>
+        /// Общее число объектов в текущей итерации
+        /// </summary>
+        public static int MaxCount = 0;
+        /// <summary>
+        /// Текущий объект в текущей итерации
+        /// </summary>
+        public static int CurrentCount = 0;
+
+
+        /// <summary>
         /// Справочник приоритетов
         /// </summary>
         public static PriorityGroupList PrioritetList = null;
@@ -1058,6 +1086,7 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static void SetPriorityGroup(GroupingSettings setting)
         {
+            locked = new object();
             PrioritetList = new PriorityGroupList();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
@@ -1075,16 +1104,29 @@ namespace KadOzenka.Dal.GbuObject
 
             if (useTask)
             {
+                MaxIteration = setting.TaskFilter.Count;
+                CurrentIteration = 0;
                 foreach (long taskId in setting.TaskFilter)
                 {
+                    CurrentIteration++;
                     List<ObjectModel.KO.OMUnit> Objs = ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId).SelectAll().Execute();
+                    MaxCount = Objs.Count;
+                    CurrentCount = 0;
                     Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
+                    CurrentCount = 0;
+                    MaxCount = 0;
                 }
             }
             else
             {
+                MaxIteration = 1;
+                CurrentIteration = 1;
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
+                MaxCount = Objs.Count;
+                CurrentCount = 0;
                 Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
+                CurrentCount = 0;
+                MaxCount = 0;
             }
 
 
