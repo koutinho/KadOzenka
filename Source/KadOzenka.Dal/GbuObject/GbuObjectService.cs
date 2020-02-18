@@ -183,5 +183,26 @@ where a.object_id = {objectId}";
         {
             return OMAttribute.Where(x => x.RegisterId >= 2 && x.RegisterId <= 23).SelectAll().Execute();
         }
+
+        public int AddNewVirtualAttribute(string attributeName, long registerId, RegisterAttributeType type)
+        {
+			if (string.IsNullOrEmpty(attributeName) || registerId == 0) return 0;
+			int id;
+			try
+			{
+				id = new OMAttribute
+				{
+					Name = attributeName,
+					RegisterId = registerId,
+					Type = (long) type,
+				}.Save();
+			}
+			catch (Exception e)
+			{
+				throw new Exception(e.Message);
+			}
+
+			return id;
+        }
 	}
 }

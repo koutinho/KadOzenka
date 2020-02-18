@@ -9,10 +9,10 @@ using System.Linq;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
-using Core.Shared.Misc;
 using Core.SRD;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
@@ -127,30 +127,30 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
+				return GenerateMessageNonValidModel();
+			}
 
-							return e.ErrorMessage;
-						}))
-					})
-				});
-			}
-			List<string> errorsList = new List<string>();
-			if (model.IsDataActualUsed && model.DataActual.IsNullOrDbNull())
+			if (model.IsNewAttribute)
 			{
-				errorsList.Add("Дата актулизации обязательна");
+				int idAttr = _service.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute);
+				if (idAttr == 0)
+				{
+					SendErrorMessage("Не корректные данные для создания нового атрибута");
+				}
+
+				model.IdAttributeResult = idAttr;
 			}
-			PriorityGrouping.SetPriorityGroup(model.CovertToGroupingSettings());
-			return Json(new { success = true });
+
+			try
+			{
+				PriorityGrouping.SetPriorityGroup(model.CovertToGroupingSettings());
+			}
+			catch (Exception e)
+			{
+				return SendErrorMessage(e.Message);
+			}
+
+			return Json(new { success = true , idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null });
 		}
 		#endregion
 
@@ -466,6 +466,44 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new { success = true });
+		}
+
+		public IEnumerable<SelectListItem> GetAllGbuRegisters()
+		{
+			return RegisterCache.Registers.Values.Where(x => x.Id > 2 && x.Id < 23).Select(x => new SelectListItem(x.Name, x.Id.ToString()));
+		}
+
+		public JsonResult SendErrorMessage(string errorMessage)
+		{
+			return Json(new
+			{
+				Errors = new
+				{
+					Control = 0,
+					Message = errorMessage
+				}
+			});
+		}
+
+		public JsonResult GenerateMessageNonValidModel()
+		{
+			return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+
 		}
 
 		#endregion

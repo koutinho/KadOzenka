@@ -22,7 +22,7 @@ namespace KadOzenka.Web.Helpers
 	{
 		public static IHtmlContent KendoDropDownListWithAutocompleteFor<TModel, TValue>(this IHtmlHelper<TModel> html,
 			Expression<Func<TModel, TValue>> expression, IEnumerable data, string dataTextField = "Text",
-			string dataValueField = "Value", string filter = "contains", double minLength = 3, bool isReadonly = false)
+			string dataValueField = "Value", string filter = "contains", bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false)
 		{
 			ModelExplorer modelExplorer =
 				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
@@ -34,7 +34,8 @@ namespace KadOzenka.Web.Helpers
 			var script = "<script>" +
 						 $"function onCascade{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); $('#{className}Wrapper').data('kendoTooltip').refresh();}}}}" +
 			             $"function clearField{className}() {{ $('input.{className}').data('kendoDropDownList').value('');}}" +
-							$"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
+							$"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});" +
+						 $"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
 							"</script>";
 
 			var dataList = data.Cast<object>().ToList();
@@ -47,7 +48,15 @@ namespace KadOzenka.Web.Helpers
 			clearTag.AddCssClass("k-button");
 			clearTag.AddCssClass("k-button-icon");
 			clearTag.AddCssClass($"clear-button-{className}");
+			clearTag.MergeAttribute("style", "margin-left: 2px;");
 			clearTag.InnerHtml.AppendHtml("<span class='k-icon k-i-close'></span>");
+
+			var addTag = new TagBuilder("a");
+			addTag.AddCssClass("k-button");
+			addTag.AddCssClass("k-button-icon");
+			addTag.AddCssClass($"add-button-{className}");
+			addTag.MergeAttribute("style", "margin-left: 2px;");
+			addTag.InnerHtml.AppendHtml("<span class='fas fa-plus-circle'></span>");
 
 			DropDownListBuilder dropDownBuilder = html.Kendo().DropDownList()
 				.Name(name)
@@ -97,20 +106,18 @@ namespace KadOzenka.Web.Helpers
 
 			var autocompleteDiv = new TagBuilder("div");
 			autocompleteDiv.MergeAttribute("id", $"{className}Wrapper");
-			autocompleteDiv.AddCssClass("col-sm-11");
-			autocompleteDiv.MergeAttribute("style", "padding-right: 0;");
+			autocompleteDiv.AddCssClass("col-sm-12");
+			autocompleteDiv.MergeAttribute("style", "display: flex;");
 			autocompleteDiv.InnerHtml.AppendHtml(dropDownBuilder);
-
-			var wrapButtonDiv = new TagBuilder("div");
-			wrapButtonDiv.AddCssClass("col-sm-1");
-			wrapButtonDiv.MergeAttribute("style", "padding-left: 0;");
-			wrapButtonDiv.InnerHtml.AppendHtml(clearTag);
+			autocompleteDiv.InnerHtml.AppendHtml(clearTag);
+			if (useAddTag)
+			{
+				autocompleteDiv.InnerHtml.AppendHtml(addTag);
+			}
 
 			var container = new TagBuilder("div");
 			container.AddCssClass("row");
-			container.MergeAttribute("style", "display: flex;");
 			container.InnerHtml.AppendHtml(autocompleteDiv);
-			container.InnerHtml.AppendHtml(wrapButtonDiv);
 			container.InnerHtml.AppendHtml(tooltip);
 
 			var writer = new StringWriter();

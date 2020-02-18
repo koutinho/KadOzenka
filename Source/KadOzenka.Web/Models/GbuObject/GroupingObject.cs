@@ -34,7 +34,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		}
 	}
 
-	public class GroupingObject : IValidatableObject
+	public class GroupingObject : PartialCharacteristicViewModel, IValidatableObject
 	{
 		/// <summary>
 		/// Идентификатор задания ЦОД
@@ -133,12 +133,6 @@ namespace KadOzenka.Web.Models.GbuObject
 		public LevelItemGroup Level11 { get; set; }
 
 		/// <summary>
-		/// Идентификатор атрибута, куда будет записан результат 
-		/// </summary>
-		[Display(Name = "Характеристика")]
-		[Required(ErrorMessage = "Заполните Характеристику")]
-		public int? IdAttributeResult { get; set; }
-		/// <summary>
 		/// Идентификатор атрибута, куда будут записаны источники 
 		/// </summary>
 		[Display(Name = "Источник")]
@@ -169,8 +163,10 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level7 = Level7.ConvertToLevelItem(),
 				Level8 = Level8.ConvertToLevelItem(),
 				Level9 = Level9.ConvertToLevelItem(),
-				ValuesFilter = ValuesFilter,
-				SelectAllObject = SelectAllObject
+				ValuesFilter = ValuesFilter ?? new List<string>(),
+				SelectAllObject = SelectAllObject,
+				DateActual = DataActual,
+				TaskFilter = TaskFilter ?? new List<long>()
 			};
 		}
 
@@ -206,6 +202,36 @@ namespace KadOzenka.Web.Models.GbuObject
 						new ValidationResult(errorMessage: "Поле Идентификатор атрибута-фильтра обязательное",
 							memberNames: new[] { nameof(IdAttributeFilter) });
 				}
+			}
+
+			if (IsNewAttribute)
+			{
+				if (string.IsNullOrEmpty(NameNewAttribute))
+				{
+					yield return
+						new ValidationResult(errorMessage: "Имя нового атрибута не может быть пустым",
+							memberNames: new[] { nameof(NameNewAttribute) });
+				}
+
+				if (TypeNewAttribute == null)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Тип нового атрибута не может быть пустым",
+							memberNames: new[] { nameof(TypeNewAttribute) });
+				}
+
+				if (RegistryId == null)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Выберите реестр",
+							memberNames: new[] { nameof(RegistryId) });
+				}
+			}
+			else if(IdAttributeResult == null)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Заполните результирующую характеристику",
+						memberNames: new[] { nameof(IdAttributeResult) });
 			}
 		}
 	}
