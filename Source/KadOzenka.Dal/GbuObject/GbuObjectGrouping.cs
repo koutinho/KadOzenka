@@ -435,9 +435,9 @@ namespace KadOzenka.Dal.GbuObject
             List<long> lstIds = new List<long>();
             if (idFactor != null) lstIds.Add(idFactor.Value);
             List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(obj.Id, null, lstIds, date);
-            if (attribs.Count>0)
+            if (attribs.Count > 0)
             {
-                if (attribs[0].StringValue!=string.Empty && attribs[0].StringValue != null)
+                if (attribs[0].StringValue != string.Empty && attribs[0].StringValue != null)
                 {
                     res.Value = attribs[0].StringValue;
                     res.AttributeName = attribs[0].AttributeData.Name;
@@ -481,7 +481,7 @@ namespace KadOzenka.Dal.GbuObject
                 Id = -1,
                 AttributeId = idFactor.Value,
                 ObjectId = obj.Id,
-                ChangeDocId = (idDoc==null)?-1:idDoc.Value,
+                ChangeDocId = (idDoc == null) ? -1 : idDoc.Value,
                 S = date,
                 ChangeUserId = SRDSession.Current.UserID,
                 ChangeDate = DateTime.Now,
@@ -1059,19 +1059,11 @@ namespace KadOzenka.Dal.GbuObject
 
 
         /// <summary>
-        /// Общее количество итераций
-        /// </summary>
-        public static int MaxIteration = 0;
-        /// <summary>
-        /// Текушая  итерация
-        /// </summary>
-        public static int CurrentIteration = 0;
-        /// <summary>
-        /// Общее число объектов в текущей итерации
+        /// Общее число объектов
         /// </summary>
         public static int MaxCount = 0;
         /// <summary>
-        /// Текущий объект в текущей итерации
+        /// Индекс текущего объекта
         /// </summary>
         public static int CurrentCount = 0;
 
@@ -1104,23 +1096,19 @@ namespace KadOzenka.Dal.GbuObject
 
             if (useTask)
             {
-                MaxIteration = setting.TaskFilter.Count;
-                CurrentIteration = 0;
+                List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
                 foreach (long taskId in setting.TaskFilter)
                 {
-                    CurrentIteration++;
-                    List<ObjectModel.KO.OMUnit> Objs = ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId).SelectAll().Execute();
-                    MaxCount = Objs.Count;
-                    CurrentCount = 0;
-                    Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
-                    CurrentCount = 0;
-                    MaxCount = 0;
+                    Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId).SelectAll().Execute());
                 }
+                MaxCount = Objs.Count;
+                CurrentCount = 0;
+                Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
+                CurrentCount = 0;
+                MaxCount = 0;
             }
             else
             {
-                MaxIteration = 1;
-                CurrentIteration = 1;
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
