@@ -13,6 +13,7 @@ using ObjectModel.KO;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
@@ -190,8 +191,7 @@ namespace KadOzenka.Web.Controllers
             };
 
             ValidateExportAttributeItems(settings.Attributes);
-
-            ExportAttributeToKO.Run(settings);
+            ExportAttributeToKoProcess.AddProcessToQueue(settings);
         }
 
         

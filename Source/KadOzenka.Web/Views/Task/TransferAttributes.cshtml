@@ -275,7 +275,7 @@
             url: form.attr('action'),
             data: formObject,
             success: function() {
-                Common.ShowMessage('Операция успешно выполнена');
+                Common.ShowMessage('Операция успешно добавлена в очередь фоновых процессов');
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
