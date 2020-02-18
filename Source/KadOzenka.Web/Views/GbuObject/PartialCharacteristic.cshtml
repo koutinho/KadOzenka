@@ -9,7 +9,7 @@
 		@Html.CustomLabelFor(m => m.IdAttributeResult, true)
 	</div>
 	<div class="col-sm-10">
-		@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeResult, (IEnumerable)ViewData["Attribute"], dataValueField: "Id", useAddTag: true, addFunction: "addButton")
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeResult, (IEnumerable)ViewData["Attributes"], useAddTag: true, addFunction: "addButton")
 	</div>
 </div>
 <div class="form-group new-attribute-result" style="@(Model.IsNewAttribute ? "" : "display: none")">

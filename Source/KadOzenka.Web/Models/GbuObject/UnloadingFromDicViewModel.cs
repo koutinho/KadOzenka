@@ -5,7 +5,7 @@ using ObjectModel.Gbu.CodSelection;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
-	public class UnloadingFromDicViewModel : IValidatableObject
+	public class UnloadingFromDicViewModel : PartialCharacteristicViewModel, IValidatableObject
 	{
 		/// <summary>
 		/// Идентификатор задания ЦОД
@@ -13,13 +13,6 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Задание ЦОД")]
 		[Required(ErrorMessage = "Выберете Задание ЦОД")]
 		public long? IdCodJob { get; set; }
-
-		/// <summary>
-		/// Идентификатор атрибута, куда будет записан результат 
-		/// </summary>
-		[Display(Name = "Характеристика")]
-		[Required(ErrorMessage = "Выберете результирующую Характеристику")]
-		public long? IdAttributeResult { get; set; }
 
 		/// <summary>
 		/// Тип объекта 
@@ -82,6 +75,36 @@ namespace KadOzenka.Web.Models.GbuObject
 						new ValidationResult(errorMessage: "Поле Идентификатор атрибута-фильтра обязательное",
 							memberNames: new[] { nameof(IdAttributeFilter) });
 				}
+			}
+
+			if (IsNewAttribute)
+			{
+				if (string.IsNullOrEmpty(NameNewAttribute))
+				{
+					yield return
+						new ValidationResult(errorMessage: "Имя нового атрибута не может быть пустым",
+							memberNames: new[] { nameof(NameNewAttribute) });
+				}
+
+				if (TypeNewAttribute == null)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Тип нового атрибута не может быть пустым",
+							memberNames: new[] { nameof(TypeNewAttribute) });
+				}
+
+				if (RegistryId == null)
+				{
+					yield return
+						new ValidationResult(errorMessage: "Выберите реестр",
+							memberNames: new[] { nameof(RegistryId) });
+				}
+			}
+			else if (IdAttributeResult == null)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Заполните результирующую характеристику",
+						memberNames: new[] { nameof(IdAttributeResult) });
 			}
 		}
 

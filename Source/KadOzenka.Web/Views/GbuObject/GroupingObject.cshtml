@@ -48,7 +48,7 @@
 			@Html.CustomLabelFor(m => m.IdCodJob)
 		</div>
 		<div class="col-sm-10">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodJob, (IEnumerable) ViewData["CodJob"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodJob, (IEnumerable) ViewData["CodJob"] )
 		</div>
 	</div>
 	<fieldset class="wrap-level">
@@ -68,7 +68,7 @@
 				@Html.CustomLabelFor(m => m.IdAttributeFilter)
 			</div>
 			<div class="col-sm-4">
-				@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (IEnumerable)ViewData["Attribute"], dataValueField: "Id", isReadonly: true)
+				@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (IEnumerable)ViewData["Attributes"], isReadonly: true)
 			</div>
 			<div class="col-sm-2">
 				@Html.CustomLabelFor(m => m.ValuesFilter)
@@ -127,7 +127,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level1.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level1.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -150,7 +150,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level2.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level2.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -173,7 +173,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level3.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level3.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -196,7 +196,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level4.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level4.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -219,7 +219,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level5.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level5.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -242,7 +242,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level6.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level6.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -265,7 +265,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level7.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level7.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -288,7 +288,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level8.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level8.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -311,7 +311,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level9.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level9.IdFactor, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 </fieldset>
@@ -334,7 +334,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level10.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level10.IdFactor, (IEnumerable)ViewData["Attributes"])
 		</div>
 	</div>
 </fieldset>
@@ -357,7 +357,7 @@
 			@Html.CustomLabel("Характеристика")
 		</div>
 		<div class="col-sm-6">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level11.IdFactor, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.Level11.IdFactor, (IEnumerable)ViewData["Attributes"])
 		</div>
 	</div>
 </fieldset>
@@ -375,7 +375,7 @@
 			@Html.CustomLabelFor(m => m.IdAttributeSource)
 		</div>
 		<div class="col-sm-10">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeSource, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeSource, (IEnumerable)ViewData["Attributes"] )
 		</div>
 	</div>
 <div class="form-group">
@@ -383,7 +383,7 @@
 		@Html.CustomLabelFor(m => m.IdAttributeDocument)
 	</div>
 	<div class="col-sm-10">
-		@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeDocument, (IEnumerable)ViewData["Attribute"], dataValueField: "Id")
+		@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeDocument, (IEnumerable)ViewData["Attributes"] )
 	</div>
 </div>
 <div class="form-group">

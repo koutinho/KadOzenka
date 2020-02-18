@@ -108,14 +108,14 @@ namespace KadOzenka.Web.Controllers
 		{
 			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
 			{
-				x.Id,
+				Value = x.Id,
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewData["Attribute"] = _service.GetGbuAttributes()
+			ViewData["Attributes"] = _service.GetGbuAttributes()
 				.Select(x => new
 				{
-					x.Id,
+					Value = x.Id,
 					Text = x.Name
 				}).AsEnumerable();
 
@@ -132,7 +132,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (model.IsNewAttribute)
 			{
-				int idAttr = _service.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute);
+				int idAttr = _service.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
 					SendErrorMessage("Не корректные данные для создания нового атрибута");
@@ -281,22 +281,18 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
+				return GenerateMessageNonValidModel();
+			}
 
-							return e.ErrorMessage;
-						}))
-					})
-				});
+			if (viewModel.IsNewAttribute)
+			{
+				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				if (idAttr == 0)
+				{
+					SendErrorMessage("Не корректные данные для создания нового атрибута");
+				}
+
+				viewModel.IdAttributeResult = idAttr;
 			}
 
 			try
@@ -309,7 +305,7 @@ namespace KadOzenka.Web.Controllers
 				return BadRequest();
 			}
 
-			return Json(new { Success = "Процедура Гармонизации успешно выполнена" });
+			return Json(new { Success = "Процедура Гармонизации успешно выполнена", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
 		}
 
 		#endregion
@@ -342,22 +338,18 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
+				return GenerateMessageNonValidModel();
+			}
 
-							return e.ErrorMessage;
-						}))
-					})
-				});
+			if (viewModel.IsNewAttribute)
+			{
+				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				if (idAttr == 0)
+				{
+					SendErrorMessage("Не корректные данные для создания нового атрибута");
+				}
+
+				viewModel.IdAttributeResult = idAttr;
 			}
 
 			try
@@ -370,7 +362,7 @@ namespace KadOzenka.Web.Controllers
 				return BadRequest();
 			}
 
-			return Json(new { Success = "Процедура Гармонизации по классификатору ЦОД успешно выполнена" });
+			return Json(new { Success = "Процедура Гармонизации по классификатору ЦОД успешно выполнена", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
 		}
 
 		#endregion
@@ -382,20 +374,20 @@ namespace KadOzenka.Web.Controllers
 		{
 			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
 			{
-				x.Id,
+				Value = x.Id,
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewData["Attribute"] = _service.GetGbuAttributes()
+			ViewData["Attributes"] = _service.GetGbuAttributes()
 				.Select(x => new
 				{
-					x.Id,
+					Value = x.Id,
 					Text = x.Name
 				}).AsEnumerable();
 
 			ViewData["Document"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
 			{
-				x.Id,
+				Value = x.Id,
 				Text = x.Description
 			}).AsEnumerable();
 
@@ -408,27 +400,23 @@ namespace KadOzenka.Web.Controllers
 
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
+				return GenerateMessageNonValidModel();
+			}
 
-							return e.ErrorMessage;
-						}))
-					})
-				});
+			if (viewModel.IsNewAttribute)
+			{
+				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				if (idAttr == 0)
+				{
+					SendErrorMessage("Не корректные данные для создания нового атрибута");
+				}
+
+				viewModel.IdAttributeResult = idAttr;
 			}
 
 			CodSelection.SelectByCadastralNumber(viewModel.ToCodSelectionSettings());
 
-			return Json(new {success = "Успешно выполнено"});
+			return Json(new {success = "Успешно выполнено", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
 		}
 
 		#endregion

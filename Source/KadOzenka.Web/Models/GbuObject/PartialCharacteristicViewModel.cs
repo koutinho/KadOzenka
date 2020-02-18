@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using Core.Register;
@@ -23,7 +24,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Тип нового атрибута
 		/// </summary>
 		[Display(Name = "Тип")]
-		public RegisterAttributeType TypeNewAttribute { get; set; }
+		public RegisterAttributeType? TypeNewAttribute { get; set; }
 
 		/// <summary>
 		/// Ид реестра куда добавим атрибут
@@ -35,5 +36,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Флаг указывающий используем старый или новый атрибут
 		/// </summary>
 		public bool IsNewAttribute { get; set; } = false;
+
+
 	}
 }

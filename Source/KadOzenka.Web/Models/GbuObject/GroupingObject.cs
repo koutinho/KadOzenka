@@ -204,6 +204,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				}
 			}
 
+
 			if (IsNewAttribute)
 			{
 				if (string.IsNullOrEmpty(NameNewAttribute))
@@ -227,12 +228,13 @@ namespace KadOzenka.Web.Models.GbuObject
 							memberNames: new[] { nameof(RegistryId) });
 				}
 			}
-			else if(IdAttributeResult == null)
+			else if (IdAttributeResult == null)
 			{
 				yield return
 					new ValidationResult(errorMessage: "Заполните результирующую характеристику",
 						memberNames: new[] { nameof(IdAttributeResult) });
 			}
+
 		}
 	}
 }
