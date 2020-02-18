@@ -1,0 +1,49 @@
+﻿@model long
+
+<div>
+    <div id="grid"></div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        var element = $("#grid").kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetTaskObjects", "Task")' + '?taskId=@Model',
+                        dataType: "json"
+                    }
+                },
+            },
+            height: 600,
+            sortable: true,            
+            detailInit: detailInit,
+            columns: [                                
+                {
+                    field: "CadastralNumber", title: "Объект"
+                }
+            ]
+        });
+    });
+
+    function detailInit(e) {        
+        $("<div/>").appendTo(e.detailCell).kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDataMapping", "Task")' + '?taskId=@Model&objectId=' + e.data.ObjectId,
+                        dataType: "json"
+                    }
+                },                
+                filter: { field: "ObjectId", operator: "eq", value: e.data.ObjectId }
+            },
+            scrollable: false,
+            sortable: true,            
+            columns: [            
+                { field: "Attribute", title: "Атрибут" },
+                { field: "OldValue", title: "Предыдущее значение" },
+                { field: "Value", title: "Новое значение" }
+            ]
+        });
+    }
+</script>

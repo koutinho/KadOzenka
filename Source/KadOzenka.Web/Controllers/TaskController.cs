@@ -21,237 +21,238 @@ using KadOzenka.Web.Models.DataImporterLayout;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ObjectModel.Gbu.ExportAttribute;
+using KadOzenka.Dal.Models.Task;
 
 namespace KadOzenka.Web.Controllers
 {
 	public class TaskController : Controller
-    {
-        public TaskService TaskService { get; set; }
-        public ModelService ModelService { get; set; }
-        public DataImporterService DataImporterService { get; set; }
-        public GbuObjectService GbuObjectService { get; set; }
-        public KoService KoService { get; set; }
+	{
+		public TaskService TaskService { get; set; }
+		public ModelService ModelService { get; set; }
+		public DataImporterService DataImporterService { get; set; }
+		public GbuObjectService GbuObjectService { get; set; }
+		public KoService KoService { get; set; }
 
-        public TaskController()
-        {
-            TaskService = new TaskService();
-            ModelService = new ModelService();
-            DataImporterService = new DataImporterService();
-            GbuObjectService = new GbuObjectService();
-            KoService = new KoService();
-        }
+		public TaskController()
+		{
+			TaskService = new TaskService();
+			ModelService = new ModelService();
+			DataImporterService = new DataImporterService();
+			GbuObjectService = new GbuObjectService();
+			KoService = new KoService();
+		}
 
-        #region Карточка задачи
+		#region Карточка задачи
 
-        [HttpGet]
-        public ActionResult TaskCard(long taskId)
-        {
-            var taskDto = TaskService.GetTaskById(taskId);
-            if (taskDto == null)
-                return NotFound();
+		[HttpGet]
+		public ActionResult TaskCard(long taskId)
+		{
+			var taskDto = TaskService.GetTaskById(taskId);
+			if (taskDto == null)
+				return NotFound();
 
-            var taskModel = TaskModel.ToModel(taskDto);
+			var taskModel = TaskModel.ToModel(taskDto);
 
-            return View(taskModel);
-        }
+			return View(taskModel);
+		}
 
-        [HttpGet]
-        public ActionResult GetXmlDocuments([DataSourceRequest]DataSourceRequest request, long taskId)
-        {
-            var importDataLogsDto = DataImporterService.GetCommonDataLog(OMTask.GetRegisterId(), taskId);
+		[HttpGet]
+		public ActionResult GetXmlDocuments([DataSourceRequest]DataSourceRequest request, long taskId)
+		{
+			var importDataLogsDto = DataImporterService.GetCommonDataLog(OMTask.GetRegisterId(), taskId);
 
-            var result = new List<DataImporterLayoutDto>();
-            importDataLogsDto.ForEach(x =>
-            {
-                result.Add(new DataImporterLayoutDto
-                {
-                    Id = x.Id,
-                    DateCreated = x.CreationDate,
-                    UserName = x.Author,
-                    TemplateFileName = x.FileName
-                });
-            });
+			var result = new List<DataImporterLayoutDto>();
+			importDataLogsDto.ForEach(x =>
+			{
+				result.Add(new DataImporterLayoutDto
+				{
+					Id = x.Id,
+					DateCreated = x.CreationDate,
+					UserName = x.Author,
+					TemplateFileName = x.FileName
+				});
+			});
 
-            return Json(result.ToDataSourceResult(request));
-        }
+			return Json(result.ToDataSourceResult(request));
+		}
 
-        #endregion
+		#endregion
 
-        #region Перенос атрибутов
+		#region Перенос атрибутов
 
-        [HttpGet]
-        public ActionResult TransferAttributes()
-        {
-            var model = new ExportAttributesModel();
+		[HttpGet]
+		public ActionResult TransferAttributes()
+		{
+			var model = new ExportAttributesModel();
 
-            ViewData["GbuAttributes"] = GbuObjectService.GetGbuAttributes()
-                .Select(x => new
-                {
-                    x.Id,
-                    Text = x.Name
-                }).AsEnumerable();
+			ViewData["GbuAttributes"] = GbuObjectService.GetGbuAttributes()
+				.Select(x => new
+				{
+					x.Id,
+					Text = x.Name
+				}).AsEnumerable();
 
-            ViewData["KoAttributes"] = new List<string>();
+			ViewData["KoAttributes"] = new List<string>();
 
-            return View(model);
-        }
+			return View(model);
+		}
 
-        public JsonResult GetTasksByTour(long tourId)
-        {
-            var tasks = TaskService.GetTasksByTour(tourId);
+		public JsonResult GetTasksByTour(long tourId)
+		{
+			var tasks = TaskService.GetTasksByTour(tourId);
 
-            var models = tasks.Select(x => new SelectListItem
-            {
-                Value = x.Id.ToString(),
-                Text = x.IncomingDocument?.RegNumber
-            });
+			var models = tasks.Select(x => new SelectListItem
+			{
+				Value = x.Id.ToString(),
+				Text = x.IncomingDocument?.RegNumber
+			});
 
-            return Json(models);
-        }
+			return Json(models);
+		}
 
-        public JsonResult GetKoAttributes(long tourId, string objectType)
-        {
-            var objTypeEnum = string.Equals(objectType, "oks", StringComparison.InvariantCultureIgnoreCase)
-                ? ObjectType.Oks
-                : ObjectType.ZU;
+		public JsonResult GetKoAttributes(long tourId, string objectType)
+		{
+			var objTypeEnum = string.Equals(objectType, "oks", StringComparison.InvariantCultureIgnoreCase)
+				? ObjectType.Oks
+				: ObjectType.ZU;
 
-            var koAttributes = KoService.GetKoAttributes(tourId, objTypeEnum);
+			var koAttributes = KoService.GetKoAttributes(tourId, objTypeEnum);
 
-            var models = koAttributes.Select(x => new
-            {
-                Value = x.Id,
-                Text = x.Name
-            }).AsEnumerable();
+			var models = koAttributes.Select(x => new
+			{
+				Value = x.Id,
+				Text = x.Name
+			}).AsEnumerable();
 
-            return Json(models);
-        }
+			return Json(models);
+		}
 
-        [HttpPost]
-        public void TransferAttributes(ExportAttributesModel model)
-        {
-            if (model.TaskFilter == null || model.TaskFilter.Count == 0)
-                throw new ArgumentException("Не выбрано задание на оценку, операция прервана");
+		[HttpPost]
+		public void TransferAttributes(ExportAttributesModel model)
+		{
+			if (model.TaskFilter == null || model.TaskFilter.Count == 0)
+				throw new ArgumentException("Не выбрано задание на оценку, операция прервана");
 
-            var settings = new GbuExportAttributeSettings
-            {
-                TaskFilter = model.TaskFilter,
-                Attributes = new List<ExportAttributeItem>
-                {
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO1,
-                        IdAttributeGBU = model.IdAttributeGBU1
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO2,
-                        IdAttributeGBU = model.IdAttributeGBU2
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO3,
-                        IdAttributeGBU = model.IdAttributeGBU3
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO4,
-                        IdAttributeGBU = model.IdAttributeGBU4
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO5,
-                        IdAttributeGBU = model.IdAttributeGBU5
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO6,
-                        IdAttributeGBU = model.IdAttributeGBU6
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO7,
-                        IdAttributeGBU = model.IdAttributeGBU7
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO8,
-                        IdAttributeGBU = model.IdAttributeGBU8
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO9,
-                        IdAttributeGBU = model.IdAttributeGBU9
-                    },
-                    new ExportAttributeItem
-                    {
-                        IdAttributeKO = model.IdAttributeKO10,
-                        IdAttributeGBU = model.IdAttributeGBU10
-                    }
-                }
-            };
+			var settings = new GbuExportAttributeSettings
+			{
+				TaskFilter = model.TaskFilter,
+				Attributes = new List<ExportAttributeItem>
+				{
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO1,
+						IdAttributeGBU = model.IdAttributeGBU1
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO2,
+						IdAttributeGBU = model.IdAttributeGBU2
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO3,
+						IdAttributeGBU = model.IdAttributeGBU3
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO4,
+						IdAttributeGBU = model.IdAttributeGBU4
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO5,
+						IdAttributeGBU = model.IdAttributeGBU5
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO6,
+						IdAttributeGBU = model.IdAttributeGBU6
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO7,
+						IdAttributeGBU = model.IdAttributeGBU7
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO8,
+						IdAttributeGBU = model.IdAttributeGBU8
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO9,
+						IdAttributeGBU = model.IdAttributeGBU9
+					},
+					new ExportAttributeItem
+					{
+						IdAttributeKO = model.IdAttributeKO10,
+						IdAttributeGBU = model.IdAttributeGBU10
+					}
+				}
+			};
 
             ValidateExportAttributeItems(settings.Attributes);
             ExportAttributeToKoProcess.AddProcessToQueue(settings);
         }
 
-        
-        #region Support Methods
 
-        public void ValidateExportAttributeItems(List<ExportAttributeItem> item)
-        {
-            var message = new StringBuilder("Один из параметров не выбран, строки №:");
-            var withErrors = false;
+		#region Support Methods
 
-            for (var i = 0; i < item.Count; i++)
-            {
-                var current = item[i];
+		public void ValidateExportAttributeItems(List<ExportAttributeItem> item)
+		{
+			var message = new StringBuilder("Один из параметров не выбран, строки №:");
+			var withErrors = false;
 
-                if (!((current.IdAttributeGBU == 0 && current.IdAttributeKO == 0) ||
-                      (current.IdAttributeGBU != 0 && current.IdAttributeKO != 0)))
-                {
-                    message.Append($"{i + 1}, ");
-                    withErrors = true;
-                }
-            }
+			for (var i = 0; i < item.Count; i++)
+			{
+				var current = item[i];
 
-            if(withErrors)
-                throw new ArgumentException(message.ToString());
-        }
+				if (!((current.IdAttributeGBU == 0 && current.IdAttributeKO == 0) ||
+					  (current.IdAttributeGBU != 0 && current.IdAttributeKO != 0)))
+				{
+					message.Append($"{i + 1}, ");
+					withErrors = true;
+				}
+			}
 
-        #endregion
-
-        #endregion
-
-        #region Модель
-
-        public ActionResult Model(long groupId)
-        {
-            var modelDto = ModelService.GetModelByGroupId(groupId);
-            var model = ModelModel.ToModel(modelDto);
-            
-            return View(model); 
+			if (withErrors)
+				throw new ArgumentException(message.ToString());
 		}
 
-        [HttpGet]
-        public ActionResult PartialModel(long groupId)
-        {
-            var modelDto = ModelService.GetModelByGroupId(groupId);
-            var model = ModelModel.ToModel(modelDto);
-            model.IsPartial = true;
+		#endregion
 
-            return PartialView("~/Views/Task/Model.cshtml", model);
-        }
+		#endregion
 
-        [HttpPost]
+		#region Модель
+
+		public ActionResult Model(long groupId)
+		{
+			var modelDto = ModelService.GetModelByGroupId(groupId);
+			var model = ModelModel.ToModel(modelDto);
+
+			return View(model);
+		}
+
+		[HttpGet]
+		public ActionResult PartialModel(long groupId)
+		{
+			var modelDto = ModelService.GetModelByGroupId(groupId);
+			var model = ModelModel.ToModel(modelDto);
+			model.IsPartial = true;
+
+			return PartialView("~/Views/Task/Model.cshtml", model);
+		}
+
+		[HttpPost]
 		public ActionResult Model(OMModel model)
-		{			
+		{
 			model.Formula = model.GetFormulaFull(true);
 			model.Save();
 			return Ok();
 		}
 
 		public JsonResult GetFormula(long modelId, long algType)
-		{	
+		{
 			OMModel model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
 			model.AlgoritmType_Code = (KoAlgoritmType)algType;
 			string formula = model.GetFormulaFull(true);
@@ -287,7 +288,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				factorDto.Factor = sqlResult[factorDto.FactorId];
 			}
-					   
+
 			return Json(factors);
 		}
 
@@ -302,7 +303,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				return Json(new List<SelectListItem> { });
 			}
-						
+
 			var result = GetModelFactorNameSql(ids, true).Select(x => new SelectListItem
 			{
 				Value = x.Key.ToString(),
@@ -375,7 +376,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		public JsonResult GetModelFactorName(long? modelId)
-		{			
+		{
 			OMModel model = OMModel.Where(x => x.Id == modelId)
 				.Select(x => x.GroupId).ExecuteFirstOrDefault();
 
@@ -385,7 +386,7 @@ namespace KadOzenka.Web.Controllers
 					.Select(x => x.TourId).ExecuteFirstOrDefault();
 
 				if (tourGroup != null)
-				{					
+				{
 					List<OMTourFactorRegister> tfrList = OMTourFactorRegister.Where(x => x.TourId == tourGroup.TourId)
 						.Select(x => x.RegisterId).Execute();
 
@@ -410,7 +411,7 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
 		public ActionResult EditModelFactor(OMModelFactor factor)
-		{			
+		{
 			factor.Save();
 
 			OMModel model = OMModel.Where(x => x.Id == factor.ModelId).SelectAll().ExecuteFirstOrDefault();
@@ -435,7 +436,7 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-        #region Единица оценки
+		#region Единица оценки
 
 		public ActionResult Unit(long objectId)
 		{
@@ -444,7 +445,7 @@ namespace KadOzenka.Web.Controllers
 				.ExecuteFirstOrDefault();
 
 			UnitDto dto = UnitDto.ToDto(unit);
-			
+
 			bool isEditPermission = true;
 			ViewBag.IsEditPermission = isEditPermission;
 
@@ -496,8 +497,8 @@ namespace KadOzenka.Web.Controllers
 				task.CreationDate = dto.TaskCreationDate;
 				//task.ResponseDocId = dto.ResponseDocId;
 
-				task.Save();		
-			}			
+				task.Save();
+			}
 
 			OMCostRosreestr costRosreestr = OMCostRosreestr.Where(x => x.IdObject == dto.Id)
 				.SelectAll()
@@ -513,7 +514,7 @@ namespace KadOzenka.Web.Controllers
 				costRosreestr.Docdate = dto.DocDate;
 
 				costRosreestr.Save();
-			}			
+			}
 
 			return Json(new { Success = "Успешно сохранено" });
 		}
@@ -582,7 +583,7 @@ namespace KadOzenka.Web.Controllers
 						foreach (var factorDto in factors)
 						{
 							factorDto.Factor = sqlResult[factorDto.FactorId];
-						}						
+						}
 					}
 
 					return Json(factors);
@@ -608,6 +609,46 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
-	}
 
+		public ActionResult DataMapping(long taskId)
+		{
+			OMTask task = OMTask.Where(x => x.Id == taskId)				
+				.ExecuteFirstOrDefault();
+
+			if (task == null)
+			{
+				throw new Exception("Не найдено задание на оценку с ИД=" + taskId);
+			}
+
+			return View(taskId);
+		}
+
+		public JsonResult GetTaskObjects(long taskId)
+		{
+			List<OMUnit> unitList = OMUnit.Where(x => x.TaskId == taskId)
+				.Select(x => x.ObjectId)
+				.Select(x => x.CadastralNumber)
+				.Execute();
+
+			var objectList = unitList.Select(x => new { x.ObjectId, x.CadastralNumber }).ToList();
+			return Json(objectList);
+		}
+
+		public JsonResult GetDataMapping(long taskId, long objectId)
+		{			
+			OMTask task = OMTask.Where(x => x.Id == taskId)
+				.Select(x => x.CreationDate)
+				.Select(x => x.EstimationDate)
+				.Select(x => x.DocumentId)
+				.ExecuteFirstOrDefault();
+					
+			List<DataMappingDto> list = new List<DataMappingDto>();
+
+			TaskService.FetchGbuData(list, objectId, task, "num");
+			TaskService.FetchGbuData(list, objectId, task, "dt");
+			TaskService.FetchGbuData(list, objectId, task, "txt");
+
+			return Json(list);
+		}
+	}	
 }

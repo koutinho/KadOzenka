@@ -35,5 +35,10 @@
         <Parameter Key="80101400" Value="[ObjectId]" />
       </Parameters>
     </Tab>
+    <Tab Caption="Сопоставление данных" NavigateURL="/Task/DataMapping">
+      <Parameters>
+        <Parameter Key="TaskId" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
 	</Tabs>
 </RegisterView>
