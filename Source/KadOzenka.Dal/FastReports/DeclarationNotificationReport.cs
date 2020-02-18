@@ -266,17 +266,33 @@ namespace KadOzenka.Dal.FastReports
 				address = subject.Mail;
 			} else
 			{
-				var addressParts = new List<string>
+				if (!string.IsNullOrEmpty(subject.Street))
 				{
-					subject.Street?.Replace(" ", "\u00A0"),
-					subject.House?.Replace(" ", "\u00A0"),
-					subject.Building?.Replace(" ", "\u00A0"),
-					!string.IsNullOrWhiteSpace(subject.Flat) ? "кв.\u00A0" + subject.Flat : null,
-					System.Environment.NewLine,
-					subject.City?.Replace(" ", "\u00A0"),
-					subject.Zip
-				};
-				address = string.Join(", ", addressParts.Where(x => !string.IsNullOrWhiteSpace(x)));
+					address += subject.Street?.Replace(" ", "\u00A0") + ", " + System.Environment.NewLine;
+				}
+				if (!string.IsNullOrEmpty(subject.House))
+				{
+					address += subject.House?.Replace(" ", "\u00A0") + ", ";
+				}
+				if (!string.IsNullOrEmpty(subject.Building))
+				{
+					address += subject.Building?.Replace(" ", "\u00A0") + ", ";
+				}
+				if (!string.IsNullOrEmpty(subject.Flat))
+				{
+					address += "кв.\u00A0" + subject.Flat + ", ";
+				}
+				address += System.Environment.NewLine;
+				if (!string.IsNullOrEmpty(subject.City))
+				{
+					address += subject.City?.Replace(" ", "\u00A0") + ", ";
+				}
+				if (!string.IsNullOrEmpty(subject.Zip))
+				{
+					address += subject.Zip;
+				}
+
+				return address;
 			}
 
 			return address;
