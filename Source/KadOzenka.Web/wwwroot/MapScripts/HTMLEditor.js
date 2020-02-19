@@ -1,7 +1,7 @@
 ﻿function insertCard(cartData, isLast) {
-    console.log(cartData);
+    avaliableCIPJSOptions = avaliableCIPJSTypes.filter(function (x) { return x.code != cartData.propertyTypeCode }).map(function (x) { return `<option value="${x.code}">${x.value}</option>`; }).join('');
+    avaliableSegmentOptions = avaliableSegments.filter(function (x) { return x.code != cartData.MarketSegmentCode }).map(function (x) { return `<option value="${x.code}">${x.value}</option>`; }).join('');
     document.getElementById("dataContentContainer").innerHTML += `
-        <!--<div class="DataItemContainer ${getPropertyType(cartData.source)}">-->
         <div class="DataItemContainer">
             <div class="Container">
                 <div class="Header">
@@ -69,8 +69,78 @@
                     <div class="Value">${cartData.cadastralNumber}</div>
                 </div>  
             `}
+            <div class="EditContainer${editMode ? "" : " Hidden"}">
+                <div class="EditLine">
+                    <div class="MiniLine"></div>
+                    <div class="Content">Редактировать</div>
+                </div>
+                <div class="Container">
+                    <div class="Name">Долгота</div>
+                    <div class="Value">
+                        <input id="lngTextBox_${cartData.id}" class="EditData" type="text" value="${cartData.lng}">
+                    </div>
+                </div>
+                <div class="Container">
+                    <div class="Name">Широта</div>
+                    <div class="Value">
+                        <input id="latTextBox_${cartData.id}" class="EditData" type="text" value="${cartData.lat}">
+                    </div>
+                </div>
+                <div class="Container">
+                    <div class="Name">Тип ЦИПЖС</div>
+                    <div class="Value">
+                        <div class="EditDataSelectContainer">
+                            <select id="typeSelect_${cartData.id}" class="EditDataSelect" dir="rtl">
+                                <option value="${cartData.propertyTypeCode}">${cartData.propertyType}</option>
+                                ${avaliableCIPJSOptions}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="Container">
+                    <div class="Name">Сегмент</div>
+                    <div class="Value">
+                        <div class="EditDataSelectContainer">
+                            <select id="segmentSelect_${cartData.id}" class="EditDataSelect" dir="rtl">
+                                <option value="${cartData.MarketSegmentCode}">${cartData.MarketSegment}</option>
+                                ${avaliableSegmentOptions}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="Container">
+                    <div id="saveBtn_${cartData.id}" class="Button blocked">Сохранить</div>
+                    <div id="undoBtn_${cartData.id}" class="Button blocked">Отменить</div>
+                </div>
+            </div>
             ${isLast ? "" : `<div class="Line"></div>`}
-        </div>`;
+        </div>
+    `;
+};
+
+function updateCard(result) {
+    result.lng = result.lng.toString();
+    result.lat = result.lat.toString();
+    result.propertyTypeCode = result.propertyTypeCode.toString();
+    result.marketSegmentCode = result.marketSegmentCode.toString();
+    document.getElementById(`lngTextBox_${result.id}`).value = result.lng;
+    document.getElementById(`latTextBox_${result.id}`).value = result.lat;
+    document.getElementById(`typeSelect_${result.id}`).value = result.propertyTypeCode;
+    document.getElementById(`segmentSelect_${result.id}`).value = result.marketSegmentCode;
+    console.log(document.getElementById(`lngTextBox_${result.id}`).value, result.lng);
+    console.log(document.getElementById(`latTextBox_${result.id}`).value, result.lat);
+    console.log(document.getElementById(`typeSelect_${result.id}`).value, result.propertyTypeCode);
+    console.log(document.getElementById(`segmentSelect_${result.id}`).value, result.marketSegmentCode);
+    dataChanged(result);
+};
+
+function addEventsCard(cartData) {
+    document.getElementById(`lngTextBox_${cartData.id}`).addEventListener('input', function () { dataChanged(cartData); });
+    document.getElementById(`latTextBox_${cartData.id}`).addEventListener('input', function () { dataChanged(cartData); });
+    document.getElementById(`typeSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
+    document.getElementById(`segmentSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
+    document.getElementById(`saveBtn_${cartData.id}`).addEventListener('click', function () { saveDataChanges(cartData); });
+    document.getElementById(`undoBtn_${cartData.id}`).addEventListener('click', function () { undoDataChanges(cartData); });
 };
 
 function clearCardContainer() {
@@ -88,25 +158,18 @@ function showCardContainer() {
 
 function getValidImageUrlArray(source) {
     let imageUrlArray = [];
-    if (source) {
-        imageUrlArray = source.split(',');
-    }
-
+    if (source) imageUrlArray = source.split(',');
     return imageUrlArray;
 };
 
 function checkImageUrl(url) {
     return new Promise((resolve, reject) => {
         let img = new Image();
-        img.addEventListener('load', e => {
-            resolve(url);
-        });
-        img.addEventListener('error', () => {
-            reject(new Error(`Failed to load image's URL: ${url}`));
-        });
+        img.addEventListener('load', e => { resolve(url); });
+        img.addEventListener('error', () => { reject(new Error(`Failed to load image's URL: ${url}`)); });
         img.src = url;
     });
-}
+};
 
 function getImageGallery(cartData) {
     let imgUrs = getValidImageUrlArray(cartData.images);
@@ -115,23 +178,13 @@ function getImageGallery(cartData) {
     });
     if (!Promise.allSettled) {
         Promise.allSettled = function (promises) {
-            return Promise.all(promises.map(p => Promise.resolve(p).then(value => ({
-                state: 'fulfilled',
-                value: value
-            }), error => ({
-                state: 'rejected',
-                reason: error
-            }))));
+            return Promise.all(promises.map(p => Promise.resolve(p).then(value => ({ state: 'fulfilled', value: value }), error => ({ state: 'rejected', reason: error }))));
         };
     }
     Promise.allSettled(promises)
         .then(results => {
             let existingImages = [];
-            results.forEach((result, num) => {
-                if (result.status == "fulfilled") {
-                    existingImages.push(result.value);
-                }
-            });
+            results.forEach((result, num) => { if (result.status == "fulfilled") existingImages.push(result.value); });
             if (existingImages.length > 0) {
                 document.getElementById("sliderGallery" + cartData.id).innerHTML =
                     `
@@ -145,7 +198,6 @@ function getImageGallery(cartData) {
                         `<div class="arrowsContainer">
                              <div class="arrowLeftContainer" onclick="onLeftButtonClick(${cartData.id},${existingImages.length});">
                                  <span class="fas fa-arrow-left"></span>
-                                 
                              </div>
                              <div class="arrowRightContainer" onclick="onRightButtonClick(${cartData.id},${existingImages.length});">
                                  <span class="fas fa-arrow-right"></span>
@@ -156,9 +208,7 @@ function getImageGallery(cartData) {
                     `<div class="imageCountsContainer" onclick="onImageClick(${cartData.id});">
                         <div class="imageCounts">1/${existingImages.length}</div>
                      </div>`;
-            } else {
-                document.getElementById("sliderGallery" + cartData.id).innerHTML = `Нет фото`;
-            }
+            } else document.getElementById("sliderGallery" + cartData.id).innerHTML = `Нет фото`;
         });
 
     return `${
@@ -184,7 +234,7 @@ function onLeftButtonClick(cardId, imgCount) {
         $(newVisibleImage).addClass("visibleImageGallery");
         imageCount.innerHTML = (parseInt(newVisibleImage.getAttribute("order")) + 1)  + "/" + imgCount;
     }
-}
+};
 
 function onRightButtonClick(cardId, imgCount) {
     let parent = document.getElementById("sliderGallery" + cardId);
@@ -200,7 +250,7 @@ function onRightButtonClick(cardId, imgCount) {
         $(newVisibleImage).addClass("visibleImageGallery");
         imageCount.innerHTML = (parseInt(newVisibleImage.getAttribute("order")) + 1) + "/" + imgCount;
     }
-}
+};
 
 function onImageClick(cardId) {
    //TODO: future handler for image click event

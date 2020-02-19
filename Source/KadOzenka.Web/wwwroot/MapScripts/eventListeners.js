@@ -83,7 +83,7 @@ function changeMapType(type, element) {
     Array.from(document.getElementsByClassName("layerButton")).forEach(x => { if (x.id != element.id) x.classList.add("inactive"); });
     element.classList.toggle("inactive");
     changeLayer(!element.classList.contains("inactive") ? type : 0);
-}
+};
 
 function changeLayer(type) {
     if(type != null) currentLayer = type;
@@ -104,12 +104,12 @@ function changeLayer(type) {
             //setCurrentLayer('/MapJSONData/quartal.json');
             break;
     }
-}
+};
 
 function setQuartalTiles() {
     imgLayer = new ymaps.Layer(imgTileSettings.imgUrlTemplate, { tileTransparent: imgTileSettings.tileTransparent });
     map.layers.add(imgLayer);
-}
+};
 
 function setCurrentLayer(url) {
     SOM = new ymaps.ObjectManager();
@@ -118,4 +118,50 @@ function setCurrentLayer(url) {
         SOM.add(geoJson);
         map.geoObjects.add(SOM);
     });
-}
+};
+
+function enableEditableMode() {
+    editElements = document.querySelectorAll(".DataContentContainer .DataItemContainer .EditContainer");
+    editMode ? editElements.forEach(x => x.classList.remove("Hidden")) : editElements.forEach(x => x.classList.add("Hidden"));
+};
+
+function dataChanged(cartData) {
+    console.log(cartData.lng != document.getElementById(`lngTextBox_${cartData.id}`).value);
+    console.log(cartData.lat != document.getElementById(`latTextBox_${cartData.id}`).value);
+    console.log(cartData.propertyTypeCode != document.getElementById(`typeSelect_${cartData.id}`).value);
+    console.log(cartData.marketSegmentCode, document.getElementById(`segmentSelect_${cartData.id}`).value);
+    if (cartData.lng != document.getElementById(`lngTextBox_${cartData.id}`).value ||
+        cartData.lat != document.getElementById(`latTextBox_${cartData.id}`).value ||
+        cartData.propertyTypeCode != document.getElementById(`typeSelect_${cartData.id}`).value ||
+        cartData.MarketSegmentCode ? cartData.MarketSegmentCode : cartData.marketSegmentCode != document.getElementById(`segmentSelect_${cartData.id}`).value) {
+        document.getElementById(`saveBtn_${cartData.id}`).classList.remove("blocked");
+        document.getElementById(`undoBtn_${cartData.id}`).classList.remove("blocked");
+    }
+    else {
+        document.getElementById(`saveBtn_${cartData.id}`).classList.add("blocked");
+        document.getElementById(`undoBtn_${cartData.id}`).classList.add("blocked");
+    }
+};
+
+function undoDataChanges(cartData) {
+    if (!document.getElementById(`undoBtn_${cartData.id}`).classList.contains("blocked")) {
+        document.getElementById(`lngTextBox_${cartData.id}`).value = cartData.lng;
+        document.getElementById(`latTextBox_${cartData.id}`).value = cartData.lat;
+        document.getElementById(`typeSelect_${cartData.id}`).value = cartData.propertyTypeCode;
+        document.getElementById(`segmentSelect_${cartData.id}`).value = cartData.MarketSegmentCode;
+        dataChanged(cartData);
+    }
+};
+
+function saveDataChanges(cartData) {
+    if (!document.getElementById(`undoBtn_${cartData.id}`).classList.contains("blocked")) {
+        var result = {
+            id: cartData.id,
+            lng: parseFloat(document.getElementById(`lngTextBox_${cartData.id}`).value),
+            lat: parseFloat(document.getElementById(`latTextBox_${cartData.id}`).value),
+            propertyTypeCode: parseInt(document.getElementById(`typeSelect_${cartData.id}`).value),
+            marketSegmentCode: parseInt(document.getElementById(`segmentSelect_${cartData.id}`).value)
+        };
+        ChangeObject(result);
+    }
+};

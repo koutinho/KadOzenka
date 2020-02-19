@@ -194,3 +194,5 @@ var SOM = null;
 var imgLayer = null;
 var clustererData = null;
 var pointsData = null;
+var avaliableCIPJSTypes = null;
+var avaliableSegments = null;

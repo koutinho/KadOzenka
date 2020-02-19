@@ -1,4 +1,5 @@
 var map;
+var editMode;
 
 function init(){
     var script = document.createElement('script');
@@ -11,6 +12,7 @@ function init(){
         //document.head.appendChild(wmsScript);
         ymaps.ready(function() { initMap(); });
     }
+    SetAvaliableValues();
 };
 
 function initMap() {
@@ -32,7 +34,12 @@ function initMap() {
     addDisplayCountWidget(countWidgetPosition);
     addFilterWidget(filterWidgetPosition);
     GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
+    editMode = document.getElementById('cbEditMode').checked;
     map.events.add('boundschange', function (event) { ChangeBounds(event); });
+    document.getElementById('cbEditMode').addEventListener("click", function () {
+        editMode = document.getElementById('cbEditMode').checked;
+        enableEditableMode();
+    });
 };
 
 function changeDefaultControlPosition(map) { map.controls.get("rulerControl").options.set({position:{bottom: 10, right: 10}}); };

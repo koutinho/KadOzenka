@@ -15,6 +15,7 @@ using ObjectModel.Directory;
 using Core.Shared.Extensions;
 using KadOzenka.Web.Models.MarketObject;
 using ObjectModel.Core.Shared;
+using System.Reflection;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -74,6 +75,9 @@ namespace KadOzenka.Web.Controllers
                         segment = FormSegment(x.PropertyMarketSegment),
                         dealType = x.DealType,
                         propertyType = x.PropertyTypesCIPJS,
+                        propertyTypeCode = x.PropertyTypesCIPJS_Code,
+                        MarketSegment = x.PropertyMarketSegment,
+                        MarketSegmentCode = x.PropertyMarketSegment_Code,
                         source = x.Market,
                         price = x.Price,
                         area = x.Area,
@@ -88,7 +92,9 @@ namespace KadOzenka.Web.Controllers
                         floorCount = x.FloorsCount,
                         cadastralNumber = x.CadastralNumber,
                         parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
-                        lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy")
+                        lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy"),
+                        lng = x.Lng,
+                        lat = x.Lat
                     });
                 });
             }
@@ -183,6 +189,41 @@ namespace KadOzenka.Web.Controllers
         {
             new CoreUiController(_coreUiService, _registersService).SaveSearchFilter(MarketObjectsRegisterViewId, filter);
             return Json(new { });
+        }
+
+        public JsonResult GetAvaliableValues()
+        {
+            List<OMReferenceItem> CIPJSType = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).SelectAll().Execute();
+            List<OMReferenceItem> MarketSegment = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).SelectAll().Execute();
+            return Json(new 
+            { 
+                CIPJSType = CIPJSType.Select(x => new { code = x.ItemId, value = x.Value }), 
+                MarketSegment = MarketSegment.Select(x => new { code = x.ItemId, value = x.Value }) 
+            });
+        }
+
+        public JsonResult ChangeObject(long? id, decimal? lng, decimal? lat, long? propertyTypeCode, long? marketSegmentCode)
+        {
+            OMCoreObject obj = OMCoreObject.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            obj.Lng = lng;
+            obj.Lat = lat;
+            obj.PropertyTypesCIPJS_Code = (PropertyTypesCIPJS) propertyTypeCode;
+            obj.PropertyMarketSegment_Code = (MarketSegment) marketSegmentCode;
+            obj.Save();
+            object result = OMCoreObject.Where(x => x.Id == id).SelectAll().Execute().Select(x => {
+                return new
+                {
+                    segment = FormSegment(x.PropertyMarketSegment),
+                    propertyType = x.PropertyTypesCIPJS,
+                    propertyTypeCode = x.PropertyTypesCIPJS_Code,
+                    marketSegment = x.PropertyMarketSegment,
+                    marketSegmentCode = x.PropertyMarketSegment_Code,
+                    id = x.Id,
+                    lng = x.Lng,
+                    lat = x.Lat
+                };
+            }).FirstOrDefault();
+            return Json(result);
         }
 
         public ActionResult cadastralTiles(int x, int y, int z)

@@ -33,6 +33,14 @@ body {
     background-color: #F8F9FC !important;
 }
 
+.EditContainer .Button {
+    text-align: center;
+    justify-content: center;
+    width: 40%;
+    color: #5c9eff;
+    margin: 15px 0px 0px 0px;
+}
+
 .DataContentController .Button {
     color: #5c9eff;
 }
@@ -123,6 +131,7 @@ body {
     margin: 3px;
     display: flex;
     width: 324px;
+    justify-content: space-between;
 }
 
 .MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header {
@@ -203,7 +212,56 @@ body {
     margin-top: 10px;
 }
 
-.MapContainer .Data .DataContentContainer .DataItemContainer .Logo{
+.MapContainer .Data .DataContentContainer .DataItemContainer .EditContainer {
+
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .EditContainer .EditLine {
+    display: flex;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .EditContainer .EditLine .MiniLine {
+    flex-grow: 100;
+    height: 1px;
+    background-color: #d7d7d7;
+    margin-top: 10px;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .EditContainer .EditLine .Content {
+    float: right;
+    margin-left: 5px;
+    cursor: default;
+    color: #d7d7d7;
+    font-size: 14px;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .EditContainer .Container .Value .EditData {
+    text-align: right;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 1px solid #d7d7d7;
+    background: #F8F9FC;
+    width: 100%;
+}
+
+.MapContainer .Data .DataContentContainer .DataItemContainer .EditContainer .Container .Value .EditDataSelectContainer .EditDataSelect {
+    -webkit-appearance: none;
+    width: 100%;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 1px solid #d7d7d7;
+    background: #F8F9FC;
+    cursor: pointer;
+}
+
+input.EditData:focus {
+    outline-width: 0;
+}
+
+select.EditDataSelect:focus {
+    outline-width: 0;
 }
 
 .MapContainer .Map {

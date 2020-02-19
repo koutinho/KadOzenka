@@ -39,6 +39,7 @@ function GetRequiredInfo(idsArray) {
             clearCardContainer();
             showCardContainer();
             for (var i = 0; i < result.length; i++) insertCard(result[i], i == (result.length - 1));
+            for (var i = 0; i < result.length; i++) addEventsCard(result[i]);
         }
     });
 };
@@ -59,5 +60,29 @@ function SetFilterData(filter) {
         data: { filter: filter },
         contentType: 'application/json; charset=utf-8',
         success: function () { GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null); }
+    });
+};
+
+function SetAvaliableValues() {
+    $.ajax({
+        type: "GET",
+        url: "Map/GetAvaliableValues",
+        data: { },
+        contentType: 'application/json; charset=utf-8',
+        success: function (avaliableData) { avaliableCIPJSTypes = avaliableData.CIPJSType, avaliableSegments = avaliableData.MarketSegment }
+    });
+};
+
+function ChangeObject(object) {
+    $.ajax({
+        type: "GET",
+        url: "Map/ChangeObject",
+        data: object,
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        success: function (result) {
+            updateCard(result);
+            GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
+        }
     });
 };
