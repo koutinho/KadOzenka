@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.Task.PartialExportAttributesRowModel;
+
+<div class="form-group attributes-list">
+	<div class="col-sm-5 col-sm-offset-2">
+		<div>
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO, (IEnumerable)ViewData["KoAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
+		</div>
+	</div>
+	<div class="col-sm-5">
+		<div>
+			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGbu, (IEnumerable)ViewData["GbuAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
+		</div>
+	</div>
+</div>

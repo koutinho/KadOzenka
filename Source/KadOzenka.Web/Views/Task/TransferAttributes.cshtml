@@ -32,11 +32,11 @@
             <div class="col-sm-9 col-sm-offset-2">
                 <div class="radio-inline">
                     <label for="Parcel" style="font-weight: normal">Земельный участок</label>
-                    <input type="radio" id="Parcel" name="ObjType" class="custom-control-input" checked>
+                    <input type="radio" id="Parcel" name="ObjType" value="1" class="custom-control-input" checked>
                 </div>
                 <div class="radio-inline">
                     <label for="OKS" style="font-weight: normal">Объект капитального строительства</label>
-                    <input type="radio" id="OKS" name="ObjType" class="custom-control-input">
+                    <input type="radio" id="OKS" name="ObjType" value="0" class="custom-control-input">
                 </div>
             </div>
         </div>
@@ -45,137 +45,146 @@
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO1, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO1, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU1, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU1, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO2, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO2, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU2, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU2, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO3, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO3, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU3, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU3, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO4, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO4, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU4, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU4, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO5, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO5, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU5, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU5, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO6, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO6, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU6, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU6, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO7, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO7, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU7, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU7, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO8, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO8, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU8, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU8, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO9, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO9, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU9, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU9, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
             <div class="form-group attributes-list">
                 <div class="col-sm-5 col-sm-offset-2">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO10, (IEnumerable)ViewData["KoAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeKO10, (IEnumerable)ViewData["KoAttributes"])
                     </div>
                 </div>
                 <div class="col-sm-5">
                     <div>
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU10, (IEnumerable)ViewData["GbuAttributes"], dataValueField: "Id")
+                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGBU10, (IEnumerable)ViewData["GbuAttributes"])
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="col-sm-2 col-sm-offset-10">
-                @(Html.Kendo().Button()
-                            .Name("execute")
-                            .Content("Выполнить")
-                )
-            </div>
-        </div>
+	    <div class="form-group">
+		    <div class="col-sm-2">
+			    @(Html.Kendo().Button()
+				    .Name("addRow")
+				    .Content("Добавить строчку").HtmlAttributes(new {@type = "button"})
+				    )
+		    </div>
+		    <div class="col-sm-2 col-sm-offset-8">
+			    @(Html.Kendo().Button()
+					.Name("execute")
+					.Content("Выполнить").HtmlAttributes(new { @type = "button" })
+				    )
+		    </div>
+	    </div>
     </div>
 }
 
-
+<script type="text/x-kendo-template" id="templateRow">
+	<div class="wrapper-#: rowNumber #" style="display: none">
+	</div>
+	</script>
 
 <style>
     .attributes-list {
@@ -185,104 +194,152 @@
 </style>
 
 <script>
-    $(document).ready(function() {
+	var rowNumber = 1;
 
-        $('[name="RatingTour"]')
-            .kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                dataSource:
-                {
-                    transport: {
-                        read: {
-                            url: '@Url.Action("GetRatingTours", "Tour")',
-                            dataType: 'json'
-                        }
-                    }
-                }
-            });
+	function addNewRow() {
+		kendo.ui.progress($('body'), true);
+		var data = [{ rowNumber }];
 
-        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
-        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initKoAttributes);
-        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
-        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
-        $('[name="ObjType"]').on('change', initKoAttributes);
+		var templateContent = $("#templateRow").html();
+		var template = kendo.template(templateContent);
 
-        $('#execute').on('click', transferAttributes);
-    });
+		var result = kendo.render(template, data);
 
+		$("#attributesList").append(result);
 
+		var classWrapper = ".wrapper-" + rowNumber;
 
+		var idTour = $('#RatingTour').data('kendoDropDownList').value();
+		var objectType = $('input[name="ObjType"]:checked').val();
 
-    function initTasksList() {
-        var tourId = $('#RatingTour').val();
-        var dataSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: '@Url.Action("GetTasksByTour", "Task")',
-                    data: { tourId: tourId },
-                    dataType: 'json'
-                }
-            }
-        });
-        var tasksMultiSelect = $("#TaskFilter").data("kendoMultiSelect");
-        if (tasksMultiSelect) {
-            tasksMultiSelect.setDataSource(dataSource);
-        } else {
-            $('#TaskFilter').kendoMultiSelect({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                optionLabel: "--Выберите задание--",
-                dataSource: dataSource
-            });
-        }
-    }
+		var url = "@Url.Action("GetRowExport", "Task")";
+		$(classWrapper).load(url, { rowNumber: rowNumber, tourId: idTour, objectType: objectType }, function(response) {
+			$(classWrapper).show(500);
+			rowNumber++;
+			kendo.ui.progress($('body'), false);
+		});
+	}
 
+	$(document).ready(function () {
+		$('#addRow').on('click', addNewRow);
 
-    function initKoAttributes() {
-        var tourId = $('#RatingTour').val();
-        var objectType = $('input[name="ObjType"]:checked')[0].id;
+		$('[name="RatingTour"]')
+			.kendoDropDownList({
+				dataTextField: 'Text',
+				dataValueField: 'Value',
+				dataSource:
+				{
+					transport: {
+						read: {
+							url: '@Url.Action("GetRatingTours", "Tour")',
+							dataType: 'json'
+						}
+					}
+				}
+			});
 
-        var koAttributesSource = new kendo.data.DataSource({
-            transport: {
-                read: {
-                    url: '@Url.Action("GetKoAttributes", "Task")',
-                    data: { tourId: tourId, objectType: objectType },
-                    dataType: 'json'
-                }
-            }
-        });
-        $('[name^="IdAttributeKO"]').each(function() {
-            $(this).kendoDropDownList({
-                dataTextField: 'Text',
-                dataValueField: 'Value',
-                optionLabel: " ",
-                dataSource: koAttributesSource
-            });
-        });
-    }
+		$('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
+		$('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initKoAttributes);
+		$('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
+		$('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
+		$('[name="ObjType"]').on('change', initKoAttributes);
+
+		$('#execute').on('click', transferAttributes);
+	});
 
 
-    function transferAttributes() {
-        var form = $('form');
-        var formObject = Common.Functions.FormToObject(form);
-        formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
-        formObject['ObjType'] = $('input[name="ObjType"]:checked')[0].id;
 
-        kendo.ui.progress($('body'), true);
-        $.ajax({
-            type: 'POST',
-            url: form.attr('action'),
-            data: formObject,
-            success: function() {
-                Common.ShowMessage('Операция успешно добавлена в очередь фоновых процессов');
-            },
-            error: function(response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
-            }
-        });
-    }
+
+	function initTasksList() {
+		var tourId = $('#RatingTour').val();
+		var dataSource = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: '@Url.Action("GetTasksByTour", "Task")',
+					data: { tourId: tourId },
+					dataType: 'json'
+				}
+			}
+		});
+		var tasksMultiSelect = $("#TaskFilter").data("kendoMultiSelect");
+		if (tasksMultiSelect) {
+			tasksMultiSelect.setDataSource(dataSource);
+		} else {
+			$('#TaskFilter').kendoMultiSelect({
+				dataTextField: 'Text',
+				dataValueField: 'Value',
+				optionLabel: "--Выберите задание--",
+				dataSource: dataSource
+			});
+		}
+	}
+
+
+	function initKoAttributes() {
+		var tourId = $('#RatingTour').val();
+		var objectType = $('input[name="ObjType"]:checked').val();
+
+		var koAttributesSource = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: '@Url.Action("GetKoAttributes", "Task")',
+					data: { tourId: tourId, objectType: objectType },
+					dataType: 'json'
+				}
+			}
+		});
+		$('[name^="IdAttributeKO"]').each(function() {
+			$(this).kendoDropDownList({
+				dataTextField: 'Text',
+				dataValueField: 'Value',
+				optionLabel: " ",
+				dataSource: koAttributesSource
+			});
+		});
+	}
+
+	function parseFormObject(formObject) {
+		if (!formObject) {
+			return formObject;
+		}
+		var exportAttribute = [];
+		for (var i = 1; i < rowNumber; i++) {
+			var nameKo = 'IdAttributeKO_' + i;
+			var nameGbu = 'IdAttributeGbu_' + i;
+
+			exportAttribute.push({
+				IdAttributeGbu: formObject[nameGbu],
+				IdAttributeKO: formObject[nameKo]
+			});
+			delete formObject[nameGbu];
+			delete formObject[nameKo];
+		}
+		return Object.assign({}, formObject, {ExportAttribute: exportAttribute});
+	}
+
+	function transferAttributes() {
+		var form = $('form');
+		var formObject = Common.Functions.FormToObject(form);
+		formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
+		formObject['ObjType'] = $('input[name="ObjType"]:checked').val();
+
+		formObject = parseFormObject(formObject);
+		console.log('formObject', formObject);
+
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: 'POST',
+			url: form.attr('action'),
+			data: formObject,
+			success: function() {
+				Common.ShowMessage('Операция успешно добавлена в очередь фоновых процессов');
+			},
+			error: function(response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function() {
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
 </script>

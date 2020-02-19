@@ -20,8 +20,10 @@ using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.DataImporterLayout;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ObjectModel.Core.Register;
 using ObjectModel.Gbu.ExportAttribute;
 using KadOzenka.Dal.Models.Task;
+using Microsoft.EntityFrameworkCore.SqlServer.Query.Expressions.Internal;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -88,7 +90,7 @@ namespace KadOzenka.Web.Controllers
 			ViewData["GbuAttributes"] = GbuObjectService.GetGbuAttributes()
 				.Select(x => new
 				{
-					x.Id,
+					Value = x.Id,
 					Text = x.Name
 				}).AsEnumerable();
 
@@ -110,13 +112,9 @@ namespace KadOzenka.Web.Controllers
 			return Json(models);
 		}
 
-		public JsonResult GetKoAttributes(long tourId, string objectType)
+		public JsonResult GetKoAttributes(long tourId, int objectType)
 		{
-			var objTypeEnum = string.Equals(objectType, "oks", StringComparison.InvariantCultureIgnoreCase)
-				? ObjectType.Oks
-				: ObjectType.ZU;
-
-			var koAttributes = KoService.GetKoAttributes(tourId, objTypeEnum);
+			var koAttributes = KoService.GetKoAttributes(tourId, (ObjectType)objectType);
 
 			var models = koAttributes.Select(x => new
 			{
@@ -133,67 +131,34 @@ namespace KadOzenka.Web.Controllers
 			if (model.TaskFilter == null || model.TaskFilter.Count == 0)
 				throw new ArgumentException("Не выбрано задание на оценку, операция прервана");
 
-			var settings = new GbuExportAttributeSettings
-			{
-				TaskFilter = model.TaskFilter,
-				Attributes = new List<ExportAttributeItem>
-				{
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO1,
-						IdAttributeGBU = model.IdAttributeGBU1
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO2,
-						IdAttributeGBU = model.IdAttributeGBU2
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO3,
-						IdAttributeGBU = model.IdAttributeGBU3
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO4,
-						IdAttributeGBU = model.IdAttributeGBU4
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO5,
-						IdAttributeGBU = model.IdAttributeGBU5
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO6,
-						IdAttributeGBU = model.IdAttributeGBU6
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO7,
-						IdAttributeGBU = model.IdAttributeGBU7
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO8,
-						IdAttributeGBU = model.IdAttributeGBU8
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO9,
-						IdAttributeGBU = model.IdAttributeGBU9
-					},
-					new ExportAttributeItem
-					{
-						IdAttributeKO = model.IdAttributeKO10,
-						IdAttributeGBU = model.IdAttributeGBU10
-					}
-				}
-			};
 
-            ValidateExportAttributeItems(settings.Attributes);
+			var settings = model.ToGbuExportAttributeSettings();
+
+			ValidateExportAttributeItems(settings.Attributes);
             ExportAttributeToKoProcess.AddProcessToQueue(settings);
         }
+
+		public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] int objectType)
+		{
+
+			ViewData["GbuAttributes"] = GbuObjectService.GetGbuAttributes()
+				.Select(x => new
+				{
+					Value = x.Id,
+					Text = x.Name
+				}).AsEnumerable();
+
+			var koAttributes = KoService.GetKoAttributes(tourId, (ObjectType)objectType) ?? new List<OMAttribute>();
+
+			ViewData["KoAttributes"] = koAttributes.Select(x => new
+			{
+				Value = x.Id,
+				Text = x.Name
+			}).AsEnumerable();
+
+			ViewData["RowNumber"] = rowNumber.ToString();
+			return PartialView("/Views/Task/PartialTransferAttributeRow.cshtml", new PartialExportAttributesRowModel());
+		}
 
 
 		#region Support Methods
