@@ -53,14 +53,14 @@ namespace KadOzenka.Web.Helpers
 			clearTag.AddCssClass("k-button");
 			clearTag.AddCssClass("k-button-icon");
 			clearTag.AddCssClass($"clear-button-{className}");
-			clearTag.MergeAttribute("style", "margin-left: 2px;");
+			clearTag.MergeAttribute("style", "margin-left: 2px; width: 35px; display: table-cell;");
 			clearTag.InnerHtml.AppendHtml("<span class='k-icon k-i-close'></span>");
 
 			var addTag = new TagBuilder("a");
 			addTag.AddCssClass("k-button");
 			addTag.AddCssClass("k-button-icon");
 			addTag.AddCssClass($"add-button-{className}");
-			addTag.MergeAttribute("style", "margin-left: 2px;");
+			addTag.MergeAttribute("style", "margin-left: 2px; width: 35px; display: table-cell;");
 			addTag.InnerHtml.AppendHtml("<span class='fas fa-plus-circle'></span>");
 
 			DropDownListBuilder dropDownBuilder = html.Kendo().DropDownList()
@@ -109,16 +109,24 @@ namespace KadOzenka.Web.Helpers
 				clearTag.AddCssClass("k-state-disabled");
 			}
 
+			var dropDownWrapper = new TagBuilder("div");
+			dropDownWrapper.MergeAttribute("style", "display: table-cell;");
+			dropDownWrapper.InnerHtml.AppendHtml(dropDownBuilder);
+
+			var allWrapper = new TagBuilder("div");
+			allWrapper.MergeAttribute("style", "display: table; width: 100%; table-layout: fixed;");
+			allWrapper.InnerHtml.AppendHtml(dropDownWrapper);
+			allWrapper.InnerHtml.AppendHtml(clearTag);
+			if (useAddTag)
+			{
+				allWrapper.InnerHtml.AppendHtml(addTag);
+			}
+
+
 			var autocompleteDiv = new TagBuilder("div");
 			autocompleteDiv.MergeAttribute("id", $"{className}Wrapper");
 			autocompleteDiv.AddCssClass("col-sm-12");
-			autocompleteDiv.MergeAttribute("style", "display: flex;");
-			autocompleteDiv.InnerHtml.AppendHtml(dropDownBuilder);
-			autocompleteDiv.InnerHtml.AppendHtml(clearTag);
-			if (useAddTag)
-			{
-				autocompleteDiv.InnerHtml.AppendHtml(addTag);
-			}
+			autocompleteDiv.InnerHtml.AppendHtml(allWrapper);
 
 			var container = new TagBuilder("div");
 			container.AddCssClass("row");

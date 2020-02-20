@@ -458,7 +458,7 @@ namespace KadOzenka.Web.Controllers
 
 		public IEnumerable<SelectListItem> GetAllGbuRegisters()
 		{
-			return RegisterCache.Registers.Values.Where(x => x.Id > 2 && x.Id < 23).Select(x => new SelectListItem(x.Name, x.Id.ToString()));
+			return RegisterCache.Registers.Values.Where(x => x.Id > 2 && x.Id < 23).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
 		}
 
 		public JsonResult SendErrorMessage(string errorMessage)
