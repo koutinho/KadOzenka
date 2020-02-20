@@ -7,11 +7,11 @@
                 <div class="Header">
                     <div class="Text">${CIPJSType[cartData.segment][0].type}${cartData.area ? `&nbsp;${getArea(cartData.propertyType, cartData.area, cartData.areaLand)}` : ""}</div>
                     <div class="Content">
-                        <a style="margin-left: auto;" href="/ObjectCard?ObjId=${cartData.id}&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true">
+                        <a target="_blank" style="margin-left: auto;" href="/ObjectCard?ObjId=${cartData.id}&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true">
                             <div class="Card"></div>
                         </a>
                         ${cartData.source != "Росреестр" ? `
-                            <a style="margin-left: 3px;" href="${cartData.link}">
+                            <a target="_blank" style="margin-left: 3px;" href="${cartData.link}">
                                 <div class="Link ${getPropertyType(cartData.source)}"></div>
                             </a>
                         ` : `<div style="margin-left: 3px;" class="Link ${getPropertyType(cartData.source)}"></div>`}
