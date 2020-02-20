@@ -25,6 +25,7 @@ namespace KadOzenka.Dal.LongProcess
 			var cancelToken = cancelSource.Token;
 			try
 			{
+				WorkerCommon.SetProgress(processQueue, 0);
 				var settings = processQueue.Parameters.DeserializeFromXml<GroupingSettings>();
 				var t = Task.Run(() => {
 					while (true)
