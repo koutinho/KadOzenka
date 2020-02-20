@@ -30,7 +30,7 @@
             ${(cartData.dealType != 'Предложение-продажа' && cartData.dealType != 'Сделка купли-продажи') ? "" : `
                 <div class="Container">
                     <div class="Name">Цена за ${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}</div>
-                    <div class="Value">${cartData.area ? `${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.propertyType, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}` : "—"}</div>
+                    <div class="Value">${(cartData.area || cartData.areaLand) ? `${numberWithSpaces(Math.round(cartData.price / getAreaNumber(cartData.propertyType, cartData.area, cartData.areaLand)))}&nbsp;₽/${getAreaType(cartData.propertyType, cartData.area, cartData.areaLand)}` : "—"}</div>
                 </div>
             `}
             ${cartData.floor == null && cartData.floorCount == null ? "" : `
@@ -41,7 +41,7 @@
             `}
             <div class="Container">
                 <div class="Name">Площадь</div>
-                <div class="Value">${cartData.area ? getArea(cartData.propertyType, cartData.area, cartData.areaLand) : "—"}</div>
+                <div class="Value">${(cartData.area || cartData.areaLand) ? getArea(cartData.propertyType, cartData.area, cartData.areaLand) : "—"}</div>
             </div>
             ${!(cartData.areaLand != null && (cartData.segment == 0 && cartData.area)) ? "" : `
                 <div class="Container">
