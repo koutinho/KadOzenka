@@ -615,7 +615,11 @@ namespace KadOzenka.Dal.GbuObject
 
         public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual)
         {
-            Code_Source_01 = string.Empty;
+	        lock (PriorityGrouping.locked)
+	        {
+		        PriorityGrouping.CurrentCount++;
+	        }
+			Code_Source_01 = string.Empty;
             Code_Source_02 = string.Empty;
             Code_Source_03 = string.Empty;
             Code_Source_04 = string.Empty;

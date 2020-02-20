@@ -26,6 +26,7 @@ using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Controllers;
+using KadOzenka.Web.SignalR;
 
 namespace CIPJS
 {
@@ -58,6 +59,7 @@ namespace CIPJS
 			services.AddTransient<DashboardService>();
 			services.AddTransient<GbuObjectService>();
 			services.AddTransient<TaskService>();
+	        services.AddTransient<GbuLongProcessesService>();
             
 			services.AddHttpContextAccessor();
             services.AddSession(options =>
@@ -81,7 +83,9 @@ namespace CIPJS
             //init AutoMapping
             Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
             services.AddAutoMapper();
-        }
+	        services.AddSignalR();
+	        services.AddMemoryCache();
+		}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -159,7 +163,12 @@ namespace CIPJS
                 else await next();
             });
 
-            HttpContextHelper.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
+	        app.UseSignalR(routes =>
+	        {
+		        routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
+	        });
+
+			HttpContextHelper.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
             HttpContextHelper.WebRootPath = env.ContentRootPath;
         }
     }

@@ -10,6 +10,7 @@ using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -143,7 +144,7 @@ namespace KadOzenka.Web.Controllers
 
 			try
 			{
-				PriorityGrouping.SetPriorityGroup(model.CovertToGroupingSettings());
+				SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
 			}
 			catch (Exception e)
 			{

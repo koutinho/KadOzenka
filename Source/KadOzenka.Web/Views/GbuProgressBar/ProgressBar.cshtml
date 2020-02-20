@@ -1,0 +1,31 @@
+﻿
+<div class="container">
+    <div></div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-sm-12">Отображение текущих процессов</div>
+    </div>
+    <div class="row">&nbsp;</div>
+</div>
+
+<script src="~/lib/signalr/dist/browser/signalr.js"></script>
+<script type="text/javascript">
+    var connection = new signalR.HubConnectionBuilder().withUrl("/gbuLongProcessesProgressBar").build();
+
+    connection.on('ReceiveMessage', function (message) {
+
+        var encodedMsg = message;
+        // Add the message to the page.
+        console.log(encodedMsg);
+    });
+
+    connection.start()
+        .then(function () {
+
+            console.log('connection started');
+            connection.invoke('SendMessage');
+        })
+        .catch(error => {
+            console.error(error.message);
+        });
+</script>
