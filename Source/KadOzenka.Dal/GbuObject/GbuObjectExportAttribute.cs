@@ -25,10 +25,23 @@ namespace KadOzenka.Dal.GbuObject
     public class ExportAttributeToKO
     {
         /// <summary>
+        /// Объект для блокировки счетчика в многопоточке
+        /// </summary>
+        private static object locked;
+        /// <summary>
+        /// Общее число объектов
+        /// </summary>
+        public static int MaxCount = 0;
+        /// <summary>
+        /// Индекс текущего объекта
+        /// </summary>
+        public static int CurrentCount = 0;
+        /// <summary>
         /// Выполнение операции переноса атрибутов
         /// </summary>
         public static void Run(GbuExportAttributeSettings setting)
         {
+            locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
@@ -45,16 +58,25 @@ namespace KadOzenka.Dal.GbuObject
 
             if (setting.TaskFilter.Count > 0)
             {
-                foreach(long taskId in setting.TaskFilter)
+                List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
+                foreach (long taskId in setting.TaskFilter)
                 {
-                    List<ObjectModel.KO.OMUnit> Objs = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
-                    Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting, lstIds); });
+                    Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute());
                 }
+                MaxCount = Objs.Count;
+                CurrentCount = 0;
+                Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting, lstIds); });
+                CurrentCount = 0;
+                MaxCount = 0;
             }
         }
 
         public static void RunOneUnit(ObjectModel.KO.OMUnit unit, GbuExportAttributeSettings setting, List<long> lstIds)
         {
+            lock (locked)
+            {
+                CurrentCount++;
+            }
             List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId.Value, null, lstIds, unit.CreationDate);
 
             foreach (GbuObjectAttribute attrib in attribs)

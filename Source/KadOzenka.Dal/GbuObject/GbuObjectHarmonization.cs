@@ -24,10 +24,23 @@ namespace KadOzenka.Dal.GbuObject
     public class Harmonization
     {
         /// <summary>
+        /// Объект для блокировки счетчика в многопоточке
+        /// </summary>
+        private static object locked;
+        /// <summary>
+        /// Общее число объектов
+        /// </summary>
+        public static int MaxCount = 0;
+        /// <summary>
+        /// Индекс текущего объекта
+        /// </summary>
+        public static int CurrentCount = 0;
+        /// <summary>
         /// Выполнение операции гармонизации
         /// </summary>
         public static void Run(HarmonizationSettings setting)
         {
+            locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
@@ -40,20 +53,29 @@ namespace KadOzenka.Dal.GbuObject
             if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
             if (useTask)
             {
-                foreach(long taskId in setting.TaskFilter)
+                List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
+                foreach (long taskId in setting.TaskFilter)
                 {
-                    List<ObjectModel.KO.OMUnit> Objs = ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == setting.PropertyType && x.TaskId == taskId).SelectAll().Execute();
-                    Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting); });
+                    Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == setting.PropertyType && x.TaskId == taskId).SelectAll().Execute());
                 }
+                MaxCount = Objs.Count;
+                CurrentCount = 0;
+                Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting); });
+                CurrentCount = 0;
+                MaxCount = 0;
             }
             else
             {
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == setting.PropertyType && x.IsActive == true).SelectAll().Execute();
+                MaxCount = Objs.Count;
+                CurrentCount = 0;
                 Parallel.ForEach(Objs, options, item => { RunOneGbu(item, setting); });
+                CurrentCount = 0;
+                MaxCount = 0;
             }
 
 
-                
+
 
         }
 
@@ -118,6 +140,10 @@ namespace KadOzenka.Dal.GbuObject
 
         public static void RunOneGbu(ObjectModel.Gbu.OMMainObject obj, HarmonizationSettings setting)
         {
+            lock (locked)
+            {
+                CurrentCount++;
+            }
             DateTime dt = (setting.DateActual==null)?DateTime.Now:setting.DateActual.Value;
             List<long> lstIds = new List<long>();
             if (setting.Level1Attribute != null) lstIds.Add(setting.Level1Attribute.Value);
@@ -161,6 +187,10 @@ namespace KadOzenka.Dal.GbuObject
         }
         public static void RunOneUnit(ObjectModel.KO.OMUnit obj, HarmonizationSettings setting)
         {
+            lock (locked)
+            {
+                CurrentCount++;
+            }
             if (obj.ObjectId != null)
             {
                 List<long> lstIds = new List<long>();
