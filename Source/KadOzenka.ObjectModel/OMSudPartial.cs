@@ -19,12 +19,16 @@ namespace ObjectModel.Sud
 			bool pDate = false;
 			bool pSudDate = false;
 			bool pStatus = true;
+			bool pArchiveNumber = true;
+			bool pAppealNumber = true;
 
 			bool cNumber = false;
 			bool cName = false;
 			bool cDate = false;
 			bool cSudDate = false;
 			bool cStatus = true;
+			bool cArchiveNumber = true;
+			bool cAppealNumber = true;
 
 
 			if (!_new)
@@ -41,12 +45,16 @@ namespace ObjectModel.Sud
 					pDate = OMParam.GetParamDate(OMTableParam.Sud, Id, "date", Date, out bool aDate, out cDate);
 					pSudDate = OMParam.GetParamDate(OMTableParam.Sud, Id, "sud_date", SudDate, out bool aSudDate, out cSudDate);
 					pStatus = OMParam.GetParamBigInt(OMTableParam.Sud, Id, "status", (long)Status_Code, 0, out bool aStatus, out cStatus, out bool setStatusActual);
+					pArchiveNumber = OMParam.GetParamStr(OMTableParam.Sud, Id, "archive_number", ArchiveNumber,  out bool aArchiveNumber, out cArchiveNumber);
+					pAppealNumber = OMParam.GetParamStr(OMTableParam.Sud, Id, "appeal_number", AppealNumber, out bool aAppealNumber, out cAppealNumber);
 
 					Name = (pName && !aName && cName) ? old.Name : Name;
 					Number = (pNumber && !aNumber && cNumber) ? old.Number : Number;
 					Date = (pDate && !aDate && cDate) ? old.Date : Date;
 					SudDate = (pSudDate && !aSudDate && cSudDate) ? old.SudDate : SudDate;
 					Status = (setStatusActual) ? (Status) : ((pStatus && !aStatus && cStatus) ? old.Status : Status);
+					ArchiveNumber = (pArchiveNumber && !aArchiveNumber && cArchiveNumber) ? old.ArchiveNumber : ArchiveNumber;
+					AppealNumber = (pAppealNumber && !aAppealNumber && cAppealNumber) ? old.AppealNumber : AppealNumber;
 				}
 			}
 			long res = Save();
@@ -60,7 +68,9 @@ namespace ObjectModel.Sud
 					Date = 1,
 					SudDate = 1,
 					Status = 1,
-					Astatus = 1
+					Astatus = 1,
+					ArchiveNumber = 1,
+					AppealNumber = 1
 				};
 				objStatus.Save();
 				OMParam.AddChar(OMTableParam.Sud, this.Id, "number", Number, ProcessingStatus.Processed);
@@ -68,6 +78,8 @@ namespace ObjectModel.Sud
 				OMParam.AddDate(OMTableParam.Sud, this.Id, "date", Date, ProcessingStatus.Processed);
 				OMParam.AddDate(OMTableParam.Sud, this.Id, "sud_date", SudDate, ProcessingStatus.Processed);
 				OMParam.AddInt(OMTableParam.Sud, this.Id, "status", (long)Status_Code, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Sud, this.Id, "archive_number", ArchiveNumber, ProcessingStatus.Processed);
+				OMParam.AddChar(OMTableParam.Sud, this.Id, "appeal_number", AppealNumber, ProcessingStatus.Processed);
 			}
 			else
 			{
@@ -82,7 +94,10 @@ namespace ObjectModel.Sud
 					objStatus.Date = (pDate && cDate) ? 1 : 0;
 					objStatus.SudDate = (pSudDate && cSudDate) ? 1 : 0;
 					objStatus.Status = (pStatus && cStatus) ? 1 : 0;
-					objStatus.Astatus = (pNumber && pName && pDate && pSudDate && pStatus && cNumber && cName && cDate && cSudDate && cStatus) ? 1 : 0;
+					objStatus.AppealNumber = pAppealNumber && cAppealNumber ? 1 : 0;
+					objStatus.ArchiveNumber = pArchiveNumber && cArchiveNumber ? 1 : 0;
+					objStatus.Astatus = (pNumber && pName && pDate && pSudDate && pStatus && pArchiveNumber && pAppealNumber
+					                     && cNumber && cName && cDate && cSudDate && cStatus && cArchiveNumber && cAppealNumber) ? 1 : 0;
 					objStatus.Save();
 				}
 			}
@@ -166,9 +181,9 @@ namespace ObjectModel.Sud
 		/// <summary>
 		/// Утверждение характеристики объекта из выбранных
 		/// </summary>
-		public bool UpdateAndCheckParam(OMParam pNumber, OMParam pName, OMParam pDate, OMParam pSudDate, OMParam pStatus)
+		public bool UpdateAndCheckParam(OMParam pNumber, OMParam pName, OMParam pDate, OMParam pSudDate, OMParam pStatus, OMParam pArchiveNumber, OMParam pAppealNumber)
 		{
-			if (pNumber == null || pName == null || pDate == null || pSudDate == null || pStatus == null)
+			if (pNumber == null || pName == null || pDate == null || pSudDate == null || pStatus == null || pArchiveNumber == null || pAppealNumber == null)
 			{
 				throw new ArgumentNullException(nameof(OMParam));
 			}
@@ -179,6 +194,8 @@ namespace ObjectModel.Sud
 			pDate.UpdateStatus(ProcessingStatus.Processed);
 			pSudDate.UpdateStatus(ProcessingStatus.Processed);
 			pStatus.UpdateStatus(ProcessingStatus.Processed);
+			pArchiveNumber.UpdateStatus(ProcessingStatus.Processed);
+			pAppealNumber.UpdateStatus(ProcessingStatus.Processed);
 			#endregion
 
 			#region Обновление данных для объекта
@@ -187,6 +204,8 @@ namespace ObjectModel.Sud
 			Date = pDate.ParamDate;
 			SudDate = pSudDate.ParamDate;
 			Status_Code = (CourtStatus)pStatus.ParamInt;
+			ArchiveNumber = pAppealNumber.ParamChar;
+			AppealNumber = pAppealNumber.ParamChar;
 			Save();
 			#endregion
 
@@ -203,6 +222,8 @@ namespace ObjectModel.Sud
 				objStatus.SudDate = 1;
 				objStatus.Status = 1;
 				objStatus.Astatus = 1;
+				objStatus.ArchiveNumber = 1;
+				objStatus.AppealNumber = 1;
 				objStatus.Save();
 			}
 			#endregion

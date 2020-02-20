@@ -123,7 +123,9 @@ namespace ObjectModel.Sud
                         case "date": return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
                         case "sud_date": return (ParamDate == null) ? string.Empty : ParamDate.Value.ToShortDateString();
                         case "status": return (ParamInt == null) ? string.Empty : ((ParamInt == 0) ? "Без статуса" : ((ParamInt == 1) ? "Удовлетворено" : ((ParamInt == 2) ? "Отказано" : ((ParamInt == 3) ? "Приостановлено" : ((ParamInt == 4) ? "Частично удовлетворено" : string.Empty)))));
-                        default: return string.Empty;
+                        case "archive_number": return ParamChar;
+                        case "appeal_number": return ParamChar;
+						default: return string.Empty;
                     }
                 case 7://SudLink
                     switch (ParamName)

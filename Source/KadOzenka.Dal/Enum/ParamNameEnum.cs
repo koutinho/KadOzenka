@@ -77,6 +77,11 @@ namespace KadOzenka.Dal.Enum
 		[Description("additional_analysis")]
 		AdditionalAnalysisRequired,
 		[Description("is_satisfied")]
-		IsSatisfied
-    }
+		IsSatisfied,
+		[Description("archive_number")]
+		ArchiveNumber,
+		[Description("appeal_number")]
+		AppealNumber
+
+	}
 }

@@ -31,7 +31,15 @@ namespace KadOzenka.Web.Models.Sud
         [Display(Name = "Статус")]
         public string Status { get; set; }
 
-        public string NumberForTab { get; set; }
+		[Required(ErrorMessage = "Выберите архивный номер")]
+		[Display(Name = "Архивный номер")]
+        public string ArchiveNumber { get; set; }
+
+		[Required(ErrorMessage = "Выберите номер апелляции")]
+		[Display(Name = "Номер апелляции")]
+        public string AppealNumber { get; set; }
+
+		public string NumberForTab { get; set; }
         public string DateForTab { get; set; }
         public string NameForTab { get; set; }
 
@@ -49,9 +57,11 @@ namespace KadOzenka.Web.Models.Sud
                 DateForTab = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Date.GetEnumDescription())?.ToString(),
                 SudDate = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.SudDate.GetEnumDescription())?.Pid.ToString(),
                 Status = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.Status.GetEnumDescription())?.Pid.ToString(),
+                ArchiveNumber = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.ArchiveNumber.GetEnumDescription())?.Pid.ToString(),
+                AppealNumber = param.FirstOrDefault(x => x.ParamName == ParamNameEnum.AppealNumber.GetEnumDescription())?.Pid.ToString(),
             };
             model.IsDisableButton = model.Name != null && model.Number != null && model.Date != null &&
-                                    model.SudDate != null && model.Status != null;
+                                    model.SudDate != null && model.Status != null && model.ArchiveNumber != null && model.AppealNumber != null;
             return model;
         }
     }

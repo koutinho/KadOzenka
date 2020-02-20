@@ -22,7 +22,7 @@
 		            $"{m.Conclusion.NumberForTab} от {m.Conclusion.DateForTab}"
 		            : string.IsNullOrEmpty(m.Conclusion.DateForTab) && !string.IsNullOrEmpty(m.Conclusion.NumberForTab) ? $"{m.Conclusion.NumberForTab}"
 			            : string.IsNullOrEmpty(m.Conclusion.NumberForTab) && !string.IsNullOrEmpty(m.Conclusion.DateForTab)
-				            ? $"Решение от {m.Conclusion.DateForTab}" : "Решение";
+				            ? $"Заключение от {m.Conclusion.DateForTab}" : "Заключение";
 
                 <li class="@(i == 0 ? "k-state-active" : "")">@(textTab)</li>
                 i++;

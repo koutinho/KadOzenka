@@ -1159,8 +1159,10 @@ namespace KadOzenka.Web.Controllers
             OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.Date)).SelectAll().ExecuteFirstOrDefault();
             OMParam pSudDate = OMParam.Where(x => x.Pid == long.Parse(model.SudDate)).SelectAll().ExecuteFirstOrDefault();
             OMParam pStatus = OMParam.Where(x => x.Pid == long.Parse(model.Status)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pArchiveNumber = OMParam.Where(x => x.Pid == long.Parse(model.ArchiveNumber)).SelectAll().ExecuteFirstOrDefault();
+            OMParam pAppealNumber = OMParam.Where(x => x.Pid == long.Parse(model.AppealNumber)).SelectAll().ExecuteFirstOrDefault();
 
-            court.UpdateAndCheckParam(pNumber, pName, pDate, pSudDate, pStatus);
+            court.UpdateAndCheckParam(pNumber, pName, pDate, pSudDate, pStatus, pArchiveNumber, pAppealNumber);
 
             return Json(new { Success = "Утверждено успешно" });
         }

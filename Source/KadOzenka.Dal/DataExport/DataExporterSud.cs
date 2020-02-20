@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.DataExport
 
             DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "Кадастровый номер объекта", "Дата определения КС", "Кадастровая стоимость", "№ дела", "Дата судебного акта", "Установленная судом РС", "Административный истец" });
 
-            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => !x.IsRemoved).SelectAll().Execute();
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => x.IsRemoved != true || x.IsRemoved == null).SelectAll().Execute();
             int curIndex = 0;
             if (objs.Count > 0)
             {
@@ -121,7 +121,7 @@ namespace KadOzenka.Dal.DataExport
             DataExportCommon.AddAttribute(xmlFile, xnLandValuation, "Version", "01");
             XmlNode xnobjects = xmlFile.CreateElement("Objects");
 
-            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => !x.IsRemoved).SelectAll().Execute();
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => x.IsRemoved != true || x.IsRemoved == null).SelectAll().Execute();
             int curIndex = 0;
             if (objs.Count > 0)
             {
@@ -212,7 +212,7 @@ namespace KadOzenka.Dal.DataExport
 
             var mainWorkSheet = excelTemplate.Worksheets.Add("Экспорт данных");
 
-            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => !x.IsRemoved).SelectAll().Execute();
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => x.IsRemoved != true || x.IsRemoved == null).SelectAll().Execute();
             int curIndex = 0;
             if (objs.Count > 0)
             {
@@ -290,6 +290,8 @@ namespace KadOzenka.Dal.DataExport
                     caption.Add("Дата заседания");
                     caption.Add("Дата судебного акта");
                     caption.Add("Рыночная стоимость");
+                    caption.Add("Архивный номер");
+                    caption.Add("Номер аппеляции");
                     caption.Add("Источник информации");
                     caption.Add("Примечание");
                     #endregion
@@ -318,8 +320,8 @@ namespace KadOzenka.Dal.DataExport
 
                 DataExportCommon.MergeCell(mainWorkSheet, 0, 1, 0, 8, "Объект");
                 DataExportCommon.MergeCell(mainWorkSheet, 0, 9, 9 + (10 * maxotchet) - 1, "Отчет");
-                DataExportCommon.MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet), 9 + (10 * maxotchet) + (8 * maxsud) - 1, "Судебное решение");
-                DataExportCommon.MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet) + (8 * maxsud), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * maxzak) - 1, "Экспертное заключение");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet), 9 + (10 * maxotchet) + (10 * maxsud) - 1, "Судебное решение");
+                DataExportCommon.MergeCell(mainWorkSheet, 0, 9 + (10 * maxotchet) + (10 * maxsud), 9 + (10 * maxotchet) + (10 * maxsud) + (15 * maxzak) - 1, "Экспертное заключение");
 
                 for (int i = 0; i < maxotchet; i++)
                 {
@@ -328,12 +330,12 @@ namespace KadOzenka.Dal.DataExport
 
                 for (int i = 0; i < maxsud; i++)
                 {
-                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * (i)), 9 + (10 * maxotchet) + (8 * (i + 1)) - 1, "Судебное решение " + "№" + (i + 1).ToString());
+                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (10 * (i)), 9 + (10 * maxotchet) + (10 * (i + 1)) - 1, "Судебное решение " + "№" + (i + 1).ToString());
                 }
 
                 for (int i = 0; i < maxzak; i++)
                 {
-                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i)), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i + 1)) - 1, "Экспертное заключение " + "№" + (i + 1).ToString());
+                    DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (10 * maxsud) + (15 * (i)), 9 + (10 * maxotchet) + (10 * maxsud) + (15 * (i + 1)) - 1, "Экспертное заключение " + "№" + (i + 1).ToString());
                 }
 
                 DataExportCommon.AddRow(mainWorkSheet, 2, caption.ToArray());
@@ -603,6 +605,8 @@ namespace KadOzenka.Dal.DataExport
                         value.Add(sud.Date);
                         value.Add(sud.SudDate);
                         value.Add(obj.SudLink[i].Rs);
+                        value.Add(sud.ArchiveNumber);
+                        value.Add(sud.AppealNumber);
                         value.Add(obj.SudLink[i].Use);
                         value.Add(obj.SudLink[i].Descr);
                     }
@@ -614,7 +618,9 @@ namespace KadOzenka.Dal.DataExport
                         value.Add("-");
                         value.Add("-");
                         value.Add(obj.SudLink[i].Rs);
-                        value.Add(obj.SudLink[i].Use);
+                        value.Add("-");
+                        value.Add("-");
+						value.Add(obj.SudLink[i].Use);
                         value.Add(obj.SudLink[i].Descr);
                     }
                 }
@@ -706,7 +712,7 @@ namespace KadOzenka.Dal.DataExport
         {
             ExcelFile excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Статистика сводная");
-            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => !x.IsRemoved).SelectAll().Execute();
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => x.IsRemoved != true || x.IsRemoved == null).SelectAll().Execute();
 
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
@@ -863,7 +869,7 @@ namespace KadOzenka.Dal.DataExport
         {
             ExcelFile excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Статискика по объектам");
-            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => !x.IsRemoved).SelectAll().Execute();
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => x.IsRemoved != true || x.IsRemoved == null).SelectAll().Execute();
 
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
@@ -1003,7 +1009,7 @@ namespace KadOzenka.Dal.DataExport
         {
             ExcelFile excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Статистика по положительным");
-            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => !x.IsRemoved).SelectAll().Execute();
+            List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => x.IsRemoved != true || x.IsRemoved == null).SelectAll().Execute();
 
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
