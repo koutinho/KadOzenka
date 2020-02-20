@@ -12780,6 +12780,46 @@ namespace ObjectModel.Sud
             }
         }
 
+
+        private string _archivenumber;
+        /// <summary>
+        /// 31600800 Номер архивный (ARCHIVE_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600800)]
+        public string ArchiveNumber
+        {
+            get
+            {
+                CheckPropertyInited("ArchiveNumber");
+                return _archivenumber;
+            }
+            set
+            {
+                _archivenumber = value;
+                NotifyPropertyChanged("ArchiveNumber");
+            }
+        }
+
+
+        private string _appealnumber;
+        /// <summary>
+        /// 31600900 Номер апелляции (APPEAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 31600900)]
+        public string AppealNumber
+        {
+            get
+            {
+                CheckPropertyInited("AppealNumber");
+                return _appealnumber;
+            }
+            set
+            {
+                _appealnumber = value;
+                NotifyPropertyChanged("AppealNumber");
+            }
+        }
+
     }
 }
 

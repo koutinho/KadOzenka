@@ -38,6 +38,17 @@ namespace KadOzenka.Web.Models.Sud
 		/// </summary>
 		[Display(Name = "Статус дела")]
 		public long? Status { get; set; }
+		/// <summary>
+		/// Архивный номер
+		/// </summary>
+		[Display(Name = "Номер архивный")]
+		public string ArchiveNumber { get; set; }
+		/// <summary>
+		/// Номер апелляции
+		/// </summary>
+		[Display(Name = "Номер апелляции")]
+		public string AppealNumber { get; set; }
+
 
 		public bool IsEditCourt { get; set; }
 
@@ -52,7 +63,9 @@ namespace KadOzenka.Web.Models.Sud
 				Number = entity.Number,
 				Date = entity.Date,
 				SudDate = entity.SudDate,
-				Status = (long)entity.Status_Code
+				Status = (long)entity.Status_Code,
+				ArchiveNumber = entity.ArchiveNumber,
+				AppealNumber = entity.AppealNumber
 			};
 		}
 
@@ -63,6 +76,8 @@ namespace KadOzenka.Web.Models.Sud
 			entity.Date = model.Date;
 			entity.SudDate = model.SudDate;
 			entity.Status_Code = (CourtStatus)(model.Status ?? 0);
+			entity.AppealNumber = model.AppealNumber;
+			entity.ArchiveNumber = model.ArchiveNumber;
 		}
 	}
 }

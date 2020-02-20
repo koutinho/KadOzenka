@@ -50,6 +50,22 @@
 		</div>
 		<div class="form-group">
 			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.AppealNumber)
+			</div>
+			<div class="col-sm-10">
+				@Html.TextBoxFor(m => m.AppealNumber, new {@class = "k-textbox", @style = "width: 100%;"})
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(m => m.ArchiveNumber)
+			</div>
+			<div class="col-sm-10">
+				@Html.TextBoxFor(m => m.ArchiveNumber, new {@class = "k-textbox", @style = "width: 100%;"})
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
 				@Html.CustomLabelFor(m => m.Status)
 			</div>
 			<div class="col-sm-10">
