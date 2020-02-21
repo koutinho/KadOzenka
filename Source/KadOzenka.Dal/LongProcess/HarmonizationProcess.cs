@@ -5,15 +5,15 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Gbu.GroupingAlgoritm;
+using ObjectModel.Gbu.Harmonization;
 
 namespace KadOzenka.Dal.LongProcess
 {
-	public class SetPriorityGroupProcess : LongProcess
+	public class HarmonizationProcess : LongProcess
 	{
-		public const string LongProcessName = "SetPriorityGroupProcess";
+		public const string LongProcessName = "HarmonizationProcess";
 
-		public static void AddProcessToQueue(GroupingSettings settings)
+		public static void AddProcessToQueue(HarmonizationSettings settings)
 		{
 			LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
 		}
@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.LongProcess
 			try
 			{
 				WorkerCommon.SetProgress(processQueue, 0);
-				var settings = processQueue.Parameters.DeserializeFromXml<GroupingSettings>();
+				var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationSettings>();
 				var t = Task.Run(() => {
 					while (true)
 					{
@@ -33,9 +33,9 @@ namespace KadOzenka.Dal.LongProcess
 						{
 							break;
 						}
-						if (PriorityGrouping.MaxCount > 0 && PriorityGrouping.CurrentCount > 0)
+						if (Harmonization.MaxCount > 0 && Harmonization.CurrentCount > 0)
 						{
-							var newProgress = (long)Math.Round(((double)PriorityGrouping.CurrentCount / PriorityGrouping.MaxCount) * 100);
+							var newProgress = (long)Math.Round(((double)Harmonization.CurrentCount / Harmonization.MaxCount) * 100);
 							if (newProgress != processQueue.Progress)
 							{
 								WorkerCommon.SetProgress(processQueue, newProgress);
@@ -44,30 +44,30 @@ namespace KadOzenka.Dal.LongProcess
 					}
 				}, cancelToken);
 
-				PriorityGrouping.SetPriorityGroup(settings);
+				Harmonization.Run(settings);
 				//TestLongRunningProcess(settings);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();
 
 				WorkerCommon.SetProgress(processQueue, 100);
-				SendNotification(processQueue, "Результат Операции группировки", "Операция успешно завершена");
+				SendNotification(processQueue, "Результат Операции Гармонизации", "Операция успешно завершена");
 			}
 			catch (Exception ex)
 			{
 				cancelSource.Cancel();
-				SendNotification(processQueue, "Результат Операции группировки", $"Операция была прервана: {ex.Message}");
+				SendNotification(processQueue, "Результат Операции Гармонизации", $"Операция была прервана: {ex.Message}");
 				throw;
 			}
 		}
 
-		protected void TestLongRunningProcess(GroupingSettings setting)
+		protected void TestLongRunningProcess(HarmonizationSettings setting)
 		{
-			PriorityGrouping.MaxCount = 200;
-			PriorityGrouping.CurrentCount = 0;
-			for (int i = 0; i < 200; i++)
+			Harmonization.MaxCount = 900;
+			Harmonization.CurrentCount = 0;
+			for (int i = 0; i < 900; i++)
 			{
-				PriorityGrouping.CurrentCount++;
+				Harmonization.CurrentCount++;
 				Thread.Sleep(1000);
 			}
 		}

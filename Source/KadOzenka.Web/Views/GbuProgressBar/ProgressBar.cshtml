@@ -158,7 +158,22 @@
 
     function updateGrid(newData) {
         //debugger;
-        gridDataSource = newData;
+        for (var i = 0; i < newData.length; i++) {
+            var elem = gridDataSource.find(x => x.Id === newData[i].Id);
+            if (elem === undefined) {
+                gridDataSource.push(newData[i]);
+            } else {
+                elem.StatusName = newData[i].StatusName;
+                elem.Progress = newData[i].Progress;
+            }
+        }
+        for (var i = 0; i < gridDataSource.length; i++) {
+            var elem = newData.find(x => x.Id === gridDataSource[i].Id);
+            if (elem === undefined) {
+                gridDataSource.splice(i, 1);
+            }
+        }
+
         grid.setDataSource(gridDataSource);
         grid.refresh();
     }

@@ -298,7 +298,7 @@ namespace KadOzenka.Web.Controllers
 
 			try
 			{
-				KadOzenka.Dal.GbuObject.Harmonization.Run(viewModel.ToHarmonizationSettings());
+				HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
 			}
 			catch (Exception e)
 			{
@@ -306,7 +306,7 @@ namespace KadOzenka.Web.Controllers
 				return BadRequest();
 			}
 
-			return Json(new { Success = "Процедура Гармонизации успешно выполнена", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
+			return Json(new { Success = "Процедура Гармонизации успешно добавлена в очередь, по результатам операции будет отправлено сообщение", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
 		}
 
 		#endregion
@@ -355,7 +355,7 @@ namespace KadOzenka.Web.Controllers
 
 			try
 			{
-				KadOzenka.Dal.GbuObject.HarmonizationCOD.Run(viewModel.ToHarmonizationCODSettings());
+				HarmonizationCodProcess.AddProcessToQueue(viewModel.ToHarmonizationCODSettings());
 			}
 			catch (Exception e)
 			{
@@ -363,7 +363,7 @@ namespace KadOzenka.Web.Controllers
 				return BadRequest();
 			}
 
-			return Json(new { Success = "Процедура Гармонизации по классификатору ЦОД успешно выполнена", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
+			return Json(new { Success = "Процедура Гармонизации по классификатору ЦОД успешно добавлена в очередь, по результатам операции будет отправлено сообщение", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
 		}
 
 		#endregion
