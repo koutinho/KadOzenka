@@ -461,6 +461,8 @@ namespace KadOzenka.Dal.DataImport
 							string sNumber = mainWorkSheet.Rows[row.Index].Cells[21].Value.ParseToString();
 							DateTime? sDate = mainWorkSheet.Rows[row.Index].Cells[22].Value.ParseToDateTimeNullable();
 							DateTime? sDateAct = mainWorkSheet.Rows[row.Index].Cells[23].Value.ParseToDateTimeNullable();
+							string sArchiveNumber = mainWorkSheet.Rows[row.Index].Cells[27].Value.ParseToString();
+							string sAppealNumber = mainWorkSheet.Rows[row.Index].Cells[28].Value.ParseToString();
 							long? lStatus = -1;
 							switch (sStatus.ToLower())
 							{
@@ -496,6 +498,8 @@ namespace KadOzenka.Dal.DataImport
 										Number = sNumber,
 										Status_Code = (CourtStatus) ((lStatus == -1) ? 0 : lStatus),
 										SudDate = sDateAct,
+										ArchiveNumber = sArchiveNumber,
+										AppealNumber = sAppealNumber
 									};
 									sud_sud.SaveAndCheckParam();
 									newsud = true;
@@ -510,6 +514,8 @@ namespace KadOzenka.Dal.DataImport
 									sDate = (sDate == null) ? sud_sud.Date : sDate;
 									sDateAct = (sDateAct == null) ? sud_sud.SudDate : sDateAct;
 									lStatus = (lStatus == -1) ? (long)sud_sud.Status_Code : lStatus;
+									sArchiveNumber = (sArchiveNumber == string.Empty) ? sud_sud.ArchiveNumber : sArchiveNumber;
+									sAppealNumber = (sAppealNumber == string.Empty) ? sud_sud.AppealNumber : sAppealNumber;
 
 									if ((sud_sud.Date != sDate) && (sDate != null))
 									{
@@ -523,6 +529,14 @@ namespace KadOzenka.Dal.DataImport
 									{
 										errorSud.colIndex.Add(19);
 									}
+									if (sud_sud.ArchiveNumber.ToUpper() != sArchiveNumber.ToUpper() && (sArchiveNumber != string.Empty))
+									{
+										errorSud.colIndex.Add(27);
+									}
+									if (sud_sud.AppealNumber.ToUpper() != sAppealNumber.ToUpper() && (sAppealNumber != string.Empty))
+									{
+										errorSud.colIndex.Add(28);
+									}
 									if (((long)sud_sud.Status_Code != lStatus) && (lStatus != -1))
 									{
 										errorSud.colIndex.Add(20);
@@ -533,6 +547,8 @@ namespace KadOzenka.Dal.DataImport
 									sud_sud.Number = sNumber;
 									sud_sud.Status_Code = (CourtStatus)lStatus;
 									sud_sud.SudDate = sDateAct;
+									sud_sud.ArchiveNumber = sArchiveNumber;
+									sud_sud.AppealNumber = sAppealNumber;
 									sud_sud.SaveAndCheckParam();
 								}
 
@@ -579,6 +595,7 @@ namespace KadOzenka.Dal.DataImport
 								}
 							}
 							else
+
 							{
 								if (mainWorkSheet.Rows[row.Index].Cells[19].Value.ParseToString() == string.Empty && (mainWorkSheet.Rows[row.Index].Cells[20].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[21].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[22].Value.ParseToString() != null || mainWorkSheet.Rows[row.Index].Cells[23].Value.ParseToString() != null || mainWorkSheet.Rows[row.Index].Cells[24].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[25].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[26].Value.ParseToString() != string.Empty))
 								{
@@ -588,17 +605,17 @@ namespace KadOzenka.Dal.DataImport
 							#endregion
 
 							#region Заключения
-							string zNumber = mainWorkSheet.Rows[row.Index].Cells[27].Value.ParseToString();
-							DateTime? zDate = mainWorkSheet.Rows[row.Index].Cells[28].Value.ParseToDateTimeNullable();
-							DateTime? zRecDate = mainWorkSheet.Rows[row.Index].Cells[37].Value.ParseToDateTimeNullable();
-							string zOrgName = mainWorkSheet.Rows[row.Index].Cells[30].Value.ParseToString();
-							string zFioName = mainWorkSheet.Rows[row.Index].Cells[31].Value.ParseToString();
-							string zSroName = mainWorkSheet.Rows[row.Index].Cells[32].Value.ParseToString();
-							string zRecUser = mainWorkSheet.Rows[row.Index].Cells[38].Value.ParseToString();
-							string zRecLetter = mainWorkSheet.Rows[row.Index].Cells[39].Value.ParseToString();
-							string zBefore = mainWorkSheet.Rows[row.Index].Cells[35].Value.ParseToString();
-							string zAfter = mainWorkSheet.Rows[row.Index].Cells[36].Value.ParseToString();
-							string zSoglas = mainWorkSheet.Rows[row.Index].Cells[41].Value.ParseToString();
+							string zNumber = mainWorkSheet.Rows[row.Index].Cells[29].Value.ParseToString();
+							DateTime? zDate = mainWorkSheet.Rows[row.Index].Cells[30].Value.ParseToDateTimeNullable();
+							DateTime? zRecDate = mainWorkSheet.Rows[row.Index].Cells[39].Value.ParseToDateTimeNullable();
+							string zOrgName = mainWorkSheet.Rows[row.Index].Cells[32].Value.ParseToString();
+							string zFioName = mainWorkSheet.Rows[row.Index].Cells[33].Value.ParseToString();
+							string zSroName = mainWorkSheet.Rows[row.Index].Cells[34].Value.ParseToString();
+							string zRecUser = mainWorkSheet.Rows[row.Index].Cells[40].Value.ParseToString();
+							string zRecLetter = mainWorkSheet.Rows[row.Index].Cells[41].Value.ParseToString();
+							string zBefore = mainWorkSheet.Rows[row.Index].Cells[37].Value.ParseToString();
+							string zAfter = mainWorkSheet.Rows[row.Index].Cells[38].Value.ParseToString();
+							string zSoglas = mainWorkSheet.Rows[row.Index].Cells[43].Value.ParseToString();
 
 							ObjectModel.Sud.OMZak sud_zak = ObjectModel.Sud.OMZak.Where(x => x.Number == zNumber).SelectAll().ExecuteFirstOrDefault();
 							ObjectModel.Sud.OMDict zOrg = ObjectModel.Sud.OMDict.Where(x => x.Name.ToUpper() == zOrgName.ToUpper() && x.Type == 1).SelectAll().ExecuteFirstOrDefault();
@@ -743,10 +760,10 @@ namespace KadOzenka.Dal.DataImport
 									sud_zak.SaveAndCheckParam();
 								}
 								{
-									decimal? zRc = mainWorkSheet.Rows[row.Index].Cells[33].Value.ParseToDecimalNullable();
-									decimal? zUc = mainWorkSheet.Rows[row.Index].Cells[34].Value.ParseToDecimalNullable();
-									string zUse = mainWorkSheet.Rows[row.Index].Cells[29].Value.ParseToString();
-									string zDesc = mainWorkSheet.Rows[row.Index].Cells[40].Value.ParseToString();
+									decimal? zRc = mainWorkSheet.Rows[row.Index].Cells[35].Value.ParseToDecimalNullable();
+									decimal? zUc = mainWorkSheet.Rows[row.Index].Cells[36].Value.ParseToDecimalNullable();
+									string zUse = mainWorkSheet.Rows[row.Index].Cells[31].Value.ParseToString();
+									string zDesc = mainWorkSheet.Rows[row.Index].Cells[42].Value.ParseToString();
 
 									if (zRc > 0 || zUc > 0)
 									{
@@ -775,15 +792,15 @@ namespace KadOzenka.Dal.DataImport
 
 											if ((sud_zak_link.Use.ToUpper() != zUse.ToUpper()) && (zUse != string.Empty))
 											{
-												errorZak.colIndex.Add(29);
+												errorZak.colIndex.Add(31);
 											}
 											if ((sud_zak_link.Rs != zRc) && (zRc != null))
 											{
-												errorZak.colIndex.Add(33);
+												errorZak.colIndex.Add(35);
 											}
 											if ((sud_zak_link.Uprs != zUc) && (zUc != null))
 											{
-												errorZak.colIndex.Add(34);
+												errorZak.colIndex.Add(36);
 											}
 
 											sud_zak_link.Use = zUse;
@@ -795,23 +812,23 @@ namespace KadOzenka.Dal.DataImport
 									}
 									else
 									{
-										errorZak.colIndex.Add(33);
-										errorZak.colIndex.Add(34);
+										errorZak.colIndex.Add(35);
+										errorZak.colIndex.Add(36);
 									}
 								}
 							}
 							else
 							{
-								if (mainWorkSheet.Rows[row.Index].Cells[27].Value.ParseToString() == string.Empty && (mainWorkSheet.Rows[row.Index].Cells[28].Value.ParseToString() != string.Empty ||
-								mainWorkSheet.Rows[row.Index].Cells[29].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[30].Value.ParseToString() != string.Empty ||
+								if (mainWorkSheet.Rows[row.Index].Cells[29].Value.ParseToString() == string.Empty && (mainWorkSheet.Rows[row.Index].Cells[30].Value.ParseToString() != string.Empty ||
 								mainWorkSheet.Rows[row.Index].Cells[31].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[32].Value.ParseToString() != string.Empty ||
 								mainWorkSheet.Rows[row.Index].Cells[33].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[34].Value.ParseToString() != string.Empty ||
 								mainWorkSheet.Rows[row.Index].Cells[35].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[36].Value.ParseToString() != string.Empty ||
 								mainWorkSheet.Rows[row.Index].Cells[37].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[38].Value.ParseToString() != string.Empty ||
 								mainWorkSheet.Rows[row.Index].Cells[39].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[40].Value.ParseToString() != string.Empty ||
-								mainWorkSheet.Rows[row.Index].Cells[41].Value.ParseToString() != string.Empty))
+								mainWorkSheet.Rows[row.Index].Cells[41].Value.ParseToString() != string.Empty || mainWorkSheet.Rows[row.Index].Cells[42].Value.ParseToString() != string.Empty ||
+								mainWorkSheet.Rows[row.Index].Cells[43].Value.ParseToString() != string.Empty))
 								{
-									errorZak.colIndex.Add(27);
+									errorZak.colIndex.Add(29);
 								}
 							}
 							#endregion
@@ -884,7 +901,7 @@ namespace KadOzenka.Dal.DataImport
 			{
 				if (ind.rowIndex > 0)
 				{
-					for (int i = 0; i < 42; i++)
+					for (int i = 0; i < 44; i++)
 						mainWorkSheet.Rows[ind.rowIndex].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
 				}
 				foreach (int indX in ind.colIndex)
@@ -908,7 +925,7 @@ namespace KadOzenka.Dal.DataImport
 			{
 				if (ind.rowIndex > 0)
 				{
-					for (int i = 19; i < 27; i++)
+					for (int i = 19; i < 29; i++)
 						mainWorkSheet.Rows[ind.rowIndex].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(200, 255, 255));
 				}
 				foreach (int indX in ind.colIndex)
@@ -920,7 +937,7 @@ namespace KadOzenka.Dal.DataImport
 			{
 				if (ind.rowIndex > 0)
 				{
-					for (int i = 27; i < 42; i++)
+					for (int i = 29; i < 44; i++)
 						mainWorkSheet.Rows[ind.rowIndex].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 255, 200));
 				}
 				foreach (int indX in ind.colIndex)
