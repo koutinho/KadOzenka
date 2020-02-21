@@ -97,7 +97,7 @@ namespace KadOzenka.Dal.Tasks
 				{
 					ObjectId = row["object_id"].ParseToLong(),
 					AttributeId = row["attribute_id"].ParseToLong(),
-					Value = row["value"].ToString()
+					Value = row["value"].ParseToStringNullable()
 				});
 			}
 

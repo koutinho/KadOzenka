@@ -613,7 +613,7 @@ namespace KadOzenka.Web.Controllers
 			TaskService.FetchGbuData(list, objectId, task, "dt");
 			TaskService.FetchGbuData(list, objectId, task, "txt");
 
-			list = list.Where(x => !x.Value.Equals(x.OldValue)).ToList();
+			list = list.Where(x => !Object.Equals(x.Value, x.OldValue)).ToList();
 
 			return Json(list);
 		}
