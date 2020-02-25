@@ -1,6 +1,6 @@
 ﻿function insertCard(cartData, isLast) {
-    avaliableCIPJSOptions = avaliableCIPJSTypes.filter(function (x) { return x.code != cartData.propertyTypeCode }).map(function (x) { return `<option value="${x.code}">${x.value}</option>`; }).join('');
-    avaliableSegmentOptions = avaliableSegments.filter(function (x) { return x.code != cartData.marketSegmentCode }).map(function (x) { return `<option value="${x.code}">${x.value}</option>`; }).join('');
+    avaliableCIPJSOptions = avaliableCIPJSTypes.filter(function (x) { return x.code != cartData.propertyTypeCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
+    avaliableSegmentOptions = avaliableSegments.filter(function (x) { return x.code != cartData.marketSegmentCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
     document.getElementById("dataContentContainer").innerHTML += `
         <div class="DataItemContainer">
             <div class="Container">
@@ -91,7 +91,7 @@
                     <div class="Value">
                         <div class="EditDataSelectContainer">
                             <select id="typeSelect_${cartData.id}" class="EditDataSelect" dir="rtl">
-                                <option value="${cartData.propertyTypeCode}">${cartData.propertyType}</option>
+                                <option value="${cartData.propertyTypeCode}">${cartData.propertyType.length < 28 ? cartData.propertyType : '...' + cartData.propertyType.substr(0, 27)}</option>
                                 ${avaliableCIPJSOptions}
                             </select>
                         </div>
@@ -102,7 +102,7 @@
                     <div class="Value">
                         <div class="EditDataSelectContainer">
                             <select id="segmentSelect_${cartData.id}" class="EditDataSelect" dir="rtl">
-                                <option value="${cartData.marketSegmentCode}">${cartData.marketSegment}</option>
+                                <option value="${cartData.marketSegmentCode}">${cartData.marketSegment.length < 28 ? cartData.marketSegment : '...' + cartData.marketSegment.substr(0, 27)}</option>
                                 ${avaliableSegmentOptions}
                             </select>
                         </div>
