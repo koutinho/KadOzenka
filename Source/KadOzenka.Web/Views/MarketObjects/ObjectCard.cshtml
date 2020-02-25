@@ -26,12 +26,16 @@
                             <input class="k-textbox" readonly value="@Model.DealType" />
                         </div>
                         <div class="col-sm-2">
-                            @if (Model.DealTypeCode == DealType.RentDeal || Model.DealTypeCode == DealType.SaleDeal) {<label class="control-label">Дата сделки</label>}
-                            else {<label class="control-label">Дата предложения</label>}
+                            @if (Model.DealTypeCode == DealType.RentDeal || Model.DealTypeCode == DealType.SaleDeal)
+                            {<label class="control-label">Дата сделки</label>}
+                            else
+                            {<label class="control-label">Дата предложения</label>}
                         </div>
                         <div class="col-sm-2">
-                            @if (Model.LastDateUpdate != null) {<input class="k-textbox" readonly value="@Model.LastDateUpdate.Value.ToString("dd.MM.yyyy")" />}
-                            else {<input class="k-textbox" readonly value="@Model.ParserTime.Value.ToString("dd.MM.yyyy")" />}
+                            @if (Model.LastDateUpdate != null)
+                            {<input class="k-textbox" readonly value="@Model.LastDateUpdate.Value.ToString("dd.MM.yyyy")" />}
+                            else
+                            {<input class="k-textbox" readonly value="@Model.ParserTime.Value.ToString("dd.MM.yyyy")" />}
                         </div>
                     </div>
                     <div class="form-group">
@@ -108,13 +112,31 @@
                             <label class="control-label">Тип ОН</label>
                         </div>
                         <div class="col-sm-2">
-                            <input id="priceInput" class="k-textbox" readonly value="@Model.CIPJSType" />
+                            @*<input id="priceInput" class="k-textbox" readonly value="@Model.CIPJSType" />*@
+                            <span title="" class="k-widget k-dropdown" unselectable="on" role="listbox">
+                                <span unselectable="on" class="k-dropdown-wrap k-state-default">
+                                    <span unselectable="on" class="k-input">@Html.Raw(Model.CIPJSType)</span>
+                                    <span unselectable="on" class="k-select" aria-label="select">
+                                        <span class="k-icon k-i-arrow-60-down" id="ObjectTypeSelectedValue"></span>
+                                    </span>
+                                </span>
+                                <input data-val="true" data-val-required="Поле Тип объекта обязательное" editmode="true" id="ObjectType" name="ObjectType" type="text" value="2" data-role="dropdownlist" style="display: none;">
+                            </span>
                         </div>
                         <div class="col-sm-2">
                             <label class="control-label">Сегмент рынка</label>
                         </div>
                         <div class="col-sm-2">
-                            <input id="priceInput" class="k-textbox" readonly value="@Model.MarketSegment" />
+                            @*<input id="priceInput" class="k-textbox" readonly value="@Model.MarketSegment" />*@
+                            <span title="" class="k-widget k-dropdown" unselectable="on" role="listbox">
+                                <span unselectable="on" class="k-dropdown-wrap k-state-default">
+                                    <span unselectable="on" class="k-input">@Html.Raw(Model.MarketSegment)</span>
+                                    <span unselectable="on" class="k-select" aria-label="select">
+                                        <span class="k-icon k-i-arrow-60-down"></span>
+                                    </span>
+                                </span>
+                                <input data-val="true" data-val-required="Поле Сегмент рынка обязательное" editmode="true" id="ObjectMarketSegment" name="ObjectMarketSegment" type="text" value="2" data-role="dropdownlist" style="display: none;">
+                            </span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -123,6 +145,28 @@
                         </div>
                         <div class="col-sm-2">
                             <a href="@Model.Url" target="_blank">@Model.Url</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="Coordinates_Group" data-expand>
+            <span>Координаты</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            <label class="control-label">Долгота</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input id="lngTextBox" class="k-textbox" value="@Model.Longitude" />
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="control-label">Широта</label>
+                        </div>
+                        <div class="col-sm-2">
+                            <input id="latTextBox" class="k-textbox" value="@Model.Latitude" />
                         </div>
                     </div>
                 </div>
@@ -302,17 +346,25 @@
     <div class="static-nav">
         <nav id="navigation-menu">
             <a href="#Section_Main">Основные данные</a>
-            @if (@Model.PriceHistories?.Count > 0)
-            {
-                <a href="#Section_PriceHistoryChart">График истории изменения цены</a>
-            }
+            <a href="#Coordinates_Group">Координаты</a>
+            @if (@Model.PriceHistories?.Count > 0) { <a href="#Section_PriceHistoryChart">График истории изменения цены</a>  }
             <a href="#Section_Reestr">Данные Росреестра</a>
             <a href="#Section_OKS">Данные ОКС</a>
             <a href="#Section_Group">Группировка</a>
-            @if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess)
-            {
-                <a href="#Section_Map">На карте</a>
-            }
+            @if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess) { <a href="#Section_Map">На карте</a> }
+            <div style="position:absolute; bottom:0px; width:100%; display:flex; justify-content: space-between;" id="toolbar" data-role="toolbar" class="k-toolbar k-widget k-toolbar-resizable" tabindex="0">
+                <div tabindex="0" class="k-overflow-anchor k-button" style="visibility: hidden; width: 1px;">
+                    <span class="k-icon k-i-more-vertical"></span>
+                </div>
+                <a tabindex="0" class="k-button k-button-icon blocked" id="saveBtn" data-overflow="auto" style="width:110px;">
+                    Сохранить
+                    <span class="k-icon k-i-save"></span>
+                </a>
+                <a tabindex="0" class="k-button k-button-icon blocked" id="cancelBtn" data-overflow="auto" style="width:110px">
+                    Отменить
+                    <span class="k-icon k-i-cancel"></span>
+                </a>
+            </div>
         </nav>
     </div>
 </form>
@@ -384,6 +436,75 @@
             <span style="font-weight: bold;">#= kendo.toString(new Date(category), "dd.MM.yyyy HH:mm:ss") #</span>
         </div>
     </div>
+</script>
+<script charset="utf-8">
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetAvaliableValues", "Map")',
+        data: { },
+        contentType: 'application/json; charset=utf-8',
+        success: function (avaliableData) {
+            kendo.syncReady(function () {
+                jQuery("#ObjectType").kendoDropDownList({
+                    "dataTextField": "Text",
+                    "dataValueField": "Value",
+                    "noDataTemplate": "Ничего не найдено!",
+                    "value": "@Html.Raw((int)Model.CIPJSTypeCode)",
+                    "dataSource": avaliableData.CIPJSType.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.CIPJSTypeCode) ? false : true } })
+                });
+            });
+             kendo.syncReady(function () {
+                jQuery("#ObjectMarketSegment").kendoDropDownList({
+                    "dataTextField": "Text",
+                    "dataValueField": "Value",
+                    "noDataTemplate": "Ничего не найдено!",
+                    "value": "@Html.Raw((int)Model.MarketSegmentCode)",
+                    "dataSource": avaliableData.MarketSegment.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.MarketSegmentCode) ? false : true } })
+                });
+            });
+        }
+    });
+
+    document.getElementById("lngTextBox").addEventListener("input", function () { dataChanged(); });
+    document.getElementById("latTextBox").addEventListener("input", function () { dataChanged(); });
+    jQuery("#ObjectType").change(function () { dataChanged(); });
+    jQuery("#ObjectMarketSegment").change(function () { dataChanged(); });
+    document.getElementById("cancelBtn").addEventListener("click", function () { cancelData(); });
+    document.getElementById("saveBtn").addEventListener("click", function () { saveData(); });
+
+    function dataChanged() {
+        if ("@Model.Longitude.ToString()" != document.getElementById("lngTextBox").value ||
+            "@Model.Latitude.ToString()" != document.getElementById("latTextBox").value ||
+            "@Html.Raw((int)Model.CIPJSTypeCode)" != jQuery("#ObjectType").data("kendoDropDownList").value() ||
+            "@Html.Raw((int)Model.MarketSegmentCode)" != jQuery("#ObjectMarketSegment").data("kendoDropDownList").value()) {
+            document.getElementById("saveBtn").classList.remove("blocked");
+            document.getElementById("cancelBtn").classList.remove("blocked");
+        }
+        else {
+            document.getElementById("saveBtn").classList.add("blocked");
+            document.getElementById("cancelBtn").classList.add("blocked");
+        }
+    };
+
+    function cancelData() { document.location.reload(); };
+
+    function saveData() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ChangeObject", "Map")',
+            data: {
+                id: @Model.Id,
+                lng: parseFloat(document.getElementById("lngTextBox").value.replace(',', '.')),
+                lat: parseFloat(document.getElementById("latTextBox").value.replace(',', '.')),
+                propertyTypeCode: parseInt(jQuery("#ObjectType").get()[0].value),
+                marketSegmentCode: parseInt(jQuery("#ObjectMarketSegment").get()[0].value)
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success: function () { document.location.reload(); }
+        });
+    };
+    
 </script>
 
 @section styles {
@@ -458,6 +579,14 @@
             margin: 5px 0 5px 0;
             background-color: white;
             max-height: 300px;
+        }
+
+        .k-button.blocked:hover {
+            background-color: white;
+            cursor: default;
+            border: 1px solid #E5E8F0;
+            color: #9398A7;
+            border-left: 1px solid #E5E8F0 !important;
         }
     </style>
     <link rel="stylesheet" href="~/MapStyles/style.css" />
@@ -621,7 +750,6 @@
 		}
 
 		function addGeoObject() {
-			console.log(SelectedTargetOnCard);
 			const geoObject = new ymaps.Placemark([objectLatitude, objectLongitude], {}, SelectedTargetOnCard);
 			objectMap.geoObjects.add(geoObject);
 		}
