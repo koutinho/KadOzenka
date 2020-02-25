@@ -129,7 +129,7 @@ function dataChanged(cartData) {
     if (cartData.lng != document.getElementById(`lngTextBox_${cartData.id}`).value ||
         cartData.lat != document.getElementById(`latTextBox_${cartData.id}`).value ||
         cartData.propertyTypeCode != document.getElementById(`typeSelect_${cartData.id}`).value ||
-        cartData.MarketSegmentCode ? cartData.MarketSegmentCode : cartData.marketSegmentCode != document.getElementById(`segmentSelect_${cartData.id}`).value) {
+        (cartData.MarketSegmentCode ? cartData.MarketSegmentCode : cartData.marketSegmentCode) != document.getElementById(`segmentSelect_${cartData.id}`).value) {
         document.getElementById(`saveBtn_${cartData.id}`).classList.remove("blocked");
         document.getElementById(`undoBtn_${cartData.id}`).classList.remove("blocked");
     }
