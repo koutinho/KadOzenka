@@ -1,6 +1,6 @@
 ﻿function insertCard(cartData, isLast) {
     avaliableCIPJSOptions = avaliableCIPJSTypes.filter(function (x) { return x.code != cartData.propertyTypeCode }).map(function (x) { return `<option value="${x.code}">${x.value}</option>`; }).join('');
-    avaliableSegmentOptions = avaliableSegments.filter(function (x) { return x.code != cartData.MarketSegmentCode }).map(function (x) { return `<option value="${x.code}">${x.value}</option>`; }).join('');
+    avaliableSegmentOptions = avaliableSegments.filter(function (x) { return x.code != cartData.marketSegmentCode }).map(function (x) { return `<option value="${x.code}">${x.value}</option>`; }).join('');
     document.getElementById("dataContentContainer").innerHTML += `
         <div class="DataItemContainer">
             <div class="Container">
@@ -102,7 +102,7 @@
                     <div class="Value">
                         <div class="EditDataSelectContainer">
                             <select id="segmentSelect_${cartData.id}" class="EditDataSelect" dir="rtl">
-                                <option value="${cartData.MarketSegmentCode}">${cartData.MarketSegment}</option>
+                                <option value="${cartData.marketSegmentCode}">${cartData.marketSegment}</option>
                                 ${avaliableSegmentOptions}
                             </select>
                         </div>
@@ -127,10 +127,6 @@ function updateCard(result) {
     document.getElementById(`latTextBox_${result.id}`).value = result.lat;
     document.getElementById(`typeSelect_${result.id}`).value = result.propertyTypeCode;
     document.getElementById(`segmentSelect_${result.id}`).value = result.marketSegmentCode;
-    console.log(document.getElementById(`lngTextBox_${result.id}`).value, result.lng);
-    console.log(document.getElementById(`latTextBox_${result.id}`).value, result.lat);
-    console.log(document.getElementById(`typeSelect_${result.id}`).value, result.propertyTypeCode);
-    console.log(document.getElementById(`segmentSelect_${result.id}`).value, result.marketSegmentCode);
     dataChanged(result);
 };
 
