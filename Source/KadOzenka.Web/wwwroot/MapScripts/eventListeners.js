@@ -126,10 +126,6 @@ function enableEditableMode() {
 };
 
 function dataChanged(cartData) {
-    console.log(cartData.lng != document.getElementById(`lngTextBox_${cartData.id}`).value);
-    console.log(cartData.lat != document.getElementById(`latTextBox_${cartData.id}`).value);
-    console.log(cartData.propertyTypeCode != document.getElementById(`typeSelect_${cartData.id}`).value);
-    console.log(cartData.marketSegmentCode, document.getElementById(`segmentSelect_${cartData.id}`).value);
     if (cartData.lng != document.getElementById(`lngTextBox_${cartData.id}`).value ||
         cartData.lat != document.getElementById(`latTextBox_${cartData.id}`).value ||
         cartData.propertyTypeCode != document.getElementById(`typeSelect_${cartData.id}`).value ||
