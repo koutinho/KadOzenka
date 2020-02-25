@@ -307,6 +307,11 @@ select.EditDataSelect:focus {
     background-position: 7px 7px;
 }
 
+.filterControl {
+    width: 0px;
+    height: 0px;
+}
+
 .filterControl .filterImage {
     background: #fff;
     height: 36px;
