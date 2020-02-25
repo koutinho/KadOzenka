@@ -29,7 +29,7 @@ namespace KadOzenka.Web.Helpers
 
 			var htmlFieldName = ExpressionHelper.GetExpressionText(expression);
 			var name = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
-			var className = name.Replace(".", "_");
+			var className = name.Replace(".", "_").Replace('[', '_').Replace(']', '_');
 			if (!string.IsNullOrEmpty(idPrefix))
 			{
 				name = name + idPrefix;

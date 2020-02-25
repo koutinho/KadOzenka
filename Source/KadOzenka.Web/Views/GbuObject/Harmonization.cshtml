@@ -8,7 +8,7 @@
 {
     <div class="form-horizontal col-sm-12">
         <div class="form-group"></div>
-	    @(await Html.PartialAsync("PartialCharacteristic", new PartialCharacteristicViewModel
+	    @(await Html.PartialAsync("Partials/PartialCharacteristic", new PartialCharacteristicViewModel
 	    {
 		    IdAttributeResult = Model.IdAttributeResult,
 		    IsNewAttribute = Model.IsNewAttribute,
@@ -181,7 +181,7 @@
         </fieldset>
 	    <div class="form-group">
 		    <div class="col-sm-7">
-			    @( await Html.PartialAsync("PartialTemplateStorage", new TemplateStorageViewModel
+			    @( await Html.PartialAsync("Partials/PartialTemplateStorage", new TemplateStorageViewModel
 			{
 				ControllerName = "GbuObject",
 				ActionName = "GetTemplatesHarmonization"

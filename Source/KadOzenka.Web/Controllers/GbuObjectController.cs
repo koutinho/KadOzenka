@@ -421,6 +421,85 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
+
+		#region Inheritance
+
+		#region load data
+
+		public JsonResult GetRatingTours()
+		{
+			var tours = OMTour.Where(x => true).SelectAll().Execute()
+				.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.Year.ToString()
+				});
+
+			return Json(tours);
+		}
+
+		public JsonResult GetTasksByTour(long tourId)
+		{
+			var tasks = _taskService.GetTasksByTour(tourId);
+
+			var models = tasks.Select(x => new SelectListItem
+			{
+				Value = x.Id.ToString(),
+				Text = x.IncomingDocument?.RegNumber
+			});
+
+			return Json(models);
+		}
+		public ActionResult GetRow([FromForm] int rowNumber)
+		{
+			ViewData["Attributes"] = _service.GetGbuAttributes()
+				.Select(x => new
+				{
+					Value = x.Id,
+					Text = x.Name
+				}).AsEnumerable();
+
+			ViewData["RowNumber"] = rowNumber.ToString();
+			return PartialView("/Views/GbuObject/Partials/PartialNewRow.cshtml", new PartialAttribute());
+		}
+
+		#endregion
+		[HttpGet]
+		public ActionResult Inheritance()
+		{
+			ViewData["Attributes"] = _service.GetGbuAttributes()
+				.Select(x => new
+				{
+					Value = x.Id,
+					Text = x.Name
+				}).AsEnumerable();
+
+			long[] arr = new long[5];
+			return View(new InheritanceViewModel{Attributes = new List<long>(arr.ToList())});
+		}
+
+		[HttpPost]
+		public JsonResult Inheritance(InheritanceViewModel viewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			try
+			{
+				GbuObjectInheritanceAttribute.Run(viewModel.ToAttributeSettings());
+			}
+			catch (Exception e)
+			{
+				return SendErrorMessage(e.Message);
+			}
+			
+
+			return Json(new { Success = "Выполнено успешно!"});
+		}
+
+		#endregion
 		public List<SelectListItem> GetTasksData()
 		{
 			var documentInfoList = _taskService.GetTaskDocumentInfoList();

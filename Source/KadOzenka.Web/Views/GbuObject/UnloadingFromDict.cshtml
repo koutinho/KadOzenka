@@ -54,7 +54,7 @@
 			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodJob, (IEnumerable)ViewData["CodJob"])
 		</div>
 	</div>
-	@(await Html.PartialAsync("PartialCharacteristic", new PartialCharacteristicViewModel
+	@(await Html.PartialAsync("Partials/PartialCharacteristic", new PartialCharacteristicViewModel
 	{
 		IdAttributeResult = Model.IdAttributeResult,
 		IsNewAttribute = Model.IsNewAttribute,
@@ -117,7 +117,7 @@
 
 	<div class="form-group">
 		<div class="col-sm-7">
-			@( await Html.PartialAsync("PartialTemplateStorage", new TemplateStorageViewModel
+			@( await Html.PartialAsync("Partials/PartialTemplateStorage", new TemplateStorageViewModel
 				{
 					ControllerName = "GbuObject",
 					ActionName = "GetTemplatesUnloadingForm"
@@ -186,10 +186,10 @@
                 if (this.checked) {
                     changeAttributeFilterAvailability(true);
                 }
-            });
+			});
+
 		$('input[type="radio"][name="SelectAllObject"][value="False"] ').change(function () {
-			console.log('123', this.checked);
-                if (this.checked) {
+			if (this.checked) {
                     changeAttributeFilterAvailability(false);
                 }
             });
