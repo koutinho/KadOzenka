@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Core.UI.Registers.Controllers;
@@ -7,7 +8,9 @@ using KadOzenka.Web.Models.Sud;
 using ObjectModel.Sud;
 using System.Transactions;
 using Core.ErrorManagment;
+using Core.Main.FileStorages;
 using Core.Register.DAL;
+using Core.Register.Enums;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
@@ -15,8 +18,10 @@ using Core.UI.Registers.Models.CoreUi;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.SudLongProcesses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ObjectModel.Common;
 using ObjectModel.Directory.Sud;
 
 namespace KadOzenka.Web.Controllers
@@ -1337,19 +1342,62 @@ namespace KadOzenka.Web.Controllers
             return Json(new { Success = "Утверждено успешно" });
         }
 
-        #endregion
+		#endregion
 
-        #region Load Files
+		#region Load Files
 
-        public FileResult GetExportDataToExcelGbu()
+		public ActionResult GetExportDataToExcelGbu()
+		{
+			var model = new ExportDataFormModel
+			{
+				NotifyMessage = "Выполнить Выгрузку судебных решений для ГБУ?",
+				ExportDataMethodName = nameof(ExportDataToExcelGbu),
+				ExportDataInBackgroundModeMethodName = nameof(ExportDataToExcelGbuInBackgroundMode),
+				Filename = "Выгрузка судебных решений для ГБУ.xlsx"
+			};
+
+			return View("ExportData", model);
+		}
+
+		public FileResult ExportDataToExcelGbu()
         {
 	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_GBU, true, false, true);
 			var file = DataExporterSud.ExportDataToExcelGbu();
-           return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-               "Выгрузка судебных решений для ГБУ" + ".xlsx");
-        }
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"Выгрузка судебных решений для ГБУ" + ".xlsx");
+		}
 
-        public FileResult GetExportDataToXml()
+		public ActionResult ExportDataToExcelGbuInBackgroundMode()
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_GBU, true, false, true);
+			try
+			{
+				SudExportDataToExcelGbuProcess.AddImportToQueue();
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return Json(new
+				{Success = "Процедура Выгрузки судебных решений для ГБУ в формате Excel успешно добавлена в очередь"});
+		}
+
+		public ActionResult GetExportDataToXml()
+		{
+			var model = new ExportDataFormModel
+			{
+				NotifyMessage = "Выполнить Выгрузку судебных решений на сайт в формате XML?",
+				ExportDataMethodName = nameof(ExportDataToXml),
+				ExportDataInBackgroundModeMethodName = nameof(ExportDataToXmlInBackgroundMode),
+				Filename = "Выгрузка судебных решений на сайт в формате XML.xml"
+			};
+
+			return View("ExportData", model);
+		}
+
+		public FileResult ExportDataToXml()
         {
 	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_XML, true, false, true);
 			var file = DataExporterSud.ExportDataToXml();
@@ -1357,7 +1405,37 @@ namespace KadOzenka.Web.Controllers
                 "Выгрузка судебных решений на сайт в формате XML" + ".xml");
         }
 
-        public FileResult GetExportAllDataToExcel()
+		public ActionResult ExportDataToXmlInBackgroundMode()
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_XML, true, false, true);
+			try
+			{
+				SudExportDataToXmlProcess.AddImportToQueue();
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return Json(new
+				{ Success = "Процедура Выгрузки судебных решений на сайт в формате XML успешно добавлена в очередь" });
+		}
+
+		public ActionResult GetExportAllDataToExcel()
+		{
+			var model = new ExportDataFormModel
+			{
+				NotifyMessage = "Выполнить Полную выгрузку в Excel?",
+				ExportDataMethodName = nameof(ExportAllDataToExcel),
+				ExportDataInBackgroundModeMethodName = nameof(ExportAllDataToExcelInBackgroundMode),
+				Filename = "Полная выгрузка.xlsx"
+			};
+
+			return View("ExportData", model);
+		}
+
+		public FileResult ExportAllDataToExcel()
         {
 	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_ALL, true, false, true);
 			var file = DataExporterSud.ExportAllDataToExcel();
@@ -1365,7 +1443,37 @@ namespace KadOzenka.Web.Controllers
                 "Полная выгрузка" + ".xlsx");
         }
 
-        public FileResult GetExportStatisticCheck()
+		public ActionResult ExportAllDataToExcelInBackgroundMode()
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_ALL, true, false, true);
+			try
+			{
+				SudExportAllDataToExcelProcess.AddImportToQueue();
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return Json(new
+				{ Success = "Процедура Полной выгрузки в Excel успешно добавлена в очередь" });
+		}
+
+		public ActionResult GetExportStatisticCheck()
+		{
+			var model = new ExportDataFormModel
+			{
+				NotifyMessage = "Выполнить выгрузку Статистики по положительным судебным решениям?",
+				ExportDataMethodName = nameof(ExportStatisticCheck),
+				ExportDataInBackgroundModeMethodName = nameof(ExportStatisticCheckInBackgroundMode),
+				Filename = "Статистика по положительным судебным решениям.xlsx"
+			};
+
+			return View("ExportData", model);
+		}
+
+		public FileResult ExportStatisticCheck()
         {
 	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_TRUE, true, false, true);
 			var file = DataExporterSud.ExportStatisticCheck();
@@ -1373,7 +1481,37 @@ namespace KadOzenka.Web.Controllers
 		        "Статистика по положительным судебным решениям" + ".xlsx");
         }
 
-        public FileResult GetExportStatistic()
+		public ActionResult ExportStatisticCheckInBackgroundMode()
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_TRUE, true, false, true);
+			try
+			{
+				SudExportStatisticCheckProcess.AddImportToQueue();
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return Json(new
+				{ Success = "Процедура выгрузки Статистики по положительным судебным решениям успешно добавлена в очередь" });
+		}
+
+		public ActionResult GetExportStatistic()
+		{
+			var model = new ExportDataFormModel
+			{
+				NotifyMessage = "Выполнить выгрузку Cводной cтатистики?",
+				ExportDataMethodName = nameof(ExportStatistic),
+				ExportDataInBackgroundModeMethodName = nameof(ExportStatisticInBackgroundMode),
+				Filename = "Статистика сводная.xlsx"
+			};
+
+			return View("ExportData", model);
+		}
+
+		public FileResult ExportStatistic()
         {
 	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_SUMMARY, true, false, true);
 			var file = DataExporterSud.ExportStatistic();
@@ -1381,13 +1519,91 @@ namespace KadOzenka.Web.Controllers
 				"Статистика сводная" + ".xlsx");
         }
 
-        public FileResult GetExportStatisticObject()
+		public ActionResult ExportStatisticInBackgroundMode()
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_SUMMARY, true, false, true);
+			try
+			{
+				SudExportStatisticProcess.AddImportToQueue();
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return Json(new
+				{ Success = "Процедура выгрузки сводной Статистики успешно добавлена в очередь" });
+		}
+
+		public ActionResult GetExportStatisticObject()
+		{
+			var model = new ExportDataFormModel
+			{
+				NotifyMessage = "Выполнить выгрузку Статистики по объектам недвижимости?",
+				ExportDataMethodName = nameof(ExportStatisticObject),
+				ExportDataInBackgroundModeMethodName = nameof(ExportStatisticObjectInBackgroundMode),
+				Filename = "Статистика по объектам недвижимости.xlsx"
+			};
+
+			return View("ExportData", model);
+		}
+
+		public FileResult ExportStatisticObject()
         {
 	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_OBJECT, true, false, true);
 			var file = DataExporterSud.ExportStatisticObject();
 	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика по объектам недвижимости" + ".xlsx");
         }
+
+		public ActionResult ExportStatisticObjectInBackgroundMode()
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_OBJECT, true, false, true);
+			try
+			{
+				SudExportStatisticObjectProcess.AddImportToQueue();
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return Json(new
+				{ Success = "Процедура выгрузки Статистики по объектам недвижимости успешно добавлена в очередь" });
+		}
+
+		[HttpGet]
+		public FileContentResult DownloadExportResult(long exportId, bool withXmlExtension)
+		{
+			var export = OMExportByTemplates
+				.Where(x => x.Id == exportId)
+				.SelectAll()
+				.Execute()
+				.FirstOrDefault();
+
+			if (export == null)
+			{
+				throw new Exception($"В журнале выгрузок не найдена запись с ИД {exportId}");
+			}
+
+			var fileName = export.TemplateFileName;
+			var templateFile = FileStorageManager.GetFileStream(SudExportDataToExcelGbuProcess.StorageName, export.DateCreated,
+				fileName);
+			var bytes = new byte[templateFile.Length];
+			templateFile.Read(bytes);
+			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
+
+			if (withXmlExtension)
+			{
+				fileExtension = "xml";
+				contentType = "application/xml";
+			}
+
+			return File(bytes, contentType, fileName.Replace(exportId.ToString(), Path.GetFileNameWithoutExtension(export.TemplateFileName)) + "." + fileExtension);
+		}
+
 		#endregion
 
 		#region Attachments
