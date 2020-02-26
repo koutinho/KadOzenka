@@ -64,6 +64,44 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
+        public static void Inheritance(ObjectModel.KO.OMUnit unit, GbuInheritanceAttributeSettings setting, ObjectModel.Directory.PropertyTypes typecode)
+        {
+            List<long> lstIds = new List<long>();
+            lstIds.Add(setting.ParentCadastralNumberAttribute);
+            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId.Value, null, lstIds, unit.CreationDate);
+            if (attribs.Count > 0)
+            {
+                ObjectModel.Gbu.OMMainObject parent = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == attribs[0].StringValue && x.ObjectType_Code == typecode).SelectAll().ExecuteFirstOrDefault();
+                if (parent != null)
+                {
+                    List<long> lstPIds = new List<long>();
+                    if (setting.Attributes != null)
+                    {
+                        foreach (long id in setting.Attributes)
+                        {
+                            if (id > 0) lstPIds.Add(id);
+                        }
+                    }
+                    List<GbuObjectAttribute> pattribs = new GbuObjectService().GetAllAttributes(parent.Id, null, lstPIds, unit.CreationDate);
+                    foreach (GbuObjectAttribute pattrib in pattribs)
+                    {
+                        var attributeValue = new GbuObjectAttribute
+                        {
+                            Id = -1,
+                            AttributeId = pattrib.AttributeId,
+                            ObjectId = unit.ObjectId.Value,
+                            ChangeDocId = pattrib.ChangeDocId,
+                            S = pattrib.S,
+                            ChangeUserId = SRDSession.Current.UserID,
+                            ChangeDate = DateTime.Now,
+                            Ot = pattrib.Ot,
+                            StringValue = pattrib.StringValue,
+                        };
+                        attributeValue.Save();
+                    }
+                }
+            }
+        }
         public static void RunOneUnit(ObjectModel.KO.OMUnit unit, GbuInheritanceAttributeSettings setting)
         {
             lock (locked)
@@ -71,7 +109,46 @@ namespace KadOzenka.Dal.GbuObject
                 CurrentCount++;
             }
 
-            //TO DO: Со старого комплекса переносить смысла нет, проще написать с нуля!!!
+            //Тип наследования: Здание -> Помещение
+            if (setting.BuildToFlat && unit.PropertyType_Code==ObjectModel.Directory.PropertyTypes.Pllacement)
+            {
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Building);
+            }
+            //Тип наследования: Земельный участок -> Объект незавершенного строительства
+            if (setting.ParcelToUncomplited && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding)
+            {
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Stead);
+            }
+            //Тип наследования: Земельный участок -> Сооружение
+            if (setting.ParcelToConstruction && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction)
+            {
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Stead);
+            }
+            //Тип наследования: Земельный участок -> Здание
+            if (setting.ParcelToBuilding && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
+            {
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Stead);
+            }
+            //Тип наследования: Кадастровый квартал -> Объект незавершенного строительства
+            if (setting.CadastralBlockToUncomplited && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding)
+            {
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Other);
+            }
+            //Тип наследования: Кадастровый квартал -> Сооружение
+            if (setting.CadastralBlockToConstruction && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction)
+            {
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Other);
+            }
+            //Тип наследования: Кадастровый квартал -> Здание
+            if (setting.CadastralBlockToBuilding && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
+            {
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Other);
+            }
+            //Тип наследования: Кадастровый квартал -> Земельный участок
+            if (setting.CadastralBlockToParcel && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Stead)
+            {
+                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Other);
+            }
         }
 
     }
