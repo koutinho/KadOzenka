@@ -53,6 +53,7 @@ namespace KadOzenka.Dal.DataImport
             Parallel.ForEach(GknItems.Constructions, options, item => ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Flats, options, item => ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
 
         }
         private static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
@@ -1341,6 +1342,231 @@ namespace KadOzenka.Dal.DataImport
             return koUnit;
             #endregion
         }
+
+
+
+        public static void ImportObjectCarPlace(xmlObjectCarPlace current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        {
+            KoUnitStatus koUnitStatus = KoUnitStatus.New;
+            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+            switch (koNoteType)
+            {
+                case KoNoteType.Day:
+                    koUnitStatus = KoUnitStatus.New;
+                    break;
+                case KoNoteType.Petition:
+                    koUnitStatus = KoUnitStatus.New;
+                    break;
+                case KoNoteType.Year:
+                    koUnitStatus = KoUnitStatus.Annual;
+                    break;
+                case KoNoteType.Initial:
+                    koUnitStatus = KoUnitStatus.Initial;
+                    break;
+            }
+
+            ObjectModel.KO.OMUnit prev = null;
+
+            #region Получение данных о прошлой оценке данного объекта
+            //prev = ObjectModel.KO.OMUnit.Where().SelectAll().ExecuteFirstOrDefault();
+            #endregion
+
+            //Если данные о прошлой оценке найдены
+            if (prev != null)
+            {
+                #region Импорт нового объекта
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                #region Сохранение объекта
+                if (gbuObject == null)
+                {
+                    gbuObject = new ObjectModel.Gbu.OMMainObject
+                    {
+                        Id = -1,
+                        CadastralNumber = current.CadastralNumber,
+                        IsActive = true,
+                        ObjectType_Code = PropertyTypes.Parking,
+                    };
+                    gbuObject.Save();
+                }
+                else
+                {
+                    if (gbuObject.ObjectType_Code != PropertyTypes.Parking)
+                    {
+                        gbuObject.ObjectType_Code = PropertyTypes.Parking;
+                        gbuObject.Save();
+                    }
+                }
+                #endregion
+
+                //Сохранение данных ГКН
+                SaveGknDataCarPlace(current, gbuObject.Id, sDate, otDate, idDocument);
+                //Задание на оценку
+                ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                #endregion
+            }
+            //Если данные о прошлой оценке не найдены
+            else
+            {
+                #region Импорт нового объекта
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+                #region Сохранение объекта
+                if (gbuObject == null)
+                {
+                    gbuObject = new ObjectModel.Gbu.OMMainObject
+                    {
+                        Id = -1,
+                        CadastralNumber = current.CadastralNumber,
+                        IsActive = true,
+                        ObjectType_Code = PropertyTypes.Parking,
+                    };
+                    gbuObject.Save();
+                }
+                else
+                {
+                    if (gbuObject.ObjectType_Code != PropertyTypes.Parking)
+                    {
+                        gbuObject.ObjectType_Code = PropertyTypes.Parking;
+                        gbuObject.Save();
+                    }
+                }
+                #endregion
+
+                //Сохранение данных ГКН
+                SaveGknDataCarPlace(current, gbuObject.Id, sDate, otDate, idDocument);
+
+                //Задание на оценку
+                ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                #endregion
+            }
+
+        }
+        private static void SaveGknDataCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
+        {
+            #region Сохранение данных ГКН
+            //Площадь
+            SetAttributeValue_Numeric(2, current.Area.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Дата образования
+            SetAttributeValue_Date(13, (current.DateCreate == DateTime.MinValue) ? (DateTime?)null : current.DateCreate, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Назначение помещения
+            //if (current. AssignationFlatCode != null)
+            //    SetAttributeValue_String(23, current.AssignationFlatCode.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Наименование объекта
+            SetAttributeValue_String(19, current.TypeRealty, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+
+            //Назначение здания
+            if (current.parentAssignationBuilding != null) SetAttributeValue_String(14, current.parentAssignationBuilding.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Назначение сооружения
+            if (current.parentAssignationName != null && current.parentAssignationName != string.Empty) SetAttributeValue_String(22, current.parentAssignationName, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+
+            if (current.parentFloors != null)
+            {
+                //Количество этажей
+                SetAttributeValue_String(17, current.parentFloors.Floors, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                //Количество подземных этажей
+                SetAttributeValue_String(18, current.parentFloors.Underground_Floors, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            }
+            if (current.parentYears != null)
+            {
+                //Год ввода в эксплуатацию
+                SetAttributeValue_String(16, current.parentYears.Year_Used, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                //Год постройки
+                SetAttributeValue_String(15, current.parentYears.Year_Built, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            }
+            //Тип объекта
+            SetAttributeValue_String(26, current.TypeRealty, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Материал стен
+            string pWalls = xmlCodeName.GetNames(current.parentWalls);
+            if (pWalls != string.Empty)
+                SetAttributeValue_String(21, pWalls, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Местоположение
+            SetAttributeValue_String(8, xmlAdress.GetTextPlace(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Адрес
+            SetAttributeValue_String(600, xmlAdress.GetTextAdress(current.Adress), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Кадастровая стоимость
+            if (current.CadastralCost != null) SetAttributeValue_Numeric(6, current.CadastralCost.Value.ParseToDecimal(), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Кадастровый квартал
+            SetAttributeValue_String(601, current.CadastralNumberBlock, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+
+
+            ////Тип помещения
+            //if (current.AssignationFlatType != null) SetAttributeValue_String(603, current.AssignationFlatType.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Кадастровый номер здания или сооружения, в котором расположено помещение
+            SetAttributeValue_String(604, current.CadastralNumberOKS, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            //Кадастровый номер квартиры, в которой расположена комната
+            //SetAttributeValue_String(605, current.CadastralNumberFlat, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+
+            if (current.PositionsInObject.Count > 0)
+            {
+                //Номер на плане
+                SetAttributeValue_String(606, xmlCodeName.GetNames(current.PositionsInObject[0].NumbersOnPlan), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                //Тип этажа
+                SetAttributeValue_String(25, current.PositionsInObject[0].Position.Name, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+                //Номер этажа
+                SetAttributeValue_String(24, current.PositionsInObject[0].Position.Value, gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
+            }
+
+
+
+            #endregion
+        }
+        private static ObjectModel.KO.OMUnit SaveUnitCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
+        {
+            #region Задание на оценку
+            ObjectModel.KO.OMUnit koUnit = ObjectModel.KO.OMUnit.Where(x => x.ObjectId == gbuObjectId && x.TaskId == idTask && x.TourId == idTour).SelectAll().ExecuteFirstOrDefault();
+            if (koUnit == null)
+            {
+                koUnit = new ObjectModel.KO.OMUnit
+                {
+                    Id = -1,
+                    ModelId = -1,
+                    TourId = idTour,
+                    TaskId = idTask,
+                    GroupId = -1,
+                    Status_Code = unitStatus,
+                    ObjectId = gbuObjectId,
+                    CreationDate = unitDate,
+                    CadastralNumber = current.CadastralNumber,
+                    CadastralBlock = current.CadastralNumberBlock,
+                    Square = current.Area.ParseToDecimal(),
+                    PropertyType_Code = PropertyTypes.Parking,
+                    StatusRepeatCalc_Code = calcStatus,
+                    StatusResultCalc_Code = KoStatusResultCalc.None,
+                    CadastralCost = 0,
+                    CadastralCostPre = 0,
+                    Upks = 0,
+                    UpksPre = 0,
+                };
+                koUnit.Save();
+            }
+
+            if (current.CadastralCost != null)
+            {
+                ObjectModel.KO.OMCostRosreestr cost = ObjectModel.KO.OMCostRosreestr.Where(x => x.IdObject == koUnit.Id).SelectAll().ExecuteFirstOrDefault();
+                if (cost == null)
+                {
+                    cost = new ObjectModel.KO.OMCostRosreestr
+                    {
+                        Id = -1,
+                        Applicationdate = (current.CadastralCost.ApplicationDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.ApplicationDate,
+                        Dateapproval = (current.CadastralCost.DateApproval == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateApproval,
+                        Dateentering = (current.CadastralCost.DateEntering == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateEntering,
+                        Datevaluation = (current.CadastralCost.DateValuation == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateValuation,
+                        Docdate = (current.CadastralCost.DocDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DocDate,
+                        Docnumber = current.CadastralCost.DocNumber,
+                        Docname = current.CadastralCost.DocName,
+                        IdObject = koUnit.Id,
+                        Costvalue = current.CadastralCost.Value.ParseToDecimal(),
+                        Revisalstatementdate = (current.CadastralCost.RevisalStatementDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.RevisalStatementDate,
+                    };
+                    cost.Save();
+                }
+            }
+
+
+            return koUnit;
+            #endregion
+        }
+
 
     }
 }
