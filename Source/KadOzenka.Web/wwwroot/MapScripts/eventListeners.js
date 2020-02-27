@@ -112,12 +112,39 @@ function setQuartalTiles() {
 };
 
 function setCurrentLayer(url) {
-    SOM = new ymaps.ObjectManager();
-    $.getJSON(url).done(function (geoJson) {
-        geoJson.features.forEach(function (obj) { try { obj.properties.balloonContent = obj.properties.description; } catch{ } });
-        SOM.add(geoJson);
-        map.geoObjects.add(SOM);
-    });
+    if (UseManager) {
+        SOM = new ymaps.ObjectManager();
+        $.getJSON(url).done(function (geoJson) {
+            geoJson.features.forEach(function (obj) { try { obj.properties.balloonContent = obj.properties.description; } catch{ } });
+            SOM.add(geoJson);
+            map.geoObjects.add(SOM);
+        });
+    }
+    else {
+        SOM = new ymaps.GeoObjectCollection();
+        $.getJSON(url).done(function (geoJson) {
+            defaultColor = geoJson.features[0].options.fillColor;
+            geoJson.features.forEach(function (obj) {
+                //if ((obj.geometry.coordinates[0][0][0] != 55.736392 && obj.geometry.coordinates[0][0][1] != 37.699307) &&
+                //    (obj.geometry.coordinates[0][0][0] != 55.758117 && obj.geometry.coordinates[0][0][1] != 37.657738))
+                SOM.add(new ymaps.GeoObject({
+                    geometry: obj.geometry
+                }, {
+                    fillColor: obj.options.fillColor,
+                    strokeColor: obj.options.strokeColor,
+                    fillOpacity: obj.options.fillOpacity,
+                    strokeWidth: parseInt(obj.options.strokeWidth),
+                    strokeOpacity: obj.options.strokeOpacity
+                }));
+            });
+            SOM.events.add("click", function (e) {
+                SOM.each(x => x.options.set('fillColor', defaultColor));
+                e.get('target').options.set('fillColor', "FF0000");
+                console.log(e.get('target').geometry.getCoordinates());
+            })
+            map.geoObjects.add(SOM);
+        });
+    }
 };
 
 function enableEditableMode() {
