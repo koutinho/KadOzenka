@@ -512,6 +512,30 @@ namespace ObjectModel.Gbu
     }
 }
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 80 Справочник кадастровых кварталов
+    /// </summary>
+    public partial class OMKadastrKvartal
+    {
+
+        public OMKadastrKvartal()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMKadastrKvartal(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Market
 {
     /// <summary>

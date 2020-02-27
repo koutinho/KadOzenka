@@ -299,6 +299,78 @@ namespace ObjectModel.Gbu
     }
 }
 
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 80 Справочник кадастровых кварталов (GBU_KADASTR_KVARTAL)
+    /// </summary>
+    [RegisterInfo(RegisterID = 80)]
+    [Serializable]
+    public partial class OMKadastrKvartal : OMBaseClass<OMKadastrKvartal>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 8000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 8000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _kadastrkvartal;
+        /// <summary>
+        /// 8000200 Кадастровый квартал (KADASTR_KVARTAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8000200)]
+        public string KadastrKvartal
+        {
+            get
+            {
+                CheckPropertyInited("KadastrKvartal");
+                return _kadastrkvartal;
+            }
+            set
+            {
+                _kadastrkvartal = value;
+                NotifyPropertyChanged("KadastrKvartal");
+            }
+        }
+
+
+        private long _parentid;
+        /// <summary>
+        /// 8000300 ИД родителя (PARENT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8000300)]
+        public long ParentId
+        {
+            get
+            {
+                CheckPropertyInited("ParentId");
+                return _parentid;
+            }
+            set
+            {
+                _parentid = value;
+                NotifyPropertyChanged("ParentId");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Market
 {
     /// <summary>
@@ -1465,6 +1537,46 @@ namespace ObjectModel.Market
                 this._propertytypescipjs_Code = value;
                 NotifyPropertyChanged("PropertyTypesCIPJS");
                 NotifyPropertyChanged("PropertyTypesCIPJS_Code");
+            }
+        }
+
+
+        private string _propertylawtype;
+        /// <summary>
+        /// 10007800 Вид передаваемых прав (PROPERTY_LAW_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007800)]
+        public string PropertyLawType
+        {
+            get
+            {
+                CheckPropertyInited("PropertyLawType");
+                return _propertylawtype;
+            }
+            set
+            {
+                _propertylawtype = value;
+                NotifyPropertyChanged("PropertyLawType");
+            }
+        }
+
+
+        private string _propertypartsize;
+        /// <summary>
+        /// 10007900 Размер доли (PROPERTY_PART_SIZE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007900)]
+        public string PropertyPartSize
+        {
+            get
+            {
+                CheckPropertyInited("PropertyPartSize");
+                return _propertypartsize;
+            }
+            set
+            {
+                _propertypartsize = value;
+                NotifyPropertyChanged("PropertyPartSize");
             }
         }
 
@@ -3616,6 +3728,26 @@ namespace ObjectModel.Gbu
             {
                 _isactive = value;
                 NotifyPropertyChanged("IsActive");
+            }
+        }
+
+
+        private string _kadastrkvartal;
+        /// <summary>
+        /// 20000500 Кадастровый квартал (KADASTR_KVARTAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20000500)]
+        public string KadastrKvartal
+        {
+            get
+            {
+                CheckPropertyInited("KadastrKvartal");
+                return _kadastrkvartal;
+            }
+            set
+            {
+                _kadastrkvartal = value;
+                NotifyPropertyChanged("KadastrKvartal");
             }
         }
 
