@@ -72,15 +72,15 @@
     <fieldset class="filterFieldset">
             <div class="form-group">
                 <div class="col-sm-2">
-                    @Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Дата актуализации").Value(true)
+                    @Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Дата актуализации").Value(true).Enable(!Model.SelectAllObject)
                 </div>
                 <div class="col-sm-4">
-                    @(Html.Kendo().DatePickerFor(m => m.DataActual).Enable(Model.IsDataActualUsed))
+                    @(Html.Kendo().DatePickerFor(m => m.DataActual).Enable(Model.IsDataActualUsed.HasValue && Model.IsDataActualUsed.Value))
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-2">
-                    @Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Задания на оценку").Value(false)
+                    @Html.Kendo().RadioButtonFor(m => m.IsDataActualUsed).Label("Задания на оценку").Value(false).Enable(!Model.SelectAllObject)
                 </div>
                 <div class="col-sm-10">
                     @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
@@ -94,7 +94,7 @@
                             read.Action("GetTasksData", "GbuObject");
                         })
                         .ServerFiltering(false);
-                    }).Enable(!Model.IsDataActualUsed))
+                    }).Enable(Model.IsDataActualUsed.HasValue && !Model.IsDataActualUsed.Value))
                 </div>
             </div>
         </fieldset>
@@ -251,140 +251,146 @@
     </style>
 }
 @section scripts {
-	<script type="text/javascript">
+    <script type="text/javascript">
+
+        var dataActualRadioButtonPrevValue, taskRadioButtonPrevValue;
 
         function fillForm(data) {
-        $('#valuesFilter').getKendoMultiSelect().value([]);
-        $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
-		data.forEach(function (val) {
-			if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
-                Object.keys(val)[0].includes('IdAttributeFilter') || Object.keys(val)[0].includes('IdCodJob') || Object.keys(val)[0].includes('IdDocument')) {
-				$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
-			}
+            $('#valuesFilter').getKendoMultiSelect().value([]);
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+            data.forEach(function (val) {
+                if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
+                    Object.keys(val)[0].includes('IdAttributeFilter') || Object.keys(val)[0].includes('IdCodJob') || Object.keys(val)[0].includes('IdDocument')) {
+                    $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+                }
 
-			if (Object.keys(val)[0].includes('ValuesFilter')) {
-				var widget = $('#valuesFilter').getKendoMultiSelect();
-				var dataSource = widget.dataSource;
-				var newItem = {
-					valuesFilter: val[Object.keys(val)[0]],
-					valuesFilterName: val[Object.keys(val)[0]]
-				};
+                if (Object.keys(val)[0].includes('ValuesFilter')) {
+                    var widget = $('#valuesFilter').getKendoMultiSelect();
+                    var dataSource = widget.dataSource;
+                    var newItem = {
+                        valuesFilter: val[Object.keys(val)[0]],
+                        valuesFilterName: val[Object.keys(val)[0]]
+                    };
 
-				dataSource.add(newItem);
-				var newValue = newItem.valuesFilter;
-				widget.value(widget.value().concat([newValue]));
-			}
+                    dataSource.add(newItem);
+                    var newValue = newItem.valuesFilter;
+                    widget.value(widget.value().concat([newValue]));
+                }
 
-			if (Object.keys(val)[0] === '@(nameof(Model.SelectAllObject))') {
-				console.log(true);
-				if (!!val[Object.keys(val)[0]]) {
-                    $('#@(nameof(Model.SelectAllObject))_True').prop("checked", true);
-				    changeAttributeFilterAvailability(true);
-					return;
-				}
-                $('#@(nameof(Model.SelectAllObject))_False').prop("checked", true);
-			    changeAttributeFilterAvailability(false);
+                if (Object.keys(val)[0] === '@(nameof(Model.SelectAllObject))') {
+                    console.log(true);
+                    if (!!val[Object.keys(val)[0]]) {
+                        $('#@(nameof(Model.SelectAllObject))_True').prop("checked", true);
+                        changeAttributeFilterAvailability(true);
+                        return;
+                    }
+                    $('#@(nameof(Model.SelectAllObject))_False').prop("checked", true);
+                    changeAttributeFilterAvailability(false);
+                }
+
+                if (Object.keys(val)[0] === '@(nameof(Model.IsDataActualUsed))') {
+                    if (!!val[Object.keys(val)[0]]) {
+                        $('#@(nameof(Model.IsDataActualUsed))_True').prop("checked", true);
+                        $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').trigger("change");
+                        return;
+                    }
+                    $('#@(nameof(Model.IsDataActualUsed))_False').prop("checked", true);
+                    $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').trigger("change");
+                }
+
+                if (Object.keys(val)[0] === '@(nameof(Model.DataActual))') {
+                    $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(kendo.parseDate(val[Object.keys(val)[0]]));
+                }
+
+                if (Object.keys(val)[0].includes('@(nameof(Model.TaskFilter))')) {
+                    var currentValue = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
+                    currentValue.push([val[Object.keys(val)[0]]]);
+                    $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
+                }
+
+                if (Object.keys(val)[0] === 'PropertyType') {
+                    var id = '#PropertyType_' + val[Object.keys(val)[0]];
+                    $(id).prop("checked", true);
+                }
+
+                if (Object.keys(val)[0].includes('DefaultValue')) {
+                    $('#' + Object.keys(val)[0]).val(val[Object.keys(val)[0]]);
+                }
+            });
+            var isSelectAllObjectsChecked =
+                $('input[type="radio"][name="SelectAllObject"][value="True"] ').prop('checked');
+            changeDataActualBlockAvailability(isSelectAllObjectsChecked);
+        }
+
+        $(document).ready(function () {
+
+            templateStorage.init(@((int)DataFormStorege.HarmonizationCOD), "SaveTemplateHarmonizationCODObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+            initIsDataActualUsedClickHandler();
+            initIsDataActualUsedChangedHandler();
+            initSelectAllObjectChangedHandler();
+
+            function onDataBound(e) {
+                $('.k-multiselect .k-input').unbind('keyup');
+                $('.k-multiselect .k-input').on('keyup', onClickEnter);
             }
+            function onClickEnter(e) {
+                if (e.keyCode === 13) {
+                    var widget = $('#valuesFilter').getKendoMultiSelect();
+                    var dataSource = widget.dataSource;
+                    var input = $('.k-multiselect .k-input');
+                    var value = input.val().trim();
+                    if (!value || value.length === 0) {
+                        return;
+                    }
+                    var newItem = {
+                        valuesFilter: value,
+                        valuesFilterName: value
+                    };
 
-		    if (Object.keys(val)[0] === '@(nameof(Model.IsDataActualUsed))') {
-		        if (!!val[Object.keys(val)[0]]) {
-		            $('#@(nameof(Model.IsDataActualUsed))_True').prop("checked", true);
-		            changeDataActualAvailability(true);
-		            return;
-		        }
-		        $('#@(nameof(Model.IsDataActualUsed))_False').prop("checked", true);
-		        changeDataActualAvailability(false);
-		    }
-
-		    if (Object.keys(val)[0] === '@(nameof(Model.DataActual))') {
-		        $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(kendo.parseDate(val[Object.keys(val)[0]]));
-		    }
-
-		    if (Object.keys(val)[0].includes('@(nameof(Model.TaskFilter))')) {
-		        var currentValue = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
-		        currentValue.push([val[Object.keys(val)[0]]]);
-		        $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
-		    }
-
-			if (Object.keys(val)[0] === 'PropertyType') {
-				var id = '#PropertyType_' + val[Object.keys(val)[0]];
-				$(id).prop("checked", true);
+                    dataSource.add(newItem);
+                    var newValue = newItem.valuesFilter;
+                    widget.value(widget.value().concat([newValue]));
+                }
             }
-
-		    if (Object.keys(val)[0].includes('DefaultValue')) {
-		        $('#' + Object.keys(val)[0]).val(val[Object.keys(val)[0]]);
-		    }
-		});
-	}
-
-		$(document).ready(function () {
-
-			templateStorage.init(@((int)DataFormStorege.HarmonizationCOD), "SaveTemplateHarmonizationCODObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
-		    initIsDataActualUsedChangedHandler();
-		    initSelectAllObjectChangedHandler();
-
-			function onDataBound(e) {
-				$('.k-multiselect .k-input').unbind('keyup');
-				$('.k-multiselect .k-input').on('keyup', onClickEnter);
-			}
-			function onClickEnter(e) {
-				if (e.keyCode === 13) {
-					var widget = $('#valuesFilter').getKendoMultiSelect();
-					var dataSource = widget.dataSource;
-					var input = $('.k-multiselect .k-input');
-					var value = input.val().trim();
-					if (!value || value.length === 0) {
-						return;
-					}
-					var newItem = {
-						valuesFilter: value,
-						valuesFilterName: value
-					};
-
-					dataSource.add(newItem);
-					var newValue = newItem.valuesFilter;
-					widget.value(widget.value().concat([newValue]));
-				}
-			}
-			$("#valuesFilter").kendoMultiSelect({
-				dataTextField: "valuesFilterName",
-				dataValueField: "valuesFilter",
-				dataSource: {
-					data: []
-				},
+            $("#valuesFilter").kendoMultiSelect({
+                dataTextField: "valuesFilterName",
+                dataValueField: "valuesFilter",
+                dataSource: {
+                    data: []
+                },
                 dataBound: onDataBound,
-				enable: @(Model.SelectAllObject ? "false" : "true")
-			});
+                enable: @(Model.SelectAllObject ? "false" : "true")
+            });
 
-			$('#performHarmonization').on('click',
-				function() {
-					kendo.ui.progress($('body'), true);
-					var form = $('form');
-					var formObject = Common.Functions.FormToObject(form);
+            $('#performHarmonization').on('click',
+                function() {
+                    kendo.ui.progress($('body'), true);
+                    var form = $('form');
+                    var formObject = Common.Functions.FormToObject(form);
                     formObject.ValuesFilter = $("#valuesFilter").data("kendoMultiSelect").value();
-				    formObject.TaskFilter = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
-					$.post(form.attr('action'), formObject).done(function(response) {
-						kendo.ui.progress($('body'), false);
-						if (response.Errors) {
-							var errors = $.map(distinctErrors(response.Errors),
-								function(el) {
-									return el.Message;
-								});
-							Common.ShowError(errors);
-							return;
-						}
-						if (response.Success) {
-							if (response.idResultAttribute && updateResultControl) {
-								updateResultControl(response.idResultAttribute);
-							}
-							Common.ShowMessage(response.Success);
-						}
-					}).fail(function (response, textStatus, errorThrown) {
-						kendo.ui.progress($('body'), false);
-						Common.ShowError(response.responseText);
-					});
-				});
-		});
+                    formObject.TaskFilter = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
+                    $.post(form.attr('action'), formObject).done(function(response) {
+                        kendo.ui.progress($('body'), false);
+                        if (response.Errors) {
+                            var errors = $.map(distinctErrors(response.Errors),
+                                function(el) {
+                                    return el.Message;
+                                });
+                            Common.ShowError(errors);
+                            return;
+                        }
+                        if (response.Success) {
+                            if (response.idResultAttribute && updateResultControl) {
+                                updateResultControl(response.idResultAttribute);
+                            }
+                            Common.ShowMessage(response.Success);
+                        }
+                    }).fail(function (response, textStatus, errorThrown) {
+                        kendo.ui.progress($('body'), false);
+                        Common.ShowError(response.responseText);
+                    });
+                });
+        });
 
         function distinctErrors(errors) {
             var result = [];
@@ -415,28 +421,73 @@
             });
         }
 
-        function initIsDataActualUsedChangedHandler() {
-            $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').change(function() {
-                if (this.checked) {
-                    changeDataActualAvailability(true);
+        function initIsDataActualUsedClickHandler() {
+            $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').click(function () {
+                if (dataActualRadioButtonPrevValue && this.checked) {
+                    $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').prop('checked', false);
+                    $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').trigger("change");
                 }
             });
-            $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').change(function() {
-                if (this.checked) {
-                    changeDataActualAvailability(false);
+            $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').click(function () {
+                if (taskRadioButtonPrevValue && this.checked) {
+                    $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').prop('checked', false);
+                    $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').trigger("change");
                 }
             });
         }
 
-        function changeDataActualAvailability(isDataActualUsed) {
+        function initIsDataActualUsedChangedHandler() {
+            $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').change(function() {
+                if (this.checked) {
+                    changeDataActualAvailability(true, false);
+                    dataActualRadioButtonPrevValue = true;
+                } else {
+                    changeDataActualAvailability(false, false);
+                    dataActualRadioButtonPrevValue = false;
+                }
+                taskRadioButtonPrevValue = false;
+            });
+            $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').change(function() {
+                if (this.checked) {
+                    changeDataActualAvailability(false, true);
+                    taskRadioButtonPrevValue = true;
+                } else {
+                    changeDataActualAvailability(false, false);
+                    taskRadioButtonPrevValue = false;
+                }
+                dataActualRadioButtonPrevValue = false;
+            });
+        }
+
+        function changeDataActualAvailability(isDataActualUsed, isTaskUsed) {
             if (isDataActualUsed) {
                 $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
                 $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
                 $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(true);
-            } else {
+            } else if (isTaskUsed) {
                 $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(null);
                 $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(false);
                 $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
+            } else {
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(null);
+                $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').enable(false);
+            }
+        }
+
+        function changeDataActualBlockAvailability(disable) {
+            if (disable) {
+                changeDataActualAvailability(false, false);
+                $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').prop('checked', false);
+                $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').prop('checked', false);
+                $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').attr('disabled', true);
+                $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').attr('disabled', true);
+                taskRadioButtonPrevValue = false;
+                dataActualRadioButtonPrevValue = false;
+            } else {
+                $('input[type="radio"][name="IsDataActualUsed"][value="True"] ').attr('disabled', false);
+                $('input[type="radio"][name="IsDataActualUsed"][value="False"] ').attr('disabled', false);
             }
         }
 
@@ -453,6 +504,7 @@
                 $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
                 $('#valuesFilter').data("kendoMultiSelect").enable(true);
             }
+            changeDataActualBlockAvailability(areFieldsReadonly);
         }
     </script>
 }

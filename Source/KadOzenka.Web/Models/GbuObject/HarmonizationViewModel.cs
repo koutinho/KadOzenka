@@ -34,7 +34,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Использовать Дату актуализации
 		/// </summary>
-		public bool IsDataActualUsed { get; set; }
+		public bool? IsDataActualUsed { get; set; }
 
 		/// <summary>
 		/// Список значений фильтра
@@ -117,8 +117,8 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level8Attribute = Level8Attribute,
 				Level9Attribute = Level9Attribute,
 				Level10Attribute = Level10Attribute,
-				TaskFilter = IsDataActualUsed? null: TaskFilter,
-				DateActual = IsDataActualUsed ? DataActual: null
+				TaskFilter = IsDataActualUsed.HasValue && !IsDataActualUsed.Value? TaskFilter : null,
+				DateActual = IsDataActualUsed.HasValue && IsDataActualUsed.Value ? DataActual: null
 			};
 
 			return settings;
@@ -126,20 +126,23 @@ namespace KadOzenka.Web.Models.GbuObject
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-			if (IsDataActualUsed)
+			if (IsDataActualUsed.HasValue)
 			{
-				if (!DataActual.HasValue)
+				if (IsDataActualUsed.Value)
+				{
+					if (!DataActual.HasValue)
+					{
+						yield return
+							new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
+								memberNames: new[] {nameof(DataActual)});
+					}
+				}
+				else if (TaskFilter?.Count == null || TaskFilter?.Count == 0)
 				{
 					yield return
-						new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
-							memberNames: new[] { nameof(DataActual) });
+						new ValidationResult(errorMessage: "Список заданий на оценку не может быть пустым",
+							memberNames: new[] {nameof(TaskFilter)});
 				}
-			}
-			else if (TaskFilter?.Count == null || TaskFilter?.Count == 0)
-			{
-				yield return
-					new ValidationResult(errorMessage: "Список заданий на оценку не может быть пустым",
-						memberNames: new[] { nameof(TaskFilter) });
 			}
 
 			if (!SelectAllObject)

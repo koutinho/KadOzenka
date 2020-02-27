@@ -49,8 +49,8 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level10Attribute = Level10Attribute,
 				DefaultValue = DefaultValue,
 				IdDocument = IdDocument,
-				TaskFilter = IsDataActualUsed ? null : TaskFilter,
-				DateActual = IsDataActualUsed ? DataActual : null
+				TaskFilter = IsDataActualUsed.HasValue && !IsDataActualUsed.Value ? TaskFilter : null,
+				DateActual = IsDataActualUsed.HasValue && IsDataActualUsed.Value ? DataActual : null
 			};
 
 			return settings;
