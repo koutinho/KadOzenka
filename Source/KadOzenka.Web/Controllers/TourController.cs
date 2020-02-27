@@ -400,19 +400,17 @@ namespace KadOzenka.Web.Controllers
 	    }
 
 	    [HttpPost]
-	    public ActionResult ImportGroupDataFromExcel(IFormFile file, ImportGroupDataModel viewModel)
+	    public ActionResult ImportGroupDataFromExcel(ImportGroupDataModel viewModel)
 	    {
-		    if (!viewModel.TourId.HasValue)
-			    throw new Exception("Не выбран Тур");
-		    if (!viewModel.UnitStatus.HasValue)
-			    throw new Exception("Не выбран Статус единицы оценки");
-		    if (file == null)
-			    throw new Exception("Файл не выбран");
+		    if (!ModelState.IsValid)
+		    {
+			    return GenerateMessageNonValidModel();
+		    }
 
 			try
 		    {
 			    ExcelFile excelFile;
-			    using (var stream = file.OpenReadStream())
+			    using (var stream = viewModel.File.OpenReadStream())
 			    {
 				    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			    }
@@ -425,7 +423,7 @@ namespace KadOzenka.Web.Controllers
 			    ErrorManager.LogError(ex);
 			    return BadRequest();
 		    }
-			return Json(new { Success = "Импорт группы из Excel успешно выполнен" });
+			return NoContent();
 		}
 
 	    [HttpGet]
@@ -480,5 +478,29 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
-    }
+
+	    #region Helpers
+
+		private JsonResult GenerateMessageNonValidModel()
+	    {
+		    return Json(new
+		    {
+			    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+			    {
+				    Control = x.Key,
+				    Message = string.Join("\n", x.Value.Errors.Select(e =>
+				    {
+					    if (e.ErrorMessage == "The value '' is invalid.")
+					    {
+						    return $"{e.ErrorMessage} Поле {x.Key}";
+					    }
+
+					    return e.ErrorMessage;
+				    }))
+			    })
+		    });
+	    }
+
+	    #endregion
+	}
 }
