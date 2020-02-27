@@ -60,8 +60,9 @@ namespace KadOzenka.Dal.Tasks
 		    query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
 		    query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
 		    query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
+		    query.AddColumn(OMTask.GetColumn(x => x.NoteType, nameof(TaskDocumentInfoDto.KoNoteType)));
 
-		    return query.ExecuteQuery<TaskDocumentInfoDto>();
+			return query.ExecuteQuery<TaskDocumentInfoDto>();
 		}
 
         public List<TaskDto> GetTasksByTour(long tourId)

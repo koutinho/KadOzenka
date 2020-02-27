@@ -502,9 +502,9 @@ namespace KadOzenka.Web.Controllers
 		#endregion
 		public List<SelectListItem> GetTasksData()
 		{
-			var documentInfoList = _taskService.GetTaskDocumentInfoList().OrderBy(x => x.DocumentCreateDate);
+			var documentInfoList = _taskService.GetTaskDocumentInfoList().OrderByDescending(x => x.DocumentCreateDate);
 			return documentInfoList
-				.Select(x => new SelectListItem(x.DocumentRegNumber, x.TaskId.ToString()))
+				.Select(x => new SelectListItem($"{x.DocumentCreateDate?.ToShortDateString()}, {x.DocumentRegNumber}, {x.KoNoteType}", x.TaskId.ToString()))
 				.ToList();
 		}
 

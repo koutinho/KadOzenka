@@ -7,5 +7,6 @@ namespace KadOzenka.Dal.Tasks.Dto
 		public long? TaskId { get; set; }
 		public DateTime? DocumentCreateDate { get; set; }
 		public string DocumentRegNumber { get; set; }
+		public string KoNoteType { get; set; }
 	}
 }
