@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Transactions;
+using Core.ErrorManagment;
 using Core.Shared.Extensions;
+using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.Tour;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory;
@@ -388,11 +393,59 @@ namespace KadOzenka.Web.Controllers
 			return Json(mechanism);
 		}
 
-        #endregion
+	    [HttpGet]
+		public ActionResult ImportGroupDataFromExcel()
+	    {
+		    return View(new ImportGroupDataModel());
+	    }
 
-        #region Метки
+	    [HttpPost]
+	    public ActionResult ImportGroupDataFromExcel(IFormFile file, ImportGroupDataModel viewModel)
+	    {
+		    if (!viewModel.TourId.HasValue)
+			    throw new Exception("Не выбран Тур");
+		    if (!viewModel.UnitStatus.HasValue)
+			    throw new Exception("Не выбран Статус единицы оценки");
+		    if (file == null)
+			    throw new Exception("Файл не выбран");
 
-        public ActionResult MarkCatalog()
+			try
+		    {
+			    ExcelFile excelFile;
+			    using (var stream = file.OpenReadStream())
+			    {
+				    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+			    }
+
+			    DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
+				    viewModel.TourId.GetValueOrDefault(), viewModel.UnitStatus.GetValueOrDefault());
+		    }
+		    catch (Exception ex)
+		    {
+			    ErrorManager.LogError(ex);
+			    return BadRequest();
+		    }
+			return Json(new { Success = "Импорт группы из Excel успешно выполнен" });
+		}
+
+	    [HttpGet]
+	    public JsonResult GetTours()
+	    {
+			var tours = OMTour.Where(x => true).SelectAll().Execute()
+			    .Select(x => new SelectListItem
+			    {
+				    Value = x.Id.ToString(),
+				    Text = x.Year.ToString()
+			    }).ToList();
+
+		    return Json(tours);
+		}
+
+		#endregion
+
+		#region Метки
+
+		public ActionResult MarkCatalog()
 		{			
 			return View();
 		}

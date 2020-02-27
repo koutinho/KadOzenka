@@ -1,0 +1,92 @@
+﻿@model KadOzenka.Web.Models.Tour.ImportGroupDataModel
+
+@using (Html.BeginForm("ImportGroupDataFromExcel", "Tour", FormMethod.Post))
+{
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.TourId)
+        </div>
+        <div class="col-sm-10">
+            @(Html.Kendo().DropDownListFor(m => m.TourId).DataTextField("Text").DataValueField("Value").DataSource(source =>
+                      {
+                          source.Read(read => read.Action("GetTours", "Tour"));
+                      }))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.UnitStatus)
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoEnumDropDownListFor(m => m.UnitStatus, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <input name="file" id="file" type="file" aria-label="files" accept=".xls,.xlsx" />
+        </div>
+    </div>
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button class="k-button k-button-icontext" style="float: right" id="perform" type="button">Выполнить</button>
+        </div>
+    </div>
+</div>
+}
+
+<script>
+    $(document).ready(function () {
+        $('#file').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Загрузить файл'
+            },
+            async: {
+                autoUpload: true
+            },
+            validation: {
+                allowedExtensions: ['.xls','.xlsx']
+            }
+        }).data('kendoUpload');
+
+        $('#perform').on('click',
+            function () {
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+                var files = $('#file').data('kendoUpload').getFiles();
+                if (files.length === 0) {
+                    Common.ShowError("Файл не выбран");
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append("viewModel.TourId", formObject.TourId);
+                formData.append("viewModel.UnitStatus", formObject.UnitStatus);
+                formData.append("file", files[0].rawFile);
+
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    type: 'POST',
+                    url: form.attr('action'),
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    dataType: 'xml',
+                    success: function(data) {
+                        if (data.Success) {
+                            Common.ShowMessage(response.Success);
+                        }
+                    },
+                    error: function(response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function(data) {
+                        kendo.ui.progress($('#importForm'), false);
+                    }
+                });
+            });
+    });
+</script>
