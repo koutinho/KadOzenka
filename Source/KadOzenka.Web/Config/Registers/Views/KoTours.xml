@@ -14,7 +14,7 @@
     <Button Caption="Значения меток" NavigateURL="/Tour/MarkCatalog" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
     </Button>
 
-    <Button Caption="Импорт группы из Excel" NavigateURL="/Tour/ImportGroupDataFromExcel" WindowHeight="300" WindowWidth="800"  Icon="fas fa-wrench"/>
+    <Button Caption="Импорт группы из Excel" NavigateURL="/Tour/ImportGroupDataFromExcel" WindowHeight="350" WindowWidth="800"  Icon="fas fa-wrench"/>
   </Buttons>
 
   <Tabs>

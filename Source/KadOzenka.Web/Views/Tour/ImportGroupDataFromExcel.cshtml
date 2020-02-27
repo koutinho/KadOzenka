@@ -75,16 +75,16 @@
                     contentType: false,
                     processData: false,
                     dataType: 'xml',
-                    success: function(data) {
+                    success: function (data) {
                         if (data.Success) {
                             Common.ShowMessage(response.Success);
                         }
                     },
-                    error: function(response) {
+                    error: function (response) {
                         Common.ShowError(response.responseText);
                     },
-                    complete: function(data) {
-                        kendo.ui.progress($('#importForm'), false);
+                    complete: function (data) {
+                        kendo.ui.progress($('body'), false);
                     }
                 });
             });
