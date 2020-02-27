@@ -13,6 +13,7 @@ using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
@@ -22,6 +23,7 @@ using ObjectModel.Directory.Common;
 using ObjectModel.Gbu;
 using ObjectModel.Gbu.CodSelection;
 using ObjectModel.KO;
+using Kendo.Mvc.Extensions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -506,6 +508,22 @@ namespace KadOzenka.Web.Controllers
 			return documentInfoList
 				.Select(x => new SelectListItem($"{x.DocumentCreateDate?.ToShortDateString()}, {x.DocumentRegNumber}, {x.KoNoteType}", x.TaskId.ToString()))
 				.ToList();
+		}
+
+		public ActionResult TreeKadastralKvartal()
+		{
+			return View("/Views/Filter/KadastrKvartalList.cshtml");
+		}
+
+		public JsonResult All([DataSourceRequest] DataSourceRequest request)
+		{
+			var result = OMKadastrKvartal.Where(x => x).SelectAll().Execute().AsEnumerable().ToTreeDataSourceResult(request,
+				e => e.Id,
+				e => e.ParentId,
+				e => e
+			);
+
+			return Json(result);
 		}
 
 		#region Helper

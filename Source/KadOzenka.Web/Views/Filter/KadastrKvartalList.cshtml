@@ -1,0 +1,24 @@
+﻿@using ObjectModel.Gbu
+<div class="form-horizontal col-sm-12">
+	<div class="form-group"></div>
+	<div class="form-group">
+		<div class="col-sm-12">
+			@(Html.Kendo().TreeList<OMKadastrKvartal>().Name("treeList")
+				.Columns(columns => columns.Add().Field(e => e.KadastrKvartal).HeaderTemplate("Кадастровый квартал"))
+				.DataSource(source => source.Read("All", "GbuObject")
+					.ServerOperation(false)
+					.Model(m =>
+					{
+						m.Id(f => f.Id);
+						m.ParentId(f => f.ParentId);
+						m.Expanded(false);
+						m.Field(f => f.KadastrKvartal);
+					}))
+				.Height(700)
+				.Pageable(false)
+				.Sortable(false)
+				.Selectable(s => s.Type(TreeListSelectionType.Row).Mode(TreeListSelectionMode.Multiple))
+				.Filterable(true))
+		</div>
+	</div>
+</div>
