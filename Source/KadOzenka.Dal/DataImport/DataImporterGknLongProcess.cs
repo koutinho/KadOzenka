@@ -83,11 +83,21 @@ namespace KadOzenka.Dal.DataImport
 			// Запустить формирование файла
 			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
 
-			ImportGknFromXml(templateFile, import.ObjectId);
-			
-			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
-			import.DateFinished = DateTime.Now;
-			import.Save();
+			try
+			{
+				ImportGknFromXml(templateFile, import.ObjectId);
+				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
+				import.DateFinished = DateTime.Now;
+				import.Save();
+			}
+			catch (Exception ex)
+			{
+				long errorId = ErrorManager.LogError(ex);
+				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
+				import.DateFinished = DateTime.Now;
+				import.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
+				import.Save();
+			}			
 
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
 			task.Status_Code = ObjectModel.Directory.KoTaskStatus.Ready;
@@ -106,7 +116,7 @@ namespace KadOzenka.Dal.DataImport
 		{
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
 			string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-					
+						
 			DataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);			
 		}
 
