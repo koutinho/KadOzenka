@@ -10,17 +10,36 @@
         </div>
         <div class="col-sm-10">
             @(Html.Kendo().DropDownListFor(m => m.TourId).DataTextField("Text").DataValueField("Value").DataSource(source =>
-                      {
-                          source.Read(read => read.Action("GetTours", "Tour"));
-                      }))
+                              {
+                                  source.Read(read => read.Action("GetTours", "Tour"));
+                              }))
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.CustomLabelFor(m => m.UnitStatus)
+            @Html.Kendo().RadioButtonFor(m => m.IsUnitStatusUsed).Label("Статус единицы оценки").Value(true)
         </div>
         <div class="col-sm-10">
-            @Html.KendoEnumDropDownListFor(m => m.UnitStatus, isReadonly: false)
+            @Html.KendoEnumDropDownListFor(m => m.UnitStatus, isReadonly: !Model.IsUnitStatusUsed)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.Kendo().RadioButtonFor(m => m.IsUnitStatusUsed).Label("Задания на оценку").Value(false)
+        </div>
+        <div class="col-sm-10">
+            @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetTasksData", "GbuObject");
+                        })
+                        .ServerFiltering(false);
+                    }).Enable(!Model.IsUnitStatusUsed))
         </div>
     </div>
     <div class="form-group">
@@ -39,6 +58,8 @@
 
 <script>
     $(document).ready(function () {
+        initIsUnitStatusUsedChangedHandler();
+
         $('#file').kendoUpload({
             multiple: false,
             localization: {
@@ -64,7 +85,9 @@
 
                 var formData = new FormData();
                 formData.append("viewModel.TourId", formObject.TourId);
+                formData.append("viewModel.IsUnitStatusUsed", formObject.IsUnitStatusUsed);
                 formData.append("viewModel.UnitStatus", formObject.UnitStatus);
+                formData.append("viewModel.TaskFilter", $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value());
                 formData.append("viewModel.File", files[0].rawFile);
 
                 kendo.ui.progress($('body'), true);
@@ -100,6 +123,31 @@
                 });
             });
     });
+
+    function initIsUnitStatusUsedChangedHandler() {
+        $('input[type="radio"][name="IsUnitStatusUsed"][value="True"] ').change(function() {
+            if (this.checked) {
+                changeUnitStatusAvailability(true);
+            }
+        });
+        $('input[type="radio"][name="IsUnitStatusUsed"][value="False"] ').change(function() {
+            if (this.checked) {
+                changeUnitStatusAvailability(false);
+            }
+        });
+    }
+
+    function changeUnitStatusAvailability(isUnitStatusUsed) {
+        if (isUnitStatusUsed) {
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(false);
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').enable(true);
+        } else {
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').value('');
+            $('#@(nameof(Model.UnitStatus))').data('kendoDropDownList').enable(false);
+            $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").enable(true);
+        }
+    }
 
     function distinctErrors(errors) {
         var result = [];

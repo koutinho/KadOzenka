@@ -402,10 +402,18 @@ namespace KadOzenka.Web.Controllers
 	    [HttpPost]
 	    public ActionResult ImportGroupDataFromExcel(ImportGroupDataModel viewModel)
 	    {
-		    if (!ModelState.IsValid)
+		    var errors = viewModel.Validate();
+		    if (errors.Count > 0)
 		    {
-			    return GenerateMessageNonValidModel();
-		    }
+				return Json(new
+			    {
+				    Errors = errors.Select(x => new
+				    {
+					    Control = x.MemberNames.FirstOrDefault(),
+					    Message = x.ErrorMessage
+				    })
+			    });
+			}
 
 			try
 		    {
@@ -415,8 +423,16 @@ namespace KadOzenka.Web.Controllers
 				    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			    }
 
-			    DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
-				    viewModel.TourId.GetValueOrDefault(), viewModel.UnitStatus.GetValueOrDefault());
+			    if (viewModel.IsUnitStatusUsed)
+			    {
+				    DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
+					    viewModel.TourId.GetValueOrDefault(), viewModel.UnitStatus.GetValueOrDefault());
+				}
+			    else
+			    {
+				    DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
+					    viewModel.TourId.GetValueOrDefault(), viewModel.TaskFilter);
+				}
 		    }
 		    catch (Exception ex)
 		    {
@@ -478,29 +494,5 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
-
-	    #region Helpers
-
-		private JsonResult GenerateMessageNonValidModel()
-	    {
-		    return Json(new
-		    {
-			    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-			    {
-				    Control = x.Key,
-				    Message = string.Join("\n", x.Value.Errors.Select(e =>
-				    {
-					    if (e.ErrorMessage == "The value '' is invalid.")
-					    {
-						    return $"{e.ErrorMessage} Поле {x.Key}";
-					    }
-
-					    return e.ErrorMessage;
-				    }))
-			    })
-		    });
-	    }
-
-	    #endregion
 	}
 }
