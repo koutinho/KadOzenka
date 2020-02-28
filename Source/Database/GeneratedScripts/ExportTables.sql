@@ -276,7 +276,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('COMMON_EXPORT_BY_TEMPLATES', 'template_file_name')) then
-        execute 'alter table COMMON_EXPORT_BY_TEMPLATES add "template_file_name" VARCHAR(512) NOT NULL';
+        execute 'alter table COMMON_EXPORT_BY_TEMPLATES add "template_file_name" VARCHAR(512)';
     end if;
 end $$;
 
@@ -285,7 +285,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('COMMON_EXPORT_BY_TEMPLATES', 'columns_mapping')) then
-        execute 'alter table COMMON_EXPORT_BY_TEMPLATES add "columns_mapping" VARCHAR NOT NULL';
+        execute 'alter table COMMON_EXPORT_BY_TEMPLATES add "columns_mapping" VARCHAR';
     end if;
 end $$;
 
@@ -2132,6 +2132,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_LONG_PROCESS_QUEUE', 'progress')) then
         execute 'alter table CORE_LONG_PROCESS_QUEUE add "progress" BIGINT DEFAULT 0';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_LONG_PROCESS_QUEUE', 'parameters')) then
+        execute 'alter table CORE_LONG_PROCESS_QUEUE add "parameters" VARCHAR(4000)';
     end if;
 end $$;
 
@@ -4786,6 +4795,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('CORE_SRD_SESSION', 'auth_token')) then
+        execute 'alter table CORE_SRD_SESSION add "auth_token" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_SRD_SESSION', 'created_token')) then
+        execute 'alter table CORE_SRD_SESSION add "created_token" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_949_quant_pk')) then
     execute 'alter table CORE_SRD_SESSION add constraint reg_949_quant_pk primary key (id)';
   end if;
@@ -5228,6 +5255,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_SRD_USERSETTINGSREGVIEW', 'condition')) then
         execute 'alter table CORE_SRD_USERSETTINGSREGVIEW add "condition" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_SRD_USERSETTINGSREGVIEW', 'search_type')) then
+        execute 'alter table CORE_SRD_USERSETTINGSREGVIEW add "search_type" BIGINT';
     end if;
 end $$;
 
@@ -8378,16 +8414,16 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_KADASTR_KVARTAL')) then
+		execute 'create table GBU_KADASTR_KVARTAL ("id" BIGINT NOT NULL)';
 	end if;
 end $$;
 --<DO>--
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_KADASTR_KVARTAL', 'id')) then
+        execute 'alter table GBU_KADASTR_KVARTAL add "id" BIGINT NOT NULL';
     end if;
 end $$;
 
@@ -8395,8 +8431,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_KADASTR_KVARTAL', 'kadastr_kvartal')) then
+        execute 'alter table GBU_KADASTR_KVARTAL add "kadastr_kvartal" VARCHAR(255) NOT NULL';
     end if;
 end $$;
 
@@ -8404,8 +8440,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_KADASTR_KVARTAL', 'parent_id')) then
+        execute 'alter table GBU_KADASTR_KVARTAL add "parent_id" BIGINT';
     end if;
 end $$;
 
@@ -8413,119 +8449,24 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  if (not core_updstru_checkexistconstraint('gbu_kadastr_kvartal_kadastr_kvartal_key')) then
+    execute 'alter table GBU_KADASTR_KVARTAL add constraint gbu_kadastr_kvartal_kadastr_kvartal_key unique (kadastr_kvartal)';
   end if;
 end $$;
 --<DO>--
 
 DO $$
 begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  if (not core_updstru_checkexistconstraint('gbu_kadastr_kvartal_pkey')) then
+    execute 'alter table GBU_KADASTR_KVARTAL add constraint gbu_kadastr_kvartal_pkey primary key (id)';
   end if;
 end $$;
 --<DO>--
 
 DO $$
 begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_kadastr_kvartal_kadastr_kvartal_key')) then
+	execute 'CREATE UNIQUE INDEX gbu_kadastr_kvartal_kadastr_kvartal_key on GBU_KADASTR_KVARTAL (kadastr_kvartal)';
   end if;
 end $$;
 --<DO>--
@@ -8585,6 +8526,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -8603,6 +8553,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -8662,6 +8620,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -8680,6 +8647,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -8739,6 +8714,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -8757,6 +8741,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -8816,6 +8808,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -8834,6 +8835,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -8893,6 +8902,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -8911,6 +8929,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -8970,6 +8996,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -8988,6 +9023,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9047,6 +9090,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9065,6 +9117,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9124,6 +9184,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9142,6 +9211,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9201,6 +9278,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9219,6 +9305,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9278,6 +9372,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9296,6 +9399,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9355,6 +9466,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9373,6 +9493,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9432,6 +9560,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9450,6 +9587,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9509,6 +9654,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9527,6 +9681,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9586,6 +9748,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9604,6 +9775,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9663,6 +9842,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9681,6 +9869,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9740,6 +9936,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9758,6 +9963,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9817,6 +10030,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9835,6 +10057,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9894,6 +10124,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9912,6 +10151,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -9971,6 +10218,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -9989,6 +10245,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -10048,6 +10312,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -10066,6 +10339,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -10125,6 +10406,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -10143,6 +10433,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -10202,6 +10500,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -10220,6 +10527,202 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
 	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
   end if;
 end $$;
 --<DO>--
@@ -23964,6 +24467,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_law_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "property_law_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_part_size')) then
+        execute 'alter table MARKET_CORE_OBJECT add "property_part_size" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table MARKET_CORE_OBJECT add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -25787,6 +26308,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('SUD_SUD', 'archive_number')) then
+        execute 'alter table SUD_SUD add "archive_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUD', 'appeal_number')) then
+        execute 'alter table SUD_SUD add "appeal_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_316_q_pk')) then
     execute 'alter table SUD_SUD add constraint reg_316_q_pk primary key (id)';
   end if;
@@ -26034,6 +26573,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('SUD_SUDSTATUS', 'astatus')) then
         execute 'alter table SUD_SUDSTATUS add "astatus" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDSTATUS', 'archive_number')) then
+        execute 'alter table SUD_SUDSTATUS add "archive_number" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('SUD_SUDSTATUS', 'appeal_number')) then
+        execute 'alter table SUD_SUDSTATUS add "appeal_number" BIGINT';
     end if;
 end $$;
 
