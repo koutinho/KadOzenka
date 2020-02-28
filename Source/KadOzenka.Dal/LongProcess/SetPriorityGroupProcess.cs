@@ -51,12 +51,12 @@ namespace KadOzenka.Dal.LongProcess
 				cancelSource.Dispose();
 
 				WorkerCommon.SetProgress(processQueue, 100);
-				SendNotification(processQueue, "Результат Операции группировки", "Операция успешно завершена");
+				NotificationSender.SendNotification(processQueue, "Результат Операции группировки", "Операция успешно завершена");
 			}
 			catch (Exception ex)
 			{
 				cancelSource.Cancel();
-				SendNotification(processQueue, "Результат Операции группировки", $"Операция была прервана: {ex.Message}");
+				NotificationSender.SendNotification(processQueue, "Результат Операции группировки", $"Операция была прервана: {ex.Message}");
 				throw;
 			}
 		}
