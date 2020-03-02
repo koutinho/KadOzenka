@@ -440,18 +440,6 @@ namespace KadOzenka.Web.Controllers
 			return Json(tours);
 		}
 
-		public JsonResult GetTasksByTour(long tourId)
-		{
-			var tasks = _taskService.GetTasksByTour(tourId);
-
-			var models = tasks.Select(x => new SelectListItem
-			{
-				Value = x.Id.ToString(),
-				Text = x.IncomingDocument?.RegNumber
-			});
-
-			return Json(models);
-		}
 		public ActionResult GetRow([FromForm] int rowNumber)
 		{
 			ViewData["Attributes"] = _service.GetGbuAttributes()
@@ -506,7 +494,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var documentInfoList = _taskService.GetTaskDocumentInfoList().OrderByDescending(x => x.DocumentCreateDate);
 			return documentInfoList
-				.Select(x => new SelectListItem($"{x.DocumentCreateDate?.ToShortDateString()}, {x.DocumentRegNumber}, {x.KoNoteType}", x.TaskId.ToString()))
+				.Select(x => new SelectListItem(_taskService.GetTemplateForTaskName(x), x.TaskId.ToString()))
 				.ToList();
 		}
 

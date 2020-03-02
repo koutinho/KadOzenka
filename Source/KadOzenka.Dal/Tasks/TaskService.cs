@@ -69,6 +69,7 @@ namespace KadOzenka.Dal.Tasks
         {
             var tasks = OMTask.Where(x => x.TourId == tourId)
                 .Select(x => x.Id)
+                .Select(x => x.NoteType_Code)
                 .Select(x => x.DocumentId)
                 .Execute();
 
@@ -77,6 +78,7 @@ namespace KadOzenka.Dal.Tasks
             tasks.ForEach(x => result.Add(new TaskDto
             {
                 Id = x.Id,
+                NoteType = x.NoteType_Code,
                 IncomingDocument = GetDocumentById(x.DocumentId)
             }));
 
@@ -119,9 +121,19 @@ namespace KadOzenka.Dal.Tasks
 			}
 		}
 
-		#region Support Methods
+        public string GetTemplateForTaskName(TaskDocumentInfoDto x)
+        {
+            return GetTemplateForTaskName(x.DocumentCreateDate, x.DocumentRegNumber, x.KoNoteType);
+        }
 
-		private DocumentDto GetDocumentById(long? documentId)
+        public string GetTemplateForTaskName(TaskDto x)
+        {
+            return GetTemplateForTaskName(x.IncomingDocument?.CreationDate, x.IncomingDocument?.RegNumber, x.NoteType?.GetEnumDescription());
+        }
+
+        #region Support Methods
+
+        private DocumentDto GetDocumentById(long? documentId)
         {
             if (documentId == null)
                 return null;
@@ -153,6 +165,11 @@ namespace KadOzenka.Dal.Tasks
                 Id = tour.Id,
                 Year = tour.Year
             };
+        }
+
+        private string GetTemplateForTaskName(DateTime? documentCreationDate, string documentRegNumber, string koNoteType)
+        {
+            return $"{documentCreationDate?.ToShortDateString()}, {documentRegNumber}, {koNoteType}";
         }
 
         #endregion

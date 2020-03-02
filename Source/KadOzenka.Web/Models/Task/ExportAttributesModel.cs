@@ -9,7 +9,7 @@ namespace KadOzenka.Web.Models.Task
 {
     public class ExportAttributesModel
     {
-        [Display(Name = "Задание на оценку")]
+        [Display(Name = "Задания на оценку")]
         public List<long> TaskFilter { get; set; }
         public string ObjType { get; set; }
 

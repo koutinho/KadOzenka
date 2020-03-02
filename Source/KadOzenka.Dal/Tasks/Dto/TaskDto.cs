@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.Tasks.Dto
 
         public TourDto Tour { get; set; }
 
-        public KoNoteType NoteType { get; set; }
+        public KoNoteType? NoteType { get; set; }
 
         public string Status { get; set; }
 
