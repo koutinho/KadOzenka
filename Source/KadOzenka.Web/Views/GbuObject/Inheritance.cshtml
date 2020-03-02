@@ -33,7 +33,7 @@
 									{
 										source.Read(read =>
 										{
-											read.Action("GetTasksData", "GbuObject").Data("handlerData");
+											read.Action("GetTasksByTour", "Task").Data("handlerData");
 										})
 											.ServerFiltering(false);
 									}))
