@@ -124,14 +124,6 @@ namespace CIPJS
                     RequestPath = "/ConfigReports"
             });
 
-			if(ConfigurationManager.AppSettings["UsePlatformWwwroot"].ParseToBoolean())
-			{
-				app.UseStaticFiles(new StaticFileOptions
-				{
-					FileProvider = new PhysicalFileProvider("\\\\192.168.3.151\\версии систем\\Platform.wwwroot\\Platform.Web.1.0.68.wwwroot"),
-					RequestPath = ""
-				});
-			}
 
             app.UseSession();
             app.UseAuthentication();
