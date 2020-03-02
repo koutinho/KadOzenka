@@ -147,7 +147,8 @@
 
 	$(document).ready(function () {
 		$('#addRow').on('click', addNewRow);
-		$("#RatingTour").data('kendoDropDownList').bind('select', dropdownlist_select);
+		$("#RatingTour").data('kendoDropDownList').bind('change', dropdownlist_select);
+		$("#RatingTour").data('kendoDropDownList').bind('dataBound', dropdownlist_select);
 
 		$('input[type=radio]').change(function() {
 			$('input[type=radio]:checked').not(this).prop('checked', false);
