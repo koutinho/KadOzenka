@@ -123,24 +123,30 @@ function setCurrentLayer(url) {
     else {
         SOM = new ymaps.GeoObjectCollection();
         $.getJSON(url).done(function (geoJson) {
-            defaultColor = geoJson.features[0].options.fillColor;
+            var defaultColor = null;
             geoJson.features.forEach(function (obj) {
                 //if ((obj.geometry.coordinates[0][0][0] != 55.736392 && obj.geometry.coordinates[0][0][1] != 37.699307) &&
                 //    (obj.geometry.coordinates[0][0][0] != 55.758117 && obj.geometry.coordinates[0][0][1] != 37.657738))
                 SOM.add(new ymaps.GeoObject({
-                    geometry: obj.geometry
+                    geometry: obj.geometry,
+                    properties: { balloonContent: obj.name }
                 }, {
                     fillColor: obj.options.fillColor,
                     strokeColor: obj.options.strokeColor,
                     fillOpacity: obj.options.fillOpacity,
                     strokeWidth: parseInt(obj.options.strokeWidth),
-                    strokeOpacity: obj.options.strokeOpacity
+                    strokeOpacity: obj.options.strokeOpacity,
+                    name: obj.name,
+                    id: obj.id
                 }));
             });
             SOM.events.add("click", function (e) {
-                SOM.each(x => x.options.set('fillColor', defaultColor));
+                SOM.each(x => { if (x.options.get('fillColor') == 'FF0000') x.options.set('fillColor', defaultColor); });
+                defaultColor = `${e.get('target').options.get('fillColor')}`;
                 e.get('target').options.set('fillColor', "FF0000");
                 console.log(e.get('target').geometry.getCoordinates());
+                console.log(e.get('target').options.get('name'));
+                console.log(e.get('target').options.get('id'));
             })
             map.geoObjects.add(SOM);
         });
