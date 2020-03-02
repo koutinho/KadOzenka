@@ -8,6 +8,7 @@ using ObjectModel.Core.TD;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
 using System;
+using System.Linq;
 using KadOzenka.Dal.Models.Task;
 
 namespace KadOzenka.Dal.Tasks
@@ -58,6 +59,7 @@ namespace KadOzenka.Dal.Tasks
 			    }
 		    };
 		    query.AddColumn(OMTask.GetColumn(x => x.Id, nameof(TaskDocumentInfoDto.TaskId)));
+		    query.AddColumn(OMTask.GetColumn(x => x.TourId, nameof(TaskDocumentInfoDto.TourId)));
 		    query.AddColumn(OMInstance.GetColumn(x => x.CreateDate, nameof(TaskDocumentInfoDto.DocumentCreateDate)));
 		    query.AddColumn(OMInstance.GetColumn(x => x.RegNumber, nameof(TaskDocumentInfoDto.DocumentRegNumber)));
 		    query.AddColumn(OMTask.GetColumn(x => x.NoteType, nameof(TaskDocumentInfoDto.KoNoteType)));
@@ -65,24 +67,9 @@ namespace KadOzenka.Dal.Tasks
 			return query.ExecuteQuery<TaskDocumentInfoDto>();
 		}
 
-        public List<TaskDto> GetTasksByTour(long tourId)
+        public List<TaskDocumentInfoDto> GetTasksByTour(long tourId)
         {
-            var tasks = OMTask.Where(x => x.TourId == tourId)
-                .Select(x => x.Id)
-                .Select(x => x.NoteType_Code)
-                .Select(x => x.DocumentId)
-                .Execute();
-
-            var result = new List<TaskDto>();
-
-            tasks.ForEach(x => result.Add(new TaskDto
-            {
-                Id = x.Id,
-                NoteType = x.NoteType_Code,
-                IncomingDocument = GetDocumentById(x.DocumentId)
-            }));
-
-            return result;
+            return GetTaskDocumentInfoList().Where(x => x.TourId == tourId).ToList();
         }
 
 		public void FetchGbuData(List<DataMappingDto> list, long objectId, OMTask task, string postfix)
@@ -124,11 +111,6 @@ namespace KadOzenka.Dal.Tasks
         public string GetTemplateForTaskName(TaskDocumentInfoDto x)
         {
             return GetTemplateForTaskName(x.DocumentCreateDate, x.DocumentRegNumber, x.KoNoteType);
-        }
-
-        public string GetTemplateForTaskName(TaskDto x)
-        {
-            return GetTemplateForTaskName(x.IncomingDocument?.CreationDate, x.IncomingDocument?.RegNumber, x.NoteType?.GetEnumDescription());
         }
 
         #region Support Methods

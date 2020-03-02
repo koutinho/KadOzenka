@@ -105,7 +105,7 @@ namespace KadOzenka.Web.Controllers
 
 			var models = tasks.Select(x => new SelectListItem
 			{
-				Value = x.Id.ToString(),
+				Value = x.TaskId.ToString(),
 				Text = TaskService.GetTemplateForTaskName(x)
 			});
 
