@@ -18,7 +18,9 @@ namespace KadOzenka.Dal.Gadgets
 {
 	public class GadgetService
 	{
-		private static QSQuery GetQuery(string registerViewId)
+        private static string _moveToPageSymbol = "→";
+
+        private static QSQuery GetQuery(string registerViewId)
 		{
 			var registerView = RegisterCommonConfiguration.GetRegisterViewConfiguration(registerViewId);
 
@@ -202,20 +204,37 @@ namespace KadOzenka.Dal.Gadgets
         /// Объекты недвижимости (карточка основного рабочего стола)
         /// </summary>
         /// <returns></returns>
+        public static DataTable GbuObjects()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            var gbuObjectsCount = OMCoreObject.Where(GetQuery("GbuObjects")).ExecuteCount();
+            var codCount = OMCoreObject.Where(GetQuery("GbuCodJob")).ExecuteCount();
+
+            data.Rows.Add("/RegistersView/GbuObjects", "Объекты недвижимости", gbuObjectsCount);
+            data.Rows.Add("/GbuObject/Harmonization", "Выполнить гармонизацию", _moveToPageSymbol);
+            data.Rows.Add("/GbuObject/HarmonizationCOD", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
+            data.Rows.Add("~/GbuObject/GroupingObject", "Выполнить нормализацию", _moveToPageSymbol);
+            data.Rows.Add("~/GbuObject/Inheritance", "Выполнить наследование", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", codCount);
+
+            return data;
+        }
+
+        /// <summary>
+        /// Объекты аналоги (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
         public static DataTable MarketObjects()
         {
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
             var marketObjectsCount = OMCoreObject.Where(GetQuery("MarketObjects")).ExecuteCount();
-            var codCount = OMCoreObject.Where(GetQuery("GbuCodJob")).ExecuteCount();
 
-            data.Rows.Add("/RegistersView/MarketObjects", "Объекты недвижимости", marketObjectsCount);
-            data.Rows.Add("/GbuObject/Harmonization", "Выполнить гармонизацию", 0);
-            data.Rows.Add("/GbuObject/HarmonizationCOD", "Выполнить гармонизацию по классификатору ЦОД", 0);
-            data.Rows.Add("~/GbuObject/GroupingObject", "Выполнить нормализацию", 0);
-            data.Rows.Add("~/GbuObject/Inheritance", "Выполнить наследование", 0);
-            data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", codCount);
+            data.Rows.Add("/RegistersView/MarketObjects", "Реестр объектов аналогов", marketObjectsCount);
+            data.Rows.Add("/Map", "На карту", _moveToPageSymbol);
 
             return data;
         }
