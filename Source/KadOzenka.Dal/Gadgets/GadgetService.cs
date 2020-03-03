@@ -203,127 +203,127 @@ namespace KadOzenka.Dal.Gadgets
 			return data;
 		}
 
-        ///// <summary>
-        ///// Объекты недвижимости (карточка основного рабочего стола)
-        ///// </summary>
-        ///// <returns></returns>
-        //public static DataTable GbuObjects()
-        //{
-        //    var data = new DataTable();
-        //    data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+        /// <summary>
+        /// Объекты недвижимости (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable GbuObjects()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-        //    var gbuObjectsCount = OMMainObject.Where(GetQuery("GbuObjects")).ExecuteCount();
-        //    var codCount = OMCodJob.Where(GetQuery("GbuCodJob")).ExecuteCount();
+            var gbuObjectsCount = 0;// OMMainObject.Where(GetQuery("GbuObjects")).ExecuteCount();
+            var codCount = 0;// OMCodJob.Where(GetQuery("GbuCodJob")).ExecuteCount();
 
-        //    data.Rows.Add("/RegistersView/GbuObjects", "Объекты недвижимости", gbuObjectsCount);
-        //    data.Rows.Add("/GbuObject/Harmonization", "Выполнить гармонизацию", _moveToPageSymbol);
-        //    data.Rows.Add("/GbuObject/HarmonizationCOD", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
-        //    data.Rows.Add("~/GbuObject/GroupingObject", "Выполнить нормализацию", _moveToPageSymbol);
-        //    data.Rows.Add("~/GbuObject/Inheritance", "Выполнить наследование", _moveToPageSymbol);
-        //    data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", codCount);
+            data.Rows.Add("/RegistersView/GbuObjects", "Объекты недвижимости", gbuObjectsCount);
+            data.Rows.Add("/GbuObject/Harmonization", "Выполнить гармонизацию", _moveToPageSymbol);
+            data.Rows.Add("/GbuObject/HarmonizationCOD", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
+            data.Rows.Add("~/GbuObject/GroupingObject", "Выполнить нормализацию", _moveToPageSymbol);
+            data.Rows.Add("~/GbuObject/Inheritance", "Выполнить наследование", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", codCount);
 
-        //    return data;
-        //}
+            return data;
+        }
 
-        ///// <summary>
-        ///// Объекты аналоги (карточка основного рабочего стола)
-        ///// </summary>
-        ///// <returns></returns>
-        //public static DataTable MarketObjects()
-        //{
-        //    var data = new DataTable();
-        //    data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+        /// <summary>
+        /// Объекты аналоги (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable MarketObjects()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-        //    var marketObjectsCount = OMCoreObject.Where(GetQuery("MarketObjects")).ExecuteCount();
+            var marketObjectsCount = 0;// OMCoreObject.Where(GetQuery("MarketObjects")).ExecuteCount();
 
-        //    data.Rows.Add("/RegistersView/MarketObjects", "Реестр объектов аналогов", marketObjectsCount);
-        //    data.Rows.Add("/Map", "На карту", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/MarketObjects", "Реестр объектов аналогов", marketObjectsCount);
+            data.Rows.Add("/Map", "На карту", _moveToPageSymbol);
 
-        //    return data;
-        //}
+            return data;
+        }
 
-        ///// <summary>
-        ///// Судебные решения (карточка основного рабочего стола)
-        ///// </summary>
-        ///// <returns></returns>
-        //public static DataTable Sud()
-        //{
-        //    var data = new DataTable();
-        //    data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+        /// <summary>
+        /// Судебные решения (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable Sud()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-        //    var sudCount = OMObject.Where(GetQuery("SudObjects")).ExecuteCount();
-        //    var sudOtchetCount = OMOtchet.Where(GetQuery("SudOtchet")).ExecuteCount();
-        //    var sudZakCount = OMZak.Where(GetQuery("SudZak")).ExecuteCount();
-        //    var sudReshCount = OMSud.Where(GetQuery("SudResh")).ExecuteCount();
+            var sudCount = 0;// OMObject.Where(GetQuery("SudObjects")).ExecuteCount();
+            var sudOtchetCount = 0;// OMOtchet.Where(GetQuery("SudOtchet")).ExecuteCount();
+            var sudZakCount = 0;// OMZak.Where(GetQuery("SudZak")).ExecuteCount();
+            var sudReshCount = 0;// OMSud.Where(GetQuery("SudResh")).ExecuteCount();
 
-        //    data.Rows.Add("/RegistersView/SudObjects", "Перейти к объектам", sudCount);
-        //    data.Rows.Add("/RegistersView/SudOtchet", "Перейти к отчетам", sudOtchetCount);
-        //    data.Rows.Add("/RegistersView/SudZak", "Перейти к заключениям", sudZakCount);
-        //    data.Rows.Add("/RegistersView/SudResh", "Перейти к решениям", sudReshCount);
+            data.Rows.Add("/RegistersView/SudObjects", "Перейти к объектам", sudCount);
+            data.Rows.Add("/RegistersView/SudOtchet", "Перейти к отчетам", sudOtchetCount);
+            data.Rows.Add("/RegistersView/SudZak", "Перейти к заключениям", sudZakCount);
+            data.Rows.Add("/RegistersView/SudResh", "Перейти к решениям", sudReshCount);
 
-        //    return data;
-        //}
+            return data;
+        }
 
-        ///// <summary>
-        ///// Расчетная подсистема (карточка основного рабочего стола)
-        ///// </summary>
-        ///// <returns></returns>
-        //public static DataTable Ko()
-        //{
-        //    var data = new DataTable();
-        //    data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+        /// <summary>
+        /// Расчетная подсистема (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable Ko()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-        //    var tasksCount = OMTask.Where(GetQuery("KoTasks")).ExecuteCount();
-        //    var objectsCount = OMUnit.Where(GetQuery("KoObjects")).ExecuteCount();
-        //    var toursCount = OMTour.Where(GetQuery("KoTours")).ExecuteCount();
+            var tasksCount = 0;// OMTask.Where(GetQuery("KoTasks")).ExecuteCount();
+            var objectsCount = 0;// OMUnit.Where(GetQuery("KoObjects")).ExecuteCount();
+            var toursCount = 0;// OMTour.Where(GetQuery("KoTours")).ExecuteCount();
 
-        //    data.Rows.Add("/RegistersView/KoTasks", "Задания на оценку", tasksCount);
-        //    data.Rows.Add("/RegistersView/KoObjects", "Единицы оценки", objectsCount);
-        //    data.Rows.Add("/DataImport/ImportGkn", "Создать задание на оценку", _moveToPageSymbol);
-        //    data.Rows.Add("/RegistersView/KoTours", "Перейти к справочнику туров", toursCount);
-        //    data.Rows.Add("#", "Перейти к справочнику моделей", string.Empty);
+            data.Rows.Add("/RegistersView/KoTasks", "Задания на оценку", tasksCount);
+            data.Rows.Add("/RegistersView/KoObjects", "Единицы оценки", objectsCount);
+            data.Rows.Add("/DataImport/ImportGkn", "Создать задание на оценку", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/KoTours", "Перейти к справочнику туров", toursCount);
+            data.Rows.Add("#", "Перейти к справочнику моделей", string.Empty);
 
-        //    return data;
-        //}
+            return data;
+        }
 
-        ///// <summary>
-        ///// Декларации (карточка основного рабочего стола)
-        ///// </summary>
-        ///// <returns></returns>
-        //public static DataTable Declarations()
-        //{
-        //    var data = new DataTable();
-        //    data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+        /// <summary>
+        /// Декларации (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable Declarations()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-        //    var declarationsCount = OMDeclaration.Where(GetQuery("DeclarationsDeclaration")).ExecuteCount();
-        //    var booksCount = OMBook.Where(GetQuery("DeclarationsBook")).ExecuteCount();
-        //    var subjectsCount = OMSubject.Where(GetQuery("DeclarationsSubject")).ExecuteCount();
-        //    var signatoriesCount = OMSignatory.Where(GetQuery("DeclarationsSignatory")).ExecuteCount();
+            var declarationsCount = 0;// OMDeclaration.Where(GetQuery("DeclarationsDeclaration")).ExecuteCount();
+            var booksCount = 0;// OMBook.Where(GetQuery("DeclarationsBook")).ExecuteCount();
+            var subjectsCount = 0;// OMSubject.Where(GetQuery("DeclarationsSubject")).ExecuteCount();
+            var signatoriesCount = 0;// OMSignatory.Where(GetQuery("DeclarationsSignatory")).ExecuteCount();
 
-        //    data.Rows.Add("/RegistersView/DeclarationsDeclaration", "Перейти к декларациям", declarationsCount);
-        //    data.Rows.Add("/Declarations/EditDeclaration", "Перейти к добавлению декларации", _moveToPageSymbol);
-        //    data.Rows.Add("/RegistersView/DeclarationsBook", "Перейти к книгам", booksCount);
-        //    data.Rows.Add("/RegistersView/DeclarationsSubject", "Перейти в субъекты", subjectsCount);
-        //    data.Rows.Add("/RegistersView/DeclarationsSignatory", "Перейти в подписанты", signatoriesCount);
+            data.Rows.Add("/RegistersView/DeclarationsDeclaration", "Перейти к декларациям", declarationsCount);
+            data.Rows.Add("/Declarations/EditDeclaration", "Перейти к добавлению декларации", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/DeclarationsBook", "Перейти к книгам", booksCount);
+            data.Rows.Add("/RegistersView/DeclarationsSubject", "Перейти в субъекты", subjectsCount);
+            data.Rows.Add("/RegistersView/DeclarationsSignatory", "Перейти в подписанты", signatoriesCount);
 
-        //    return data;
-        //}
+            return data;
+        }
 
-        ///// <summary>
-        ///// Комиссии по рассмотрению споров о результатах определения кадастровой стоимости (карточка основного рабочего стола)
-        ///// </summary>
-        ///// <returns></returns>
-        //public static DataTable Commissions()
-        //{
-        //    var data = new DataTable();
-        //    data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+        /// <summary>
+        /// Комиссии по рассмотрению споров о результатах определения кадастровой стоимости (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable Commissions()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-        //    var commissionsCount = OMCost.Where(GetQuery("CommissionCost")).ExecuteCount();
+            var commissionsCount = 0;// OMCost.Where(GetQuery("CommissionCost")).ExecuteCount();
 
-        //    data.Rows.Add("/RegistersView/CommissionCost", "Перейти к комиссиям", commissionsCount);
-        //    data.Rows.Add("/Commission/EditCommission", "Перейти добавлению комиссии", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/CommissionCost", "Перейти к комиссиям", commissionsCount);
+            data.Rows.Add("/Commission/EditCommission", "Перейти добавлению комиссии", _moveToPageSymbol);
 
-        //    return data;
-        //}
+            return data;
+        }
     }
 }
