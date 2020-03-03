@@ -8,6 +8,7 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
+using ObjectModel.Commission;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using ObjectModel.Directory.Sud;
@@ -304,6 +305,23 @@ namespace KadOzenka.Dal.Gadgets
             data.Rows.Add("/RegistersView/DeclarationsBook", "Перейти к книгам", booksCount);
             data.Rows.Add("/RegistersView/DeclarationsSubject", "Перейти в субъекты", subjectsCount);
             data.Rows.Add("/RegistersView/DeclarationsSignatory", "Перейти в подписанты", signatoriesCount);
+
+            return data;
+        }
+
+        /// <summary>
+        /// Комиссии по рассмотрению споров о результатах определения кадастровой стоимости (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable Commissions()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            var commissionsCount = OMCost.Where(GetQuery("CommissionCost")).ExecuteCount();
+
+            data.Rows.Add("/RegistersView/CommissionCost", "Перейти к комиссиям", commissionsCount);
+            data.Rows.Add("/Commission/EditCommission", "Перейти добавлению комиссии", _moveToPageSymbol);
 
             return data;
         }
