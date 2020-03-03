@@ -212,15 +212,12 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            var gbuObjectsCount = 0;// OMMainObject.Where(GetQuery("GbuObjects")).ExecuteCount();
-            var codCount = 0;// OMCodJob.Where(GetQuery("GbuCodJob")).ExecuteCount();
-
-            data.Rows.Add("/RegistersView/GbuObjects", "Объекты недвижимости", gbuObjectsCount);
+            data.Rows.Add("/RegistersView/GbuObjects", "Объекты недвижимости", _moveToPageSymbol);
             data.Rows.Add("/GbuObject/Harmonization", "Выполнить гармонизацию", _moveToPageSymbol);
             data.Rows.Add("/GbuObject/HarmonizationCOD", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
             data.Rows.Add("~/GbuObject/GroupingObject", "Выполнить нормализацию", _moveToPageSymbol);
             data.Rows.Add("~/GbuObject/Inheritance", "Выполнить наследование", _moveToPageSymbol);
-            data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", codCount);
+            data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", _moveToPageSymbol);
 
             return data;
         }
@@ -234,9 +231,7 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            var marketObjectsCount = 0;// OMCoreObject.Where(GetQuery("MarketObjects")).ExecuteCount();
-
-            data.Rows.Add("/RegistersView/MarketObjects", "Реестр объектов аналогов", marketObjectsCount);
+            data.Rows.Add("/RegistersView/MarketObjects", "Реестр объектов аналогов", _moveToPageSymbol);
             data.Rows.Add("/Map", "На карту", _moveToPageSymbol);
 
             return data;
@@ -251,15 +246,10 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            var sudCount = 0;// OMObject.Where(GetQuery("SudObjects")).ExecuteCount();
-            var sudOtchetCount = 0;// OMOtchet.Where(GetQuery("SudOtchet")).ExecuteCount();
-            var sudZakCount = 0;// OMZak.Where(GetQuery("SudZak")).ExecuteCount();
-            var sudReshCount = 0;// OMSud.Where(GetQuery("SudResh")).ExecuteCount();
-
-            data.Rows.Add("/RegistersView/SudObjects", "Перейти к объектам", sudCount);
-            data.Rows.Add("/RegistersView/SudOtchet", "Перейти к отчетам", sudOtchetCount);
-            data.Rows.Add("/RegistersView/SudZak", "Перейти к заключениям", sudZakCount);
-            data.Rows.Add("/RegistersView/SudResh", "Перейти к решениям", sudReshCount);
+            data.Rows.Add("/RegistersView/SudObjects", "Перейти к объектам", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/SudOtchet", "Перейти к отчетам", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/SudZak", "Перейти к заключениям", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/SudResh", "Перейти к решениям", _moveToPageSymbol);
 
             return data;
         }
@@ -273,14 +263,10 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            var tasksCount = 0;// OMTask.Where(GetQuery("KoTasks")).ExecuteCount();
-            var objectsCount = 0;// OMUnit.Where(GetQuery("KoObjects")).ExecuteCount();
-            var toursCount = 0;// OMTour.Where(GetQuery("KoTours")).ExecuteCount();
-
-            data.Rows.Add("/RegistersView/KoTasks", "Задания на оценку", tasksCount);
-            data.Rows.Add("/RegistersView/KoObjects", "Единицы оценки", objectsCount);
+            data.Rows.Add("/RegistersView/KoTasks", "Задания на оценку", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/KoObjects", "Единицы оценки", _moveToPageSymbol);
             data.Rows.Add("/DataImport/ImportGkn", "Создать задание на оценку", _moveToPageSymbol);
-            data.Rows.Add("/RegistersView/KoTours", "Перейти к справочнику туров", toursCount);
+            data.Rows.Add("/RegistersView/KoTours", "Перейти к справочнику туров", _moveToPageSymbol);
             data.Rows.Add("#", "Перейти к справочнику моделей", string.Empty);
 
             return data;
@@ -295,16 +281,11 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            var declarationsCount = 0;// OMDeclaration.Where(GetQuery("DeclarationsDeclaration")).ExecuteCount();
-            var booksCount = 0;// OMBook.Where(GetQuery("DeclarationsBook")).ExecuteCount();
-            var subjectsCount = 0;// OMSubject.Where(GetQuery("DeclarationsSubject")).ExecuteCount();
-            var signatoriesCount = 0;// OMSignatory.Where(GetQuery("DeclarationsSignatory")).ExecuteCount();
-
-            data.Rows.Add("/RegistersView/DeclarationsDeclaration", "Перейти к декларациям", declarationsCount);
+            data.Rows.Add("/RegistersView/DeclarationsDeclaration", "Перейти к декларациям", _moveToPageSymbol);
             data.Rows.Add("/Declarations/EditDeclaration", "Перейти к добавлению декларации", _moveToPageSymbol);
-            data.Rows.Add("/RegistersView/DeclarationsBook", "Перейти к книгам", booksCount);
-            data.Rows.Add("/RegistersView/DeclarationsSubject", "Перейти в субъекты", subjectsCount);
-            data.Rows.Add("/RegistersView/DeclarationsSignatory", "Перейти в подписанты", signatoriesCount);
+            data.Rows.Add("/RegistersView/DeclarationsBook", "Перейти к книгам", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/DeclarationsSubject", "Перейти в субъекты", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/DeclarationsSignatory", "Перейти в подписанты", _moveToPageSymbol);
 
             return data;
         }
@@ -318,9 +299,7 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            var commissionsCount = 0;// OMCost.Where(GetQuery("CommissionCost")).ExecuteCount();
-
-            data.Rows.Add("/RegistersView/CommissionCost", "Перейти к комиссиям", commissionsCount);
+            data.Rows.Add("/RegistersView/CommissionCost", "Перейти к комиссиям", _moveToPageSymbol);
             data.Rows.Add("/Commission/EditCommission", "Перейти добавлению комиссии", _moveToPageSymbol);
 
             return data;
