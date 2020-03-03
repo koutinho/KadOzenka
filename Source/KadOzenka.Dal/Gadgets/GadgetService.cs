@@ -238,5 +238,27 @@ namespace KadOzenka.Dal.Gadgets
 
             return data;
         }
+
+        /// <summary>
+        /// Судебные решения (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable Sud()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            var sudCount = OMCoreObject.Where(GetQuery("SudObjects")).ExecuteCount();
+            var sudOtchetCount = OMCoreObject.Where(GetQuery("SudOtchet")).ExecuteCount();
+            var sudZakCount = OMCoreObject.Where(GetQuery("SudZak")).ExecuteCount();
+            var sudReshCount = OMCoreObject.Where(GetQuery("SudResh")).ExecuteCount();
+
+            data.Rows.Add("/RegistersView/SudObjects", "Перейти к объектам", sudCount);
+            data.Rows.Add("/RegistersView/SudOtchet", "Перейти к отчетам", sudOtchetCount);
+            data.Rows.Add("/RegistersView/SudZak", "Перейти к заключениям", sudZakCount);
+            data.Rows.Add("/RegistersView/SudResh", "Перейти к решениям", sudReshCount);
+
+            return data;
+        }
     }
 }
