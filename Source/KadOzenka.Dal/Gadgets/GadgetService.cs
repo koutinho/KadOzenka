@@ -284,5 +284,28 @@ namespace KadOzenka.Dal.Gadgets
 
             return data;
         }
+
+        /// <summary>
+        /// Декларации (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable Declarations()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            var declarationsCount = OMDeclaration.Where(GetQuery("DeclarationsDeclaration")).ExecuteCount();
+            var booksCount = OMBook.Where(GetQuery("DeclarationsBook")).ExecuteCount();
+            var subjectsCount = OMSubject.Where(GetQuery("DeclarationsSubject")).ExecuteCount();
+            var signatoriesCount = OMSignatory.Where(GetQuery("DeclarationsSignatory")).ExecuteCount();
+
+            data.Rows.Add("/RegistersView/DeclarationsDeclaration", "Перейти к декларациям", declarationsCount);
+            data.Rows.Add("/Declarations/EditDeclaration", "Перейти к добавлению декларации", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/DeclarationsBook", "Перейти к книгам", booksCount);
+            data.Rows.Add("/RegistersView/DeclarationsSubject", "Перейти в субъекты", subjectsCount);
+            data.Rows.Add("/RegistersView/DeclarationsSignatory", "Перейти в подписанты", signatoriesCount);
+
+            return data;
+        }
     }
 }
