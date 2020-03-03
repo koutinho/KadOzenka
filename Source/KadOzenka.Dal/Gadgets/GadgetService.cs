@@ -11,6 +11,8 @@ using Core.UI.Registers.CoreUI.Registers;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using ObjectModel.Directory.Sud;
+using ObjectModel.Gbu;
+using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Sud;
 
@@ -209,8 +211,8 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            var gbuObjectsCount = OMCoreObject.Where(GetQuery("GbuObjects")).ExecuteCount();
-            var codCount = OMCoreObject.Where(GetQuery("GbuCodJob")).ExecuteCount();
+            var gbuObjectsCount = OMMainObject.Where(GetQuery("GbuObjects")).ExecuteCount();
+            var codCount = OMCodJob.Where(GetQuery("GbuCodJob")).ExecuteCount();
 
             data.Rows.Add("/RegistersView/GbuObjects", "Объекты недвижимости", gbuObjectsCount);
             data.Rows.Add("/GbuObject/Harmonization", "Выполнить гармонизацию", _moveToPageSymbol);
@@ -248,15 +250,37 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            var sudCount = OMCoreObject.Where(GetQuery("SudObjects")).ExecuteCount();
-            var sudOtchetCount = OMCoreObject.Where(GetQuery("SudOtchet")).ExecuteCount();
-            var sudZakCount = OMCoreObject.Where(GetQuery("SudZak")).ExecuteCount();
-            var sudReshCount = OMCoreObject.Where(GetQuery("SudResh")).ExecuteCount();
+            var sudCount = OMObject.Where(GetQuery("SudObjects")).ExecuteCount();
+            var sudOtchetCount = OMOtchet.Where(GetQuery("SudOtchet")).ExecuteCount();
+            var sudZakCount = OMZak.Where(GetQuery("SudZak")).ExecuteCount();
+            var sudReshCount = OMSud.Where(GetQuery("SudResh")).ExecuteCount();
 
             data.Rows.Add("/RegistersView/SudObjects", "Перейти к объектам", sudCount);
             data.Rows.Add("/RegistersView/SudOtchet", "Перейти к отчетам", sudOtchetCount);
             data.Rows.Add("/RegistersView/SudZak", "Перейти к заключениям", sudZakCount);
             data.Rows.Add("/RegistersView/SudResh", "Перейти к решениям", sudReshCount);
+
+            return data;
+        }
+
+        /// <summary>
+        /// Расчетная подсистема (карточка основного рабочего стола)
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable Ko()
+        {
+            var data = new DataTable();
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            var tasksCount = OMTask.Where(GetQuery("KoTasks")).ExecuteCount();
+            var objectsCount = OMUnit.Where(GetQuery("KoObjects")).ExecuteCount();
+            var toursCount = OMTour.Where(GetQuery("KoTours")).ExecuteCount();
+
+            data.Rows.Add("/RegistersView/KoTasks", "Задания на оценку", tasksCount);
+            data.Rows.Add("/RegistersView/KoObjects", "Единицы оценки", objectsCount);
+            data.Rows.Add("/DataImport/ImportGkn", "Создать задание на оценку", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/KoTours", "Перейти к справочнику туров", toursCount);
+            data.Rows.Add("#", "Перейти к справочнику моделей", string.Empty);
 
             return data;
         }
