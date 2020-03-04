@@ -18,7 +18,7 @@
     <PackageReference Include="FastReport.Web" Version="2018.4.1" />
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="NPetrovich" Version="1.2.0" />
-    <PackageReference Include="Platform" Version="1.0.211" />
+    <PackageReference Include="Platform" Version="1.0.214" />
     <PackageReference Include="Platform.Reports" Version="1.0.28" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />

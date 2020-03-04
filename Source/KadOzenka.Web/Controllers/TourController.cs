@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Transactions;
 using Core.ErrorManagment;
+using Core.Register;
 using Core.Shared.Extensions;
+using Core.UI.Registers.Controllers;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Groups;
@@ -15,20 +17,24 @@ using KadOzenka.Web.Models.Tour;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using Platform.Configurator;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class TourController : Controller
+	public class TourController : BaseController
     {
         public TourService TourService { get; set; }
         public GroupService GroupService { get; set; }
+        public TourFactorService TourFactorService { get; set; }
 
         public TourController()
         {
             TourService = new TourService();
             GroupService = new GroupService();
+            TourFactorService = new TourFactorService();
         }
 
         #region Карточка тура
@@ -149,6 +155,7 @@ namespace KadOzenka.Web.Controllers
 
 			using (var ts = new TransactionScope())
 			{
+                TourFactorService.RemoveTourFactorRegisters(tour.Id);
 				tour.Destroy();
 				ts.Complete();
 			}
@@ -493,6 +500,162 @@ namespace KadOzenka.Web.Controllers
 			return Json(markCatalog);
 		}
 
-		#endregion
-	}
+        #endregion
+
+        #region Факторы
+
+        [HttpGet]
+        public ActionResult TourZuFactorsCard(long tourId)
+	    {
+		    var model = new TourFactorsModel
+		    {
+			    TourId = tourId,
+			    IsSteadObjectType = true
+		    };
+
+			var existedTourFactorRegisters = OMTourFactorRegister
+				.Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
+				.SelectAll().Execute();
+			if (existedTourFactorRegisters.Count != 0)
+		    {
+			    model.RegisterFactorId = existedTourFactorRegisters.First().RegisterId;
+		    }
+
+		    return View("TourFactorsCard", model);
+		}
+
+        [HttpGet]
+        public ActionResult TourOksFactorsCard(long tourId)
+	    {
+			var model = new TourFactorsModel
+		    {
+			    TourId = tourId,
+			    IsSteadObjectType = false
+		    };
+
+		    var existedTourFactorRegisters = OMTourFactorRegister
+			    .Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
+			    .SelectAll().Execute();
+		    if (existedTourFactorRegisters.Count != 0)
+		    {
+			    model.RegisterFactorId = existedTourFactorRegisters.First().RegisterId;
+		    }
+
+		    return View("TourFactorsCard", model);
+		}
+
+        [HttpGet]
+        public ActionResult TourFactorObjectCard(long id, long tourId, bool isSteadObjectType, long registerFactorId)
+	    {
+	        var omAttribute = OMAttribute.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            var omRegister = OMRegister.Where(x => x.RegisterId == registerFactorId).Select(x => x.RegisterId).ExecuteFirstOrDefault();
+
+	        var model = new TourFactorObjectModel
+	        {
+	            Id = -1,
+	            TourId = tourId,
+	            IsSteadObjectType = isSteadObjectType,
+	            RegisterFactorId = omRegister?.RegisterId
+	        };
+	        if (omAttribute != null)
+	        {
+	            model.Id = omAttribute.Id;
+	            model.Name = omAttribute.Name;
+	            model.Type = (RegisterAttributeType)omAttribute.Type;
+	        }
+
+		    return View(model);
+	    }
+
+        [HttpPost]
+        public ActionResult EditTourFactorObjectCard(TourFactorObjectModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return GenerateMessageNonValidModel();
+            }
+
+            var id = model.Id;
+            using (var ts = new TransactionScope())
+            {
+                var omRegister = OMRegister.Where(x => x.RegisterId == model.RegisterFactorId).Select(x => x.RegisterId).ExecuteFirstOrDefault();
+                if (omRegister == null)
+                {
+                    omRegister = TourFactorService.CreateTourFactorRegister(model.TourId, model.IsSteadObjectType);
+                    model.RegisterFactorId = omRegister.RegisterId;
+                }
+
+                if (model.Id == -1)
+                {
+                    model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type);
+                }
+                else
+                {
+                    TourFactorService.RenameTourFactorRegisterAttribute(id, model.Name);
+                }
+
+                ts.Complete();
+            }
+
+            return Json(new { Success = "Сохранено успешно", data = model });
+        }
+
+        [HttpGet]
+        public IActionResult DeleteTourFactorObject(long id)
+        {
+            var omAttribute = OMAttribute.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            if (omAttribute == null)
+            {
+                throw new Exception($"Фактор с ИД {id} не найден");
+            }
+
+            var model = new TourFactorObjectModel
+            {
+                Id = omAttribute.Id,
+                Name = omAttribute.Name
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteTourFactorObject(TourFactorObjectModel model)
+        {
+            var omAttribute = OMAttribute.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+            if (omAttribute == null)
+            {
+                throw new Exception($"Фактор с ИД {model.Id} не найден");
+            }
+
+            TourFactorService.RemoveTourFactorRegisterAttribute(omAttribute.Id);
+
+            return EmptyResponse();
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private JsonResult GenerateMessageNonValidModel()
+        {
+            return Json(new
+            {
+                Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                {
+                    Control = x.Key,
+                    Message = string.Join("\n", x.Value.Errors.Select(e =>
+                    {
+                        if (e.ErrorMessage == "The value '' is invalid.")
+                        {
+                            return $"{e.ErrorMessage} Поле {x.Key}";
+                        }
+
+                        return e.ErrorMessage;
+                    }))
+                })
+            });
+        }
+
+        #endregion
+    }
 }

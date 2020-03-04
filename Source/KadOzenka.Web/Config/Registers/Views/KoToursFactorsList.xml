@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="931" DefaultLayoutId="1009312"
+              IsBasic="false" ShowActualDate="false" ShowObjectCards="false"
+              UseMasterPage="false" OpenEmpty="true" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
+    <Buttons>
+        <Button Caption="Добавить" NavigateURL="/Tour/TourFactorObjectCard" WindowHeight="380" WindowWidth="840" NeedRefresh="true">
+            <Parameters>
+                <Parameter Key="tourId" Value="{Get:TourId}" />
+                <Parameter Key="isSteadObjectType" Value="{Get:IsSteadObjectType}" />
+                <Parameter Key="registerFactorId" Value="{Get:RegisterFactorId}" />
+            </Parameters>
+        </Button>
+        <Button Caption="Редактировать" NavigateURL="/Tour/TourFactorObjectCard" WindowHeight="380" WindowWidth="840" NeedRefresh="true">
+            <Parameters>
+                <Parameter Key="id" Value="[ObjectID]" />
+                <Parameter Key="tourId" Value="{Get:TourId}" />
+                <Parameter Key="isSteadObjectType" Value="{Get:IsSteadObjectType}" />
+                <Parameter Key="registerFactorId" Value="{Get:RegisterFactorId}" />
+            </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+        </Button>
+
+        <Button Caption="Удалить" NavigateURL="/Tour/DeleteTourFactorObject" WindowHeight="180" WindowWidth="840" NeedRefresh="true">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="id" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+    </Buttons>
+</RegisterView>
