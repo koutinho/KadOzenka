@@ -422,30 +422,23 @@ namespace KadOzenka.Web.Controllers
 			    });
 			}
 
-			try
-		    {
-			    ExcelFile excelFile;
-			    using (var stream = viewModel.File.OpenReadStream())
-			    {
-				    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-			    }
+			ExcelFile excelFile;
+			using (var stream = viewModel.File.OpenReadStream())
+			{
+				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+			}
 
-			    if (viewModel.IsUnitStatusUsed)
-			    {
-				    DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
-					    viewModel.TourId.GetValueOrDefault(), viewModel.UnitStatus.GetValueOrDefault());
-				}
-			    else
-			    {
-				    DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
-					    viewModel.TourId.GetValueOrDefault(), viewModel.TaskFilter);
-				}
-		    }
-		    catch (Exception ex)
-		    {
-			    ErrorManager.LogError(ex);
-			    return BadRequest();
-		    }
+			if (viewModel.IsUnitStatusUsed)
+			{
+				DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
+					viewModel.TourId.GetValueOrDefault(), viewModel.UnitStatus.GetValueOrDefault());
+			}
+			else
+			{
+				DataImporterKO.ImportDataGroupNumberFromExcel(excelFile, "KoTours", OMTour.GetRegisterId(),
+					viewModel.TourId.GetValueOrDefault(), viewModel.TaskFilter);
+			}
+
 			return NoContent();
 		}
 
