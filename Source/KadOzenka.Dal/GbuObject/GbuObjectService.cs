@@ -181,7 +181,10 @@ where a.object_id = {objectId}";
 
         public List<OMAttribute> GetGbuAttributes()
         {
-            return OMAttribute.Where(x => x.RegisterId >= 2 && x.RegisterId <= 23).SelectAll().Execute();
+            var registersIds = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
+                .Select(x => x.RegisterId).Execute().Select(x => x.RegisterId).ToList();
+
+            return OMAttribute.Where(x => registersIds.Contains(x.RegisterId)).SelectAll().Execute();
         }
 
         public int AddNewVirtualAttribute(string attributeName, long registerId, RegisterAttributeType type)

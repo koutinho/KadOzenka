@@ -269,10 +269,8 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult Harmonization()
 		{
-			ViewData["Attributes"] = OMAttribute.Where(x => x.RegisterId >= 2 && x.RegisterId <= 23)
-				.Select(x => new { x.Name, x.Id })
-				.Execute()
-				.Select(x => new { Text = x.Name, Value = x.Id })
+			ViewData["Attributes"] = _service.GetGbuAttributes()
+                .Select(x => new { Text = x.Name, Value = x.Id })
 				.ToList();
 
 			var viewModel = new HarmonizationViewModel();
@@ -317,10 +315,8 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult HarmonizationCOD()
 		{
-			ViewData["Attributes"] = OMAttribute.Where(x => x.RegisterId >= 2 && x.RegisterId <= 23)
-				.Select(x => new { x.Name, x.Id })
-				.Execute()
-				.Select(x => new { Text = x.Name, Value = x.Id })
+			ViewData["Attributes"] = _service.GetGbuAttributes()
+                .Select(x => new { Text = x.Name, Value = x.Id })
 				.ToList();
 			ViewData["CodJobs"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
 			{
