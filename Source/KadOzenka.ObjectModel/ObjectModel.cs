@@ -18483,6 +18483,58 @@ namespace ObjectModel.Declarations
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 600 Реестр хранения реестров с характеристиками объекта (KO_OBJECTS_CHARACTERISTICS_REGISTER)
+    /// </summary>
+    [RegisterInfo(RegisterID = 600)]
+    [Serializable]
+    public partial class OMObjectsCharacteristicsRegister : OMBaseClass<OMObjectsCharacteristicsRegister>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 60000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _registerid;
+        /// <summary>
+        /// 60000200 Идентификатор регистра (REGISTER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000200)]
+        public long? RegisterId
+        {
+            get
+            {
+                CheckPropertyInited("RegisterId");
+                return _registerid;
+            }
+            set
+            {
+                _registerid = value;
+                NotifyPropertyChanged("RegisterId");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

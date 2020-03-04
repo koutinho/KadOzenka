@@ -2500,6 +2500,30 @@ namespace ObjectModel.Declarations
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 600 Реестр хранения реестров с характеристиками объекта
+    /// </summary>
+    public partial class OMObjectsCharacteristicsRegister
+    {
+
+        public OMObjectsCharacteristicsRegister()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMObjectsCharacteristicsRegister(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>
