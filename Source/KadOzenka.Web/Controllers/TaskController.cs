@@ -11,6 +11,7 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using Core.UI.Registers.Models.CoreUi;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess;
@@ -573,6 +574,22 @@ namespace KadOzenka.Web.Controllers
 			return Json(new List<SelectListItem>());
 		}
 
+		#endregion
+
+		#region Присвоение оценочной группы
+
+		public ActionResult SetEstimatedGroup()
+		{
+			var model = new ModalDialogDetails()
+			{
+				Action = ModalDialogDetails.ActionType.None,
+				Buttons = ModalDialogDetails.ButtonType.Ok,
+				Icon = ModalDialogDetails.IconType.Ok,
+				IsProgress = false,
+				Message = "Процесс присвоения оценочной группы поставлен в очередь. По завершении вы получите уведомление!"
+			};
+			return View("~/Views/Shared/ModalDialogDetails.cshtml", model);
+		}
 		#endregion
 
 		public ActionResult DataMapping(long taskId)
