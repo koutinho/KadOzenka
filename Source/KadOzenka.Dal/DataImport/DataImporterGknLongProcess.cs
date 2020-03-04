@@ -4,15 +4,15 @@ using Core.SRD;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using Core.Shared.Extensions;
 using System.Linq;
+using System.Transactions;
 using Core.ErrorManagment;
 using Core.Messages;
 using Core.Register;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -37,10 +37,10 @@ namespace KadOzenka.Dal.DataImport
 
 			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, export.DateCreated, DataImporterCommon.GetTemplateName(export.Id));
 
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
-		}
+            LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+        }
 
-		public void LogError(long? objectId, Exception ex, long? errorId = null)
+        public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
 			OMImportDataLog import = OMImportDataLog
 				.Where(x => x.Id == objectId)
@@ -85,7 +85,7 @@ namespace KadOzenka.Dal.DataImport
 
 			try
 			{
-				ImportGknFromXml(templateFile, import.ObjectId);
+				ImportGknFromXml(templateFile, import.ObjectId, import);
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 				import.DateFinished = DateTime.Now;
 				import.Save();
@@ -112,15 +112,15 @@ namespace KadOzenka.Dal.DataImport
 			return true;
 		}
 
-		public static void ImportGknFromXml(FileStream fileStream, long? objectId)
+		public static void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog)
 		{
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
 			string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-						
-			DataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);			
-		}
 
-		internal static void SendResultNotification(OMImportDataLog import)
+            ImportDataGknFromXmlWithStatistic(fileStream, schemaPath, task, dataLog);
+        }
+
+        internal static void SendResultNotification(OMImportDataLog import)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
@@ -134,5 +134,31 @@ namespace KadOzenka.Dal.DataImport
 				IsEmail = true
 			});
 		}
-	}
+
+        private static void ImportDataGknFromXmlWithStatistic(FileStream fileStream, string schemaPath, OMTask task, OMImportDataLog dataLog)
+        {
+            DataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);
+            CollectStatistic(dataLog);
+        }
+
+        private static void CollectStatistic(OMImportDataLog dataLog)
+        {
+            var totalNumberOfObjects = DataImporterGkn.CountXmlBuildings + DataImporterGkn.CountXmlParcels +
+                                       DataImporterGkn.CountXmlConstructions + DataImporterGkn.CountXmlUncompliteds +
+                                       DataImporterGkn.CountXmlFlats + DataImporterGkn.CountXmlCarPlaces;
+
+            var totalNumberOfImportedObjects = DataImporterGkn.CountImportBuildings + DataImporterGkn.CountImportParcels +
+                                               DataImporterGkn.CountImportConstructions + DataImporterGkn.CountImportUncompliteds +
+                                               DataImporterGkn.CountImportFlats + DataImporterGkn.CountImportCarPlaces;
+
+            using (var ts = new TransactionScope())
+            {
+                dataLog.TotalNumberOfObjects = totalNumberOfObjects;
+                dataLog.NumberOfImportedObjects = totalNumberOfImportedObjects;
+                dataLog.Save();
+
+                ts.Complete();
+            }
+        }
+    }
 }
