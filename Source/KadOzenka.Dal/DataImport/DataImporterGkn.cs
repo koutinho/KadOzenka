@@ -17,10 +17,63 @@ namespace KadOzenka.Dal.DataImport
 {
     public static class DataImporterGkn
     {
+        //Объект-блокиратор для многопоточки
+        private static object locked;
         //ID фактора Материал стен итоговый
         public static Int64 Id_Factor_Wall = -1;
         //ID фактора Год постройки итоговый
         public static Int64 Id_Factor_Year = -1;
+
+        /// <summary>
+        /// Колличество зданий в Xml
+        /// </summary>
+        public static Int32 CountXmlBuildings = 0;
+        /// <summary>
+        /// Колличество участков в Xml
+        /// </summary>
+        public static Int32 CountXmlParcels = 0;
+        /// <summary>
+        /// Колличество сооружений в Xml
+        /// </summary>
+        public static Int32 CountXmlConstructions = 0;
+        /// <summary>
+        /// Колличество объектов незавершенного строительства в Xml
+        /// </summary>
+        public static Int32 CountXmlUncompliteds = 0;
+        /// <summary>
+        /// Колличество помещений в Xml
+        /// </summary>
+        public static Int32 CountXmlFlats = 0;
+        /// <summary>
+        /// Колличество машиномест в Xml
+        /// </summary>
+        public static Int32 CountXmlCarPlaces = 0;
+
+        /// <summary>
+        /// Колличество загруженных зданий из Xml
+        /// </summary>
+        public static Int32 CountImportBuildings = 0;
+        /// <summary>
+        /// Колличество загруженных участков из Xml
+        /// </summary>
+        public static Int32 CountImportParcels = 0;
+        /// <summary>
+        /// Колличество загруженных сооружений из Xml
+        /// </summary>
+        public static Int32 CountImportConstructions = 0;
+        /// <summary>
+        /// Колличество загруженных объектов незавершенного строительства из Xml
+        /// </summary>
+        public static Int32 CountImportUncompliteds = 0;
+        /// <summary>
+        /// Колличество загруженных помещений из Xml
+        /// </summary>
+        public static Int32 CountImportFlats = 0;
+        /// <summary>
+        /// Колличество загруженных машиномест из Xml
+        /// </summary>
+        public static Int32 CountImportCarPlaces = 0;
+
 
 
         /// <summary>
@@ -47,6 +100,19 @@ namespace KadOzenka.Dal.DataImport
                 MaxDegreeOfParallelism = 10
             };
 
+            CountXmlBuildings = GknItems.Buildings.Count;
+            CountXmlParcels = GknItems.Parcels.Count;
+            CountXmlConstructions = GknItems.Constructions.Count;
+            CountXmlUncompliteds = GknItems.Uncompliteds.Count;
+            CountXmlFlats = GknItems.Flats.Count;
+            CountXmlCarPlaces = GknItems.CarPlaces.Count;
+            CountImportBuildings = 0;
+            CountImportParcels = 0;
+            CountImportConstructions = 0;
+            CountImportUncompliteds = 0;
+            CountImportFlats = 0;
+            CountImportCarPlaces = 0;
+            locked = new object();
 
             Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
@@ -343,6 +409,10 @@ namespace KadOzenka.Dal.DataImport
                 #endregion
             }
 
+            lock(locked)
+            {
+                CountImportBuildings++;
+            }
         }
         private static void SaveGknDataBuilding(xmlObjectBuild current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
@@ -567,6 +637,11 @@ namespace KadOzenka.Dal.DataImport
                 ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                 #endregion
 
+            }
+
+            lock (locked)
+            {
+                CountImportParcels++;
             }
 
         }
@@ -840,6 +915,11 @@ namespace KadOzenka.Dal.DataImport
                 #endregion
             }
 
+            lock (locked)
+            {
+                CountImportConstructions++;
+            }
+
         }
         private static void SaveGknDataConstruction(xmlObjectConstruction current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
@@ -1035,6 +1115,11 @@ namespace KadOzenka.Dal.DataImport
                 #endregion
             }
 
+            lock (locked)
+            {
+                CountImportUncompliteds++;
+            }
+
         }
         private static void SaveGknDataUncomplited(xmlObjectUncomplited current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
@@ -1213,6 +1298,11 @@ namespace KadOzenka.Dal.DataImport
                 //Задание на оценку
                 ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
                 #endregion
+            }
+
+            lock (locked)
+            {
+                CountImportFlats++;
             }
 
         }
@@ -1439,6 +1529,10 @@ namespace KadOzenka.Dal.DataImport
                 #endregion
             }
 
+            lock (locked)
+            {
+                CountImportCarPlaces++;
+            }
         }
         private static void SaveGknDataCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
