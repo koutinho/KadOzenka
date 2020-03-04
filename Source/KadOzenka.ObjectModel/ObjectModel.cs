@@ -19060,11 +19060,31 @@ namespace ObjectModel.Common
         }
 
 
-        private long? _numberofimportedobjects;
+        private long? _totalnumberofobjects;
         /// <summary>
-        /// 80101500 Число загруженных объектов (NUMBER_OF_IMPORTED_OBJECTS)
+        /// 80101500 Общее число объектов в файле (TOTAL_NUMBER_OF_OBJECTS)
         /// </summary>
         [RegisterAttribute(AttributeID = 80101500)]
+        public long? TotalNumberOfObjects
+        {
+            get
+            {
+                CheckPropertyInited("TotalNumberOfObjects");
+                return _totalnumberofobjects;
+            }
+            set
+            {
+                _totalnumberofobjects = value;
+                NotifyPropertyChanged("TotalNumberOfObjects");
+            }
+        }
+
+
+        private long? _numberofimportedobjects;
+        /// <summary>
+        /// 80101600 Число загруженных объектов в файле (NUMBER_OF_IMPORTED_OBJECTS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80101600)]
         public long? NumberOfImportedObjects
         {
             get
