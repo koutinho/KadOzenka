@@ -87,7 +87,12 @@
                 formData.append("viewModel.TourId", formObject.TourId);
                 formData.append("viewModel.IsUnitStatusUsed", formObject.IsUnitStatusUsed);
                 formData.append("viewModel.UnitStatus", formObject.UnitStatus);
-                formData.append("viewModel.TaskFilter", $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value());
+                var taskFilter = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
+                if (taskFilter.length > 0) {
+                    for (var i = 0; i !== taskFilter.length; i++) {
+                        formData.append(`viewModel.TaskFilter[${i}]`, taskFilter[i]);
+                    }
+                }
                 formData.append("viewModel.File", files[0].rawFile);
 
                 kendo.ui.progress($('body'), true);
