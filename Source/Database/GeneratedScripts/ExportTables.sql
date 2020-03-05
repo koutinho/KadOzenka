@@ -3314,6 +3314,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('CORE_REGISTER', 'is_deleted')) then
+        execute 'alter table CORE_REGISTER add "is_deleted" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_930_quant_pk')) then
     execute 'alter table CORE_REGISTER add constraint reg_930_quant_pk primary key (registerid)';
   end if;
@@ -3476,6 +3485,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_REGISTER_ATTRIBUTE', 'export_column_name')) then
         execute 'alter table CORE_REGISTER_ATTRIBUTE add "export_column_name" VARCHAR(250)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_REGISTER_ATTRIBUTE', 'is_deleted')) then
+        execute 'alter table CORE_REGISTER_ATTRIBUTE add "is_deleted" SMALLINT';
     end if;
 end $$;
 
@@ -8442,6 +8460,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('GBU_KADASTR_KVARTAL', 'parent_id')) then
         execute 'alter table GBU_KADASTR_KVARTAL add "parent_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_KADASTR_KVARTAL', 'type_territory_2020')) then
+        execute 'alter table GBU_KADASTR_KVARTAL add "type_territory_2020" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_KADASTR_KVARTAL', 'type_territory_2017')) then
+        execute 'alter table GBU_KADASTR_KVARTAL add "type_territory_2017" BIGINT';
     end if;
 end $$;
 
@@ -20200,6 +20236,67 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_COMPLIANCE_GUIDE')) then
+		execute 'create table KO_COMPLIANCE_GUIDE ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'id')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'code')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "code" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'subgroup')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "subgroup" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'type_property')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "type_property" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'parent_id')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "parent_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_compliance_guide_pkey')) then
+    execute 'alter table KO_COMPLIANCE_GUIDE add constraint ko_compliance_guide_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_COST_ROSREESTR')) then
 		execute 'create table KO_COST_ROSREESTR ("id" BIGINT NOT NULL)';
 	end if;
@@ -21014,8 +21111,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_TOUR_FACTOR_REGISTER', 'object_type')) then
-        execute 'alter table KO_TOUR_FACTOR_REGISTER add "object_type" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('KO_TOUR_FACTOR_REGISTER', 'register_id')) then
+        execute 'alter table KO_TOUR_FACTOR_REGISTER add "register_id" BIGINT NOT NULL';
     end if;
 end $$;
 
@@ -21023,8 +21120,17 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_TOUR_FACTOR_REGISTER', 'register_id')) then
-        execute 'alter table KO_TOUR_FACTOR_REGISTER add "register_id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('KO_TOUR_FACTOR_REGISTER', 'object_type_code')) then
+        execute 'alter table KO_TOUR_FACTOR_REGISTER add "object_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR_FACTOR_REGISTER', 'object_type')) then
+        execute 'alter table KO_TOUR_FACTOR_REGISTER add "object_type" VARCHAR(255)';
     end if;
 end $$;
 
@@ -27077,6 +27183,31 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_312_q_pk')) then
     execute 'alter table SUD_ZAKSTATUS add constraint reg_312_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('Tour17618025ZuFactors')) then
+		execute 'create table Tour17618025ZuFactors ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('Tour17618025ZuFactors', 'id')) then
+        execute 'alter table Tour17618025ZuFactors add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_22907398_q_pk')) then
+    execute 'alter table Tour17618025ZuFactors add constraint reg_22907398_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
