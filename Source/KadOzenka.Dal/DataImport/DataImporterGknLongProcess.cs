@@ -5,6 +5,7 @@ using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Threading;
 using Core.Shared.Extensions;
 using System.Linq;
@@ -81,11 +82,19 @@ namespace KadOzenka.Dal.DataImport
 			import.Save();
 					   
 			// Запустить формирование файла
-			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
+			var templateFileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
 
 			try
 			{
-				ImportGknFromXml(templateFile, import.ObjectId, import);
+                if (import.DataFileName.EndsWith(".zip"))
+                {
+                    ImportGknFromZip(import, templateFileStream);
+                }
+			    else
+			    {
+			        ImportGknFromXml(templateFileStream, import.ObjectId, import);
+                }
+
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 				import.DateFinished = DateTime.Now;
 				import.Save();
@@ -107,7 +116,7 @@ namespace KadOzenka.Dal.DataImport
 			SendResultNotification(import);
 		}
 
-		public bool Test()
+	    public bool Test()
 		{
 			return true;
 		}
@@ -117,8 +126,31 @@ namespace KadOzenka.Dal.DataImport
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
 			string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
-            ImportDataGknFromXmlWithStatistic(fileStream, schemaPath, task, dataLog);
+		    DataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);
+		    CollectStatistic(dataLog, GetFileTotalNumberOfObjects(), GetFileTotalNumberOfImportedObjects());
         }
+
+	    private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream)
+	    {
+	        ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
+	            .ExecuteFirstOrDefault();
+	        string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
+
+	        var totalNumberOfObjects = 0;
+	        var numberOfImportedObjects = 0;
+	        using (ZipArchive archive = new ZipArchive(templateFileStream, ZipArchiveMode.Read))
+	        {
+	            var entries = archive.Entries.Where(x => x.Name.EndsWith(".xml")).ToList();
+	            foreach (var zipArchiveEntry in entries)
+	            {
+	                DataImporterGkn.ImportDataGknFromXml(zipArchiveEntry.Open(), schemaPath, omTask);
+
+	                totalNumberOfObjects += GetFileTotalNumberOfObjects();
+	                numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
+	            }
+	        }
+	        CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
+	    }
 
         internal static void SendResultNotification(OMImportDataLog import)
 		{
@@ -135,22 +167,8 @@ namespace KadOzenka.Dal.DataImport
 			});
 		}
 
-        private static void ImportDataGknFromXmlWithStatistic(FileStream fileStream, string schemaPath, OMTask task, OMImportDataLog dataLog)
+        private static void CollectStatistic(OMImportDataLog dataLog, int totalNumberOfObjects, int totalNumberOfImportedObjects)
         {
-            DataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);
-            CollectStatistic(dataLog);
-        }
-
-        private static void CollectStatistic(OMImportDataLog dataLog)
-        {
-            var totalNumberOfObjects = DataImporterGkn.CountXmlBuildings + DataImporterGkn.CountXmlParcels +
-                                       DataImporterGkn.CountXmlConstructions + DataImporterGkn.CountXmlUncompliteds +
-                                       DataImporterGkn.CountXmlFlats + DataImporterGkn.CountXmlCarPlaces;
-
-            var totalNumberOfImportedObjects = DataImporterGkn.CountImportBuildings + DataImporterGkn.CountImportParcels +
-                                               DataImporterGkn.CountImportConstructions + DataImporterGkn.CountImportUncompliteds +
-                                               DataImporterGkn.CountImportFlats + DataImporterGkn.CountImportCarPlaces;
-
             using (var ts = new TransactionScope())
             {
                 dataLog.TotalNumberOfObjects = totalNumberOfObjects;
@@ -160,5 +178,19 @@ namespace KadOzenka.Dal.DataImport
                 ts.Complete();
             }
         }
-    }
+
+	    private static int GetFileTotalNumberOfImportedObjects()
+	    {
+	        return DataImporterGkn.CountImportBuildings + DataImporterGkn.CountImportParcels +
+	               DataImporterGkn.CountImportConstructions + DataImporterGkn.CountImportUncompliteds +
+	               DataImporterGkn.CountImportFlats + DataImporterGkn.CountImportCarPlaces;
+	    }
+
+	    private static int GetFileTotalNumberOfObjects()
+	    {
+	        return DataImporterGkn.CountXmlBuildings + DataImporterGkn.CountXmlParcels +
+	               DataImporterGkn.CountXmlConstructions + DataImporterGkn.CountXmlUncompliteds +
+	               DataImporterGkn.CountXmlFlats + DataImporterGkn.CountXmlCarPlaces;
+	    }
+	}
 }

@@ -9,10 +9,7 @@ using GemBox.Spreadsheet;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
-using Core.Main.FileStorages;
 using Core.ErrorManagment;
-using System.IO;
-using Core.SRD;
 using ObjectModel.KO;
 using KadOzenka.Web.Models.Task;
 using ObjectModel.Core.TD;
@@ -122,7 +119,8 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto)
+		[RequestSizeLimit(2000000000)]
+        public ActionResult ImportGkn(List<IFormFile> files, TaskModel dto)
 		{
 			//SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
 
@@ -171,17 +169,18 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult ImportGknFromTask(List<IFormFile> files, long taskId)
+		[RequestSizeLimit(2000000000)]
+        public ActionResult ImportGknFromTask(List<IFormFile> files, long taskId)
 		{
 			try
 			{
 				foreach (var file in files)
 				{
-					using (var stream = file.OpenReadStream())
-					{
-						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), taskId);
-					}
-				}
+				    using (var stream = file.OpenReadStream())
+				    {
+				        DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), taskId);
+				    }
+                }
 			}
 			catch (Exception e)
 			{

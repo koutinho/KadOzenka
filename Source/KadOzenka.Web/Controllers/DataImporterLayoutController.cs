@@ -32,7 +32,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public FileContentResult Download(long importId, bool downloadResult, bool withXmlExtension)
+		public FileContentResult Download(long importId, bool downloadResult, bool withXmlExtension, string fileNameWithExtention = null)
 		{
 			var import = OMImportDataLog
 				.Where(x => x.Id == importId)
@@ -59,6 +59,17 @@ namespace KadOzenka.Web.Controllers
                 fileExtension = "xml";
                 contentType = "application/xml";
             }
+
+		    if (fileNameWithExtention != null && fileNameWithExtention.EndsWith(".xml"))
+		    {
+		        fileExtension = "xml";
+		        contentType = "application/xml";
+            }
+		    if (fileNameWithExtention != null && fileNameWithExtention.EndsWith(".zip"))
+		    {
+		        fileExtension = "zip";
+		        contentType = "application/zip";
+		    }
 
             return File(bytes, contentType, fileName.Replace(importId.ToString(), Path.GetFileNameWithoutExtension(import.DataFileName)) + "." + fileExtension);
 		}

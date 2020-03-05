@@ -96,7 +96,7 @@
                         {
                             columns.Bound(p => p.Id)
                                 .ClientTemplate("<div style='text-align:center'> <a href='" +
-                                                Url.Action("Download", "DataImporterLayout", new { importId = "#= Id #", downloadResult = false, withXmlExtension = true }, null) +
+                                                Url.Action("Download", "DataImporterLayout", new { importId = "#= Id #", downloadResult = false, withXmlExtension = true, fileNameWithExtention = "#= TemplateFileName #" }, null) +
                                                 "' class='k-icon k-i-download'></a> </div>")
                                 .Title("Файл").Width(80);
                             columns.Bound(p => p.DateCreated).Format("{0:dd.MM.yyyy hh:mm:ss}");
@@ -148,7 +148,7 @@
                     select: 'Загрузить XML'
                 },
                 validation: {
-                    allowedExtensions: ['.xml']
+                    allowedExtensions: ['.xml', '.zip']
                 },
                 async: {
                     autoUpload: true,
