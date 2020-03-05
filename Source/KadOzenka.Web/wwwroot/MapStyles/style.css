@@ -348,11 +348,18 @@ select.EditDataSelect:focus {
 }
 
 .filterControl .allFiltersContainer .filterPanel {
-    margin-top: 10px;
+    margin-top: 5px;
     display: flex;
     align-items: center;
     max-width: 800px;
     white-space: nowrap;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterLabel {
+    color: #5c9eff;
+    background-color: #fff;
+    height:auto;
+    font-size: 18px;
 }
 
 .filterControl .allFiltersContainer .filterPanel .filterButton {

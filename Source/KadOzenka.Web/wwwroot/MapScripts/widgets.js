@@ -55,10 +55,14 @@ function creatFilterWidget() {
                  <div id="filterControl" class="filterControl">
                     <div id="filterImage" class="filterImage inactive"></div>
                     <div id="allFiltersContainer" class="allFiltersContainer inactive">
+                        <div class="filterPanel filterLabel">Тип сделки</div>
                         <div id="dealTypePanel" class="filterPanel"></div>
+                        <div class="filterPanel filterLabel">Тип объекта недвижимости</div>
                         <div id="propertyTypePanel" class="filterPanel"></div>
+                        <div class="filterPanel filterLabel">Сегмент рынка</div>
                         <div id="propertyMarketSegmentPanel" class="filterPanel"></div>
                         <div id="commercialMarketSegmentPanel" class="filterPanel"></div>
+                        <div class="filterPanel filterLabel">Тип деления</div>
                         <div id="layersPanel" class="filterPanel">
                              <div id="districtLayerFilterButton" class="layerButton filterButton inactive">Округа</div>
                              <div id="regionLayerFilterButton" class="layerButton filterButton inactive">Районы</div>
