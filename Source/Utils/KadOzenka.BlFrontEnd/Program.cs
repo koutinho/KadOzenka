@@ -63,8 +63,10 @@ namespace KadOzenka.BlFrontEnd
             /*Вспомогательные функции*/
             consoleHelper.AddCommand("1108", "Присвоение кадастровых номеров", () => { new Cian().SetCadastralNumbers(); });
 
-			/*Генерация тайлов для карт яндекс*/
-			consoleHelper.AddCommand("1901", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
+            consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseXMLData(); });
+
+            /*Генерация тайлов для карт яндекс*/
+            consoleHelper.AddCommand("1901", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
 			consoleHelper.AddCommand("1902", "Генерация тайлов для карты", () => { new CoordinatesConverter().GenerateInitialImages(); });
 
 			consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
@@ -82,7 +84,6 @@ namespace KadOzenka.BlFrontEnd
 				});
 			consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
 			consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
-			consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseDistricts("district"); });
 			consoleHelper.AddCommand("20", "Тест конвертации из Postgres в Mongo", () => { ConvertToMongo.Convert(20000); });
 
 			consoleHelper.AddCommand("30", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
