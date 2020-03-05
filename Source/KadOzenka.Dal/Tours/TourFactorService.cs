@@ -27,10 +27,10 @@ namespace KadOzenka.Dal.Tours
                 omRegister = new OMRegister
                 {
                     RegisterId = -1,
-                    RegisterName = $"Tour{tourId}{(isStead ? "Zu" : "Oks")}Factors",
+                    RegisterName = $"KO.Tour{(isStead ? "Zu" : "Oks")}Factors{tourId}",
                     RegisterDescription = $"Факторы {(isStead ? "Земельных участков" : "ОКС")} Тура {tourId}"
                 };
-                omRegister.QuantTable = omRegister.RegisterName;
+                omRegister.QuantTable = omRegister.RegisterName.Replace(".", "_");
                 omRegister.StorageType = 4;
                 omRegister.ObjectSequence = "REG_OBJECT_SEQ";
                 var registerId = omRegister.Save();
@@ -44,7 +44,6 @@ namespace KadOzenka.Dal.Tours
                     ValueField = "ID",
                     IsPrimaryKey = true,
                     IsNullable = false,
-                    InternalName = "Id"
                 };
                 attribute.Save();
 
@@ -109,7 +108,7 @@ namespace KadOzenka.Dal.Tours
             }
         }
 
-        public int CreateTourFactorRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type)
+        public int CreateTourFactorRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
         {
             int id;
             using (var ts = new TransactionScope())
@@ -119,11 +118,16 @@ namespace KadOzenka.Dal.Tours
                     Id = -1,
                     RegisterId = registerId,
                     Name = attributeName,
-                    Type = (long) type,
+                    Type = type == RegisterAttributeType.REFERENCE ? (long) RegisterAttributeType.STRING : (long) type,
                     IsNullable = true
                 };
                 id = omAttribute.Save();
                 omAttribute.ValueField = $"field{id}";
+                if (type == RegisterAttributeType.REFERENCE)
+                {
+                    omAttribute.CodeField = $"field{id}_code";
+                    omAttribute.ReferenceId = referenceId;
+                }
                 omAttribute.Save();
 
                 DbConfiguratorBase dbConfigurator = RegisterConfigurator.GetDbConfigurator();

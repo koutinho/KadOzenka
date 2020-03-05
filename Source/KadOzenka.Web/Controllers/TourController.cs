@@ -554,7 +554,10 @@ namespace KadOzenka.Web.Controllers
 	        {
 	            model.Id = omAttribute.Id;
 	            model.Name = omAttribute.Name;
-	            model.Type = (RegisterAttributeType)omAttribute.Type;
+	            model.Type = omAttribute.ReferenceId.HasValue
+	                ? RegisterAttributeType.REFERENCE
+	                : (RegisterAttributeType) omAttribute.Type;
+	            model.ReferenceId = omAttribute.ReferenceId;
 	        }
 
 		    return View(model);
@@ -580,7 +583,7 @@ namespace KadOzenka.Web.Controllers
 
                 if (model.Id == -1)
                 {
-                    model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type);
+                    model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type, model.ReferenceId);
                 }
                 else
                 {
