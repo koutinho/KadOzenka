@@ -32,7 +32,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public FileContentResult Download(long importId, bool downloadResult, bool withXmlExtension, string fileNameWithExtention = null)
+		public FileContentResult Download(long importId, bool downloadResult, string fileNameWithExtension = null)
 		{
 			var import = OMImportDataLog
 				.Where(x => x.Id == importId)
@@ -53,28 +53,15 @@ namespace KadOzenka.Web.Controllers
 			templateFile.Read(bytes);
 			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
 
-            //костыль используется в карточке задания (TaskCard), есть задача на доделывание
-            if (withXmlExtension)
-            {
-                fileExtension = "xml";
-                contentType = "application/xml";
-            }
-
-		    if (fileNameWithExtention != null && fileNameWithExtention.EndsWith(".xml"))
+		    if (fileNameWithExtension != null)
 		    {
-		        fileExtension = "xml";
-		        contentType = "application/xml";
-            }
-		    if (fileNameWithExtention != null && fileNameWithExtention.EndsWith(".zip"))
-		    {
-		        fileExtension = "zip";
-		        contentType = "application/zip";
+		        GetFileExtensionByName(fileNameWithExtension, ref fileExtension, ref contentType);
 		    }
 
             return File(bytes, contentType, fileName.Replace(importId.ToString(), Path.GetFileNameWithoutExtension(import.DataFileName)) + "." + fileExtension);
 		}
 
-		[HttpGet]
+	    [HttpGet]
 		public ActionResult ImportReStart(long importId)
 		{
 			var import = OMImportDataLog
@@ -94,5 +81,28 @@ namespace KadOzenka.Web.Controllers
 
 			return Content($"Выполнено повторное формирование файла по шаблону {import.DataFileName}");
 		}
-	}
+
+	    #region Helpers
+
+        private static void GetFileExtensionByName(string fileNameWithExtension, ref string fileExtension, ref string contentType)
+	    {
+	        if (fileNameWithExtension.EndsWith(".xml"))
+	        {
+	            fileExtension = "xml";
+	            contentType = "application/xml";
+	        }
+	        else if (fileNameWithExtension.EndsWith(".zip"))
+	        {
+	            fileExtension = "zip";
+	            contentType = "application/zip";
+	        }
+	        else if (fileNameWithExtension.EndsWith(".rar"))
+	        {
+	            fileExtension = "rar";
+	            contentType = "application/octet-stream";
+	        }
+	    }
+
+	    #endregion
+    }
 }

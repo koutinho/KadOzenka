@@ -13,11 +13,11 @@ using System.Transactions;
 using Core.ErrorManagment;
 using Core.Messages;
 using Core.Register;
-using ObjectModel.KO;
+using SharpCompress.Archives.Rar;
 
 namespace KadOzenka.Dal.DataImport
 {
-	public class DataImporterGknLongProcess : ILongProcess
+    public class DataImporterGknLongProcess : ILongProcess
 	{
 		public const string LongProcessName = "DataImporterGkn";
 
@@ -81,18 +81,24 @@ namespace KadOzenka.Dal.DataImport
 			import.DateStarted = DateTime.Now;
 			import.Save();
 					   
-			// Запустить формирование файла
 			var templateFileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
-
 			try
 			{
                 if (import.DataFileName.EndsWith(".zip"))
                 {
                     ImportGknFromZip(import, templateFileStream);
                 }
-			    else
+                else if (import.DataFileName.EndsWith(".rar"))
+                {
+                    ImportGknFromRar(import, templateFileStream);
+                }
+                else if (import.DataFileName.EndsWith(".xml"))
 			    {
 			        ImportGknFromXml(templateFileStream, import.ObjectId, import);
+                }
+                else
+                {
+                    throw new NotSupportedException($"Неподдерживаемое расширение файла {import.DataFileName}");
                 }
 
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
@@ -149,6 +155,31 @@ namespace KadOzenka.Dal.DataImport
 	                numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
 	            }
 	        }
+
+	        CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
+	    }
+
+	    private static void ImportGknFromRar(OMImportDataLog import, FileStream templateFileStream)
+	    {
+	        ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
+	            .ExecuteFirstOrDefault();
+	        string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
+
+	        var totalNumberOfObjects = 0;
+	        var numberOfImportedObjects = 0;
+
+            using (var archive = RarArchive.Open(templateFileStream))
+	        {
+	            var entries = archive.Entries.Where(entry => entry.Key.EndsWith(".xml")).ToList();
+                foreach (var entry in entries)
+	            {
+	                DataImporterGkn.ImportDataGknFromXml(entry.OpenEntryStream(), schemaPath, omTask);
+
+	                totalNumberOfObjects += GetFileTotalNumberOfObjects();
+	                numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
+	            }
+	        }
+
 	        CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
 	    }
 
