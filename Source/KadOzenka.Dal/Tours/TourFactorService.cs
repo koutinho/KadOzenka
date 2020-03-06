@@ -3,6 +3,7 @@ using System.Linq;
 using System.Transactions;
 using Core.Register;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -13,6 +14,14 @@ namespace KadOzenka.Dal.Tours
 {
     public class TourFactorService
     {
+        public RegisterService RegisterService { get; set; }
+
+        public TourFactorService()
+        {
+            RegisterService = new RegisterService();
+        }
+
+
         public OMRegister CreateTourFactorRegister(long tourId, bool isStead)
         {
             var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
@@ -37,7 +46,7 @@ namespace KadOzenka.Dal.Tours
 
                 var attribute = new OMAttribute
                 {
-                    Id = GetFirstAttributeId(registerId),
+                    Id = RegisterService.GetFirstAttributeId(registerId),
                     RegisterId = registerId,
                     Type = 1,
                     Name = "Идентификатор",
@@ -172,11 +181,6 @@ namespace KadOzenka.Dal.Tours
             omTourFactorRegister.RegisterId = registerId;
             omTourFactorRegister.ObjectType_Code = propertyType;
             omTourFactorRegister.Save();
-        }
-
-        private long GetFirstAttributeId(long registerId)
-        {
-            return registerId * Math.Pow(10, (8 - Math.Floor(Math.Log10(registerId) + 1))).ParseToLong() + 100;
         }
 
         #endregion
