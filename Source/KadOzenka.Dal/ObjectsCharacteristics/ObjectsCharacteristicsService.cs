@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using KadOzenka.Dal.ObjectsCharacteristics.Dto;
+﻿using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
@@ -20,40 +18,22 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         public long AddRegister(ObjectsCharacteristicDto characteristic)
         {
-            long registerId;
+            OMRegister omRegister;
             using (var ts = new TransactionScope())
             {
-                var omRegister = new OMRegister
-                {
-                    RegisterId = -1,
-                    RegisterName = $"source_{GetNumberOfExistingRegistersWithCharacteristics()}_q",
-                    RegisterDescription = characteristic.Name
-                };
-                omRegister.QuantTable = omRegister.RegisterName.Replace(".", "_");
-                omRegister.StorageType = 4;
-                omRegister.ObjectSequence = "REG_OBJECT_SEQ";
-                registerId = omRegister.Save();
+                var registerName = $"source_{GetNumberOfExistingRegistersWithCharacteristics()}_q";
+                omRegister = RegisterService.CreateRegister(registerName, characteristic.Name, registerName);
 
-                var attribute = new OMAttribute
-                {
-                    Id = RegisterService.GetFirstAttributeId(registerId),
-                    RegisterId = registerId,
-                    Type = 1,
-                    Name = "Идентификатор",
-                    ValueField = "ID",
-                    IsPrimaryKey = true,
-                    IsNullable = false
-                };
-                attribute.Save();
+                RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
 
-                RegisterConfigurator.CreateDbTableForRegister(registerId);
+                RegisterConfigurator.CreateDbTableForRegister(omRegister.RegisterId);
 
-                CreateObjectCharacteristics(registerId);
+                CreateObjectCharacteristics(omRegister.RegisterId);
 
                 ts.Complete();
             }
 
-            return registerId;
+            return omRegister.RegisterId;
         }
 
         public long EditRegister(ObjectsCharacteristicDto characteristic)

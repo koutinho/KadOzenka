@@ -33,28 +33,13 @@ namespace KadOzenka.Dal.Tours
             OMRegister omRegister;
             using (var ts = new TransactionScope())
             {
-                omRegister = new OMRegister
-                {
-                    RegisterId = -1,
-                    RegisterName = $"KO.Tour{(isStead ? "Zu" : "Oks")}Factors{tourId}",
-                    RegisterDescription = $"Факторы {(isStead ? "Земельных участков" : "ОКС")} Тура {tourId}"
-                };
-                omRegister.QuantTable = omRegister.RegisterName.Replace(".", "_");
-                omRegister.StorageType = 4;
-                omRegister.ObjectSequence = "REG_OBJECT_SEQ";
-                var registerId = omRegister.Save();
+                var registerName = $"KO.Tour{(isStead ? "Zu" : "Oks")}Factors{tourId}";
+                var registerDescription = $"Факторы {(isStead ? "Земельных участков" : "ОКС")} Тура {tourId}";
+                var quantTable = registerName.Replace(".", "_");
+                omRegister = RegisterService.CreateRegister(registerName, registerDescription, quantTable);
+                var registerId = omRegister.RegisterId;
 
-                var attribute = new OMAttribute
-                {
-                    Id = RegisterService.GetFirstAttributeId(registerId),
-                    RegisterId = registerId,
-                    Type = 1,
-                    Name = "Идентификатор",
-                    ValueField = "ID",
-                    IsPrimaryKey = true,
-                    IsNullable = false,
-                };
-                attribute.Save();
+                RegisterService.CreateIdColumnForRegister(registerId);
 
                 RegisterConfigurator.CreateDbTableForRegister(registerId);
 
@@ -173,7 +158,7 @@ namespace KadOzenka.Dal.Tours
 
         #region Support Methods
 
-        private static void CreateTourFactorRegister(long tourId, int registerId, PropertyTypes propertyType)
+        private static void CreateTourFactorRegister(long tourId, long registerId, PropertyTypes propertyType)
         {
             var omTourFactorRegister = new OMTourFactorRegister();
             omTourFactorRegister.Id = -1;
