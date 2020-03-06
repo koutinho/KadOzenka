@@ -9,8 +9,8 @@
         <Parameter Key="RegisterId" Value="[RegisterId]" />
       </Parameters>
     </Button>
-    <!--<Button Caption="Добавить источник" NavigateURL="~/CoreUi/EditRegisterData" WindowHeight="700" WindowWidth="900" Icon="fas fa-plus">
-    </Button>-->
+    <Button Caption="Добавить источник" NavigateURL="~/ObjectsCharacteristics/Add" WindowHeight="200" WindowWidth="900" Icon="fas fa-plus">
+    </Button>
   </Buttons>
 
   <Tabs>
