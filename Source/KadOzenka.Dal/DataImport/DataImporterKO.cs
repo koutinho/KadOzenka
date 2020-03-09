@@ -330,7 +330,7 @@ namespace KadOzenka.Dal.DataImport
                             }
                             else
                             {
-                                ObjectModel.KO.OMGroup group = oksGroup.Find(x => x.GroupName == numberGroup);
+                                ObjectModel.KO.OMGroup group = oksGroup.Find(x => x.Number == numberGroup);
                                 if (group != null)
                                 {
                                     unit.GroupId = group.Id;
