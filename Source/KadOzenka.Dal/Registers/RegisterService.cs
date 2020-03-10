@@ -57,6 +57,8 @@ namespace KadOzenka.Dal.Registers
                     omRegisterAttribute.IsDeleted = true;
                     omRegisterAttribute.Save();
                 }
+
+                ts.Complete();
             }
         }
 
