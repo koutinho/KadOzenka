@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using Core.Register;
-using Core.Shared.Extensions;
+using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
@@ -15,10 +17,30 @@ namespace KadOzenka.Dal.Tours
     public class TourFactorService
     {
         public RegisterService RegisterService { get; set; }
+        public RegisterAttributeService RegisterAttributeService { get; set; }
 
         public TourFactorService()
         {
             RegisterService = new RegisterService();
+            RegisterAttributeService = new RegisterAttributeService();
+        }
+
+        public List<OMAttribute> GetTourAttributes(long tourId, ObjectType objectType)
+        {
+            var existedTourFactorRegisters = objectType == ObjectType.ZU
+                ? OMTourFactorRegister
+                    .Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
+                    .SelectAll().Execute()
+                : OMTourFactorRegister
+                    .Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
+                    .SelectAll().Execute();
+
+            if (existedTourFactorRegisters.Count == 0)
+                return new List<OMAttribute>();
+
+            var registerId = existedTourFactorRegisters.First().RegisterId;
+
+            return OMAttribute.Where(x => x.RegisterId == registerId && x.IsDeleted.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
         }
 
 
@@ -89,27 +111,13 @@ namespace KadOzenka.Dal.Tours
             }
         }
 
-        public int CreateTourFactorRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
+        public long CreateTourFactorRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
         {
-            int id;
+            long id;
             using (var ts = new TransactionScope())
             {
-                var omAttribute = new OMAttribute
-                {
-                    Id = -1,
-                    RegisterId = registerId,
-                    Name = attributeName,
-                    Type = type == RegisterAttributeType.REFERENCE ? (long) RegisterAttributeType.STRING : (long) type,
-                    IsNullable = true
-                };
-                id = omAttribute.Save();
-                omAttribute.ValueField = $"field{id}";
-                if (type == RegisterAttributeType.REFERENCE)
-                {
-                    omAttribute.CodeField = $"field{id}_code";
-                    omAttribute.ReferenceId = referenceId;
-                }
-                omAttribute.Save();
+                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(attributeName, registerId, type, referenceId);
+                id = omAttribute.Id;
 
                 DbConfiguratorBase dbConfigurator = RegisterConfigurator.GetDbConfigurator();
                 RegisterConfigurator.CreateDbColumnForRegister(omAttribute, dbConfigurator);
@@ -122,25 +130,12 @@ namespace KadOzenka.Dal.Tours
 
         public void RenameTourFactorRegisterAttribute(long attributeId, string newAttributeName)
         {
-            var attribute = OMAttribute.Where(x => x.Id == attributeId).SelectAll().ExecuteFirstOrDefault();
-            if (attribute == null)
-            {
-                throw new Exception($"Не найден атрибут с ИД {attributeId}");
-            }
-            attribute.Name = newAttributeName;
-
-            attribute.Save();
+            RegisterAttributeService.RenameRegisterAttribute(attributeId, newAttributeName);
         }
 
         public void RemoveTourFactorRegisterAttribute(long attributeId)
         {
-            var attribute = OMAttribute.Where(x => x.Id == attributeId).SelectAll().ExecuteFirstOrDefault();
-            if (attribute == null)
-            {
-                throw new Exception($"Не найден атрибут с ИД {attributeId}");
-            }
-            attribute.IsDeleted = true;
-            attribute.Save();
+            RegisterAttributeService.RemoveRegisterAttribute(attributeId);
         }
 
         #region Support Methods

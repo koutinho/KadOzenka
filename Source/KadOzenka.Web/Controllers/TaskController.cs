@@ -24,6 +24,7 @@ using Kendo.Mvc.UI;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu.ExportAttribute;
 using KadOzenka.Dal.Models.Task;
+using KadOzenka.Dal.Tours;
 using Microsoft.EntityFrameworkCore.SqlServer.Query.Expressions.Internal;
 
 namespace KadOzenka.Web.Controllers
@@ -34,7 +35,7 @@ namespace KadOzenka.Web.Controllers
 		public ModelService ModelService { get; set; }
 		public DataImporterService DataImporterService { get; set; }
 		public GbuObjectService GbuObjectService { get; set; }
-		public KoService KoService { get; set; }
+		public TourFactorService TourFactorService { get; set; }
 
 		public TaskController()
 		{
@@ -42,7 +43,7 @@ namespace KadOzenka.Web.Controllers
 			ModelService = new ModelService();
 			DataImporterService = new DataImporterService();
 			GbuObjectService = new GbuObjectService();
-			KoService = new KoService();
+		    TourFactorService = new TourFactorService();
 		}
 
 		#region Карточка задачи
@@ -115,7 +116,7 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetKoAttributes(long tourId, int objectType)
 		{
-			var koAttributes = KoService.GetKoAttributes(tourId, (ObjectType)objectType);
+			var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
 
 			var models = koAttributes.Select(x => new
 			{
@@ -149,7 +150,7 @@ namespace KadOzenka.Web.Controllers
 					Text = x.Name
 				}).AsEnumerable();
 
-			var koAttributes = KoService.GetKoAttributes(tourId, (ObjectType)objectType) ?? new List<OMAttribute>();
+			var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType) ?? new List<OMAttribute>();
 
 			ViewData["KoAttributes"] = koAttributes.Select(x => new
 			{

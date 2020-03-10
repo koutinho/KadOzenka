@@ -60,7 +60,6 @@ namespace KadOzenka.Dal.Registers
             }
         }
 
-
         #region Support Methods
 
         private long GetFirstAttributeId(long registerId)
