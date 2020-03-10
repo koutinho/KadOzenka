@@ -15,7 +15,8 @@ namespace KadOzenka.Dal.Registers
                 RegisterDescription = registerDescription,
                 QuantTable = quantTable,
                 StorageType = 4,
-                ObjectSequence = "REG_OBJECT_SEQ"
+                ObjectSequence = "REG_OBJECT_SEQ",
+                ContainsQuantInFuture = false
             };
 
             omRegister.Save();
