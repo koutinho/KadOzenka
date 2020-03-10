@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Transactions;
 using Core.Shared.Extensions;
 using ObjectModel.Core.Register;
 
@@ -36,6 +37,27 @@ namespace KadOzenka.Dal.Registers
                 IsPrimaryKey = true,
                 IsNullable = false
             }.Save();
+        }
+
+        public void RemoveRegister(long registerId)
+        {
+            using (var ts = new TransactionScope())
+            {
+                var omRegister = OMRegister.Where(x => x.RegisterId == registerId).SelectAll().ExecuteFirstOrDefault();
+                if (omRegister == null)
+                {
+                    throw new Exception($"Не найден реестр с ИД {registerId}");
+                }
+                omRegister.IsDeleted = true;
+                omRegister.Save();
+
+                var omRegisterAttributes = OMAttribute.Where(x => x.RegisterId == registerId).SelectAll().Execute();
+                foreach (var omRegisterAttribute in omRegisterAttributes)
+                {
+                    omRegisterAttribute.IsDeleted = true;
+                    omRegisterAttribute.Save();
+                }
+            }
         }
 
 

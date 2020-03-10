@@ -76,20 +76,7 @@ namespace KadOzenka.Dal.Tours
                 {
                     foreach (var omTourFactorRegisterId in omTourFactorRegisters.Select(x => x.RegisterId).Distinct().ToList())
                     {
-                        var omRegister = OMRegister.Where(x => x.RegisterId == omTourFactorRegisterId).SelectAll().ExecuteFirstOrDefault();
-                        if (omRegister == null)
-                        {
-                            throw new Exception($"Не найден реестр факторов тура с ИД {omTourFactorRegisterId}");
-                        }
-                        omRegister.IsDeleted = true;
-                        omRegister.Save();
-
-                        var omRegisterAttributes = OMAttribute.Where(x => x.RegisterId == omTourFactorRegisterId).SelectAll().Execute();
-                        foreach (var omRegisterAttribute in omRegisterAttributes)
-                        {
-                            omRegisterAttribute.IsDeleted = true;
-                            omRegisterAttribute.Save();
-                        }
+                        RegisterService.RemoveRegister(omTourFactorRegisterId.Value);
                     }
 
                     foreach (var omTourFactorRegister in omTourFactorRegisters)
