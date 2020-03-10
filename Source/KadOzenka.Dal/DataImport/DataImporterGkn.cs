@@ -87,7 +87,51 @@ namespace KadOzenka.Dal.DataImport
             ImportDataGknFromXml(xmlFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.CreationDate.Value, task.CreationDate.Value, task.DocumentId.Value);
         }
 
+        /// <summary>
+        /// Импорт данных ГКН из Excel
+        /// excelFile - файл Excel
+        /// pathSchema - путь к каталогу где хранится схема
+        /// task - ссылка на задание на оценку
+        /// </summary>
+        public static void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task)
+        {
+            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.CreationDate.Value, task.CreationDate.Value, task.DocumentId.Value);
+        }
 
+        private static void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        {
+            xmlImportGkn.FillDictionary(pathSchema);
+            xmlObjectList GknItems = xmlImportGkn.GetExcelObject(excelFile);
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 10
+            };
+
+            CountXmlBuildings = GknItems.Buildings.Count;
+            CountXmlParcels = GknItems.Parcels.Count;
+            CountXmlConstructions = GknItems.Constructions.Count;
+            CountXmlUncompliteds = GknItems.Uncompliteds.Count;
+            CountXmlFlats = GknItems.Flats.Count;
+            CountXmlCarPlaces = GknItems.CarPlaces.Count;
+            CountImportBuildings = 0;
+            CountImportParcels = 0;
+            CountImportConstructions = 0;
+            CountImportUncompliteds = 0;
+            CountImportFlats = 0;
+            CountImportCarPlaces = 0;
+            locked = new object();
+
+            Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.Constructions, options, item => ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.Flats, options, item => ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+
+        }
         private static void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlImportGkn.FillDictionary(pathSchema);

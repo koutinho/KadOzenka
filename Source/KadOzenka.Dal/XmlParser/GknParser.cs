@@ -1949,6 +1949,237 @@ namespace KadOzenka.Dal.XmlParser
 
             return obj;
         }
+        public static xmlObject GetData(ExcelRow row, enTypeObject typeobject)
+        {
+            string kn = row.Cells[0].Value.ParseToString();
+            DateTime dc = DateTime.MinValue;
+            xmlObject obj = new xmlObject(typeobject, kn, dc);
+
+            if (typeobject==enTypeObject.toParcel)
+            {
+                obj.TypeRealty = "Земельный участок";
+                obj.Area = row.Cells[2].Value.ParseToString();
+                obj.NameParcel = new xmlCodeName()
+                {
+                    Code = string.Empty,
+                    Name = row.Cells[3].Value.ParseToString()
+                };
+                obj.CadastralNumberBlock = row.Cells[8].Value.ParseToString();
+                obj.Adress = new xmlAdress();
+                obj.Adress.KLADR = row.Cells[6].Value.ParseToString();
+                obj.Adress.Place = row.Cells[7].Value.ParseToString();
+                obj.Adress.Other = row.Cells[5].Value.ParseToString();
+                obj.Category = new xmlCodeName()
+                {
+                    Code = string.Empty,
+                    Name = row.Cells[9].Value.ParseToString()
+                };
+                obj.Utilization = new xmlUtilization();
+                obj.Utilization.ByDoc= row.Cells[4].Value.ParseToString();
+            }
+
+            if (typeobject == enTypeObject.toBuilding)
+            {
+                obj.TypeRealty = "Здание";
+                obj.Area = row.Cells[2].Value.ParseToString();
+                obj.CadastralNumberBlock = row.Cells[8].Value.ParseToString();
+                obj.Adress = new xmlAdress();
+                obj.Adress.KLADR = row.Cells[6].Value.ParseToString();
+                obj.Adress.Place = row.Cells[7].Value.ParseToString();
+                obj.Adress.Other = row.Cells[5].Value.ParseToString();
+
+                string zusnum = row.Cells[9].Value.ParseToString();
+                if (zusnum != string.Empty)
+                {
+                    string[] zus = zusnum.Split(';');
+                    foreach (string zu in zus)
+                        obj.ParentCadastralNumbers.Add(zu.Trim());
+                }
+
+                obj.Years = new xmlYear();
+                obj.Years.Year_Built = row.Cells[10].Value.ParseToString();
+                obj.Years.Year_Used = row.Cells[11].Value.ParseToString();
+
+                obj.Floors = new xmlFloors();
+                obj.Floors.Floors = row.Cells[12].Value.ParseToString();
+                obj.Floors.Underground_Floors = row.Cells[13].Value.ParseToString();
+
+                obj.AssignationBuilding = new xmlCodeName()
+                {
+                    Code = string.Empty,
+                    Name = row.Cells[4].Value.ParseToString()
+                };
+
+                obj.NameObject = row.Cells[3].Value.ParseToString();
+
+                string wcode = row.Cells[14].Value.ParseToString();
+                if (wcode != string.Empty)
+                {
+                    obj.Walls.Add(
+                        new xmlCodeName()
+                        {
+                            Code = string.Empty,
+                            Name = wcode
+                        });
+                }
+            }
+
+            if (typeobject == enTypeObject.toConstruction)
+            {
+                obj.TypeRealty = "Сооружение";
+                obj.CadastralNumberBlock = row.Cells[7].Value.ParseToString();
+                obj.Adress = new xmlAdress();
+                obj.Adress.KLADR = row.Cells[5].Value.ParseToString();
+                obj.Adress.Place = row.Cells[6].Value.ParseToString();
+                obj.Adress.Other = row.Cells[4].Value.ParseToString();
+
+                string zusnum = row.Cells[8].Value.ParseToString();
+                if (zusnum != string.Empty)
+                {
+                    string[] zus = zusnum.Split(';');
+                    foreach (string zu in zus)
+                        obj.ParentCadastralNumbers.Add(zu.Trim());
+                }
+
+                obj.Years = new xmlYear();
+                obj.Years.Year_Built = row.Cells[9].Value.ParseToString();
+                obj.Years.Year_Used = row.Cells[10].Value.ParseToString();
+
+                obj.Floors = new xmlFloors();
+                obj.Floors.Floors = row.Cells[11].Value.ParseToString();
+                obj.Floors.Underground_Floors = row.Cells[12].Value.ParseToString();
+
+                obj.AssignationName = row.Cells[3].Value.ParseToString();
+                obj.NameObject = row.Cells[2].Value.ParseToString();
+
+
+                string wcode = row.Cells[13].Value.ParseToString();
+                if (wcode != string.Empty)
+                {
+                    xmlCodeNameValue tmp = new xmlCodeNameValue();
+                    tmp.Code = string.Empty; 
+                    tmp.Name = "Характеристика"; 
+                    tmp.Value = wcode;
+                    obj.KeyParameters.Add(tmp);
+                }
+            }
+
+            if (typeobject == enTypeObject.toUncomplited)
+            {
+                obj.TypeRealty = "ОНС";
+                obj.CadastralNumberBlock = row.Cells[6].Value.ParseToString();
+                obj.Adress = new xmlAdress();
+                obj.Adress.KLADR = row.Cells[4].Value.ParseToString();
+                obj.Adress.Place = row.Cells[5].Value.ParseToString();
+                obj.Adress.Other = row.Cells[3].Value.ParseToString();
+
+                string zusnum = row.Cells[7].Value.ParseToString();
+                if (zusnum != string.Empty)
+                {
+                    string[] zus = zusnum.Split(';');
+                    foreach (string zu in zus)
+                        obj.ParentCadastralNumbers.Add(zu.Trim());
+                }
+
+                obj.AssignationName = row.Cells[2].Value.ParseToString();
+
+
+                string wcode = row.Cells[8].Value.ParseToString();
+                if (wcode != string.Empty)
+                {
+                    xmlCodeNameValue tmp = new xmlCodeNameValue();
+                    tmp.Code = string.Empty;
+                    tmp.Name = "Характеристика";
+                    tmp.Value = wcode;
+                    obj.KeyParameters.Add(tmp);
+                }
+
+                obj.DegreeReadiness = row.Cells[9].Value.ParseToString();
+            }
+
+            if (typeobject == enTypeObject.toFlat)
+            {
+                obj.TypeRealty = "Помещение";
+                obj.Area = row.Cells[2].Value.ParseToString();
+
+                obj.CadastralNumberBlock = row.Cells[9].Value.ParseToString();
+                obj.Adress = new xmlAdress();
+                obj.Adress.KLADR = row.Cells[6].Value.ParseToString();
+                obj.Adress.Place = row.Cells[8].Value.ParseToString();
+                obj.Adress.Other = row.Cells[5].Value.ParseToString();
+
+                obj.AssignationFlatCode = new xmlCodeName()
+                {
+                    Code = string.Empty,
+                    Name = row.Cells[4].Value.ParseToString()
+                };
+
+                obj.NameObject = row.Cells[3].Value.ParseToString();
+                obj.CadastralNumberOKS= row.Cells[7].Value.ParseToString();
+
+                obj.Years = new xmlYear();
+                obj.Years.Year_Built = row.Cells[10].Value.ParseToString();
+                obj.Years.Year_Used = row.Cells[11].Value.ParseToString();
+
+
+                xmlPosition tmp = new xmlPosition();
+                tmp.Position.Value = row.Cells[12].Value.ParseToString();
+                tmp.Position.Name = "Этаж";
+                obj.PositionsInObject.Add(tmp);
+
+
+                string wcode = row.Cells[13].Value.ParseToString();
+                if (wcode != string.Empty)
+                {
+                    obj.Walls.Add(
+                        new xmlCodeName()
+                        {
+                            Code = string.Empty,
+                            Name = wcode
+                        });
+                }
+            }
+
+            return obj;
+        }
+
+
+        public static xmlObjectList GetExcelObject(ExcelFile excelFile)
+        {
+            xmlObjectList objs = new xmlObjectList();
+
+            var mainWorkSheet = excelFile.Worksheets[0];
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 1
+            };
+
+            Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+            {
+                try
+                {
+                    if (row.Index != 0) //все, кроме заголовков
+                    {
+                        string typeobject = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString().ToUpper();
+                        if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toParcel));
+                        if (typeobject == "ЗДАНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toBuilding));
+                        if (typeobject == "СООРУЖЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toConstruction));
+                        if (typeobject == "ОНС") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toUncomplited));
+                        if (typeobject == "ПОМЕЩЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toFlat));
+                    }
+                }
+                catch (Exception ex)
+                {
+                }
+            });
+
+            return objs;
+        }
+
+
     }
 
 
