@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.Tours
         {
             var tour = OMTour.Where(x => x.Year == year).Select(x => x.Id).ExecuteFirstOrDefault();
             if (tour == null)
-                throw new Exception($"Не найден Тур с годом='{year}'");
+                throw new Exception($"Не найден Тур с годом '{year}'");
 
             return new TourDto
             {
@@ -32,6 +32,9 @@ namespace KadOzenka.Dal.Tours
         public int AddTour(TourDto tourDto)
         {
             ValidateTourYear(tourDto);
+            var existedTour = OMTour.Where(x => x.Year == tourDto.Year).Select(x => x.Id).ExecuteFirstOrDefault();
+            if (existedTour != null)
+                throw new Exception($"Тур с годом '{tourDto.Year}' уже существует");
 
             int id;
             using (var ts = new TransactionScope())
