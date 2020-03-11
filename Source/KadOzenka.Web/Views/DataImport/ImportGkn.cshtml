@@ -78,6 +78,9 @@
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
         panelbar.expand('li[data-expand]');        
 
+        var generalAllowedFilesExtensions = ['.xml', '.zip', '.rar'];
+        var allowedFilesExtensionsForPetition = ['.xlsx', '.zip', '.rar'];
+
         var toolbar = $("#toolbar").kendoToolBar({
             items: [
                 {
@@ -86,7 +89,19 @@
                     text: 'Сохранить',
                     click: function () {
                         var message = [];
-                        
+
+                        var upload = $("#files").data("kendoUpload");
+                        var files = upload.getFiles();
+                        $.each(files, (function (index, value) {
+                            if (isPetition()) {
+                                if ($.inArray(value.extension, allowedFilesExtensionsForPetition) === -1)
+                                    message += 'Загружены файлы недопустимого формата (разрешенные форматы для обращения: .xlsx, .zip, .rar)<br>';
+                            } else {
+                                if ($.inArray(value.extension, generalAllowedFilesExtensions) === -1)
+                                    message += 'Загружены файлы недопустимого формата (разрешенные форматы: .xml, .zip, .rar)<br>';
+                            }
+                        }));
+
                         if ($('[name="IncomingDocumentRegNumber"]').val() == 0) {
                             message += 'Необходимо заполнить номер документа<br>';
                         }                        
@@ -161,7 +176,7 @@
                 select: 'Выбрать файлы'
             },
             validation: {
-                allowedExtensions: ['.xml', '.zip', '.rar']
+                allowedExtensions: generalAllowedFilesExtensions
             },
             error: function (e) {
                 if (e.XMLHttpRequest.responseText) {
@@ -178,14 +193,18 @@
 
 
     function updateFilesBlock() {
-        var noteType = $('[name="NoteType"]').val();
-        var petitionNoteType = '@KoNoteType.Petition.GetEnumCode()';
-        if (noteType === petitionNoteType) {
+        if (isPetition()) {
             $("#filesBlockLabel").text("XLSX-файлы");
             $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xlsx', '.zip', '.rar'];
         } else {
             $("#filesBlockLabel").text("XML-файлы");
             $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xml', '.zip', '.rar'];
         }
+    }
+
+    function isPetition() {
+        var noteType = $('[name="NoteType"]').val();
+        var petitionNoteType = '@KoNoteType.Petition.GetEnumCode()';
+        return noteType === petitionNoteType;
     }
 </script>
