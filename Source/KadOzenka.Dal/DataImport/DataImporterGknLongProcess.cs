@@ -9,11 +9,13 @@ using System.IO.Compression;
 using System.Threading;
 using Core.Shared.Extensions;
 using System.Linq;
+using System.Text;
 using System.Transactions;
 using Core.ErrorManagment;
 using Core.Messages;
 using Core.Register;
 using GemBox.Spreadsheet;
+using Ionic.Zip;
 using ObjectModel.Directory;
 using SharpCompress.Archives.Rar;
 
@@ -202,12 +204,28 @@ namespace KadOzenka.Dal.DataImport
 
             var totalNumberOfObjects = 0;
             var numberOfImportedObjects = 0;
-            using (ZipArchive archive = new ZipArchive(templateFileStream, ZipArchiveMode.Read))
+           
+            using (var filesFromZip = Ionic.Zip.ZipFile.Read(templateFileStream, new ReadOptions { Encoding = Encoding.GetEncoding("cp866") }))
             {
-                var entries = archive.Entries.Where(x => x.Name.EndsWith(".xlsx")).ToList();
-                foreach (var zipArchiveEntry in entries)
+                if (filesFromZip.Count == 0)
+                    throw new Exception("Передан пустой zip-файл");
+
+                foreach (var file in filesFromZip)
                 {
-                    var excelFile = ExcelFile.Load(zipArchiveEntry.Open(), LoadOptions.XlsxDefault);
+                    if (file.Attributes == FileAttributes.Directory)
+                        continue;
+
+                    var fileExtension = Path.GetExtension(file.FileName);
+                    if (fileExtension != ".xlsx")
+                    {
+                        throw new Exception(
+                            $"Внутри архива есть файл с неправильным форматом '{file.FileName}' (поддерживаемые форматы: .xlsx).");
+                    }
+                    var stream = new MemoryStream();
+                    file.Extract(stream);
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    var excelFile = ExcelFile.Load(stream, LoadOptions.XlsxDefault);
                     DataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, omTask);
 
                     totalNumberOfObjects += GetFileTotalNumberOfObjects();
