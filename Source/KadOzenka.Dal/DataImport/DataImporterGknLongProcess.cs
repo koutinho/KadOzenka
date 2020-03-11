@@ -13,6 +13,8 @@ using System.Transactions;
 using Core.ErrorManagment;
 using Core.Messages;
 using Core.Register;
+using GemBox.Spreadsheet;
+using ObjectModel.Directory;
 using SharpCompress.Archives.Rar;
 
 namespace KadOzenka.Dal.DataImport
@@ -84,21 +86,44 @@ namespace KadOzenka.Dal.DataImport
 			var templateFileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
 			try
 			{
-                if (import.DataFileName.EndsWith(".zip"))
+                ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                if (omTask != null && omTask.NoteType_Code == KoNoteType.Petition)
                 {
-                    ImportGknFromZip(import, templateFileStream);
-                }
-                else if (import.DataFileName.EndsWith(".rar"))
-                {
-                    ImportGknFromRar(import, templateFileStream);
-                }
-                else if (import.DataFileName.EndsWith(".xml"))
-			    {
-			        ImportGknFromXml(templateFileStream, import.ObjectId, import);
+                    if (import.DataFileName.EndsWith(".zip"))
+                    {
+                        ImportGknFromZipForPetition(import, templateFileStream);
+                    }
+                    else if (import.DataFileName.EndsWith(".rar"))
+                    {
+                        ImportGknFromRarForPetition(import, templateFileStream);
+                    }
+                    else if (import.DataFileName.EndsWith(".xlsx"))
+                    {
+                        ImportGknFromXlsx(templateFileStream, import.ObjectId, import);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException($"Неподдерживаемое расширение файла {import.DataFileName}, поддерживаемые расширения: .zip, .rar, .xlsx.");
+                    }
                 }
                 else
                 {
-                    throw new NotSupportedException($"Неподдерживаемое расширение файла {import.DataFileName}");
+                    if (import.DataFileName.EndsWith(".zip"))
+                    {
+                        ImportGknFromZip(import, templateFileStream);
+                    }
+                    else if (import.DataFileName.EndsWith(".rar"))
+                    {
+                        ImportGknFromRar(import, templateFileStream);
+                    }
+                    else if (import.DataFileName.EndsWith(".xml"))
+                    {
+                        ImportGknFromXml(templateFileStream, import.ObjectId, import);
+                    }
+                    else
+                    {
+                        throw new NotSupportedException($"Неподдерживаемое расширение файла {import.DataFileName}");
+                    }
                 }
 
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
@@ -136,7 +161,17 @@ namespace KadOzenka.Dal.DataImport
 		    CollectStatistic(dataLog, GetFileTotalNumberOfObjects(), GetFileTotalNumberOfImportedObjects());
         }
 
-	    private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream)
+        public static void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog)
+        {
+            ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
+            string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
+
+            var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+            DataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, task);
+            CollectStatistic(dataLog, GetFileTotalNumberOfObjects(), GetFileTotalNumberOfImportedObjects());
+        }
+
+        private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream)
 	    {
 	        ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
 	            .ExecuteFirstOrDefault();
@@ -159,7 +194,31 @@ namespace KadOzenka.Dal.DataImport
 	        CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
 	    }
 
-	    private static void ImportGknFromRar(OMImportDataLog import, FileStream templateFileStream)
+        private static void ImportGknFromZipForPetition(OMImportDataLog import, FileStream templateFileStream)
+        {
+            ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
+                .ExecuteFirstOrDefault();
+            string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
+
+            var totalNumberOfObjects = 0;
+            var numberOfImportedObjects = 0;
+            using (ZipArchive archive = new ZipArchive(templateFileStream, ZipArchiveMode.Read))
+            {
+                var entries = archive.Entries.Where(x => x.Name.EndsWith(".xlsx")).ToList();
+                foreach (var zipArchiveEntry in entries)
+                {
+                    var excelFile = ExcelFile.Load(zipArchiveEntry.Open(), LoadOptions.XlsxDefault);
+                    DataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, omTask);
+
+                    totalNumberOfObjects += GetFileTotalNumberOfObjects();
+                    numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
+                }
+            }
+
+            CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
+        }
+
+        private static void ImportGknFromRar(OMImportDataLog import, FileStream templateFileStream)
 	    {
 	        ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
 	            .ExecuteFirstOrDefault();
@@ -182,6 +241,31 @@ namespace KadOzenka.Dal.DataImport
 
 	        CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
 	    }
+
+        private static void ImportGknFromRarForPetition(OMImportDataLog import, FileStream templateFileStream)
+        {
+            ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
+                .ExecuteFirstOrDefault();
+            string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
+
+            var totalNumberOfObjects = 0;
+            var numberOfImportedObjects = 0;
+
+            using (var archive = RarArchive.Open(templateFileStream))
+            {
+                var entries = archive.Entries.Where(entry => entry.Key.EndsWith(".xlsx")).ToList();
+                foreach (var entry in entries)
+                {
+                    var excelFile = ExcelFile.Load(entry.OpenEntryStream(), LoadOptions.XlsxDefault);
+                    DataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, omTask);
+
+                    totalNumberOfObjects += GetFileTotalNumberOfObjects();
+                    numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
+                }
+            }
+
+            CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
+        }
 
         internal static void SendResultNotification(OMImportDataLog import)
 		{

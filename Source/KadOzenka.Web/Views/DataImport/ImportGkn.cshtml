@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Task.TaskModel
+﻿@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Task.TaskModel
 
 <div id="toolbar"></div>
 <div>
@@ -59,7 +60,7 @@
             </div>
         </li>
         <li id="XmlFiles" data-expand>
-            <span>XML-файлы</span>
+            <span id="filesBlockLabel">XML-файлы</span>
             <div>
                 <div class="form-horizontal col-sm-12">
                     <form id="fileForm">
@@ -155,20 +156,36 @@
             });
 
         var files = $('#files').kendoUpload({
-		    multiple: true,
-		    localization: {
-			    select: 'Выбрать файлы'
-		    },		    
-		    validation: {
+            multiple: true,
+            localization: {
+                select: 'Выбрать файлы'
+            },
+            validation: {
                 allowedExtensions: ['.xml', '.zip', '.rar']
-		    },
-		    error: function (e) {
-			    if (e.XMLHttpRequest.responseText) {
-				    Common.ShowError(e.XMLHttpRequest.responseText);
-			    } else {
-				    Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошибок)");
-			    }
-		    }
-	    }).data('kendoUpload');
+            },
+            error: function (e) {
+                if (e.XMLHttpRequest.responseText) {
+                    Common.ShowError(e.XMLHttpRequest.responseText);
+                } else {
+                    Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошибок)");
+                }
+            }
+        }).data('kendoUpload');
+
+        $('[name="NoteType"]').data('kendoDropDownList').bind('dataBound', updateFilesBlock);
+        $('[name="NoteType"]').data('kendoDropDownList').bind('change', updateFilesBlock);
     });
+
+
+    function updateFilesBlock() {
+        var noteType = $('[name="NoteType"]').val();
+        var petitionNoteType = '@KoNoteType.Petition.GetEnumCode()';
+        if (noteType === petitionNoteType) {
+            $("#filesBlockLabel").text("XLSX-файлы");
+            $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xlsx', '.zip', '.rar'];
+        } else {
+            $("#filesBlockLabel").text("XML-файлы");
+            $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xml', '.zip', '.rar'];
+        }
+    }
 </script>
