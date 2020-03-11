@@ -190,7 +190,9 @@ namespace KadOzenka.Dal.DataImport
 
 	                totalNumberOfObjects += GetFileTotalNumberOfObjects();
 	                numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
-	            }
+
+					CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
+				}
 	        }
 
 	        CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
