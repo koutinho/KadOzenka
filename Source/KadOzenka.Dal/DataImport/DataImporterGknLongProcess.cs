@@ -17,6 +17,7 @@ using Core.Register;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
 using ObjectModel.Directory;
+using ObjectModel.KO;
 using SharpCompress.Archives.Rar;
 
 namespace KadOzenka.Dal.DataImport
@@ -93,11 +94,11 @@ namespace KadOzenka.Dal.DataImport
                 {
                     if (import.DataFileName.EndsWith(".zip"))
                     {
-                        ImportGknFromZipForPetition(import, templateFileStream);
+                        ImportGknFromZip(import, templateFileStream, ".xlsx");
                     }
                     else if (import.DataFileName.EndsWith(".rar"))
                     {
-                        ImportGknFromRarForPetition(import, templateFileStream);
+                        ImportGknFromRar(import, templateFileStream, ".xlsx");
                     }
                     else if (import.DataFileName.EndsWith(".xlsx"))
                     {
@@ -112,11 +113,11 @@ namespace KadOzenka.Dal.DataImport
                 {
                     if (import.DataFileName.EndsWith(".zip"))
                     {
-                        ImportGknFromZip(import, templateFileStream);
+                        ImportGknFromZip(import, templateFileStream, ".xml");
                     }
                     else if (import.DataFileName.EndsWith(".rar"))
                     {
-                        ImportGknFromRar(import, templateFileStream);
+                        ImportGknFromRar(import, templateFileStream, ".xml");
                     }
                     else if (import.DataFileName.EndsWith(".xml"))
                     {
@@ -173,40 +174,10 @@ namespace KadOzenka.Dal.DataImport
             CollectStatistic(dataLog, GetFileTotalNumberOfObjects(), GetFileTotalNumberOfImportedObjects());
         }
 
-        private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream)
-	    {
-	        ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
-	            .ExecuteFirstOrDefault();
-	        string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
-	        var totalNumberOfObjects = 0;
-	        var numberOfImportedObjects = 0;
-	        using (ZipArchive archive = new ZipArchive(templateFileStream, ZipArchiveMode.Read))
-	        {
-	            var entries = archive.Entries.Where(x => x.Name.EndsWith(".xml")).ToList();
-	            foreach (var zipArchiveEntry in entries)
-	            {
-	                DataImporterGkn.ImportDataGknFromXml(zipArchiveEntry.Open(), schemaPath, omTask);
 
-	                totalNumberOfObjects += GetFileTotalNumberOfObjects();
-	                numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
-
-					CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
-				}
-	        }
-
-	        CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
-	    }
-
-        private static void ImportGknFromZipForPetition(OMImportDataLog import, FileStream templateFileStream)
+        private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream, string usedFileExtension)
         {
-            ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
-                .ExecuteFirstOrDefault();
-            string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-
-            var totalNumberOfObjects = 0;
-            var numberOfImportedObjects = 0;
-           
             using (var filesFromZip = Ionic.Zip.ZipFile.Read(templateFileStream, new ReadOptions { Encoding = Encoding.GetEncoding("cp866") }))
             {
                 if (filesFromZip.Count == 0)
@@ -218,74 +189,30 @@ namespace KadOzenka.Dal.DataImport
                         continue;
 
                     var fileExtension = Path.GetExtension(file.FileName);
-                    if (fileExtension != ".xlsx")
+                    if (fileExtension != usedFileExtension)
                     {
-                        throw new Exception(
-                            $"Внутри архива есть файл с неправильным форматом '{file.FileName}' (поддерживаемые форматы: .xlsx).");
+                        continue;
                     }
                     var stream = new MemoryStream();
                     file.Extract(stream);
                     stream.Seek(0, SeekOrigin.Begin);
 
-                    var excelFile = ExcelFile.Load(stream, LoadOptions.XlsxDefault);
-                    DataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, omTask);
-
-                    totalNumberOfObjects += GetFileTotalNumberOfObjects();
-                    numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
+                    DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), import.ObjectId.Value);
                 }
             }
-
-            CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
         }
 
-        private static void ImportGknFromRar(OMImportDataLog import, FileStream templateFileStream)
+        private static void ImportGknFromRar(OMImportDataLog import, FileStream templateFileStream, string usedFileExtension)
 	    {
-	        ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
-	            .ExecuteFirstOrDefault();
-	        string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-
-	        var totalNumberOfObjects = 0;
-	        var numberOfImportedObjects = 0;
-
             using (var archive = RarArchive.Open(templateFileStream))
 	        {
-	            var entries = archive.Entries.Where(entry => entry.Key.EndsWith(".xml")).ToList();
+	            var entries = archive.Entries.Where(entry => entry.Key.EndsWith(usedFileExtension)).ToList();
                 foreach (var entry in entries)
 	            {
-	                DataImporterGkn.ImportDataGknFromXml(entry.OpenEntryStream(), schemaPath, omTask);
-
-	                totalNumberOfObjects += GetFileTotalNumberOfObjects();
-	                numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
+	                DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", entry.Key, entry.OpenEntryStream(), OMTask.GetRegisterId(), import.ObjectId.Value);
 	            }
 	        }
-
-	        CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
 	    }
-
-        private static void ImportGknFromRarForPetition(OMImportDataLog import, FileStream templateFileStream)
-        {
-            ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll()
-                .ExecuteFirstOrDefault();
-            string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-
-            var totalNumberOfObjects = 0;
-            var numberOfImportedObjects = 0;
-
-            using (var archive = RarArchive.Open(templateFileStream))
-            {
-                var entries = archive.Entries.Where(entry => entry.Key.EndsWith(".xlsx")).ToList();
-                foreach (var entry in entries)
-                {
-                    var excelFile = ExcelFile.Load(entry.OpenEntryStream(), LoadOptions.XlsxDefault);
-                    DataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, omTask);
-
-                    totalNumberOfObjects += GetFileTotalNumberOfObjects();
-                    numberOfImportedObjects += GetFileTotalNumberOfImportedObjects();
-                }
-            }
-
-            CollectStatistic(import, totalNumberOfObjects, numberOfImportedObjects);
-        }
 
         internal static void SendResultNotification(OMImportDataLog import)
 		{
