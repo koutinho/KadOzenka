@@ -15,65 +15,72 @@ using System.Threading.Tasks;
 
 namespace KadOzenka.Dal.DataImport
 {
-    public static class DataImporterGkn
+    public class DataImporterGkn
     {
         //Объект-блокиратор для многопоточки
-        private static object locked;
+        private readonly object locked = new object();
         //ID фактора Материал стен итоговый
-        public static Int64 Id_Factor_Wall = -1;
+        public Int64 Id_Factor_Wall { get; private set; }
         //ID фактора Год постройки итоговый
-        public static Int64 Id_Factor_Year = -1;
+        public Int64 Id_Factor_Year { get; private set; }
 
         /// <summary>
         /// Колличество зданий в Xml
         /// </summary>
-        public static Int32 CountXmlBuildings = 0;
+        public Int32 CountXmlBuildings { get; private set; }
         /// <summary>
         /// Колличество участков в Xml
         /// </summary>
-        public static Int32 CountXmlParcels = 0;
+        public Int32 CountXmlParcels { get; private set; }
         /// <summary>
         /// Колличество сооружений в Xml
         /// </summary>
-        public static Int32 CountXmlConstructions = 0;
+        public Int32 CountXmlConstructions { get; private set; }
         /// <summary>
         /// Колличество объектов незавершенного строительства в Xml
         /// </summary>
-        public static Int32 CountXmlUncompliteds = 0;
+        public Int32 CountXmlUncompliteds { get; private set; }
         /// <summary>
         /// Колличество помещений в Xml
         /// </summary>
-        public static Int32 CountXmlFlats = 0;
+        public Int32 CountXmlFlats { get; private set; }
         /// <summary>
         /// Колличество машиномест в Xml
         /// </summary>
-        public static Int32 CountXmlCarPlaces = 0;
+        public Int32 CountXmlCarPlaces { get; private set; }
 
         /// <summary>
         /// Колличество загруженных зданий из Xml
         /// </summary>
-        public static Int32 CountImportBuildings = 0;
+        public Int32 CountImportBuildings { get; private set; }
         /// <summary>
         /// Колличество загруженных участков из Xml
         /// </summary>
-        public static Int32 CountImportParcels = 0;
+        public Int32 CountImportParcels { get; private set; }
         /// <summary>
         /// Колличество загруженных сооружений из Xml
         /// </summary>
-        public static Int32 CountImportConstructions = 0;
+        public Int32 CountImportConstructions { get; private set; }
         /// <summary>
         /// Колличество загруженных объектов незавершенного строительства из Xml
         /// </summary>
-        public static Int32 CountImportUncompliteds = 0;
+        public Int32 CountImportUncompliteds { get; private set; }
         /// <summary>
         /// Колличество загруженных помещений из Xml
         /// </summary>
-        public static Int32 CountImportFlats = 0;
+        public Int32 CountImportFlats { get; private set; }
         /// <summary>
         /// Колличество загруженных машиномест из Xml
         /// </summary>
-        public static Int32 CountImportCarPlaces = 0;
+        public Int32 CountImportCarPlaces { get; private set; }
 
+        public bool AreCountersInitialized { get; private set; }
+
+        public DataImporterGkn()
+        {
+            Id_Factor_Wall = -1;
+            Id_Factor_Year = -1;
+        }
 
 
         /// <summary>
@@ -82,7 +89,7 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public static void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task)
+        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task)
         {
             ImportDataGknFromXml(xmlFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.CreationDate.Value, task.CreationDate.Value, task.DocumentId.Value);
         }
@@ -93,12 +100,12 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public static void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task)
+        public void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task)
         {
             ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.CreationDate.Value, task.CreationDate.Value, task.DocumentId.Value);
         }
 
-        private static void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetExcelObject(excelFile);
@@ -122,7 +129,7 @@ namespace KadOzenka.Dal.DataImport
             CountImportUncompliteds = 0;
             CountImportFlats = 0;
             CountImportCarPlaces = 0;
-            locked = new object();
+            AreCountersInitialized = true;
 
             Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
@@ -132,7 +139,7 @@ namespace KadOzenka.Dal.DataImport
             Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
 
         }
-        private static void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             xmlImportGkn.FillDictionary(pathSchema);
             xmlObjectList GknItems = xmlImportGkn.GetXmlObject(xmlFile);
@@ -156,7 +163,7 @@ namespace KadOzenka.Dal.DataImport
             CountImportUncompliteds = 0;
             CountImportFlats = 0;
             CountImportCarPlaces = 0;
-            locked = new object();
+            AreCountersInitialized = true;
 
             Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
             Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
@@ -215,7 +222,7 @@ namespace KadOzenka.Dal.DataImport
             attributeValue.Save();
         }
 
-        public static void ImportObjectBuild(xmlObjectBuild current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        public void ImportObjectBuild(xmlObjectBuild current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             KoUnitStatus koUnitStatus = KoUnitStatus.New;
             KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
@@ -558,7 +565,7 @@ namespace KadOzenka.Dal.DataImport
             #endregion
         }
 
-        public static void ImportObjectParcel(xmlObjectParcel current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        public void ImportObjectParcel(xmlObjectParcel current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             KoUnitStatus koUnitStatus = KoUnitStatus.New;
             KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
@@ -775,7 +782,7 @@ namespace KadOzenka.Dal.DataImport
         }
 
 
-        public static void ImportObjectConstruction(xmlObjectConstruction current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        public void ImportObjectConstruction(xmlObjectConstruction current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             KoUnitStatus koUnitStatus = KoUnitStatus.New;
             KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
@@ -1064,7 +1071,7 @@ namespace KadOzenka.Dal.DataImport
 
 
 
-        public static void ImportObjectUncomplited(xmlObjectUncomplited current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        public void ImportObjectUncomplited(xmlObjectUncomplited current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             KoUnitStatus koUnitStatus = KoUnitStatus.New;
             KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
@@ -1250,7 +1257,7 @@ namespace KadOzenka.Dal.DataImport
             #endregion
         }
 
-        public static void ImportObjectFlat(xmlObjectFlat current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        public void ImportObjectFlat(xmlObjectFlat current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             KoUnitStatus koUnitStatus = KoUnitStatus.New;
             KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
@@ -1479,7 +1486,7 @@ namespace KadOzenka.Dal.DataImport
 
 
 
-        public static void ImportObjectCarPlace(xmlObjectCarPlace current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
+        public void ImportObjectCarPlace(xmlObjectCarPlace current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
             KoUnitStatus koUnitStatus = KoUnitStatus.New;
             KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;

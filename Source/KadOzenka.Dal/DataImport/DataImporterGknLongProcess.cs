@@ -10,6 +10,7 @@ using System.Threading;
 using Core.Shared.Extensions;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Transactions;
 using Core.ErrorManagment;
 using Core.Messages;
@@ -102,7 +103,7 @@ namespace KadOzenka.Dal.DataImport
                     }
                     else if (import.DataFileName.EndsWith(".xlsx"))
                     {
-                        ImportGknFromXlsx(templateFileStream, import.ObjectId, import);
+                        ImportGknFromXlsx(templateFileStream, import.ObjectId, import, cancellationToken);
                     }
                     else
                     {
@@ -121,7 +122,7 @@ namespace KadOzenka.Dal.DataImport
                     }
                     else if (import.DataFileName.EndsWith(".xml"))
                     {
-                        ImportGknFromXml(templateFileStream, import.ObjectId, import);
+                        ImportGknFromXml(templateFileStream, import.ObjectId, import, cancellationToken);
                     }
                     else
                     {
@@ -155,26 +156,64 @@ namespace KadOzenka.Dal.DataImport
 			return true;
 		}
 
-		public static void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog)
+		public static void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken cancellationToken)
 		{
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
 			string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
-		    DataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);
-		    CollectStatistic(dataLog, GetFileTotalNumberOfObjects(), GetFileTotalNumberOfImportedObjects());
+		    var cancelSource = new CancellationTokenSource();
+		    var cancelToken = cancelSource.Token;
+
+		    var dataImporterGkn = new DataImporterGkn();
+            try
+		    {
+		        var t = Task.Run(() =>
+		        {
+		            CollectStatistic(dataLog, dataImporterGkn, cancelToken);
+		        }, cancelToken);
+
+		        dataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task);
+                cancelSource.Cancel();
+
+		        t.Wait(cancellationToken);
+		        cancelSource.Dispose();
+            }
+		    catch (Exception ex)
+		    {
+		        cancelSource.Cancel();
+		        throw;
+		    }
         }
 
-        public static void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog)
+        public static void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken cancellationToken)
         {
             ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
             string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
+            var cancelSource = new CancellationTokenSource();
+            var cancelToken = cancelSource.Token;
+
             var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-            DataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, task);
-            CollectStatistic(dataLog, GetFileTotalNumberOfObjects(), GetFileTotalNumberOfImportedObjects());
+            var dataImporterGkn = new DataImporterGkn();
+            try
+            {
+                var t = Task.Run(() =>
+                {
+                    CollectStatistic(dataLog, dataImporterGkn, cancelToken);
+                }, cancelToken);
+
+                dataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, task);
+                cancelSource.Cancel();
+
+                t.Wait(cancellationToken);
+                cancelSource.Dispose();
+            }
+            catch (Exception ex)
+            {
+                cancelSource.Cancel();
+                throw;
+            }
         }
-
-
 
         private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream, string usedFileExtension)
         {
@@ -229,6 +268,27 @@ namespace KadOzenka.Dal.DataImport
 			});
 		}
 
+	    private static void CollectStatistic(OMImportDataLog dataLog, DataImporterGkn dataImporterGkn, CancellationToken cancelToken)
+	    {
+	        while (true)
+	        {
+	            if (cancelToken.IsCancellationRequested && dataImporterGkn.AreCountersInitialized)
+	            {
+	                CollectStatistic(dataLog, GetFileTotalNumberOfObjects(dataImporterGkn), GetFileNumberOfImportedObjects(dataImporterGkn));
+                    break;
+	            }
+
+	            var totalNumberOfObjects = GetFileTotalNumberOfObjects(dataImporterGkn);
+	            var numberOfImportedObjects = GetFileNumberOfImportedObjects(dataImporterGkn);
+	            if (dataImporterGkn.AreCountersInitialized && (dataLog.TotalNumberOfObjects != totalNumberOfObjects ||
+	                dataLog.NumberOfImportedObjects != numberOfImportedObjects))
+	            {
+	                CollectStatistic(dataLog, totalNumberOfObjects, numberOfImportedObjects);
+                }
+                Thread.Sleep(1000);
+	        }
+        }
+
         private static void CollectStatistic(OMImportDataLog dataLog, int totalNumberOfObjects, int totalNumberOfImportedObjects)
         {
             using (var ts = new TransactionScope())
@@ -241,18 +301,18 @@ namespace KadOzenka.Dal.DataImport
             }
         }
 
-	    private static int GetFileTotalNumberOfImportedObjects()
+	    private static int GetFileNumberOfImportedObjects(DataImporterGkn dataImporterGkn)
 	    {
-	        return DataImporterGkn.CountImportBuildings + DataImporterGkn.CountImportParcels +
-	               DataImporterGkn.CountImportConstructions + DataImporterGkn.CountImportUncompliteds +
-	               DataImporterGkn.CountImportFlats + DataImporterGkn.CountImportCarPlaces;
+	        return dataImporterGkn.CountImportBuildings + dataImporterGkn.CountImportParcels +
+	               dataImporterGkn.CountImportConstructions + dataImporterGkn.CountImportUncompliteds +
+	               dataImporterGkn.CountImportFlats + dataImporterGkn.CountImportCarPlaces;
 	    }
 
-	    private static int GetFileTotalNumberOfObjects()
+	    private static int GetFileTotalNumberOfObjects(DataImporterGkn dataImporterGkn)
 	    {
-	        return DataImporterGkn.CountXmlBuildings + DataImporterGkn.CountXmlParcels +
-	               DataImporterGkn.CountXmlConstructions + DataImporterGkn.CountXmlUncompliteds +
-	               DataImporterGkn.CountXmlFlats + DataImporterGkn.CountXmlCarPlaces;
+	        return dataImporterGkn.CountXmlBuildings + dataImporterGkn.CountXmlParcels +
+	               dataImporterGkn.CountXmlConstructions + dataImporterGkn.CountXmlUncompliteds +
+	               dataImporterGkn.CountXmlFlats + dataImporterGkn.CountXmlCarPlaces;
 	    }
 	}
 }
