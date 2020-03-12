@@ -64,7 +64,7 @@
             <div>
                 <div class="form-horizontal col-sm-12">
                     <form id="fileForm">
-                        <input name="files" id="files" type="file" aria-label="files" />
+                        <input name="files" id="files" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar"/>
                     </form>
                 </div>
             </div>
@@ -175,9 +175,6 @@
             localization: {
                 select: 'Выбрать файлы'
             },
-            validation: {
-                allowedExtensions: generalAllowedFilesExtensions
-            },
             error: function (e) {
                 if (e.XMLHttpRequest.responseText) {
                     Common.ShowError(e.XMLHttpRequest.responseText);
@@ -195,10 +192,8 @@
     function updateFilesBlock() {
         if (isPetition()) {
             $("#filesBlockLabel").text("XLSX-файлы");
-            $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xlsx', '.zip', '.rar'];
         } else {
             $("#filesBlockLabel").text("XML-файлы");
-            $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xml', '.zip', '.rar'];
         }
     }
 
