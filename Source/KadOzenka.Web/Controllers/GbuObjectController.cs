@@ -494,22 +494,6 @@ namespace KadOzenka.Web.Controllers
 				.ToList();
 		}
 
-		public ActionResult TreeKadastralKvartal()
-		{
-			return View("/Views/Filter/KadastrKvartalList.cshtml");
-		}
-
-		public JsonResult All([DataSourceRequest] DataSourceRequest request)
-		{
-			var result = OMKadastrKvartal.Where(x => x).SelectAll().Execute().AsEnumerable().ToTreeDataSourceResult(request,
-				e => e.Id,
-				e => e.ParentId,
-				e => e
-			);
-
-			return Json(result);
-		}
-
 		#region Helper
 
 		public JsonResult SaveTemplate(string nameTemplate, DataFormStorege formType, string serializeData)
