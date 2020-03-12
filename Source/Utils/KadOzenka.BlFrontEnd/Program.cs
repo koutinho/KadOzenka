@@ -22,6 +22,7 @@ using KadOzenka.BlFrontEnd.PostgresToMongo;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
 using KadOzenka.BlFrontEnd.DataImport;
+using KadOzenka.Dal.CadastralInfoFilling;
 using KadOzenka.Dal.YandexParser;
 
 namespace KadOzenka.BlFrontEnd
@@ -149,6 +150,12 @@ namespace KadOzenka.BlFrontEnd
 				KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
 			});
 			consoleHelper.AddCommand("501", "Импорт данных деклараций (Excel)", () => { new DataImporterDeclarationsTest().ImportData(); });
+
+            consoleHelper.AddCommand("161", "Привязка к объектам аналогам кадастровых кварталов, зон и районов", () =>
+            {
+                var filler = new MarketObjectsCadastralInfoFiller(ConfigurationManager.AppSettings["CadastralQuartersZonesDistrictsRegionsFile"]);
+                filler.PerformProc();
+            });
 		}
 
 	}
