@@ -20,11 +20,24 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult Edit(long test)
         {
-            var model = new ObjectsCharacteristicModel
+            ObjectsCharacteristicModel model;
+            var characteristics = ObjectsCharacteristicsService.GetCharacteristics(test);
+            if (characteristics == null)
             {
-                Id = test
-            };
-           
+                model = new ObjectsCharacteristicModel
+                {
+                    Id = test
+                };
+            }
+            else
+            {
+                model = new ObjectsCharacteristicModel
+                {
+                    Id = characteristics.Id,
+                    Name = characteristics.RegisterDescription
+                };
+            }
+
             return View("~/Views/ObjectsCharacteristics/Edit.cshtml", model);
         }
 
@@ -36,12 +49,14 @@ namespace KadOzenka.Web.Controllers
             {
                 if (model.Id == -1)
                 {
-                    //ObjectsCharacteristicsService.AddRegister(ObjectsCharacteristicModel.UnMap(model));
+                    ObjectsCharacteristicsService.AddRegister(ObjectsCharacteristicModel.UnMap(model));
                     message = "Источник успешно сохранен";
                 }
                 else
                 {
-                    //ObjectsCharacteristicsService.EditRegister(ObjectsCharacteristicModel.UnMap(model));
+                    if(string.IsNullOrWhiteSpace(model.Name))
+                        throw new ArgumentException("Имя источника не может быть пустым");
+                    ObjectsCharacteristicsService.EditRegister(ObjectsCharacteristicModel.UnMap(model));
                     message = "Источник успешно обновлен";
                 }
             }

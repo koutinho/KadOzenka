@@ -7,7 +7,7 @@ namespace KadOzenka.Dal.Registers
 {
     public class RegisterService
     {
-        public OMRegister GetRegister(long registerId)
+        public OMRegister GetRegister(long? registerId)
         {
             return OMRegister.Where(x => x.RegisterId == registerId).SelectAll().ExecuteFirstOrDefault();
         }

@@ -1,5 +1,6 @@
 ﻿using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
+using DevExpress.DataProcessing;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
@@ -16,10 +17,20 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             RegisterService = new RegisterService();
         }
 
-        public OMObjectsCharacteristicsRegister GetOMObjectsCharacteristics(long characteristicsId)
+        public ObjectsCharacteristicDto GetCharacteristics(long characteristicsId)
         {
-            return OMObjectsCharacteristicsRegister.Where(x => x.Id == characteristicsId).SelectAll()
-                .ExecuteFirstOrDefault();
+            var characteristic = GetCharacteristicsInternal(characteristicsId);
+            if (characteristic == null)
+                return null;
+
+            var register = RegisterService.GetRegister(characteristic.RegisterId);
+
+            return new ObjectsCharacteristicDto
+            {
+                Id = characteristic.Id,
+                RegisterId = characteristic.RegisterId,
+                RegisterDescription = register.RegisterDescription
+            };
         }
 
         public long AddRegister(ObjectsCharacteristicDto characteristic)
@@ -28,7 +39,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             using (var ts = new TransactionScope())
             {
                 var registerName = $"source_{GetNumberOfExistingRegistersWithCharacteristics()}_q";
-                omRegister = RegisterService.CreateRegister(registerName, characteristic.Name, registerName);
+                omRegister = RegisterService.CreateRegister(registerName, characteristic.RegisterDescription, registerName);
 
                 RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
 
@@ -42,17 +53,26 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             return omRegister.RegisterId;
         }
 
-        public long EditRegister(ObjectsCharacteristicDto characteristic)
+        public void EditRegister(ObjectsCharacteristicDto characteristicDto)
         {
-            var register = RegisterService.GetRegister(characteristic.Id);
+            var characteristic = GetCharacteristicsInternal(characteristicDto.Id);
+            if (characteristic == null)
+                return;
 
-            return 0;
+            var register = RegisterService.GetRegister(characteristic.RegisterId);
+            using (var ts = new TransactionScope())
+            {
+                register.RegisterDescription = characteristicDto.RegisterDescription;
+                register.Save();
+
+                ts.Complete();
+            }
         }
 
 
         #region Support Methods
 
-        public void CreateObjectCharacteristics(long registerId)
+        private void CreateObjectCharacteristics(long registerId)
         {
             new OMObjectsCharacteristicsRegister
             {
@@ -60,9 +80,15 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             }.Save();
         }
 
-        public int GetNumberOfExistingRegistersWithCharacteristics()
+        private int GetNumberOfExistingRegistersWithCharacteristics()
         {
             return OMObjectsCharacteristicsRegister.Where(x => true).SelectAll().ExecuteCount();
+        }
+
+        private OMObjectsCharacteristicsRegister GetCharacteristicsInternal(long characteristicsId)
+        {
+            return OMObjectsCharacteristicsRegister.Where(x => x.Id == characteristicsId).SelectAll()
+                .ExecuteFirstOrDefault();
         }
 
         #endregion

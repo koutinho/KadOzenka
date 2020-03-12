@@ -15,7 +15,7 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
             return new ObjectsCharacteristicDto
             {
                 Id = model.Id,
-                Name = model.Name
+                RegisterDescription = model.Name
             };
         }
     }

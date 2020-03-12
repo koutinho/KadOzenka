@@ -4,6 +4,8 @@
     {
         public long Id { get; set; }
 
-        public string Name { get; set; }
+        public long? RegisterId { get; set; }
+
+        public string RegisterDescription { get; set; }
     }
 }
