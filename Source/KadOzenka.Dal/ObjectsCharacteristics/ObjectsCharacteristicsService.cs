@@ -16,6 +16,12 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             RegisterService = new RegisterService();
         }
 
+        public OMObjectsCharacteristicsRegister GetOMObjectsCharacteristics(long characteristicsId)
+        {
+            return OMObjectsCharacteristicsRegister.Where(x => x.Id == characteristicsId).SelectAll()
+                .ExecuteFirstOrDefault();
+        }
+
         public long AddRegister(ObjectsCharacteristicDto characteristic)
         {
             OMRegister omRegister;
@@ -38,6 +44,8 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         public long EditRegister(ObjectsCharacteristicDto characteristic)
         {
+            var register = RegisterService.GetRegister(characteristic.Id);
+
             return 0;
         }
 

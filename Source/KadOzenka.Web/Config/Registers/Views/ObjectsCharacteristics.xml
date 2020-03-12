@@ -9,7 +9,15 @@
         <Parameter Key="RegisterId" Value="[RegisterId]" />
       </Parameters>
     </Button>
-    <Button Caption="Добавить источник" NavigateURL="~/ObjectsCharacteristics/Add" WindowHeight="200" WindowWidth="900" Icon="fas fa-plus">
+    <Button Caption="Добавить источник" NavigateURL="~/ObjectsCharacteristics/Edit" WindowHeight="200" WindowWidth="900" Icon="fas fa-plus">
+      <Parameters>
+        <Parameter Key="test" Value="-1" />
+      </Parameters>
+    </Button>
+    <Button Caption="Редактировать источник" NavigateURL="~/ObjectsCharacteristics/Edit" WindowHeight="200" WindowWidth="900" Icon="fas fa-edit">
+      <Parameters>
+        <Parameter Key="test" Value="[60000200]" />
+      </Parameters>
     </Button>
   </Buttons>
 

@@ -18,11 +18,11 @@ namespace KadOzenka.Web.Controllers
 
 
         [HttpGet]
-        public ActionResult Add()
+        public ActionResult Edit(long test)
         {
             var model = new ObjectsCharacteristicModel
             {
-                Id = -1
+                Id = test
             };
            
             return View("~/Views/ObjectsCharacteristics/Edit.cshtml", model);
