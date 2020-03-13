@@ -423,7 +423,7 @@ namespace ObjectModel.Market
 
         private string _market;
         /// <summary>
-        /// 10002300 Источник данных (MARKET)
+        /// 10002300 Источник информации (MARKET)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public string Market
@@ -443,7 +443,7 @@ namespace ObjectModel.Market
 
         private MarketTypes _market_Code;
         /// <summary>
-        /// 10002300 Источник данных (справочный код) (MARKET_CODE)
+        /// 10002300 Источник информации (справочный код) (MARKET_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public MarketTypes Market_Code
@@ -498,7 +498,7 @@ namespace ObjectModel.Market
 
         private long? _price;
         /// <summary>
-        /// 10002700 Цена (PRICE)
+        /// 10002700 Цена сделки/предложения (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002700)]
         public long? Price
@@ -538,7 +538,7 @@ namespace ObjectModel.Market
 
         private DateTime? _parsertime;
         /// <summary>
-        /// 10002800 Дата сделки (PARSER_TIME)
+        /// 10002800 Дата предложения (сделки) (PARSER_TIME)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002800)]
         public DateTime? ParserTime
@@ -598,7 +598,7 @@ namespace ObjectModel.Market
 
         private string _address;
         /// <summary>
-        /// 10003100 Адрес (ADDRESS)
+        /// 10003100 Адресный ориентир (ADDRESS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003100)]
         public string Address
@@ -618,7 +618,7 @@ namespace ObjectModel.Market
 
         private string _metro;
         /// <summary>
-        /// 10003200 Ближайшие станции метро (METRO)
+        /// 10003200 Наименование метро (METRO)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003200)]
         public string Metro
@@ -658,7 +658,7 @@ namespace ObjectModel.Market
 
         private string _description;
         /// <summary>
-        /// 10003400 Описание (DESCRIPTION)
+        /// 10003400 Текст объявления (DESCRIPTION)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003400)]
         public string Description
@@ -893,7 +893,7 @@ namespace ObjectModel.Market
 
         private decimal? _arealand;
         /// <summary>
-        /// 10004600 Площадь земельного участка (AREA_LAND)
+        /// 10004600 Площадь ЗУ (AREA_LAND)
         /// </summary>
         [RegisterAttribute(AttributeID = 10004600)]
         public decimal? AreaLand
@@ -1013,7 +1013,7 @@ namespace ObjectModel.Market
 
         private string _cadastralquartal;
         /// <summary>
-        /// 10005600 Кадастровый номер квартала (CADASTRAL_QUARTAL)
+        /// 10005600 Кадастровый квартал (CADASTRAL_QUARTAL)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005600)]
         public string CadastralQuartal
@@ -1033,7 +1033,7 @@ namespace ObjectModel.Market
 
         private string _group;
         /// <summary>
-        /// 10005700 Группа (KO_GROUP)
+        /// 10005700 Группа сегмента рынка (KO_GROUP)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005700)]
         public string Group
@@ -1053,7 +1053,7 @@ namespace ObjectModel.Market
 
         private long? _group_Code;
         /// <summary>
-        /// 10005700 Группа (справочный код) (KO_GROUP_CODE)
+        /// 10005700 Группа сегмента рынка (справочный код) (KO_GROUP_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005700)]
         public long? Group_Code
@@ -1073,7 +1073,7 @@ namespace ObjectModel.Market
 
         private string _subgroup;
         /// <summary>
-        /// 10005800 Подгруппа (KO_SUBGROUP)
+        /// 10005800 Подгруппа сегмента рынка (KO_SUBGROUP)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005800)]
         public string Subgroup
@@ -1093,7 +1093,7 @@ namespace ObjectModel.Market
 
         private long? _subgroup_Code;
         /// <summary>
-        /// 10005800 Подгруппа (справочный код) (KO_SUBGROUP_CODE)
+        /// 10005800 Подгруппа сегмента рынка (справочный код) (KO_SUBGROUP_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10005800)]
         public long? Subgroup_Code
@@ -1133,7 +1133,7 @@ namespace ObjectModel.Market
 
         private string _processtype;
         /// <summary>
-        /// 10006000 Статус обработки (PROCESS_TYPE)
+        /// 10006000 Статус (PROCESS_TYPE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10006000)]
         public string ProcessType
@@ -1153,7 +1153,7 @@ namespace ObjectModel.Market
 
         private ProcessStep _processtype_Code;
         /// <summary>
-        /// 10006000 Статус обработки (справочный код) (PROCESS_TYPE_CODE)
+        /// 10006000 Статус (справочный код) (PROCESS_TYPE_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10006000)]
         public ProcessStep ProcessType_Code
@@ -1243,7 +1243,7 @@ namespace ObjectModel.Market
 
         private string _propertymarketsegment;
         /// <summary>
-        /// 10007000 Сегмент рынка недвижимости (PROPERTY_MARKET_SEGMENT)
+        /// 10007000 Сегмент рынка (PROPERTY_MARKET_SEGMENT)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007000)]
         public string PropertyMarketSegment
@@ -1263,7 +1263,7 @@ namespace ObjectModel.Market
 
         private MarketSegment _propertymarketsegment_Code;
         /// <summary>
-        /// 10007000 Сегмент рынка недвижимости (справочный код) (PROPERTY_MARKET_SEGMENT_CODE)
+        /// 10007000 Сегмент рынка (справочный код) (PROPERTY_MARKET_SEGMENT_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007000)]
         public MarketSegment PropertyMarketSegment_Code
@@ -1488,7 +1488,7 @@ namespace ObjectModel.Market
 
         private string _propertytypescipjs;
         /// <summary>
-        /// 10007700 Тип объекта недвижимости по ЦИПЖС (PROPERTY_TYPETS_CIPJS)
+        /// 10007700 Вид объекта недвижимости (PROPERTY_TYPETS_CIPJS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007700)]
         public string PropertyTypesCIPJS
@@ -1508,7 +1508,7 @@ namespace ObjectModel.Market
 
         private PropertyTypesCIPJS _propertytypescipjs_Code;
         /// <summary>
-        /// 10007700 Тип объекта недвижимости по ЦИПЖС (справочный код) (PROPERTY_TYPETS_CIPJS_CODE)
+        /// 10007700 Вид объекта недвижимости (справочный код) (PROPERTY_TYPETS_CIPJS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007700)]
         public PropertyTypesCIPJS PropertyTypesCIPJS_Code
@@ -9030,6 +9030,208 @@ namespace ObjectModel.KO
             {
                 _field215 = value;
                 NotifyPropertyChanged("Field215");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 254 Таблица соответствия кода и группы (KO_COMPLIANCE_GUIDE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 254)]
+    [Serializable]
+    public partial class OMComplianceGuide : OMBaseClass<OMComplianceGuide>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 25400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 25400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _code;
+        /// <summary>
+        /// 25400200 Значение кода (CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25400200)]
+        public string Code
+        {
+            get
+            {
+                CheckPropertyInited("Code");
+                return _code;
+            }
+            set
+            {
+                _code = value;
+                NotifyPropertyChanged("Code");
+            }
+        }
+
+
+        private string _subgroup;
+        /// <summary>
+        /// 25400300 Подгруппа соответствия  (SUBGROUP)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25400300)]
+        public string SubGroup
+        {
+            get
+            {
+                CheckPropertyInited("SubGroup");
+                return _subgroup;
+            }
+            set
+            {
+                _subgroup = value;
+                NotifyPropertyChanged("SubGroup");
+            }
+        }
+
+
+        private string _typeproperty;
+        /// <summary>
+        /// 25400400 Тип объекта  ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25400400)]
+        public string TypeProperty
+        {
+            get
+            {
+                CheckPropertyInited("TypeProperty");
+                return _typeproperty;
+            }
+            set
+            {
+                _typeproperty = value;
+                NotifyPropertyChanged("TypeProperty");
+            }
+        }
+
+
+        private PropertyTypes _typeproperty_Code;
+        /// <summary>
+        /// 25400400 Тип объекта  (справочный код) (TYPE_PROPERTY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25400400)]
+        public PropertyTypes TypeProperty_Code
+        {
+            get
+            {
+                CheckPropertyInited("TypeProperty_Code");
+                return this._typeproperty_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_typeproperty))
+                    {
+                         _typeproperty = descr;
+                    }
+                }
+                else
+                {
+                     _typeproperty = descr;
+                }
+
+                this._typeproperty_Code = value;
+                NotifyPropertyChanged("TypeProperty");
+                NotifyPropertyChanged("TypeProperty_Code");
+            }
+        }
+
+
+        private long? _parentid;
+        /// <summary>
+        /// 25400500 Идентификатор родителя (PARENT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25400500)]
+        public long? ParentId
+        {
+            get
+            {
+                CheckPropertyInited("ParentId");
+                return _parentid;
+            }
+            set
+            {
+                _parentid = value;
+                NotifyPropertyChanged("ParentId");
+            }
+        }
+
+
+        private string _isresidental;
+        /// <summary>
+        /// 25400600 Тип помещения ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25400600)]
+        public string IsResidental
+        {
+            get
+            {
+                CheckPropertyInited("IsResidental");
+                return _isresidental;
+            }
+            set
+            {
+                _isresidental = value;
+                NotifyPropertyChanged("IsResidental");
+            }
+        }
+
+
+        private KoTypeOfRoom _isresidental_Code;
+        /// <summary>
+        /// 25400600 Тип помещения (справочный код) (IS_RESIDENTAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25400600)]
+        public KoTypeOfRoom IsResidental_Code
+        {
+            get
+            {
+                CheckPropertyInited("IsResidental_Code");
+                return this._isresidental_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_isresidental))
+                    {
+                         _isresidental = descr;
+                    }
+                }
+                else
+                {
+                     _isresidental = descr;
+                }
+
+                this._isresidental_Code = value;
+                NotifyPropertyChanged("IsResidental");
+                NotifyPropertyChanged("IsResidental_Code");
             }
         }
 
@@ -19298,5 +19500,77 @@ namespace ObjectModel.Common
             }
         }
 
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 39959475 Тест4 (source_23_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 39959475)]
+    [Serializable]
+    public partial class OMSource23Q : OMBaseClass<OMSource23Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 39964619 Test22 (source_24_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 39964619)]
+    [Serializable]
+    public partial class OMSource24Q : OMBaseClass<OMSource24Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 39964641 Test3 (source_25_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 39964641)]
+    [Serializable]
+    public partial class OMSource25Q : OMBaseClass<OMSource25Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 39964643 test44 (source_26_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 39964643)]
+    [Serializable]
+    public partial class OMSource26Q : OMBaseClass<OMSource26Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 40116955 1 (source_27_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 40116955)]
+    [Serializable]
+    public partial class OMSource27Q : OMBaseClass<OMSource27Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 40116957 q (source_28_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 40116957)]
+    [Serializable]
+    public partial class OMSource28Q : OMBaseClass<OMSource28Q>
+    {
     }
 }

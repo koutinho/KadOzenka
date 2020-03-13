@@ -517,6 +517,13 @@ namespace ObjectModel.KO
     public partial class OMModel
     {
         /// <summary>
+        /// Ссылка на (202 Тур оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMTour ParentTour { get; set; }
+
+        /// <summary>
         /// Ссылка на (205 Группы/Подгруппы)
         /// </summary>
         [ParentRegister]
@@ -1039,6 +1046,24 @@ namespace ObjectModel.Declarations
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.Declarations.OMHarParcel ParentHarParcel { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 600 Реестр хранения реестров с характеристиками объекта
+    /// </summary>
+    public partial class OMObjectsCharacteristicsRegister
+    {
+        /// <summary>
+        /// Ссылка на (930 Список реестров)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMRegister ParentRegister { get; set; }
 
     }
 }

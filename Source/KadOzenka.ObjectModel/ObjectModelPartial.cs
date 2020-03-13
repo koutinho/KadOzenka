@@ -1028,6 +1028,12 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMTask> Task { get; set; }
+
+        /// <summary>
+        /// Ссылка на (206 Модель)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMModel> Model { get; set; }
         public OMTour()
         {
 
@@ -1039,6 +1045,8 @@ namespace ObjectModel.KO
             Unit = new List<ObjectModel.KO.OMUnit>();
 
             Task = new List<ObjectModel.KO.OMTask>();
+
+            Model = new List<ObjectModel.KO.OMModel>();
 
         }
         public OMTour(bool trackPropertyChanging) : this()
@@ -1558,6 +1566,30 @@ namespace ObjectModel.KO
 
         }
         public OMUnitParamsZu2016(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 254 Таблица соответствия кода и группы
+    /// </summary>
+    public partial class OMComplianceGuide
+    {
+
+        public OMComplianceGuide()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMComplianceGuide(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -2590,6 +2622,138 @@ namespace ObjectModel.Common
 
         }
         public OMDataFormStorage(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 39959475 Тест4
+    /// </summary>
+    public partial class OMSource23Q
+    {
+
+        public OMSource23Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource23Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 39964619 Test22
+    /// </summary>
+    public partial class OMSource24Q
+    {
+
+        public OMSource24Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource24Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 39964641 Test3
+    /// </summary>
+    public partial class OMSource25Q
+    {
+
+        public OMSource25Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource25Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 39964643 test44
+    /// </summary>
+    public partial class OMSource26Q
+    {
+
+        public OMSource26Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource26Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 40116955 1
+    /// </summary>
+    public partial class OMSource27Q
+    {
+
+        public OMSource27Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource27Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 40116957 q
+    /// </summary>
+    public partial class OMSource28Q
+    {
+
+        public OMSource28Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource28Q(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
