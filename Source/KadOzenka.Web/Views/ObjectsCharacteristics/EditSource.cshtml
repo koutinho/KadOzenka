@@ -41,14 +41,16 @@
                         data: formObject,
                         dataType: 'json',
                         success: function (data) {
-                            if (data.Errors)
-                                Common.ShowError(data.Errors.Message);
+                            if (data.Errors) {
+                                var errors = $.map(distinctErrors(data.Errors),
+                                    function(el) {
+                                        return el.Message;
+                                    });
+                                Common.ShowError(errors);
+                                return;
+                            }
                             else {
-                                Common.UI.ShowDialog({
-                                    content: data.Message,
-                                    icon: 'ok',
-                                    showCloseBtn: true
-                                });
+                                Common.ShowMessage(data.Message);
                             }
                         }
                     });
@@ -64,4 +66,18 @@
             }]
         }).data("kendoToolBar");
     });
+
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors, function (index, event) {
+            var events = $.grep(result, function (e) {
+                return event.Message === e.Message;
+            });
+            if (events.length === 0) {
+                result.push(event);
+            }
+        });
+
+        return result;
+    }
 </script>

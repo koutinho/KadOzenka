@@ -8,6 +8,7 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         public long Id { get; set; }
         public long RegisterId { get; set; }
 
+        [Required(ErrorMessage = "Имя источника не может быть пустым")]
         [Display(Name = "Пользовательское наименование")]
         public string Name { get; set; }
 

@@ -86,14 +86,9 @@
                         $('#@Html.IdFor(m => m.RegisterId)').val(response.data.RegisterFactorId);
                         $('#@Html.IdFor(m => m.Type)').data('kendoDropDownList').enable(false);
                         $('#@Html.IdFor(m => m.ReferenceId)').data('kendoDropDownList').enable(false);
-                        Common.ShowMessage(response.Success);
                     }
 
-                    Common.UI.ShowDialog({
-                        content: response.Message,
-                        icon: 'ok',
-                        showCloseBtn: true
-                    });
+                    Common.ShowMessage(response.Message);
 
                 }).fail(function (response, textStatus, errorThrown) {
                     kendo.ui.progress($('body'), false);

@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.ObjectsCharacteristics.Dto;
+﻿using System;
+using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
@@ -37,13 +38,16 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             };
         }
 
-        public long AddSource(SourceDto characteristic)
+        public long AddSource(SourceDto sourceDto)
         {
+            if (string.IsNullOrWhiteSpace(sourceDto.RegisterDescription))
+                throw new ArgumentException("Имя источника не может быть пустым");
+
             OMRegister omRegister;
             using (var ts = new TransactionScope())
             {
                 var registerName = $"source_{GetNumberOfExistingRegistersWithCharacteristics()}_q";
-                omRegister = RegisterService.CreateRegister(registerName, characteristic.RegisterDescription, registerName);
+                omRegister = RegisterService.CreateRegister(registerName, sourceDto.RegisterDescription, registerName);
 
                 RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
 
@@ -57,16 +61,19 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             return omRegister.RegisterId;
         }
 
-        public void EditSource(SourceDto characteristicDto)
+        public void EditSource(SourceDto sourceDto)
         {
-            var characteristic = GetCharacteristicsInternal(characteristicDto.Id);
+            if (string.IsNullOrWhiteSpace(sourceDto.RegisterDescription))
+                throw new ArgumentException("Имя источника не может быть пустым");
+
+            var characteristic = GetCharacteristicsInternal(sourceDto.Id);
             if (characteristic == null)
                 return;
 
             var register = RegisterService.GetRegister(characteristic.RegisterId);
             using (var ts = new TransactionScope())
             {
-                register.RegisterDescription = characteristicDto.RegisterDescription;
+                register.RegisterDescription = sourceDto.RegisterDescription;
                 register.Save();
 
                 ts.Complete();
@@ -79,6 +86,9 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         public long AddCharacteristic(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
         {
+            if (string.IsNullOrWhiteSpace(attributeName))
+                throw new ArgumentException("Имя характеристики не может быть пустым");
+
             long id;
             using (var ts = new TransactionScope())
             {

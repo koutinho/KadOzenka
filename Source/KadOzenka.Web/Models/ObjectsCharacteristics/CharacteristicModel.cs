@@ -8,8 +8,8 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
     {
         public long Id { get; set; }
 
-        [Required(ErrorMessage = "Имя фактора не может быть пустым")]
-        [Display(Name = "Имя фактора")]
+        [Required(ErrorMessage = "Имя характеристики не может быть пустым")]
+        [Display(Name = "Имя характеристики")]
         public string Name { get; set; }
 
         [Display(Name = "Тип")]
@@ -24,7 +24,7 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         {
             if (Type == RegisterAttributeType.REFERENCE && !ReferenceId.HasValue)
             {
-                yield return new ValidationResult(errorMessage: "Поле Cправочник обязательное для данного типа фактора",
+                yield return new ValidationResult(errorMessage: "Поле Cправочник обязательное для данного типа характеристики",
                     memberNames: new[] { nameof(ReferenceId) });
             }
         }

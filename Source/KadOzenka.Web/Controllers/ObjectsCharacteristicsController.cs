@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Core.UI.Registers.Controllers;
 using KadOzenka.Dal.ObjectsCharacteristics;
@@ -49,6 +50,9 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         public JsonResult EditSource(SourceModel model)
         {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
             string message;
             try
             {
@@ -59,9 +63,6 @@ namespace KadOzenka.Web.Controllers
                 }
                 else
                 {
-                    if(string.IsNullOrWhiteSpace(model.Name))
-                        throw new ArgumentException("Имя источника не может быть пустым");
-
                     ObjectsCharacteristicsService.EditSource(SourceModel.UnMap(model));
                     message = "Источник успешно обновлен";
                 }
@@ -98,43 +99,65 @@ namespace KadOzenka.Web.Controllers
                 RegisterId = sourceId
             };
 
-            return View("~/Views/ObjectsCharacteristics/CharacteristicCard.cshtml", model);
+            return View("~/Views/ObjectsCharacteristics/EditCharacteristic.cshtml", model);
         }
 
         //TODO
         [HttpPost]
-        public ActionResult EditCharacteristic(CharacteristicModel model)
+        public JsonResult EditCharacteristic(CharacteristicModel model)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return GenerateMessageNonValidModel();
-            //}
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
 
-            //var id = model.Id;
-            //using (var ts = new TransactionScope())
-            //{
-            //    var omRegister = OMRegister.Where(x => x.RegisterId == model.RegisterFactorId).Select(x => x.RegisterId).ExecuteFirstOrDefault();
-            //    if (omRegister == null)
-            //    {
-            //        omRegister = TourFactorService.CreateTourFactorRegister(model.TourId, model.IsSteadObjectType);
-            //        model.RegisterFactorId = omRegister.RegisterId;
-            //    }
+            string message;
+            try
+            {
+                if (model.Id == -1)
+                {
+                    //model.Id = ObjectsCharacteristicsService.AddCharacteristic(model.Name, model.RegisterId, model.Type, model.ReferenceId);
+                    message = "Характеристика успешно сохранена";
+                }
+                else
+                {
+                    //TODO
+                    //if (string.IsNullOrWhiteSpace(model.Name))
+                    //    throw new ArgumentException("Имя источника не может быть пустым");
 
-            //    if (model.Id == -1)
-            //    {
-            //        model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type, model.ReferenceId);
-            //    }
-            //    else
-            //    {
-            //        TourFactorService.RenameTourFactorRegisterAttribute(id, model.Name);
-            //    }
+                    //ObjectsCharacteristicsService.EditSource(SourceModel.UnMap(model));
+                    message = "Характеристика успешно обновлена";
+                }
+            }
+            catch (Exception e)
+            {
+                message = $"Во время работы с характеристикой произошла ошибка: {e.Message}";
+            }
 
-            //    ts.Complete();
-            //}
+            return Json(new { Message = message, data = model });
+        }
 
-            //return Json(new { Success = "Сохранено успешно", data = model });
+        #endregion
 
-            return new EmptyResult();
+
+        #region Support Methods
+
+        private JsonResult GenerateMessageNonValidModel()
+        {
+            return Json(new
+            {
+                Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+                {
+                    Control = x.Key,
+                    Message = string.Join("\n", x.Value.Errors.Select(e =>
+                    {
+                        if (e.ErrorMessage == "The value '' is invalid.")
+                        {
+                            return $"{e.ErrorMessage} Поле {x.Key}";
+                        }
+
+                        return e.ErrorMessage;
+                    }))
+                })
+            });
         }
 
         #endregion
