@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.CadastralInfoFilling
+﻿namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
 {
     public class CadastralQuarterInfo
     {

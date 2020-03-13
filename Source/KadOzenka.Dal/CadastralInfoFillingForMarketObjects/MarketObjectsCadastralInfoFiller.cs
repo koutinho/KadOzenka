@@ -8,7 +8,7 @@ using KadOzenka.Dal.XmlParser;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
 
-namespace KadOzenka.Dal.CadastralInfoFilling
+namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
 {
     public class MarketObjectsCadastralInfoFiller
     {

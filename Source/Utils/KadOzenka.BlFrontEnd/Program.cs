@@ -22,7 +22,7 @@ using KadOzenka.BlFrontEnd.PostgresToMongo;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
 using KadOzenka.BlFrontEnd.DataImport;
-using KadOzenka.Dal.CadastralInfoFilling;
+using KadOzenka.Dal.CadastralInfoFillingForMarketObjects;
 using KadOzenka.Dal.YandexParser;
 
 namespace KadOzenka.BlFrontEnd
