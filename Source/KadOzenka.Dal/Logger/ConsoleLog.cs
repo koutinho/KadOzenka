@@ -42,6 +42,13 @@ namespace KadOzenka.Dal.Logger
             if (errorList.Length != 0) File.AppendAllText(fileName, $"{startFile}========{DateTime.Now.ToString()} ({procedureName})========\n{string.Join("\n", errorList)}");
         }
 
+        public static void WriteGbuCadastralFillingData(int length, int current, int fromMainObjectCount, int fromAllpriRosreestrSourceCount, int fromCadastralNumber)
+        {
+            Console.Write($"\rОбработка объектов: {current}/{length} {((double)current / length * 100).ToString("0.00")}% " +
+                          $"(Из gbu_main_object: {fromMainObjectCount} {((double)fromMainObjectCount / length * 100).ToString("0.00")}%; " +
+                          $"Из source2_a_txt: {fromAllpriRosreestrSourceCount} {((double)fromAllpriRosreestrSourceCount / length * 100).ToString("0.00")}% " +
+                          $"по кадастровому номеру: {fromCadastralNumber} {((double)fromCadastralNumber / length * 100).ToString("0.00")}%;)");
+        }
     }
 
 }

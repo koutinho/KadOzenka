@@ -151,12 +151,17 @@ namespace KadOzenka.BlFrontEnd
 			});
 			consoleHelper.AddCommand("501", "Импорт данных деклараций (Excel)", () => { new DataImporterDeclarationsTest().ImportData(); });
 
-            consoleHelper.AddCommand("161", "Привязка к объектам аналогам кадастровых кварталов, зон и районов", () =>
+            consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
             {
-                var filler = new MarketObjectsCadastralInfoFiller(ConfigurationManager.AppSettings["CadastralQuartersZonesDistrictsRegionsFile"]);
-                filler.PerformProc();
+                var filler = new MarketObjectsCadastralInfoFiller();
+                filler.PerformFillingCadastralQuarterProc();
             });
-		}
+		    consoleHelper.AddCommand("161-2", "Привязка к объектам аналогам информации о зонах, округах и районах по кадастровому кварталу", () =>
+		    {
+		        var filler = new MarketObjectsCadastralInfoFiller();
+		        filler.PerformFillingCadastralInfoByQuarterProc(ConfigurationManager.AppSettings["CadastralQuartersZonesDistrictsRegionsFile"]);
+		    });
+        }
 
 	}
 

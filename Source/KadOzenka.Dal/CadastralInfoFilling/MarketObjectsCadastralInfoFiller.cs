@@ -17,24 +17,79 @@ namespace KadOzenka.Dal.CadastralInfoFilling
 
         public GbuObjectService GbuObjectService { get; set; }
 
-        private string CadastralQuartersInfoFilePath { get; set; }
         private Dictionary<string, CadastralQuarterInfo> CadastralQuarters { get; set; }
 
-        public MarketObjectsCadastralInfoFiller(string cadastralQuartersInfoFilePath)
+        public MarketObjectsCadastralInfoFiller()
         {
             GbuObjectService = new GbuObjectService();
-            CadastralQuartersInfoFilePath = cadastralQuartersInfoFilePath;
         }
 
-        public void PerformProc()
+        public void PerformFillingCadastralQuarterProc()
         {
-            InitCadastralQuartersInfoFromFile();
-            FillMarketObjects();
+            var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralNumber != null && x.CadastralNumber != string.Empty)
+                .Select(x => x.Id)
+                .Select(x => x.CadastralNumber)
+                .Select(x => x.CadastralQuartal)
+                .Execute();
+            Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровыми номерами");
+
+            int totalCount = marketObjectsWithCadastralNumber.Count, currentCount = 0;
+            int fromMainObjectCount = 0, fromAllpriRosreestrSourceCount = 0, fromCadastralNumber = 0;
+            foreach (var marketObject in marketObjectsWithCadastralNumber)
+            {
+                var sameGbuObjects = OMMainObject.Where(x => x.CadastralNumber == marketObject.CadastralNumber)
+                    .SelectAll()
+                    .Execute();
+
+                if (sameGbuObjects.Count == 1)
+                {
+                    if (!string.IsNullOrEmpty(sameGbuObjects.First().KadastrKvartal))
+                    {
+                        marketObject.CadastralQuartal = sameGbuObjects.First().KadastrKvartal;
+                        fromMainObjectCount++;
+                    }
+                    else
+                    {
+                        var res = GbuObjectService.GetAllAttributes(sameGbuObjects.First().Id,
+                            new List<long> { RosreestrRegisterId }, new List<long> { RosreestrCadastralQuarterAttributeId }, DateTime.Now);
+
+                        if (res.Count != 0 && !string.IsNullOrEmpty(res.First().StringValue))
+                        {
+                            marketObject.CadastralQuartal = res.First().StringValue;
+                            fromAllpriRosreestrSourceCount++;
+                        }
+                        else
+                        {
+                            FillQuarterByCadastralNumber(marketObject);
+                            fromCadastralNumber++;
+                        }
+                    }
+                }
+                else
+                {
+                    FillQuarterByCadastralNumber(marketObject);
+                    fromCadastralNumber++;
+                }
+
+                marketObject.Save();
+
+                currentCount++;
+                ConsoleLog.WriteGbuCadastralFillingData(totalCount, currentCount,
+                    fromMainObjectCount, fromAllpriRosreestrSourceCount, fromCadastralNumber);
+            }
+
+            Console.WriteLine($"Обработка завершена");
         }
 
-        private void InitCadastralQuartersInfoFromFile()
+        public void PerformFillingCadastralInfoByQuarterProc(string cadastralQuartersInfoFilePath)
         {
-            var file = ExcelFile.Load(CadastralQuartersInfoFilePath, new XlsxLoadOptions());
+            InitCadastralQuartersInfoFromFile(cadastralQuartersInfoFilePath);
+            FillCadastralQuarterInfo();
+        }
+
+        private void InitCadastralQuartersInfoFromFile(string cadastralQuartersInfoFilePath)
+        {
+            var file = ExcelFile.Load(cadastralQuartersInfoFilePath, new XlsxLoadOptions());
             var mainWorkSheet = file.Worksheets[0];
 
             var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
@@ -58,9 +113,9 @@ namespace KadOzenka.Dal.CadastralInfoFilling
             }
         }
 
-        private void FillMarketObjects()
+        private void FillCadastralQuarterInfo()
         {
-            var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralNumber != null && x.CadastralNumber != string.Empty)
+            var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralQuartal != null && x.CadastralQuartal != string.Empty)
                 .Select(x => x.Id)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.CadastralQuartal)
@@ -70,15 +125,23 @@ namespace KadOzenka.Dal.CadastralInfoFilling
                 .Select(x => x.RegionId)
                 .Select(x => x.Zone)
                 .Execute();
-            Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровыми номерами");
+            Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровым кварталом");
 
             int totalCount = marketObjectsWithCadastralNumber.Count, currentCount = 0, correctCount = 0, errorCount = 0;
             foreach (var marketObject in marketObjectsWithCadastralNumber)
             {
                 try
                 {
-                    FillCadastralQuarter(marketObject);
-                    FillCadastralQuarterInfo(marketObject);
+                    
+                    if (!CadastralQuarters.TryGetValue(marketObject.CadastralQuartal, out var quarterInfo))
+                        throw new Exception(
+                            $"В файле отсутствует информация по кварталу {marketObject.CadastralQuartal}");
+
+                    //TODO: дополнить после измения структуры БД для объектов-аналогов
+                    marketObject.District = XMLPolyLineDictionary.getCorrectNameForDistrict(quarterInfo.DistrictName);
+                    marketObject.Region = XMLPolyLineDictionary.getCorrectNameForRegion(quarterInfo.RegionName);
+                    marketObject.Zone = quarterInfo.ZoneNumber;
+
                     marketObject.Save();
 
                     correctCount++;
@@ -95,61 +158,10 @@ namespace KadOzenka.Dal.CadastralInfoFilling
             Console.WriteLine($"Обработка завершена");
         }
 
-        private void FillCadastralQuarter( OMCoreObject marketObject)
-        {
-            var sameGbuObjects = OMMainObject.Where(x => x.CadastralNumber == marketObject.CadastralNumber)
-                .SelectAll()
-                .Execute();
-
-            //if (sameGbuObjects.Count > 1)
-            //    throw new Exception(
-            //        $"Найдено несколько ГБУ объектов с кадастровым номером {marketObject.CadastralNumber}");
-            //if (sameGbuObjects.Count == 0)
-            //    throw new Exception(
-            //        $"Не найдено ГБУ объектов с кадастровым номером {marketObject.CadastralNumber}");
-
-            if (sameGbuObjects.Count == 1)
-            {
-                if (!string.IsNullOrEmpty(sameGbuObjects.First().KadastrKvartal))
-                {
-                    marketObject.CadastralQuartal = sameGbuObjects.First().KadastrKvartal;
-                }
-                else
-                {
-                    var res = GbuObjectService.GetAllAttributes(sameGbuObjects.First().Id,
-                        new List<long> { RosreestrRegisterId }, new List<long> { RosreestrCadastralQuarterAttributeId }, DateTime.Now);
-
-                    if (res.Count != 0 && !string.IsNullOrEmpty(res.First().StringValue))
-                    {
-                        marketObject.CadastralQuartal = res.First().StringValue;
-                    }
-                    else
-                    {
-                        FillQuarterByCadastralNumber(marketObject);
-                    }
-                }
-            }
-            else
-            {
-                FillQuarterByCadastralNumber(marketObject);
-            }
-        }
-
         private void FillQuarterByCadastralNumber(OMCoreObject marketObject)
         {
             var ellipsisLastIndex = marketObject.CadastralNumber.LastIndexOf(":");
             marketObject.CadastralQuartal = marketObject.CadastralNumber.Substring(0, ellipsisLastIndex);
-        }
-
-        private void FillCadastralQuarterInfo(OMCoreObject marketObject)
-        {
-            if (!CadastralQuarters.TryGetValue(marketObject.CadastralQuartal, out var quarterInfo))
-                throw new Exception(
-                    $"В файле отсутствует информация по кварталу {marketObject.CadastralQuartal}");
-
-            marketObject.District = XMLPolyLineDictionary.getCorrectNameForDistrict(quarterInfo.DistrictName);
-            marketObject.Region = XMLPolyLineDictionary.getCorrectNameForRegion(quarterInfo.RegionName);
-            marketObject.Zone = quarterInfo.ZoneNumber;
         }
     }
 }
