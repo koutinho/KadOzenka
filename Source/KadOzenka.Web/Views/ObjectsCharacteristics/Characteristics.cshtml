@@ -1,0 +1,36 @@
+﻿@model KadOzenka.Web.Models.ObjectsCharacteristics.SourceModel
+
+@Html.HiddenFor(m => m.RegisterId)
+
+<div style="height: auto">
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div style="height: auto;">
+            <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/CharacteristicsList?Transition=1&93100300=" + Model.RegisterId) + "
+                 data-param-Pageable="true" data-param-Scrollable="true"
+                 data-param-partialview="true" data-loader="true"></div>
+        </div>
+        <div class="form-group"></div>
+    </div>
+</div>
+
+
+<script>
+    $(function () {
+        var registerId = $('#@Html.IdFor(m => m.RegisterId)').val();
+        if (!registerId) {
+            var observer = new MutationObserver(function (mutationsList, observer) {
+                for (let mutation of mutationsList) {
+                    if (mutation.type === 'childList') {
+                        if (mutation.removedNodes && mutation.removedNodes.length == 1 && mutation.removedNodes.item(0)
+                            && mutation.removedNodes.item(0).classList && mutation.removedNodes.item(0).classList.contains('k-window')
+                        ) {
+                            window.location.reload();
+                        }
+                    }
+                }
+            });
+            observer.observe(document.getElementsByTagName('body')[0], { childList: true, subtree: true });
+        }
+    })
+</script>

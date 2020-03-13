@@ -6,6 +6,7 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
     public class SourceModel
     {
         public long Id { get; set; }
+        public long RegisterId { get; set; }
 
         [Display(Name = "Пользовательское наименование")]
         public string Name { get; set; }

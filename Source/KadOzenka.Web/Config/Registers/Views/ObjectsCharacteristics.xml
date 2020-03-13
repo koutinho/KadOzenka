@@ -11,11 +11,6 @@
     </Button>
     <Button Caption="Добавить источник" NavigateURL="~/ObjectsCharacteristics/AddSource" WindowHeight="200" WindowWidth="900" Icon="fas fa-plus">
     </Button>
-    <Button Caption="Добавить характеристику" NavigateURL="~/ObjectsCharacteristics/AddCharacteristic" WindowHeight="200" WindowWidth="900" Icon="fas fa-plus">
-      <Parameters>
-        <Parameter Key="characteristicsId" Value="[60000100]" />
-      </Parameters>
-    </Button>
     <Button Caption="Редактировать источник" NavigateURL="~/ObjectsCharacteristics/EditSource" WindowHeight="200" WindowWidth="900" Icon="fas fa-edit">
       <Parameters>
         <Parameter Key="characteristicsId" Value="[60000100]" />
@@ -24,9 +19,9 @@
   </Buttons>
 
   <Tabs>
-    <Tab Caption="Показатели реестра" NavigateURL="/RegistersView/CoreRegisterAttributeCard?Transition=1">
+    <Tab Caption="Характеристики" NavigateURL="~/ObjectsCharacteristics/Characteristics">
       <Parameters>
-        <Parameter Key="93100300" Value="[60000200]" />
+        <Parameter Key="registerId" Value="[60000200]" />
       </Parameters>
     </Tab>
   </Tabs>

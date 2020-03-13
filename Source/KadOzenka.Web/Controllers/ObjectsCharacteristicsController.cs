@@ -80,9 +80,13 @@ namespace KadOzenka.Web.Controllers
         #region Characteristics
 
         [HttpGet]
-        public ActionResult AddCharacteristic()
+        public ActionResult Characteristics(long registerId)
         {
-            return new EmptyResult();
+            var model = new SourceModel
+            {
+                RegisterId = registerId
+            };
+            return View(model);
         }
 
         #endregion

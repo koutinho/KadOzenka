@@ -897,6 +897,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />
