@@ -16,7 +16,9 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             RegisterService = new RegisterService();
         }
 
-        public ObjectsCharacteristicDto GetCharacteristics(long characteristicsId)
+        #region Source
+
+        public SourceDto GetSource(long characteristicsId)
         {
             var characteristic = GetCharacteristicsInternal(characteristicsId);
             if (characteristic == null)
@@ -24,7 +26,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
             var register = RegisterService.GetRegister(characteristic.RegisterId);
 
-            return new ObjectsCharacteristicDto
+            return new SourceDto
             {
                 Id = characteristic.Id,
                 RegisterId = characteristic.RegisterId,
@@ -32,7 +34,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             };
         }
 
-        public long AddRegister(ObjectsCharacteristicDto characteristic)
+        public long AddSource(SourceDto characteristic)
         {
             OMRegister omRegister;
             using (var ts = new TransactionScope())
@@ -52,7 +54,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             return omRegister.RegisterId;
         }
 
-        public void EditRegister(ObjectsCharacteristicDto characteristicDto)
+        public void EditSource(SourceDto characteristicDto)
         {
             var characteristic = GetCharacteristicsInternal(characteristicDto.Id);
             if (characteristic == null)
@@ -67,6 +69,8 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
                 ts.Complete();
             }
         }
+
+        #endregion
 
 
         #region Support Methods

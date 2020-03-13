@@ -17,10 +17,12 @@ namespace KadOzenka.Web.Controllers
         }
 
 
+        #region Source
+
         [HttpGet]
         public ActionResult AddSource()
         {
-            var model = new ObjectsCharacteristicModel
+            var model = new SourceModel
             {
                 Id = -1
             };
@@ -31,11 +33,11 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult EditSource(long characteristicsId)
         {
-            var characteristics = ObjectsCharacteristicsService.GetCharacteristics(characteristicsId);
+            var characteristics = ObjectsCharacteristicsService.GetSource(characteristicsId);
             if (characteristics == null)
                 throw new Exception($"Характеристика с Id {characteristicsId} не найдена");
 
-            var model = new ObjectsCharacteristicModel
+            var model = new SourceModel
             {
                 Id = characteristics.Id,
                 Name = characteristics.RegisterDescription
@@ -45,14 +47,14 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult EditSource(ObjectsCharacteristicModel model)
+        public JsonResult EditSource(SourceModel model)
         {
             string message;
             try
             {
                 if (model.Id == -1)
                 {
-                    ObjectsCharacteristicsService.AddRegister(ObjectsCharacteristicModel.UnMap(model));
+                    ObjectsCharacteristicsService.AddSource(SourceModel.UnMap(model));
                     message = "Источник успешно сохранен";
                 }
                 else
@@ -60,7 +62,7 @@ namespace KadOzenka.Web.Controllers
                     if(string.IsNullOrWhiteSpace(model.Name))
                         throw new ArgumentException("Имя источника не может быть пустым");
 
-                    ObjectsCharacteristicsService.EditRegister(ObjectsCharacteristicModel.UnMap(model));
+                    ObjectsCharacteristicsService.EditSource(SourceModel.UnMap(model));
                     message = "Источник успешно обновлен";
                 }
             }
@@ -71,5 +73,18 @@ namespace KadOzenka.Web.Controllers
 
             return Json(new { Message = message });
         }
+
+        #endregion
+
+
+        #region Characteristics
+
+        [HttpGet]
+        public ActionResult AddCharacteristic()
+        {
+            return new EmptyResult();
+        }
+
+        #endregion
     }
 }

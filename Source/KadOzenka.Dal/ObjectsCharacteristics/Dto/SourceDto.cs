@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ObjectsCharacteristics.Dto
 {
-    public class ObjectsCharacteristicDto
+    public class SourceDto
     {
         public long Id { get; set; }
 
