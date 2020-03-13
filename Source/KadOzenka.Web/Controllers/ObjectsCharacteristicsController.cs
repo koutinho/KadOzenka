@@ -18,18 +18,18 @@ namespace KadOzenka.Web.Controllers
 
 
         [HttpGet]
-        public ActionResult Add()
+        public ActionResult AddSource()
         {
             var model = new ObjectsCharacteristicModel
             {
                 Id = -1
             };
 
-            return View("~/Views/ObjectsCharacteristics/Edit.cshtml", model);
+            return View("~/Views/ObjectsCharacteristics/EditSource.cshtml", model);
         }
 
         [HttpGet]
-        public ActionResult Edit(long characteristicsId)
+        public ActionResult EditSource(long characteristicsId)
         {
             var characteristics = ObjectsCharacteristicsService.GetCharacteristics(characteristicsId);
             if (characteristics == null)
@@ -45,7 +45,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult Edit(ObjectsCharacteristicModel model)
+        public JsonResult EditSource(ObjectsCharacteristicModel model)
         {
             string message;
             try
