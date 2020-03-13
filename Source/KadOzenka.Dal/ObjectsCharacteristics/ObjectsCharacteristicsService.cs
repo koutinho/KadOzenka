@@ -1,6 +1,5 @@
 ﻿using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
-using DevExpress.DataProcessing;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;

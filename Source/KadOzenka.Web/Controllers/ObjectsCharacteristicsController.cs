@@ -18,27 +18,30 @@ namespace KadOzenka.Web.Controllers
 
 
         [HttpGet]
-        public ActionResult Edit(long test)
+        public ActionResult Add()
         {
-            ObjectsCharacteristicModel model;
-            var characteristics = ObjectsCharacteristicsService.GetCharacteristics(test);
-            if (characteristics == null)
+            var model = new ObjectsCharacteristicModel
             {
-                model = new ObjectsCharacteristicModel
-                {
-                    Id = test
-                };
-            }
-            else
-            {
-                model = new ObjectsCharacteristicModel
-                {
-                    Id = characteristics.Id,
-                    Name = characteristics.RegisterDescription
-                };
-            }
+                Id = -1
+            };
 
             return View("~/Views/ObjectsCharacteristics/Edit.cshtml", model);
+        }
+
+        [HttpGet]
+        public ActionResult Edit(long characteristicsId)
+        {
+            var characteristics = ObjectsCharacteristicsService.GetCharacteristics(characteristicsId);
+            if (characteristics == null)
+                throw new Exception($"Характеристика с Id {characteristicsId} не найдена");
+
+            var model = new ObjectsCharacteristicModel
+            {
+                Id = characteristics.Id,
+                Name = characteristics.RegisterDescription
+            };
+
+            return View(model);
         }
 
         [HttpPost]
@@ -56,6 +59,7 @@ namespace KadOzenka.Web.Controllers
                 {
                     if(string.IsNullOrWhiteSpace(model.Name))
                         throw new ArgumentException("Имя источника не может быть пустым");
+
                     ObjectsCharacteristicsService.EditRegister(ObjectsCharacteristicModel.UnMap(model));
                     message = "Источник успешно обновлен";
                 }
