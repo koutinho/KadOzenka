@@ -18,7 +18,7 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         [Display(Name = "Связь со справочником")]
         public long? ReferenceId { get; set; }
 
-        public long? RegisterId { get; set; }
+        public long RegisterId { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

@@ -88,6 +88,13 @@
                         $('#@Html.IdFor(m => m.ReferenceId)').data('kendoDropDownList').enable(false);
                         Common.ShowMessage(response.Success);
                     }
+
+                    Common.UI.ShowDialog({
+                        content: response.Message,
+                        icon: 'ok',
+                        showCloseBtn: true
+                    });
+
                 }).fail(function (response, textStatus, errorThrown) {
                     kendo.ui.progress($('body'), false);
                     Common.ShowError(response.responseText);

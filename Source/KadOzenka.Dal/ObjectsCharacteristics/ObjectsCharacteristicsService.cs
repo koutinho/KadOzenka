@@ -4,16 +4,19 @@ using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using Platform.Configurator;
+using Core.Register;
 
 namespace KadOzenka.Dal.ObjectsCharacteristics
 {
     public class ObjectsCharacteristicsService
     {
         public RegisterService RegisterService { get; set; }
+        public RegisterAttributeService RegisterAttributeService { get; set; }
 
         public ObjectsCharacteristicsService()
         {
             RegisterService = new RegisterService();
+            RegisterAttributeService = new RegisterAttributeService();
         }
 
         #region Source
@@ -68,6 +71,27 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
                 ts.Complete();
             }
+        }
+
+        #endregion
+
+        #region Characteristics
+
+        public long AddCharacteristic(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
+        {
+            long id;
+            using (var ts = new TransactionScope())
+            {
+                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(attributeName, registerId, type, referenceId);
+                id = omAttribute.Id;
+
+                var dbConfigurator = RegisterConfigurator.GetDbConfigurator();
+                RegisterConfigurator.CreateDbColumnForRegister(omAttribute, dbConfigurator);
+
+                ts.Complete();
+            }
+
+            return id;
         }
 
         #endregion
