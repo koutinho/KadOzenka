@@ -167,7 +167,7 @@ namespace KadOzenka.Dal.DataImport
 		    var dataImporterGkn = new DataImporterGkn();
             try
 		    {
-		        var t = Task.Run(() =>
+                var t = Task.Run(() =>
 		        {
 		            CollectStatistic(dataLog, dataImporterGkn, cancelToken);
 		        }, cancelToken);
@@ -291,14 +291,9 @@ namespace KadOzenka.Dal.DataImport
 
         private static void CollectStatistic(OMImportDataLog dataLog, int totalNumberOfObjects, int totalNumberOfImportedObjects)
         {
-            using (var ts = new TransactionScope())
-            {
-                dataLog.TotalNumberOfObjects = totalNumberOfObjects;
-                dataLog.NumberOfImportedObjects = totalNumberOfImportedObjects;
-                dataLog.Save();
-
-                ts.Complete();
-            }
+            dataLog.TotalNumberOfObjects = totalNumberOfObjects;
+            dataLog.NumberOfImportedObjects = totalNumberOfImportedObjects;
+            dataLog.Save();
         }
 
 	    private static int GetFileNumberOfImportedObjects(DataImporterGkn dataImporterGkn)
