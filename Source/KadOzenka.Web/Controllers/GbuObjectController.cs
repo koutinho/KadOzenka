@@ -1,5 +1,4 @@
 ﻿using System;
-using Core.UI.Registers.Controllers;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Models.GbuObject;
 using Microsoft.AspNetCore.Mvc;
@@ -13,21 +12,17 @@ using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
-using Kendo.Mvc.UI;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
-using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
 using ObjectModel.Gbu;
 using ObjectModel.Gbu.CodSelection;
 using ObjectModel.KO;
-using Kendo.Mvc.Extensions;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class GbuObjectController : BaseController
+	public class GbuObjectController : KoBaseController
 	{
 		#region initialization
 		private readonly GbuObjectService _service;
@@ -539,27 +534,6 @@ namespace KadOzenka.Web.Controllers
 			});
 		}
 
-		public JsonResult GenerateMessageNonValidModel()
-		{
-			return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
-
-		}
-
-		#endregion
+        #endregion
 	}
 }

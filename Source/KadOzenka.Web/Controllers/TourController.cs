@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Transactions;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
-using Core.UI.Registers.Controllers;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Groups;
@@ -14,7 +12,6 @@ using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.Tour;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
@@ -23,7 +20,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class TourController : BaseController
+	public class TourController : KoBaseController
     {
         public TourService TourService { get; set; }
         public GroupService GroupService { get; set; }
@@ -633,30 +630,6 @@ namespace KadOzenka.Web.Controllers
             TourFactorService.RemoveTourFactorRegisterAttribute(omAttribute.Id);
 
             return EmptyResponse();
-        }
-
-        #endregion
-
-        #region Helpers
-
-        private JsonResult GenerateMessageNonValidModel()
-        {
-            return Json(new
-            {
-                Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-                {
-                    Control = x.Key,
-                    Message = string.Join("\n", x.Value.Errors.Select(e =>
-                    {
-                        if (e.ErrorMessage == "The value '' is invalid.")
-                        {
-                            return $"{e.ErrorMessage} Поле {x.Key}";
-                        }
-
-                        return e.ErrorMessage;
-                    }))
-                })
-            });
         }
 
         #endregion
