@@ -1,9 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="201" IsBasic="true" Description="Единицы оценки" DefaultLayoutId="1002012" LinkedRegistersList="201,202,203,250,251,252,253" UseSubMap="true"
-              OpenEmpty="true" JoinType="Left" 
+              OpenEmpty="false" JoinType="Left" 
               ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="true" ShowFilterMenu="false">
 
-  <DefaultSearchControls>
+	<DefaultSearchControls>
+		<ControlElement AttributeNumber="20101400" ReferenceId="209" AllowDelete="false" />
+		<ControlElement AttributeNumber="20101700" CustomSearchUrl="/CustomSearch/CadastralQuarterFilter" AllowDelete="true" DefaultValue="77:10:0003004"/>
+	</DefaultSearchControls>
+
+	<DefaultSearchControls>
     <ControlElement AttributeNumber="20101600" QueryOperation="Like" />
   </DefaultSearchControls>
   

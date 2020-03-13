@@ -579,8 +579,10 @@ namespace KadOzenka.Web.Controllers
 
 		#region Присвоение оценочной группы
 
-		public ActionResult SetEstimatedGroup()
+		public ActionResult SetEstimatedGroup(int taskId)
 		{
+
+
 			var model = new ModalDialogDetails()
 			{
 				Action = ModalDialogDetails.ActionType.None,

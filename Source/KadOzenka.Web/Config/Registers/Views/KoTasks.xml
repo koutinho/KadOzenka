@@ -19,7 +19,7 @@
     </Button>
 		<Button Caption="Присвоить оценочеую группу" NavigateURL="/Task/SetEstimatedGroup" Icon="fas fa-donate" WindowHeight="150" WindowWidth="400">
 			<Parameters>
-				<Parameter Key="ObjectId" Value="[ObjectID]" />
+				<Parameter Key="taskId" Value="[ObjectID]" />
 			</Parameters>
 		</Button>
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />

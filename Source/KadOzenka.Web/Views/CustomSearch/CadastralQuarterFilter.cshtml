@@ -28,11 +28,11 @@
 	var initValue = [];
 
 	function setSelectedRow() {
+		console.log('initValue', initValue);
 		// пока логика только для работы с 1 выбраным элементом
 		if (Array.isArray(initValue) && initValue.length > 0) {
 			var ddl = $("#treeList").data("kendoTreeList");
 			if (ddl) {
-
 				//находим элемент по кад кварталу
 				var el = ddl.dataSource.data().filter(function (el) { return el['KadastrKvartal'] === initValue[0]})[0] || {Id: 0};
 
@@ -65,8 +65,7 @@
 
 	function csc_setSearchControlValue(value) {
 		if (value) {
-			initValue = value;
-			//ddl.value(value[0]);
+			initValue = typeof value === 'string' ? [value] : value;
 		}
 	}
 
