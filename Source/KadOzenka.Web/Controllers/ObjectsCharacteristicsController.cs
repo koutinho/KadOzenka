@@ -89,6 +89,54 @@ namespace KadOzenka.Web.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public ActionResult AddCharacteristic(long sourceId)
+        {
+            var model = new CharacteristicModel
+            {
+                Id = -1,
+                RegisterId = sourceId
+            };
+
+            return View("~/Views/ObjectsCharacteristics/CharacteristicCard.cshtml", model);
+        }
+
+        //TODO
+        [HttpPost]
+        public ActionResult EditCharacteristic(CharacteristicModel model)
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    return GenerateMessageNonValidModel();
+            //}
+
+            //var id = model.Id;
+            //using (var ts = new TransactionScope())
+            //{
+            //    var omRegister = OMRegister.Where(x => x.RegisterId == model.RegisterFactorId).Select(x => x.RegisterId).ExecuteFirstOrDefault();
+            //    if (omRegister == null)
+            //    {
+            //        omRegister = TourFactorService.CreateTourFactorRegister(model.TourId, model.IsSteadObjectType);
+            //        model.RegisterFactorId = omRegister.RegisterId;
+            //    }
+
+            //    if (model.Id == -1)
+            //    {
+            //        model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type, model.ReferenceId);
+            //    }
+            //    else
+            //    {
+            //        TourFactorService.RenameTourFactorRegisterAttribute(id, model.Name);
+            //    }
+
+            //    ts.Complete();
+            //}
+
+            //return Json(new { Success = "Сохранено успешно", data = model });
+
+            return new EmptyResult();
+        }
+
         #endregion
     }
 }
