@@ -56,6 +56,9 @@
                                     window.parent.location.reload();
                                 }, 2000);
                             }
+                        },
+                        error: function (data) {
+                            Common.ShowError(data.responseText);
                         }
                     });
                 }

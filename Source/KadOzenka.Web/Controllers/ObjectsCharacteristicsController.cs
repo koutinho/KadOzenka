@@ -49,22 +49,15 @@ namespace KadOzenka.Web.Controllers
                 return GenerateMessageNonValidModel();
 
             string message;
-            try
+            if (model.RegisterId == -1)
             {
-                if (model.RegisterId == -1)
-                {
-                    ObjectsCharacteristicsService.AddSource(SourceModel.UnMap(model));
-                    message = "Источник успешно сохранен";
-                }
-                else
-                {
-                    ObjectsCharacteristicsService.EditSource(SourceModel.UnMap(model));
-                    message = "Источник успешно обновлен";
-                }
+                ObjectsCharacteristicsService.AddSource(SourceModel.UnMap(model));
+                message = "Источник успешно сохранен";
             }
-            catch (Exception e)
+            else
             {
-                message = $"Во время работы с источником произошла ошибка: {e.Message}";
+                ObjectsCharacteristicsService.EditSource(SourceModel.UnMap(model));
+                message = "Источник успешно обновлен";
             }
 
             return Json(new { Message = message });
@@ -115,22 +108,15 @@ namespace KadOzenka.Web.Controllers
                 return GenerateMessageNonValidModel();
 
             string message;
-            try
+            if (model.Id == -1)
             {
-                if (model.Id == -1)
-                {
-                    model.Id = ObjectsCharacteristicsService.AddCharacteristic(CharacteristicModel.UnMap(model));
-                    message = "Характеристика успешно сохранена";
-                }
-                else
-                {
-                    ObjectsCharacteristicsService.EditCharacteristic(CharacteristicModel.UnMap(model));
-                    message = "Характеристика успешно обновлена";
-                }
+                model.Id = ObjectsCharacteristicsService.AddCharacteristic(CharacteristicModel.UnMap(model));
+                message = "Характеристика успешно сохранена";
             }
-            catch (Exception e)
+            else
             {
-                message = $"Во время работы с характеристикой произошла ошибка: {e.Message}";
+                ObjectsCharacteristicsService.EditCharacteristic(CharacteristicModel.UnMap(model));
+                message = "Характеристика успешно обновлена";
             }
 
             return Json(new { Message = message, data = model });
