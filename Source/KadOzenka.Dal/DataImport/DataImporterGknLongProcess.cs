@@ -18,6 +18,8 @@ using Core.Register;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Common;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
 using SharpCompress.Archives.Rar;
 
@@ -45,6 +47,60 @@ namespace KadOzenka.Dal.DataImport
 			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, export.DateCreated, DataImporterCommon.GetTemplateName(export.Id));
 
             LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+        }
+
+	    public static void RestartImport(long? importId)
+	    {
+            var import = OMImportDataLog
+                .Where(x => x.Id == importId)
+                .SelectAll()
+                .ExecuteFirstOrDefault();
+
+	        if (import == null)
+	        {
+	            throw new Exception($"Не найдена запись {importId} в журнале загрузки данных");
+            }
+
+	        if (import.Status_Code == ImportStatus.Added || import.Status_Code == ImportStatus.Running)
+	        {
+	            throw new Exception($"Невозможно перезапустить записть импорта {import} со статусом '{import.Status_Code.GetEnumDescription()}'");
+	        }
+
+            OMProcessType oMProcessType = OMProcessType
+	            .Where(x => x.ProcessName == LongProcessName)
+	            .Execute()
+	            .FirstOrDefault();
+	        if (oMProcessType == null)
+	        {
+	            throw new Exception("Неизвестный тип процесса: " + LongProcessName);
+	        }
+
+            var queue = OMQueue
+	            .Where(x => x.ProcessTypeId == oMProcessType.Id && x.ObjectRegisterId == OMExportByTemplates.GetRegisterId() && x.ObjectId == import.Id)
+	            .Execute()
+	            .FirstOrDefault();
+	        if (queue == null)
+	        {
+	            throw new Exception("Не удалось определить процесс");
+	        }
+
+            using (var ts = new TransactionScope())
+	        {
+	            queue.EndDate = null;
+	            queue.ErrorId = null;
+	            queue.Message = null;
+	            queue.ServiceLogId = null;
+	            queue.Status_Code = Status.Added;
+	            queue.Save();
+
+	            import.DateStarted = null;
+	            import.DateFinished = null;
+	            import.ResultMessage = null;
+                import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Added;
+	            import.Save();
+
+                ts.Complete();
+	        }
         }
 
         public void LogError(long? objectId, Exception ex, long? errorId = null)

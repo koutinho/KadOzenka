@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using Core.UI.Registers.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,13 +11,18 @@ using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Core.ErrorManagment;
+using Core.Shared.Extensions;
+using Core.UI.Registers.CoreUI.Registers;
+using Core.UI.Registers.Models.CoreUi;
 using ObjectModel.KO;
 using KadOzenka.Web.Models.Task;
+using ObjectModel.Common;
 using ObjectModel.Core.TD;
+using ObjectModel.Directory.Common;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class DataImportController : BaseController
+    public class DataImportController : BaseController
 	{
 		private readonly int _dataCountForBackgroundLoading = 1000;
 
@@ -179,7 +185,7 @@ namespace KadOzenka.Web.Controllers
 				    using (var stream = file.OpenReadStream())
 				    {
 				        DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), taskId);
-				    }
+                    }
                 }
 			}
 			catch (Exception e)
@@ -190,5 +196,85 @@ namespace KadOzenka.Web.Controllers
 
 			return NoContent();
 		}
-	}
+
+	    [HttpGet]
+	    [ActionName("RestartGknImports")]
+	    public ActionResult RestartGknImportsConfirm()
+	    {
+	        var currentImportsId = RegistersVariables.CurrentList?.ToList() ?? new List<long>();
+	        if (currentImportsId.Count == 0)
+	        {
+	            return View("~/Views/Shared/ModalDialogDetails.cshtml", new ModalDialogDetails
+	            {
+	                Message = "Не выбраны записи для перезапуска.",
+	                Icon = ModalDialogDetails.IconType.Warning,
+	                Buttons = ModalDialogDetails.ButtonType.Ok,
+	                Action = ModalDialogDetails.ActionType.Reload
+	            });
+	        }
+
+            var addedOrRunningSelectedImports = OMImportDataLog
+	            .Where(x => currentImportsId.Contains(x.Id) && (x.Status_Code == ImportStatus.Added || x.Status_Code == ImportStatus.Running))
+                .Select(x => x.Status)
+                .Select(x => x.Status_Code)
+                .Execute();
+            if (addedOrRunningSelectedImports.Count > 0)
+	        {
+	            return View("~/Views/Shared/ModalDialogDetails.cshtml", new ModalDialogDetails
+	            {
+	                Message = $"Выбраны записи со статусом '{ImportStatus.Added.GetEnumDescription()}' или '{ImportStatus.Running.GetEnumDescription()}'",
+	                Icon = ModalDialogDetails.IconType.Warning,
+	                Buttons = ModalDialogDetails.ButtonType.Ok,
+	                Action = ModalDialogDetails.ActionType.Reload
+	            });
+	        }
+
+            var model = new ModalDialogDetails
+            {
+                Message = "Вы уверены, что хотите перезапустить выбранные записи импорта?",
+            };
+
+	        return View("~/Views/Shared/ModalDialogDetails.cshtml", model);
+	    }
+
+        [HttpPost]
+        [ActionName("RestartGknImports")]
+        public ActionResult RestartGknImports()
+	    {
+	        var currentImportsId = RegistersVariables.CurrentList?.ToList() ?? new List<long>();
+            try
+            {
+                if (currentImportsId.Count == 0)
+                {
+                    throw new Exception("Не выбраны записи для перезапуска.");
+                }
+
+                using (var ts = new TransactionScope(TransactionScopeOption.RequiresNew))
+                {
+                    foreach (var importId in currentImportsId)
+                    {
+                        DataImporterGknLongProcess.RestartImport(importId);
+                    }
+
+                    ts.Complete();
+                }
+            }
+	        catch (Exception e)
+	        {
+	            long errorId = ErrorManager.LogError(e);
+                return Json(new
+	            {
+	                type = "Error",
+	                message =  $"{e.Message} (Подробнее в журнале № {errorId})"
+                });
+            }
+
+	        return Json(new
+	        {
+	            type = "Success",
+	            message = "Выбранные записи импорта успешно перезапущены",
+	            reload = true
+	        });
+        }
+    }
 }

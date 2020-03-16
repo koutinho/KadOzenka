@@ -30,5 +30,15 @@
               <Parameter Key="importId" Value="[ObjectID]" />
           </Parameters>
       </Button>
+
+      <Button Caption="Перезапустить" NavigateURL="~/DataImport/RestartGknImports" OpenInNewWindow="false" NeedRefresh="true" WindowHeight="150" WindowWidth="450">
+          <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                  <Conditions>
+                      <Condition Key="NeedCheckedRows" Operation="" Value="true" />
+                  </Conditions>
+              </ConditionGroup>
+          </ConditionGroups>
+      </Button>
   </Buttons>
 </RegisterView>
