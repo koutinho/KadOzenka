@@ -28,7 +28,7 @@
 
         $('#toolbar').kendoToolBar({
             items: [{
-                id: "addGroupColumn",
+                id: "saveBtn",
                 type: "button",
                 icon: "save",
                 text: "Сохранить",
@@ -52,13 +52,16 @@
                             }
                             else {
                                 Common.ShowMessage(data.Message);
+                                setTimeout(function() {
+                                     Common.UI.CloseWindow('registerModalWindow', window.parent);
+                                }, 2000);
                             }
                         }
                     });
                 }
             },
             {
-                id: "editGroupColumn",
+                id: "cancelBtn",
                 type: "button",
                 text: "Отмена",
                 click: function (e) {

@@ -89,6 +89,9 @@
                     }
 
                     Common.ShowMessage(response.Message);
+                    setTimeout(function() {
+                        Common.UI.CloseWindow('registerModalWindow', window.parent);
+                    }, 2000);
 
                 }).fail(function (response, textStatus, errorThrown) {
                     kendo.ui.progress($('body'), false);

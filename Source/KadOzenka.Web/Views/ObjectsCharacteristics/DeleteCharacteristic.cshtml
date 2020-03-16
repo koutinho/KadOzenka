@@ -37,6 +37,9 @@
                 $.post(form.attr('action'), formObject).done(function (response) {
                     kendo.ui.progress($('body'), false);
                     Common.ShowMessage("Характеристика успешно удалена");
+                    setTimeout(function() {
+                        Common.UI.CloseWindow('registerModalWindow', window.parent);
+                    }, 2000);
                     $(btn).attr('disabled', true);
                 }).fail(function (response, textStatus, errorThrown) {
                     kendo.ui.progress($('body'), false);
