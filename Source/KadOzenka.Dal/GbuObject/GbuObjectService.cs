@@ -184,7 +184,7 @@ where a.object_id = {objectId}";
             var registersIds = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
                 .Select(x => x.RegisterId).Execute().Select(x => x.RegisterId).ToList();
 
-            return OMAttribute.Where(x => registersIds.Contains(x.RegisterId)).SelectAll().Execute();
+            return OMAttribute.Where(x => registersIds.Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false).SelectAll().Execute();
         }
 
         public int AddNewVirtualAttribute(string attributeName, long registerId, RegisterAttributeType type)
