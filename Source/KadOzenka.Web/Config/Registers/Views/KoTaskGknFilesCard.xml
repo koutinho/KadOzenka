@@ -40,5 +40,15 @@
               </ConditionGroup>
           </ConditionGroups>
       </Button>
+
+     <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="" />
+
+    <Button Caption="Перейти в Журнал" NavigateURL="/RegistersView/DataImporter" OpenInRadWindow="false" OpenInNewWindow="true">
+      <Parameters>
+        <Parameter Key="Transition" Value="1" />
+        <Parameter Key="80101400" Value="{Get:80101400}" />
+      </Parameters>
+    </Button>
+    
   </Buttons>
 </RegisterView>
