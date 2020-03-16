@@ -43,6 +43,14 @@
 
      <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="" />
 
+    <Button Caption="Детали" NavigateURL="/ObjectCard?isVertical=false&amp;useMasterPage=false" >
+      <Parameters>
+        <Parameter Key="ObjId" Value="[ObjectId]" />
+        <Parameter Key="RegisterViewId" Value="DataImporter" />
+      </Parameters>
+    </Button>
+    
+    
     <Button Caption="Перейти в Журнал" NavigateURL="/RegistersView/DataImporter" OpenInRadWindow="false" OpenInNewWindow="true">
       <Parameters>
         <Parameter Key="Transition" Value="1" />
