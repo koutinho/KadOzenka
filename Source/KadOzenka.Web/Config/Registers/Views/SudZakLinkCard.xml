@@ -6,7 +6,7 @@
 	      <ConditionGroups>
 		      <ConditionGroup HideOrDisable="Hide">
 			      <Conditions>
-				      <Condition Key="[31502000]" Operation="Equal" Value="1" AndOr="And"/>
+				      <Condition Key="{Get:IsRemoved}" Operation="Equal" Value="True" AndOr="And"/>
 			      </Conditions>
 		      </ConditionGroup>
 	      </ConditionGroups>
@@ -18,7 +18,7 @@
 	      <ConditionGroups>
 		      <ConditionGroup HideOrDisable="Hide">
 			      <Conditions>
-				      <Condition Key="[31502000]" Operation="Equal" Value="1" AndOr="And"/>
+				      <Condition Key="{Get:IsRemoved}" Operation="Equal" Value="True" AndOr="And"/>
 			      </Conditions>
 		      </ConditionGroup>
 	      </ConditionGroups>
