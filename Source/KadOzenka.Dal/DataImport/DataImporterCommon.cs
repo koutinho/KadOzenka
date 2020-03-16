@@ -105,7 +105,7 @@ namespace KadOzenka.Dal.DataImport
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
-				UserIds = new long[] { import.UserId },
+				Addressers = new MessageAddressersDto{UserIds = new long[] { import.UserId } },
 				Subject = $"Результат загрузки данных в реестр: {RegisterCache.GetRegisterData((int)import.MainRegisterId).Description} от ({import.DateCreated.GetString()})",
 				Message = $@"Загрузка файла ""{import.DataFileName}"" была завершена.
 Статус загрузки: {import.Status_Code.GetEnumDescription()}

@@ -11,7 +11,7 @@ namespace KadOzenka.Dal.LongProcess
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
-				UserIds = processQueue.UserId.HasValue ? new long[] { processQueue.UserId.Value } : new long[] { },
+				Addressers = new MessageAddressersDto{UserIds = processQueue.UserId.HasValue ? new long[] { processQueue.UserId.Value } : new long[] { } },
 				Subject = subject,
 				Message = message,
 				IsUrgent = true,
@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.LongProcess
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
-				UserIds = new long[] { export.UserId },
+				Addressers = new MessageAddressersDto{UserIds = new long[] { export.UserId } },
 				Subject = subject,
 				Message = $@"Статус операции: {((ObjectModel.Directory.Common.ImportStatus)export.Status).GetEnumDescription()}
 					<a href=""/Sud/DownloadExportResult?exportId={export.Id}&withXmlExtension={withXmlExtension}"">Скачать результат</a>",

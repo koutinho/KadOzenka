@@ -14,9 +14,10 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Enum;
 using Microsoft.Practices.EnterpriseLibrary.Data;
+using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Sud;
-using Platform.LongProcessManagment.Model;
+using Platform.LongProcessManagment;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -29,21 +30,15 @@ namespace KadOzenka.Dal.LongProcess
 
 			var res = dt.Rows[0].ItemArray[0];
 
-			var longProcessParametersModel = new LongProcessParametersModel();
-			if (!string.IsNullOrEmpty(processType.Parameters))
-			{
-				var ms = new MemoryStream(Encoding.UTF8.GetBytes(processType.Parameters));
-				var ser = new DataContractJsonSerializer(longProcessParametersModel.GetType());
-				longProcessParametersModel = ser.ReadObject(ms) as LongProcessParametersModel;
-				ms.Close();
-			}
+			var messageAddresses = JsonConvert.DeserializeObject<MessageAddressersDto>(processType.Parameters);
+	
 			if (res.ParseToInt() == 0)
 			{
-				SendResultNotificationWithoutChange(longProcessParametersModel);
+				SendResultNotificationWithoutChange(messageAddresses);
 			}
 			else
 			{
-				SendResultNotification(processQueue.Id, res.ParseToInt(), longProcessParametersModel);
+				SendResultNotification(processQueue.Id, res.ParseToInt(), messageAddresses);
 			}
 		}
 
@@ -57,14 +52,11 @@ namespace KadOzenka.Dal.LongProcess
 			return true;
 		}
 
-		internal static void SendResultNotificationWithoutChange(LongProcessParametersModel processParameters)
+		internal static void SendResultNotificationWithoutChange(MessageAddressersDto addresses)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
-				UserIds = processParameters.UserIds,
-				RoleIds = processParameters.RoleIds,
-				DepartmentIds = processParameters.DepartmentIds,
-				QueryIds = processParameters.QueryIds,
+				Addressers = addresses,
 				Subject = $"Результат проверки объектов от: {DateTime.Now.Date}",
 				Message = @"Процесс дополнительного анализа завершен успешно, объектов подходящих под критерии дополнительного анализа не обнаружено",
 				IsUrgent = true,
@@ -72,14 +64,11 @@ namespace KadOzenka.Dal.LongProcess
 			});
 		}
 
-		internal static void SendResultNotification(long queueId, long additionalCheckCount, LongProcessParametersModel processParameters)
+		internal static void SendResultNotification(long queueId, long additionalCheckCount, MessageAddressersDto addresses)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
-				UserIds = processParameters.UserIds,
-				RoleIds = processParameters.RoleIds,
-				DepartmentIds = processParameters.DepartmentIds,
-				QueryIds = processParameters.QueryIds,
+				Addressers = addresses,
 				Subject = $"Результат проверки объектов от: {DateTime.Now.Date})",
 				Message = $@"Процесс дополнительного анализа завершен успешно. Объекты удовлетворяющие условию: <a href=""/Sud/GetReportAdditionalCheck?idProcess={queueId}"">{additionalCheckCount}</a>",
 				IsUrgent = true,

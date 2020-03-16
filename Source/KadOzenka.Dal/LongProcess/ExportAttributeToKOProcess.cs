@@ -45,9 +45,11 @@ namespace KadOzenka.Dal.LongProcess
 
 		private void SendSuccessNotification(OMQueue processQueue)
 		{
+			
+
 			new MessageService().SendMessages(new MessageDto
 			{
-				UserIds = processQueue.UserId.HasValue ? new long[] { processQueue.UserId.Value } : new long[] { },
+				Addressers = new MessageAddressersDto{UserIds = processQueue.UserId.HasValue ? new[] { processQueue.UserId.Value } : new long[] { } },
 				Subject = $"Результат Операции переноса атрибутов из ГБУ в КО",
 				Message = $"Операция переноса атрибутов из ГБУ в КО успешно завершена",
 				IsUrgent = true,
@@ -59,7 +61,7 @@ namespace KadOzenka.Dal.LongProcess
 		{
 			new MessageService().SendMessages(new MessageDto
 			{
-				UserIds = processQueue.UserId.HasValue ? new long[] { processQueue.UserId.Value } : new long[] { },
+				Addressers = new MessageAddressersDto { UserIds = processQueue.UserId.HasValue ? new[] { processQueue.UserId.Value } : new long[] { } },
 				Subject = $"Результат Операции переноса атрибутов из ГБУ в КО",
 				Message = $"Операция переноса атрибутов из ГБУ в КО была прервана: {message}",
 				IsUrgent = true,
