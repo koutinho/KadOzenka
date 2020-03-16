@@ -23,5 +23,18 @@
       </ConditionGroups>
     </Button>
 
+    <Button Caption="Удалить" NavigateURL="/ObjectsCharacteristics/DeleteCharacteristic" WindowHeight="180" WindowWidth="840" NeedRefresh="true">
+      <Parameters>
+        <Parameter Key="characteristicId" Value="[ObjectID]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
   </Buttons>
+
 </RegisterView>

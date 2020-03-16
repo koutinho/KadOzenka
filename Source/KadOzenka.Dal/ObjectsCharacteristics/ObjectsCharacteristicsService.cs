@@ -113,6 +113,11 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             RegisterAttributeService.RenameRegisterAttribute(characteristicDto.Id, characteristicDto.Name);
         }
 
+        public void DeleteCharacteristic(long characteristicId)
+        {
+            RegisterAttributeService.RemoveRegisterAttribute(characteristicId);
+        }
+
         #endregion
 
 

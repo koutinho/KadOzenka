@@ -153,6 +153,28 @@ namespace KadOzenka.Web.Controllers
             return Json(new { Message = message, data = model });
         }
 
+        [HttpGet]
+        public ActionResult DeleteCharacteristic(long characteristicId)
+        {
+            var attribute = RegisterAttributeService.GetRegisterAttribute(characteristicId);
+            if (attribute == null)
+                throw new Exception($"Характеристика с Id '{characteristicId}' не найдена");
+
+            var model = new CharacteristicModel
+            {
+                Id = attribute.Id,
+                Name = attribute.Name
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public void DeleteCharacteristic(CharacteristicModel model)
+        {
+            ObjectsCharacteristicsService.DeleteCharacteristic(model.Id);
+        }
+
         #endregion
     }
 }
