@@ -11,6 +11,16 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         [Display(Name = "Пользовательское наименование")]
         public string Name { get; set; }
 
+
+        public static SourceModel Map(SourceDto dto)
+        {
+            return new SourceModel
+            {
+                RegisterId = dto.RegisterId,
+                Name = dto.RegisterDescription
+            };
+        }
+
         public static SourceDto UnMap(SourceModel model)
         {
             return new SourceDto

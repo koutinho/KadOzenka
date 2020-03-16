@@ -52,8 +52,8 @@
                             }
                             else {
                                 Common.ShowMessage(data.Message);
-                                setTimeout(function() {
-                                     Common.UI.CloseWindow('registerModalWindow', window.parent);
+                                setTimeout(function () {
+                                    window.parent.location.reload();
                                 }, 2000);
                             }
                         }

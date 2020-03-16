@@ -24,6 +24,8 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
         public SourceDto GetSource(long registerId)
         {
             var register = RegisterService.GetRegister(registerId);
+            if (register == null)
+                throw new Exception($"Источник с Id {registerId} не найден");
 
             return new SourceDto
             {

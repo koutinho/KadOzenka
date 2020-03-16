@@ -6,13 +6,13 @@
   <Buttons>
     <Button Caption="Добавить" NavigateURL="/ObjectsCharacteristics/AddCharacteristic" WindowHeight="280" WindowWidth="840" NeedRefresh="true">
       <Parameters>
-        <Parameter Key="sourceId" Value="{Get:SourceId}" />
+        <Parameter Key="registerId" Value="{Get:SourceId}" />
       </Parameters>
     </Button>
 
     <Button Caption="Редактировать" NavigateURL="/ObjectsCharacteristics/EditCharacteristic" WindowHeight="280" WindowWidth="840" NeedRefresh="true">
       <Parameters>
-        <Parameter Key="characteristicId" Value="[ObjectID]" />
+        <Parameter Key="attributeId" Value="[ObjectID]" />
       </Parameters>
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
@@ -25,7 +25,7 @@
 
     <Button Caption="Удалить" NavigateURL="/ObjectsCharacteristics/DeleteCharacteristic" WindowHeight="180" WindowWidth="840" NeedRefresh="true">
       <Parameters>
-        <Parameter Key="characteristicId" Value="[ObjectID]" />
+        <Parameter Key="attributeId" Value="[ObjectID]" />
       </Parameters>
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Core.Register;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
+using ObjectModel.Core.Register;
 
 namespace KadOzenka.Web.Models.ObjectsCharacteristics
 {
@@ -22,17 +23,17 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         public long RegisterId { get; set; }
 
 
-        public static CharacteristicModel Map(CharacteristicDto dto)
+        public static CharacteristicModel Map(OMAttribute attribute)
         {
             return new CharacteristicModel
             {
-                Id = dto.Id,
-                RegisterId = dto.RegisterId,
-                Name = dto.Name,
-                Type = dto.ReferenceId.HasValue
+                Id = attribute.Id,
+                RegisterId = attribute.RegisterId,
+                Name = attribute.Name,
+                Type = attribute.ReferenceId.HasValue
                     ? RegisterAttributeType.REFERENCE
-                    : dto.Type,
-                ReferenceId = dto.ReferenceId
+                    : (RegisterAttributeType)attribute.Type,
+                ReferenceId = attribute.ReferenceId
             };
         }
 

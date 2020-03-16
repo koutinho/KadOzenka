@@ -1,5 +1,4 @@
 ﻿using System;
-using Core.Register;
 using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.Registers;
@@ -37,14 +36,8 @@ namespace KadOzenka.Web.Controllers
         public ActionResult EditSource(long registerId)
         {
             var source = ObjectsCharacteristicsService.GetSource(registerId);
-            if (source == null)
-                throw new Exception($"Источник с Id {registerId} не найден");
-
-            var model = new SourceModel
-            {
-                RegisterId = source.RegisterId,
-                Name = source.RegisterDescription
-            };
+            
+            var model = SourceModel.Map(source);
 
             return View(model);
         }
@@ -89,36 +82,28 @@ namespace KadOzenka.Web.Controllers
             {
                 RegisterId = registerId
             };
+
             return View(model);
         }
 
         [HttpGet]
-        public ActionResult AddCharacteristic(long sourceId)
+        public ActionResult AddCharacteristic(long registerId)
         {
             var model = new CharacteristicModel
             {
                 Id = -1,
-                RegisterId = sourceId
+                RegisterId = registerId
             };
 
             return View("~/Views/ObjectsCharacteristics/EditCharacteristic.cshtml", model);
         }
 
         [HttpGet]
-        public ActionResult EditCharacteristic(long characteristicId)
+        public ActionResult EditCharacteristic(long attributeId)
         {
-            var attribute = GetAttribute(characteristicId);
+            var attribute = GetAttribute(attributeId);
 
-            var model = new CharacteristicModel
-            {
-                Id = attribute.Id,
-                RegisterId = attribute.RegisterId,
-                Name = attribute.Name,
-                Type = attribute.ReferenceId.HasValue
-                    ? RegisterAttributeType.REFERENCE
-                    : (RegisterAttributeType) attribute.Type,
-                ReferenceId = attribute.ReferenceId
-            };
+            var model = CharacteristicModel.Map(attribute);
 
             return View(model);
         }
@@ -152,15 +137,11 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult DeleteCharacteristic(long characteristicId)
+        public ActionResult DeleteCharacteristic(long attributeId)
         {
-            var attribute = GetAttribute(characteristicId);
+            var attribute = GetAttribute(attributeId);
 
-            var model = new CharacteristicModel
-            {
-                Id = attribute.Id,
-                Name = attribute.Name
-            };
+            var model = CharacteristicModel.Map(attribute);
 
             return View(model);
         }
