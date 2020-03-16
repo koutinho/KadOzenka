@@ -23,22 +23,18 @@
               </ConditionGroup>
           </ConditionGroups>-->
       </Button>
-    
-      <Button Caption="Повторить формирование" NavigateURL="~/DataImporterLayout/ImportReStart" OpenInNewWindow="false" Icon="fas fa-undo-alt"
-              NeedRefresh="true" WindowHeight="200" WindowWidth="400">
-          <Parameters>
-              <Parameter Key="importId" Value="[ObjectID]" />
-          </Parameters>
-      </Button>
 
       <Button Caption="Перезапустить" NavigateURL="~/DataImport/RestartGknImports" OpenInNewWindow="false" NeedRefresh="true" WindowHeight="150" WindowWidth="450">
           <ConditionGroups>
               <ConditionGroup HideOrDisable="Disable">
                   <Conditions>
-                      <Condition Key="NeedCheckedRows" Operation="" Value="true" />
+                      <Condition Key="NeedSelectedRow" Operation="" Value="true"/>
                   </Conditions>
               </ConditionGroup>
           </ConditionGroups>
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+          </Parameters>
       </Button>
 
      <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="" />

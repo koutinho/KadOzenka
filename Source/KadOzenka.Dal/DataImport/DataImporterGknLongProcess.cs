@@ -66,38 +66,15 @@ namespace KadOzenka.Dal.DataImport
 	            throw new Exception($"Невозможно перезапустить записть импорта {import} со статусом '{import.Status_Code.GetEnumDescription()}'");
 	        }
 
-            OMProcessType oMProcessType = OMProcessType
-	            .Where(x => x.ProcessName == LongProcessName)
-	            .Execute()
-	            .FirstOrDefault();
-	        if (oMProcessType == null)
-	        {
-	            throw new Exception("Неизвестный тип процесса: " + LongProcessName);
-	        }
-
-            var queue = OMQueue
-	            .Where(x => x.ProcessTypeId == oMProcessType.Id && x.ObjectRegisterId == OMExportByTemplates.GetRegisterId() && x.ObjectId == import.Id)
-	            .Execute()
-	            .FirstOrDefault();
-	        if (queue == null)
-	        {
-	            throw new Exception("Не удалось определить процесс");
-	        }
-
             using (var ts = new TransactionScope())
 	        {
-	            queue.EndDate = null;
-	            queue.ErrorId = null;
-	            queue.Message = null;
-	            queue.ServiceLogId = null;
-	            queue.Status_Code = Status.Added;
-	            queue.Save();
-
 	            import.DateStarted = null;
 	            import.DateFinished = null;
 	            import.ResultMessage = null;
                 import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Added;
 	            import.Save();
+
+	            LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), import.Id);
 
                 ts.Complete();
 	        }

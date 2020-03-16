@@ -199,9 +199,16 @@ namespace KadOzenka.Web.Controllers
 
 	    [HttpGet]
 	    [ActionName("RestartGknImports")]
-	    public ActionResult RestartGknImportsConfirm()
+	    public ActionResult RestartGknImportsConfirm(long? importId)
 	    {
-	        var currentImportsId = RegistersVariables.CurrentList?.ToList() ?? new List<long>();
+	        var currentImportsId = RegistersVariables.CurrentList?.ToList();
+	        if (currentImportsId == null || currentImportsId.Count == 0)
+	        {
+	            currentImportsId = importId.HasValue
+	                ? new List<long> { importId.Value }
+	                : new List<long>();
+            }
+	           
 	        if (currentImportsId.Count == 0)
 	        {
 	            return View("~/Views/Shared/ModalDialogDetails.cshtml", new ModalDialogDetails
@@ -239,9 +246,15 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [ActionName("RestartGknImports")]
-        public ActionResult RestartGknImports()
+        public ActionResult RestartGknImports(long? importId)
 	    {
-	        var currentImportsId = RegistersVariables.CurrentList?.ToList() ?? new List<long>();
+	        var currentImportsId = RegistersVariables.CurrentList?.ToList();
+	        if (currentImportsId == null || currentImportsId.Count == 0)
+	        {
+	            currentImportsId = importId.HasValue
+	                ? new List<long> { importId.Value }
+	                : new List<long>();
+	        }
             try
             {
                 if (currentImportsId.Count == 0)
@@ -251,9 +264,9 @@ namespace KadOzenka.Web.Controllers
 
                 using (var ts = new TransactionScope(TransactionScopeOption.RequiresNew))
                 {
-                    foreach (var importId in currentImportsId)
+                    foreach (var id in currentImportsId)
                     {
-                        DataImporterGknLongProcess.RestartImport(importId);
+                        DataImporterGknLongProcess.RestartImport(id);
                     }
 
                     ts.Complete();
