@@ -84,15 +84,16 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         #region Characteristics
 
-        public long AddCharacteristic(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
+        public long AddCharacteristic(CharacteristicDto characteristicDto)
         {
-            if (string.IsNullOrWhiteSpace(attributeName))
+            if (string.IsNullOrWhiteSpace(characteristicDto.Name))
                 throw new ArgumentException("Имя характеристики не может быть пустым");
 
             long id;
             using (var ts = new TransactionScope())
             {
-                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(attributeName, registerId, type, referenceId);
+                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(characteristicDto.Name,
+                    characteristicDto.RegisterId, characteristicDto.Type, characteristicDto.ReferenceId);
                 id = omAttribute.Id;
 
                 var dbConfigurator = RegisterConfigurator.GetDbConfigurator();
@@ -102,6 +103,14 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             }
 
             return id;
+        }
+
+        public void EditCharacteristic(CharacteristicDto characteristicDto)
+        {
+            if (string.IsNullOrWhiteSpace(characteristicDto.Name))
+                throw new ArgumentException("Имя характеристики не может быть пустым");
+
+            RegisterAttributeService.RenameRegisterAttribute(characteristicDto.Id, characteristicDto.Name);
         }
 
         #endregion

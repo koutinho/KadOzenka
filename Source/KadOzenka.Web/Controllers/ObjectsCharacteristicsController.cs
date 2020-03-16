@@ -1,6 +1,8 @@
 ﻿using System;
+using Core.Register;
 using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Dal.ObjectsCharacteristics;
+using KadOzenka.Dal.Registers;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
 
 namespace KadOzenka.Web.Controllers
@@ -9,10 +11,12 @@ namespace KadOzenka.Web.Controllers
 	public class ObjectsCharacteristicsController : KoBaseController
     {
         private ObjectsCharacteristicsService ObjectsCharacteristicsService { get; set; }
+        private RegisterAttributeService RegisterAttributeService { get; set; }
 
         public ObjectsCharacteristicsController()
         {
             ObjectsCharacteristicsService = new ObjectsCharacteristicsService();
+            RegisterAttributeService = new RegisterAttributeService();
         }
 
 
@@ -34,7 +38,7 @@ namespace KadOzenka.Web.Controllers
         {
             var characteristics = ObjectsCharacteristicsService.GetSource(characteristicsId);
             if (characteristics == null)
-                throw new Exception($"Характеристика с Id {characteristicsId} не найдена");
+                throw new Exception($"Источник с Id {characteristicsId} не найден");
 
             var model = new SourceModel
             {
@@ -100,7 +104,27 @@ namespace KadOzenka.Web.Controllers
             return View("~/Views/ObjectsCharacteristics/EditCharacteristic.cshtml", model);
         }
 
-        //TODO
+        [HttpGet]
+        public ActionResult EditCharacteristic(long characteristicId)
+        {
+            var attribute = RegisterAttributeService.GetRegisterAttribute(characteristicId);
+            if (attribute == null)
+                throw new Exception($"Характеристика с Id '{characteristicId}' не найдена");
+
+            var model = new CharacteristicModel
+            {
+                Id = attribute.Id,
+                RegisterId = attribute.RegisterId,
+                Name = attribute.Name,
+                Type = attribute.ReferenceId.HasValue
+                    ? RegisterAttributeType.REFERENCE
+                    : (RegisterAttributeType) attribute.Type,
+                ReferenceId = attribute.ReferenceId
+            };
+
+            return View(model);
+        }
+
         [HttpPost]
         public JsonResult EditCharacteristic(CharacteristicModel model)
         {
@@ -112,16 +136,12 @@ namespace KadOzenka.Web.Controllers
             {
                 if (model.Id == -1)
                 {
-                    //model.Id = ObjectsCharacteristicsService.AddCharacteristic(model.Name, model.RegisterId, model.Type, model.ReferenceId);
+                    model.Id = ObjectsCharacteristicsService.AddCharacteristic(CharacteristicModel.UnMap(model));
                     message = "Характеристика успешно сохранена";
                 }
                 else
                 {
-                    //TODO
-                    //if (string.IsNullOrWhiteSpace(model.Name))
-                    //    throw new ArgumentException("Имя источника не может быть пустым");
-
-                    //ObjectsCharacteristicsService.EditSource(SourceModel.UnMap(model));
+                    ObjectsCharacteristicsService.EditCharacteristic(CharacteristicModel.UnMap(model));
                     message = "Характеристика успешно обновлена";
                 }
             }

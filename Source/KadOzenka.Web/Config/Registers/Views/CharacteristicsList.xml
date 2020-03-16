@@ -9,6 +9,19 @@
         <Parameter Key="sourceId" Value="{Get:SourceId}" />
       </Parameters>
     </Button>
-  </Buttons>
 
+    <Button Caption="Редактировать" NavigateURL="/ObjectsCharacteristics/EditCharacteristic" WindowHeight="380" WindowWidth="840" NeedRefresh="true">
+      <Parameters>
+        <Parameter Key="characteristicId" Value="[ObjectID]" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+
+  </Buttons>
 </RegisterView>

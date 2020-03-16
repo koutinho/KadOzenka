@@ -7,6 +7,11 @@ namespace KadOzenka.Dal.Registers
 {
     public class RegisterAttributeService
     {
+        public OMAttribute GetRegisterAttribute(long attributeId)
+        {
+            return OMAttribute.Where(x => x.Id == attributeId).SelectAll().ExecuteFirstOrDefault();
+        }
+
         public OMAttribute CreateRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
         {
             OMAttribute omAttribute;
