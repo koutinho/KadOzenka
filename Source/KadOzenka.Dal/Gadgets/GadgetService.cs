@@ -8,20 +8,16 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
-using ObjectModel.Commission;
 using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using ObjectModel.Directory.Sud;
-using ObjectModel.Gbu;
-using ObjectModel.KO;
-using ObjectModel.Market;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Dal.Gadgets
 {
 	public class GadgetService
 	{
-        private static string _moveToPageSymbol = "→";
+        private static string _moveToPageSymbol = string.Empty;
 
         private static QSQuery GetQuery(string registerViewId)
 		{
