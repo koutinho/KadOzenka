@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
+using ObjectModel.Core.Register;
 
 namespace KadOzenka.Web.Controllers
 {
-    //TODO
-	public class ObjectsCharacteristicsController : KoBaseController
+    public class ObjectsCharacteristicsController : KoBaseController
     {
-        private ObjectsCharacteristicsService ObjectsCharacteristicsService { get; set; }
-        private RegisterAttributeService RegisterAttributeService { get; set; }
+        private ObjectsCharacteristicsService ObjectsCharacteristicsService { get; }
+        private RegisterAttributeService RegisterAttributeService { get; }
 
         public ObjectsCharacteristicsController()
         {
@@ -27,23 +27,23 @@ namespace KadOzenka.Web.Controllers
         {
             var model = new SourceModel
             {
-                Id = -1
+                RegisterId = -1
             };
 
             return View("~/Views/ObjectsCharacteristics/EditSource.cshtml", model);
         }
 
         [HttpGet]
-        public ActionResult EditSource(long characteristicsId)
+        public ActionResult EditSource(long registerId)
         {
-            var characteristics = ObjectsCharacteristicsService.GetSource(characteristicsId);
-            if (characteristics == null)
-                throw new Exception($"Источник с Id {characteristicsId} не найден");
+            var source = ObjectsCharacteristicsService.GetSource(registerId);
+            if (source == null)
+                throw new Exception($"Источник с Id {registerId} не найден");
 
             var model = new SourceModel
             {
-                Id = characteristics.Id,
-                Name = characteristics.RegisterDescription
+                RegisterId = source.RegisterId,
+                Name = source.RegisterDescription
             };
 
             return View(model);
@@ -58,7 +58,7 @@ namespace KadOzenka.Web.Controllers
             string message;
             try
             {
-                if (model.Id == -1)
+                if (model.RegisterId == -1)
                 {
                     ObjectsCharacteristicsService.AddSource(SourceModel.UnMap(model));
                     message = "Источник успешно сохранен";
@@ -80,7 +80,7 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
 
-        #region Characteristics
+        #region Characteristic
 
         [HttpGet]
         public ActionResult Characteristics(long registerId)
@@ -107,9 +107,7 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult EditCharacteristic(long characteristicId)
         {
-            var attribute = RegisterAttributeService.GetRegisterAttribute(characteristicId);
-            if (attribute == null)
-                throw new Exception($"Характеристика с Id '{characteristicId}' не найдена");
+            var attribute = GetAttribute(characteristicId);
 
             var model = new CharacteristicModel
             {
@@ -156,9 +154,7 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult DeleteCharacteristic(long characteristicId)
         {
-            var attribute = RegisterAttributeService.GetRegisterAttribute(characteristicId);
-            if (attribute == null)
-                throw new Exception($"Характеристика с Id '{characteristicId}' не найдена");
+            var attribute = GetAttribute(characteristicId);
 
             var model = new CharacteristicModel
             {
@@ -174,6 +170,20 @@ namespace KadOzenka.Web.Controllers
         {
             ObjectsCharacteristicsService.DeleteCharacteristic(model.Id);
         }
+
+        
+        #region Support Methods
+
+        private OMAttribute GetAttribute(long characteristicId)
+        {
+            var attribute = RegisterAttributeService.GetRegisterAttribute(characteristicId);
+            if (attribute == null)
+                throw new Exception($"Характеристика с Id '{characteristicId}' не найдена");
+
+            return attribute;
+        }
+
+        #endregion
 
         #endregion
     }

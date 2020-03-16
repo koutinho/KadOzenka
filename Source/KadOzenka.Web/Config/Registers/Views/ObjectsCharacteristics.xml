@@ -13,7 +13,7 @@
     </Button>
     <Button Caption="Редактировать источник" NavigateURL="~/ObjectsCharacteristics/EditSource" WindowHeight="200" WindowWidth="900" Icon="fas fa-edit">
       <Parameters>
-        <Parameter Key="characteristicsId" Value="[60000100]" />
+        <Parameter Key="registerId" Value="[60000200]" />
       </Parameters>
     </Button>
   </Buttons>

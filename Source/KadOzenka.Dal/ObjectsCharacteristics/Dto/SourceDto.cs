@@ -2,9 +2,7 @@
 {
     public class SourceDto
     {
-        public long Id { get; set; }
-
-        public long? RegisterId { get; set; }
+        public long RegisterId { get; set; }
 
         public string RegisterDescription { get; set; }
     }

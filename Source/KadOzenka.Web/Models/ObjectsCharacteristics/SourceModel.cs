@@ -5,7 +5,6 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
 {
     public class SourceModel
     {
-        public long Id { get; set; }
         public long RegisterId { get; set; }
 
         [Required(ErrorMessage = "Имя источника не может быть пустым")]
@@ -16,7 +15,7 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         {
             return new SourceDto
             {
-                Id = model.Id,
+                RegisterId = model.RegisterId,
                 RegisterDescription = model.Name
             };
         }

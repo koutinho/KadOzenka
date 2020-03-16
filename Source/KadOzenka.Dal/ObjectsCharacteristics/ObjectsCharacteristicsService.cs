@@ -5,7 +5,6 @@ using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using Platform.Configurator;
-using Core.Register;
 
 namespace KadOzenka.Dal.ObjectsCharacteristics
 {
@@ -22,26 +21,20 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         #region Source
 
-        public SourceDto GetSource(long characteristicsId)
+        public SourceDto GetSource(long registerId)
         {
-            var characteristic = GetCharacteristicsInternal(characteristicsId);
-            if (characteristic == null)
-                return null;
-
-            var register = RegisterService.GetRegister(characteristic.RegisterId);
+            var register = RegisterService.GetRegister(registerId);
 
             return new SourceDto
             {
-                Id = characteristic.Id,
-                RegisterId = characteristic.RegisterId,
+                RegisterId = registerId,
                 RegisterDescription = register.RegisterDescription
             };
         }
 
         public long AddSource(SourceDto sourceDto)
         {
-            if (string.IsNullOrWhiteSpace(sourceDto.RegisterDescription))
-                throw new ArgumentException("Имя источника не может быть пустым");
+            ValidateSource(sourceDto);
 
             OMRegister omRegister;
             using (var ts = new TransactionScope())
@@ -63,14 +56,10 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         public void EditSource(SourceDto sourceDto)
         {
-            if (string.IsNullOrWhiteSpace(sourceDto.RegisterDescription))
-                throw new ArgumentException("Имя источника не может быть пустым");
+            ValidateSource(sourceDto);
 
-            var characteristic = GetCharacteristicsInternal(sourceDto.Id);
-            if (characteristic == null)
-                return;
+            var register = RegisterService.GetRegister(sourceDto.RegisterId);
 
-            var register = RegisterService.GetRegister(characteristic.RegisterId);
             using (var ts = new TransactionScope())
             {
                 register.RegisterDescription = sourceDto.RegisterDescription;
@@ -80,14 +69,29 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             }
         }
 
+        #region Support Methods
+
+        private void ValidateSource(SourceDto sourceDto)
+        {
+            if (string.IsNullOrWhiteSpace(sourceDto.RegisterDescription))
+                throw new ArgumentException("Имя источника не может быть пустым");
+        }
+
+        private int GetNumberOfExistingRegistersWithCharacteristics()
+        {
+            return OMObjectsCharacteristicsRegister.Where(x => true).SelectAll().ExecuteCount();
+        }
+
         #endregion
 
-        #region Characteristics
+        #endregion
+
+
+        #region Characteristic
 
         public long AddCharacteristic(CharacteristicDto characteristicDto)
         {
-            if (string.IsNullOrWhiteSpace(characteristicDto.Name))
-                throw new ArgumentException("Имя характеристики не может быть пустым");
+            ValidateCharacteristic(characteristicDto);
 
             long id;
             using (var ts = new TransactionScope())
@@ -107,8 +111,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         public void EditCharacteristic(CharacteristicDto characteristicDto)
         {
-            if (string.IsNullOrWhiteSpace(characteristicDto.Name))
-                throw new ArgumentException("Имя характеристики не может быть пустым");
+            ValidateCharacteristic(characteristicDto);
 
             RegisterAttributeService.RenameRegisterAttribute(characteristicDto.Id, characteristicDto.Name);
         }
@@ -118,10 +121,14 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             RegisterAttributeService.RemoveRegisterAttribute(characteristicId);
         }
 
-        #endregion
-
-
+        
         #region Support Methods
+
+        private void ValidateCharacteristic(CharacteristicDto characteristicDto)
+        {
+            if (string.IsNullOrWhiteSpace(characteristicDto.Name))
+                throw new ArgumentException("Имя характеристики не может быть пустым");
+        }
 
         private void CreateObjectCharacteristics(long registerId)
         {
@@ -131,16 +138,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             }.Save();
         }
 
-        private int GetNumberOfExistingRegistersWithCharacteristics()
-        {
-            return OMObjectsCharacteristicsRegister.Where(x => true).SelectAll().ExecuteCount();
-        }
-
-        private OMObjectsCharacteristicsRegister GetCharacteristicsInternal(long characteristicsId)
-        {
-            return OMObjectsCharacteristicsRegister.Where(x => x.Id == characteristicsId).SelectAll()
-                .ExecuteFirstOrDefault();
-        }
+        #endregion
 
         #endregion
     }
