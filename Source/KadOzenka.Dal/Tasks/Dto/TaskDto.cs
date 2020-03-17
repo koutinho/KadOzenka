@@ -22,6 +22,10 @@ namespace KadOzenka.Dal.Tasks.Dto
 
         public DocumentDto IncomingDocument { get; set; }
 
+        public long? CommonNumberOfImportedObjects { get; set; }
+
+        public long? PossibleTotalCountOfObjects { get; set; }
+
         public TaskDto()
         {
             Tour = new TourDto();

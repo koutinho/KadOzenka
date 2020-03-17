@@ -35,6 +35,10 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Статус")]
         public string Status { get; set; }
 
+        public long? CommonNumberOfImportedObjects { get; set; }
+
+        public long? PossibleTotalCountOfObjects { get; set; }
+
 
         public static TaskModel ToModel(TaskDto task)
         {
@@ -48,7 +52,9 @@ namespace KadOzenka.Web.Models.Task
                 IncomingDocumentDate = task.IncomingDocument?.CreationDate,
                 NoteType = task.NoteType,
                 TourYear = task.Tour?.Year,
-                Status = task.Status
+                Status = task.Status,
+                CommonNumberOfImportedObjects = task.CommonNumberOfImportedObjects,
+                PossibleTotalCountOfObjects = task.PossibleTotalCountOfObjects
             };
         }
     }

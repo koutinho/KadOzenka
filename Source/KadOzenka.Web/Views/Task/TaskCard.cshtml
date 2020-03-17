@@ -69,6 +69,21 @@
                         @Html.KendoTextBoxFor(m => m.Status)
                     </div>
                 </div>
+                <div class="form-group">
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Импортированных объектов", false, "totalImportObjectsLabel")
+                    </div>
+                    <div class="col-sm-10">
+                        @(Html.Kendo().ProgressBar()
+                              .Name("totalImportObjectsProgressBar")
+                              .Type(ProgressBarType.Value)
+                              .Min(0)
+                              .Max(Model.PossibleTotalCountOfObjects ?? 0)
+                              .Value(Model.CommonNumberOfImportedObjects ?? 0))
+                    </div>
+                </div>
             </div>
         </li>
 
@@ -149,6 +164,21 @@
         .k-progressbar .k-progress-status-wrap {
             text-align: center;
         }
+
+        .totalImportObjectsLabel {
+            font-weight: bold !important;
+        }
+
+        #totalImportObjectsProgressBar {
+            font-weight: bold !important;
+            font-size: medium;
+            width: 100%;
+            /*min-height: 2.5em;*/
+        }
+        #totalImportObjectsProgressBar .k-progress-status {
+            /*vertical-align: sub;*/
+        }
+       
     </style>
 }
 
@@ -219,7 +249,6 @@
                         min: 0,
                         max: model.TotalNumberOfObjects,
                         change: function (e) {
-                            debugger;
                             var status = e.value + "/" + e.sender.options.max;
                             this.progressStatus.text(status);
                             this.progressWrapper.css({
