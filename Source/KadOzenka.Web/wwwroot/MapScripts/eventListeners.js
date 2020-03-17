@@ -162,6 +162,7 @@ function dataChanged(cartData) {
     if (cartData.lng != document.getElementById(`lngTextBox_${cartData.id}`).value ||
         cartData.lat != document.getElementById(`latTextBox_${cartData.id}`).value ||
         cartData.propertyTypeCode != document.getElementById(`typeSelect_${cartData.id}`).value ||
+        cartData.statusCode !== document.getElementById(`statusSelect_${cartData.id}`).value ||
         cartData.marketSegmentCode != document.getElementById(`segmentSelect_${cartData.id}`).value) {
         document.getElementById(`saveBtn_${cartData.id}`).classList.remove("blocked");
         document.getElementById(`undoBtn_${cartData.id}`).classList.remove("blocked");
@@ -178,6 +179,7 @@ function undoDataChanges(cartData) {
         document.getElementById(`latTextBox_${cartData.id}`).value = cartData.lat;
         document.getElementById(`typeSelect_${cartData.id}`).value = cartData.propertyTypeCode;
         document.getElementById(`segmentSelect_${cartData.id}`).value = cartData.marketSegmentCode;
+        document.getElementById(`statusSelect_${cartData.id}`).value = cartData.statusCode;
         dataChanged(cartData);
     }
 };
@@ -189,7 +191,8 @@ function saveDataChanges(cartData) {
             lng: parseFloat(document.getElementById(`lngTextBox_${cartData.id}`).value),
             lat: parseFloat(document.getElementById(`latTextBox_${cartData.id}`).value),
             propertyTypeCode: parseInt(document.getElementById(`typeSelect_${cartData.id}`).value),
-            marketSegmentCode: parseInt(document.getElementById(`segmentSelect_${cartData.id}`).value)
+            marketSegmentCode: parseInt(document.getElementById(`segmentSelect_${cartData.id}`).value),
+            statusCode: parseInt(document.getElementById(`statusSelect_${cartData.id}`).value)
         };
         ChangeObject(result);
     }

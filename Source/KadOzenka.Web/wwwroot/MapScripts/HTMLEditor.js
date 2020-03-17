@@ -1,6 +1,8 @@
 ﻿function insertCard(cartData, isLast) {
     avaliableCIPJSOptions = avaliableCIPJSTypes.filter(function (x) { return x.code != cartData.propertyTypeCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
     avaliableSegmentOptions = avaliableSegments.filter(function (x) { return x.code != cartData.marketSegmentCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
+    availableStatusOptions = avaliableStatuses.filter(function (x) { return x.code != cartData.StatusCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
+    
     document.getElementById("dataContentContainer").innerHTML += `
         <div class="DataItemContainer">
             <div class="Container">
@@ -109,6 +111,17 @@
                     </div>
                 </div>
                 <div class="Container">
+                    <div class="Name">Статус обработки</div>
+                    <div class="Value">
+                        <div class="EditDataSelectContainer">
+                            <select id="statusSelect_${cartData.id}" class="EditDataSelect" dir="rtl">
+                                <option value="${cartData.statusCode}">${cartData.status.length < 28 ? cartData.status : '...' + cartData.status.substr(0, 27)}</option>
+                                ${availableStatusOptions}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="Container">
                     <div id="saveBtn_${cartData.id}" class="Button blocked">Сохранить</div>
                     <div id="undoBtn_${cartData.id}" class="Button blocked">Отменить</div>
                 </div>
@@ -123,10 +136,12 @@ function updateCard(result) {
     result.lat = result.lat.toString();
     result.propertyTypeCode = result.propertyTypeCode.toString();
     result.marketSegmentCode = result.marketSegmentCode.toString();
+    result.statusCode = result.statusCode.toString();
     document.getElementById(`lngTextBox_${result.id}`).value = result.lng;
     document.getElementById(`latTextBox_${result.id}`).value = result.lat;
     document.getElementById(`typeSelect_${result.id}`).value = result.propertyTypeCode;
     document.getElementById(`segmentSelect_${result.id}`).value = result.marketSegmentCode;
+    document.getElementById(`statusSelect_${result.id}`).value = result.statusCode;
     dataChanged(result);
 };
 
@@ -135,6 +150,7 @@ function addEventsCard(cartData) {
     document.getElementById(`latTextBox_${cartData.id}`).addEventListener('input', function () { dataChanged(cartData); });
     document.getElementById(`typeSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
     document.getElementById(`segmentSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
+    document.getElementById(`statusSelect_${cartData.id}`).addEventListener('change', function () { dataChanged(cartData); });
     document.getElementById(`saveBtn_${cartData.id}`).addEventListener('click', function () { saveDataChanges(cartData); });
     document.getElementById(`undoBtn_${cartData.id}`).addEventListener('click', function () { undoDataChanges(cartData); });
 };

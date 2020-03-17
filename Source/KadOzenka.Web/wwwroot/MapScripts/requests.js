@@ -69,7 +69,7 @@ function SetAvaliableValues() {
         url: "Map/GetAvaliableValues",
         data: { },
         contentType: 'application/json; charset=utf-8',
-        success: function (avaliableData) { avaliableCIPJSTypes = avaliableData.CIPJSType, avaliableSegments = avaliableData.MarketSegment }
+        success: function (avaliableData) { avaliableCIPJSTypes = avaliableData.CIPJSType, avaliableSegments = avaliableData.MarketSegment, avaliableStatuses = avaliableData.Status }
     });
 };
 

@@ -78,6 +78,8 @@ namespace KadOzenka.Web.Controllers
                         propertyTypeCode = x.PropertyTypesCIPJS_Code,
                         marketSegment = x.PropertyMarketSegment,
                         marketSegmentCode = x.PropertyMarketSegment_Code,
+                        status = x.ProcessType,
+                        statusCode = x.ProcessType_Code,
                         source = x.Market,
                         price = x.Price,
                         area = x.Area,
@@ -195,20 +197,23 @@ namespace KadOzenka.Web.Controllers
         {
             List<OMReferenceItem> CIPJSType = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).SelectAll().Execute();
             List<OMReferenceItem> MarketSegment = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).SelectAll().Execute();
+            List<OMReferenceItem> status = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.ProcessType_Code).ReferenceId).SelectAll().Execute();
             return Json(new 
             { 
                 CIPJSType = CIPJSType.Select(x => new { code = x.ItemId, value = x.Value }), 
-                MarketSegment = MarketSegment.Select(x => new { code = x.ItemId, value = x.Value }) 
+                MarketSegment = MarketSegment.Select(x => new { code = x.ItemId, value = x.Value }),
+                Status = status.Select(x => new { code = x.ItemId, value = x.Value }) 
             });
         }
 
-        public JsonResult ChangeObject(long? id, decimal? lng, decimal? lat, long? propertyTypeCode, long? marketSegmentCode)
+        public JsonResult ChangeObject(long? id, decimal? lng, decimal? lat, long? propertyTypeCode, long? marketSegmentCode, long? statusCode)
         {
             OMCoreObject obj = OMCoreObject.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
             obj.Lng = lng;
             obj.Lat = lat;
             obj.PropertyTypesCIPJS_Code = (PropertyTypesCIPJS) propertyTypeCode;
             obj.PropertyMarketSegment_Code = (MarketSegment) marketSegmentCode;
+            obj.ProcessType_Code = (ProcessStep) statusCode;
             obj.Save();
             object result = OMCoreObject.Where(x => x.Id == id).SelectAll().Execute().Select(x => {
                 return new
@@ -218,6 +223,8 @@ namespace KadOzenka.Web.Controllers
                     propertyTypeCode = x.PropertyTypesCIPJS_Code,
                     marketSegment = x.PropertyMarketSegment,
                     marketSegmentCode = x.PropertyMarketSegment_Code,
+                    status = x.ProcessType,
+                    statusCode = x.ProcessType_Code,
                     id = x.Id,
                     lng = x.Lng,
                     lat = x.Lat

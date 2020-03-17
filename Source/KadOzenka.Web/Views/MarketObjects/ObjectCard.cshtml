@@ -63,7 +63,16 @@
                             <label class="control-label">Статус обработки</label>
                         </div>
                         <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.Status" />
+                            @*<input class="k-textbox" readonly value="@Model.Status" />*@
+                            <span title="" class="k-widget k-dropdown" unselectable="on" role="listbox">
+                                <span unselectable="on" class="k-dropdown-wrap k-state-default">
+                                    <span unselectable="on" class="k-input">@Html.Raw(Model.Status)</span>
+                                    <span unselectable="on" class="k-select" aria-label="select">
+                                        <span class="k-icon k-i-arrow-60-down" id="ObjectStatusSelectedValue"></span>
+                                    </span>
+                                </span>
+                                <input data-val="true" data-val-required="Поле Статус обработки обязательное" editmode="true" id="ObjectStatus" name="ObjectStatus" type="text" value="2" data-role="dropdownlist" style="display: none;">
+                            </span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -462,6 +471,15 @@
                     "dataSource": avaliableData.MarketSegment.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.MarketSegmentCode) ? false : true } })
                 });
             });
+            kendo.syncReady(function () {
+                jQuery("#ObjectStatus").kendoDropDownList({
+                    "dataTextField": "Text",
+                    "dataValueField": "Value",
+                    "noDataTemplate": "Ничего не найдено!",
+                    "value": "@Html.Raw((int)Model.StatusCode)",
+                    "dataSource": avaliableData.Status.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.StatusCode) ? false : true } })
+                });
+            });
         }
     });
 
@@ -469,6 +487,7 @@
     document.getElementById("latTextBox").addEventListener("input", function () { dataChanged(); });
     jQuery("#ObjectType").change(function () { dataChanged(); });
     jQuery("#ObjectMarketSegment").change(function () { dataChanged(); });
+    jQuery("#ObjectStatus").change(function () { dataChanged(); });
     document.getElementById("cancelBtn").addEventListener("click", function () { cancelData(); });
     document.getElementById("saveBtn").addEventListener("click", function () { saveData(); });
 
@@ -476,6 +495,7 @@
         if ("@Model.Longitude.ToString()" != document.getElementById("lngTextBox").value ||
             "@Model.Latitude.ToString()" != document.getElementById("latTextBox").value ||
             "@Html.Raw((int)Model.CIPJSTypeCode)" != jQuery("#ObjectType").data("kendoDropDownList").value() ||
+            "@Html.Raw((int)Model.StatusCode)" != jQuery("#ObjectStatus").data("kendoDropDownList").value() ||
             "@Html.Raw((int)Model.MarketSegmentCode)" != jQuery("#ObjectMarketSegment").data("kendoDropDownList").value()) {
             document.getElementById("saveBtn").classList.remove("blocked");
             document.getElementById("cancelBtn").classList.remove("blocked");
@@ -497,7 +517,8 @@
                 lng: parseFloat(document.getElementById("lngTextBox").value.replace(',', '.')),
                 lat: parseFloat(document.getElementById("latTextBox").value.replace(',', '.')),
                 propertyTypeCode: parseInt(jQuery("#ObjectType").get()[0].value),
-                marketSegmentCode: parseInt(jQuery("#ObjectMarketSegment").get()[0].value)
+                marketSegmentCode: parseInt(jQuery("#ObjectMarketSegment").get()[0].value),
+                statusCode: parseInt(jQuery("#ObjectStatus").get()[0].value)
             },
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',

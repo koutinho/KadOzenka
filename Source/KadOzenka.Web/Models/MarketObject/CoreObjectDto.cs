@@ -43,6 +43,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public bool IsRangePriceHistory { get; set; }
 		public string Url { get; set; }
 		public string Status { get; set; }
+		public ProcessStep StatusCode { get; set; }
 		public decimal? Latitude { get; set; }
 		public decimal? Longitude { get; set; }
 		public ProcessStep ProcessType { get; set; }
@@ -82,6 +83,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				Subgroup = entity.Subgroup,
 				Url = entity.Url,
 				Status = entity.ProcessType,
+				StatusCode = entity.ProcessType_Code,
 				Latitude = entity.Lat,
 				Longitude = entity.Lng,
 				ProcessType = entity.ProcessType_Code,
