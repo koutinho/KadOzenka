@@ -26,7 +26,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string Metro { get; set; }
 		public decimal? Area { get; set; }
 		public string Description { get; set; }
-		public long? Price { get; set; }
+		public decimal? Price { get; set; }
 		public string CadastralNumber { get; set; }
 		public string CadastralQuartal { get; set; }
 		public string District { get; set; }

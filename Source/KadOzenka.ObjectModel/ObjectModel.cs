@@ -496,12 +496,12 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _price;
+        private decimal? _price;
         /// <summary>
         /// 10002700 Цена сделки/предложения (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002700)]
-        public long? Price
+        public decimal? Price
         {
             get
             {
@@ -9181,37 +9181,37 @@ namespace ObjectModel.KO
         }
 
 
-        private string _isresidental;
+        private string _isresidential;
         /// <summary>
         /// 25400600 Тип помещения ()
         /// </summary>
         [RegisterAttribute(AttributeID = 25400600)]
-        public string IsResidental
+        public string IsResidential
         {
             get
             {
-                CheckPropertyInited("IsResidental");
-                return _isresidental;
+                CheckPropertyInited("IsResidential");
+                return _isresidential;
             }
             set
             {
-                _isresidental = value;
-                NotifyPropertyChanged("IsResidental");
+                _isresidential = value;
+                NotifyPropertyChanged("IsResidential");
             }
         }
 
 
-        private KoTypeOfRoom _isresidental_Code;
+        private KoTypeOfRoom _isresidential_Code;
         /// <summary>
-        /// 25400600 Тип помещения (справочный код) (IS_RESIDENTAL)
+        /// 25400600 Тип помещения (справочный код) (IS_RESIDENTIAL)
         /// </summary>
         [RegisterAttribute(AttributeID = 25400600)]
-        public KoTypeOfRoom IsResidental_Code
+        public KoTypeOfRoom IsResidential_Code
         {
             get
             {
-                CheckPropertyInited("IsResidental_Code");
-                return this._isresidental_Code;
+                CheckPropertyInited("IsResidential_Code");
+                return this._isresidential_Code;
             }
             set
             {
@@ -9219,19 +9219,19 @@ namespace ObjectModel.KO
 
                 if (string.IsNullOrEmpty(descr))
                 {
-                    if (string.IsNullOrEmpty(_isresidental))
+                    if (string.IsNullOrEmpty(_isresidential))
                     {
-                         _isresidental = descr;
+                         _isresidential = descr;
                     }
                 }
                 else
                 {
-                     _isresidental = descr;
+                     _isresidential = descr;
                 }
 
-                this._isresidental_Code = value;
-                NotifyPropertyChanged("IsResidental");
-                NotifyPropertyChanged("IsResidental_Code");
+                this._isresidential_Code = value;
+                NotifyPropertyChanged("IsResidential");
+                NotifyPropertyChanged("IsResidential_Code");
             }
         }
 
@@ -19518,7 +19518,7 @@ namespace ObjectModel
 namespace ObjectModel
 {
     /// <summary>
-    /// 39964619 Test22 (source_24_q)
+    /// 39964619 Test221 (source_24_q)
     /// </summary>
     [RegisterInfo(RegisterID = 39964619)]
     [Serializable]
@@ -19571,6 +19571,42 @@ namespace ObjectModel
     [RegisterInfo(RegisterID = 40116957)]
     [Serializable]
     public partial class OMSource28Q : OMBaseClass<OMSource28Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41619124 Source2 (source_29_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41619124)]
+    [Serializable]
+    public partial class OMSource29Q : OMBaseClass<OMSource29Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41619157 test21 (source_30_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41619157)]
+    [Serializable]
+    public partial class OMSource30Q : OMBaseClass<OMSource30Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41619187 Last (source_31_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41619187)]
+    [Serializable]
+    public partial class OMSource31Q : OMBaseClass<OMSource31Q>
     {
     }
 }

@@ -1402,14 +1402,14 @@ namespace ObjectModel.Directory
 		[Description("Жилое")]
         [EnumCode("1")]
         [ShortTitle("Жилое")]
-        Residental = 1,
+        Residential = 1,
 		/// <summary>
 		/// Не жилое (2)
 		/// </summary>
 		[Description("Не жилое")]
         [EnumCode("2")]
         [ShortTitle("Не жилое")]
-        NotResidental = 2,
+        NotResidential = 2,
     }
 }
 

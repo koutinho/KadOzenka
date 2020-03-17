@@ -82,10 +82,6 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public IActionResult ImportDataFromExcel(int mainRegisterId, IFormFile file, List<DataColumnDto> columns)
 		{
-			if (columns.All(x => x.IsKey == false))
-			{
-				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
-			}
 
 			ExcelFile excelFile;
 			using (var stream = file.OpenReadStream())
@@ -102,10 +98,6 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public IActionResult AddImportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
 		{
-			if (columns.All(x => x.IsKey == false))
-			{
-				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
-			}
 
 			using (var stream = file.OpenReadStream())
 			{
