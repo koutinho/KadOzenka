@@ -73,8 +73,10 @@ namespace KadOzenka.Web.Controllers
 					Id = x.Id,
 					DateCreated = x.CreationDate,
 					UserName = x.Author,
-					TemplateFileName = x.FileName
-				});
+					TemplateFileName = x.FileName,
+				    NumberOfImportedObjects = x.NumberOfImportedObjects,
+				    TotalNumberOfObjects = x.TotalNumberOfObjects,
+                });
 			});
 
 			return Json(result.ToDataSourceResult(request));

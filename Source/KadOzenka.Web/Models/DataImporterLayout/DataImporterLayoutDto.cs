@@ -37,9 +37,11 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 		public string FileSizeKb { get; set; }
 		public string FileSizeMb { get; set; }
 		public string ColumnsMappingDtoListJson { get; set; }
+        public long? NumberOfImportedObjects { get; set; }
+        public long? TotalNumberOfObjects { get; set; }
 
 
-		public static DataImporterLayoutDto OMMap(OMImportDataLog entity, string userName, ImportStatus? status)
+        public static DataImporterLayoutDto OMMap(OMImportDataLog entity, string userName, ImportStatus? status)
 		{
 			if (entity == null)
 			{
@@ -85,7 +87,9 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 				ResultMessage = entity.ResultMessage,
 				FileSizeKb = fileSize.HasValue ? Convert.ToString(fileSize / 1024) : string.Empty,
 				FileSizeMb = fileSize.HasValue ? Convert.ToString(fileSize / (1024 * 1024)) : string.Empty,
-				ColumnsMappingDtoListJson = JsonConvert.SerializeObject(columnsMappingDtoList)
+				ColumnsMappingDtoListJson = JsonConvert.SerializeObject(columnsMappingDtoList),
+			    NumberOfImportedObjects = entity.NumberOfImportedObjects,
+                TotalNumberOfObjects = entity.TotalNumberOfObjects
 			};
 		}
 	}

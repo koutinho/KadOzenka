@@ -22,7 +22,9 @@ namespace KadOzenka.Dal.DataImport
                     Id = x.Id,
                     CreationDate = x.DateCreated,
                     Author = user?.FullName,
-                    FileName = x.DataFileName
+                    FileName = x.DataFileName,
+                    NumberOfImportedObjects = x.NumberOfImportedObjects,
+                    TotalNumberOfObjects = x.TotalNumberOfObjects
                 });
             });
 

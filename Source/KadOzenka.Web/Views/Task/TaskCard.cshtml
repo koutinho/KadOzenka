@@ -103,10 +103,14 @@
                             columns.Bound(p => p.DateCreated).Format("{0:dd.MM.yyyy hh:mm:ss}");
                             columns.Bound(p => p.UserName);
                             columns.Bound(p => p.TemplateFileName);
+                            columns.Template("<div class='progress'></div>").Title("Загрузка объектов");
+                            columns.Bound(p => p.NumberOfImportedObjects).Hidden();
+                            columns.Bound(p => p.TotalNumberOfObjects).Hidden();
                         })
                         .Navigatable()
                         .Pageable()
                         .Sortable()
+                        .Events(ev => ev.DataBound("dataBound"))
                         .Scrollable(s => s.Height("auto"))
                         .DataSource(s =>
                             s.Ajax().Read(read => read.Action("GetXmlDocuments", "Task", new { taskId = Model.Id }).Type(HttpVerbs.Get)).PageSize(5)
@@ -128,6 +132,22 @@
         }
         .hidden {
             display: none;
+        }
+
+        .progress {
+            width: 97%;
+            margin-bottom: 0;
+        }
+        .k-progressbar .k-state-selected {
+            background-color: rgb(137, 215, 215);
+            border-color: rgb(82, 163, 163);
+        }
+        .k-progressbar .k-complete {
+            background-color: rgb(137, 215, 215);
+            border-color: rgb(82, 163, 163);
+        }
+        .k-progressbar .k-progress-status-wrap {
+            text-align: center;
         }
     </style>
 }
@@ -185,6 +205,33 @@
                 $("#filesBlockLabel").text("XML-файлы");
                 $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xml', '.zip', '.rar'];
             }
+        }
+
+        function dataBound(e) {
+            var grid = this;
+            grid.tbody.find(".progress").each(function(e) {
+                var row = $(this).closest("tr");
+                var model = grid.dataItem(row);
+                if (model.TotalNumberOfObjects) {
+                    $(this).kendoProgressBar({
+                        type: "value",
+                        showStatus: true,
+                        min: 0,
+                        max: model.TotalNumberOfObjects,
+                        change: function (e) {
+                            debugger;
+                            var status = e.value + "/" + e.sender.options.max;
+                            this.progressStatus.text(status);
+                            this.progressWrapper.css({
+                                "text-align": "center"
+                            });
+                        }
+                    });
+                    $(this).data("kendoProgressBar").value(model.NumberOfImportedObjects ? model.NumberOfImportedObjects : 0);
+                } else {
+                    $(this).addClass('hidden');
+                }
+            });
         }
     </script>
 }
