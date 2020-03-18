@@ -41,7 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Correction\Dto\" />
     <Folder Include="Seman\" />
   </ItemGroup>
 

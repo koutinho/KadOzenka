@@ -4,21 +4,26 @@ using System.Linq;
 using System.IO.Compression;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-
 using Newtonsoft.Json;
 using ObjectModel.Market;
 using KadOzenka.Web.Models.MarketObject;
 using Core.Main.FileStorages;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
+using KadOzenka.Dal.Correction;
 
 namespace KadOzenka.Web.Controllers
 {
-
-	public class MarketObjectsController : Controller
+    public class MarketObjectsController : KoBaseController
 	{
+        public CorrectionService CorrectionService { get; set; }
 
-		[HttpGet]
+        public MarketObjectsController()
+        {
+            CorrectionService = new CorrectionService();
+        }
+
+        [HttpGet]
 		public IActionResult ObjectCard(long id)
 		{
 			var analogItem = OMCoreObject.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -82,6 +87,63 @@ namespace KadOzenka.Web.Controllers
 			}
 		}
 
-	}
+
+        #region Correction By Date
+
+        [HttpGet]
+        public JsonResult GetCorrectionByDate(DateTime? date)
+        {
+            if (date == null)
+                throw new ArgumentException("Дата не может быть пустой");
+
+            var correction = CorrectionService.GetCorrectionByDate(date.Value);
+            var model = CorrectionByDateModel.Map(correction);
+
+            return Json(new { Correction = model });
+        }
+
+        [HttpGet]
+        public ActionResult AddConsumerPriceIndexRosstat()
+        {
+            var model = new CorrectionByDateModel
+            {
+                Id = -1,
+                IsDateReadOnly = true,
+                IndexDate = CorrectionService.GetNextCorrectionDate()
+            };
+
+            return View("~/Views/MarketObjects/EditConsumerPriceIndexRosstat.cshtml", model);
+        }
+
+        [HttpGet]
+        public ActionResult EditConsumerPriceIndexRosstat()
+        {
+            var model = new CorrectionByDateModel();
+            return View(model);
+        }
+
+        [HttpPost]
+        public JsonResult EditConsumerPriceIndexRosstat(CorrectionByDateModel model)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            string message;
+            if (model.Id == -1)
+            {
+                CorrectionService.AddCorrection(CorrectionByDateModel.UnMap(model));
+                message = "Индекс успешно сохранен";
+            }
+            else
+            {
+                //CorrectionService.EditCorrection(CorrectionByDateModel.UnMap(model));
+                message = "Индекс успешно обновлен";
+            }
+
+            return Json(new { Message = message });
+        }
+
+        #endregion
+    }
 
 }

@@ -1,0 +1,130 @@
+﻿@using KadOzenka.Dal.Correction
+@model KadOzenka.Web.Models.MarketObject.CorrectionByDateModel
+
+@using (Html.BeginForm("EditConsumerPriceIndexRosstat", "MarketObjects", FormMethod.Post))
+{
+@Html.HiddenFor(x => x.Id, htmlAttributes: new {id = "correctionId"})
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div id="toolbar" style="position: fixed;width: 96%;z-index: 999;"></div>
+</div>
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group" style="height: 60px;"></div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(x => x.IndexDate)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoDatePickerFor(x => x.IndexDate, isReadonly: Model.IsDateReadOnly, id: "monthDate")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabelFor(x => x.ConsumerPriceIndexRosstat)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoNumericTextBoxFor(x => x.ConsumerPriceIndexRosstat, isReadonly: false, id: "index")
+        </div>
+    </div>
+</div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $("#monthDate").kendoDatePicker({
+            start: "year",
+            depth: "year",
+            format: '@Consts.DateFormatForDateCorrection',
+            change: getConsumerPriceIndex
+        });
+
+        $('#toolbar').kendoToolBar({
+            items: [
+                {
+                    id: "saveBtn",
+                    type: "button",
+                    icon: "save",
+                    text: "Сохранить",
+                    click: saveConsumerPriceIndex
+                },
+                {
+                    id: "cancelBtn",
+                    type: "button",
+                    text: "Отмена",
+                    click: closePopup
+                }
+            ]
+        }).data("kendoToolBar");
+    });
+
+
+
+    function getConsumerPriceIndex() {
+        var indexDate = $("#monthDate").data("kendoDatePicker").value();
+        if (indexDate == null) {
+            Common.ShowError("Дата не выбрана");
+            return;
+        }
+        var indexTextBox = $("#index").data("kendoNumericTextBox");
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCorrectionByDate", "MarketObjects")',
+            data: {date: indexDate.toUTCString()},
+            dataType: 'json',
+            success: function (data) {
+                indexTextBox.value(data.Correction.Index);
+                $("#correctionId").val(data.Correction.Id);
+            },
+            error: function (data) {
+                indexTextBox.value(null);
+                Common.ShowError(data.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    function saveConsumerPriceIndex() {
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            dataType: 'json',
+            success: function (data) {
+                if (data.Errors) {
+                    var errors = $.map(distinctErrors(data.Errors),
+                        function(el) {
+                            return el.Message;
+                        });
+                    Common.ShowError(errors);
+                    return;
+                }
+                else {
+                    Common.ShowMessage(data.Message);
+                    setTimeout(function () {
+                        closePopup();
+                    }, 2000);
+                }
+            },
+            error: function (data) {
+                Common.ShowError(data.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    function closePopup() {
+        Common.UI.CloseWindow('registerModalWindow', window.parent);
+    }
+</script>
