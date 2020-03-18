@@ -17,8 +17,6 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
 
         public GbuObjectService GbuObjectService { get; set; }
 
-        private Dictionary<string, CadastralQuarterInfo> CadastralQuarters { get; set; }
-
         public MarketObjectsCadastralInfoFiller()
         {
             GbuObjectService = new GbuObjectService();
@@ -81,49 +79,21 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
             Console.WriteLine($"Обработка завершена");
         }
 
-        public void PerformFillingCadastralInfoByQuarterProc(string cadastralQuartersInfoFilePath)
+        public void PerformFillingCadastralInfoByQuarterProc()
         {
-            InitCadastralQuartersInfoFromFile(cadastralQuartersInfoFilePath);
-            FillCadastralQuarterInfo();
-        }
-
-        private void InitCadastralQuartersInfoFromFile(string cadastralQuartersInfoFilePath)
-        {
-            var file = ExcelFile.Load(cadastralQuartersInfoFilePath, new XlsxLoadOptions());
-            var mainWorkSheet = file.Worksheets[0];
-
-            var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
-            var columnNames = new List<string>();
-            for (var i = 0; i < maxColumns; i++)
-            {
-                columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
-            }
-
-            var dataRows = mainWorkSheet.Rows.Where(x => x.Index != 0);
-            CadastralQuarters = new Dictionary<string, CadastralQuarterInfo>();
-            foreach (var dataRow in dataRows)
-            {
-                var info = new CadastralQuarterInfo();
-                info.DistrictName = dataRow.Cells[columnNames.IndexOf("Наименование АО")].StringValue.Trim();
-                info.RegionName = dataRow.Cells[columnNames.IndexOf("РАЙОНЫ")].StringValue.Trim();
-                info.ZoneNumber = dataRow.Cells[columnNames.IndexOf("Номер Зоны")].IntValue;
-                info.ZoneAndDistrictName = dataRow.Cells[columnNames.IndexOf("ЗОНА+ОКРУГ")].StringValue.Trim();
-
-                CadastralQuarters.Add(dataRow.Cells[columnNames.IndexOf("КК")].StringValue.Trim(), info);
-            }
-        }
-
-        private void FillCadastralQuarterInfo()
-        {
+            var quartalDictionary = OMQuartalDictionary.Where(x => true)
+                .SelectAll()
+                .Execute().ToDictionary(x => x.CadastralQuartal);
             var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralQuartal != null && x.CadastralQuartal != string.Empty)
                 .Select(x => x.Id)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.CadastralQuartal)
                 .Select(x => x.District)
                 .Select(x => x.District_Code)
-                .Select(x => x.Region)
-                .Select(x => x.RegionId)
+                .Select(x => x.Neighborhood)
+                .Select(x => x.Neighborhood_Code)
                 .Select(x => x.Zone)
+                .Select(x => x.ZoneRegion)
                 .Execute();
             Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровым кварталом");
 
@@ -132,15 +102,16 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
             {
                 try
                 {
-                    
-                    if (!CadastralQuarters.TryGetValue(marketObject.CadastralQuartal, out var quarterInfo))
+                    if (!quartalDictionary.TryGetValue(marketObject.CadastralQuartal, out var quarterInfo))
+                    {
                         throw new Exception(
-                            $"В файле отсутствует информация по кварталу {marketObject.CadastralQuartal}");
+                            $"Отсутствует информация по кварталу {marketObject.CadastralQuartal}");
+                    }
 
-                    //TODO: дополнить после измения структуры БД для объектов-аналогов
-                    marketObject.District = XMLPolyLineDictionary.getCorrectNameForDistrict(quarterInfo.DistrictName);
-                    marketObject.Region = XMLPolyLineDictionary.getCorrectNameForRegion(quarterInfo.RegionName);
-                    marketObject.Zone = quarterInfo.ZoneNumber;
+                    marketObject.District_Code = quarterInfo.District_Code;
+                    marketObject.Neighborhood_Code = quarterInfo.Region_Code;
+                    marketObject.Zone = quarterInfo.Zone;
+                    marketObject.ZoneRegion = quarterInfo.ZoneRegion;
 
                     marketObject.Save();
 

@@ -159,7 +159,7 @@ namespace KadOzenka.BlFrontEnd
 		    consoleHelper.AddCommand("161-2", "Привязка к объектам аналогам информации о зонах, округах и районах по кадастровому кварталу", () =>
 		    {
 		        var filler = new MarketObjectsCadastralInfoFiller();
-		        filler.PerformFillingCadastralInfoByQuarterProc(ConfigurationManager.AppSettings["CadastralQuartersZonesDistrictsRegionsFile"]);
+		        filler.PerformFillingCadastralInfoByQuarterProc();
 		    });
         }
 
