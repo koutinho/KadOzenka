@@ -261,8 +261,6 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                 obj.PricePerMeter = decimal.Parse(row.Cells[20].Value.ToString());
                 ObjectModel.Directory.QualityClass? qualityClass = getBuildingType(row.Cells[22].Value.ToString());
                 if (qualityClass != null) obj.QualityClass_Code = (ObjectModel.Directory.QualityClass)qualityClass;
-                obj.District = row.Cells[24].Value.ToString();
-                obj.Zone = int.TryParse(row.Cells[25].Value.ToString(), out int n) ? (long?)long.Parse(row.Cells[25].Value.ToString()) : null;
                 obj.ProcessType_Code = ObjectModel.Directory.ProcessStep.AddressStep;
                 if (obj.PricePerMeter > 19000) list.Add(obj);
             }

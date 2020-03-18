@@ -72,9 +72,6 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                         initialObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Buildings;
                                    else initialObject.PropertyTypesCIPJS_Code = PropertyTypesCIPJS.Placements;
                                 }
-                                //Получение района города через крошки
-                                if(bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexDistrictInfo"]).ToString()))
-                                    initialObject.District = executor.ExecuteScript(ConfigurationManager.AppSettings["getYandexDistrict"]).ToString();
                                 //Получение актуальной цены
                                 OMPriceHistory lastPrice = OMPriceHistory.Where(x => x.InitialId == initialObject.Id).SelectAll().OrderByDescending(x => x.ChangingDate).ExecuteFirstOrDefault();
                                 //Обновление информации и снятие скриншотов

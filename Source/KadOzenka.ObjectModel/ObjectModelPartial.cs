@@ -715,6 +715,30 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
+    /// 107 Таблица, содержащая информацию о соответствии кад кварталов районам, округам и зонам 
+    /// </summary>
+    public partial class OMQuartalDictionary
+    {
+
+        public OMQuartalDictionary()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMQuartalDictionary(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
     /// 108 Индексы для корректировки на дату
     /// </summary>
     public partial class OMIndexesForDateCorrection

@@ -943,6 +943,846 @@ namespace ObjectModel.Directory
         [EnumCode("26")]
         [ShortTitle("")]
         Khoroshyovsky = 940,
+		/// <summary>
+		/// Алексеевский (941)
+		/// </summary>
+		[Description("Алексеевский")]
+        [EnumCode("27")]
+        [ShortTitle("")]
+        Alexeyevsky = 941,
+		/// <summary>
+		/// Алтуфьевский (942)
+		/// </summary>
+		[Description("Алтуфьевский")]
+        [EnumCode("28")]
+        [ShortTitle("")]
+        Altufyevsky = 942,
+		/// <summary>
+		/// Бабушкинский (943)
+		/// </summary>
+		[Description("Бабушкинский")]
+        [EnumCode("29")]
+        [ShortTitle("")]
+        Babushkinsky = 943,
+		/// <summary>
+		/// Бибирево (944)
+		/// </summary>
+		[Description("Бибирево")]
+        [EnumCode("30")]
+        [ShortTitle("")]
+        Bibirevo = 944,
+		/// <summary>
+		/// Бутырский (945)
+		/// </summary>
+		[Description("Бутырский")]
+        [EnumCode("31")]
+        [ShortTitle("")]
+        Butyrsky = 945,
+		/// <summary>
+		/// Лианозово (946)
+		/// </summary>
+		[Description("Лианозово")]
+        [EnumCode("32")]
+        [ShortTitle("")]
+        Lianozovo = 946,
+		/// <summary>
+		/// Лосиноостровский (947)
+		/// </summary>
+		[Description("Лосиноостровский")]
+        [EnumCode("33")]
+        [ShortTitle("")]
+        Losinoostrovsky = 947,
+		/// <summary>
+		/// Марфино (948)
+		/// </summary>
+		[Description("Марфино")]
+        [EnumCode("34")]
+        [ShortTitle("")]
+        Marfino = 948,
+		/// <summary>
+		/// Марьина роща (949)
+		/// </summary>
+		[Description("Марьина роща")]
+        [EnumCode("35")]
+        [ShortTitle("")]
+        MaryinaRoshcha = 949,
+		/// <summary>
+		/// Останкинский (950)
+		/// </summary>
+		[Description("Останкинский")]
+        [EnumCode("36")]
+        [ShortTitle("")]
+        Ostankinsky = 950,
+		/// <summary>
+		/// Отрадное (951)
+		/// </summary>
+		[Description("Отрадное")]
+        [EnumCode("37")]
+        [ShortTitle("")]
+        Otradnoye = 951,
+		/// <summary>
+		/// Ростокино (952)
+		/// </summary>
+		[Description("Ростокино")]
+        [EnumCode("38")]
+        [ShortTitle("")]
+        Rostokino = 952,
+		/// <summary>
+		/// Свиблово (953)
+		/// </summary>
+		[Description("Свиблово")]
+        [EnumCode("39")]
+        [ShortTitle("")]
+        Sviblovo = 953,
+		/// <summary>
+		/// Северное Медведково (954)
+		/// </summary>
+		[Description("Северное Медведково")]
+        [EnumCode("40")]
+        [ShortTitle("")]
+        SevernoyeMedvedkovo = 954,
+		/// <summary>
+		/// Северный (955)
+		/// </summary>
+		[Description("Северный")]
+        [EnumCode("41")]
+        [ShortTitle("")]
+        Severny = 955,
+		/// <summary>
+		/// Южное Медведково (956)
+		/// </summary>
+		[Description("Южное Медведково")]
+        [EnumCode("42")]
+        [ShortTitle("")]
+        YuzhnoyeMedvedkovo = 956,
+		/// <summary>
+		/// Ярославский (957)
+		/// </summary>
+		[Description("Ярославский")]
+        [EnumCode("43")]
+        [ShortTitle("")]
+        Yaroslavsky = 957,
+		/// <summary>
+		/// Богородское (958)
+		/// </summary>
+		[Description("Богородское")]
+        [EnumCode("44")]
+        [ShortTitle("")]
+        Bogorodskoye = 958,
+		/// <summary>
+		/// Вешняки (959)
+		/// </summary>
+		[Description("Вешняки")]
+        [EnumCode("45")]
+        [ShortTitle("")]
+        Veshnyaki = 959,
+		/// <summary>
+		/// Восточное Измайлово (960)
+		/// </summary>
+		[Description("Восточное Измайлово")]
+        [EnumCode("46")]
+        [ShortTitle("")]
+        VostochnoyeIzmaylovo = 960,
+		/// <summary>
+		/// Восточный (961)
+		/// </summary>
+		[Description("Восточный")]
+        [EnumCode("47")]
+        [ShortTitle("")]
+        Vostochny = 961,
+		/// <summary>
+		/// Гольяново (962)
+		/// </summary>
+		[Description("Гольяново")]
+        [EnumCode("48")]
+        [ShortTitle("")]
+        Golyanovo = 962,
+		/// <summary>
+		/// Ивановское (963)
+		/// </summary>
+		[Description("Ивановское")]
+        [EnumCode("49")]
+        [ShortTitle("")]
+        Ivanovskoye = 963,
+		/// <summary>
+		/// Измайлово (964)
+		/// </summary>
+		[Description("Измайлово")]
+        [EnumCode("50")]
+        [ShortTitle("")]
+        Izmaylovo = 964,
+		/// <summary>
+		/// Косино-Ухтомский (965)
+		/// </summary>
+		[Description("Косино-Ухтомский")]
+        [EnumCode("51")]
+        [ShortTitle("")]
+        KosinoUkhtomsky = 965,
+		/// <summary>
+		/// Метрогородок (966)
+		/// </summary>
+		[Description("Метрогородок")]
+        [EnumCode("52")]
+        [ShortTitle("")]
+        Metrogorodok = 966,
+		/// <summary>
+		/// Новогиреево (967)
+		/// </summary>
+		[Description("Новогиреево")]
+        [EnumCode("53")]
+        [ShortTitle("")]
+        Novogireyevo = 967,
+		/// <summary>
+		/// Новокосино (968)
+		/// </summary>
+		[Description("Новокосино")]
+        [EnumCode("54")]
+        [ShortTitle("")]
+        Novokosino = 968,
+		/// <summary>
+		/// Перово (969)
+		/// </summary>
+		[Description("Перово")]
+        [EnumCode("55")]
+        [ShortTitle("")]
+        Perovo = 969,
+		/// <summary>
+		/// Преображенское (970)
+		/// </summary>
+		[Description("Преображенское")]
+        [EnumCode("56")]
+        [ShortTitle("")]
+        Preobrazhenskoye = 970,
+		/// <summary>
+		/// Северное Измайлово (971)
+		/// </summary>
+		[Description("Северное Измайлово")]
+        [EnumCode("57")]
+        [ShortTitle("")]
+        SevernoyeIzmaylovo = 971,
+		/// <summary>
+		/// Соколиная гора (972)
+		/// </summary>
+		[Description("Соколиная гора")]
+        [EnumCode("58")]
+        [ShortTitle("")]
+        SokolinayaGora = 972,
+		/// <summary>
+		/// Сокольники (973)
+		/// </summary>
+		[Description("Сокольники")]
+        [EnumCode("59")]
+        [ShortTitle("")]
+        Sokolniki = 973,
+		/// <summary>
+		/// Выхино-Жулебино (974)
+		/// </summary>
+		[Description("Выхино-Жулебино")]
+        [EnumCode("60")]
+        [ShortTitle("")]
+        VykhinoZhulebino = 974,
+		/// <summary>
+		/// Капотня (975)
+		/// </summary>
+		[Description("Капотня")]
+        [EnumCode("61")]
+        [ShortTitle("")]
+        Kapotnya = 975,
+		/// <summary>
+		/// Кузьминки (976)
+		/// </summary>
+		[Description("Кузьминки")]
+        [EnumCode("62")]
+        [ShortTitle("")]
+        Kuzminki = 976,
+		/// <summary>
+		/// Лефортово (977)
+		/// </summary>
+		[Description("Лефортово")]
+        [EnumCode("63")]
+        [ShortTitle("")]
+        Lefortovo = 977,
+		/// <summary>
+		/// Люблино (978)
+		/// </summary>
+		[Description("Люблино")]
+        [EnumCode("64")]
+        [ShortTitle("")]
+        Lyublino = 978,
+		/// <summary>
+		/// Марьино (979)
+		/// </summary>
+		[Description("Марьино")]
+        [EnumCode("65")]
+        [ShortTitle("")]
+        Maryino = 979,
+		/// <summary>
+		/// Некрасовка (980)
+		/// </summary>
+		[Description("Некрасовка")]
+        [EnumCode("66")]
+        [ShortTitle("")]
+        Nekrasovka = 980,
+		/// <summary>
+		/// Нижегородский (981)
+		/// </summary>
+		[Description("Нижегородский")]
+        [EnumCode("67")]
+        [ShortTitle("")]
+        Nizhegorodsky = 981,
+		/// <summary>
+		/// Печатники (982)
+		/// </summary>
+		[Description("Печатники")]
+        [EnumCode("68")]
+        [ShortTitle("")]
+        Pechatniki = 982,
+		/// <summary>
+		/// Рязанский (983)
+		/// </summary>
+		[Description("Рязанский")]
+        [EnumCode("69")]
+        [ShortTitle("")]
+        Ryazansky = 983,
+		/// <summary>
+		/// Текстильщики (984)
+		/// </summary>
+		[Description("Текстильщики")]
+        [EnumCode("70")]
+        [ShortTitle("")]
+        Tekstilshchiki = 984,
+		/// <summary>
+		/// Южнопортовый (985)
+		/// </summary>
+		[Description("Южнопортовый")]
+        [EnumCode("71")]
+        [ShortTitle("")]
+        Yuzhnoportovy = 985,
+		/// <summary>
+		/// Бирюлёво Восточное (986)
+		/// </summary>
+		[Description("Бирюлёво Восточное")]
+        [EnumCode("72")]
+        [ShortTitle("")]
+        BiryulyovoVostochnoye = 986,
+		/// <summary>
+		/// Бирюлёво Западное (987)
+		/// </summary>
+		[Description("Бирюлёво Западное")]
+        [EnumCode("73")]
+        [ShortTitle("")]
+        BiryulyovoZapadnoye = 987,
+		/// <summary>
+		/// Братеево (988)
+		/// </summary>
+		[Description("Братеево")]
+        [EnumCode("74")]
+        [ShortTitle("")]
+        Brateyevo = 988,
+		/// <summary>
+		/// Даниловский (989)
+		/// </summary>
+		[Description("Даниловский")]
+        [EnumCode("75")]
+        [ShortTitle("")]
+        Danilovsky = 989,
+		/// <summary>
+		/// Донской (990)
+		/// </summary>
+		[Description("Донской")]
+        [EnumCode("76")]
+        [ShortTitle("")]
+        Donskoy = 990,
+		/// <summary>
+		/// Зябликово (991)
+		/// </summary>
+		[Description("Зябликово")]
+        [EnumCode("77")]
+        [ShortTitle("")]
+        Zyablikovo = 991,
+		/// <summary>
+		/// Москворечье-Сабурово (992)
+		/// </summary>
+		[Description("Москворечье-Сабурово")]
+        [EnumCode("78")]
+        [ShortTitle("")]
+        MoskvorechyeSaburovo = 992,
+		/// <summary>
+		/// Нагатино-Садовники (993)
+		/// </summary>
+		[Description("Нагатино-Садовники")]
+        [EnumCode("79")]
+        [ShortTitle("")]
+        NagatinoSadovniki = 993,
+		/// <summary>
+		/// Нагатинский Затон (994)
+		/// </summary>
+		[Description("Нагатинский Затон")]
+        [EnumCode("80")]
+        [ShortTitle("")]
+        NagatinskyZaton = 994,
+		/// <summary>
+		/// Нагорный (995)
+		/// </summary>
+		[Description("Нагорный")]
+        [EnumCode("81")]
+        [ShortTitle("")]
+        Nagorny = 995,
+		/// <summary>
+		/// Орехово-Борисово Северное (996)
+		/// </summary>
+		[Description("Орехово-Борисово Северное")]
+        [EnumCode("82")]
+        [ShortTitle("")]
+        OrekhovoBorisovoSevernoye = 996,
+		/// <summary>
+		/// Орехово-Борисово Южное (997)
+		/// </summary>
+		[Description("Орехово-Борисово Южное")]
+        [EnumCode("83")]
+        [ShortTitle("")]
+        OrekhovoBorisovoYuzhnoye = 997,
+		/// <summary>
+		/// Царицыно (998)
+		/// </summary>
+		[Description("Царицыно")]
+        [EnumCode("84")]
+        [ShortTitle("")]
+        Tsaritsyno = 998,
+		/// <summary>
+		/// Чертаново Северное (999)
+		/// </summary>
+		[Description("Чертаново Северное")]
+        [EnumCode("85")]
+        [ShortTitle("")]
+        ChertanovoSevernoye = 999,
+		/// <summary>
+		/// Чертаново Центральное (1000)
+		/// </summary>
+		[Description("Чертаново Центральное")]
+        [EnumCode("86")]
+        [ShortTitle("")]
+        ChertanovoTsentralnoye = 1000,
+		/// <summary>
+		/// Чертаново Южное (1001)
+		/// </summary>
+		[Description("Чертаново Южное")]
+        [EnumCode("87")]
+        [ShortTitle("")]
+        ChertanovoYuzhnoye = 1001,
+		/// <summary>
+		/// Академический (1002)
+		/// </summary>
+		[Description("Академический")]
+        [EnumCode("88")]
+        [ShortTitle("")]
+        Akademichesky = 1002,
+		/// <summary>
+		/// Гагаринский (1003)
+		/// </summary>
+		[Description("Гагаринский")]
+        [EnumCode("89")]
+        [ShortTitle("")]
+        Gagarinsky = 1003,
+		/// <summary>
+		/// Зюзино (1004)
+		/// </summary>
+		[Description("Зюзино")]
+        [EnumCode("90")]
+        [ShortTitle("")]
+        Zyuzino = 1004,
+		/// <summary>
+		/// Коньково (1005)
+		/// </summary>
+		[Description("Коньково")]
+        [EnumCode("91")]
+        [ShortTitle("")]
+        Konkovo = 1005,
+		/// <summary>
+		/// Котловка (1006)
+		/// </summary>
+		[Description("Котловка")]
+        [EnumCode("92")]
+        [ShortTitle("")]
+        Kotlovka = 1006,
+		/// <summary>
+		/// Ломоносовский (1007)
+		/// </summary>
+		[Description("Ломоносовский")]
+        [EnumCode("93")]
+        [ShortTitle("")]
+        Lomonosovsky = 1007,
+		/// <summary>
+		/// Обручевский (1008)
+		/// </summary>
+		[Description("Обручевский")]
+        [EnumCode("94")]
+        [ShortTitle("")]
+        Obruchevsky = 1008,
+		/// <summary>
+		/// Северное Бутово (1009)
+		/// </summary>
+		[Description("Северное Бутово")]
+        [EnumCode("95")]
+        [ShortTitle("")]
+        SevernoyeButovo = 1009,
+		/// <summary>
+		/// Тёплый Стан (1010)
+		/// </summary>
+		[Description("Тёплый Стан")]
+        [EnumCode("96")]
+        [ShortTitle("")]
+        TyoplyStan = 1010,
+		/// <summary>
+		/// Черёмушки (1011)
+		/// </summary>
+		[Description("Черёмушки")]
+        [EnumCode("97")]
+        [ShortTitle("")]
+        Cheryomushki = 1011,
+		/// <summary>
+		/// Южное Бутово (1012)
+		/// </summary>
+		[Description("Южное Бутово")]
+        [EnumCode("98")]
+        [ShortTitle("")]
+        YuzhnoyeButovo = 1012,
+		/// <summary>
+		/// Ясенево (1013)
+		/// </summary>
+		[Description("Ясенево")]
+        [EnumCode("99")]
+        [ShortTitle("")]
+        Yasenevo = 1013,
+		/// <summary>
+		/// Внуково (1014)
+		/// </summary>
+		[Description("Внуково")]
+        [EnumCode("100")]
+        [ShortTitle("")]
+        Vnukovo = 1014,
+		/// <summary>
+		/// Дорогомилово (1015)
+		/// </summary>
+		[Description("Дорогомилово")]
+        [EnumCode("101")]
+        [ShortTitle("")]
+        Dorogomilovo = 1015,
+		/// <summary>
+		/// Крылатское (1016)
+		/// </summary>
+		[Description("Крылатское")]
+        [EnumCode("102")]
+        [ShortTitle("")]
+        Krylatskoye = 1016,
+		/// <summary>
+		/// Кунцево (1017)
+		/// </summary>
+		[Description("Кунцево")]
+        [EnumCode("103")]
+        [ShortTitle("")]
+        Kuntsevo = 1017,
+		/// <summary>
+		/// Можайский (1018)
+		/// </summary>
+		[Description("Можайский")]
+        [EnumCode("104")]
+        [ShortTitle("")]
+        Mozhaysky = 1018,
+		/// <summary>
+		/// Ново-Переделкино (1019)
+		/// </summary>
+		[Description("Ново-Переделкино")]
+        [EnumCode("105")]
+        [ShortTitle("")]
+        NovoPeredelkino = 1019,
+		/// <summary>
+		/// Очаково-Матвеевское (1020)
+		/// </summary>
+		[Description("Очаково-Матвеевское")]
+        [EnumCode("106")]
+        [ShortTitle("")]
+        OchakovoMatveyevskoye = 1020,
+		/// <summary>
+		/// Проспект Вернадского (1021)
+		/// </summary>
+		[Description("Проспект Вернадского")]
+        [EnumCode("107")]
+        [ShortTitle("")]
+        ProspektVernadskogo = 1021,
+		/// <summary>
+		/// Раменки (1022)
+		/// </summary>
+		[Description("Раменки")]
+        [EnumCode("108")]
+        [ShortTitle("")]
+        Ramenki = 1022,
+		/// <summary>
+		/// Солнцево (1023)
+		/// </summary>
+		[Description("Солнцево")]
+        [EnumCode("109")]
+        [ShortTitle("")]
+        Solntsevo = 1023,
+		/// <summary>
+		/// Тропарево-Никулино (1024)
+		/// </summary>
+		[Description("Тропарево-Никулино")]
+        [EnumCode("110")]
+        [ShortTitle("")]
+        TroparyovoNikulino = 1024,
+		/// <summary>
+		/// Филёвский Парк (1025)
+		/// </summary>
+		[Description("Филёвский Парк")]
+        [EnumCode("111")]
+        [ShortTitle("")]
+        FilyovskyPark = 1025,
+		/// <summary>
+		/// Фили-Давыдково (1026)
+		/// </summary>
+		[Description("Фили-Давыдково")]
+        [EnumCode("112")]
+        [ShortTitle("")]
+        FiliDavydkovo = 1026,
+		/// <summary>
+		/// Куркино (1027)
+		/// </summary>
+		[Description("Куркино")]
+        [EnumCode("113")]
+        [ShortTitle("")]
+        Kurkino = 1027,
+		/// <summary>
+		/// Митино (1028)
+		/// </summary>
+		[Description("Митино")]
+        [EnumCode("114")]
+        [ShortTitle("")]
+        Mitino = 1028,
+		/// <summary>
+		/// Покровское-Стрешнево (1029)
+		/// </summary>
+		[Description("Покровское-Стрешнево")]
+        [EnumCode("115")]
+        [ShortTitle("")]
+        PokrovskoyeStreshnevo = 1029,
+		/// <summary>
+		/// Северное Тушино (1030)
+		/// </summary>
+		[Description("Северное Тушино")]
+        [EnumCode("116")]
+        [ShortTitle("")]
+        SevernoyeTushino = 1030,
+		/// <summary>
+		/// Строгино (1031)
+		/// </summary>
+		[Description("Строгино")]
+        [EnumCode("117")]
+        [ShortTitle("")]
+        Strogino = 1031,
+		/// <summary>
+		/// Хорошёво-Мнёвники (1032)
+		/// </summary>
+		[Description("Хорошёво-Мнёвники")]
+        [EnumCode("118")]
+        [ShortTitle("")]
+        KhoroshyovoMnyovniki = 1032,
+		/// <summary>
+		/// Щукино (1033)
+		/// </summary>
+		[Description("Щукино")]
+        [EnumCode("119")]
+        [ShortTitle("")]
+        Shchukino = 1033,
+		/// <summary>
+		/// Южное Тушино (1034)
+		/// </summary>
+		[Description("Южное Тушино")]
+        [EnumCode("120")]
+        [ShortTitle("")]
+        YuzhnoyeTushino = 1034,
+		/// <summary>
+		/// Матушкино (1035)
+		/// </summary>
+		[Description("Матушкино")]
+        [EnumCode("121")]
+        [ShortTitle("")]
+        Matushkino = 1035,
+		/// <summary>
+		/// Савёлки (1036)
+		/// </summary>
+		[Description("Савёлки")]
+        [EnumCode("122")]
+        [ShortTitle("")]
+        Savyolki = 1036,
+		/// <summary>
+		/// Старое Крюково (1037)
+		/// </summary>
+		[Description("Старое Крюково")]
+        [EnumCode("123")]
+        [ShortTitle("")]
+        StaroyeKryukovo = 1037,
+		/// <summary>
+		/// Силино (1038)
+		/// </summary>
+		[Description("Силино")]
+        [EnumCode("124")]
+        [ShortTitle("")]
+        Silino = 1038,
+		/// <summary>
+		/// Крюково (1039)
+		/// </summary>
+		[Description("Крюково")]
+        [EnumCode("125")]
+        [ShortTitle("")]
+        Kryukovo = 1039,
+		/// <summary>
+		/// Внуковское (1040)
+		/// </summary>
+		[Description("Внуковское")]
+        [EnumCode("126")]
+        [ShortTitle("")]
+        Vnukovskoye = 1040,
+		/// <summary>
+		/// Воскресенское (1041)
+		/// </summary>
+		[Description("Воскресенское")]
+        [EnumCode("127")]
+        [ShortTitle("")]
+        Voskresenskoye = 1041,
+		/// <summary>
+		/// Десёновское (1042)
+		/// </summary>
+		[Description("Десёновское")]
+        [EnumCode("128")]
+        [ShortTitle("")]
+        Desyonovskoye = 1042,
+		/// <summary>
+		/// Кокошкино (1043)
+		/// </summary>
+		[Description("Кокошкино")]
+        [EnumCode("129")]
+        [ShortTitle("")]
+        Kokoshkino = 1043,
+		/// <summary>
+		/// Марушкинское (1044)
+		/// </summary>
+		[Description("Марушкинское")]
+        [EnumCode("130")]
+        [ShortTitle("")]
+        Marushkinskoye = 1044,
+		/// <summary>
+		/// Московский (1045)
+		/// </summary>
+		[Description("Московский")]
+        [EnumCode("131")]
+        [ShortTitle("")]
+        Moskovsky = 1045,
+		/// <summary>
+		/// Мосрентген (1046)
+		/// </summary>
+		[Description("Мосрентген")]
+        [EnumCode("132")]
+        [ShortTitle("")]
+        Mosrentgen = 1046,
+		/// <summary>
+		/// Рязановское (1047)
+		/// </summary>
+		[Description("Рязановское")]
+        [EnumCode("133")]
+        [ShortTitle("")]
+        Ryazanovskoye = 1047,
+		/// <summary>
+		/// Сосенское (1048)
+		/// </summary>
+		[Description("Сосенское")]
+        [EnumCode("134")]
+        [ShortTitle("")]
+        Sosenskoye = 1048,
+		/// <summary>
+		/// Филимонковское (1049)
+		/// </summary>
+		[Description("Филимонковское")]
+        [EnumCode("135")]
+        [ShortTitle("")]
+        Filimonkovskoye = 1049,
+		/// <summary>
+		/// Щербинка (1050)
+		/// </summary>
+		[Description("Щербинка")]
+        [EnumCode("136")]
+        [ShortTitle("")]
+        Shcherbinka = 1050,
+		/// <summary>
+		/// Вороновское (1051)
+		/// </summary>
+		[Description("Вороновское")]
+        [EnumCode("137")]
+        [ShortTitle("")]
+        Voronovskoye = 1051,
+		/// <summary>
+		/// Киевский (1052)
+		/// </summary>
+		[Description("Киевский")]
+        [EnumCode("138")]
+        [ShortTitle("")]
+        Kiyevsky = 1052,
+		/// <summary>
+		/// Клёновское (1053)
+		/// </summary>
+		[Description("Клёновское")]
+        [EnumCode("139")]
+        [ShortTitle("")]
+        Klenovskoye = 1053,
+		/// <summary>
+		/// Краснопахорское (1054)
+		/// </summary>
+		[Description("Краснопахорское")]
+        [EnumCode("140")]
+        [ShortTitle("")]
+        Krasnopakhorskoye = 1054,
+		/// <summary>
+		/// Михайлово-Ярцевское (1055)
+		/// </summary>
+		[Description("Михайлово-Ярцевское")]
+        [EnumCode("141")]
+        [ShortTitle("")]
+        MikhaylovoYartsevskoye = 1055,
+		/// <summary>
+		/// Новофёдоровское (1056)
+		/// </summary>
+		[Description("Новофёдоровское")]
+        [EnumCode("142")]
+        [ShortTitle("")]
+        Novofyodorovskoye = 1056,
+		/// <summary>
+		/// Первомайское (1057)
+		/// </summary>
+		[Description("Первомайское")]
+        [EnumCode("143")]
+        [ShortTitle("")]
+        Pervomayskoye = 1057,
+		/// <summary>
+		/// Роговское (1058)
+		/// </summary>
+		[Description("Роговское")]
+        [EnumCode("144")]
+        [ShortTitle("")]
+        Rogovskoye = 1058,
+		/// <summary>
+		/// Троицк (1059)
+		/// </summary>
+		[Description("Троицк")]
+        [EnumCode("145")]
+        [ShortTitle("")]
+        Troitsky = 1059,
+		/// <summary>
+		/// Щаповское (1060)
+		/// </summary>
+		[Description("Щаповское")]
+        [EnumCode("146")]
+        [ShortTitle("")]
+        Shchapovskoye = 1060,
     }
 }
 

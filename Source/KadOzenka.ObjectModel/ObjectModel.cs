@@ -931,11 +931,31 @@ namespace ObjectModel.Market
         }
 
 
+        private string _zoneregion;
+        /// <summary>
+        /// 10005100 Зона_Округ (ZONE_REGION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005100)]
+        public string ZoneRegion
+        {
+            get
+            {
+                CheckPropertyInited("ZoneRegion");
+                return _zoneregion;
+            }
+            set
+            {
+                _zoneregion = value;
+                NotifyPropertyChanged("ZoneRegion");
+            }
+        }
+
+
         private string _district;
         /// <summary>
-        /// 10005300 Район (DISTRICT)
+        /// 10005200 Административный округ (DISTRICT)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10005300)]
+        [RegisterAttribute(AttributeID = 10005200)]
         public string District
         {
             get
@@ -951,22 +971,92 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _district_Code;
+        private Hunteds _district_Code;
         /// <summary>
-        /// 10005300 Район (справочный код) (DISTRICT_CODE)
+        /// 10005200 Административный округ (справочный код) (DISTRICT_CODE)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10005300)]
-        public long? District_Code
+        [RegisterAttribute(AttributeID = 10005200)]
+        public Hunteds District_Code
         {
             get
             {
                 CheckPropertyInited("District_Code");
-                return _district_Code;
+                return this._district_Code;
             }
             set
             {
-                _district_Code = value;
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_district))
+                    {
+                         _district = descr;
+                    }
+                }
+                else
+                {
+                     _district = descr;
+                }
+
+                this._district_Code = value;
+                NotifyPropertyChanged("District");
                 NotifyPropertyChanged("District_Code");
+            }
+        }
+
+
+        private string _neighborhood;
+        /// <summary>
+        /// 10005300 Район (NEIGHBORHOOD)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005300)]
+        public string Neighborhood
+        {
+            get
+            {
+                CheckPropertyInited("Neighborhood");
+                return _neighborhood;
+            }
+            set
+            {
+                _neighborhood = value;
+                NotifyPropertyChanged("Neighborhood");
+            }
+        }
+
+
+        private Districts _neighborhood_Code;
+        /// <summary>
+        /// 10005300 Район (справочный код) (NEIGHBORHOOD_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005300)]
+        public Districts Neighborhood_Code
+        {
+            get
+            {
+                CheckPropertyInited("Neighborhood_Code");
+                return this._neighborhood_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_neighborhood))
+                    {
+                         _neighborhood = descr;
+                    }
+                }
+                else
+                {
+                     _neighborhood = descr;
+                }
+
+                this._neighborhood_Code = value;
+                NotifyPropertyChanged("Neighborhood");
+                NotifyPropertyChanged("Neighborhood_Code");
             }
         }
 
@@ -3209,6 +3299,208 @@ namespace ObjectModel.Market
             {
                 _duplicateobjects = value;
                 NotifyPropertyChanged("DuplicateObjects");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 107 Таблица, содержащая информацию о соответствии кад кварталов районам, округам и зонам  (MARKET_REGION_DICTIONATY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 107)]
+    [Serializable]
+    public partial class OMQuartalDictionary : OMBaseClass<OMQuartalDictionary>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10700100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _cadastralquartal;
+        /// <summary>
+        /// 10700200 Кадастровый квартал (CADASTRAL_QUARTAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700200)]
+        public string CadastralQuartal
+        {
+            get
+            {
+                CheckPropertyInited("CadastralQuartal");
+                return _cadastralquartal;
+            }
+            set
+            {
+                _cadastralquartal = value;
+                NotifyPropertyChanged("CadastralQuartal");
+            }
+        }
+
+
+        private string _district;
+        /// <summary>
+        /// 10700300 Округ (DISTRICT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700300)]
+        public string District
+        {
+            get
+            {
+                CheckPropertyInited("District");
+                return _district;
+            }
+            set
+            {
+                _district = value;
+                NotifyPropertyChanged("District");
+            }
+        }
+
+
+        private Hunteds _district_Code;
+        /// <summary>
+        /// 10700300 Округ (справочный код) (DISTRICT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700300)]
+        public Hunteds District_Code
+        {
+            get
+            {
+                CheckPropertyInited("District_Code");
+                return this._district_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_district))
+                    {
+                         _district = descr;
+                    }
+                }
+                else
+                {
+                     _district = descr;
+                }
+
+                this._district_Code = value;
+                NotifyPropertyChanged("District");
+                NotifyPropertyChanged("District_Code");
+            }
+        }
+
+
+        private string _region;
+        /// <summary>
+        /// 10700400 Район (REGION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700400)]
+        public string Region
+        {
+            get
+            {
+                CheckPropertyInited("Region");
+                return _region;
+            }
+            set
+            {
+                _region = value;
+                NotifyPropertyChanged("Region");
+            }
+        }
+
+
+        private Districts _region_Code;
+        /// <summary>
+        /// 10700400 Район (справочный код) (REGION_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700400)]
+        public Districts Region_Code
+        {
+            get
+            {
+                CheckPropertyInited("Region_Code");
+                return this._region_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_region))
+                    {
+                         _region = descr;
+                    }
+                }
+                else
+                {
+                     _region = descr;
+                }
+
+                this._region_Code = value;
+                NotifyPropertyChanged("Region");
+                NotifyPropertyChanged("Region_Code");
+            }
+        }
+
+
+        private long? _zone;
+        /// <summary>
+        /// 10700500 Зона (ZONE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700500)]
+        public long? Zone
+        {
+            get
+            {
+                CheckPropertyInited("Zone");
+                return _zone;
+            }
+            set
+            {
+                _zone = value;
+                NotifyPropertyChanged("Zone");
+            }
+        }
+
+
+        private string _zoneregion;
+        /// <summary>
+        /// 10700600 Зона_район (ZONE_REGION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700600)]
+        public string ZoneRegion
+        {
+            get
+            {
+                CheckPropertyInited("ZoneRegion");
+                return _zoneregion;
+            }
+            set
+            {
+                _zoneregion = value;
+                NotifyPropertyChanged("ZoneRegion");
             }
         }
 
