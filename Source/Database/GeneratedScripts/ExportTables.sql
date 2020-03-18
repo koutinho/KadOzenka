@@ -489,6 +489,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'number_of_imported_objects')) then
+        execute 'alter table COMMON_IMPORT_DATA_LOG add "number_of_imported_objects" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'total_number_of_objects')) then
+        execute 'alter table COMMON_IMPORT_DATA_LOG add "total_number_of_objects" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_801_q_pk')) then
     execute 'alter table COMMON_IMPORT_DATA_LOG add constraint reg_801_q_pk primary key (id)';
   end if;
@@ -1064,6 +1082,14 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_992_quant_pk')) then
     execute 'alter table CORE_DIAGNOSTICS add constraint reg_992_quant_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('core_diagnostics_action_idx')) then
+	execute 'CREATE  INDEX core_diagnostics_action_idx on CORE_DIAGNOSTICS (action_date)';
   end if;
 end $$;
 --<DO>--
@@ -3501,6 +3527,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('CORE_REGISTER_ATTRIBUTE', 'change_user_id')) then
+        execute 'alter table CORE_REGISTER_ATTRIBUTE add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_REGISTER_ATTRIBUTE', 'change_date')) then
+        execute 'alter table CORE_REGISTER_ATTRIBUTE add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_931_quant_pk')) then
     execute 'alter table CORE_REGISTER_ATTRIBUTE add constraint reg_931_quant_pk primary key (id)';
   end if;
@@ -3958,7 +4002,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_SRD_AUDIT', 'result_desc')) then
-        execute 'alter table CORE_SRD_AUDIT add "result_desc" VARCHAR(4000)';
+        execute 'alter table CORE_SRD_AUDIT add "result_desc" VARCHAR';
     end if;
 end $$;
 
@@ -20289,6 +20333,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_COMPLIANCE_GUIDE', 'is_residential')) then
+        execute 'alter table KO_COMPLIANCE_GUIDE add "is_residential" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('ko_compliance_guide_pkey')) then
     execute 'alter table KO_COMPLIANCE_GUIDE add constraint ko_compliance_guide_pkey primary key (id)';
   end if;
@@ -20406,6 +20459,14 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_216_q_pk')) then
     execute 'alter table KO_COST_ROSREESTR add constraint reg_216_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('ko_cost_rosreestr_id_obj_idx')) then
+	execute 'CREATE  INDEX ko_cost_rosreestr_id_obj_idx on KO_COST_ROSREESTR (id_object)';
   end if;
 end $$;
 --<DO>--
@@ -20945,6 +21006,40 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_OBJECTS_CHARACTERISTICS_REGISTER')) then
+		execute 'create table KO_OBJECTS_CHARACTERISTICS_REGISTER ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_OBJECTS_CHARACTERISTICS_REGISTER', 'id')) then
+        execute 'alter table KO_OBJECTS_CHARACTERISTICS_REGISTER add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_OBJECTS_CHARACTERISTICS_REGISTER', 'register_id')) then
+        execute 'alter table KO_OBJECTS_CHARACTERISTICS_REGISTER add "register_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_600_q_pk')) then
+    execute 'alter table KO_OBJECTS_CHARACTERISTICS_REGISTER add constraint reg_600_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_TASK')) then
 		execute 'create table KO_TASK ("id" BIGINT NOT NULL)';
 	end if;
@@ -21077,8 +21172,24 @@ end $$;
 
 DO $$
 begin
+  if (not core_updstru_checkexistconstraint('ko_tour_year_key')) then
+    execute 'alter table KO_TOUR add constraint ko_tour_year_key unique (year)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_202_q_pk')) then
     execute 'alter table KO_TOUR add constraint reg_202_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('ko_tour_year_key')) then
+	execute 'CREATE UNIQUE INDEX ko_tour_year_key on KO_TOUR (year)';
   end if;
 end $$;
 --<DO>--
@@ -21183,6 +21294,863 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_212_q_pk')) then
     execute 'alter table KO_TOUR_GROUPS add constraint reg_212_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourOksFactors12506547')) then
+		execute 'create table KO_TourOksFactors12506547 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors12506547', 'id')) then
+        execute 'alter table KO_TourOksFactors12506547 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors12506547', 'field27407421')) then
+        execute 'alter table KO_TourOksFactors12506547 add "field27407421" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors12506547', 'field27407421_code')) then
+        execute 'alter table KO_TourOksFactors12506547 add "field27407421_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_27407381_q_pk')) then
+    execute 'alter table KO_TourOksFactors12506547 add constraint reg_27407381_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourOksFactors17618026')) then
+		execute 'create table KO_TourOksFactors17618026 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors17618026', 'id')) then
+        execute 'alter table KO_TourOksFactors17618026 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors17618026', 'field29434801')) then
+        execute 'alter table KO_TourOksFactors17618026 add "field29434801" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors17618026', 'field29434801_code')) then
+        execute 'alter table KO_TourOksFactors17618026 add "field29434801_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29434779_q_pk')) then
+    execute 'alter table KO_TourOksFactors17618026 add constraint reg_29434779_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourOksFactors28859124')) then
+		execute 'create table KO_TourOksFactors28859124 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors28859124', 'id')) then
+        execute 'alter table KO_TourOksFactors28859124 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors28859124', 'field28954503')) then
+        execute 'alter table KO_TourOksFactors28859124 add "field28954503" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors28859124', 'field28954503_code')) then
+        execute 'alter table KO_TourOksFactors28859124 add "field28954503_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_28954487_q_pk')) then
+    execute 'alter table KO_TourOksFactors28859124 add constraint reg_28954487_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourOksFactors29151974')) then
+		execute 'create table KO_TourOksFactors29151974 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors29151974', 'id')) then
+        execute 'alter table KO_TourOksFactors29151974 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors29151974', 'field29180422')) then
+        execute 'alter table KO_TourOksFactors29151974 add "field29180422" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29180374_q_pk')) then
+    execute 'alter table KO_TourOksFactors29151974 add constraint reg_29180374_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourOksFactors29425150')) then
+		execute 'create table KO_TourOksFactors29425150 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors29425150', 'id')) then
+        execute 'alter table KO_TourOksFactors29425150 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors29425150', 'field29504602')) then
+        execute 'alter table KO_TourOksFactors29425150 add "field29504602" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29504581_q_pk')) then
+    execute 'alter table KO_TourOksFactors29425150 add constraint reg_29504581_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourOksFactors29839891')) then
+		execute 'create table KO_TourOksFactors29839891 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors29839891', 'id')) then
+        execute 'alter table KO_TourOksFactors29839891 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors29839891', 'field29871888')) then
+        execute 'alter table KO_TourOksFactors29839891 add "field29871888" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29871819_q_pk')) then
+    execute 'alter table KO_TourOksFactors29839891 add constraint reg_29871819_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourOksFactors37294645')) then
+		execute 'create table KO_TourOksFactors37294645 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors37294645', 'id')) then
+        execute 'alter table KO_TourOksFactors37294645 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourOksFactors37294645', 'field37312279')) then
+        execute 'alter table KO_TourOksFactors37294645 add "field37312279" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_37312256_q_pk')) then
+    execute 'alter table KO_TourOksFactors37294645 add constraint reg_37312256_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors12506545')) then
+		execute 'create table KO_TourZuFactors12506545 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors12506545', 'id')) then
+        execute 'alter table KO_TourZuFactors12506545 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors12506545', 'field22986695')) then
+        execute 'alter table KO_TourZuFactors12506545 add "field22986695" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_22986693_q_pk')) then
+    execute 'alter table KO_TourZuFactors12506545 add constraint reg_22986693_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors12506547')) then
+		execute 'create table KO_TourZuFactors12506547 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors12506547', 'id')) then
+        execute 'alter table KO_TourZuFactors12506547 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors12506547', 'field27388769')) then
+        execute 'alter table KO_TourZuFactors12506547 add "field27388769" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors12506547', 'field27388769_code')) then
+        execute 'alter table KO_TourZuFactors12506547 add "field27388769_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_27388644_q_pk')) then
+    execute 'alter table KO_TourZuFactors12506547 add constraint reg_27388644_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors17618026')) then
+		execute 'create table KO_TourZuFactors17618026 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors17618026', 'id')) then
+        execute 'alter table KO_TourZuFactors17618026 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors17618026', 'field29431968')) then
+        execute 'alter table KO_TourZuFactors17618026 add "field29431968" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors17618026', 'field29431968_code')) then
+        execute 'alter table KO_TourZuFactors17618026 add "field29431968_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors17618026', 'field40116942')) then
+        execute 'alter table KO_TourZuFactors17618026 add "field40116942" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors17618026', 'field40116943')) then
+        execute 'alter table KO_TourZuFactors17618026 add "field40116943" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29431915_q_pk')) then
+    execute 'alter table KO_TourZuFactors17618026 add constraint reg_29431915_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors18099454')) then
+		execute 'create table KO_TourZuFactors18099454 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors18099454', 'id')) then
+        execute 'alter table KO_TourZuFactors18099454 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors18099454', 'field39959494')) then
+        execute 'alter table KO_TourZuFactors18099454 add "field39959494" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_39959492_q_pk')) then
+    execute 'alter table KO_TourZuFactors18099454 add constraint reg_39959492_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors22907439')) then
+		execute 'create table KO_TourZuFactors22907439 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'id')) then
+        execute 'alter table KO_TourZuFactors22907439 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field22907631')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field22907631" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field22907632')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field22907632" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field22907633')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field22907633" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field22907634')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field22907634" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field22907635')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field22907635" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field22907636')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field22907636" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field22907636_code')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field22907636_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field27063431')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field27063431" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field27086593')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field27086593" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field27086593_code')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field27086593_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field39959469')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field39959469" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors22907439', 'field39959470')) then
+        execute 'alter table KO_TourZuFactors22907439 add "field39959470" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_22907629_q_pk')) then
+    execute 'alter table KO_TourZuFactors22907439 add constraint reg_22907629_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors28859124')) then
+		execute 'create table KO_TourZuFactors28859124 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors28859124', 'id')) then
+        execute 'alter table KO_TourZuFactors28859124 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors28859124', 'field28928948')) then
+        execute 'alter table KO_TourZuFactors28859124 add "field28928948" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors28859124', 'field28928948_code')) then
+        execute 'alter table KO_TourZuFactors28859124 add "field28928948_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_28928795_q_pk')) then
+    execute 'alter table KO_TourZuFactors28859124 add constraint reg_28928795_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors29151974')) then
+		execute 'create table KO_TourZuFactors29151974 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29151974', 'id')) then
+        execute 'alter table KO_TourZuFactors29151974 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29151974', 'field29169198')) then
+        execute 'alter table KO_TourZuFactors29151974 add "field29169198" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29151974', 'field29197634')) then
+        execute 'alter table KO_TourZuFactors29151974 add "field29197634" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29151974', 'field29197634_code')) then
+        execute 'alter table KO_TourZuFactors29151974 add "field29197634_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29169156_q_pk')) then
+    execute 'alter table KO_TourZuFactors29151974 add constraint reg_29169156_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors29425150')) then
+		execute 'create table KO_TourZuFactors29425150 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29425150', 'id')) then
+        execute 'alter table KO_TourZuFactors29425150 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29425150', 'field29503152')) then
+        execute 'alter table KO_TourZuFactors29425150 add "field29503152" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29425150', 'field29638038')) then
+        execute 'alter table KO_TourZuFactors29425150 add "field29638038" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29503139_q_pk')) then
+    execute 'alter table KO_TourZuFactors29425150 add constraint reg_29503139_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors29839891')) then
+		execute 'create table KO_TourZuFactors29839891 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29839891', 'id')) then
+        execute 'alter table KO_TourZuFactors29839891 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29839891', 'field29861013')) then
+        execute 'alter table KO_TourZuFactors29839891 add "field29861013" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors29839891', 'field29861013_code')) then
+        execute 'alter table KO_TourZuFactors29839891 add "field29861013_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_29860805_q_pk')) then
+    execute 'alter table KO_TourZuFactors29839891 add constraint reg_29860805_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TourZuFactors37294645')) then
+		execute 'create table KO_TourZuFactors37294645 ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'id')) then
+        execute 'alter table KO_TourZuFactors37294645 add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37302327')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37302327" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37365533')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37365533" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37376793')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37376793" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37379266')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37379266" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37379266_code')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37379266_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37389497')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37389497" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37402784')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37402784" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37455423')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37455423" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors37294645', 'field37500836')) then
+        execute 'alter table KO_TourZuFactors37294645 add "field37500836" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_37302129_q_pk')) then
+    execute 'alter table KO_TourZuFactors37294645 add constraint reg_37302129_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -21474,6 +22442,14 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('ko_unit_kad_num_text_inx')) then
 	execute 'CREATE  INDEX ko_unit_kad_num_text_inx on KO_UNIT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('ko_unit_obj_idx')) then
+	execute 'CREATE  INDEX ko_unit_obj_idx on KO_UNIT (object_id)';
   end if;
 end $$;
 --<DO>--
@@ -24950,6 +25926,14 @@ end $$;
 
 DO $$
 begin
+  if (not CORE_UPDSTRU_CheckExistIndex('market_price_history_obj_id_idx')) then
+	execute 'CREATE  INDEX market_price_history_obj_id_idx on MARKET_PRICE_HISTORY (initial_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('MARKET_SCREENSHOTS')) then
 		execute 'create table MARKET_SCREENSHOTS ("id" BIGINT NOT NULL)';
 	end if;
@@ -25038,6 +26022,201 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('pk_market_settings_id')) then
     execute 'alter table MARKET_SETTINGS add constraint pk_market_settings_id primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('source_23_q')) then
+		execute 'create table source_23_q ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_23_q', 'id')) then
+        execute 'alter table source_23_q add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116941')) then
+        execute 'alter table source_23_q add "field40116941" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116944')) then
+        execute 'alter table source_23_q add "field40116944" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116945')) then
+        execute 'alter table source_23_q add "field40116945" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116946')) then
+        execute 'alter table source_23_q add "field40116946" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116950')) then
+        execute 'alter table source_23_q add "field40116950" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_39959475_q_pk')) then
+    execute 'alter table source_23_q add constraint reg_39959475_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('source_24_q')) then
+		execute 'create table source_24_q ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_24_q', 'id')) then
+        execute 'alter table source_24_q add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_39964619_q_pk')) then
+    execute 'alter table source_24_q add constraint reg_39964619_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('source_25_q')) then
+		execute 'create table source_25_q ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_25_q', 'id')) then
+        execute 'alter table source_25_q add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_39964641_q_pk')) then
+    execute 'alter table source_25_q add constraint reg_39964641_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('source_26_q')) then
+		execute 'create table source_26_q ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_26_q', 'id')) then
+        execute 'alter table source_26_q add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_39964643_q_pk')) then
+    execute 'alter table source_26_q add constraint reg_39964643_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('source_27_q')) then
+		execute 'create table source_27_q ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_27_q', 'id')) then
+        execute 'alter table source_27_q add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_40116955_q_pk')) then
+    execute 'alter table source_27_q add constraint reg_40116955_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('source_28_q')) then
+		execute 'create table source_28_q ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_28_q', 'id')) then
+        execute 'alter table source_28_q add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_40116957_q_pk')) then
+    execute 'alter table source_28_q add constraint reg_40116957_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -27183,31 +28362,6 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_312_q_pk')) then
     execute 'alter table SUD_ZAKSTATUS add constraint reg_312_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('Tour17618025ZuFactors')) then
-		execute 'create table Tour17618025ZuFactors ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('Tour17618025ZuFactors', 'id')) then
-        execute 'alter table Tour17618025ZuFactors add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_22907398_q_pk')) then
-    execute 'alter table Tour17618025ZuFactors add constraint reg_22907398_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
