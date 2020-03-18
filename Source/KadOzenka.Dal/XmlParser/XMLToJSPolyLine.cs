@@ -58,7 +58,7 @@ namespace KadOzenka.Dal.XmlParser
             public List<Feature> features { get; set; } = new List<Feature>();
         }
 
-        public static void parseXMLData()
+        public static void parseXMLMapGeoData()
         {
             parseData("district", "Округа.TAB.xml", "districts.json", "districts.min.json");
             parseData("region", "Районы Москвы.TAB.xml", "regions.json", "regions.min.json");

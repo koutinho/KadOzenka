@@ -24,6 +24,7 @@ using KadOzenka.BlFrontEnd.GbuTest;
 using KadOzenka.BlFrontEnd.DataImport;
 using KadOzenka.Dal.CadastralInfoFillingForMarketObjects;
 using KadOzenka.Dal.YandexParser;
+using KadOzenka.Dal.ExcelParser;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -64,7 +65,8 @@ namespace KadOzenka.BlFrontEnd
             /*Вспомогательные функции*/
             consoleHelper.AddCommand("1108", "Присвоение кадастровых номеров", () => { new Cian().SetCadastralNumbers(); });
 
-            consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseXMLData(); });
+            consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseXMLMapGeoData(); });
+            consoleHelper.AddCommand("21", "Парсинг excele файла", () => { FormRegionTable.parseExcelRegionsData(); });
 
             /*Генерация тайлов для карт яндекс*/
             consoleHelper.AddCommand("1901", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
