@@ -1580,6 +1580,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private decimal? _priceaftercorrectionbydate;
+        /// <summary>
+        /// 10008100 Цена после корректировки на дату (PRICE_AFTER_CORRECTION_BY_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008100)]
+        public decimal? PriceAfterCorrectionByDate
+        {
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionByDate");
+                return _priceaftercorrectionbydate;
+            }
+            set
+            {
+                _priceaftercorrectionbydate = value;
+                NotifyPropertyChanged("PriceAfterCorrectionByDate");
+            }
+        }
+
     }
 }
 
@@ -3169,6 +3189,118 @@ namespace ObjectModel.Market
             {
                 _duplicateobjects = value;
                 NotifyPropertyChanged("DuplicateObjects");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 108 Индексы для корректировки на дату (MARKET_INDEXES_FOR_DATE_CORRECTION)
+    /// </summary>
+    [RegisterInfo(RegisterID = 108)]
+    [Serializable]
+    public partial class OMIndexesForDateCorrection : OMBaseClass<OMIndexesForDateCorrection>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 10800100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 10800100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private DateTime _date;
+        /// <summary>
+        /// 10800200 Дата (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10800200)]
+        public DateTime Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private decimal? _consumerpricechange;
+        /// <summary>
+        /// 10800300 Изменение потребительских цен к предыдущему месяцу (CONSUMER_PRICE_CHANGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10800300)]
+        public decimal? ConsumerPriceChange
+        {
+            get
+            {
+                CheckPropertyInited("ConsumerPriceChange");
+                return _consumerpricechange;
+            }
+            set
+            {
+                _consumerpricechange = value;
+                NotifyPropertyChanged("ConsumerPriceChange");
+            }
+        }
+
+
+        private decimal? _consumerpriceindex;
+        /// <summary>
+        /// 10800400 Индекс потребительских цен (CONSUMER_PRICE_INDEX)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10800400)]
+        public decimal? ConsumerPriceIndex
+        {
+            get
+            {
+                CheckPropertyInited("ConsumerPriceIndex");
+                return _consumerpriceindex;
+            }
+            set
+            {
+                _consumerpriceindex = value;
+                NotifyPropertyChanged("ConsumerPriceIndex");
+            }
+        }
+
+
+        private decimal? _consumerpriceindexrosstat;
+        /// <summary>
+        /// 10800500 Индекс потребительских цен тов и усл Росстат (CONSUMER_PRICE_INDEX_ROSSTAT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10800500)]
+        public decimal? ConsumerPriceIndexRosstat
+        {
+            get
+            {
+                CheckPropertyInited("ConsumerPriceIndexRosstat");
+                return _consumerpriceindexrosstat;
+            }
+            set
+            {
+                _consumerpriceindexrosstat = value;
+                NotifyPropertyChanged("ConsumerPriceIndexRosstat");
             }
         }
 

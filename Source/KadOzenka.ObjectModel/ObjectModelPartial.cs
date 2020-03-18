@@ -715,6 +715,30 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
+    /// 108 Индексы для корректировки на дату
+    /// </summary>
+    public partial class OMIndexesForDateCorrection
+    {
+
+        public OMIndexesForDateCorrection()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMIndexesForDateCorrection(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
     /// 110 Временная таблица для проведения проверки механизма отбора дублей
     /// </summary>
     public partial class OMCoreObjectTest
