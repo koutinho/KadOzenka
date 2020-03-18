@@ -1600,6 +1600,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private decimal? _priceaftercorrectionbybargain;
+        /// <summary>
+        /// 10008200 Цена после корректировки на торг (PRICE_AFTER_CORRECTION_BY_BARGAIN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008200)]
+        public decimal? PriceAfterCorrectionByBargain
+        {
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionByBargain");
+                return _priceaftercorrectionbybargain;
+            }
+            set
+            {
+                _priceaftercorrectionbybargain = value;
+                NotifyPropertyChanged("PriceAfterCorrectionByBargain");
+            }
+        }
+
     }
 }
 
