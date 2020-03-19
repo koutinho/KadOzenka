@@ -38,7 +38,30 @@ namespace KadOzenka.Dal.Correction
 
         public void AddCorrection(CorrectionByDateDto correctionDto)
         {
-            
+            //var nextConsumerPriceIndex = 1;
+            //var consumerPriceChange = (correctionDto.ConsumerPriceIndexRosstat - 100) / 100;
+            //var consumerPriceIndex = nextConsumerPriceIndex * (1 + consumerPriceChange);
+
+            //using (var ts = new TransactionScope())
+            //{
+            //    new OMIndexesForDateCorrection
+            //    {
+            //        Date = correctionDto.Date,
+            //        ConsumerPriceChange = consumerPriceChange,
+            //        ConsumerPriceIndex = consumerPriceIndex,
+            //        ConsumerPriceIndexRosstat = correctionDto.ConsumerPriceIndexRosstat
+            //    }.Save();
+
+            //    new OMIndexesForDateCorrection
+            //    {
+            //        Date = correctionDto.Date.AddMonths(1),
+            //        ConsumerPriceIndex = nextConsumerPriceIndex
+            //    }.Save();
+
+            //    RecalculateConsumerPriceIndexes(correctionDto.Date);
+
+            //    ts.Complete();
+            //}
         }
 
         public void EditCorrection(CorrectionByDateDto correctionDto)
@@ -49,7 +72,22 @@ namespace KadOzenka.Dal.Correction
 
         #region Support Methods
 
-        
+        private void RecalculateConsumerPriceIndexes(DateTime startDate)
+        {
+            var corrections = OMIndexesForDateCorrection.Where(x => x.Date < startDate).SelectAll().OrderByDescending(x => x.Date).Execute();
+            for (var i = 0; i < corrections.Count; i++)
+            {
+                var current = corrections.ElementAt(i);
+                var next = corrections.ElementAtOrDefault(i + 1);
+
+                if (next == null)
+                    continue;
+
+                current.ConsumerPriceIndex = next.ConsumerPriceIndex * (1 + current.ConsumerPriceChange);
+                current.Save();
+            }
+        }
+
 
         #endregion
     }
