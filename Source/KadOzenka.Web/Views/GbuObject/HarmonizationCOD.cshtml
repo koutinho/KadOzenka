@@ -206,7 +206,7 @@
     </div>
     <div class="form-group">
         <div class="col-sm-7">
-            @( await Html.PartialAsync("Partials/PartialTemplateStorage", new TemplateStorageViewModel
+            @( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
 			{
 				ControllerName = "GbuObject",
 				ActionName = "GetTemplatesHarmonizationCOD"

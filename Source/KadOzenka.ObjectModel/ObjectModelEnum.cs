@@ -3161,6 +3161,13 @@ namespace ObjectModel.Directory.Common
         [EnumCode("4")]
         [ShortTitle("Выборка из справочника ЦОД")]
         UnloadingFromDict = 4,
+		/// <summary>
+		/// Проставление оценочной группы (5)
+		/// </summary>
+		[Description("Проставление оценочной группы")]
+        [EnumCode("5")]
+        [ShortTitle("Проставление оценочной группы")]
+        EstimatedGroup = 5,
     }
 }
 

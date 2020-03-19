@@ -491,49 +491,11 @@ namespace KadOzenka.Web.Controllers
 
 		#region Helper
 
-		public JsonResult SaveTemplate(string nameTemplate, DataFormStorege formType, string serializeData)
-		{
-			if (string.IsNullOrEmpty(nameTemplate))
-			{
-				return Json(new { Error = "Сохранение не выполнено. Имя шаблона обязательное поле" });
-			}
-
-			try
-			{
-				new OMDataFormStorage()
-				{
-					UserId = SRDSession.GetCurrentUserId().Value,
-					FormType_Code = formType,
-					Data = serializeData,
-					TemplateName = nameTemplate,
-
-				}.Save();
-			}
-			catch (Exception e)
-			{
-				return Json(new { Error = $"Сохранение не выполнено. Подробности в журнале ошибок. Ошибка: {e.Message}" });
-			}
-
-			return Json(new { success = true });
-		}
-
 		public IEnumerable<SelectListItem> GetAllGbuRegisters()
 		{
 			return RegisterCache.Registers.Values.Where(x => x.Id > 2 && x.Id < 23).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
 		}
 
-		public JsonResult SendErrorMessage(string errorMessage)
-		{
-			return Json(new
-			{
-				Errors = new
-				{
-					Control = 0,
-					Message = errorMessage
-				}
-			});
-		}
-
-        #endregion
+		#endregion
 	}
 }

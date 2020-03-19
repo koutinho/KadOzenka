@@ -1,15 +1,15 @@
 ﻿@model KadOzenka.Web.Models.GbuObject.TemplateStorageViewModel
 
-<div>
+<div style="display: flex">
 	<button style="float: left" id="showSelectedTemplate" class="k-button" type="button">Загрузить шаблон</button>
 	<button style="float: left; margin-left: 4px;" id="showSaveForm" class="k-button" type="button">Сохранить шаблон</button>
-	<div class="template-name-wrapper"  style="display: none;">
+	<div class="template-name-wrapper"  style="display: none; flex-grow: 0.8">
 		<div style="display: flex; padding-left: 4px;">
 			@Html.Kendo().TextBox().Name("templateName").Value("").HtmlAttributes(new { placeholder = "Введите имя шаблона", autocomplete = "off" })
 			<button style="float: left; margin-left: 4px;" id="save" class="k-button" type="button"><i class="fas fa-check"></i></button>
 		</div>
 	</div>
-	<div class="template-select-wrapper"  style="display: none;">
+	<div class="template-select-wrapper"  style="display: none; flex-grow: 0.8">
 		<div style="display: flex; padding-left: 4px;">
 			@(Html.Kendo().DropDownList()
 				.Name("selectedTemplate")
@@ -57,13 +57,13 @@
 				var self = this;
 				$('#showSaveForm').on('click',
 					function () {
+						$('.template-select-wrapper').hide();
 						$('.template-name-wrapper').show(500);
-						$('.template-select-wrapper').hide(500);
 					});
 
-				$('#showSelectedTemplate').on('click', function() {
+				$('#showSelectedTemplate').on('click', function () {
+					$('.template-name-wrapper').hide();
 					$('.template-select-wrapper').show(500);
-					$('.template-name-wrapper').hide(500);
 				});
 
 
@@ -81,7 +81,9 @@
 
 						var form = $('form');
 						var formObject = Common.Functions.FormToObject(form);
-						formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
+						if ($("#valuesFilter").data('kendoMultiSelect')) {
+							formObject['ValuesFilter'] = $("#valuesFilter").data('kendoMultiSelect').value();
+						}
 						kendo.ui.progress($('body'), true);
 
 						var url = "/"+ self.controllerNameUrlSaveTemplate + "/" + self.actionNameUrlSaveTemplate + "?nameTemplate=" + $('#templateName').val();

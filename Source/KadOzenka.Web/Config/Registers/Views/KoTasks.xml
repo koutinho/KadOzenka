@@ -17,7 +17,7 @@
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
       </Parameters>
     </Button>
-		<Button Caption="Присвоить оценочеую группу" NavigateURL="/Task/SetEstimatedGroup" Icon="fas fa-donate" WindowHeight="150" WindowWidth="400">
+		<Button Caption="Присвоить оценочеую группу" NavigateURL="/Task/SetEstimatedGroup" Icon="fas fa-donate" WindowHeight="400" WindowWidth="1150">
 			<Parameters>
 				<Parameter Key="taskId" Value="[ObjectID]" />
 			</Parameters>

@@ -368,6 +368,46 @@ namespace ObjectModel.Gbu
             }
         }
 
+
+        private long? _typeterritory2017;
+        /// <summary>
+        /// 8000400 Показатель за 2017 год (TYPE_TERRITORY_2017)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8000400)]
+        public long? TypeTerritory2017
+        {
+            get
+            {
+                CheckPropertyInited("TypeTerritory2017");
+                return _typeterritory2017;
+            }
+            set
+            {
+                _typeterritory2017 = value;
+                NotifyPropertyChanged("TypeTerritory2017");
+            }
+        }
+
+
+        private long? _typeterritory2020;
+        /// <summary>
+        /// 8000500 Показатель за 2020 год (TYPE_TERRITORY_2020)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8000500)]
+        public long? TypeTerritory2020
+        {
+            get
+            {
+                CheckPropertyInited("TypeTerritory2020");
+                return _typeterritory2020;
+            }
+            set
+            {
+                _typeterritory2020 = value;
+                NotifyPropertyChanged("TypeTerritory2020");
+            }
+        }
+
     }
 }
 
