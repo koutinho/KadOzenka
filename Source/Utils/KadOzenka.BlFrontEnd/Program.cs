@@ -132,10 +132,12 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("306", "Статистика по положительным судебным решениям в Excel", SudExporter.ExportStatCheckExcel);
 			consoleHelper.AddCommand("350", "Импорт данных решений комиссий (БД)", CommissionExporter.DoLoadBd);
 			consoleHelper.AddCommand("351", "Импорт данных решений комиссий (Excel)", CommissionExporter.DoLoadExcel);
-			consoleHelper.AddCommand("390", "Тест API судебной подсистемы", SudTestApi.TestAll);
-
-			consoleHelper.AddCommand("360", "Экспорт в Xml - результаты определения КС.", ExporterKO.ExportXml1);
-			consoleHelper.AddCommand("401", "Импорт данных ЦОД из Xml", () =>
+            consoleHelper.AddCommand("360", "Экспорт в Xml - КНомер, УПКСЗ, КСтоимость.", ExporterKO.ExportXmlUnit);
+            consoleHelper.AddCommand("361", "Экспорт в Xml - КОценка по группам.", ExporterKO.ExportXmlGroup);
+            consoleHelper.AddCommand("362", "Экспорт в Xml - КОценка по исходящим документам.", ExporterKO.ExportXmlRD);
+            consoleHelper.AddCommand("363", "Экспорт в Xml - КОценка для ВУОН.", ExporterKO.ExportXmlVUON);
+            consoleHelper.AddCommand("390", "Тест API судебной подсистемы", SudTestApi.TestAll);
+            consoleHelper.AddCommand("401", "Импорт данных ЦОД из Xml", () =>
 			{
 				using (FileStream fstream = File.OpenRead("c:\\WORK\\cod1.xml"))
 				{
