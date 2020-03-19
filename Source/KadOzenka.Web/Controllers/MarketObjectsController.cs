@@ -91,25 +91,15 @@ namespace KadOzenka.Web.Controllers
         #region Correction By Date
 
         [HttpGet]
-        public JsonResult GetCorrectionByDate(DateTime? date)
-        {
-            if (date == null)
-                throw new ArgumentException("Дата не может быть пустой");
-
-            var correction = CorrectionService.GetCorrectionByDate(date.Value);
-            var model = CorrectionByDateModel.Map(correction);
-
-            return Json(new { Correction = model });
-        }
-
-        [HttpGet]
         public ActionResult AddConsumerPriceIndexRosstat()
         {
+            var nextCorrection = CorrectionService.GetNextCorrection();
+
             var model = new CorrectionByDateModel
             {
-                Id = -1,
+                Id = nextCorrection.Id,
                 IsDateReadOnly = true,
-                IndexDate = CorrectionService.GetNextCorrectionDate()
+                IndexDate = nextCorrection.Date
             };
 
             return View("~/Views/MarketObjects/EditConsumerPriceIndexRosstat.cshtml", model);
@@ -122,23 +112,26 @@ namespace KadOzenka.Web.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public JsonResult GetCorrectionByDate(DateTime? date)
+        {
+            if (date == null)
+                throw new ArgumentException("Дата не может быть пустой");
+
+            var correction = CorrectionService.GetCorrectionByDate(date.Value);
+            var model = CorrectionByDateModel.Map(correction);
+
+            return Json(new { Correction = model });
+        }
+
         [HttpPost]
         public JsonResult EditConsumerPriceIndexRosstat(CorrectionByDateModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            string message;
-            if (model.Id == -1)
-            {
-                CorrectionService.AddCorrection(CorrectionByDateModel.UnMap(model));
-                message = "Индекс успешно сохранен";
-            }
-            else
-            {
-                //CorrectionService.EditCorrection(CorrectionByDateModel.UnMap(model));
-                message = "Индекс успешно обновлен";
-            }
+            CorrectionService.EditCorrection(CorrectionByDateModel.UnMap(model));
+            var message = "Индекс успешно обновлен";
 
             return Json(new { Message = message });
         }

@@ -25,7 +25,7 @@
             @Html.CustomLabelFor(x => x.ConsumerPriceIndexRosstat)
         </div>
         <div class="col-sm-8">
-            @Html.KendoNumericTextBoxFor(x => x.ConsumerPriceIndexRosstat, isReadonly: false, id: "index")
+            @Html.KendoNumericTextBoxFor(x => x.ConsumerPriceIndexRosstat, 4, isReadonly: false, id: "index")
         </div>
     </div>
 </div>
@@ -77,7 +77,7 @@
             data: {date: indexDate.toUTCString()},
             dataType: 'json',
             success: function (data) {
-                indexTextBox.value(data.Correction.Index);
+                indexTextBox.value(data.Correction.ConsumerPriceIndexRosstat);
                 $("#correctionId").val(data.Correction.Id);
             },
             error: function (data) {
