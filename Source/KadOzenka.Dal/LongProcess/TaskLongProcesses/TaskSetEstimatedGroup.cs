@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
-using Core.Messages;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.KoObject;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Gbu.ExportAttribute;
 
 namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 {
