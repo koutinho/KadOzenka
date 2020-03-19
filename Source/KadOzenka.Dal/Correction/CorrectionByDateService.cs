@@ -6,7 +6,7 @@ using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
 {
-    public class CorrectionService
+    public class CorrectionByDateService
     {
         public CorrectionByDateDto GetCorrectionByDate(DateTime date)
         {

@@ -16,11 +16,11 @@ namespace KadOzenka.Web.Controllers
 {
     public class MarketObjectsController : KoBaseController
 	{
-        public CorrectionService CorrectionService { get; set; }
+        public CorrectionByDateService CorrectionByDateService { get; set; }
 
         public MarketObjectsController()
         {
-            CorrectionService = new CorrectionService();
+            CorrectionByDateService = new CorrectionByDateService();
         }
 
         [HttpGet]
@@ -93,7 +93,7 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult AddConsumerPriceIndexRosstat()
         {
-            var nextCorrection = CorrectionService.GetNextCorrection();
+            var nextCorrection = CorrectionByDateService.GetNextCorrection();
 
             var model = new CorrectionByDateModel
             {
@@ -118,7 +118,7 @@ namespace KadOzenka.Web.Controllers
             if (date == null)
                 throw new ArgumentException("Дата не может быть пустой");
 
-            var correction = CorrectionService.GetCorrectionByDate(date.Value);
+            var correction = CorrectionByDateService.GetCorrectionByDate(date.Value);
             var model = CorrectionByDateModel.Map(correction);
 
             return Json(new { Correction = model });
@@ -130,7 +130,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            CorrectionService.EditCorrection(CorrectionByDateModel.UnMap(model));
+            CorrectionByDateService.EditCorrection(CorrectionByDateModel.UnMap(model));
             var message = "Индекс успешно обновлен";
 
             return Json(new { Message = message });
