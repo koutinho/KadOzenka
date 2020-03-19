@@ -41,6 +41,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="LongProcess\TaskLongProcesses\" />
+    <Folder Include="Correction\Dto\" />
     <Folder Include="Seman\" />
   </ItemGroup>
 
