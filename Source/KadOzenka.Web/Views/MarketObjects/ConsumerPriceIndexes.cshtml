@@ -1,0 +1,35 @@
+﻿@using KadOzenka.Web.Models.MarketObject
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group" style="padding: 2%">
+        @(Html.Kendo().Grid<CorrectionByDateModel>()
+            .Name("Grid")
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.IndexDate).Format("{0:" + KadOzenka.Dal.Correction.Consts.DateFormatForDateCorrection + "}");
+                columns.Bound(x => x.ConsumerPriceIndexChange).Format("{0:p}");
+                columns.Bound(x => x.ConsumerPriceIndex).Title("Индекс потребительских цен к " + ViewBag.LastDate);
+                columns.Bound(x => x.ConsumerPriceIndexRosstat);
+            })
+            .Navigatable()
+            .Pageable()
+            .Sortable()
+            .Scrollable(s => s.Height("auto"))
+            .DataSource(s =>
+                s.Ajax().Read(read => read.Action("GetConsumerPriceIndexes", "MarketObjects").Type(HttpVerbs.Get)).PageSize(15)
+            ))
+    </div>
+</div>
+
+
+@section styles {
+    <link rel="stylesheet" href="~/css/jquery.fancybox.min.css"/>
+    <style>
+        .k-header .k-link {
+            text-align: center;
+        }
+        #Grid {
+            text-align: center;
+        }
+    </style>
+}

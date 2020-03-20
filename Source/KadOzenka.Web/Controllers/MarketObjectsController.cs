@@ -11,6 +11,8 @@ using Core.Main.FileStorages;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -89,6 +91,27 @@ namespace KadOzenka.Web.Controllers
 
 
         #region Correction By Date
+
+        [HttpGet]
+        public ActionResult ConsumerPriceIndexes()
+        {
+            var lastCorrection = CorrectionByDateService.GetNextCorrection();
+
+            ViewBag.LastDate = lastCorrection?.Date.ToString("dd.MM.yyyy");
+
+            return View();
+        }
+
+        [HttpGet]
+        public JsonResult GetConsumerPriceIndexes([DataSourceRequest]DataSourceRequest request)
+        {
+            var corrections = CorrectionByDateService.GetCorrections();
+
+            var models = new List<CorrectionByDateModel>();
+            corrections.ForEach(x => models.Add(CorrectionByDateModel.Map(x)));
+
+            return Json(models.ToDataSourceResult(request));
+        }
 
         [HttpGet]
         public ActionResult AddConsumerPriceIndexRosstat()

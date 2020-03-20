@@ -1,13 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using KadOzenka.Dal.Correction.Dto;
+using ObjectModel.Directory;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
 {
+    //TODO rename methods from Correction to ConsumerIndex
     public class CorrectionByDateService
     {
+        public List<CorrectionByDateDto> GetCorrections()
+        {
+            var corrections = OMIndexesForDateCorrection.Where(x => true).SelectAll()
+                .OrderBy(x => x.Date)
+                .Execute();
+
+            var result = new List<CorrectionByDateDto>();
+            corrections.ForEach(x => result.Add(ToDto(x)));
+
+            return result;
+        }
+
         public CorrectionByDateDto GetCorrectionByDate(DateTime date)
         {
             var dateToCompare = new DateTime(date.Year, date.Month, 1);
@@ -76,18 +91,18 @@ namespace KadOzenka.Dal.Correction
 
                 next.ConsumerPriceChange = consumerPriceChange;
                 next.ConsumerPriceIndex = consumerPriceIndex;
+
+                //todo map to transaction
                 next.Save();
             }
         }
 
         private CorrectionByDateDto ToDto(OMIndexesForDateCorrection omCorrection)
         {
-            return new CorrectionByDateDto
+            return new CorrectionByDateDto(omCorrection.ConsumerPriceIndex, omCorrection.ConsumerPriceChange)
             {
                 Id = omCorrection.Id,
                 Date = omCorrection.Date,
-                //ConsumerPriceChange = omCorrection.ConsumerPriceChange,
-                //ConsumerPriceIndex = omCorrection.ConsumerPriceIndex,
                 ConsumerPriceIndexRosstat = omCorrection.ConsumerPriceIndexRosstat
             };
         }

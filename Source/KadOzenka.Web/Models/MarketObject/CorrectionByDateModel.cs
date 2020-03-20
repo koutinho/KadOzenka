@@ -13,6 +13,11 @@ namespace KadOzenka.Web.Models.MarketObject
         [Display(Name = "Дата")]
         public DateTime? IndexDate { get; set; }
 
+        [Display(Name = "Изменение потребительских цен к предыдущему месяцу, %")]
+        public decimal? ConsumerPriceIndexChange { get; set; }
+
+        public decimal? ConsumerPriceIndex { get; set; }
+
         [Required(ErrorMessage = "Индекс не может быть пустым")]
         [Display(Name = "Индекс потребительских цен тов. и усл. Росстат")]
         public decimal? ConsumerPriceIndexRosstat { get; set; }
@@ -24,6 +29,8 @@ namespace KadOzenka.Web.Models.MarketObject
             {
                 Id = correction.Id,
                 IndexDate = correction.Date,
+                ConsumerPriceIndexChange = correction.ConsumerPriceChange,
+                ConsumerPriceIndex = correction.ConsumerPriceIndex,
                 ConsumerPriceIndexRosstat = correction.ConsumerPriceIndexRosstat
             };
         }
