@@ -77,7 +77,7 @@ namespace KadOzenka.Dal.Correction
         public void RecalculateMarketObjectsPrice()
         {
             var marketObjects = OMCoreObject
-                .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal).SetPackageSize(100).SetPackageIndex(0)
+                .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                 .SelectAll().Execute();
 
             foreach (var obj in marketObjects)
@@ -93,7 +93,10 @@ namespace KadOzenka.Dal.Correction
                 var indexSum = OMIndexesForDateCorrection.Where(x => x.Date >= dateToCompare).SelectAll().Execute()
                     .Sum(x => x.ConsumerPriceIndex.GetValueOrDefault());
 
-                obj.PriceAfterCorrectionByDate = obj.Price * indexSum / 100;
+                var priceDifference = (obj.Price * indexSum) / 100;
+                var priceWithDateCorrection = obj.Price + priceDifference;
+
+                obj.PriceAfterCorrectionByDate = priceWithDateCorrection;
                 obj.Save();
             }
         }
