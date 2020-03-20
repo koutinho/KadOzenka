@@ -165,7 +165,13 @@ namespace KadOzenka.BlFrontEnd
 		        var filler = new MarketObjectsCadastralInfoFiller();
 		        filler.PerformFillingCadastralInfoByQuarterProc();
 		    });
-        }
+
+			consoleHelper.AddCommand("900", "Test Configuration.GetFileStream", () =>
+			{
+				FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("CCCReport", ".frx", "Reports");
+
+			});
+		}
 
 	}
 
