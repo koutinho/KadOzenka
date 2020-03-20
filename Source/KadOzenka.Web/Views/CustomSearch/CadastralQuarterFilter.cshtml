@@ -75,10 +75,12 @@
 	function csc_getSearchControlValue() {
 		var ddl = $("#treeList").data("kendoTreeList");
 		var row = ddl.select();
-		var number = [];
+		var number = '';
 		if (row.length > 0) {
 			var data = ddl.dataItem(row);
-			number.push(data.KadastrKvartal);
+			//number.push(data.KadastrKvartal);
+			number = data.KadastrKvartal;
+
 		}
 		return number;
 	}
