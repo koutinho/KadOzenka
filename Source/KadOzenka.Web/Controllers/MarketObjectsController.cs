@@ -154,7 +154,7 @@ namespace KadOzenka.Web.Controllers
                 return GenerateMessageNonValidModel();
 
             CorrectionByDateService.EditConsumerIndex(CorrectionByDateModel.UnMap(model));
-            var message = "Индекс успешно обновлен";
+            var message = "Индекс успешно обновлен. Процесс перерассчета стоимости объектов добавлен в очередь.";
 
             return Json(new { Message = message });
         }

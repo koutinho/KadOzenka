@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using KadOzenka.Dal.Correction.Dto;
+using KadOzenka.Dal.LongProcess;
+using ObjectModel.Directory;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
@@ -68,6 +70,32 @@ namespace KadOzenka.Dal.Correction
             }
 
             RecalculateConsumerPriceIndexes();
+
+            CorrectionByDateForMarketObjectsLongProcess.AddProcessToQueue();
+        }
+
+        public void RecalculateMarketObjectsPrice()
+        {
+            var marketObjects = OMCoreObject
+                .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal).SetPackageSize(100).SetPackageIndex(0)
+                .SelectAll().Execute();
+
+            foreach (var obj in marketObjects)
+            {
+                if (obj.LastDateUpdate == null && obj.ParserTime == null)
+                {
+                    continue;
+                }
+
+                var date = obj.LastDateUpdate ?? obj.ParserTime.Value;
+                var dateToCompare = new DateTime(date.Year, date.Month, 1);
+
+                var indexSum = OMIndexesForDateCorrection.Where(x => x.Date >= dateToCompare).SelectAll().Execute()
+                    .Sum(x => x.ConsumerPriceIndex.GetValueOrDefault());
+
+                obj.PriceAfterCorrectionByDate = obj.Price * indexSum / 100;
+                obj.Save();
+            }
         }
 
 
