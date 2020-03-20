@@ -95,9 +95,9 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult ConsumerPriceIndexes()
         {
-            var lastCorrection = CorrectionByDateService.GetNextCorrection();
+            var nextIndex = CorrectionByDateService.GetNextConsumerIndex();
 
-            ViewBag.LastDate = lastCorrection?.Date.ToString("dd.MM.yyyy");
+            ViewBag.LastDate = nextIndex?.Date.ToString("dd.MM.yyyy");
 
             return View();
         }
@@ -105,10 +105,10 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public JsonResult GetConsumerPriceIndexes([DataSourceRequest]DataSourceRequest request)
         {
-            var corrections = CorrectionByDateService.GetCorrections();
+            var indexes = CorrectionByDateService.GetConsumerIndexes();
 
             var models = new List<CorrectionByDateModel>();
-            corrections.ForEach(x => models.Add(CorrectionByDateModel.Map(x)));
+            indexes.ForEach(x => models.Add(CorrectionByDateModel.Map(x)));
 
             return Json(models.ToDataSourceResult(request));
         }
@@ -116,13 +116,13 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult AddConsumerPriceIndexRosstat()
         {
-            var nextCorrection = CorrectionByDateService.GetNextCorrection();
+            var nexIndex = CorrectionByDateService.GetNextConsumerIndex();
 
             var model = new CorrectionByDateModel
             {
-                Id = nextCorrection.Id,
+                Id = nexIndex.Id,
                 IsDateReadOnly = true,
-                IndexDate = nextCorrection.Date
+                IndexDate = nexIndex.Date
             };
 
             return View("~/Views/MarketObjects/EditConsumerPriceIndexRosstat.cshtml", model);
@@ -141,8 +141,8 @@ namespace KadOzenka.Web.Controllers
             if (date == null)
                 throw new ArgumentException("Дата не может быть пустой");
 
-            var correction = CorrectionByDateService.GetCorrectionByDate(date.Value);
-            var model = CorrectionByDateModel.Map(correction);
+            var index = CorrectionByDateService.GetConsumerIndexByDate(date.Value);
+            var model = CorrectionByDateModel.Map(index);
 
             return Json(new { Correction = model });
         }
@@ -153,7 +153,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            CorrectionByDateService.EditCorrection(CorrectionByDateModel.UnMap(model));
+            CorrectionByDateService.EditConsumerIndex(CorrectionByDateModel.UnMap(model));
             var message = "Индекс успешно обновлен";
 
             return Json(new { Message = message });
