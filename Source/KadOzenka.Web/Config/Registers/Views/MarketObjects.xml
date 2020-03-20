@@ -39,7 +39,7 @@
 			  <Button Caption="Добавить Индекс потребительских цен тов. и усл. Росстат" NavigateURL="~/MarketObjects/AddConsumerPriceIndexRosstat" WindowHeight="250" WindowWidth="1000" Icon="fas fa-plus" />
 			  <Button Caption="Редактировать Индекс потребительских цен тов. и усл. Росстат" NavigateURL="~/MarketObjects/EditConsumerPriceIndexRosstat" WindowHeight="450" WindowWidth="1000" Icon="fas fa-edit" />
         <Button Caption="Список индексов" NavigateURL="~/MarketObjects/ConsumerPriceIndexes" OpenInNewWindow="true" Icon="icon-contract" />
-        <Button Caption="Отчет" NavigateURL="~/Report/Viewer?reportTypeId=1005&amp;reportRegisterId=100" OpenInNewWindow="true" Icon="fas fa-images" />
+        <Button Caption="Отчет" NavigateURL="~/Report/Viewer?reportTypeId=1006&amp;reportRegisterId=100" OpenInNewWindow="true" Icon="fas fa-images" />
 		  </DropDownButtons>
 	  </Button>
 
