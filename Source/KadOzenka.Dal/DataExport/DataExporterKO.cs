@@ -1149,7 +1149,7 @@ namespace KadOzenka.Dal.DataExport
                 if (item.IndexOf("b|") == 0) baditems.Add(item);
                 if (item.IndexOf("g|") == 0) gooditems.Add(item);
             }
-
+             
             #region Акт_об_определении_КС - без изменений
             {
                 ExcelFile excelTemplate = new ExcelFile();
@@ -1210,8 +1210,9 @@ namespace KadOzenka.Dal.DataExport
 
             #region Акт_об_определении_КС - с изменениями
             {
-                ExcelFile excel_edit = new ExcelFile();
-                var sheet_edit = excel_edit.Worksheets.Add("КС");
+                FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("ActDeterminingCadastralCost", ".xlsx", "ExcelTemplates");
+                ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
+                var sheet_edit = excel_edit.Worksheets[0];
 
                 int curcount = 3;
                 int curcounti = 3;
@@ -1260,8 +1261,9 @@ namespace KadOzenka.Dal.DataExport
 
             #region Акт_определения_КС_по_МУ_пункт_12_2
             {
-                ExcelFile aexcell = new ExcelFile();
-                var asheet = aexcell.Worksheets.Add("КС");
+                FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("ActDeterminingCadastralCostMUitem122", ".xlsx", "ExcelTemplates");
+                ExcelFile aexcell = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
+                var asheet = aexcell.Worksheets[0];
 
                 int acurcount = 10;
                 int acurcounti = 10;

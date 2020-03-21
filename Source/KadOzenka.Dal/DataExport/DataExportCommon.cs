@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.TD;
 using System.Globalization;
+using System.IO;
 
 namespace KadOzenka.Dal.DataExport
 {

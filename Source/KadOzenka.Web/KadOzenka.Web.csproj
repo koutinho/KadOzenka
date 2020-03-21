@@ -896,6 +896,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
+    <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
