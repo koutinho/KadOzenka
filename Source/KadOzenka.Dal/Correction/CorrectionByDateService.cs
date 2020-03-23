@@ -11,7 +11,7 @@ namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByDateService
     {
-        public List<CorrectionByDateDto> GetConsumerIndexes()
+        public List<CorrectionByDateDto> GetAllConsumerIndexes()
         {
             var indexes = OMIndexesForDateCorrection.Where(x => true).SelectAll()
                 .OrderBy(x => x.Date)
@@ -29,7 +29,7 @@ namespace KadOzenka.Dal.Correction
 
             var index = OMIndexesForDateCorrection.Where(x => x.Date == dateToCompare).SelectAll()
                 .ExecuteFirstOrDefault();
-            if(index == null)
+            if (index == null)
                 throw new Exception($"Не найдено индекса на дату: {date.ToString(Consts.DateFormatForDateCorrection)} ");
 
             return ToDto(index);
@@ -62,16 +62,22 @@ namespace KadOzenka.Dal.Correction
             //т.е. мы добавляем новое значение
             if (index.ConsumerPriceIndex == 1)
             {
-                new OMIndexesForDateCorrection
-                {
-                    Date = index.Date.AddMonths(1),
-                    ConsumerPriceIndex = 1
-                }.Save();
+                GetDefaultNewConsumerIndex(index.Date.AddMonths(1)).Save();
             }
 
-            RecalculateConsumerPriceIndexes();
+            UpdateConsumerPriceIndexes();
 
+            //добавляем в очередь службу для рассчеты "Цены с учетом корректировки на дату" для объектов-аналогов
             CorrectionByDateForMarketObjectsLongProcess.AddProcessToQueue();
+        }
+
+        public OMIndexesForDateCorrection GetDefaultNewConsumerIndex(DateTime date)
+        {
+            return new OMIndexesForDateCorrection
+            {
+                Date = date,
+                ConsumerPriceIndex = 1
+            };
         }
 
         public void RecalculateMarketObjectsPrice()
@@ -90,10 +96,10 @@ namespace KadOzenka.Dal.Correction
                 var date = obj.LastDateUpdate ?? obj.ParserTime.Value;
                 var dateToCompare = new DateTime(date.Year, date.Month, 1);
 
-                var indexSum = OMIndexesForDateCorrection.Where(x => x.Date >= dateToCompare).SelectAll().Execute()
+                var inflationRate = OMIndexesForDateCorrection.Where(x => x.Date >= dateToCompare).SelectAll().Execute()
                     .Sum(x => x.ConsumerPriceIndex.GetValueOrDefault());
 
-                var priceDifference = (obj.Price * indexSum) / 100;
+                var priceDifference = (obj.Price * inflationRate) / 100;
                 var priceWithDateCorrection = obj.Price + priceDifference;
 
                 obj.PriceAfterCorrectionByDate = priceWithDateCorrection;
@@ -101,12 +107,8 @@ namespace KadOzenka.Dal.Correction
             }
         }
 
-
-        #region Support Methods
-
-        private void RecalculateConsumerPriceIndexes()
+        public List<OMIndexesForDateCorrection> RecalculateConsumerPriceIndexes(List<OMIndexesForDateCorrection> indexes)
         {
-            var indexes = OMIndexesForDateCorrection.Where(x => true).SelectAll().OrderByDescending(x => x.Date).Execute();
             for (var i = 0; i < indexes.Count; i++)
             {
                 var current = indexes.ElementAt(i);
@@ -120,9 +122,29 @@ namespace KadOzenka.Dal.Correction
 
                 next.ConsumerPriceChange = consumerPriceChange;
                 next.ConsumerPriceIndex = consumerPriceIndex;
+            }
 
-                //todo map to transaction
-                next.Save();
+            return indexes;
+        }
+
+
+        #region Support Methods
+
+        private void UpdateConsumerPriceIndexes()
+        {
+            var indexes = OMIndexesForDateCorrection.Where(x => true).SelectAll().OrderByDescending(x => x.Date).Execute();
+
+            RecalculateConsumerPriceIndexes(indexes);
+
+            using (var ts = new TransactionScope())
+            {
+                //первый эл-т не изменяется, если попробовать его сохранить, то ORM выдает исключение
+                for (var i = 1; i < indexes.Count; i++)
+                {
+                    indexes[i].Save();
+                }
+
+                ts.Complete();
             }
         }
 

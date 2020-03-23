@@ -105,7 +105,7 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public JsonResult GetConsumerPriceIndexes([DataSourceRequest]DataSourceRequest request)
         {
-            var indexes = CorrectionByDateService.GetConsumerIndexes();
+            var indexes = CorrectionByDateService.GetAllConsumerIndexes();
 
             var models = new List<CorrectionByDateModel>();
             indexes.ForEach(x => models.Add(CorrectionByDateModel.Map(x)));
