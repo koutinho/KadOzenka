@@ -19,7 +19,7 @@ function GetClusterData(bounds, zoom, token, objectId) {
         dataType: 'json',
         success: function (result) {
             if (result.token == currentToken) {
-                ids = [];
+                var ids = [];
                 result.arr.slice(0, MapSettings.leftMenuMaxValues).forEach(x => { if (x.id != undefined) ids.push(x.id); });
                 initCluster(result.arr, zoom, result.allCount);
                 changeObjectsCount(result.allCount);
@@ -80,8 +80,8 @@ function ChangeObject(object) {
         data: object,
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
-        success: function (result) {
-            updateCard(result);
+        success: function () {
+            GetRequiredInfo(ids);
             GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
         }
     });

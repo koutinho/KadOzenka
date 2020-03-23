@@ -188,6 +188,8 @@ Object.freeze(MapZoneType);
 
 var UseManager = false;
 
+var ids = [];
+
 var targetWidget = null;
 var clusterSelected = null;
 var currentToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

@@ -15,7 +15,7 @@
 };
 
 function clickOnCluster(event) {
-    var ids = [];
+    ids = [];
     switch (event.get('target').options._name) {
         case ObjectTypes.cluster:
             event.get('target').properties.get('geoObjects').forEach(x => ids.push(x.properties.get('data')[0].id));
@@ -162,7 +162,7 @@ function dataChanged(cartData) {
     if (cartData.lng != document.getElementById(`lngTextBox_${cartData.id}`).value ||
         cartData.lat != document.getElementById(`latTextBox_${cartData.id}`).value ||
         cartData.propertyTypeCode != document.getElementById(`typeSelect_${cartData.id}`).value ||
-        cartData.statusCode !== document.getElementById(`statusSelect_${cartData.id}`).value ||
+        cartData.statusCode != document.getElementById(`statusSelect_${cartData.id}`).value ||
         cartData.marketSegmentCode != document.getElementById(`segmentSelect_${cartData.id}`).value) {
         document.getElementById(`saveBtn_${cartData.id}`).classList.remove("blocked");
         document.getElementById(`undoBtn_${cartData.id}`).classList.remove("blocked");

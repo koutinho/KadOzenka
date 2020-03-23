@@ -1,8 +1,7 @@
 ﻿function insertCard(cartData, isLast) {
     avaliableCIPJSOptions = avaliableCIPJSTypes.filter(function (x) { return x.code != cartData.propertyTypeCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
     avaliableSegmentOptions = avaliableSegments.filter(function (x) { return x.code != cartData.marketSegmentCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
-    availableStatusOptions = avaliableStatuses.filter(function (x) { return x.code != cartData.StatusCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
-    
+    availableStatusOptions = avaliableStatuses.filter(function (x) { return x.code != cartData.statusCode }).map(function (x) { return `<option value="${x.code}">${x.value.length < 28 ? x.value : '...' + x.value.substr(0, 27)}</option>`; }).join('');
     document.getElementById("dataContentContainer").innerHTML += `
         <div class="DataItemContainer">
             <div class="Container">
@@ -111,7 +110,7 @@
                     </div>
                 </div>
                 <div class="Container">
-                    <div class="Name">Статус обработки</div>
+                    <div class="Name">Статус</div>
                     <div class="Value">
                         <div class="EditDataSelectContainer">
                             <select id="statusSelect_${cartData.id}" class="EditDataSelect" dir="rtl">
@@ -129,20 +128,6 @@
             ${isLast ? "" : `<div class="Line"></div>`}
         </div>
     `;
-};
-
-function updateCard(result) {
-    result.lng = result.lng.toString();
-    result.lat = result.lat.toString();
-    result.propertyTypeCode = result.propertyTypeCode.toString();
-    result.marketSegmentCode = result.marketSegmentCode.toString();
-    result.statusCode = result.statusCode.toString();
-    document.getElementById(`lngTextBox_${result.id}`).value = result.lng;
-    document.getElementById(`latTextBox_${result.id}`).value = result.lat;
-    document.getElementById(`typeSelect_${result.id}`).value = result.propertyTypeCode;
-    document.getElementById(`segmentSelect_${result.id}`).value = result.marketSegmentCode;
-    document.getElementById(`statusSelect_${result.id}`).value = result.statusCode;
-    dataChanged(result);
 };
 
 function addEventsCard(cartData) {
