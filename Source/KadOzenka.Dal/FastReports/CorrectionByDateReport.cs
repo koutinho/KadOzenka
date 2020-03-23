@@ -80,9 +80,13 @@ namespace KadOzenka.Dal.FastReports
             var segments = GetQueryParam<string>("Segment", query) ?? string.Empty;
             var segmentCodes = segments.Split(';').Select(EnumExtensions.GetEnumByDescription<MarketSegment>).Where(x => x != 0).ToList();
 
-            var date = GetQueryParam<DateTime?>("ReportDate", query);
-            if (date?.Month >= DateTime.Today.AddMonths(1).Month)
-                throw new Exception($"Максимальное значение даты: {DateTime.Today.ToString(Correction.Consts.DateFormatForDateCorrection)}");
+            var dateFromFilter = GetQueryParam<DateTime?>("ReportDate", query);
+            var date = dateFromFilter != null
+                ? new DateTime(dateFromFilter.Value.Year, dateFromFilter.Value.Month, 1)
+                : DateTime.Today.Date;
+            var maxDate = CorrectionByDateService.GetNextConsumerIndex()?.Date ?? new DateTime(DateTime.Today.Year, DateTime.Today.Month - 1, 1);
+            if (date > maxDate)
+                throw new Exception($"Максимальное значение даты: {maxDate.ToString(Correction.Consts.DateFormatForDateCorrection)}");
 
             _input = new CorrectionByDateInput(city, districtCode, neighborhoodCode, quartal, date, segmentCodes);
         }
@@ -122,7 +126,7 @@ namespace KadOzenka.Dal.FastReports
                     operation.DealType,
                     operation.PropertyMarketSegment,
                     operation.Price,
-                    operation.PriceAfterCorrectionByDate,
+                    Math.Round(operation.PriceAfterCorrectionByDate.GetValueOrDefault(), 4),
                     operation.ParserDate?.ToString(Correction.Consts.DateFormatForDateCorrection),
                     operation.LastUpdateDate?.ToString(Correction.Consts.DateFormatForDateCorrection),
                     operation.ProcessType,
@@ -138,7 +142,7 @@ namespace KadOzenka.Dal.FastReports
         {
             var marketObjects = GetObjects();
 
-            var inflationRate = GetInflationRate(_input.Date);
+            var consumerIndexes = GetConsumerIndexes();
 
             var result = new List<CorrectionByDateItem>();
             marketObjects.ForEach(x =>
@@ -150,7 +154,7 @@ namespace KadOzenka.Dal.FastReports
                     DealType = x.DealType,
                     PropertyMarketSegment = x.PropertyMarketSegment,
                     Price = x.Price,
-                    PriceAfterCorrectionByDate = CalculatePriceAfterCorrectionByDate(x, inflationRate),
+                    PriceAfterCorrectionByDate = CorrectionByDateService.CalculatePriceAfterCorrectionByDate(x, consumerIndexes),
                     ParserDate = x.ParserTime,
                     LastUpdateDate = x.LastDateUpdate,
                     ProcessType = x.ProcessType,
@@ -174,28 +178,25 @@ namespace KadOzenka.Dal.FastReports
                .SetPackageSize(100).SetPackageIndex(0)
                .SelectAll().Execute();
 
+
+
            return objects.Where(x => (string.IsNullOrWhiteSpace(_input.Quartal) || x.CadastralQuartal == _input.Quartal)
                                      && (_input.SegmentCodes.Count == 0 || _input.SegmentCodes.Where(s => s != 0)
                                              .Select(s => (MarketSegment) s).Contains(x.PropertyMarketSegment_Code))).ToList();
         }
 
-        private decimal? GetInflationRate(DateTime? date)
+        private List<OMIndexesForDateCorrection> GetConsumerIndexes()
         {
-            if(date == null)
+            if(_input.Date == null)
                 return null;
 
-            var indexes = OMIndexesForDateCorrection.Where(x => x.Date < date).SelectAll()
+            var indexes = OMIndexesForDateCorrection.Where(x => x.Date < _input.Date).SelectAll()
                 .OrderByDescending(x => x.Date).Execute();
-            indexes.Insert(0, CorrectionByDateService.GetDefaultNewConsumerIndex(date.Value));
+            indexes.Insert(0, CorrectionByDateService.GetDefaultNewConsumerIndex(_input.Date.Value));
 
            CorrectionByDateService.RecalculateConsumerPriceIndexes(indexes);
 
-           return indexes.Sum(x => x.ConsumerPriceIndex.GetValueOrDefault());
-        }
-
-        private decimal CalculatePriceAfterCorrectionByDate(OMCoreObject obj, decimal? inflationRate)
-        {
-            return 0;
+           return indexes;
         }
 
         #endregion

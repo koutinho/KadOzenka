@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.LongProcess
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
             var correctionByDateService = new CorrectionByDateService();
-            correctionByDateService.RecalculateMarketObjectsPrice();
+            correctionByDateService.UpdateMarketObjectsPrice();
         }
     }
 }

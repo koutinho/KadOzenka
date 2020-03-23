@@ -80,31 +80,34 @@ namespace KadOzenka.Dal.Correction
             };
         }
 
-        public void RecalculateMarketObjectsPrice()
+        public void UpdateMarketObjectsPrice()
         {
             var marketObjects = OMCoreObject
                 .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                 .SelectAll().Execute();
 
-            foreach (var obj in marketObjects)
+            var consumerIndexes = OMIndexesForDateCorrection.Where(x => true).SelectAll().Execute();
+
+            marketObjects.ForEach(x =>
             {
-                if (obj.LastDateUpdate == null && obj.ParserTime == null)
-                {
-                    continue;
-                }
+                var priceWithCorrection = CalculatePriceAfterCorrectionByDate(x, consumerIndexes);
+                x.PriceAfterCorrectionByDate = priceWithCorrection;
+                x.Save();
+            });
+        }
 
-                var date = obj.LastDateUpdate ?? obj.ParserTime.Value;
-                var dateToCompare = new DateTime(date.Year, date.Month, 1);
+        public decimal? CalculatePriceAfterCorrectionByDate(OMCoreObject obj, List<OMIndexesForDateCorrection> consumerIndexes)
+        {
+            if (obj.LastDateUpdate == null && obj.ParserTime == null)
+                return null;
 
-                var inflationRate = OMIndexesForDateCorrection.Where(x => x.Date >= dateToCompare).SelectAll().Execute()
-                    .Sum(x => x.ConsumerPriceIndex.GetValueOrDefault());
+            var date = obj.LastDateUpdate ?? obj.ParserTime.Value;
+            var dateToCompare = new DateTime(date.Year, date.Month, 1);
 
-                var priceDifference = (obj.Price * inflationRate) / 100;
-                var priceWithDateCorrection = obj.Price + priceDifference;
+            var inflationRate = consumerIndexes.Where(x => x.Date >= dateToCompare).Sum(x => x.ConsumerPriceIndex.GetValueOrDefault());
 
-                obj.PriceAfterCorrectionByDate = priceWithDateCorrection;
-                obj.Save();
-            }
+            var priceDifference = (obj.Price * inflationRate) / 100;
+            return obj.Price + priceDifference;
         }
 
         public List<OMIndexesForDateCorrection> RecalculateConsumerPriceIndexes(List<OMIndexesForDateCorrection> indexes)
