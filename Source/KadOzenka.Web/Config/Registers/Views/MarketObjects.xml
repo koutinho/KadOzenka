@@ -49,7 +49,7 @@
 
       <Button Caption="Корректировка на торг" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
           <DropDownButtons>
-              <Button Caption="Выполнить Корректировку на торг" NavigateURL="~/MarketObjects/CorrectionByBargain" OpenInRadWindow="true" WindowHeight="450" WindowWidth="1000" Icon="fas fa-wrench" />
+              <Button Caption="Выполнить Корректировку на торг" NavigateURL="~/MarketObjects/CorrectionByBargain" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-wrench" />
               <Button Caption="Отчет" NavigateURL="~/Report/Viewer" OpenInRadWindow="true" Icon="fas fa-images">
                   <Parameters>
                       <Parameter Key="ReportTypeId" Value="1005" />

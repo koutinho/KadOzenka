@@ -1,3 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="12/24/2019 16:43:21" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="03/23/2020 16:47:17" ReportInfo.CreatorVersion="2017.4.7.0">
+  <Dictionary/>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt">
+    <DataBand Name="BandCommon" Width="1047.06" Height="85.05" CanGrow="true">
+        <TextObject Name="Text6" Left="7.56" Top="28.35" Width="1035.72" Height="56.7" Text="[Common.Title]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold" CanGrow="true"/>
+    </DataBand>
+    <DataBand Name="BandData" Top="272.6" Width="1047.06" Height="18.9" CanGrow="true">
+        <TextObject Name="CadastralNumberText" Left="7.56" Width="142.3" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="DateText" Left="149.86" Width="119.07" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Date]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="AddressText" Left="258.93" Width="176.53" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Address]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="MarketSegmentText" Left="434.7" Width="143.64" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.MarketSegment]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="PriceText" Left="578.34" Width="177.66" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Price]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="BargainCoefficientText" Left="756.00" Width="115.29" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.BargainCoefficient]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="PriceAfterCorrectionByBargainText" Left="871.29" Width="171.99" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.PriceAfterCorrectionByBargain]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="89.05" Width="1047.06" Height="151.2" Guides="132.3,151.2,0,170.1">
+            <TextObject Name="ColumnNumber1" Left="7.56" Top="132.3" Width="142.3" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="ColumnNumber2" Left="149.86" Top="132.3" Width="119.07" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="ColumnNumber3" Left="258.93" Top="132.3" Width="176.53" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="ColumnNumber4" Left="434.7" Top="132.3" Width="143.64" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="ColumnNumber5" Left="578.34" Top="132.3" Width="177.66" Height="18.9" Border.Lines="All" Text="5" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="ColumnNumber6" Left="756.00" Top="132.3" Width="115.29" Height="18.9" Border.Lines="All" Text="6" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="ColumnNumber7" Left="871.29" Top="132.3" Width="171.99" Height="18.9" Border.Lines="All" Text="7" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="CadastralNumberHeaderText" Left="7.56" Width="142.3" Height="132.3" Border.Lines="All" Text="Кадастровый номер" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="DateTextHeaderText" Left="149.86" Width="119.07" Height="132.3" Border.Lines="All" Text="Дата актуальности" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="AddressHeaderText" Left="258.93" Width="176.53" Height="132.3" Border.Lines="All" Text="Адрес" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="MarketSegmentHeaderText" Left="434.7" Width="143.64" Height="132.3" Border.Lines="All" Text="Сегмент рынка недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="PriceHeaderText" Left="578.34" Width="177.66" Height="132.3" Border.Lines="All" Text="Цена" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="BargainCoefficientHeaderText" Left="756.00" Width="115.29" Height="132.3" Border.Lines="All" Text="Коэффициент на торг" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="PriceAfterCorrectionByBargainHeaderText" Left="871.29" Width="171.99" Height="132.3" Border.Lines="All" Text="Цена с учетом корректировки на торг" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+      </DataHeaderBand>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="295.35" Width="1047.06" Height="47.25"/>
+  </ReportPage>
 </Report>

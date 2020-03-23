@@ -13,6 +13,8 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -160,6 +162,35 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion
+
+        #region Correction By Bargain
+
+        [HttpGet]
+        public ActionResult CorrectionByBargain()
+        {
+            var segments = System.Enum.GetValues(typeof(MarketSegment)).Cast<MarketSegment>();
+            ViewData["Segments"] = segments.Select(x => new SelectListItem(x.GetEnumDescription(),
+                    x.GetEnumCode())).ToList();
+
+            return View(new CorrectionByBargainModel());
+        }
+
+	    [HttpPost]
+	    public ActionResult CorrectionByBargain(CorrectionByBargainModel model)
+	    {
+	        if (!ModelState.IsValid)
+	        {
+	            return GenerateMessageNonValidModel();
+	        }
+
+	        var request = model.ToCorrectionByBargainRequest();
+	        var correctionByBargainProc = new CorrectionByBargainProc();
+	        correctionByBargainProc.PerformBargainCorrectionProc(request);
+
+            return Json(new { Success = "Процедура Корректировки на торг успешно выполнена" });
+        }
+
+        #endregion Correction By Bargain
     }
 
 }
