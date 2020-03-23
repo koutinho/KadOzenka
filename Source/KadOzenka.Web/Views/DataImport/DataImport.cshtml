@@ -1,6 +1,6 @@
 ﻿
 <form id="importForm">
-	<ul id="upload_panelbar" class="panelBar">
+	<ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
 		<li id="Section_UploadBuilding" data-expand>
 			<span>Формирование загрузки</span>
 			<div>
@@ -321,9 +321,9 @@
 					const columnsListBox = $("#columnsListBox").data("kendoListBox");
 					columnsListBox.enable($(`.k-item[data-uid=${e.model.ColumnUid}]`), true);
 
-					const treeView = $("#treeview").data('kendoTreeView');
-					var attrElement = treeView.findByUid(e.model.AttributeUid);
-					treeView.enable(attrElement);
+					const treeView = $("#treeview").data("kendoTreeView");
+                    var attrElement = treeView.dataSource.get(e.model.AttributeId);
+                    attrElement.set("enabled", true);
 				},
 				dataBound: function () {
 					if (dataSource.data().length === 0) {
