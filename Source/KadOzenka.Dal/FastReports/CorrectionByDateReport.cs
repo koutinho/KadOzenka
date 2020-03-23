@@ -9,7 +9,6 @@ using Platform.Reports;
 using EP.Morph;
 using ObjectModel.Directory;
 using ObjectModel.Market;
-using KadOzenka.Dal.FastReports.Common;
 
 namespace KadOzenka.Dal.FastReports
 {
@@ -67,13 +66,13 @@ namespace KadOzenka.Dal.FastReports
         {
             var city = GetQueryParam<string>("City", query);
             var district = GetQueryParam<string>("District", query) ?? string.Empty;
-            var districtCode = ReportHelper.GetEnumCodeByDescription<Hunteds>(district);
+            var districtCode = EnumExtensions.GetEnumByDescription<Hunteds>(district);
             var neighborhood = GetQueryParam<string>("Neighborhood", query) ?? string.Empty;
-            var neighborhoodCode = ReportHelper.GetEnumCodeByDescription<Districts>(neighborhood);
+            var neighborhoodCode = EnumExtensions.GetEnumByDescription<Districts>(neighborhood);
             var quartal = GetQueryParam<string>("Quartal", query);
             var date = GetQueryParam<DateTime?>("ReportDate", query);
             var segments = GetQueryParam<string>("Segment", query) ?? string.Empty;
-            var segmentCodes = segments.Split(';').Select(ReportHelper.GetEnumCodeByDescription<MarketSegment>).Where(x => x.GetValueOrDefault() != 0).ToList();
+            var segmentCodes = segments.Split(';').Select(EnumExtensions.GetEnumByDescription<MarketSegment>).Where(x => x != 0).ToList();
 
             _input = new CorrectionByDateInput(city, districtCode, neighborhoodCode, quartal, date, segmentCodes);
         }
@@ -158,15 +157,15 @@ namespace KadOzenka.Dal.FastReports
            var objects = OMCoreObject.Where(x => (x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                                            && (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed)
                                            && (string.IsNullOrWhiteSpace(_input.City) || x.City.ToLower().Contains(_input.City))
-                                           && (_input.DistrictCode.GetValueOrDefault() == 0 || x.District_Code == (Hunteds)_input.DistrictCode)
-                                           && (_input.NeighborhoodCode.GetValueOrDefault() == 0 || x.Neighborhood_Code == (Districts)_input.NeighborhoodCode))
+                                           && (_input.DistrictCode == 0 || x.District_Code == (Hunteds)_input.DistrictCode)
+                                           && (_input.NeighborhoodCode == 0 || x.Neighborhood_Code == (Districts)_input.NeighborhoodCode))
                //todo remove 
                .SetPackageSize(1000).SetPackageIndex(0)
                .SelectAll().Execute();
 
            return objects.Where(x => (string.IsNullOrWhiteSpace(_input.Quartal) || x.CadastralQuartal == _input.Quartal)
-                                     && (_input.SegmentCodes.Count == 0 || _input.SegmentCodes.Where(s => s.GetValueOrDefault() != 0)
-                                             .Select(s => (MarketSegment) s.Value).Contains(x.PropertyMarketSegment_Code))).ToList();
+                                     && (_input.SegmentCodes.Count == 0 || _input.SegmentCodes.Where(s => s != 0)
+                                             .Select(s => (MarketSegment) s).Contains(x.PropertyMarketSegment_Code))).ToList();
         }
 
         #endregion
@@ -192,21 +191,21 @@ namespace KadOzenka.Dal.FastReports
         private class CorrectionByDateInput
         {
             public string City { get; }
-            public long? DistrictCode { get; }
-            public long? NeighborhoodCode { get; }
+            public long DistrictCode { get; }
+            public long NeighborhoodCode { get; }
             public string Quartal { get; }
             public DateTime? Date { get; }
-            public List<long?> SegmentCodes { get; }
+            public List<long> SegmentCodes { get; }
 
-            public CorrectionByDateInput(string city, long? districtCode, long? neighborhoodCode, string quartal,
-                DateTime? date, List<long?> segmentCodes)
+            public CorrectionByDateInput(string city, long districtCode, long neighborhoodCode, string quartal,
+                DateTime? date, List<long> segmentCodes)
             {
                 City = city;
                 DistrictCode = districtCode;
                 NeighborhoodCode = neighborhoodCode;
                 Quartal = quartal;
                 Date = date;
-                SegmentCodes = segmentCodes ?? new List<long?>();
+                SegmentCodes = segmentCodes ?? new List<long>();
             }
         }
 
