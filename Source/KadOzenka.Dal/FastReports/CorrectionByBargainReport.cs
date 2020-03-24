@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.FastReports
             var correctionByBargainExport = new CorrectionByBargainExport();
             var data = correctionByBargainExport.GetBargainCorrectionData(request);
 
-            foreach (var bargainDto in data)
+            foreach (var bargainDto in data.Where(x => x.PriceAfterCorrectionByBargain.HasValue))
             {
                 dataTable.Rows.Add(bargainDto.CadastralNumber,
                     bargainDto.Date?.ToShortDateString(),
