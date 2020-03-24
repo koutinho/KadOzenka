@@ -15,7 +15,8 @@ namespace KadOzenka.Dal.FastReports
 {
 	public class CorrectionByDateReport : FastReportBase
     {
-        private CorrectionByDateInput _input;
+        private const int PrecisionForPrice = 4;
+        private Input _input;
         public CorrectionByDateService CorrectionByDateService { get; set; }
 
         public CorrectionByDateReport()
@@ -55,7 +56,7 @@ namespace KadOzenka.Dal.FastReports
 
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
-            SetFilterValues(query);
+            _input = GetValuesFromFilter(query);
 
             var operations = GetOperations();
 
@@ -69,14 +70,18 @@ namespace KadOzenka.Dal.FastReports
 
         #region Support Methods
 
-        private void SetFilterValues(NameValueCollection query)
+        private Input GetValuesFromFilter(NameValueCollection query)
         {
             var city = GetQueryParam<string>("City", query);
+
             var district = GetQueryParam<string>("District", query) ?? string.Empty;
             var districtCode = EnumExtensions.GetEnumByDescription<Hunteds>(district);
+
             var neighborhood = GetQueryParam<string>("Neighborhood", query) ?? string.Empty;
             var neighborhoodCode = EnumExtensions.GetEnumByDescription<Districts>(neighborhood);
+
             var quartal = GetQueryParam<string>("Quartal", query);
+
             var segments = GetQueryParam<string>("Segment", query) ?? string.Empty;
             var segmentCodes = segments.Split(';').Select(EnumExtensions.GetEnumByDescription<MarketSegment>).Where(x => x != 0).ToList();
 
@@ -88,7 +93,37 @@ namespace KadOzenka.Dal.FastReports
             if (date > maxDate)
                 throw new Exception($"Максимальное значение даты: {maxDate.ToString(Correction.Consts.DateFormatForDateCorrection)}");
 
-            _input = new CorrectionByDateInput(city, districtCode, neighborhoodCode, quartal, date, segmentCodes);
+            return new Input(city, districtCode, neighborhoodCode, quartal, date, segmentCodes);
+        }
+
+        private List<Item> GetOperations()
+        {
+            var marketObjects = GetMarketObjects();
+
+            var consumerIndexes = GetConsumerPriceIndexes();
+
+            var result = new List<Item>();
+            marketObjects.ForEach(x =>
+            {
+                var priceAfterCorrection = CorrectionByDateService.CalculatePriceAfterCorrectionByDate(x, consumerIndexes);
+                result.Add(new Item
+                {
+                    CadastralNumber = x.CadastralNumber,
+                    Address = x.Address,
+                    DealType = x.DealType,
+                    PropertyMarketSegment = x.PropertyMarketSegment,
+                    Price = x.Price,
+                    PriceAfterCorrectionByDate = priceAfterCorrection,
+                    ParserDate = x.ParserTime,
+                    LastUpdateDate = x.LastDateUpdate,
+                    ProcessType = x.ProcessType,
+                    District = x.District,
+                    Neighborhood = x.Neighborhood,
+                    CadastralQuartal = x.CadastralQuartal
+                });
+            });
+
+            return result;
         }
 
         private DataTable GetCommonDataTable()
@@ -97,12 +132,12 @@ namespace KadOzenka.Dal.FastReports
 
             dataTable.Columns.Add("Date");
 
-            dataTable.Rows.Add(_input.Date?.ToString(Correction.Consts.DateFormatForDateCorrection));
+            dataTable.Rows.Add(_input.Date.ToString(Correction.Consts.DateFormatForDateCorrection));
 
             return dataTable;
         }
 
-        private DataTable GetItemDataTable(List<CorrectionByDateItem> operations)
+        private DataTable GetItemDataTable(List<Item> operations)
         {
             var dataTable = new DataTable("Item");
 
@@ -125,8 +160,8 @@ namespace KadOzenka.Dal.FastReports
                     operation.Address,
                     operation.DealType,
                     operation.PropertyMarketSegment,
-                    operation.Price,
-                    Math.Round(operation.PriceAfterCorrectionByDate.GetValueOrDefault(), 4),
+                    Math.Round(operation.Price.GetValueOrDefault(), PrecisionForPrice),
+                    Math.Round(operation.PriceAfterCorrectionByDate.GetValueOrDefault(), PrecisionForPrice),
                     operation.ParserDate?.ToString(Correction.Consts.DateFormatForDateCorrection),
                     operation.LastUpdateDate?.ToString(Correction.Consts.DateFormatForDateCorrection),
                     operation.ProcessType,
@@ -138,36 +173,7 @@ namespace KadOzenka.Dal.FastReports
             return dataTable;
         }
 
-        private List<CorrectionByDateItem> GetOperations()
-        {
-            var marketObjects = GetObjects();
-
-            var consumerIndexes = GetConsumerIndexes();
-
-            var result = new List<CorrectionByDateItem>();
-            marketObjects.ForEach(x =>
-            {
-                result.Add(new CorrectionByDateItem
-                {
-                    CadastralNumber = x.CadastralNumber,
-                    Address = x.Address,
-                    DealType = x.DealType,
-                    PropertyMarketSegment = x.PropertyMarketSegment,
-                    Price = x.Price,
-                    PriceAfterCorrectionByDate = CorrectionByDateService.CalculatePriceAfterCorrectionByDate(x, consumerIndexes),
-                    ParserDate = x.ParserTime,
-                    LastUpdateDate = x.LastDateUpdate,
-                    ProcessType = x.ProcessType,
-                    District = x.District,
-                    Neighborhood = x.Neighborhood,
-                    CadastralQuartal = x.CadastralQuartal
-                });
-            });
-            
-            return result;
-        }
-
-        private List<OMCoreObject> GetObjects()
+        private List<OMCoreObject> GetMarketObjects()
         {
            var objects = OMCoreObject.Where(x => (x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                                            && (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed)
@@ -178,21 +184,18 @@ namespace KadOzenka.Dal.FastReports
                .SetPackageSize(100).SetPackageIndex(0)
                .SelectAll().Execute();
 
-
-
+           //сделано отдельно, т.к. этот код в предыдущем запросе не работал
            return objects.Where(x => (string.IsNullOrWhiteSpace(_input.Quartal) || x.CadastralQuartal == _input.Quartal)
                                      && (_input.SegmentCodes.Count == 0 || _input.SegmentCodes.Where(s => s != 0)
                                              .Select(s => (MarketSegment) s).Contains(x.PropertyMarketSegment_Code))).ToList();
         }
 
-        private List<OMIndexesForDateCorrection> GetConsumerIndexes()
+        private List<OMIndexesForDateCorrection> GetConsumerPriceIndexes()
         {
-            if(_input.Date == null)
-                return null;
-
             var indexes = OMIndexesForDateCorrection.Where(x => x.Date < _input.Date).SelectAll()
                 .OrderByDescending(x => x.Date).Execute();
-            indexes.Insert(0, CorrectionByDateService.GetDefaultNewConsumerIndex(_input.Date.Value));
+
+            indexes.Insert(0, CorrectionByDateService.GetDefaultNewConsumerIndex(_input.Date));
 
            CorrectionByDateService.RecalculateConsumerPriceIndexes(indexes);
 
@@ -203,7 +206,7 @@ namespace KadOzenka.Dal.FastReports
 
         #region Entities
 
-        private class CorrectionByDateItem
+        private class Item
         {
             public string CadastralNumber { get; set; }
             public string Address { get; set; }
@@ -219,17 +222,17 @@ namespace KadOzenka.Dal.FastReports
             public string CadastralQuartal { get; set; }
         }
 
-        private class CorrectionByDateInput
+        private class Input
         {
             public string City { get; }
             public long DistrictCode { get; }
             public long NeighborhoodCode { get; }
             public string Quartal { get; }
-            public DateTime? Date { get; }
+            public DateTime Date { get; }
             public List<long> SegmentCodes { get; }
 
-            public CorrectionByDateInput(string city, long districtCode, long neighborhoodCode, string quartal,
-                DateTime? date, List<long> segmentCodes)
+            public Input(string city, long districtCode, long neighborhoodCode, string quartal,
+                DateTime date, List<long> segmentCodes)
             {
                 City = city;
                 DistrictCode = districtCode;

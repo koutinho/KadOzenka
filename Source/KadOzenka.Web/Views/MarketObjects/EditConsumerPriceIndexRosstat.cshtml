@@ -38,6 +38,7 @@
         $("#monthDate").kendoDatePicker({
             start: "year",
             depth: "year",
+            max: new Date(),
             format: '@Consts.DateFormatForDateCorrection',
             change: getConsumerPriceIndex
         });
