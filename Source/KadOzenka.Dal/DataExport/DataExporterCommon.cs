@@ -6,7 +6,6 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using System;
@@ -15,6 +14,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Core.Messages;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -70,9 +70,11 @@ namespace KadOzenka.Dal.DataExport
 			export.Save();
 
 			FileStorageManager.Save(resultFile, FileStorageName, export.DateFinished.Value, GetResultFileName(export.Id));
-		}
 
-		public void LogError(long? objectId, Exception ex, long? errorId = null)
+            SendResultNotification(export);
+        }
+
+        public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
 			OMExportByTemplates export = OMExportByTemplates
 				.Where(x => x.Id == objectId)
@@ -114,8 +116,8 @@ namespace KadOzenka.Dal.DataExport
 
 			FileStorageManager.Save(templateFile, FileStorageName, export.DateCreated, GetTemplateName(export.Id));
 			
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
-		}
+            LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+        }
 		
 		public static Stream ExportDataToExcel(int mainRegisterId, ExcelFile excelTemplate, List<DataExportColumn> columns)
 		{
@@ -154,7 +156,7 @@ namespace KadOzenka.Dal.DataExport
 						break;
 					}
 
-					keyValues.Add(mainWorkSheet.Rows[i + 1].Cells[0].Value.ToString()); 
+					keyValues.Add(mainWorkSheet.Rows[i + 1].Cells[0].Value?.ToString()); 
 				}
 				
 				// Получение данных для 1000 строк
@@ -179,7 +181,7 @@ namespace KadOzenka.Dal.DataExport
 						break;
 					}
 
-					string keyValue = mainWorkSheet.Rows[i + 1].Cells[0].Value.ToString();
+					string keyValue = mainWorkSheet.Rows[i + 1].Cells[0].Value?.ToString();
 
 					//считаем, что ключевая колонка только одна
 					DataExportColumn key = columns.Where(x => x.IsKey).FirstOrDefault();
@@ -241,5 +243,33 @@ namespace KadOzenka.Dal.DataExport
 
 			return stream;
 		}
-	}
+
+
+        #region Notification
+
+        public static FileStream GetExportResultFileStream(long exportId)
+        {
+            var export = OMExportByTemplates
+                .Where(x => x.Id == exportId)
+                .SelectAll()
+                .Execute()
+                .FirstOrDefault();
+
+            return FileStorageManager.GetFileStream(FileStorageName, export.DateFinished.Value, GetResultFileName(export.Id));
+        }
+
+        internal static void SendResultNotification(OMExportByTemplates export)
+        {
+            new MessageService().SendMessages(new MessageDto
+            {
+                Addressers = new MessageAddressersDto { UserIds = new[] { export.UserId } },
+                Subject = $"Результаты Выгрузки данных по списку от: {export.DateCreated})",
+                Message = $@"Процесс Выгрузки данных по списку завершен. <a href=""/DataExport/DownloadExportData?exportId={export.Id}"">Скачать результаты</a>",
+                IsUrgent = true,
+                IsEmail = true
+            });
+        }
+
+        #endregion
+    }
 }

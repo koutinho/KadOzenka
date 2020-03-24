@@ -212,5 +212,13 @@ namespace KadOzenka.Web.Controllers
 
 			return View(export);
 		}
-	}
+
+        public FileResult DownloadExportData(long exportId)
+        {
+            var file = DataExporterCommon.GetExportResultFileStream(exportId);
+
+            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Результат выгрузки данных по списку" + ".xlsx");
+        }
+    }
 }
