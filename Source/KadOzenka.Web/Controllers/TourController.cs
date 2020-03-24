@@ -4,16 +4,20 @@ using System.Linq;
 using System.Transactions;
 using Core.ErrorManagment;
 using Core.Register;
+using Core.Register.Enums;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.Tour;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -496,6 +500,49 @@ namespace KadOzenka.Web.Controllers
 			markCatalog.Destroy();
 			return Json(markCatalog);
 		}
+
+        public FileResult DownloadMarksCatalog(long groupId, long factorId)
+        {
+            var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);
+
+            return File(fileStream, Helpers.Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
+        }
+
+        public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
+        {
+            if (file == null)
+                throw new Exception("Не выбран файл для загрузки");
+            if (!(file.FileName.EndsWith(".xlsx") || file.FileName.EndsWith(".xls")))
+                throw new Exception("Загружен файл неправильного формата. Допустимые форматы: .xlsx и .xls");
+
+            using (var stream = file.OpenReadStream())
+            {
+                var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+
+                var fileStream = DataImporterKO.ImportDataMarkerFromExcel(excelFile, nameof(OMMarkCatalog),
+                    OMMarkCatalog.GetRegisterId(), groupId, factorId, isDeleteOld);
+
+                var fileName = "Справочник меток (загрузка) " + file.FileName;
+                HttpContext.Session.Set(fileName, fileStream.ToByteArray());
+
+                return Content(JsonConvert.SerializeObject(new { success = true, fileName = fileName }), "application/json");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult DownloadExcelFile(string fileName)
+        {
+            var fileContent = HttpContext.Session.Get(fileName);
+            if (fileContent == null)
+            {
+                return new EmptyResult();
+            }
+
+            HttpContext.Session.Remove(fileName);
+            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
+
+            return File(fileContent, contentType, fileName);
+        }
 
         #endregion
 

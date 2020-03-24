@@ -217,8 +217,7 @@ namespace KadOzenka.Web.Controllers
         {
             var file = DataExporterCommon.GetExportResultFileStream(exportId);
 
-            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "Результат выгрузки данных по списку" + ".xlsx");
+            return File(file, Helpers.Consts.ExcelContentType, "Результат выгрузки данных по списку" + ".xlsx");
         }
     }
 }

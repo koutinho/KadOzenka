@@ -1,5 +1,30 @@
 ﻿@model KadOzenka.Web.Models.Task.ModelModel
 
+<!-- Модальное окно для загрузки справочника меток -->
+@using (Html.BeginForm("UploadMarksCatalog", "Tour", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
+{ 
+    <div id="uploadMarksCatalogModal" style="display: none;  padding: 2%;">
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group">
+                <div class="col-sm-9">
+                    <label for="isDeleteAllCheckBox">Загрузка с удалением имеющихся данных</label>
+                </div>
+                <div class="col-sm-2">
+                    <input name="isDeleteAllCheckBox" id="isDeleteAllCheckBox" type="checkbox" />
+                </div>
+            </div>
+            <div class="form-group">
+                <input name="marksCatalogFiles" id="marksCatalogFiles" type="file" aria-label="files" accept=".xls,.xlsx" />
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2 col-sm-offset-9">
+                    <button id="loadMarksCatalogFilesButton" type="button">Загрузить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <div id="toolbar"></div>
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group">
@@ -130,6 +155,20 @@
                     text: '',
                     attributes: { title: "Метки" },
                     icon: 'clock'
+                },
+                {
+                    type: 'button',
+                    id: 'upload-marks-catalog',
+                    text: '',
+                    attributes: { title: "Загрузить справочник меток" },
+                    icon: 'upload'
+                },
+                {
+                    type: 'button',
+                    id: 'download-marks-catalog',
+                    text: '',
+                    attributes: { title: "Выгрузить справочник меток" },
+                    icon: 'download'
                 }
             ]
         });
@@ -138,10 +177,7 @@
         });
 
 
-
-
-
-
+        
         var gridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -205,17 +241,23 @@
                 $('#edit-factor').addClass('k-state-disabled');
                 $('#remove-factor').addClass('k-state-disabled');
                 $('#show-marks').addClass('k-state-disabled');
+                $('#download-marks-catalog').addClass('k-state-disabled');
+                $('#upload-marks-catalog').addClass('k-state-disabled');
             }
             else {
                 $('#edit-factor').removeClass('k-state-disabled');
                 $('#remove-factor').removeClass('k-state-disabled');
                 $('#show-marks').removeClass('k-state-disabled');
+                $('#download-marks-catalog').removeClass('k-state-disabled');
+                $('#upload-marks-catalog').removeClass('k-state-disabled');
             }
         }
 
         $('#edit-factor').addClass('k-state-disabled');
         $('#remove-factor').addClass('k-state-disabled');
         $('#show-marks').addClass('k-state-disabled');
+        $('#download-marks-catalog').addClass('k-state-disabled');
+        $('#upload-marks-catalog').addClass('k-state-disabled');
 
         $('#add-factor').on('click', function () {
             Common.UI.ShowWindow('Редактирование фактора',
@@ -289,6 +331,98 @@
             }
         });
 
+
+        $('#upload-marks-catalog').on('click', function () {
+            var grid = $("#grid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                $("#marksCatalogFiles").getKendoUpload().removeAllFiles();
+                var modal = $("#uploadMarksCatalogModal");
+                //метод из TourCard
+                ShowModal(modal, '50%', '30%');
+            }
+        });
+
+        $('#download-marks-catalog').on('click', function () {
+            var grid = $("#grid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                var groupId = '@Model.GroupId';
+                var factorId = data.FactorId;
+                window.open('@Url.Action("DownloadMarksCatalog", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId);
+            }
+        });
+
+        $('#marksCatalogFiles').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Выбрать Файл'
+            },
+            validation: {
+                allowedExtensions: ['.xls', '.xlsx']
+            },
+            success: function (e) {
+                if (e.operation === "upload") {
+                    Common.ShowMessage("Данные загружены успешно");
+                }
+            },
+            error: function (e) {
+                if (e.XMLHttpRequest.responseText) {
+                    Common.ShowError(e.XMLHttpRequest.responseText);
+                } else {
+                    Common.ShowError("Не удалось загрузить выбранный файл");
+                }
+            }
+        }).data('kendoUpload');
+
+        $("#loadMarksCatalogFilesButton").kendoButton({
+            click: function (e) {
+                var grid = $("#grid").data("kendoGrid");
+                var row = grid.select();
+                if (row.length > 0) {
+                    var data = grid.dataItem(row);
+                    var files = $("#marksCatalogFiles").getKendoUpload().getFiles();
+                    if (files.length === 0) {
+                        Common.ShowError("Файл не выбран");
+                        return;
+                    }
+                    var groupId = '@Model.GroupId';
+                    var factorId = data.FactorId;
+                    var isDeleteOld = $("#isDeleteAllCheckBox").is(":checked");
+                    var formData = new FormData();
+                    formData.append('file', files[0].rawFile);
+                    formData.append('groupId', groupId);
+                    formData.append('factorId', factorId);
+                    formData.append('isDeleteOld', isDeleteOld);
+
+                    kendo.ui.progress($('#uploadMarksCatalogModal'), true);
+                    $.ajax({
+                        url: '@Url.Action("UploadMarksCatalog", "Tour")',
+                        type: 'POST',
+                        data: formData,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            console.log(response);
+                            if (response.success) {
+                                window.location = '@Url.Action("DownloadExcelFile", "Tour")' + "?fileName=" + response.fileName;
+                            } else {
+                                Common.ShowError("Не удалось загрузить выбранный файл");
+                            }
+                        },
+                        error: function (e) {
+                            Common.ShowError(e.responseText);
+                        },
+                        complete: function(e) {
+                            kendo.ui.progress($('#uploadMarksCatalogModal'), false);
+                            $("#uploadMarksCatalogModal").data("kendoWindow").close();
+                        }
+                    });
+                }
+            }
+        });
     });
 
     function UpdateView() {
