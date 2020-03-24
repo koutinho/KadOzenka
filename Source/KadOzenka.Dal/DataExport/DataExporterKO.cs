@@ -120,7 +120,7 @@ namespace KadOzenka.Dal.DataExport
                     curIndex++;
                     if (curIndex % 40 == 0) Console.WriteLine(curIndex);
 
-                    DataTable data = RegisterStorage.GetAttribute((int)unit.Id, 252, (int)factorId);
+                    DataTable data = RegisterStorage.GetAttribute((int)unit.Id, OMGroup.GetFactorReestrId(unit), (int)factorId);
                     string curValue = string.Empty;
                     if (data != null)
                     {

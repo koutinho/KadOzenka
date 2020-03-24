@@ -424,6 +424,31 @@ namespace ObjectModel.KO
                     return null;
             }
         }
+        public static int GetFactorReestrId(OMUnit current)
+        {
+            if (current != null)
+            {
+                if (current.PropertyType_Code != PropertyTypes.Stead)
+                {
+                    if (current.TourId == 2016) return 252;
+                    else
+                    if (current.TourId == 2018) return 250;
+                    else
+                        return 250;
+                }
+                else
+                {
+                    if (current.TourId == 2016) return 253;
+                    else
+                    if (current.TourId == 2018) return 251;
+                    else
+                        return 251;
+                }
+            }
+            else
+                return 251;
+        }
+
         public static List<ObjectModel.KO.OMGroup> GetListGroupTour(long tourId, ObjectModel.Directory.KoGroupAlgoritm GroupAlgoritm)
         {
             List<ObjectModel.KO.OMGroup> res = new List<ObjectModel.KO.OMGroup>();
