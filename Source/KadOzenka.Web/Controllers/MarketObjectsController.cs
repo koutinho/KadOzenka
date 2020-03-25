@@ -133,7 +133,11 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult EditConsumerPriceIndexRosstat()
         {
-            var model = new CorrectionByDateModel();
+            var nexIndex = CorrectionByDateService.GetNextConsumerIndex();
+            var model = new CorrectionByDateModel
+            {
+                MaxIndexDate = nexIndex.Date.AddMonths(-1)
+            };
             return View(model);
         }
 

@@ -8,6 +8,7 @@ namespace KadOzenka.Web.Models.MarketObject
     {
         public long Id { get; set; }
         public bool IsDateReadOnly { get; set; }
+        public DateTime? MaxIndexDate { get; set; }
 
         [Required(ErrorMessage = "Дата не может быть пустой")]
         [Display(Name = "Дата")]
