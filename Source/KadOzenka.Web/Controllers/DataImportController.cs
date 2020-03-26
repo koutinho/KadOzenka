@@ -19,6 +19,11 @@ using KadOzenka.Web.Models.Task;
 using ObjectModel.Common;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
+using Core.Register;
+using Core.Register.RegisterEntities;
+using ObjectModel.Core.Shared;
+using static Core.UI.Registers.CoreUI.Registers.RegistersCommon;
+using System.Globalization;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -40,6 +45,91 @@ namespace KadOzenka.Web.Controllers
 			ViewBag.DataCountForBackgroundLoading = _dataCountForBackgroundLoading;
 
 			return View();
+		}
+		
+		public IActionResult GetTreeAttributes(string registerViewId)
+		{			
+			var source = new List<object>();
+
+			List<RegistersCommon.RegisterTemplateColumn> attributesList = BuildAttributesTree();
+					   
+			if (attributesList.Any())
+			{
+				foreach (var attributeItem in attributesList)
+				{
+					RegisterAttribute attribute = RegisterCache.RegisterAttributes.ContainsKey(attributeItem.AttributeId) ?
+								RegisterCache.RegisterAttributes[attributeItem.AttributeId] : null;
+					OMReference reference = attribute != null && attribute.ReferenceId.HasValue ?
+						OMReference.Where(r => r.ReferenceId == attribute.ReferenceId.Value).Select(r => r.Description).Execute().FirstOrDefault() : null;
+					RegisterRelation relation = attribute != null ?
+						RegisterCache.RegisterRelations.Select(r => r.Value).FirstOrDefault(r => r.RegAttributeID == attribute.Id) : null;
+
+					var type = Enum.GetName(typeof(RegisterAttributeType), attributeItem.DocumentType);
+					var description = attributeItem.ParentId == null ? attributeItem.Description + $" ({attributeItem.ItemId})" : attributeItem.Description;
+					source.Add(new
+					{
+						attributeItem.AttributeId,
+						Description = description,
+						DescriptionAttribute = attribute != null ? attribute.Description : string.Empty,
+						attributeItem.ParentId,
+						attributeItem.ItemId,
+						ReferenceId = (attributeItem.ReferenceId != 0 ? attributeItem.ReferenceId : (int?)null),
+						Type = type,
+						DataTypeName = attribute != null ? attribute.Type.GetEnumDescription() : string.Empty,
+						ReferenceName = reference != null ? reference.Description : string.Empty,
+						IsPrimaryKey = attribute?.IsPrimaryKey ?? false,
+						ForeignKey = (relation != null && RegisterCache.Registers[relation.ParentRegID] != null) ?
+									RegisterCache.Registers[relation.ParentRegID].Description : string.Empty,
+						IsVirtual = attribute?.IsVirtual ?? false,
+						ColumnDbName = attribute != null ? (attribute.ValueField + (attribute.CodeField.IsNotEmpty() ?
+									string.Format(" ({0})", attribute.CodeField) : string.Empty)) : string.Empty
+					});
+				}
+			}
+
+			return Json(source);
+		}
+
+		public static List<RegisterTemplateColumn> BuildAttributesTree()
+		{
+			var attributesTree = new List<RegisterTemplateColumn>();
+
+			List<long> avaliableRegisters = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
+			.Select(x => x.RegisterId).Execute().Select(x => x.RegisterId).Cast<long>().ToList();
+
+			foreach (long registerId in avaliableRegisters)
+			{
+				try
+				{
+					RegisterData registerData = RegisterCache.GetRegisterData(registerId.ParseToInt());
+
+					RegisterTemplateColumn registerNode = new RegisterTemplateColumn
+					{
+						ItemId = registerData.Id.ToString(CultureInfo.InvariantCulture),
+						Description = registerData.Description
+					};
+
+					attributesTree.Add(registerNode);
+
+					attributesTree.AddRange(RegisterCache.RegisterAttributes.Values
+						.Where(x => x.RegisterId == registerData.Id).Select(attributeData => new RegisterTemplateColumn
+						{
+							ItemId = registerData.Id + "_" + attributeData.Id,
+							ParentId = registerData.Id.ToString(CultureInfo.InvariantCulture),
+							Description = attributeData.Name,
+							DocumentType = (int)attributeData.Type,
+							AttributeId = attributeData.Id,
+							ReferenceId = attributeData.ReferenceId.HasValue ? attributeData.ReferenceId.Value : 0,
+						}).OrderBy(x => x.Description));
+				}
+				catch (Exception ex)
+				{
+					ErrorManager.LogError(ex);
+					continue;
+				}
+			}
+
+			return attributesTree;
 		}
 
 		[HttpPost]
