@@ -378,8 +378,7 @@
 
 			$.ajax({
 				type: 'GET',
-                url: '/DataImport/GetTreeAttributes',
-				data: { registerViewId: registerViewId },
+                url: '/DataImport/GetTreeAttributes',				
 				success: function (data) {
 					if (data) {
 						$("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(data));

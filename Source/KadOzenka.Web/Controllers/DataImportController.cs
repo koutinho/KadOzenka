@@ -47,7 +47,7 @@ namespace KadOzenka.Web.Controllers
 			return View();
 		}
 		
-		public IActionResult GetTreeAttributes(string registerViewId)
+		public IActionResult GetTreeAttributes()
 		{			
 			var source = new List<object>();
 
