@@ -22845,6 +22845,22 @@ end $$;
 
 DO $$
 begin
+  if (not CORE_UPDSTRU_CheckExistIndex('cadastralnumberindex')) then
+	execute 'CREATE  INDEX cadastralnumberindex on KO_UNIT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('groupidindex')) then
+	execute 'CREATE  INDEX groupidindex on KO_UNIT (group_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_UNIT_PARAMS_OKS_2016')) then
 		execute 'create table KO_UNIT_PARAMS_OKS_2016 ("id" BIGINT NOT NULL)';
 	end if;
@@ -27008,6 +27024,40 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_41619187_q_pk')) then
     execute 'alter table source_31_q add constraint reg_41619187_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('source_32_q')) then
+		execute 'create table source_32_q ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_32_q', 'id')) then
+        execute 'alter table source_32_q add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('source_32_q', 'field41891429')) then
+        execute 'alter table source_32_q add "field41891429" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41891427_q_pk')) then
+    execute 'alter table source_32_q add constraint reg_41891427_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
