@@ -4140,22 +4140,22 @@ namespace ObjectModel.Market
         }
 
 
-        private long _initialid;
+        private string _buildingcadastralnumber;
         /// <summary>
-        /// 11100200 Идентификатор объекта (INITIAL_ID)
+        /// 11100200 Кадастровый номер здания (BUILDING_CADASTRAL_NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 11100200)]
-        public long InitialId
+        public string BuildingCadastralNumber
         {
             get
             {
-                CheckPropertyInited("InitialId");
-                return _initialid;
+                CheckPropertyInited("BuildingCadastralNumber");
+                return _buildingcadastralnumber;
             }
             set
             {
-                _initialid = value;
-                NotifyPropertyChanged("InitialId");
+                _buildingcadastralnumber = value;
+                NotifyPropertyChanged("BuildingCadastralNumber");
             }
         }
 
@@ -4180,22 +4180,42 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal _pricevaluefrom;
+        private decimal _oneroomcoefficient;
         /// <summary>
-        /// 11100400 Значение стоимости (PRICE_VALUE)
+        /// 11100400 Коэффициент для 1-комнатной квартиры (ONE_ROOM_COEFFICIENT)
         /// </summary>
         [RegisterAttribute(AttributeID = 11100400)]
-        public decimal PriceValueFrom
+        public decimal OneRoomCoefficient
         {
             get
             {
-                CheckPropertyInited("PriceValueFrom");
-                return _pricevaluefrom;
+                CheckPropertyInited("OneRoomCoefficient");
+                return _oneroomcoefficient;
             }
             set
             {
-                _pricevaluefrom = value;
-                NotifyPropertyChanged("PriceValueFrom");
+                _oneroomcoefficient = value;
+                NotifyPropertyChanged("OneRoomCoefficient");
+            }
+        }
+
+
+        private decimal _tworoomscoefficient;
+        /// <summary>
+        /// 11100500 Коэффициент для 2-комнатной квартиры (TWO_ROOMS_COEFFICIENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11100500)]
+        public decimal TwoRoomsCoefficient
+        {
+            get
+            {
+                CheckPropertyInited("TwoRoomsCoefficient");
+                return _tworoomscoefficient;
+            }
+            set
+            {
+                _tworoomscoefficient = value;
+                NotifyPropertyChanged("TwoRoomsCoefficient");
             }
         }
 
