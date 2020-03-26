@@ -1750,6 +1750,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private decimal? _priceaftercorrectionbyrooms;
+        /// <summary>
+        /// 10008400 Цена после корректировки на комнатность (PRICE_AFTER_CORRECTION_BY_ROOMS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008400)]
+        public decimal? PriceAfterCorrectionByRooms
+        {
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionByRooms");
+                return _priceaftercorrectionbyrooms;
+            }
+            set
+            {
+                _priceaftercorrectionbyrooms = value;
+                NotifyPropertyChanged("PriceAfterCorrectionByRooms");
+            }
+        }
+
     }
 }
 
@@ -20091,6 +20111,42 @@ namespace ObjectModel
     [RegisterInfo(RegisterID = 41619187)]
     [Serializable]
     public partial class OMSource31Q : OMBaseClass<OMSource31Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41891427 saratoo (source_32_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41891427)]
+    [Serializable]
+    public partial class OMSource32Q : OMBaseClass<OMSource32Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935242 № п/п (source_33_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41935242)]
+    [Serializable]
+    public partial class OMSource33Q : OMBaseClass<OMSource33Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935245 вид использования по иным источникам (source_34_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41935245)]
+    [Serializable]
+    public partial class OMSource34Q : OMBaseClass<OMSource34Q>
     {
     }
 }
