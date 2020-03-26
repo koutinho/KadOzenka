@@ -555,12 +555,12 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal _pricepermeter;
+        private decimal? _pricepermeter;
         /// <summary>
         /// 10002701 Цена за кв. м ()
         /// </summary>
         [RegisterAttribute(AttributeID = 10002701)]
-        public decimal PricePerMeter
+        public decimal? PricePerMeter
         {
             get
             {
