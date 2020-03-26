@@ -43,7 +43,6 @@ namespace ObjectModel.Gbu
                 NotifyPropertyChanged("Id");
             }
         }
-
     }
 }
 
@@ -4105,6 +4104,98 @@ namespace ObjectModel.Market
             {
                 _resultfromsourcefile = value;
                 NotifyPropertyChanged("ResultFromSourceFile");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 111 Таблица, содержащая историю изменения цены после корректировки на комнатность (MARKET_PRICE_CORRECTION_BY_ROOMS_HISTORY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 111)]
+    [Serializable]
+    public partial class OMPriceCorrectionByRoomsHistory : OMBaseClass<OMPriceCorrectionByRoomsHistory>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11100100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _initialid;
+        /// <summary>
+        /// 11100200 Идентификатор объекта (INITIAL_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11100200)]
+        public long InitialId
+        {
+            get
+            {
+                CheckPropertyInited("InitialId");
+                return _initialid;
+            }
+            set
+            {
+                _initialid = value;
+                NotifyPropertyChanged("InitialId");
+            }
+        }
+
+
+        private DateTime _changingdate;
+        /// <summary>
+        /// 11100300 Время изменения цены (CHANGING_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11100300)]
+        public DateTime ChangingDate
+        {
+            get
+            {
+                CheckPropertyInited("ChangingDate");
+                return _changingdate;
+            }
+            set
+            {
+                _changingdate = value;
+                NotifyPropertyChanged("ChangingDate");
+            }
+        }
+
+
+        private decimal _pricevaluefrom;
+        /// <summary>
+        /// 11100400 Значение стоимости (PRICE_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11100400)]
+        public decimal PriceValueFrom
+        {
+            get
+            {
+                CheckPropertyInited("PriceValueFrom");
+                return _pricevaluefrom;
+            }
+            set
+            {
+                _pricevaluefrom = value;
+                NotifyPropertyChanged("PriceValueFrom");
             }
         }
 
@@ -20147,6 +20238,30 @@ namespace ObjectModel
     [RegisterInfo(RegisterID = 41935245)]
     [Serializable]
     public partial class OMSource34Q : OMBaseClass<OMSource34Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935285 Ис1 (source_35_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41935285)]
+    [Serializable]
+    public partial class OMSource35Q : OMBaseClass<OMSource35Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935287 новый (source_36_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41935287)]
+    [Serializable]
+    public partial class OMSource36Q : OMBaseClass<OMSource36Q>
     {
     }
 }

@@ -784,6 +784,30 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 111 Таблица, содержащая историю изменения цены после корректировки на комнатность
+    /// </summary>
+    public partial class OMPriceCorrectionByRoomsHistory
+    {
+
+        public OMPriceCorrectionByRoomsHistory()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMPriceCorrectionByRoomsHistory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
