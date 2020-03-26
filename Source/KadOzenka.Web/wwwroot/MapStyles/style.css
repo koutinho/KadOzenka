@@ -358,8 +358,13 @@ select.EditDataSelect:focus {
 .filterControl .allFiltersContainer .filterPanel.filterLabel {
     color: #5c9eff;
     background-color: #fff;
-    height:auto;
-    font-size: 18px;
+    width: fit-content;
+    border: solid 1px #5c9eff;
+    padding: 5px 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    background: #e0eeff;
+    cursor: default;
 }
 
 .filterControl .allFiltersContainer .filterPanel .filterButton {
