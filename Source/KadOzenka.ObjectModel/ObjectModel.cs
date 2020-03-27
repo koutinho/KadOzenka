@@ -43,7 +43,6 @@ namespace ObjectModel.Gbu
                 NotifyPropertyChanged("Id");
             }
         }
-		
     }
 }
 
@@ -4221,22 +4220,77 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal _tworoomscoefficient;
+        private decimal _threeroomscoefficient;
         /// <summary>
-        /// 11100500 Коэффициент для 2-комнатной квартиры (TWO_ROOMS_COEFFICIENT)
+        /// 11100500 Коэффициент для 3-комнатной квартиры (THREE_ROOMS_COEFFICIENT)
         /// </summary>
         [RegisterAttribute(AttributeID = 11100500)]
-        public decimal TwoRoomsCoefficient
+        public decimal ThreeRoomsCoefficient
         {
             get
             {
-                CheckPropertyInited("TwoRoomsCoefficient");
-                return _tworoomscoefficient;
+                CheckPropertyInited("ThreeRoomsCoefficient");
+                return _threeroomscoefficient;
             }
             set
             {
-                _tworoomscoefficient = value;
-                NotifyPropertyChanged("TwoRoomsCoefficient");
+                _threeroomscoefficient = value;
+                NotifyPropertyChanged("ThreeRoomsCoefficient");
+            }
+        }
+
+
+        private string _marketsegment;
+        /// <summary>
+        /// 11100600 Сегмент рынка (MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11100600)]
+        public string MarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment");
+                return _marketsegment;
+            }
+            set
+            {
+                _marketsegment = value;
+                NotifyPropertyChanged("MarketSegment");
+            }
+        }
+
+
+        private MarketSegment _marketsegment_Code;
+        /// <summary>
+        /// 11100600 Сегмент рынка (справочный код) (MARKET_SEGMENT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11100600)]
+        public MarketSegment MarketSegment_Code
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment_Code");
+                return this._marketsegment_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_marketsegment))
+                    {
+                         _marketsegment = descr;
+                    }
+                }
+                else
+                {
+                     _marketsegment = descr;
+                }
+
+                this._marketsegment_Code = value;
+                NotifyPropertyChanged("MarketSegment");
+                NotifyPropertyChanged("MarketSegment_Code");
             }
         }
 
@@ -20303,6 +20357,18 @@ namespace ObjectModel
     [RegisterInfo(RegisterID = 41935287)]
     [Serializable]
     public partial class OMSource36Q : OMBaseClass<OMSource36Q>
+    {
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935625 тестовый источник (source_37_q)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41935625)]
+    [Serializable]
+    public partial class OMSource37Q : OMBaseClass<OMSource37Q>
     {
     }
 }

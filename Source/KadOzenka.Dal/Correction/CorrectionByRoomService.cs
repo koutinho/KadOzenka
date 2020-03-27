@@ -13,7 +13,9 @@ namespace KadOzenka.Dal.Correction
 
         public void UpdateMarketObjectsPrice()
         {
-            var numberOfRooms = new long?[] {1, 2, 3};
+            var numberOfRooms = new long?[] { 1, 2, 3 };
+            var oneRoomCoefficients = new List<decimal>();
+            var threeRoomsCoefficients = new List<decimal>();
 
             var groupedObjects = OMCoreObject.Where(x =>
                     x.BuildingCadastralNumber != null &&
@@ -33,16 +35,19 @@ namespace KadOzenka.Dal.Correction
                 {
                     var oneRoomAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 1);
                     var twoRoomsAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 2);
-                    var threeRoomAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 3);
+                    var threeRoomsAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 3);
 
                     var oneRoomCoefficient = Math.Round(twoRoomsAveragePricePerMeter / oneRoomAveragePricePerMeter, PrecisionForCoefficients);
-                    var twoRoomsCoefficient = Math.Round(twoRoomsAveragePricePerMeter / threeRoomAveragePricePerMeter, PrecisionForCoefficients);
+                    var threeRoomsCoefficient = Math.Round(twoRoomsAveragePricePerMeter / threeRoomsAveragePricePerMeter, PrecisionForCoefficients);
 
-                    SaveHistory(group.Key.BuildingCadastralNumber, oneRoomCoefficient, twoRoomsCoefficient);
+                    oneRoomCoefficients.Add(oneRoomCoefficient);
+                    threeRoomsCoefficients.Add(threeRoomsCoefficient);
 
-                    CalculatePriceAfterCorrectionByRooms(objectsInBuilding, oneRoomCoefficient, twoRoomsCoefficient);
+                    SaveHistory(group.Key.BuildingCadastralNumber, group.Key.PropertyMarketSegment_Code, oneRoomCoefficient, threeRoomsCoefficient);
                 }
             });
+
+            CalculatePriceAfterCorrectionByRooms(oneRoomCoefficients, threeRoomsCoefficients);
         }
 
 
@@ -71,26 +76,27 @@ namespace KadOzenka.Dal.Correction
             return haveOneRoomApartment && haveTwoRoomsApartment && haveThreeRoomsApartment;
         }
 
-        private void CalculatePriceAfterCorrectionByRooms(List<OMCoreObject> objects, decimal oneRoomCoefficient, decimal twoRoomsCoefficient)
+        private void CalculatePriceAfterCorrectionByRooms(List<decimal> oneRoomCoefficients, List<decimal> threeRoomsCoefficient)
         {
+            var oneRoomAverageCoefficient = oneRoomCoefficients.Average();
+            var threeRoomAverageCoefficient = threeRoomsCoefficient.Average();
+
+            var objects = OMCoreObject.Where(x => x.RoomsCount == 1 || x.RoomsCount == 3).SelectAll().Execute();
             objects.ForEach(x =>
             {
-                if (x.RoomsCount == 1 || x.RoomsCount == 3)
+                var coefficient = 0m;
+                switch (x.RoomsCount)
                 {
-                    var coefficient = 0m;
-                    switch (x.RoomsCount)
-                    {
-                        case 1:
-                            coefficient = oneRoomCoefficient;
-                            break;
-                        case 3:
-                            coefficient = twoRoomsCoefficient;
-                            break;
-                    }
-
-                    x.PriceAfterCorrectionByRooms = Math.Round(x.Price.GetValueOrDefault() * coefficient, PrecisionForPrice);
-                    x.Save();
+                    case 1:
+                        coefficient = oneRoomAverageCoefficient;
+                        break;
+                    case 3:
+                        coefficient = threeRoomAverageCoefficient;
+                        break;
                 }
+
+                x.PriceAfterCorrectionByRooms = Math.Round(x.Price.GetValueOrDefault() * coefficient, PrecisionForPrice);
+                x.Save();
             });
         }
 
@@ -99,14 +105,15 @@ namespace KadOzenka.Dal.Correction
             return objects.Where(x => x.RoomsCount == numberOfRooms).Select(x => x.PricePerMeter.GetValueOrDefault()).Average();
         }
 
-        private void SaveHistory(string buildingCadastralNumber, decimal oneRoomCoefficient, decimal twoRoomsCoefficient)
+        private void SaveHistory(string buildingCadastralNumber, MarketSegment segment, decimal oneRoomCoefficient, decimal threeRoomsCoefficient)
         {
             new OMPriceCorrectionByRoomsHistory
             {
                 BuildingCadastralNumber = buildingCadastralNumber,
+                MarketSegment_Code = segment,
                 ChangingDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
                 OneRoomCoefficient = oneRoomCoefficient,
-                TwoRoomsCoefficient = twoRoomsCoefficient
+                ThreeRoomsCoefficient = threeRoomsCoefficient
             }.Save();
         }
 
