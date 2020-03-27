@@ -204,7 +204,7 @@
 		});
 
 		$(document).ready(function () {
-			const mainRegisterId = @((long)ViewBag.MainRegisterId);
+			var mainRegisterId = @((long)ViewBag.MainRegisterId);
 			const registerViewId = '@((string)ViewBag.RegisterViewId)';
 			const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
 
@@ -222,7 +222,10 @@
 				click: function (e) {
 					const treeView = $("#treeview").data('kendoTreeView');
 					const listBox = $("#columnsListBox").data('kendoListBox');
-					if (treeView && listBox) {
+                    if (treeView && listBox) {                        
+                        //change or set mainregister
+                        mainRegisterId = treeView.dataItem(treeView.select()).parentId; 
+
 						var treeViewData = treeView.dataItem(treeView.select());
 						var listBoxData = listBox.dataItem(listBox.select());
 						if (treeViewData && listBoxData) {
@@ -239,7 +242,7 @@
 								AttributeId: treeViewData.id,
 								AttributeUid: treeViewData.uid
 							});
-							$("#loadButton").data('kendoButton').enable(true);
+                            $("#loadButton").data('kendoButton').enable(true);                                                       
 						}
 					}
 				}
@@ -258,8 +261,8 @@
 							AttributeId: item.AttributeId,
 							IsKey: item.IsKey
 						};
-					});
-
+                    });
+                    
 					var file = $('#files').data('kendoUpload').getFiles()[0];
 					var formData = new FormData();
 					formData.append("mainRegisterId", mainRegisterId);
