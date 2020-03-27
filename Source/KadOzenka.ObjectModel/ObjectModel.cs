@@ -43,6 +43,7 @@ namespace ObjectModel.Gbu
                 NotifyPropertyChanged("Id");
             }
         }
+		
     }
 }
 
@@ -1766,6 +1767,26 @@ namespace ObjectModel.Market
             {
                 _priceaftercorrectionbyrooms = value;
                 NotifyPropertyChanged("PriceAfterCorrectionByRooms");
+            }
+        }
+
+
+        private decimal? _priceaftercorrectionbystage;
+        /// <summary>
+        /// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008500)]
+        public decimal? PriceAfterCorrectionByStage
+        {
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionByStage");
+                return _priceaftercorrectionbystage;
+            }
+            set
+            {
+                _priceaftercorrectionbystage = value;
+                NotifyPropertyChanged("PriceAfterCorrectionByStage");
             }
         }
 
