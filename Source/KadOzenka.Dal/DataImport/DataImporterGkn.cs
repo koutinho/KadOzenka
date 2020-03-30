@@ -173,7 +173,7 @@ namespace KadOzenka.Dal.DataImport
             Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
 
         }
-        private static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        public static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
             {
@@ -189,7 +189,7 @@ namespace KadOzenka.Dal.DataImport
             };
             attributeValue.Save();
         }
-        private static void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        public static void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
             {
@@ -205,7 +205,7 @@ namespace KadOzenka.Dal.DataImport
             };
             attributeValue.Save();
         }
-        private static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
             {

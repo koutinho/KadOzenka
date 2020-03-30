@@ -518,6 +518,7 @@ namespace KadOzenka.Web.Controllers
             using (var stream = file.OpenReadStream())
             {
                 var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+                excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
 
                 var fileStream = DataImporterKO.ImportDataMarkerFromExcel(excelFile, nameof(OMMarkCatalog),
                     OMMarkCatalog.GetRegisterId(), groupId, factorId, isDeleteOld);
