@@ -21,10 +21,12 @@ namespace KadOzenka.Web.Controllers
     public class MarketObjectsController : KoBaseController
 	{
         public CorrectionByDateService CorrectionByDateService { get; set; }
+        public CorrectionByRoomService CorrectionByRoomService { get; set; }
 
         public MarketObjectsController()
         {
             CorrectionByDateService = new CorrectionByDateService();
+            CorrectionByRoomService = new CorrectionByRoomService();
         }
 
         [HttpGet]
@@ -167,6 +169,7 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
+        
         #region Correction By Bargain
 
         [HttpGet]
@@ -195,6 +198,27 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion Correction By Bargain
+
+
+        #region Correction By Rooms
+
+        [HttpGet]
+        public ActionResult CorrectionByRoomGeneralHistory()
+        {
+            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment));
+            ViewBag.Segments = segments;
+
+            return View();
+        }
+
+        public JsonResult GetCorrectionByRoomGeneralHistory(long marketSegmentCode)
+        {
+            var history = CorrectionByRoomService.GetCorrectionByRoomGeneralHistory(marketSegmentCode);
+
+            return Json(history.Select(CorrectionByRoomModel.Map).ToList());
+        }
+
+        #endregion
     }
 
 }

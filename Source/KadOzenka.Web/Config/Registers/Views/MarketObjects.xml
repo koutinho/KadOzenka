@@ -57,6 +57,12 @@
               </Button>
           </DropDownButtons>
       </Button>
+
+    <Button Caption="Корректировка на комнатность" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
+      <DropDownButtons>
+        <Button Caption="История" NavigateURL="~/MarketObjects/CorrectionByRoomGeneralHistory" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-images" />
+      </DropDownButtons>
+    </Button>
   </Buttons>
   
   <Tabs>

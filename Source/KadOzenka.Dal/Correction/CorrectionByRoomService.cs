@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using KadOzenka.Dal.Correction.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -59,7 +60,22 @@ namespace KadOzenka.Dal.Correction
             CalculatePriceAfterCorrectionByRooms(statisticsBySegment);
         }
 
+        public List<CorrectionByRoomHistoryDto> GetCorrectionByRoomGeneralHistory(long marketSegmentCode)
+        {
+            return OMPriceCorrectionByRoomsHistory.Where(x => x.MarketSegment_Code == (MarketSegment) marketSegmentCode)
+                .OrderByDescending(x => x.ChangingDate)
+                .SelectAll().Execute().GroupBy(x => x.ChangingDate).Select(
+                    group => new CorrectionByRoomHistoryDto
+                    {
+                        Date = group.Key,
+                        OneRoomCoefficient = Math.Round(group.ToList().Average(x => x.OneRoomCoefficient),
+                            PrecisionForCoefficients),
+                        TwoRoomsCoefficient = Math.Round(group.ToList().Average(x => x.ThreeRoomsCoefficient),
+                            PrecisionForCoefficients)
+                    }).ToList();
+        }
 
+        
         #region Support Methods
 
         private bool IsBuildingContainAllRoomsTypes(List<OMCoreObject> objectsInBuilding)
