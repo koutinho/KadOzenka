@@ -14,40 +14,49 @@ namespace KadOzenka.Dal.Correction
         public void UpdateMarketObjectsPrice()
         {
             var numberOfRooms = new long?[] { 1, 2, 3 };
-            var oneRoomCoefficients = new List<decimal>();
-            var threeRoomsCoefficients = new List<decimal>();
+            var statisticsBySegment = new Dictionary<MarketSegment, StatisticsBySegment>();
 
-            var groupedObjects = OMCoreObject.Where(x =>
-                    x.BuildingCadastralNumber != null &&
+            var objectsGroupedBySegment = OMCoreObject.Where(x =>
+                    x.BuildingCadastralNumber != null && x.PropertyMarketSegment != null &&
                     x.RoomsCount != null && numberOfRooms.Contains(x.RoomsCount) &&
                     x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                 .SelectAll(false)
                 //TODO remove
-                .SetPackageSize(10000).SetPackageIndex(0)
+                .SetPackageSize(1000).SetPackageIndex(0)
                 .Execute()
-                .GroupBy(x => new {x.BuildingCadastralNumber, x.PropertyMarketSegment_Code}).ToList();
+                .GroupBy(x => new {x.PropertyMarketSegment_Code}).ToList();
             
-            groupedObjects.ForEach(group =>
+            objectsGroupedBySegment.ForEach(groupBySegment =>
             {
-                var objectsInBuilding = group.ToList();
+                var oneRoomCoefficients = new List<decimal>();
+                var threeRoomsCoefficients = new List<decimal>();
 
-                if (IsBuildingContainAllRoomsTypes(objectsInBuilding))
+                var objectsGroupedByBuilding = groupBySegment.ToList().GroupBy(x => x.BuildingCadastralNumber).ToList();
+                objectsGroupedByBuilding.ForEach(groupByBuilding =>
                 {
-                    var oneRoomAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 1);
-                    var twoRoomsAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 2);
-                    var threeRoomsAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 3);
+                    var objectsInBuilding = groupByBuilding.ToList();
+                    if (IsBuildingContainAllRoomsTypes(objectsInBuilding))
+                    {
+                        var oneRoomAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 1);
+                        var twoRoomsAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 2);
+                        var threeRoomsAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 3);
 
-                    var oneRoomCoefficient = Math.Round(twoRoomsAveragePricePerMeter / oneRoomAveragePricePerMeter, PrecisionForCoefficients);
-                    var threeRoomsCoefficient = Math.Round(twoRoomsAveragePricePerMeter / threeRoomsAveragePricePerMeter, PrecisionForCoefficients);
+                        var oneRoomCoefficient = Math.Round(twoRoomsAveragePricePerMeter / oneRoomAveragePricePerMeter, PrecisionForCoefficients);
+                        var threeRoomsCoefficient = Math.Round(twoRoomsAveragePricePerMeter / threeRoomsAveragePricePerMeter, PrecisionForCoefficients);
 
-                    oneRoomCoefficients.Add(oneRoomCoefficient);
-                    threeRoomsCoefficients.Add(threeRoomsCoefficient);
+                        oneRoomCoefficients.Add(oneRoomCoefficient);
+                        threeRoomsCoefficients.Add(threeRoomsCoefficient);
 
-                    SaveHistory(group.Key.BuildingCadastralNumber, group.Key.PropertyMarketSegment_Code, oneRoomCoefficient, threeRoomsCoefficient);
-                }
+                        SaveHistory(groupByBuilding.Key, groupBySegment.Key.PropertyMarketSegment_Code, oneRoomCoefficient, threeRoomsCoefficient);
+                    }
+                });
+
+                statisticsBySegment.Add(groupBySegment.Key.PropertyMarketSegment_Code,
+                    new StatisticsBySegment(oneRoomCoefficients.DefaultIfEmpty().Average(),
+                        threeRoomsCoefficients.DefaultIfEmpty().Average()));
             });
 
-            CalculatePriceAfterCorrectionByRooms(oneRoomCoefficients, threeRoomsCoefficients);
+            CalculatePriceAfterCorrectionByRooms(statisticsBySegment);
         }
 
 
@@ -76,22 +85,22 @@ namespace KadOzenka.Dal.Correction
             return haveOneRoomApartment && haveTwoRoomsApartment && haveThreeRoomsApartment;
         }
 
-        private void CalculatePriceAfterCorrectionByRooms(List<decimal> oneRoomCoefficients, List<decimal> threeRoomsCoefficient)
+        private void CalculatePriceAfterCorrectionByRooms(Dictionary<MarketSegment, StatisticsBySegment> statistics)
         {
-            var oneRoomAverageCoefficient = oneRoomCoefficients.Average();
-            var threeRoomAverageCoefficient = threeRoomsCoefficient.Average();
-
             var objects = OMCoreObject.Where(x => x.RoomsCount == 1 || x.RoomsCount == 3).SelectAll().Execute();
             objects.ForEach(x =>
             {
+                if (!statistics.TryGetValue(x.PropertyMarketSegment_Code, out var coefficients))
+                    return;
+
                 var coefficient = 0m;
                 switch (x.RoomsCount)
                 {
                     case 1:
-                        coefficient = oneRoomAverageCoefficient;
+                        coefficient = coefficients.OneRoomCoefficient;
                         break;
                     case 3:
-                        coefficient = threeRoomAverageCoefficient;
+                        coefficient = coefficients.ThreeRoomsCoefficient;
                         break;
                 }
 
@@ -115,6 +124,18 @@ namespace KadOzenka.Dal.Correction
                 OneRoomCoefficient = oneRoomCoefficient,
                 ThreeRoomsCoefficient = threeRoomsCoefficient
             }.Save();
+        }
+
+        private class StatisticsBySegment
+        {
+            public decimal OneRoomCoefficient { get; }
+            public decimal ThreeRoomsCoefficient { get; }
+
+            public StatisticsBySegment(decimal oneRoomCoefficient, decimal threeRoomsCoefficient)
+            {
+                OneRoomCoefficient = oneRoomCoefficient;
+                ThreeRoomsCoefficient = threeRoomsCoefficient;
+            }
         }
 
         #endregion
