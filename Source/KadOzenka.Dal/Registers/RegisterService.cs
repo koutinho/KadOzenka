@@ -12,7 +12,8 @@ namespace KadOzenka.Dal.Registers
             return OMRegister.Where(x => x.RegisterId == registerId).SelectAll().ExecuteFirstOrDefault();
         }
 
-        public OMRegister CreateRegister(string registerName, string registerDescription, string quantTable)
+        public OMRegister CreateRegister(string registerName, string registerDescription, string quantTable,
+            string allPriTable = null, long? storageType = 4)
         {
             var omRegister = new OMRegister
             {
@@ -20,7 +21,8 @@ namespace KadOzenka.Dal.Registers
                 RegisterName = registerName,
                 RegisterDescription = registerDescription,
                 QuantTable = quantTable,
-                StorageType = 4,
+                AllpriTable = allPriTable,
+                StorageType = storageType,
                 ObjectSequence = "REG_OBJECT_SEQ",
                 ContainsQuantInFuture = false
             };

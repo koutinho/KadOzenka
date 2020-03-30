@@ -41,8 +41,11 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             OMRegister omRegister;
             using (var ts = new TransactionScope())
             {
-                var registerName = $"source_{GetNumberOfExistingRegistersWithCharacteristics()}_q";
-                omRegister = RegisterService.CreateRegister(registerName, sourceDto.RegisterDescription, registerName);
+                var numberOfExistingRegistersWithCharacteristics = GetNumberOfExistingRegistersWithCharacteristics();
+                var registerName = $"Gbu.Custom.Source{numberOfExistingRegistersWithCharacteristics}";
+                var allpriTable = $"gbu_custom_source_{numberOfExistingRegistersWithCharacteristics}";
+                var registerDescription = $"Источник: {sourceDto.RegisterDescription}";
+                omRegister = RegisterService.CreateRegister(registerName, registerDescription, "GBU_MAIN_OBJECT", allpriTable, 5);
 
                 RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
 
