@@ -41,6 +41,12 @@ namespace KadOzenka.Dal.Selenium.ScreenShots
                     driver.ExecuteScript(ConfigurationManager.AppSettings["removeYandexBlogPosts"]);
                     driver.ExecuteScript(ConfigurationManager.AppSettings["removeYandexFotter"]);
                     break;
+                case MarketTypes.Avito:
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeAvitoBanners"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeAvitoSimilarsBlock"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["removeAvitoSocialsBlock"]);
+                    driver.ExecuteScript(ConfigurationManager.AppSettings["hidePageScroll"]);
+                    break;
             }
 
             var metrics = new Dictionary<string, object>();

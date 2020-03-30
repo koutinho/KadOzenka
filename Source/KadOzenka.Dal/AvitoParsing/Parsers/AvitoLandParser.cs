@@ -14,24 +14,24 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
             Url = "https://www.avito.ru/moskva/zemelnye_uchastki";
             ObjectTypeList = new List<ObjectCategoryCorrelation>
             {
-                //new ObjectCategoryCorrelation
-                //{
-                //    AvitoName = "Поселений (ИЖС)",
-                //    MarketSegment = MarketSegment.IZHS,
-                //    PropertyType = PropertyTypesCIPJS.LandArea
-                //},
-                //new ObjectCategoryCorrelation
-                //{
-                //    AvitoName = "Сельхозназначения (СНТ, ДНП)",
-                //    MarketSegment = MarketSegment.Garden,
-                //    PropertyType = PropertyTypesCIPJS.LandArea
-                //},
-                //new ObjectCategoryCorrelation
-                //{
-                //    AvitoName = "Промназначения",
-                //    MarketSegment = MarketSegment.Factory,
-                //    PropertyType = PropertyTypesCIPJS.LandArea
-                //}
+                new ObjectCategoryCorrelation
+                {
+                    AvitoName = "Поселений (ИЖС)",
+                    MarketSegment = MarketSegment.NoSegment,
+                    PropertyType = PropertyTypesCIPJS.LandArea
+                },
+                new ObjectCategoryCorrelation
+                {
+                    AvitoName = "Сельхозназначения (СНТ, ДНП)",
+                    MarketSegment = MarketSegment.Garden,
+                    PropertyType = PropertyTypesCIPJS.LandArea
+                },
+                new ObjectCategoryCorrelation
+                {
+                    AvitoName = "Промназначения",
+                    MarketSegment = MarketSegment.NoSegment,
+                    PropertyType = PropertyTypesCIPJS.LandArea
+                }
             };
         }
 
@@ -39,8 +39,8 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
         {
             var areaString = !jObject.SelectToken("area").IsNullOrEmpty()
                 ? jObject.SelectToken("area").Value<string>()
-                : !jObject.SelectToken("site_area").IsNullOrEmpty()
-                    ? jObject.SelectToken("site_area").Value<string>()
+                : !jObject.SelectToken("siteArea").IsNullOrEmpty()
+                    ? jObject.SelectToken("siteArea").Value<string>()
                     : null;
 
             if (!string.IsNullOrWhiteSpace(areaString))

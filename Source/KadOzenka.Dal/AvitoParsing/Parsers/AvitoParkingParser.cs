@@ -17,18 +17,18 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
             Url = "https://www.avito.ru/moskva/garazhi_i_mashinomesta";
             ObjectTypeList = new List<ObjectCategoryCorrelation>
             {
-                //new ObjectCategoryCorrelation
-                //{
-                //    AvitoName = "Гараж",
-                //    MarketSegment = MarketSegment.Parking,
-                //    PropertyType = PropertyTypesCIPJS.Buildings
-                //},
-                //new ObjectCategoryCorrelation
-                //{
-                //    AvitoName = "Машиноместо",
-                //    MarketSegment = MarketSegment.CarParking,
-                //    PropertyType = PropertyTypesCIPJS.Placements
-                //}
+                new ObjectCategoryCorrelation
+                {
+                    AvitoName = "Гараж",
+                    MarketSegment = MarketSegment.Parking,
+                    PropertyType = PropertyTypesCIPJS.Buildings
+                },
+                new ObjectCategoryCorrelation
+                {
+                    AvitoName = "Машиноместо",
+                    MarketSegment = MarketSegment.Parking,
+                    PropertyType = PropertyTypesCIPJS.Placements
+                }
             };
         }
 

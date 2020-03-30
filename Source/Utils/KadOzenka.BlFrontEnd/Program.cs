@@ -22,6 +22,7 @@ using KadOzenka.BlFrontEnd.PostgresToMongo;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
 using KadOzenka.BlFrontEnd.DataImport;
+using KadOzenka.Dal.AvitoParsing;
 using KadOzenka.Dal.CadastralInfoFillingForMarketObjects;
 using KadOzenka.Dal.YandexParser;
 using KadOzenka.Dal.ExcelParser;
@@ -29,7 +30,7 @@ using KadOzenka.Dal.ExcelParser;
 namespace KadOzenka.BlFrontEnd
 {
 
-	class Program
+    class Program
 	{
 
 		static void Main(string[] args)
@@ -61,6 +62,12 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("1105", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });
             consoleHelper.AddCommand("1106", "Процедура обновления цен объектов-аналогов с Яндекс недвижимость", () => { new Yandex().RefreshAllData(testBoot: true); });
             consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
+
+		    consoleHelper.AddCommand("194", "Парсинг с авито", () =>
+		    {
+                //new AvitoParsingService().ParseAllObjects();
+                new AvitoParsingService().ParseParkingObjects();
+            });
 
             /*Вспомогательные функции*/
             consoleHelper.AddCommand("1108", "Присвоение кадастровых номеров", () => { new Cian().SetCadastralNumbers(); });
