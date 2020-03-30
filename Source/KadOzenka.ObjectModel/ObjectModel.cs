@@ -120,14 +120,14 @@ namespace ObjectModel.Gbu
 
 namespace ObjectModel.Gbu
 {
-    /// <summary>
-    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 9)]
-    [Serializable]
-    public partial class OMSource9 : OMBaseClass<OMSource9>
-    {
-    }
+	/// <summary>
+	/// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
+	/// </summary>
+	[RegisterInfo(RegisterID = 9)]
+	[Serializable]
+	public partial class OMSource9 : OMBaseClass<OMSource9>
+	{
+	}
 }
 
 namespace ObjectModel.Gbu
@@ -4317,6 +4317,152 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 112 Таблица, содержащая историю изменения цены после корректировки на этажность (MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 112)]
+    [Serializable]
+    public partial class OMPriceCorrectionByStageHistory : OMBaseClass<OMPriceCorrectionByStageHistory>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _buildingcadastralnumber;
+        /// <summary>
+        /// 11200200 Кадастровый номер здания (BUILDING_CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11200200)]
+        public string BuildingCadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("BuildingCadastralNumber");
+                return _buildingcadastralnumber;
+            }
+            set
+            {
+                _buildingcadastralnumber = value;
+                NotifyPropertyChanged("BuildingCadastralNumber");
+            }
+        }
+
+
+        private DateTime _changingdate;
+        /// <summary>
+        /// 11200300 Время изменения цены (CHANGING_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11200300)]
+        public DateTime ChangingDate
+        {
+            get
+            {
+                CheckPropertyInited("ChangingDate");
+                return _changingdate;
+            }
+            set
+            {
+                _changingdate = value;
+                NotifyPropertyChanged("ChangingDate");
+            }
+        }
+
+
+        private decimal _stagecoefficient;
+        /// <summary>
+        /// 11200400 Коэффициент (STAGE_COEFFICIENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11200400)]
+        public decimal StageCoefficient
+        {
+            get
+            {
+                CheckPropertyInited("StageCoefficient");
+                return _stagecoefficient;
+            }
+            set
+            {
+                _stagecoefficient = value;
+                NotifyPropertyChanged("StageCoefficient");
+            }
+        }
+
+
+        private string _marketsegment;
+        /// <summary>
+        /// 11200500 Сегмент рынка (MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11200500)]
+        public string MarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment");
+                return _marketsegment;
+            }
+            set
+            {
+                _marketsegment = value;
+                NotifyPropertyChanged("MarketSegment");
+            }
+        }
+
+
+        private MarketSegment _marketsegment_Code;
+        /// <summary>
+        /// 11200500 Сегмент рынка (справочный код) (MARKET_SEGMENT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11200500)]
+        public MarketSegment MarketSegment_Code
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment_Code");
+                return this._marketsegment_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_marketsegment))
+                    {
+                         _marketsegment = descr;
+                    }
+                }
+                else
+                {
+                     _marketsegment = descr;
+                }
+
+                this._marketsegment_Code = value;
+                NotifyPropertyChanged("MarketSegment");
+                NotifyPropertyChanged("MarketSegment_Code");
+            }
+        }
+
+    }
+}
 
 namespace ObjectModel.Gbu
 {

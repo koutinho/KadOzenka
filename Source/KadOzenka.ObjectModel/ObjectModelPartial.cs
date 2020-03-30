@@ -808,6 +808,30 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+	/// <summary>
+	/// 112 Таблица, содержащая историю изменения цены после корректировки на этажность
+	/// </summary>
+	public partial class OMPriceCorrectionByStageHistory
+	{
+
+		public OMPriceCorrectionByStageHistory()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMPriceCorrectionByStageHistory(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>

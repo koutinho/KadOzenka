@@ -171,6 +171,8 @@ namespace KadOzenka.BlFrontEnd
 				FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("CCCReport", ".frx", "Reports");
 
 			});
+
+			consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStage().MakeCorrection());
 		}
 
 	}
