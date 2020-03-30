@@ -4294,8 +4294,29 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private bool? _isexcluded;
+        /// <summary>
+        /// 11100700 Исключение здания из рассчета (IS_EXCLUDED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11100700)]
+        public bool? IsExcluded
+        {
+            get
+            {
+                CheckPropertyInited("IsExcluded");
+                return _isexcluded;
+            }
+            set
+            {
+                _isexcluded = value;
+                NotifyPropertyChanged("IsExcluded");
+            }
+        }
+
     }
 }
+
 
 namespace ObjectModel.Gbu
 {
@@ -20369,6 +20390,18 @@ namespace ObjectModel
     [RegisterInfo(RegisterID = 41935625)]
     [Serializable]
     public partial class OMSource37Q : OMBaseClass<OMSource37Q>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 41937379 Источник: Test_All_Pri (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 41937379)]
+    [Serializable]
+    public partial class OMSource38 : OMBaseClass<OMSource38>
     {
     }
 }
