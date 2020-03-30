@@ -218,7 +218,7 @@ namespace KadOzenka.Dal.FastReports
 
 		public string PrepareText(string text)
 		{
-			if (string.IsNullOrWhiteSpace(text.Trim()))
+			if (string.IsNullOrWhiteSpace(text?.Trim()))
 			{
 				return string.Empty;
 			}
