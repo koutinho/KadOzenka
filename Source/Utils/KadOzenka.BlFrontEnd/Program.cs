@@ -179,7 +179,7 @@ namespace KadOzenka.BlFrontEnd
 
 			});
 
-			consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStage().MakeCorrection());
+			consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection());
 		}
 
 	}

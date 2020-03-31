@@ -22,11 +22,13 @@ namespace KadOzenka.Web.Controllers
 	{
         public CorrectionByDateService CorrectionByDateService { get; set; }
         public CorrectionByRoomService CorrectionByRoomService { get; set; }
+		public CorrectionByStageService CorrectionByStageService { get; set; }
 
-        public MarketObjectsController()
+		public MarketObjectsController()
         {
             CorrectionByDateService = new CorrectionByDateService();
             CorrectionByRoomService = new CorrectionByRoomService();
+			CorrectionByStageService = new CorrectionByStageService();
         }
 
         [HttpGet]
@@ -218,7 +220,27 @@ namespace KadOzenka.Web.Controllers
             return Json(history.Select(CorrectionByRoomModel.Map).ToList());
         }
 
-        #endregion
-    }
+		#endregion
+
+		#region Correction By Stage
+
+		[HttpGet]
+		public ActionResult CorrectionByStageGeneralHistory()
+		{
+			var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment));
+			ViewBag.Segments = segments;
+
+			return View();
+		}
+
+		public JsonResult GetCorrectionByStageGeneralHistory(long marketSegmentCode)
+		{
+			var history = CorrectionByStageService.GetGeneralHistory(marketSegmentCode);
+
+			return Json(history);
+		}
+
+		#endregion
+	}
 
 }

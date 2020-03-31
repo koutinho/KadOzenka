@@ -6,39 +6,39 @@ using System.Collections.Generic;
 using System.Text;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.Correction.Dto;
 
 namespace KadOzenka.Dal.Correction
 {
-	public class CorrectionByStage
+	public class CorrectionByStageService
 	{
 		public void MakeCorrection()
-		{
+		{			
 			List<string> cadNumExcludeList = null;
 
 			//средняя цена подвальных помещений
 			var objsBasement = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
-				&& x.CadastralNumber != null
+				&& x.CadastralNumber != null				
 				&& x.FloorNumber < 0)
 				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
 				.ExecuteSelect(x => new
 				{
 					x.CadastralNumber,
 					Segment = x.PropertyMarketSegment_Code,
-					Price = x.Avg(y => y.Price)
-				});
-
-			//средняя цена надземных помещений
+					Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
+				});				
+			
 			var objsStage = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
 				&& x.CadastralNumber != null
 				&& x.FloorNumber >= 0)
 				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
-				.ExecuteSelect(x => new
+				.ExecuteSelect(x => new 
 				{
 					x.CadastralNumber,
 					Segment = x.PropertyMarketSegment_Code,
-					Price = x.Avg(y => y.Price)
-				});
-				
+					Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)					
+				});			
+
 			//здания, в которых есть и подземные, и надземные помещения
 			var avgPrice = objsBasement.Join(objsStage,
 				x => new { x.CadastralNumber, x.Segment },
@@ -49,6 +49,9 @@ namespace KadOzenka.Dal.Correction
 			{
 				SaveHistory(obj.CadastralNumber, obj.Segment, obj.Price);
 			}
+
+			//TODO: переделать на связь с историей
+			//здесь исключать здания из результатов
 
 			//среднее по сегменту
 			Dictionary<MarketSegment, decimal> avgKoeff = avgPrice.GroupBy(x => x.Segment)
@@ -89,7 +92,7 @@ namespace KadOzenka.Dal.Correction
 				decimal? thisPrice = obj.PriceAfterCorrectionByRooms ?? obj.Price;
 				obj.PriceAfterCorrectionByStage = Math.Round(thisPrice.GetValueOrDefault() * thisSegmentKoeff, 2);
 				obj.Save();
-			}
+			}	
 		}
 
 		private void SaveHistory(string buildingCadastralNumber, MarketSegment segment, decimal coefficient)
@@ -102,6 +105,19 @@ namespace KadOzenka.Dal.Correction
 				StageCoefficient = coefficient
 			};
 			history.Save();
+		}	
+
+		public List<CorrectionByStageHistoryDto> GetGeneralHistory(long marketSegmentCode)
+		{
+			return OMPriceCorrectionByStageHistory.Where(x => x.MarketSegment_Code == (MarketSegment)marketSegmentCode)
+				.OrderByDescending(x => x.ChangingDate)
+				.SelectAll().Execute().GroupBy(x => x.ChangingDate).Select(
+					group => new CorrectionByStageHistoryDto
+					{
+						Date = group.Key,
+						StageCoefficient = Math.Round(group.ToList().Average(x => x.StageCoefficient),	4)
+					}).ToList();
 		}
+
 	}
 }
