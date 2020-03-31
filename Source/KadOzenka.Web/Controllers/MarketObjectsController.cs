@@ -287,6 +287,49 @@ namespace KadOzenka.Web.Controllers
 			return Json(history);
 		}
 
+		[HttpGet]
+		public ActionResult CorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
+		{
+			var marketSegment = (MarketSegment)marketSegmentCode;
+
+			ViewBag.Date = date;
+			ViewBag.MarketSegmentCode = marketSegmentCode;
+			ViewBag.MarketSegment = marketSegment.GetEnumDescription();
+
+			return View();
+		}
+
+		public JsonResult GetCorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
+		{
+			var historyRecords = CorrectionByStageService.GetDetailedHistory(marketSegmentCode, date);
+			
+			return Json(historyRecords);
+		}
+
+		[HttpPost]		
+		public JsonResult ChangeBuildingsStatusInCalculationByStage(string models)
+		{
+			var historyJson = JObject.Parse(models).SelectToken("models").ToString();
+
+			var history = JsonConvert.DeserializeObject<List<CorrectionByStageModel>>(historyJson);
+			var records = history.Select(CorrectionByStageModel.UnMap).ToList();
+
+			var isDataUpdated = CorrectionByStageService.ChangeBuildingsStatusInCalculation(records);
+
+			string message;
+			if (isDataUpdated)
+			{
+				//CorrectionByStageForMarketObjectsLongProcess.AddProcessToQueue();
+				message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
+			}
+			else
+			{
+				message = "Не найдено данных для изменения";
+			}
+
+			return Json(new { Message = message });
+		}
+
 		#endregion
 	}
 }

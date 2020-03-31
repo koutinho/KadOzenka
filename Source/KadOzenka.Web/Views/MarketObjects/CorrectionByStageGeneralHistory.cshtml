@@ -39,12 +39,14 @@
     });
 
     function reloadHistory() {
+        var marketSegmentCode = $('[name="SegmentsDownList"]').val();
+
         var historyGridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
                     url: '@Url.Action("GetCorrectionByStageGeneralHistory", "MarketObjects")',
                     contentType: 'application/json; charset=utf-8',
-                    data: { marketSegmentCode: $('[name="SegmentsDownList"]').val() },
+                    data: { marketSegmentCode: marketSegmentCode },
                     dataType: 'json'
                 }
             },
@@ -58,6 +60,9 @@
             },
             pageSize: 10
         });
+
+        var hrefTemplate = '<a target="_blank" href="/MarketObjects/CorrectionByStageDetailedHistory?date=#=Date#&marketSegmentCode=' + marketSegmentCode + '">#=';
+
         $('#historyGrid').kendoGrid({
             dataSource: historyGridDataSource,
             columns: [
@@ -68,7 +73,7 @@
                 }, {
                     field: 'StageCoefficient',
                     title: 'Коэффициент на этажность',
-                //    template: '<a target="_blank" href="/MarketObjects/CorrectionByStageDetailedHistory?date=#=Date#">#=StageCoefficient#</a>'
+                    template: hrefTemplate + 'StageCoefficient#</a>'
                 }
             ],
             scrollable: true,

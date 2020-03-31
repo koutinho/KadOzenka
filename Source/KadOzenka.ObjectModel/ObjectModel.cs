@@ -4461,7 +4461,27 @@ namespace ObjectModel.Market
             }
         }
 
-    }
+
+		private bool? _isexcluded;
+		/// <summary>
+		/// 11200600 Исключение здания из рассчета (IS_EXCLUDED)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 11200600)]
+		public bool? IsExcluded
+		{
+			get
+			{
+				CheckPropertyInited("IsExcluded");
+				return _isexcluded;
+			}
+			set
+			{
+				_isexcluded = value;
+				NotifyPropertyChanged("IsExcluded");
+			}
+		}
+
+	}
 }
 
 namespace ObjectModel.Market

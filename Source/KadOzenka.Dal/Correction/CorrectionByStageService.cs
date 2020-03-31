@@ -26,8 +26,9 @@ namespace KadOzenka.Dal.Correction
 					x.CadastralNumber,
 					Segment = x.PropertyMarketSegment_Code,
 					Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
-				});				
-			
+				});
+
+			//средняя цена надземных помещений
 			var objsStage = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
 				&& x.CadastralNumber != null
 				&& x.FloorNumber >= 0)
@@ -43,7 +44,12 @@ namespace KadOzenka.Dal.Correction
 			var avgPrice = objsBasement.Join(objsStage,
 				x => new { x.CadastralNumber, x.Segment },
 				y => new { y.CadastralNumber, y.Segment },
-				(x, y) => new { x.CadastralNumber, x.Segment, Price = Math.Round((decimal)x.Price / (decimal)y.Price, 4) }).ToList();
+				(x, y) => new
+					{
+						x.CadastralNumber,
+						x.Segment,
+						Price = Math.Round((decimal)x.Price / (decimal)y.Price, 4)
+					}).ToList();
 
 			foreach (var obj in avgPrice)
 			{
@@ -89,8 +95,8 @@ namespace KadOzenka.Dal.Correction
 					continue;
 				}
 				decimal thisSegmentKoeff = avgKoeff[obj.PropertyMarketSegment_Code];
-				decimal? thisPrice = obj.PriceAfterCorrectionByRooms ?? obj.Price;
-				obj.PriceAfterCorrectionByStage = Math.Round(thisPrice.GetValueOrDefault() * thisSegmentKoeff, 2);
+				decimal thisPrice = obj.PriceAfterCorrectionByRooms ?? obj.Price ?? 0;
+				obj.PriceAfterCorrectionByStage = Math.Round(thisPrice * thisSegmentKoeff, 2);
 				obj.Save();
 			}	
 		}
@@ -117,6 +123,45 @@ namespace KadOzenka.Dal.Correction
 						Date = group.Key,
 						StageCoefficient = Math.Round(group.ToList().Average(x => x.StageCoefficient),	4)
 					}).ToList();
+		}
+
+		public List<CorrectionByStageHistoryDto> GetDetailedHistory(long marketSegmentCode, DateTime date)
+		{
+			return OMPriceCorrectionByStageHistory.Where(x =>
+					x.MarketSegment_Code == (MarketSegment)marketSegmentCode && x.ChangingDate == date)
+				.OrderBy(x => x.BuildingCadastralNumber)
+				.SelectAll().Execute().Select(
+					x => new CorrectionByStageHistoryDto
+					{
+						Id = x.Id,
+						BuildingCadastralNumber = x.BuildingCadastralNumber,
+						StageCoefficient = x.StageCoefficient,
+						IsExcludedFromCalculation = x.IsExcluded.GetValueOrDefault()
+					}).ToList();
+		}
+
+		public bool ChangeBuildingsStatusInCalculation(List<CorrectionByStageHistoryDto> historyRecords)
+		{
+			if (historyRecords.Count == 0)
+				return false;
+
+			var isDataUpdated = false;
+			historyRecords.ForEach(record =>
+			{
+				var recordFromDb = OMPriceCorrectionByStageHistory.Where(x => x.Id == record.Id).SelectAll().ExecuteFirstOrDefault();
+				if (recordFromDb == null)
+					return;
+
+				if (recordFromDb.IsExcluded != record.IsExcludedFromCalculation)
+				{
+					isDataUpdated = true;
+
+					recordFromDb.IsExcluded = record.IsExcludedFromCalculation;
+					recordFromDb.Save();
+				}
+			});
+
+			return isDataUpdated;
 		}
 
 	}
