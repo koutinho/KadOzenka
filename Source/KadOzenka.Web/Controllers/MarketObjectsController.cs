@@ -11,6 +11,7 @@ using Core.Main.FileStorages;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
+using KadOzenka.Dal.LongProcess;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -251,7 +252,16 @@ namespace KadOzenka.Web.Controllers
 
             var isDataUpdated = CorrectionByRoomService.ChangeBuildingsStatusInCalculation(changedRecords);
 
-            var message = isDataUpdated ? "Данные успешно обновлены" : "Не найдено данных для изменения";
+            string message;
+            if (isDataUpdated)
+            {
+                CorrectionByRoomForMarketObjectsLongProcess.AddProcessToQueue();
+                message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
+            }
+            else
+            {
+                message = "Не найдено данных для изменения";
+            }
 
             return Json(new {Message = message });
         }
