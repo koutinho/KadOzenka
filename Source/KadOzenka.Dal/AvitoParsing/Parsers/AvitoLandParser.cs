@@ -46,9 +46,9 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
             if (!string.IsNullOrWhiteSpace(areaString))
             {
                 var areaStringParts = areaString.Split(' ');
-                if (!decimal.TryParse(areaStringParts[0], out var area))
+                if (!decimal.TryParse(areaStringParts[0].Replace(".", ","), out var area))
                 {
-                    area = decimal.Parse(areaStringParts[1]);
+                    area = decimal.Parse(areaStringParts[1].Replace(".", ","));
                 }
                 var unit = areaString.Split(' ').Last().ToLower().Trim();
 

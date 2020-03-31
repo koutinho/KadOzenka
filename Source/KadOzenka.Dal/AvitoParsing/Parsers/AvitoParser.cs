@@ -6,10 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Transactions;
+using Core.Main.FileStorages;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Selenium.PriceChecker;
+using KadOzenka.Dal.Selenium.ScreenShots;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Directory;
@@ -97,7 +99,7 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                                 using (var ts = new TransactionScope())
                                 {
                                     marketObject.Save();
-                                    CianHelper.SaveScreenShot((ChromeDriver)driver,
+                                    SaveScreenShot((ChromeDriver)driver,
                                         new OMScreenshots
                                         {
                                             InitialId = marketObject.Id,
@@ -133,7 +135,7 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
             }
         }
 
-        public void CheckCapcha(ChromeDriver driver, string url)
+        public static void CheckCapcha(ChromeDriver driver, string url)
         {
             var isCapcha = driver.ExecuteScript(ConfigurationManager.AppSettings["isAvitoCapchaScreen"]).ToString();
             if (bool.Parse(isCapcha))
@@ -142,6 +144,26 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                 Console.ReadKey();
                 Console.WriteLine($"Парсинг возобновлен...");
                 driver.Navigate().GoToUrl(url);
+            }
+        }
+
+        public static void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot, DateTime screenShotData,
+            MarketTypes type, long objectId = 0, bool testBoot = false)
+        {
+            try
+            {
+                var screenShot = new FullScreen().TakeScreenShot(driver, type);
+                if (screenShot != null)
+                    FileStorageManager.Save(new MemoryStream(screenShot),
+                        ConfigurationManager.AppSettings["screenShotFolder"], screenShotData,
+                        screenshot.Save().ToString());
+                if (testBoot)
+                    File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png",
+                        screenShot);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -294,9 +316,9 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
             if (!string.IsNullOrEmpty(areaString))
             {
                 var areaStringParts = areaString.Split(' ');
-                if (!decimal.TryParse(areaStringParts[0], out var area))
+                if (!decimal.TryParse(areaStringParts[0].Replace(".", ","), out var area))
                 {
-                    area = decimal.Parse(areaStringParts[1]);
+                    area = decimal.Parse(areaStringParts[1].Replace(".", ","));
                 }
                 var unit = areaStringParts.Last().ToLower().Trim();
 
@@ -317,15 +339,15 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                 marketObject.Area = area * coef;
             }
 
-            var areaLandString = !jObject.SelectToken("site_area").IsNullOrEmpty()
-                ? jObject.SelectToken("site_area").Value<string>()
+            var areaLandString = !jObject.SelectToken("siteArea").IsNullOrEmpty()
+                ? jObject.SelectToken("siteArea").Value<string>()
                 : null;
             if (!string.IsNullOrEmpty(areaLandString))
             {
                 var areaLandStringParts = areaLandString.Split(' ');
-                if (!decimal.TryParse(areaLandStringParts[0], out var areaLand))
+                if (!decimal.TryParse(areaLandStringParts[0].Replace(".", ","), out var areaLand))
                 {
-                    areaLand = decimal.Parse(areaLandStringParts[1]);
+                    areaLand = decimal.Parse(areaLandStringParts[1].Replace(".", ","));
                 }
                 var unitLand = areaLandStringParts.Last().ToLower().Trim();
 
@@ -350,28 +372,7 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
         private decimal? GetPrice(JObject jObject, DealType dealType)
         {
             decimal? price = null;
-            if (dealType == DealType.RentSuggestion)
-            {
-                var priceValue = !jObject.SelectToken("price").IsNullOrEmpty()
-                    ? jObject.SelectToken("price").Value<decimal>()
-                    : (decimal?)null;
-                var priceString = !jObject.SelectToken("priceFormatted").IsNullOrEmpty()
-                    ? jObject.SelectToken("priceFormatted").Value<string>().Trim()
-                    : null;
-                if (priceString != null && priceString.EndsWith("в месяц"))
-                {
-                    price = priceValue;
-                }
-                else if (priceString != null && priceString.EndsWith("в год"))
-                {
-                    price = priceValue / 12;
-                }
-                else
-                {
-                    price = priceValue;
-                }
-            }
-            else if (dealType == DealType.SaleSuggestion)
+            if (dealType == DealType.RentSuggestion || dealType == DealType.SaleSuggestion)
             {
                 price = !jObject.SelectToken("price").IsNullOrEmpty()
                     ? jObject.SelectToken("price").Value<decimal>()
@@ -381,6 +382,7 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
             {
                 throw new Exception($"Передан неподдерживаемый тип сделки: {dealType.GetEnumDescription()}");
             }
+
             return price;
         }
 
