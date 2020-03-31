@@ -787,12 +787,12 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 111 Таблица, содержащая историю изменения цены после корректировки на комнатность
+    /// 111 Таблица, содержащая коэффициенты на квартиры по зданиям для корректировки на комнатность
     /// </summary>
-    public partial class OMPriceCorrectionByRoomsHistory
+    public partial class OMCoefficientsForCorrectionByRooms
     {
 
-        public OMPriceCorrectionByRoomsHistory()
+        public OMCoefficientsForCorrectionByRooms()
         {
 
             Id = -1;
@@ -801,7 +801,7 @@ namespace ObjectModel.Market
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMPriceCorrectionByRoomsHistory(bool trackPropertyChanging) : this()
+        public OMCoefficientsForCorrectionByRooms(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -810,26 +810,26 @@ namespace ObjectModel.Market
 
 namespace ObjectModel.Market
 {
-	/// <summary>
-	/// 112 Таблица, содержащая историю изменения цены после корректировки на этажность
-	/// </summary>
-	public partial class OMPriceCorrectionByStageHistory
-	{
+    /// <summary>
+    /// 112 Таблица, содержащая историю изменения цены после корректировки на этажность
+    /// </summary>
+    public partial class OMPriceCorrectionByStageHistory
+    {
 
-		public OMPriceCorrectionByStageHistory()
-		{
+        public OMPriceCorrectionByStageHistory()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMPriceCorrectionByStageHistory(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMPriceCorrectionByStageHistory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
 
 namespace ObjectModel.Gbu

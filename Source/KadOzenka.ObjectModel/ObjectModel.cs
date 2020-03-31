@@ -120,14 +120,14 @@ namespace ObjectModel.Gbu
 
 namespace ObjectModel.Gbu
 {
-	/// <summary>
-	/// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
-	/// </summary>
-	[RegisterInfo(RegisterID = 9)]
-	[Serializable]
-	public partial class OMSource9 : OMBaseClass<OMSource9>
-	{
-	}
+    /// <summary>
+    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 9)]
+    [Serializable]
+    public partial class OMSource9 : OMBaseClass<OMSource9>
+    {
+    }
 }
 
 namespace ObjectModel.Gbu
@@ -4133,11 +4133,11 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 111 Таблица, содержащая историю изменения цены после корректировки на комнатность (MARKET_PRICE_CORRECTION_BY_ROOMS_HISTORY)
+    /// 111 Таблица, содержащая коэффициенты на квартиры по зданиям для корректировки на комнатность (MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION)
     /// </summary>
     [RegisterInfo(RegisterID = 111)]
     [Serializable]
-    public partial class OMPriceCorrectionByRoomsHistory : OMBaseClass<OMPriceCorrectionByRoomsHistory>
+    public partial class OMCoefficientsForCorrectionByRooms : OMBaseClass<OMCoefficientsForCorrectionByRooms>
     {
 
         private long _id;
