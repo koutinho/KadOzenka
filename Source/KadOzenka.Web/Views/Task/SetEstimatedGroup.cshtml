@@ -21,7 +21,7 @@
 				@Html.CustomLabel("Атрибут кода группы")
 			</div>
 			<div class="col-sm-10">
-				@Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodeGroup, (IEnumerable)ViewData["Attributes"])
+				@Html.KendoDropDownListTreeWithButton(m => m.IdCodeGroup, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
 			</div>
 		</div>
 		<div class="form-group">
@@ -29,7 +29,7 @@
 				@Html.CustomLabel("Атрибут кадастрового квартала")
 			</div>
 			<div class="col-sm-10">
-				@Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodeQuarter, (IEnumerable)ViewData["Attributes"])
+				@Html.KendoDropDownListTreeWithButton(m => m.IdCodeQuarter, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
 			</div>
 		</div>
 		<div class="form-group">
@@ -37,7 +37,7 @@
 				@Html.CustomLabel("Атрибут типа помещения")
 			</div>
 			<div class="col-sm-10">
-				@Html.KendoDropDownListWithAutocompleteFor(m => m.IdTypeRoom, (IEnumerable)ViewData["Attributes"])
+				@Html.KendoDropDownListTreeWithButton(m => m.IdTypeRoom, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
 			</div>
 		</div>
 		<div class="form-group">
@@ -45,7 +45,7 @@
 				@Html.CustomLabel("Атрибут для проставления оценочной группы")
 			</div>
 			<div class="col-sm-10">
-				@Html.KendoDropDownListWithAutocompleteFor(m => m.IdEstimatedSubGroup, (IEnumerable)ViewData["Attributes"])
+				@Html.KendoDropDownListTreeWithButton(m => m.IdEstimatedSubGroup, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
 			</div>
 		</div>
 
@@ -69,8 +69,8 @@
 <script type="text/javascript">
 	function fillForm(data) {
 		data.forEach(function (val) {
-			if ($('#' + Object.keys(val)[0]).data('kendoDropDownList')) {
-				$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+			if ($('#' + Object.keys(val)[0]).data('kendoDropDownTree')) {
+				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]]);
 			}
 		});
 	}

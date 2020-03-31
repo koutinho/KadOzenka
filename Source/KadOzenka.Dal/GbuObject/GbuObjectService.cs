@@ -7,7 +7,10 @@ using KadOzenka.Web.Models.GbuObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KadOzenka.Dal.GbuObject.Dto;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
+
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -178,6 +181,20 @@ where a.object_id = {objectId}";
 			return result;
 		}
 
+		public List<GbuAttributesTreeDto> GetGbuAttributesTree()
+		{
+			return RegisterCache.Registers.Values.Where(x => x.Id < 22 && x.Id > 1).Select(x => new GbuAttributesTreeDto
+			{
+				Text = x.Description,
+				Value = x.Id.ToString(),
+				Items = RegisterCache.RegisterAttributes.Values.Where(y => y.RegisterId == x.Id)
+					.Select(y => new SelectListItem
+					{
+						Text = y.Name,
+						Value = y.Id.ToString()
+					}).ToList()
+			}).ToList();
+		}
 
         public List<OMAttribute> GetGbuAttributes()
         {

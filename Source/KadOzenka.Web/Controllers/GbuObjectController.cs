@@ -12,6 +12,7 @@ using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Common;
 using ObjectModel.Core.TD;
@@ -110,11 +111,16 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewData["Attributes"] = _service.GetGbuAttributes()
-				.Select(x => new
+			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
 				{
-					Value = x.Id,
-					Text = x.Name
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
 				}).AsEnumerable();
 
 			return View(new GroupingObject());
@@ -264,9 +270,17 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult Harmonization()
 		{
-			ViewData["Attributes"] = _service.GetGbuAttributes()
-                .Select(x => new { Text = x.Name, Value = x.Id })
-				.ToList();
+			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
+				{
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
+				}).AsEnumerable();
 
 			var viewModel = new HarmonizationViewModel();
 			return View(viewModel);
@@ -310,9 +324,18 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult HarmonizationCOD()
 		{
-			ViewData["Attributes"] = _service.GetGbuAttributes()
-                .Select(x => new { Text = x.Name, Value = x.Id })
-				.ToList();
+			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
+				{
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
+				}).AsEnumerable();
+
 			ViewData["CodJobs"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
 			{
 				Text = x.NameJob,
@@ -372,11 +395,16 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewData["Attributes"] = _service.GetGbuAttributes()
-				.Select(x => new
+			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
 				{
-					Value = x.Id,
-					Text = x.Name
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
 				}).AsEnumerable();
 
 			ViewData["Document"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
@@ -433,11 +461,16 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult GetRow([FromForm] int rowNumber)
 		{
-			ViewData["Attributes"] = _service.GetGbuAttributes()
-				.Select(x => new
+			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
 				{
-					Value = x.Id,
-					Text = x.Name
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
 				}).AsEnumerable();
 
 			ViewData["RowNumber"] = rowNumber.ToString();
@@ -448,11 +481,16 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult Inheritance()
 		{
-			ViewData["Attributes"] = _service.GetGbuAttributes()
-				.Select(x => new
+			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
 				{
-					Value = x.Id,
-					Text = x.Name
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
 				}).AsEnumerable();
 
 			long[] arr = new long[5];

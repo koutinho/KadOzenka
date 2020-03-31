@@ -92,7 +92,7 @@
 					@Html.CustomLabelFor(m => m.IdAttributeFilter)
 				</div>
 				<div class="col-sm-9">
-					@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (IEnumerable)ViewData["Attributes"], isReadonly: Model.SelectAllObject)
+					@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], isReadonly: Model.SelectAllObject)
 				</div>
 			</div>
 			<div class="col-sm-5">
@@ -197,14 +197,14 @@
 
 	function changeAttributeFilterAvailability(areFieldsReadonly) {
             if (areFieldsReadonly) {
-                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').value('');
-                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').enable(false);
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').value('');
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(false);
                 $('a.clear-button-@(nameof(Model.IdAttributeFilter))').addClass('k-state-disabled');
 
                 $('#valuesFilter').data("kendoMultiSelect").value([]);
                 $('#valuesFilter').data("kendoMultiSelect").enable(false);
             } else {
-                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').enable(true);
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(true);
                 $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
                 $('#valuesFilter').data("kendoMultiSelect").enable(true);
             }
@@ -225,9 +225,12 @@
 						$('#SelectAllObject_False').click();
 					}
 
-					if (Object.keys(val)[0].includes('IdAttributeResult') || Object.keys(val)[0].includes('IdCodJob')
-						|| Object.keys(val)[0].includes('IdDocument') || Object.keys(val)[0].includes('IdAttributeFilter')) {
+					if (Object.keys(val)[0].includes('IdCodJob') || Object.keys(val)[0].includes('IdDocument')) {
 						$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+					}
+
+					if (Object.keys(val)[0].includes('IdAttributeResult') || Object.keys(val)[0].includes('IdAttributeFilter')) {
+						$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]]);
 					}
 
 					if (Object.keys(val)[0].includes('ValuesFilter')) {

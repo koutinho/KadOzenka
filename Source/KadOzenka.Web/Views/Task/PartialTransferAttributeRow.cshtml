@@ -10,7 +10,7 @@
 	</div>
 	<div class="col-sm-5">
 		<div>
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeGbu, (IEnumerable)ViewData["GbuAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
+			@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
 		</div>
 	</div>
 </div>

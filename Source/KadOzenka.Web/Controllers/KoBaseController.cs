@@ -10,7 +10,7 @@ namespace KadOzenka.Web.Controllers
 {
     public class KoBaseController : BaseController
 	{
-        protected JsonResult GenerateMessageNonValidModel()
+		protected JsonResult GenerateMessageNonValidModel()
         {
             return Json(new
             {
@@ -67,5 +67,6 @@ namespace KadOzenka.Web.Controllers
 		        }
 	        });
         }
+
 	}
 }

@@ -72,7 +72,7 @@
 					@Html.CustomLabel("Фактор с родительским номером")
 				</div>
 				<div class="col-sm-8">
-					@Html.KendoDropDownListWithAutocompleteFor(m => m.ParentCadastralNumberAttribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+					@Html.KendoDropDownListTreeWithButton(m => m.ParentCadastralNumberAttribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
 				</div>
 			</div>
 		</fieldset>
@@ -87,7 +87,7 @@
 			{
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
-						@Html.KendoDropDownListWithAutocompleteFor(m => m.Attributes[i], (System.Collections.IEnumerable) ViewData["Attributes"])
+						@Html.KendoDropDownListTreeWithButton(m => m.Attributes[i], (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
 					</div>
 				</div>
 			}

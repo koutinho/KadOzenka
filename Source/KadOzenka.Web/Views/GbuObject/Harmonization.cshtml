@@ -47,7 +47,7 @@
                         @Html.CustomLabelFor(m => m.IdAttributeFilter)
                     </div>
                     <div class="col-sm-9">
-                        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeFilter, (System.Collections.IEnumerable)ViewData["Attributes"], isReadonly: Model.SelectAllObject)
+                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], isReadonly: Model.SelectAllObject)
                     </div>
                 </div>
                 <div class="col-sm-5">
@@ -95,7 +95,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level1Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level1Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -104,7 +104,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level2Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level2Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -113,7 +113,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level3Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level3Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -122,7 +122,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level4Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level4Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -131,7 +131,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level5Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level5Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -140,7 +140,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level6Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level6Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -149,7 +149,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level7Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level7Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -158,7 +158,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level8Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level8Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -167,7 +167,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level9Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level9Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
         <fieldset class="attrLevelFieldset">
@@ -176,7 +176,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.Level10Attribute, (System.Collections.IEnumerable)ViewData["Attributes"])
+                @Html.KendoDropDownListTreeWithButton(m => m.Level10Attribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
             </div>
         </fieldset>
 	    <div class="form-group">
@@ -236,7 +236,7 @@
 		data.forEach(function (val) {
 			if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
 				 Object.keys(val)[0].includes('IdAttributeFilter')) {
-				$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]]);
 			}
 
 			if (Object.keys(val)[0].includes('ValuesFilter')) {
@@ -464,14 +464,14 @@
 
         function changeAttributeFilterAvailability(areFieldsReadonly) {
             if (areFieldsReadonly) {
-                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').value('');
-                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').enable(false);
+                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').value('');
+				$('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(false);
                 $('a.clear-button-@(nameof(Model.IdAttributeFilter))').addClass('k-state-disabled');
 
                 $('#valuesFilter').data("kendoMultiSelect").value([]);
                 $('#valuesFilter').data("kendoMultiSelect").enable(false);
             } else {
-                $('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownList').enable(true);
+				$('#@(nameof(Model.IdAttributeFilter))').data('kendoDropDownTree').enable(true);
                 $('a.clear-button-@(nameof(Model.IdAttributeFilter))').removeClass('k-state-disabled');
                 $('#valuesFilter').data("kendoMultiSelect").enable(true);
             }
