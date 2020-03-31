@@ -207,7 +207,7 @@ namespace KadOzenka.Web.Controllers
         #region Correction By Rooms
 
         [HttpGet]
-        public ActionResult CorrectionByRoomGeneralHistory()
+        public ActionResult CorrectionByRoomGeneralCoefficients()
         {
             var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment));
             ViewBag.Segments = segments;
@@ -215,15 +215,15 @@ namespace KadOzenka.Web.Controllers
             return View();
         }
 
-        public JsonResult GetCorrectionByRoomGeneralHistory(long marketSegmentCode)
+        public JsonResult GetCorrectionByRoomGeneralCoefficients(long marketSegmentCode)
         {
-            var history = CorrectionByRoomService.GetCorrectionByRoomGeneralHistory(marketSegmentCode);
+            var history = CorrectionByRoomService.GetCorrectionByRoomGeneralCoefficients(marketSegmentCode);
 
             return Json(history.Select(CorrectionByRoomModel.Map).ToList());
         }
 
         [HttpGet]
-        public ActionResult CorrectionByRoomDetailedHistory(long marketSegmentCode, DateTime date)
+        public ActionResult CorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             var marketSegment = (MarketSegment)marketSegmentCode;
 
@@ -234,9 +234,9 @@ namespace KadOzenka.Web.Controllers
             return View();
         }
 
-        public JsonResult GetCorrectionByRoomDetailedHistory(long marketSegmentCode, DateTime date)
+        public JsonResult GetCorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
-            var historyRecords = CorrectionByRoomService.GetCorrectionByRoomDetailedHistory(marketSegmentCode, date);
+            var historyRecords = CorrectionByRoomService.GetCorrectionByRoomDetailedCoefficients(marketSegmentCode, date);
             var models = historyRecords.Select(CorrectionByRoomModel.Map).ToList();
 
             return Json(models);

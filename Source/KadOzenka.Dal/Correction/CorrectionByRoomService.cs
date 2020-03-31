@@ -18,8 +18,8 @@ namespace KadOzenka.Dal.Correction
             var statisticsBySegment = new Dictionary<MarketSegment, StatisticsBySegment>();
 
             var date = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-            var history = GetHistory(date);
-            var excludedBuildings = history.Where(x => x.IsExcluded.GetValueOrDefault()).Select(x => x.BuildingCadastralNumber).ToList();
+            var coefficients = GetCoefficients(date);
+            var excludedBuildings = coefficients.Where(x => x.IsExcluded.GetValueOrDefault()).Select(x => x.BuildingCadastralNumber).ToList();
             
             var objectsGroupedBySegment = OMCoreObject.Where(x =>
                     x.PropertyMarketSegment != null && x.BuildingCadastralNumber != null &&
@@ -54,7 +54,7 @@ namespace KadOzenka.Dal.Correction
                         oneRoomCoefficients.Add(oneRoomCoefficient);
                         threeRoomsCoefficients.Add(threeRoomsCoefficient);
 
-                        SaveHistory(history, date, groupByBuilding.Key, groupBySegment.Key.PropertyMarketSegment_Code, oneRoomCoefficient, threeRoomsCoefficient);
+                        SaveCoefficients(coefficients, date, groupByBuilding.Key, groupBySegment.Key.PropertyMarketSegment_Code, oneRoomCoefficient, threeRoomsCoefficient);
                     }
                 });
 
@@ -66,14 +66,14 @@ namespace KadOzenka.Dal.Correction
             CalculatePriceAfterCorrectionByRooms(statisticsBySegment);
         }
 
-        public List<CorrectionByRoomHistoryDto> GetCorrectionByRoomGeneralHistory(long marketSegmentCode)
+        public List<CorrectionByRoomCoefficientsDto> GetCorrectionByRoomGeneralCoefficients(long marketSegmentCode)
         {
             return OMCoefficientsForCorrectionByRooms.Where(x =>
                     x.MarketSegment_Code == (MarketSegment) marketSegmentCode &&
                     (x.IsExcluded == false || x.IsExcluded == null))
                 .OrderByDescending(x => x.ChangingDate)
                 .SelectAll().Execute().GroupBy(x => x.ChangingDate).Select(
-                    group => new CorrectionByRoomHistoryDto
+                    group => new CorrectionByRoomCoefficientsDto
                     {
                         Date = group.Key,
                         OneRoomCoefficient = Math.Round(
@@ -85,13 +85,13 @@ namespace KadOzenka.Dal.Correction
                     }).ToList();
         }
 
-        public List<CorrectionByRoomHistoryDto> GetCorrectionByRoomDetailedHistory(long marketSegmentCode, DateTime date)
+        public List<CorrectionByRoomCoefficientsDto> GetCorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             return OMCoefficientsForCorrectionByRooms.Where(x =>
                     x.MarketSegment_Code == (MarketSegment) marketSegmentCode && x.ChangingDate == date)
                 .OrderBy(x => x.BuildingCadastralNumber)
                 .SelectAll().Execute().Select(
-                    x => new CorrectionByRoomHistoryDto
+                    x => new CorrectionByRoomCoefficientsDto
                     {
                         Id = x.Id,
                         BuildingCadastralNumber = x.BuildingCadastralNumber,
@@ -101,13 +101,13 @@ namespace KadOzenka.Dal.Correction
                     }).ToList();
         }
 
-        public bool ChangeBuildingsStatusInCalculation(List<CorrectionByRoomHistoryDto> historyRecords)
+        public bool ChangeBuildingsStatusInCalculation(List<CorrectionByRoomCoefficientsDto> coefficients)
         {
-            if (historyRecords.Count == 0)
+            if (coefficients.Count == 0)
                 return false;
 
             var isDataUpdated = false;
-            historyRecords.ForEach(record =>
+            coefficients.ForEach(record =>
             {
                 var recordFromDb = OMCoefficientsForCorrectionByRooms.Where(x => x.Id == record.Id).SelectAll().ExecuteFirstOrDefault();
                 if (recordFromDb == null)
@@ -178,10 +178,10 @@ namespace KadOzenka.Dal.Correction
             return objects.Where(x => x.RoomsCount == numberOfRooms).Select(x => x.PricePerMeter.GetValueOrDefault()).Average();
         }
 
-        private void SaveHistory(List<OMCoefficientsForCorrectionByRooms> history, DateTime date, string buildingCadastralNumber, 
+        private void SaveCoefficients(List<OMCoefficientsForCorrectionByRooms> coefficients, DateTime date, string buildingCadastralNumber, 
             MarketSegment segment, decimal oneRoomCoefficient, decimal threeRoomsCoefficient)
         {
-            var existedRecord = history.FirstOrDefault(x =>
+            var existedRecord = coefficients.FirstOrDefault(x =>
                 x.BuildingCadastralNumber == buildingCadastralNumber && x.MarketSegment_Code == segment &&
                 x.ChangingDate == date);
             if (existedRecord == null)
@@ -203,7 +203,7 @@ namespace KadOzenka.Dal.Correction
             }
         }
 
-        private List<OMCoefficientsForCorrectionByRooms> GetHistory(DateTime date)
+        private List<OMCoefficientsForCorrectionByRooms> GetCoefficients(DateTime date)
         {
             return OMCoefficientsForCorrectionByRooms.Where(x => x.ChangingDate == date).SelectAll().Execute().ToList();
         }

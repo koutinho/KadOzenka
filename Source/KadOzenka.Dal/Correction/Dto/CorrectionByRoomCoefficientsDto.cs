@@ -3,7 +3,7 @@ using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Correction.Dto
 {
-    public class CorrectionByRoomHistoryDto
+    public class CorrectionByRoomCoefficientsDto
     {
         public long Id { get; set; }
         public string BuildingCadastralNumber { get; set; }

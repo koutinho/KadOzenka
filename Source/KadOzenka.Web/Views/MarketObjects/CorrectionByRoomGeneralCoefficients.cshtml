@@ -44,7 +44,7 @@
         var historyGridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetCorrectionByRoomGeneralHistory", "MarketObjects")',
+                    url: '@Url.Action("GetCorrectionByRoomGeneralCoefficients", "MarketObjects")',
                     contentType: 'application/json; charset=utf-8',
                     data: { marketSegmentCode: marketSegmentCode },
                     dataType: 'json'
@@ -61,7 +61,7 @@
             },
             pageSize: 10
         });
-        var hrefTemplate = '<a target="_blank" href="/MarketObjects/CorrectionByRoomDetailedHistory?date=#=Date#&marketSegmentCode=' + marketSegmentCode +'">#=';
+        var hrefTemplate = '<a target="_blank" href="/MarketObjects/CorrectionByRoomDetailedCoefficients?date=#=Date#&marketSegmentCode=' + marketSegmentCode +'">#=';
         $('#historyGrid').kendoGrid({
             dataSource: historyGridDataSource,
             columns: [

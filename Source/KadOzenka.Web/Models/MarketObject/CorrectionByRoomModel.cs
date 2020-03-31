@@ -25,22 +25,22 @@ namespace KadOzenka.Web.Models.MarketObject
         public bool IsExcludeFromCalculation { get; set; }
 
 
-        public static CorrectionByRoomModel Map(CorrectionByRoomHistoryDto history)
+        public static CorrectionByRoomModel Map(CorrectionByRoomCoefficientsDto coefficients)
         {
             return new CorrectionByRoomModel
             {
-                Id = history.Id,
-                BuildingCadastralNumber = history.BuildingCadastralNumber,
-                Date = history.Date,
-                OneRoomCoefficient = history.OneRoomCoefficient,
-                ThreeRoomsCoefficient = history.ThreeRoomsCoefficient,
-                IsExcludeFromCalculation = history.IsExcludeFromCalculation
+                Id = coefficients.Id,
+                BuildingCadastralNumber = coefficients.BuildingCadastralNumber,
+                Date = coefficients.Date,
+                OneRoomCoefficient = coefficients.OneRoomCoefficient,
+                ThreeRoomsCoefficient = coefficients.ThreeRoomsCoefficient,
+                IsExcludeFromCalculation = coefficients.IsExcludeFromCalculation
             };
         }
 
-        public static CorrectionByRoomHistoryDto UnMap(CorrectionByRoomModel model)
+        public static CorrectionByRoomCoefficientsDto UnMap(CorrectionByRoomModel model)
         {
-            return new CorrectionByRoomHistoryDto
+            return new CorrectionByRoomCoefficientsDto
             {
                 Id = model.Id,
                 IsExcludeFromCalculation = model.IsExcludeFromCalculation

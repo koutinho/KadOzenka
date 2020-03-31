@@ -47,7 +47,7 @@
         var dataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Html.Raw(Url.Action("GetCorrectionByRoomDetailedHistory", "MarketObjects", new { marketSegmentCode = ViewBag.MarketSegmentCode, date = ViewBag.Date }))',
+                    url: '@Html.Raw(Url.Action("GetCorrectionByRoomDetailedCoefficients", "MarketObjects", new { marketSegmentCode = ViewBag.MarketSegmentCode, date = ViewBag.Date }))',
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json'
                 }
