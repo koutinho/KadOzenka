@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.Correction
                     x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                 .SelectAll(false)
                 //TODO remove
-                .SetPackageSize(1000).SetPackageIndex(0)
+                .SetPackageSize(10000).SetPackageIndex(0)
                 .Execute()
                 .GroupBy(x => new {x.PropertyMarketSegment_Code}).ToList();
             
@@ -68,14 +68,50 @@ namespace KadOzenka.Dal.Correction
                     group => new CorrectionByRoomHistoryDto
                     {
                         Date = group.Key,
-                        OneRoomCoefficient = Math.Round(group.ToList().Average(x => x.OneRoomCoefficient),
+                        OneRoomCoefficient = Math.Round(group.ToList().DefaultIfEmpty().Average(x => x.OneRoomCoefficient),
                             PrecisionForCoefficients),
-                        TwoRoomsCoefficient = Math.Round(group.ToList().Average(x => x.ThreeRoomsCoefficient),
+                        ThreeRoomsCoefficient = Math.Round(group.ToList().DefaultIfEmpty().Average(x => x.ThreeRoomsCoefficient),
                             PrecisionForCoefficients)
                     }).ToList();
         }
 
-        
+        public List<CorrectionByRoomHistoryDto> GetCorrectionByRoomDetailedHistory(long marketSegmentCode, DateTime date)
+        {
+            return OMPriceCorrectionByRoomsHistory.Where(x =>
+                    x.MarketSegment_Code == (MarketSegment) marketSegmentCode && x.ChangingDate == date)
+                .OrderBy(x => x.BuildingCadastralNumber)
+                .SelectAll().Execute().Select(
+                    x => new CorrectionByRoomHistoryDto
+                    {
+                        Id = x.Id,
+                        BuildingCadastralNumber = x.BuildingCadastralNumber,
+                        OneRoomCoefficient = x.OneRoomCoefficient,
+                        ThreeRoomsCoefficient = x.ThreeRoomsCoefficient,
+                        IsExcludeFromCalculation = x.IsExcluded.GetValueOrDefault()
+                    }).ToList();
+        }
+
+        public bool ChangeBuildingsStatusInCalculation(List<CorrectionByRoomHistoryDto> historyRecords)
+        {
+            if (historyRecords.Count == 0)
+                return false;
+
+            var isDataUpdated = false;
+            historyRecords.ForEach(record =>
+            {
+                var recordFromDb = OMPriceCorrectionByRoomsHistory.Where(x => x.Id == record.Id).SelectAll().ExecuteFirstOrDefault();
+                if (recordFromDb == null)
+                    return;
+
+                recordFromDb.IsExcluded = record.IsExcludeFromCalculation;
+                recordFromDb.Save();
+                isDataUpdated = true;
+            });
+
+            return isDataUpdated;
+        }
+
+
         #region Support Methods
 
         private bool IsBuildingContainAllRoomsTypes(List<OMCoreObject> objectsInBuilding)

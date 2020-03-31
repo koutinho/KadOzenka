@@ -19,7 +19,6 @@
 
 
 @section styles {
-    <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
     <style>
         .k-header .k-link {
             text-align: center;
@@ -38,13 +37,16 @@
 
     });
 
+
+
     function reloadHistory() {
+        var marketSegmentCode = $('[name="SegmentsDownList"]').val();
         var historyGridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
                     url: '@Url.Action("GetCorrectionByRoomGeneralHistory", "MarketObjects")',
                     contentType: 'application/json; charset=utf-8',
-                    data: { marketSegmentCode: $('[name="SegmentsDownList"]').val() },
+                    data: { marketSegmentCode: marketSegmentCode },
                     dataType: 'json'
                 }
             },
@@ -59,6 +61,7 @@
             },
             pageSize: 10
         });
+        var hrefTemplate = '<a target="_blank" href="/MarketObjects/CorrectionByRoomDetailedHistory?date=#=Date#&marketSegmentCode=' + marketSegmentCode +'">#=';
         $('#historyGrid').kendoGrid({
             dataSource: historyGridDataSource,
             columns: [
@@ -69,10 +72,11 @@
                 }, {
                     field: 'OneRoomCoefficient',
                     title: 'Коэффициент на 1-но комнатную квартиру',
-                    template: '<a target="_blank" href="/MarketObjects/CorrectionByRoomDetailedHistory?date=#=Date#">#=OneRoomCoefficient#</a>'
+                    template: hrefTemplate + 'OneRoomCoefficient#</a>'
                 }, {
-                    field: 'TwoRoomsCoefficient',
-                    title: 'Коэффициент на 2-х комнатную квартиру'
+                    field: 'ThreeRoomsCoefficient',
+                    title: 'Коэффициент на 3-х комнатную квартиру',
+                    template: hrefTemplate + 'ThreeRoomsCoefficient#</a>'
                 }
             ],
             scrollable: true,

@@ -14,6 +14,7 @@ using KadOzenka.Dal.Correction;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json.Linq;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Controllers
@@ -220,9 +221,45 @@ namespace KadOzenka.Web.Controllers
             return Json(history.Select(CorrectionByRoomModel.Map).ToList());
         }
 
-		#endregion
+        [HttpGet]
+        public ActionResult CorrectionByRoomDetailedHistory(long marketSegmentCode, DateTime date)
+        {
+            var marketSegment = (MarketSegment)marketSegmentCode;
 
-		#region Correction By Stage
+            ViewBag.Date = date;
+            ViewBag.MarketSegmentCode = marketSegmentCode;
+            ViewBag.MarketSegment = marketSegment.GetEnumDescription();
+
+            return View();
+        }
+
+        public JsonResult GetCorrectionByRoomDetailedHistory(long marketSegmentCode, DateTime date)
+        {
+            var historyRecords = CorrectionByRoomService.GetCorrectionByRoomDetailedHistory(marketSegmentCode, date);
+            var models = historyRecords.Select(CorrectionByRoomModel.Map).ToList();
+
+            return Json(models);
+        }
+
+        [HttpPost]
+        public JsonResult ChangeBuildingsStatusInCalculation(string models)
+        {
+            var historyJson = JObject.Parse(models).SelectToken("models").ToString();
+
+            var allRecords = JsonConvert.DeserializeObject<List<CorrectionByRoomModel>>(historyJson);
+            var changedRecords = allRecords.Where(x => x.IsDirty).Select(CorrectionByRoomModel.UnMap).ToList();
+
+            var isDataUpdated = CorrectionByRoomService.ChangeBuildingsStatusInCalculation(changedRecords);
+
+            var message = isDataUpdated ? "Данные успешно обновлены" : "Не найдено данных для изменения";
+
+            return Json(new {Message = message });
+        }
+
+        #endregion
+
+
+        #region Correction By Stage
 
 		[HttpGet]
 		public ActionResult CorrectionByStageGeneralHistory()
@@ -242,5 +279,4 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 	}
-
 }
