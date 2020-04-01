@@ -94,22 +94,7 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
                                     ((IJavaScriptExecutor)_).ExecuteScript("return window._result;"));
                                 var deserializedObject = (JObject)JsonConvert.DeserializeObject(jsObjectData.ToString());
                                 var marketObject = FillMarketObject(dealType, objectType, deserializedObject, objectUrl);
-                                using (var ts = new TransactionScope())
-                                {
-                                    marketObject.Save();
-                                    SaveScreenShot((ChromeDriver)driver,
-                                        new OMScreenshots
-                                        {
-                                            InitialId = marketObject.Id,
-                                            CreationDate = marketObject.ParserTime.Value,
-                                            Type = "image/png"
-                                        },
-                                        marketObject.ParserTime.Value,
-                                        MarketTypes.Avito, marketObject.Id, false);
-
-                                    ts.Complete();
-                                }
-
+                                marketObject.Save();
                                 correctCount++;
                             }
                             catch (Exception ex)
