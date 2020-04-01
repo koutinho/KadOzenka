@@ -95,11 +95,16 @@ namespace KadOzenka.Web.Controllers
 		{
 			var model = new ExportAttributesModel();
 
-			ViewData["GbuAttributes"] = GbuObjectService.GetGbuAttributes()
-				.Select(x => new
+			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
 				{
-					Value = x.Id,
-					Text = x.Name
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
 				}).AsEnumerable();
 
 			ViewData["KoAttributes"] = new List<string>();
@@ -149,11 +154,16 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] int objectType)
 		{
 
-			ViewData["GbuAttributes"] = GbuObjectService.GetGbuAttributes()
-				.Select(x => new
+			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
 				{
-					Value = x.Id,
-					Text = x.Name
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
 				}).AsEnumerable();
 
 			var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType) ?? new List<OMAttribute>();
@@ -588,11 +598,16 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult SetEstimatedGroup(int taskId)
 		{
-			ViewData["Attributes"] = GbuObjectService.GetGbuAttributes()
-				.Select(x => new
+			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
+				.Select(x => new DropDownTreeItemModel
 				{
-					Value = x.Id,
-					Text = x.Name
+					Value = Guid.NewGuid().ToString(),
+					Text = x.Text,
+					Items = x.Items.Select(y => new DropDownTreeItemModel
+					{
+						Value = y.Value,
+						Text = y.Text
+					}).ToList()
 				}).AsEnumerable();
 
 			ViewBag.TaskId = taskId;
@@ -611,9 +626,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				return GenerateMessageNonValidModel();
 			}
-
 			TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask, viewModel.ToGroupModel());
-
 
 			return Json(new { });
 		}
