@@ -3,7 +3,10 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using ObjectModel.Market;
+using Core.Shared.Extensions;
+
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -11,17 +14,26 @@ namespace KadOzenka.Dal.LongProcess
     {
         public const string LongProcessName = nameof(CorrectionByRoomForMarketObjectsLongProcess);
 
-        public static void AddProcessToQueue()
+        public static void AddProcessToQueue(CorrectionByRoomRequest request)
         {
-            LongProcessManager.AddTaskToQueue(LongProcessName, registerId: OMCoreObject.GetRegisterId());
+            LongProcessManager.AddTaskToQueue(LongProcessName, registerId: OMCoreObject.GetRegisterId(), parameters: request.SerializeToXml());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
+            DateTime date;
+            if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
+            {
+                var request = processQueue.Parameters.DeserializeFromXml<CorrectionByRoomRequest>();
+                date = request?.Date ?? DateTime.Today;
+            }
+            else
+            {
+                date = DateTime.Today;
+            }
+
             var correctionByRoomService = new CorrectionByRoomService();
-            //todo
-            //var settings = processQueue.Parameters.DeserializeFromXml<type>();
-            correctionByRoomService.UpdateMarketObjectsPrice(DateTime.Today);
+            correctionByRoomService.UpdateMarketObjectsPrice(date);
         }
     }
 }

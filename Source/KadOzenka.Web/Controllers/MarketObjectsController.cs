@@ -12,6 +12,7 @@ using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -255,8 +256,7 @@ namespace KadOzenka.Web.Controllers
             string message;
             if (isDataUpdated)
             {
-                //todo - to process
-                //CorrectionByRoomService.UpdateMarketObjectsPrice(date);
+                CorrectionByRoomForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
                 message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
             }
             else
