@@ -25,8 +25,6 @@ namespace KadOzenka.Dal.Correction
                     x.RoomsCount != null && numberOfRooms.Contains(x.RoomsCount) &&
                     x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                 .SelectAll(false)
-                //TODO remove
-                .SetPackageSize(100000).SetPackageIndex(0)
                 .Execute()
                 .GroupBy(x => new {x.PropertyMarketSegment_Code}).ToList();
             
