@@ -108,7 +108,7 @@ namespace KadOzenka.Dal.DataImport
 			ParallelOptions options = new ParallelOptions
 			{
 				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 1
+				MaxDegreeOfParallelism = 100
 			};
 			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
 			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
