@@ -22,14 +22,15 @@ namespace KadOzenka.Dal.LongProcess
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
             DateTime date;
+            var firstMonthDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
             if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
             {
                 var request = processQueue.Parameters.DeserializeFromXml<CorrectionByRoomRequest>();
-                date = request?.Date ?? DateTime.Today;
+                date = request?.Date ?? firstMonthDate;
             }
             else
             {
-                date = DateTime.Today;
+                date = firstMonthDate;
             }
 
             var correctionByRoomService = new CorrectionByRoomService();
