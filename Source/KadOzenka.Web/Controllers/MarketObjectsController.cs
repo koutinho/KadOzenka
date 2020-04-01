@@ -217,7 +217,7 @@ namespace KadOzenka.Web.Controllers
 
         public JsonResult GetCorrectionByRoomGeneralCoefficients(long marketSegmentCode)
         {
-            var history = CorrectionByRoomService.GetCorrectionByRoomGeneralCoefficients(marketSegmentCode);
+            var history = CorrectionByRoomService.GetAverageCoefficients(marketSegmentCode);
 
             return Json(history.Select(CorrectionByRoomModel.Map).ToList());
         }
@@ -243,7 +243,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult ChangeBuildingsStatusInCalculation(string models)
+        public JsonResult ChangeBuildingsStatusInCalculation(string models, DateTime date)
         {
             var historyJson = JObject.Parse(models).SelectToken("models").ToString();
 
@@ -255,7 +255,8 @@ namespace KadOzenka.Web.Controllers
             string message;
             if (isDataUpdated)
             {
-                CorrectionByRoomForMarketObjectsLongProcess.AddProcessToQueue();
+                //todo - to process
+                //CorrectionByRoomService.UpdateMarketObjectsPrice(date);
                 message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
             }
             else

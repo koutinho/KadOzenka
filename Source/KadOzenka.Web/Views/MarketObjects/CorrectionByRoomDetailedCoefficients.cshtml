@@ -42,7 +42,7 @@
 }
 
 
-<script type="text/javascript">
+    <script type="text/javascript">
     $(document).ready(function () {
         var dataSource = new kendo.data.DataSource({
             transport: {
@@ -111,7 +111,7 @@
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("ChangeBuildingsStatusInCalculation", "MarketObjects")',
+            url: '@Url.Action("ChangeBuildingsStatusInCalculation", "MarketObjects", new { date = ViewBag.Date })',
             data: { models: JSON.stringify({ models }) },
             success: function (response) {
                 Common.ShowMessage(response.Message);
@@ -125,4 +125,4 @@
         });
     }
 
-</script>
+    </script>

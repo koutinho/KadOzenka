@@ -1,4 +1,5 @@
-﻿using Core.Register.LongProcessManagment;
+﻿using System;
+using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
@@ -18,7 +19,9 @@ namespace KadOzenka.Dal.LongProcess
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
             var correctionByRoomService = new CorrectionByRoomService();
-            correctionByRoomService.UpdateMarketObjectsPrice();
+            //todo
+            //var settings = processQueue.Parameters.DeserializeFromXml<type>();
+            correctionByRoomService.UpdateMarketObjectsPrice(DateTime.Today);
         }
     }
 }
