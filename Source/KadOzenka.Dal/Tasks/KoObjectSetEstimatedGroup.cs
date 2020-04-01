@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.KoObject
 				ValueItem codeGroup = GetValueFactor(gbuObject, attributeCodeGroup.RegisterId, attributeCodeGroup.Id);
 				if (string.IsNullOrEmpty(codeGroup.Value))
 				{
-					throw new Exception($"Не найден код группы для объекта {gbuObject.CadastralNumber} ");
+					throw new Exception($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber} ");
 				}
 
 				var complianceGuides = GetComplianceGuides(OMComplianceGuide.Where(x => x.Code == codeGroup.Value && x.TypeProperty == item.PropertyType).SelectAll().Execute());
