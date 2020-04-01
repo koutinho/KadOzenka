@@ -84,7 +84,7 @@ namespace KadOzenka.Dal.Correction
                 var propertyInfo = typeof(OMCoreObject).GetProperty(groupByPropName);
 
                 var objectsGroupsByCoverageAreaType = objects
-                    .GroupBy(x => propertyInfo.GetValue(x, null))
+                    .GroupBy(x => propertyInfo.GetValue(x, null) == null ? -1 : propertyInfo.GetValue(x, null))
                     .ToDictionary(g => g.Key, g => g.ToList());
                 foreach (var objectsGroupByCoverageAreaType in objectsGroupsByCoverageAreaType)
                 {
