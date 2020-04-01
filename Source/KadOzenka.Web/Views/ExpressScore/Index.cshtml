@@ -1,0 +1,180 @@
+﻿
+<style>
+	.wrap-map {
+		margin-top: 5px;
+		display: flex;
+		justify-content: center;
+		background-color: white;
+		height: 93vh;
+		padding-left: 10px;
+		padding-right: 10px;
+		padding-bottom: 10px;
+		border-radius: 10px;
+		flex-direction: column;
+	}
+	#map {
+		width: 100%;
+		height: 100%;
+	}
+	.wrap-form {
+		margin-top: 5px;
+		padding-top: 20px;
+		background-color: white;
+		height: 93vh;
+		border-radius: 10px;
+		padding-right: 10px;
+	}
+	.separator {
+		height: 3px;
+		background-color: bisque;
+	}
+	label {
+		font-weight: normal !important;
+	}
+</style>
+
+<div class="form-horizontal col-sm-12">
+	<div class="form-group">
+		<div class="col-sm-3">
+			<div class="wrap-form">
+				<div>
+					<h3 style="margin-top: 0">Параметры объекта</h3>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4">
+						@Html.CustomLabelFor("Адрес")
+					</div>
+					<div class="col-sm-8">
+						@Html.Kendo().TextBox().Name("address").HtmlAttributes(new { style = "width: 100%" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4">
+						@Html.CustomLabelFor("Тип объекта")
+					</div>
+					<div class="col-sm-8">
+						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4">
+						@Html.CustomLabelFor("Кадастровый № объекта", htmlAttributes: new { style = "padding-top: 0" })
+					</div>
+					<div class="col-sm-8">
+						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4">
+						@Html.CustomLabelFor("Сегмент")
+					</div>
+					<div class="col-sm-8">
+						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="separator col-sm-12"></div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor("Площадь", true)
+					</div>
+					<div class="col-sm-4">
+						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+					</div>
+					<div class="col-sm-2">
+						@Html.CustomLabelFor("Этаж")
+					</div>
+					<div class="col-sm-3">
+						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor("Вход")
+					</div>
+					<div class="col-sm-5">
+						@Html.Kendo().RadioButton().Name("entrance").Label("Отдельный").Value("separate")
+						@Html.Kendo().RadioButton().Name("entrance").Label("Общий").Value("common")
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor("Линия застройки")
+					</div>
+					<div class="col-sm-9">
+						@Html.Kendo().RadioButton().Name("entrance").Label("Первая линия").Value("1")
+						@Html.Kendo().RadioButton().Name("entrance").Label("Первая второстепенная").Value("2")
+						@Html.Kendo().RadioButton().Name("entrance").Label("Внутреквартальная").Value("3")
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor("Состояние отделки", htmlAttributes: new { style = "padding-top: 0" })
+					</div>
+					<div class="col-sm-9">
+						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor("Количество аналогов", htmlAttributes: new { style = "padding-top: 0" })
+					</div>
+					<div class="col-sm-9">
+						<div id="select-count">
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="separator col-sm-12"></div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-4">
+						<button id="" class="k-button" type="button">Пересчитать стоимость</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-9">
+			<div class="wrap-map">
+				<div>
+					<h3>Местоположение</h3>
+				</div>
+				<div id="map"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="~/MapScripts/config.js" charset="utf-8"></script>
+
+<script type="text/javascript">
+	$("#select-count").kendoButtonGroup({
+		items: [
+			{ text: "5", attributes: { class: "btn-count" } },
+			{ text: "10", attributes: { class: "btn-count"} },
+			{ text: "20", attributes: { class: "btn-count" } }
+		]
+	});
+	function init(){
+		var script = document.createElement('script');
+		script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+		script.type = "text/javascript";
+		document.head.appendChild(script);
+		script.onload = function () {
+			ymaps.ready(function () {
+				new ymaps.Map('map',
+					{
+						center: MapSettings.center,
+						zoom: MapSettings.zoom
+					},
+					{
+						searchControlProvider: 'yandex#search'
+					});
+			});
+		}
+	};
+
+	init();
+
+</script>
