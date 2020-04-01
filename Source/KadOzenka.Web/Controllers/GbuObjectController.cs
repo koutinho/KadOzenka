@@ -88,21 +88,35 @@ namespace KadOzenka.Web.Controllers
 			{
 				var objAttributes = _service
 					.GetAllAttributes(objectId, new List<long> { source.Id }, null, actualDate ?? DateTime.Now)
-					.Where(x =>
-						x.NumValue.HasValue || x.DtValue.HasValue || !string.IsNullOrEmpty(x.StringValue)).ToList();
+					.ToList();
 				if (objAttributes.Count > 0)
 				{
-					viewModel.Add(new RegisterDto(source.Id, source.Description, objAttributes));
+					viewModel.Add(new RegisterDto(source.Id, objectId, source.Description, objAttributes));
 				}
 			}
 
 			return PartialView("~/Views/GbuObject/_gbuObjectAttributes.cshtml", viewModel);
 		}
 
-		#endregion
+	    public ActionResult GetAttributeHistory(long objectId, long registerId, long attrId)
+	    {
+	        var attributeValues = _service
+	            .GetAllAttributes(objectId, new List<long> { registerId }, new List<long> { attrId })
+	            .OrderByDescending(x => x.Id)
+	            .ToList();
+	        var model = new List<AttributeHistoryRecordDto>();
+	        foreach (var attributeValue in attributeValues)
+	        {
+	            model.Add(new AttributeHistoryRecordDto(attributeValue));
+	        }
 
-		#region GroupingObject
-		[HttpGet]
+            return View("~/Views/GbuObject/AttributeHistory.cshtml", model);
+        }
+
+        #endregion
+
+        #region GroupingObject
+        [HttpGet]
 		public ActionResult GroupingObject()
 		{
 			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new

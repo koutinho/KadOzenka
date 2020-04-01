@@ -1,0 +1,43 @@
+﻿@using Core.Shared.Extensions;
+@using KadOzenka.Dal.GbuObject;
+@using Core.Shared.Extensions;
+@using System.Data;
+
+@model List<KadOzenka.Web.Models.GbuObject.ObjectAttributes.AttributeHistoryRecordDto>
+
+
+<div style="margin-bottom: 5px;">
+</div>
+
+<div>
+    <table id="Grid">
+        <thead>
+            <tr>
+                <th data-field="TEXT_VALUE">Значение</th>
+                <th data-field="S">Дата актуалиации</th>
+                <th data-field="USER">Пользователь</th>
+                <th data-field="DOCUMENT">Документ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var attributeValue in Model)
+            {<tr>
+                <td>@attributeValue.Value</td>
+                <td>@attributeValue.ActualDate.GetString()</td>
+                <td>@attributeValue.UserFullname</td>
+                <td>@attributeValue.Document</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+        $(function () {
+            $('#Grid').kendoGrid({
+                selectable: true,
+                resizable: true,
+                scrollable: true,
+                sortable: true
+            });
+        });
+    </script>
+</div>
