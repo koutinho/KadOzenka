@@ -26,6 +26,7 @@ using KadOzenka.Dal.AvitoParsing;
 using KadOzenka.Dal.CadastralInfoFillingForMarketObjects;
 using KadOzenka.Dal.YandexParser;
 using KadOzenka.Dal.ExcelParser;
+using KadOzenka.Dal.DataImport;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -176,6 +177,12 @@ namespace KadOzenka.BlFrontEnd
 				FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream("CCCReport", ".frx", "Reports");
 
 			});
+
+			consoleHelper.AddCommand("554", "эксель импорт", 
+				() => new DataImporterCommon().StartProcess(null, 
+					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
+					new System.Threading.CancellationToken()));
+
 
 			consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection());
 		}

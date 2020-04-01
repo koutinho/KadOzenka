@@ -173,7 +173,7 @@ namespace KadOzenka.Dal.DataImport
 								    value = value.ParseToBooleanNullable();
 								    break;
 							    case RegisterAttributeType.STRING:
-								    value = value.ToString();
+									value = value == null ? "" : value.ToString();
 								    break;
 							    case RegisterAttributeType.DATE:
 									value = value.ParseToDateTimeNullable();
