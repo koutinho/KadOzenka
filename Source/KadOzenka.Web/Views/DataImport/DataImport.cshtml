@@ -198,14 +198,14 @@
 		</div>
 	</script>
 
-	<script>
+    <script>
 		var dataSource = new kendo.data.DataSource({
 			data: [ ]
 		});
 
-		$(document).ready(function () {
-			var mainRegisterId = @((long)ViewBag.MainRegisterId);
-			const registerViewId = '@((string)ViewBag.RegisterViewId)';
+		$(document).ready(function () {            
+            var mainRegisterId = @((long)ViewBag.MainRegisterId);            
+            const registerViewId = '@((string)ViewBag.RegisterViewId)';
 			const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
 
 			$("#filter").on("input", function () {
@@ -222,9 +222,12 @@
 				click: function (e) {
 					const treeView = $("#treeview").data('kendoTreeView');
 					const listBox = $("#columnsListBox").data('kendoListBox');
-                    if (treeView && listBox) {                        
+                    if (treeView && listBox) {
+                        @if ((long)ViewBag.MainRegisterId != 100)
+                        {<text>
                         //change or set mainregister
-                        mainRegisterId = treeView.dataItem(treeView.select()).parentId; 
+                        mainRegisterId = treeView.dataItem(treeView.select()).parentId;
+                        </text>}
 
 						var treeViewData = treeView.dataItem(treeView.select());
 						var listBoxData = listBox.dataItem(listBox.select());
@@ -242,7 +245,7 @@
 								AttributeId: treeViewData.id,
 								AttributeUid: treeViewData.uid
 							});
-                            $("#loadButton").data('kendoButton').enable(true);                                                       
+                            $("#loadButton").data('kendoButton').enable(true);
 						}
 					}
 				}
@@ -262,7 +265,7 @@
 							IsKey: item.IsKey
 						};
                     });
-                    
+
 					var file = $('#files').data('kendoUpload').getFiles()[0];
 					var formData = new FormData();
 					formData.append("mainRegisterId", mainRegisterId);
@@ -378,18 +381,28 @@
 				.kendoPanelBar()
 				.data('kendoPanelBar')
 				.expand('li[data-expand]');
-
+            
 			$.ajax({
-				type: 'GET',
-                url: '/DataImport/GetTreeAttributes',				
+                type: 'GET',
+                @if ((long)ViewBag.MainRegisterId == 100)
+                {<text>
+                url: '/CoreUi/GetAttributes',
+                data: { registerViewId: registerViewId },
+                </text>}
+                else
+                {
+                {<text>
+                url: '/DataImport/GetTreeAttributes',
+                </text>}
+                }           
 				success: function (data) {
-					if (data) {
+                    if (data) {
 						$("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(data));
-					}
-				},
+                    }
+                },
 				error: function (response) {
-					Common.ShowError(response.responseText);
-				}
+                    Common.ShowError(response.responseText);
+                }
 			});
 
 			$('#files').kendoUpload({
@@ -504,5 +517,5 @@
 
 			return hasVisibleChildren;
 		}
-	</script>
+    </script>
 }
