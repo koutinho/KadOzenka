@@ -2,8 +2,12 @@
     window._result = null;
     var resultObject = {};
 
-    resultObject.lat = document.querySelector("div[data-map-lat]").getAttribute("data-map-lat");
-    resultObject.lon = document.querySelector("div[data-map-lon]").getAttribute("data-map-lon");
+    resultObject.lat = document.querySelector("div[data-map-lat]") != null
+        ? document.querySelector("div[data-map-lat]").getAttribute("data-map-lat")
+        : null;
+    resultObject.lon = document.querySelector("div[data-map-lon]") != null
+        ? document.querySelector("div[data-map-lon]").getAttribute("data-map-lon")
+        : null;
     resultObject.marketId = window.avito.item.id;
     resultObject.price = window.avito.item.price;
     resultObject.priceFormatted = window.avito.item.priceFormatted;

@@ -27,13 +27,11 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
         protected List<OMCoreObject> ExistedAvitoObjects { get; set; }
         protected string Url;
         public List<ObjectCategoryCorrelation> ObjectTypeList { get; protected set; }
-        protected Cian CianHelper { get; set; }
 
         protected AvitoParser()
         {
             ExistedAvitoObjects = OMCoreObject
                 .Where(x => x.Market_Code == MarketTypes.Avito).Select(x => new { x.Url, x.MarketId }).Execute();
-            CianHelper = new Cian();
         }
 
         public void HandleObjects()
@@ -150,21 +148,14 @@ namespace KadOzenka.Dal.AvitoParsing.Parsers
         public static void SaveScreenShot(ChromeDriver driver, OMScreenshots screenshot, DateTime screenShotData,
             MarketTypes type, long objectId = 0, bool testBoot = false)
         {
-            try
-            {
-                var screenShot = new FullScreen().TakeScreenShot(driver, type);
-                if (screenShot != null)
-                    FileStorageManager.Save(new MemoryStream(screenShot),
-                        ConfigurationManager.AppSettings["screenShotFolder"], screenShotData,
-                        screenshot.Save().ToString());
-                if (testBoot)
-                    File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png",
-                        screenShot);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            var screenShot = new FullScreen().TakeScreenShot(driver, type);
+            if (screenShot != null)
+                FileStorageManager.Save(new MemoryStream(screenShot),
+                    ConfigurationManager.AppSettings["screenShotFolder"], screenShotData,
+                    screenshot.Save().ToString());
+            if (testBoot)
+                File.WriteAllBytes($@"{ConfigurationManager.AppSettings["ScreenshotsFolder"]}{objectId}.png",
+                    screenShot);
         }
 
         private static void ChooseDealType(DealType dealType, IWebDriver driver)
