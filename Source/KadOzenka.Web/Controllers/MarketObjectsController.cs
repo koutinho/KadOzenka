@@ -236,7 +236,7 @@ namespace KadOzenka.Web.Controllers
 
         public JsonResult GetCorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
-            var historyRecords = CorrectionByRoomService.GetCorrectionByRoomDetailedCoefficients(marketSegmentCode, date);
+            var historyRecords = CorrectionByRoomService.GetDetailedCoefficients(marketSegmentCode, date);
             var models = historyRecords.Select(CorrectionByRoomModel.Map).ToList();
 
             return Json(models);

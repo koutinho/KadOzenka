@@ -35,9 +35,11 @@ namespace KadOzenka.Dal.Correction
                 var objectsGroupedByBuilding = groupBySegment
                     .Where(x => !excludedBuildings.Contains(x.BuildingCadastralNumber))
                     .GroupBy(x => x.BuildingCadastralNumber).ToList();
+
                 objectsGroupedByBuilding.ForEach(groupByBuilding =>
                 {
                     var objectsInBuilding = groupByBuilding.ToList();
+
                     if (IsBuildingContainAllRoomsTypes(objectsInBuilding))
                     {
                         var oneRoomAveragePricePerMeter = GetAveragePricePerMeter(objectsInBuilding, 1);
@@ -60,7 +62,7 @@ namespace KadOzenka.Dal.Correction
             return GetAverageCoefficients().Where(x => x.MarketSegment == (MarketSegment) marketSegmentCode).ToList();
         }
 
-        public List<CorrectionByRoomCoefficientsDto> GetCorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
+        public List<CorrectionByRoomCoefficientsDto> GetDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             return OMCoefficientsForCorrectionByRooms.Where(x =>
                     x.MarketSegment_Code == (MarketSegment) marketSegmentCode && x.ChangingDate == date)
