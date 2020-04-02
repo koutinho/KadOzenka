@@ -71,10 +71,10 @@
 		    <div class="col-sm-2">
 		        @Html.CustomLabelFor(m => m.IdAttributeFilter)
 		    </div>
-		    <div class="col-sm-3">
+		    <div class="col-sm-4">
 		        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], isReadonly: true)
 		    </div>
-		    <div class="col-sm-2">
+		    <div class="col-sm-1">
 		        @Html.CustomLabelFor(m => m.ValuesFilter)
 		    </div>
 		    <div class="col-sm-3">
@@ -411,10 +411,8 @@
 </div>
 }
 
+<script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
-
-    var dataActualRadioButtonPrevValue, taskRadioButtonPrevValue;
-
 	function fillForm(data) {
 		debugger;
 	    $('#valuesFilter').getKendoMultiSelect().value([]);
@@ -641,21 +639,5 @@
 					}
 				});
 			});
-		
-		function distinctErrors(errors) {
-			var result = [];
-			$.each(errors,
-				function (index, event) {
-					var events = $.grep(result,
-						function (e) {
-							return event.Message === e.Message;
-						});
-					if (events.length === 0) {
-						result.push(event);
-					}
-				});
-
-			return result;
-        }
 	});
 </script>
