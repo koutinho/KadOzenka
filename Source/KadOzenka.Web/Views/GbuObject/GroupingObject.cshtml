@@ -1,4 +1,5 @@
 ﻿@using System.Collections
+@using DevExpress.DataProcessing
 @using FastReport.Fonts
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
@@ -368,23 +369,24 @@
 	IsNewAttribute = Model.IsNewAttribute,
 	NameNewAttribute = Model.NameNewAttribute,
 	RegistryId = Model.RegistryId,
-	TypeNewAttribute = Model.TypeNewAttribute
+	TypeNewAttribute = Model.TypeNewAttribute,
+    SelectEventName = "onAttributeResultChangeEvent"
 }))
 	<div class="form-group">
 		<div class="col-sm-2">
-			@Html.CustomLabelFor(m => m.IdAttributeSource)
+			@Html.CustomLabelFor(m => m.AttributeResultSourceName)
 		</div>
-		<div class="col-sm-10">
-			@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeSource, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"] )
-		</div>
+	    <div class="col-sm-10" style="padding-left: 30px; padding-right: 30px;">
+	        @(Html.Kendo().TextBoxFor(m => m.AttributeResultSourceName).HtmlAttributes(new { @readonly = "readonly" }))
+	    </div>
 	</div>
 <div class="form-group">
 	<div class="col-sm-2">
 		@Html.CustomLabelFor(m => m.IdAttributeDocument)
 	</div>
-	<div class="col-sm-10">
-		@Html.KendoDropDownListTreeWithButton(m => m.IdAttributeDocument, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"] )
-	</div>
+    <div class="col-sm-10">
+        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdAttributeDocument, (IEnumerable)ViewData["Documents"])
+    </div>
 </div>
 <div class="form-group">
 	<div class="col-sm-7">
@@ -416,6 +418,10 @@
 				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]]);
 				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
 			}
+
+            if (Object.keys(val)[0].includes('AttributeResultSourceName')) {
+		        $('#' + Object.keys(val)[0]).val(val[Object.keys(val)[0]]);
+            }
 
 			if ( Object.keys(val)[0].includes('IdCodJob')) {
 				$('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
@@ -592,9 +598,9 @@
 
 		function onDataBound(e) {
 			$('.k-multiselect .k-input').unbind('keyup');
-			$('.k-multiselect .k-input').on('keyup', onClickEnter);
+            $('.k-multiselect .k-input').on('keyup', onClickEnter); 
 		}
-		function onClickEnter(e) {
+        function onClickEnter(e) {
 			if (e.keyCode === 13) {
 				var widget = $('#valuesFilter').getKendoMultiSelect();
 				var dataSource = widget.dataSource;
@@ -672,7 +678,6 @@
 				});
 
 			return result;
-		}
-
+        }
 	});
 </script>

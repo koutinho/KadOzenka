@@ -22,7 +22,7 @@ namespace KadOzenka.Web.Helpers
 
 		public static IHtmlContent KendoDropDownListTreeWithButton<TModel, TValue>(this IHtmlHelper<TModel> html,
 			Expression<Func<TModel, TValue>> expression, IEnumerable<DropDownTreeItemModel> data, string dataTextField = "Text",
-			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null)
+			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null, string onSelectEvent = null)
 		{
 			ModelExplorer modelExplorer =
 				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
@@ -36,12 +36,18 @@ namespace KadOzenka.Web.Helpers
 				className = className + idPrefix;
 			}
 
-			var script = "<script>" +
-						 $"function onChange{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); $('#{className}Wrapper').data('kendoTooltip').refresh();}}}}" +
+            string onChange = $"function onChange{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); $('#{className}Wrapper').data('kendoTooltip').refresh();}}}}";
+		    string onSelected =
+		        $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}}}}";
+            if (onSelectEvent != null)
+                onSelected =
+                    $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}} if('{onSelectEvent}'){{{onSelectEvent}.call({{e}});}}}}";
+            var script = "<script>" +
+                         onChange +
 						 $"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value(''); $('input.{className}').data('kendoDropDownTree').trigger('change')}}" +
 							$"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});" +
 						 $"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
-						 $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}}}}" +
+                         onSelected +
 							"</script>";
 
 			var emptyItem = new DropDownTreeItemModel{Text = "", Value = null};

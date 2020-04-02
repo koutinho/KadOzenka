@@ -37,6 +37,8 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// </summary>
 		public bool IsNewAttribute { get; set; } = false;
 
+        public string SelectEventName { get; set; }
+
 
 	}
 }

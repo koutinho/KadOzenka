@@ -137,7 +137,13 @@ namespace KadOzenka.Web.Controllers
 					}).ToList()
 				}).AsEnumerable();
 
-			return View(new GroupingObject());
+		    ViewData["Documents"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
+		    {
+		        Text = x.Description,
+		        Value = x.Id,
+		    }).ToList();
+
+            return View(new GroupingObject());
 		}
 
 		[HttpPost]

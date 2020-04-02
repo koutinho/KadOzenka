@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Core.Register;
 using ObjectModel.Gbu.GroupingAlgoritm;
 
 namespace KadOzenka.Web.Models.GbuObject
@@ -136,7 +137,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Идентификатор атрибута, куда будут записаны источники 
 		/// </summary>
 		[Display(Name = "Источник")]
-		public int? IdAttributeSource { get; set; }
+		public string AttributeResultSourceName { get; set; }
 		/// <summary>
 		/// Идентификатор атрибута, куда будут записаны документы 
 		/// </summary>
@@ -145,13 +146,16 @@ namespace KadOzenka.Web.Models.GbuObject
 
 		public GroupingSettings CovertToGroupingSettings()
 		{
+		    var attributeResultSourceId = IdAttributeResult.HasValue
+		        ? RegisterCache.GetAttributeData(IdAttributeResult.Value).RegisterId
+		        : (long?) null;
 			return new GroupingSettings
 			{
 				IdCodJob = IdCodJob,
 				IdAttributeDocument = IdAttributeDocument,
 				IdAttributeFilter = IdAttributeFilter,
 				IdAttributeResult = IdAttributeResult,
-				IdAttributeSource = IdAttributeSource,
+				IdAttributeSource = attributeResultSourceId,
 				Level1 = Level1.ConvertToLevelItem(),
 				Level10 = Level10.ConvertToLevelItem(),
 				Level11 = Level11.ConvertToLevelItem(),
