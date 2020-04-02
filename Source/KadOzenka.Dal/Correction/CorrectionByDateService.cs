@@ -51,6 +51,12 @@ namespace KadOzenka.Dal.Correction
             if (index == null)
                 throw new Exception($"Не найден индекс по Id '{input.Id}' ");
 
+            //добавляем новое значение
+            if (index.ConsumerPriceIndex == 1 && index.ConsumerPriceChange == null && index.ConsumerPriceIndexRosstat == null)
+            {
+                GetDefaultNewConsumerIndex(index.Date.AddMonths(1)).Save();
+            }
+
             using (var ts = new TransactionScope())
             {
                 index.ConsumerPriceIndexRosstat = input.ConsumerPriceIndexRosstat;
@@ -59,15 +65,8 @@ namespace KadOzenka.Dal.Correction
                 ts.Complete();
             }
 
-            //т.е. мы добавляем новое значение
-            if (index.ConsumerPriceIndex == 1)
-            {
-                GetDefaultNewConsumerIndex(index.Date.AddMonths(1)).Save();
-            }
-
             UpdateConsumerPriceIndexes();
 
-            //добавляем в очередь службу для рассчеты "Цены с учетом корректировки на дату" для объектов-аналогов
             CorrectionByDateForMarketObjectsLongProcess.AddProcessToQueue();
         }
 
