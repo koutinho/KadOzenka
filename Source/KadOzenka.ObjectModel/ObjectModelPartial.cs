@@ -856,6 +856,30 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 114 Таблица, хранящая отношения цен первого этажа к верхним этажам
+    /// </summary>
+    public partial class OMCoefficientsForFirstFloorCorr
+    {
+
+        public OMCoefficientsForFirstFloorCorr()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMCoefficientsForFirstFloorCorr(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -2940,6 +2964,182 @@ namespace ObjectModel
 
         }
         public OMSource31Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41891427 saratoo
+    /// </summary>
+    public partial class OMSource32Q
+    {
+
+        public OMSource32Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource32Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935242 № п/п
+    /// </summary>
+    public partial class OMSource33Q
+    {
+
+        public OMSource33Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource33Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935245 вид использования по иным источникам
+    /// </summary>
+    public partial class OMSource34Q
+    {
+
+        public OMSource34Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource34Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935285 Ис1
+    /// </summary>
+    public partial class OMSource35Q
+    {
+
+        public OMSource35Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource35Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935287 новый
+    /// </summary>
+    public partial class OMSource36Q
+    {
+
+        public OMSource36Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource36Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel
+{
+    /// <summary>
+    /// 41935625 тестовый источник
+    /// </summary>
+    public partial class OMSource37Q
+    {
+
+        public OMSource37Q()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource37Q(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 41937379 Источник: Test_All_Pri
+    /// </summary>
+    public partial class OMSource38
+    {
+
+        public OMSource38()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource38(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 41983898 Источник: Атрибут кода группы
+    /// </summary>
+    public partial class OMSource39
+    {
+
+        public OMSource39()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource39(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

@@ -45,7 +45,7 @@ namespace ObjectModel.Gbu
         }
     }
 }
-
+            
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -4462,26 +4462,26 @@ namespace ObjectModel.Market
         }
 
 
-		private bool? _isexcluded;
-		/// <summary>
-		/// 11200600 Исключение здания из рассчета (IS_EXCLUDED)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 11200600)]
-		public bool? IsExcluded
-		{
-			get
-			{
-				CheckPropertyInited("IsExcluded");
-				return _isexcluded;
-			}
-			set
-			{
-				_isexcluded = value;
-				NotifyPropertyChanged("IsExcluded");
-			}
-		}
+        private bool? _isexcluded;
+        /// <summary>
+        /// 11200600 Исключение здания из рассчета (IS_EXCLUDED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11200600)]
+        public bool? IsExcluded
+        {
+            get
+            {
+                CheckPropertyInited("IsExcluded");
+                return _isexcluded;
+            }
+            set
+            {
+                _isexcluded = value;
+                NotifyPropertyChanged("IsExcluded");
+            }
+        }
 
-	}
+    }
 }
 
 namespace ObjectModel.Market
@@ -4590,6 +4590,173 @@ namespace ObjectModel.Market
             {
                 _pricevalueto = value;
                 NotifyPropertyChanged("PriceValueTo");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 114 Таблица, хранящая отношения цен первого этажа к верхним этажам (MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR)
+    /// </summary>
+    [RegisterInfo(RegisterID = 114)]
+    [Serializable]
+    public partial class OMCoefficientsForFirstFloorCorr : OMBaseClass<OMCoefficientsForFirstFloorCorr>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private DateTime _statsdate;
+        /// <summary>
+        /// 11400200 Дата сбора данных (STATS_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11400200)]
+        public DateTime StatsDate
+        {
+            get
+            {
+                CheckPropertyInited("StatsDate");
+                return _statsdate;
+            }
+            set
+            {
+                _statsdate = value;
+                NotifyPropertyChanged("StatsDate");
+            }
+        }
+
+
+        private string _buildingcadastralnumber;
+        /// <summary>
+        /// 11400300 Кадастровый номер здания (BUILDING_CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11400300)]
+        public string BuildingCadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("BuildingCadastralNumber");
+                return _buildingcadastralnumber;
+            }
+            set
+            {
+                _buildingcadastralnumber = value;
+                NotifyPropertyChanged("BuildingCadastralNumber");
+            }
+        }
+
+
+        private string _marketsegment;
+        /// <summary>
+        /// 11400400 Сегмент рынка (MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11400400)]
+        public string MarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment");
+                return _marketsegment;
+            }
+            set
+            {
+                _marketsegment = value;
+                NotifyPropertyChanged("MarketSegment");
+            }
+        }
+
+
+        private MarketSegment _marketsegment_Code;
+        /// <summary>
+        /// 11400400 Сегмент рынка (справочный код) (MARKET_SEGMENT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11400400)]
+        public MarketSegment MarketSegment_Code
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment_Code");
+                return this._marketsegment_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_marketsegment))
+                    {
+                         _marketsegment = descr;
+                    }
+                }
+                else
+                {
+                     _marketsegment = descr;
+                }
+
+                this._marketsegment_Code = value;
+                NotifyPropertyChanged("MarketSegment");
+                NotifyPropertyChanged("MarketSegment_Code");
+            }
+        }
+
+
+        private long _firsttoupperfloorrate;
+        /// <summary>
+        /// 11400500 Отношение цены первого этажа к верхним (ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11400500)]
+        public long FirstToUpperFloorRate
+        {
+            get
+            {
+                CheckPropertyInited("FirstToUpperFloorRate");
+                return _firsttoupperfloorrate;
+            }
+            set
+            {
+                _firsttoupperfloorrate = value;
+                NotifyPropertyChanged("FirstToUpperFloorRate");
+            }
+        }
+
+
+        private bool? _isexcludedfromcalculation;
+        /// <summary>
+        /// 11400600 Исключение здания из рассчета (IS_EXCLUDED_FROM_CALCULATION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11400600)]
+        public bool? IsExcludedFromCalculation
+        {
+            get
+            {
+                CheckPropertyInited("IsExcludedFromCalculation");
+                return _isexcludedfromcalculation;
+            }
+            set
+            {
+                _isexcludedfromcalculation = value;
+                NotifyPropertyChanged("IsExcludedFromCalculation");
             }
         }
 
