@@ -194,7 +194,7 @@ where a.object_id = {objectId}";
 			{
 				Text = x.Description,
 				Value = x.Id.ToString(),
-				Items = RegisterCache.RegisterAttributes.Values.Where(y => y.RegisterId == x.Id)
+				Items = RegisterCache.RegisterAttributes.Values.Where(y => y.RegisterId == x.Id && y.IsDeleted == false)
 					.Select(y => new SelectListItem
 					{
 						Text = y.Name,
