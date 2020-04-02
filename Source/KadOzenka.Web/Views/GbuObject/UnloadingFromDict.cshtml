@@ -131,7 +131,8 @@
 </div>
 }
 
-	<script type="text/javascript">
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
 	function onDataBound(e) {
 		$('.k-multiselect .k-input').unbind('keyup');
 		$('.k-multiselect .k-input').on('keyup', onClickEnter);
@@ -164,22 +165,6 @@
 		},
 		dataBound: onDataBound
 	});
-
-	function distinctErrors(errors) {
-		var result = [];
-		$.each(errors,
-			function (index, event) {
-				var events = $.grep(result,
-					function (e) {
-						return event.Message === e.Message;
-					});
-				if (events.length === 0) {
-					result.push(event);
-				}
-			});
-
-		return result;
-		}
 
 	function initSelectAllObjectChangedHandler() {
             $('input[type="radio"][name="SelectAllObject"][value="True"] ').change(function() {
@@ -230,7 +215,8 @@
 					}
 
 					if (Object.keys(val)[0].includes('IdAttributeResult') || Object.keys(val)[0].includes('IdAttributeFilter')) {
-						$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]]);
+                        $('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]]);
+					    $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
 					}
 
 					if (Object.keys(val)[0].includes('ValuesFilter')) {

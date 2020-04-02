@@ -17,12 +17,12 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Выборка по всем объектам
 		/// </summary>
-		public bool SelectAllObject { get; set; }
+		public bool SelectAllObject { get; set; } = true;
 
-		/// <summary>
-		/// Идентификатор аттрибута - фильтра
-		/// </summary>
-		[Display(Name = "Характеристика")]
+        /// <summary>
+        /// Идентификатор аттрибута - фильтра
+        /// </summary>
+        [Display(Name = "Характеристика")]
 		public long? IdAttributeFilter { get; set; }
 
 		/// <summary>
@@ -31,15 +31,14 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Значение")]
 		public List<string> ValuesFilter { get; set; }
 
-		/// <summary>
-		/// Использовать Дату актуализации
-		/// </summary>
-		public bool? IsDataActualUsed { get; set; }
+	    public bool IsValuesFilterUsed { get; set; } = false;
+	    public bool IsDataActualUsed { get; set; } = false;
+	    public bool IsTaskFilterUsed { get; set; } = false;
 
-		/// <summary>
-		/// Список значений фильтра
-		/// </summary>
-		[Display(Name = "Задания на оценку")]
+        /// <summary>
+        /// Список значений фильтра
+        /// </summary>
+        [Display(Name = "Задания на оценку")]
 		public List<long> TaskFilter { get; set; }
 
 		/// <summary>
@@ -117,8 +116,8 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level8Attribute = Level8Attribute,
 				Level9Attribute = Level9Attribute,
 				Level10Attribute = Level10Attribute,
-				TaskFilter = IsDataActualUsed.HasValue && !IsDataActualUsed.Value? TaskFilter : null,
-				DateActual = IsDataActualUsed.HasValue && IsDataActualUsed.Value ? DataActual: null
+				TaskFilter = IsTaskFilterUsed ? TaskFilter : null,
+				DateActual = IsDataActualUsed ? DataActual: null
 			};
 
 			return settings;
@@ -126,42 +125,46 @@ namespace KadOzenka.Web.Models.GbuObject
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-			if (IsDataActualUsed.HasValue)
-			{
-				if (IsDataActualUsed.Value)
-				{
-					if (!DataActual.HasValue)
-					{
-						yield return
-							new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
-								memberNames: new[] {nameof(DataActual)});
-					}
-				}
-				else if (TaskFilter?.Count == null || TaskFilter?.Count == 0)
-				{
-					yield return
-						new ValidationResult(errorMessage: "Список заданий на оценку не может быть пустым",
-							memberNames: new[] {nameof(TaskFilter)});
-				}
-			}
+		    if (!SelectAllObject && IsDataActualUsed)
+		    {
+		        if (IsDataActualUsed)
+		        {
+		            if (!DataActual.HasValue)
+		            {
+		                yield return
+		                    new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
+		                        memberNames: new[] { nameof(DataActual) });
+		            }
+		        }
+		    }
 
-			if (!SelectAllObject)
-			{
-				if (ValuesFilter?.Count == null || ValuesFilter?.Count == 0)
-				{
-					yield return
-						new ValidationResult(errorMessage: "Список значений фильтра не может быть пустым",
-							memberNames: new[] { nameof(ValuesFilter) });
-				}
-				if (!IdAttributeFilter.HasValue)
-				{
-					yield return
-						new ValidationResult(errorMessage: "Поле Идентификатор атрибута-фильтра обязательное",
-							memberNames: new[] {nameof(IdAttributeFilter) });
-				}
-			}
+		    if (!SelectAllObject && IsTaskFilterUsed)
+		    {
+		        if (TaskFilter?.Count == null || TaskFilter?.Count == 0)
+		        {
+		            yield return
+		                new ValidationResult(errorMessage: "Список заданий на оценку не может быть пустым",
+		                    memberNames: new[] { nameof(TaskFilter) });
+		        }
+		    }
 
-			if (IsNewAttribute)
+		    if (!SelectAllObject && IsValuesFilterUsed)
+		    {
+		        if (ValuesFilter?.Count == null || ValuesFilter?.Count == 0)
+		        {
+		            yield return
+		                new ValidationResult(errorMessage: "Список значений фильтра не может быть пустым",
+		                    memberNames: new[] { nameof(ValuesFilter) });
+		        }
+		        if (!IdAttributeFilter.HasValue)
+		        {
+		            yield return
+		                new ValidationResult(errorMessage: "Поле Идентификатор атрибута-фильтра обязательное",
+		                    memberNames: new[] { nameof(IdAttributeFilter) });
+		        }
+		    }
+
+            if (IsNewAttribute)
 			{
 				if (string.IsNullOrEmpty(NameNewAttribute))
 				{
