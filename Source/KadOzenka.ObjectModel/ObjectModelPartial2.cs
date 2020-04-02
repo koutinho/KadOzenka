@@ -438,6 +438,24 @@ namespace ObjectModel.Market
 }
 
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность
+    /// </summary>
+    public partial class OMPriceAfterCorrectionByRoomsHistory
+    {
+        /// <summary>
+        /// Ссылка на (100 Аналоги)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Market.OMCoreObject ParentCoreObject { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.KO
 {
     /// <summary>

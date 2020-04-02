@@ -45,7 +45,7 @@ namespace ObjectModel.Gbu
         }
     }
 }
-            
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -20659,186 +20659,6 @@ namespace ObjectModel.Common
     }
 }
 
-namespace ObjectModel
-{
-    /// <summary>
-    /// 39959475 Тест4 (source_23_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 39959475)]
-    [Serializable]
-    public partial class OMSource23Q : OMBaseClass<OMSource23Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 39964619 Test221 (source_24_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 39964619)]
-    [Serializable]
-    public partial class OMSource24Q : OMBaseClass<OMSource24Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 39964641 Test3 (source_25_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 39964641)]
-    [Serializable]
-    public partial class OMSource25Q : OMBaseClass<OMSource25Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 39964643 test44 (source_26_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 39964643)]
-    [Serializable]
-    public partial class OMSource26Q : OMBaseClass<OMSource26Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 40116955 1 (source_27_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 40116955)]
-    [Serializable]
-    public partial class OMSource27Q : OMBaseClass<OMSource27Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 40116957 q (source_28_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 40116957)]
-    [Serializable]
-    public partial class OMSource28Q : OMBaseClass<OMSource28Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41619124 Source2 (source_29_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41619124)]
-    [Serializable]
-    public partial class OMSource29Q : OMBaseClass<OMSource29Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41619157 test21 (source_30_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41619157)]
-    [Serializable]
-    public partial class OMSource30Q : OMBaseClass<OMSource30Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41619187 Last (source_31_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41619187)]
-    [Serializable]
-    public partial class OMSource31Q : OMBaseClass<OMSource31Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41891427 saratoo (source_32_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41891427)]
-    [Serializable]
-    public partial class OMSource32Q : OMBaseClass<OMSource32Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41935242 № п/п (source_33_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41935242)]
-    [Serializable]
-    public partial class OMSource33Q : OMBaseClass<OMSource33Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41935245 вид использования по иным источникам (source_34_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41935245)]
-    [Serializable]
-    public partial class OMSource34Q : OMBaseClass<OMSource34Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41935285 Ис1 (source_35_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41935285)]
-    [Serializable]
-    public partial class OMSource35Q : OMBaseClass<OMSource35Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41935287 новый (source_36_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41935287)]
-    [Serializable]
-    public partial class OMSource36Q : OMBaseClass<OMSource36Q>
-    {
-    }
-}
-
-namespace ObjectModel
-{
-    /// <summary>
-    /// 41935625 тестовый источник (source_37_q)
-    /// </summary>
-    [RegisterInfo(RegisterID = 41935625)]
-    [Serializable]
-    public partial class OMSource37Q : OMBaseClass<OMSource37Q>
-    {
-    }
-}
-
 namespace ObjectModel.Gbu.Custom
 {
     /// <summary>
@@ -20854,7 +20674,7 @@ namespace ObjectModel.Gbu.Custom
 namespace ObjectModel.Gbu.Custom
 {
     /// <summary>
-    /// 41983898 Источник: Атрибут кода группы
+    /// 41983898 Источник: Атрибут кода группы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 41983898)]
     [Serializable]
