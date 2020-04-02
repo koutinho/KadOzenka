@@ -70,7 +70,8 @@
 	function fillForm(data) {
 		data.forEach(function (val) {
 			if ($('#' + Object.keys(val)[0]).data('kendoDropDownTree')) {
-				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]]);
+				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
+				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
 			}
 		});
 	}

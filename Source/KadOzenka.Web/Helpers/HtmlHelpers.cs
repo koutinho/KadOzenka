@@ -36,7 +36,9 @@ namespace KadOzenka.Web.Helpers
 				className = className + idPrefix;
 			}
 
-            string onChange = $"function onChange{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); $('#{className}Wrapper').data('kendoTooltip').refresh();}}}}";
+            string onChange = $"function onChange{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text();" +
+                               "$('#{className}Wrapper').data('kendoTooltip').refresh();}}}}";
+
 		    string onSelected =
 		        $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}}}}";
             if (onSelectEvent != null)
@@ -45,14 +47,11 @@ namespace KadOzenka.Web.Helpers
             var script = "<script>" +
                          onChange +
 						 $"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value(''); $('input.{className}').data('kendoDropDownTree').trigger('change')}}" +
-							$"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});" +
+                         $"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});" +
 						 $"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
-                         onSelected +
-							"</script>";
+                         onSelected + "</script>";
 
-			var emptyItem = new DropDownTreeItemModel{Text = "", Value = null};
-			List<DropDownTreeItemModel> dataSource = data.ToList();
-			dataSource.ToList().Insert(0, emptyItem);
+            List<DropDownTreeItemModel> dataSource = data.ToList();
 
 			var clearTag = new TagBuilder("a");
 			clearTag.AddCssClass("k-button");

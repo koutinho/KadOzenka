@@ -238,7 +238,7 @@
 		data.forEach(function (val) {
 			if (Object.keys(val)[0].includes('Level') || Object.keys(val)[0].includes('IdAttributeResult') ||
 				 Object.keys(val)[0].includes('IdAttributeFilter')) {
-                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]]);
+                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
 			    $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
 			}
 
