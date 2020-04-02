@@ -180,8 +180,6 @@ namespace KadOzenka.Dal.FastReports
                                            && (string.IsNullOrWhiteSpace(_input.City) || x.City.ToLower().Contains(_input.City))
                                            && (_input.DistrictCode == 0 || x.District_Code == (Hunteds)_input.DistrictCode)
                                            && (_input.NeighborhoodCode == 0 || x.Neighborhood_Code == (Districts)_input.NeighborhoodCode))
-               //todo remove 
-               .SetPackageSize(100).SetPackageIndex(0)
                .SelectAll().Execute();
 
            //сделано отдельно, т.к. этот код в предыдущем запросе не работал
@@ -242,7 +240,6 @@ namespace KadOzenka.Dal.FastReports
                 SegmentCodes = segmentCodes ?? new List<long>();
             }
         }
-
 
         #endregion
     }
