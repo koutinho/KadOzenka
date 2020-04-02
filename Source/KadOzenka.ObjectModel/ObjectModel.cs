@@ -20850,3 +20850,15 @@ namespace ObjectModel.Gbu.Custom
     {
     }
 }
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 41983898 Источник: Атрибут кода группы
+    /// </summary>
+    [RegisterInfo(RegisterID = 41983898)]
+    [Serializable]
+    public partial class OMSource39 : OMBaseClass<OMSource39>
+    {
+    }
+}
