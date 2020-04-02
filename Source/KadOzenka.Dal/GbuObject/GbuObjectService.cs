@@ -10,6 +10,7 @@ using System.Linq;
 using KadOzenka.Dal.GbuObject.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
+using ObjectModel.KO;
 
 
 namespace KadOzenka.Dal.GbuObject
@@ -181,9 +182,15 @@ where a.object_id = {objectId}";
 			return result;
 		}
 
+		public List<long> GetGbuRegistersIds()
+		{
+			return OMObjectsCharacteristicsRegister.Where(x => true)
+				.Select(x => x.RegisterId).Execute().Select(x => x.RegisterId.GetValueOrDefault()).ToList();
+		}
+
 		public List<GbuAttributesTreeDto> GetGbuAttributesTree()
 		{
-			return RegisterCache.Registers.Values.Where(x => x.Id < 22 && x.Id > 1).Select(x => new GbuAttributesTreeDto
+			return RegisterCache.Registers.Values.Where(x => GetGbuRegistersIds().Contains(x.Id)).Select(x => new GbuAttributesTreeDto
 			{
 				Text = x.Description,
 				Value = x.Id.ToString(),
@@ -198,10 +205,7 @@ where a.object_id = {objectId}";
 
         public List<OMAttribute> GetGbuAttributes()
         {
-            var registersIds = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
-                .Select(x => x.RegisterId).Execute().Select(x => x.RegisterId).ToList();
-
-            return OMAttribute.Where(x => registersIds.Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false).SelectAll().Execute();
+	        return OMAttribute.Where(x => GetGbuRegistersIds().Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false).SelectAll().Execute();
         }
 
         public int AddNewVirtualAttribute(string attributeName, long registerId, RegisterAttributeType type)
