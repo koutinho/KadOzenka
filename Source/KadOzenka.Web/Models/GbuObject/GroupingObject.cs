@@ -61,15 +61,14 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Значения")]
 		public List<string> ValuesFilter { get; set; }
 
-		/// <summary>
-		/// Использовать Дату актуализации
-		/// </summary>
-		public bool? IsDataActualUsed { get; set; }
+	    public bool IsValuesFilterUsed { get; set; } = false;
+        public bool IsDataActualUsed { get; set; } = false;
+	    public bool IsTaskFilterUsed { get; set; } = false;
 
-		/// <summary>
-		/// Список значений фильтра
-		/// </summary>
-		[Display(Name = "Задания на оценку")]
+        /// <summary>
+        /// Список значений фильтра
+        /// </summary>
+        [Display(Name = "Задания на оценку")]
 		public List<long> TaskFilter { get; set; }
 
 		/// <summary>
@@ -176,9 +175,9 @@ namespace KadOzenka.Web.Models.GbuObject
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
 		{
-			if (IsDataActualUsed.HasValue)
+			if (!SelectAllObject && IsDataActualUsed)
 			{
-				if (IsDataActualUsed.Value)
+				if (IsDataActualUsed)
 				{
 					if (!DataActual.HasValue)
 					{
@@ -187,15 +186,19 @@ namespace KadOzenka.Web.Models.GbuObject
 								memberNames: new[] {nameof(DataActual)});
 					}
 				}
-				else if (TaskFilter?.Count == null || TaskFilter?.Count == 0)
-				{
-					yield return
-						new ValidationResult(errorMessage: "Список заданий на оценку не может быть пустым",
-							memberNames: new[] {nameof(TaskFilter)});
-				}
 			}
 
-			if (!SelectAllObject)
+		    if (!SelectAllObject && IsTaskFilterUsed)
+		    {
+		        if (TaskFilter?.Count == null || TaskFilter?.Count == 0)
+		        {
+		            yield return
+		                new ValidationResult(errorMessage: "Список заданий на оценку не может быть пустым",
+		                    memberNames: new[] { nameof(TaskFilter) });
+		        }
+		    }
+
+            if (!SelectAllObject && IsValuesFilterUsed)
 			{
 				if (ValuesFilter?.Count == null || ValuesFilter?.Count == 0)
 				{
@@ -210,7 +213,6 @@ namespace KadOzenka.Web.Models.GbuObject
 							memberNames: new[] { nameof(IdAttributeFilter) });
 				}
 			}
-
 
 			if (IsNewAttribute)
 			{
