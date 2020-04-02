@@ -36,8 +36,9 @@ namespace KadOzenka.Web.Helpers
 				className = className + idPrefix;
 			}
 
-            string onChange = $"function onChange{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text();" +
-                               "$('#{className}Wrapper').data('kendoTooltip').refresh();}}}}";
+			string onChange =
+					$"function onChange{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); " +
+					$"$('#{className}Wrapper').data('kendoTooltip').refresh();}}}}";
 
 		    string onSelected =
 		        $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}}}}";
