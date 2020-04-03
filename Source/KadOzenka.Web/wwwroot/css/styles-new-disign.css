@@ -1354,6 +1354,10 @@ input#addressInput:focus {
 	background-color: #947c74;
 }
 
+.dropdown-main-menu .fa-bolt {
+	background-color: #e6e63cc2;
+}
+
 /* для старого дизайна */
 [id^=SearchWindowToolBar-] {
     border-radius: 0;
