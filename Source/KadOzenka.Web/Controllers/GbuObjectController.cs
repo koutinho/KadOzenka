@@ -551,7 +551,7 @@ namespace KadOzenka.Web.Controllers
 
 		public IEnumerable<SelectListItem> GetAllGbuRegisters()
 		{
-			return RegisterCache.Registers.Values.Where(x => x.Id > 2 && x.Id < 23).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
+			return RegisterCache.Registers.Values.Where(x => _service.GetGbuRegistersIds().Contains(x.Id)).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
 		}
 
 		#endregion
