@@ -12,7 +12,7 @@ namespace KadOzenka.Dal.Registers
             return OMAttribute.Where(x => x.Id == attributeId).SelectAll().ExecuteFirstOrDefault();
         }
 
-        public OMAttribute CreateRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, long? referenceId = null)
+        public OMAttribute CreateRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, bool withValueField, long? referenceId = null)
         {
             OMAttribute omAttribute;
             using (var ts = new TransactionScope())
@@ -27,7 +27,9 @@ namespace KadOzenka.Dal.Registers
                 };
                 var id = omAttribute.Save();
 
-                omAttribute.ValueField = $"field{id}";
+                if(withValueField)
+                    omAttribute.ValueField = $"field{id}";
+
                 if (type == RegisterAttributeType.REFERENCE)
                 {
                     omAttribute.CodeField = $"field{id}_code";

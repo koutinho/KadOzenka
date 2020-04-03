@@ -102,7 +102,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             using (var ts = new TransactionScope())
             {
                 var omAttribute = RegisterAttributeService.CreateRegisterAttribute(characteristicDto.Name,
-                    characteristicDto.RegisterId, characteristicDto.Type, characteristicDto.ReferenceId);
+                    characteristicDto.RegisterId, characteristicDto.Type, false, characteristicDto.ReferenceId);
                 id = omAttribute.Id;
 
                 var dbConfigurator = RegisterConfigurator.GetDbConfigurator();

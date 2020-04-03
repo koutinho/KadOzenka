@@ -116,7 +116,7 @@ namespace KadOzenka.Dal.Tours
             long id;
             using (var ts = new TransactionScope())
             {
-                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(attributeName, registerId, type, referenceId);
+                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(attributeName, registerId, type, true, referenceId);
                 id = omAttribute.Id;
 
                 DbConfiguratorBase dbConfigurator = RegisterConfigurator.GetDbConfigurator();
