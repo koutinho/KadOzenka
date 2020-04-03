@@ -1,4 +1,5 @@
 ﻿
+<link rel="stylesheet" href="~/css/jquery.fias.min.css" />
 <style>
 	.wrap-map {
 		margin-top: 5px;
@@ -31,45 +32,35 @@
 	label {
 		font-weight: normal !important;
 	}
+	.btn-count {
+		width: 100%;
+	}
+	#select-count {
+		width: 100%;
+	}
 </style>
 
 <div class="form-horizontal col-sm-12">
 	<div class="form-group">
-		<div class="col-sm-3">
+		<div class="col-sm-4">
 			<div class="wrap-form">
 				<div>
 					<h3 style="margin-top: 0">Параметры объекта</h3>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						@Html.CustomLabelFor("Адрес")
 					</div>
-					<div class="col-sm-8">
-						@Html.Kendo().TextBox().Name("address").HtmlAttributes(new { style = "width: 100%" })
+					<div class="col-sm-9">
+						@Html.Kendo().TextBox().Name("address").HtmlAttributes(new { style = "width: 100%", spellcheck = false })
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-4">
-						@Html.CustomLabelFor("Тип объекта")
-					</div>
-					<div class="col-sm-8">
-						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-4">
+					<div class="col-sm-3">
 						@Html.CustomLabelFor("Кадастровый № объекта", htmlAttributes: new { style = "padding-top: 0" })
 					</div>
-					<div class="col-sm-8">
-						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-4">
-						@Html.CustomLabelFor("Сегмент")
-					</div>
-					<div class="col-sm-8">
-						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+					<div class="col-sm-9">
+						@Html.Kendo().MaskedTextBox().Name("Kn").HtmlAttributes(new { style = "width: 100%" }).Mask("00:00:0000000:000")
 					</div>
 				</div>
 				<div class="form-group">
@@ -118,6 +109,14 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-3">
+						@Html.CustomLabelFor("Сегмент")
+					</div>
+					<div class="col-sm-9">
+						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
 						@Html.CustomLabelFor("Количество аналогов", htmlAttributes: new { style = "padding-top: 0" })
 					</div>
 					<div class="col-sm-9">
@@ -135,7 +134,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-sm-9">
+		<div class="col-sm-8">
 			<div class="wrap-map">
 				<div>
 					<h3>Местоположение</h3>
@@ -147,8 +146,81 @@
 </div>
 
 <script src="~/MapScripts/config.js" charset="utf-8"></script>
-
+<script src="~/js/jquery.fias.min.js"></script>
 <script type="text/javascript">
+
+	var map;
+
+	var getMapPoint = (currentAddresses) => new Promise(function (resolve, reject) {
+		var urlGeoCode = `${AppData.protocol}://geocode-maps.yandex.ru/1.x/?format=json&apikey=${AppData.key}&geocode=${currentAddresses}`;
+		$.get(urlGeoCode)
+			.done(function (data) {
+			resolve(data.response);
+			})
+			.fail(function(data) {
+				reject(data);
+			});
+	});
+
+
+	var $addresses = $('#address');
+	var typeShortList = [/г\./gi, /пгт\./gi, /п\./gi, /д\./gi, /c\./gi, /ул\./gi, /строение/gi];
+
+	var testObj;
+	$addresses.fias({
+		oneString: true,
+		parentType: $.fias.type.region,
+		parentId: '7700000000000',
+		labelFormat: function (obj, query) {
+			return getCorrectRow(obj);
+		},
+		valueFormat: function (obj, query) {
+			return getCorrectRow(obj);
+		},
+		select: function () {
+			var myGeocoder = ymaps.geocode($('#address').val());
+
+			myGeocoder.then(function (res) {
+				if (testObj) {
+					map.geoObjects.remove(testObj);
+				}
+			
+				var firstGeoObject = res.geoObjects.get(0),
+					bounds = firstGeoObject.properties.get('boundedBy');
+
+				testObj = firstGeoObject;
+				map.geoObjects.add(firstGeoObject);
+				map.setBounds(bounds, {
+					checkZoomRange: true
+				});
+			});
+		},
+		sendBefore: function(query) {
+			if (query.name) {
+				typeShortList.forEach(function(str) {
+					query.name = query.name.replace(str, '');
+				});
+			} else {
+				query.name = '';
+			}
+		}
+	});
+
+	function getCorrectRow(obj) {
+		var arrayNames = [];
+		obj.parents.forEach(function (item) {
+			switch (item.contentType) {
+			case 'street': arrayNames.splice(3, 0, ' ' + item.typeShort + '. ' + item.name ); break;
+			case 'city': arrayNames.splice(2, 0, ' ' + item.typeShort + '. ' + item.name); break;
+			case 'region': arrayNames.splice(0, 0,' ' + item.typeShort + '. ' + item.name); break;
+			case 'district': arrayNames.splice(1, 0,' ' + item.typeShort + '. ' + item.name); break;
+			default: break;
+			}
+		});
+		arrayNames.push(' ' + obj.typeShort + '. ' + obj.name);
+		return arrayNames.filter((v, i, a) => a.indexOf(v) === i).join(',');
+	}
+
 	$("#select-count").kendoButtonGroup({
 		items: [
 			{ text: "5", attributes: { class: "btn-count" } },
@@ -156,21 +228,69 @@
 			{ text: "20", attributes: { class: "btn-count" } }
 		]
 	});
+
+	function createPlacemark(coords) {
+		return new ymaps.Placemark(coords, {
+			iconCaption: 'поиск...'
+		}, {
+			preset: 'islands#violetDotIconWithCaption',
+			draggable: true
+		});
+	}
+	var myPlacemark;
+	function getAddress(coords) {
+		myPlacemark.properties.set('iconCaption', 'поиск...');
+		ymaps.geocode(coords).then(function (res) {
+			var firstGeoObject = res.geoObjects.get(0);
+
+			if (firstGeoObject.getPremiseNumber()) {
+				$('#address').val(firstGeoObject.getAddressLine().replace('Россия, ', ''));
+			}
+			myPlacemark.properties
+				.set({
+					// Формируем строку с данными об объекте.
+					iconCaption: [
+						firstGeoObject.getLocalities().length ? firstGeoObject.getLocalities() : firstGeoObject.getAdministrativeAreas(),
+						firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
+					].filter(Boolean).join(', '),
+					balloonContent: firstGeoObject.getAddressLine()
+				});
+		});
+	}
+
 	function init(){
 		var script = document.createElement('script');
 		script.src = `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
 		script.type = "text/javascript";
 		document.head.appendChild(script);
 		script.onload = function () {
-			ymaps.ready(function () {
-				new ymaps.Map('map',
+			 ymaps.ready(function () {
+				 map = new ymaps.Map('map',
 					{
 						center: MapSettings.center,
-						zoom: MapSettings.zoom
-					},
-					{
-						searchControlProvider: 'yandex#search'
-					});
+						zoom: MapSettings.zoom,
+						controls: ['fullscreenControl', 'zoomControl']
+					 });
+
+				 map.events.add('click', function (e) {
+					 // Получение координат щелчка
+					 var coords = e.get('coords');
+
+					 if (testObj) {
+						 map.geoObjects.remove(testObj);
+					 }
+
+					 if (myPlacemark) {
+						 myPlacemark.geometry.setCoordinates(coords);
+					 } else {
+						 myPlacemark = createPlacemark(coords);
+						 map.geoObjects.add(myPlacemark);
+						 myPlacemark.events.add('dragend', function () {
+							 getAddress(myPlacemark.geometry.getCoordinates());
+						 });
+					 }
+					 getAddress(coords);
+				 });
 			});
 		}
 	};
