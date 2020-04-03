@@ -1,4 +1,5 @@
-﻿using Core.Register.LongProcessManagment;
+﻿using System;
+using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
@@ -6,9 +7,9 @@ using ObjectModel.Market;
 
 namespace KadOzenka.Dal.LongProcess
 {
-    public class CorrectionByFloorForMarketObjectsLongProcess : LongProcess
+    public class CorrectionForFirstFloorForMarketObjectsLongProcess : LongProcess
     {
-        public const string LongProcessName = nameof(CorrectionByFloorForMarketObjectsLongProcess);
+        public const string LongProcessName = nameof(CorrectionForFirstFloorForMarketObjectsLongProcess);
 
         public static void AddProcessToQueue()
         {
@@ -17,9 +18,9 @@ namespace KadOzenka.Dal.LongProcess
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
-            var correctionByFloorService = new CorrectionForFirstFloorService();
-            //Todo
-            //correctionByFloorService.UpdateMarketObjectsPrice(DateTime date);
+            var date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var correctionForFirstFloorService = new CorrectionForFirstFloorService();
+            //correctionForFirstFloorService.UpdateMarketObjectsPrice(date);
         }
     }
 }

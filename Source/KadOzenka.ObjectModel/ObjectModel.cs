@@ -4721,12 +4721,12 @@ namespace ObjectModel.Market
         }
 
 
-        private long _firsttoupperfloorrate;
+        private decimal _firsttoupperfloorrate;
         /// <summary>
         /// 11400500 Отношение цены первого этажа к верхним (ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 11400500)]
-        public long FirstToUpperFloorRate
+        public decimal FirstToUpperFloorRate
         {
             get
             {
@@ -4741,12 +4741,12 @@ namespace ObjectModel.Market
         }
 
 
-        private bool? _isexcludedfromcalculation;
+        private bool _isexcludedfromcalculation;
         /// <summary>
         /// 11400600 Исключение здания из рассчета (IS_EXCLUDED_FROM_CALCULATION)
         /// </summary>
         [RegisterAttribute(AttributeID = 11400600)]
-        public bool? IsExcludedFromCalculation
+        public bool IsExcludedFromCalculation
         {
             get
             {

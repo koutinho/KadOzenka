@@ -11,7 +11,7 @@ namespace KadOzenka.Dal.Correction.Dto
         public DateTime StatsDate { get; set; }
         public string BuildingCadastralNumber { get; set; }
         public MarketSegment MarketSegmentCode { get; set; }
-        public decimal FirstToUpperFloorRate { get; set; }
+        public decimal FirstFloorCoefficient { get; set; }
         public bool IsExcludedFromCalculation { get; set; }
     }
 }

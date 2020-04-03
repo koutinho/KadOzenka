@@ -69,6 +69,12 @@
         <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionByStageGeneralHistory" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-eye" />
       </DropDownButtons>
     </Button>
+  
+    <Button Caption="Корректировка на первый этаж" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
+      <DropDownButtons>
+        <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionForFirstFloorGeneral" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-eye" />
+      </DropDownButtons>
+    </Button>
   </Buttons>
   
   <Tabs>

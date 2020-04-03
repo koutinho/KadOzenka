@@ -26,12 +26,14 @@ namespace KadOzenka.Web.Controllers
         public CorrectionByDateService CorrectionByDateService { get; set; }
         public CorrectionByRoomService CorrectionByRoomService { get; set; }
 		public CorrectionByStageService CorrectionByStageService { get; set; }
+        public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
 
 		public MarketObjectsController()
         {
             CorrectionByDateService = new CorrectionByDateService();
             CorrectionByRoomService = new CorrectionByRoomService();
 			CorrectionByStageService = new CorrectionByStageService();
+            CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
         }
 
         [HttpGet]
@@ -331,6 +333,66 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Message = message });
 		}
 
-		#endregion
-	}
+        #endregion
+
+        #region Correction For First Floor
+        public IActionResult CorrectionForFirstFloorDetailed(long marketSegmentCode, DateTime date)
+        {
+            var marketSegment = (MarketSegment)marketSegmentCode;
+
+            ViewBag.Date = date;
+            ViewBag.MarketSegmentCode = marketSegmentCode;
+            ViewBag.MarketSegment = marketSegment.GetEnumDescription();
+
+            return View();
+        }
+
+        public JsonResult GetCorrectionForFirstFloorDetailed(long marketSegmentCode, DateTime date)
+        {
+            var details = CorrectionForFirstFloorService.GetDetailsForSegmentAtDate(marketSegmentCode, date);
+            var models = details.Select(CorrectionForFirstFloorModel.Map).ToList();
+
+            return Json(models);
+        }
+
+        public IActionResult CorrectionForFirstFloorGeneral()
+        {
+            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment));
+            ViewBag.Segments = segments;
+
+            return View();
+        }
+        public JsonResult GetCorrectionForFirstFloorGeneral(long marketSegmentCode)
+        {
+            var stats = CorrectionForFirstFloorService.GetRates(marketSegmentCode);
+
+            return Json(stats);
+        }
+
+        [HttpPost]
+        public JsonResult ChangeFirstFloorStatusInCalculation(string models, DateTime date)
+        {
+            var historyJson = JObject.Parse(models).SelectToken("models").ToString();
+
+            var allRecords = JsonConvert.DeserializeObject<List<CorrectionForFirstFloorModel>>(historyJson);
+            var changedRecords = allRecords.Where(x => x.IsDirty).Select(CorrectionForFirstFloorModel.UnMap).ToList();
+
+            var isDataUpdated = CorrectionForFirstFloorService.ChangeBuildingsStatusInCalculation(changedRecords);
+
+            string message;
+            if (isDataUpdated)
+            {
+                //Todo: фоновая задача рассчета
+                //CorrectionForFirstFloorForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
+                message = "Данные успешно обновлены";
+            }
+            else
+            {
+                message = "Не найдено данных для изменения";
+            }
+
+            return Json(new { Message = message });
+        }
+        #endregion
+    }
 }
