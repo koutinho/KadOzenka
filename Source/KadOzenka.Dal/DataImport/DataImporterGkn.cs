@@ -221,6 +221,23 @@ namespace KadOzenka.Dal.DataImport
             };
             attributeValue.Save();
         }
+        public static KoStatusRepeatCalc GetNewtatusRepeatCalc(List<ObjectModel.KO.OMUnit> units)
+        {
+            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+            if (units.Count>0)
+            {
+                foreach(ObjectModel.KO.OMUnit unit in units)
+                {
+                    if (unit.StatusRepeatCalc_Code == KoStatusRepeatCalc.Initial || unit.StatusRepeatCalc_Code == KoStatusRepeatCalc.RepeatedInitial)
+                        koStatusRepeatCalc = KoStatusRepeatCalc.RepeatedInitial;
+                    if (unit.StatusRepeatCalc_Code == KoStatusRepeatCalc.New || unit.StatusRepeatCalc_Code == KoStatusRepeatCalc.Repeated)
+                        koStatusRepeatCalc = KoStatusRepeatCalc.Repeated;
+                }
+            }
+            return koStatusRepeatCalc;
+        }
+
+
 
         public void ImportObjectBuild(xmlObjectBuild current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
@@ -239,22 +256,21 @@ namespace KadOzenka.Dal.DataImport
                     break;
                 case KoNoteType.Initial:
                     koUnitStatus = KoUnitStatus.Initial;
+                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
                     break;
             }
 
 
 
-            ObjectModel.KO.OMUnit prev = null;
-
             #region Получение данных о прошлой оценке данного объекта
-            //prev = ObjectModel.KO.OMUnit.Where().SelectAll().ExecuteFirstOrDefault();
+            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
             #endregion
 
             //Если данные о прошлой оценке найдены
-            if (prev != null)
+            if (prev.Count>0)
             {
                 #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
                 #region Сохранение объекта
                 if (gbuObject == null)
                 {
@@ -280,21 +296,21 @@ namespace KadOzenka.Dal.DataImport
                 //Сохранение данных ГКН
                 SaveGknDataBuilding(current, gbuObject.Id, sDate, otDate, idDocument);
                 //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
                 #endregion
 
-
+                #region Анализ данных
                 //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
+                //bool prCheckObr = false;
                 //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
                 //надо перебрать все документы и узнать это
-                List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetHistory(koUnit.CadastralNumber);
-                foreach (ObjectModel.KO.HistoryUnit old in olds)
-                {
-                    if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate)
-                        prCheckObr = true;
-                }
-
+                //List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetHistory(koUnit.CadastralNumber);
+                //foreach (ObjectModel.KO.HistoryUnit old in olds)
+                //{
+                //    if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate)
+                //        prCheckObr = true;
+                //}
+                /*
                 if (!prCheckObr)
                 {
                     //Признак не поменялся ли тип объекта?
@@ -331,7 +347,7 @@ namespace KadOzenka.Dal.DataImport
                         #endregion
                     }
 
-                    /*
+                    
                     //Признак не поменялся ли материал стен?
                     bool prWallObjectCheck = ObjectCheckItem.Check(prev.Walls, current.Walls);
                     //Признак не поменялся ли год ввода в эксплуатацию?
@@ -386,8 +402,9 @@ namespace KadOzenka.Dal.DataImport
                                 //      2.Год завершения строительства
                             }
                         }
-                    */
                 }
+                */
+                #endregion
             }
             //Если данные о прошлой оценке не найдены
             else
@@ -582,20 +599,19 @@ namespace KadOzenka.Dal.DataImport
                     break;
                 case KoNoteType.Initial:
                     koUnitStatus = KoUnitStatus.Initial;
+                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
                     break;
             }
 
-            ObjectModel.KO.OMUnit prev = null;
-
             #region Получение данных о прошлой оценке данного объекта
-            //prev = ObjectModel.KO.OMUnit.Where().SelectAll().ExecuteFirstOrDefault();
+            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
             #endregion
 
             //Если данные о прошлой оценке найдены
-            if (prev != null)
+            if (prev.Count > 0)
             {
                 #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
                 #region Сохранение объекта
                 if (gbuObject == null)
                 {
@@ -621,7 +637,7 @@ namespace KadOzenka.Dal.DataImport
                 //Сохранение данных ГКН
                 SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
                 //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
                 #endregion
 
                 /*
@@ -799,20 +815,20 @@ namespace KadOzenka.Dal.DataImport
                     break;
                 case KoNoteType.Initial:
                     koUnitStatus = KoUnitStatus.Initial;
+                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
                     break;
             }
 
-            ObjectModel.KO.OMUnit prev = null;
 
             #region Получение данных о прошлой оценке данного объекта
-            //prev = ObjectModel.KO.OMUnit.Where().SelectAll().ExecuteFirstOrDefault();
+            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
             #endregion
 
             //Если данные о прошлой оценке найдены
-            if (prev != null)
+            if (prev.Count > 0)
             {
                 #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
                 #region Сохранение объекта
                 if (gbuObject == null)
                 {
@@ -838,7 +854,7 @@ namespace KadOzenka.Dal.DataImport
                 //Сохранение данных ГКН
                 SaveGknDataConstruction(current, gbuObject.Id, sDate, otDate, idDocument);
                 //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
                 #endregion
 
 
@@ -1088,20 +1104,20 @@ namespace KadOzenka.Dal.DataImport
                     break;
                 case KoNoteType.Initial:
                     koUnitStatus = KoUnitStatus.Initial;
+                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
                     break;
             }
 
-            ObjectModel.KO.OMUnit prev = null;
 
             #region Получение данных о прошлой оценке данного объекта
-            //prev = ObjectModel.KO.OMUnit.Where().SelectAll().ExecuteFirstOrDefault();
+            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
             #endregion
 
             //Если данные о прошлой оценке найдены
-            if (prev != null)
+            if (prev.Count > 0)
             {
                 #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
                 #region Сохранение объекта
                 if (gbuObject == null)
                 {
@@ -1127,7 +1143,7 @@ namespace KadOzenka.Dal.DataImport
                 //Сохранение данных ГКН
                 SaveGknDataUncomplited(current, gbuObject.Id, sDate, otDate, idDocument);
                 //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
                 #endregion
             }
             //Если данные о прошлой оценке не найдены
@@ -1274,20 +1290,19 @@ namespace KadOzenka.Dal.DataImport
                     break;
                 case KoNoteType.Initial:
                     koUnitStatus = KoUnitStatus.Initial;
+                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
                     break;
             }
 
-            ObjectModel.KO.OMUnit prev = null;
-
             #region Получение данных о прошлой оценке данного объекта
-            //prev = ObjectModel.KO.OMUnit.Where().SelectAll().ExecuteFirstOrDefault();
+            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
             #endregion
 
             //Если данные о прошлой оценке найдены
-            if (prev != null)
+            if (prev.Count > 0)
             {
                 #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
                 #region Сохранение объекта
                 if (gbuObject == null)
                 {
@@ -1313,7 +1328,7 @@ namespace KadOzenka.Dal.DataImport
                 //Сохранение данных ГКН
                 SaveGknDataFlat(current, gbuObject.Id, sDate, otDate, idDocument);
                 //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
                 #endregion
             }
             //Если данные о прошлой оценке не найдены
@@ -1503,20 +1518,19 @@ namespace KadOzenka.Dal.DataImport
                     break;
                 case KoNoteType.Initial:
                     koUnitStatus = KoUnitStatus.Initial;
+                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
                     break;
             }
 
-            ObjectModel.KO.OMUnit prev = null;
-
             #region Получение данных о прошлой оценке данного объекта
-            //prev = ObjectModel.KO.OMUnit.Where().SelectAll().ExecuteFirstOrDefault();
+            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
             #endregion
 
             //Если данные о прошлой оценке найдены
-            if (prev != null)
+            if (prev.Count > 0)
             {
                 #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev.ObjectId).SelectAll().ExecuteFirstOrDefault();
+                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
                 #region Сохранение объекта
                 if (gbuObject == null)
                 {
@@ -1542,7 +1556,7 @@ namespace KadOzenka.Dal.DataImport
                 //Сохранение данных ГКН
                 SaveGknDataCarPlace(current, gbuObject.Id, sDate, otDate, idDocument);
                 //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
                 #endregion
             }
             //Если данные о прошлой оценке не найдены
