@@ -135,7 +135,7 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-4">
-						<button id="" class="k-button" type="button">Пересчитать стоимость</button>
+						<button id="" class="k-button calculate" type="button">Пересчитать стоимость</button>
 					</div>
 				</div>
 			</div>
@@ -246,6 +246,26 @@
 
 
 	//fias
+	$addresses.on('focus', function () {
+		$addresses.on('kladr_close_before', closeBefore);
+	});
+
+	$addresses.on('blur', function () {
+		$addresses.off('kladr_close_before', closeBefore);
+	});
+
+	function closeBefore() {
+		if (!!$('#address').val()) {
+			var myGeocoder = ymaps.geocode($('#address').val());
+			setMarkerByGeoCoder(myGeocoder).then(function (geoObject) {
+				removeFindPoints();
+				if (geoObject.getPremiseNumber()) {
+					setKadNumber(geoObject.getAddressLine());
+				}
+			});
+		}
+	}
+
 	$addresses.fias({
 		oneString: true,
 		parentType: $.fias.type.region,
@@ -255,18 +275,6 @@
 		},
 		valueFormat: function(obj, query) {
 			return getCorrectRow(obj);
-		},
-		closeBefore: function () {
-			$('#address').blur();
-			if (!!$('#address').val()) {
-				var myGeocoder = ymaps.geocode($('#address').val());
-				setMarkerByGeoCoder(myGeocoder).then(function (geoObject) {
-					removeFindPoints();
-					if (geoObject.getPremiseNumber()) {
-						setKadNumber(geoObject.getAddressLine());
-					}
-				});
-			}
 		},
 		sendBefore: function(query) {
 			if (query.name) {
@@ -380,7 +388,6 @@
 				kendo.ui.progress($('body'), true);
 				var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}`;
 				$.get(url).done(function (data) {
-
 					if (data.Errors) {
 						var errors = $.map(distinctErrors(data.Errors),
 							function(el) {
