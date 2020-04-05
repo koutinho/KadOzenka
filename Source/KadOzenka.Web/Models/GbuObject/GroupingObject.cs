@@ -137,13 +137,11 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// </summary>
 		[Display(Name = "Источник")]
 		public string AttributeResultSourceName { get; set; }
-		/// <summary>
-		/// Идентификатор атрибута, куда будут записаны документы 
-		/// </summary>
-		[Display(Name = "Документ")]
-		public int? IdAttributeDocument { get; set; }
 
-		public GroupingSettings CovertToGroupingSettings()
+        public PartialDocumentViewModel Document { get; set; } = new PartialDocumentViewModel();
+
+
+        public GroupingSettings CovertToGroupingSettings()
 		{
 		    var attributeResultSourceId = IdAttributeResult.HasValue
 		        ? RegisterCache.GetAttributeData(IdAttributeResult.Value).RegisterId
@@ -151,7 +149,7 @@ namespace KadOzenka.Web.Models.GbuObject
 			return new GroupingSettings
 			{
 				IdCodJob = IdCodJob,
-				IdAttributeDocument = IdAttributeDocument,
+				IdAttributeDocument = Document.IdDocument,
 				IdAttributeFilter = IdAttributeFilter,
 				IdAttributeResult = IdAttributeResult,
 				IdAttributeSource = attributeResultSourceId,

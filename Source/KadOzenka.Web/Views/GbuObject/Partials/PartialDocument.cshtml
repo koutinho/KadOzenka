@@ -1,0 +1,68 @@
+﻿@using System.Collections
+@using Core.Register
+@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.GbuObject.PartialDocumentViewModel
+
+@Html.Hidden(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.IsNewDocument) : $"{Model.ModelPrefix}.{nameof(Model.IsNewDocument)}", Model.IsNewDocument)
+<div class="form-group existing-document" style="@(!Model.IsNewDocument ? "" : "display: none")">
+    <div class="col-sm-2">
+        @Html.CustomLabelFor(m => m.IdDocument, true)
+    </div>
+    <div class="col-sm-10">
+        @Html.KendoDropDownListWithAutocompleteFor(m => m.IdDocument, (IEnumerable)ViewData["Documents"], useAddTag: true, addFunction: "addButtonClick", modelPrefix: Model.ModelPrefix)
+    </div>
+</div>
+<div class="form-group new-document" style="@(Model.IsNewDocument ? "" : "display: none")">
+    <div class="col-sm-1">
+        @Html.CustomLabelFor(m => m.NewDocumentName, true)
+    </div>
+    <div class="col-sm-11">
+        <div class="row">
+            <div class="col-sm-4">
+                @Html.Kendo().TextBox().Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentName) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentName)}")
+            </div>
+            <div class="col-sm-1">
+                @Html.CustomLabelFor(m => m.NewDocumentRegNumber, htmlAttributes: new {@style = "float: right"}, NotSetRequired: true)
+            </div>
+            <div class="col-sm-3">
+                @Html.Kendo().TextBox().Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentRegNumber) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentRegNumber)}")
+            </div>
+            <div class="col-sm-1">
+                @Html.CustomLabelFor(m => m.NewDocumentDate, htmlAttributes: new {@style = "float: right"}, NotSetRequired: true)
+            </div>
+            <div class="col-sm-2" style="padding-right: 0">
+                @(Html.Kendo().DatePicker().Name(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.NewDocumentDate) : $"{Model.ModelPrefix}.{nameof(Model.NewDocumentDate)}"))
+            </div>
+            <div class="col-sm-1">
+                <a id="exist-doc" class="k-button k-button-icon" style="float: right"><span class='fas fa-history'></span></a>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var idPrefix = '@(!string.IsNullOrEmpty(Model.ModelPrefix) ? $"{Model.ModelPrefix}_" : string.Empty)';
+
+    function addButtonClick() {
+        $('.existing-document').hide(500);
+        $('.new-document').show(500);
+        $(`#${idPrefix}@(nameof(Model.IsNewDocument))`).val(true);
+    }
+    function updateDocumentControl(id) {
+        $('#exist-doc').click();
+	    $(`#${idPrefix}@(nameof(Model.IdDocument))`).data('kendoDropDownList').dataSource.add({ Text: $(`#${idPrefix}@(nameof(Model.NewDocumentName))`).val(), Value: id });
+	    $(`#${idPrefix}@(nameof(Model.IdDocument))`).data('kendoDropDownList').refresh();
+	    $(`#${idPrefix}@(nameof(Model.IdDocument))`).data('kendoDropDownList').value(id);
+	    $(`#${idPrefix}@(nameof(Model.NewDocumentName))`).val("");
+	    $(`#${idPrefix}@(nameof(Model.NewDocumentRegNumber))`).val("");
+        $(`#${idPrefix}@(nameof(Model.NewDocumentDate))`).data('kendoDatePicker').value(null);
+	}
+
+    $(document).ready(function () {
+        $('#exist-doc').on('click',
+            function () {
+                $('.new-document').hide(500);
+                $('.existing-document').show(500);
+				$(`#${idPrefix}@(nameof(Model.IsNewDocument))`).val(false);
+			});
+    });
+</script>

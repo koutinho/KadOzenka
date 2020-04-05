@@ -154,21 +154,25 @@ namespace KadOzenka.Web.Helpers
 
 		public static IHtmlContent KendoDropDownListWithAutocompleteFor<TModel, TValue>(this IHtmlHelper<TModel> html,
 			Expression<Func<TModel, TValue>> expression, IEnumerable data, string dataTextField = "Text",
-			string dataValueField = "Value", string filter = "contains", bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null)
+			string dataValueField = "Value", string filter = "contains", bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null, string modelPrefix = null)
 		{
 			ModelExplorer modelExplorer =
 				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
 
 			var htmlFieldName = ExpressionHelper.GetExpressionText(expression);
 			var name = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
-			var className = name.Replace(".", "_").Replace('[', '_').Replace(']', '_');
+		    if (!string.IsNullOrEmpty(modelPrefix))
+		    {
+		        name = modelPrefix + "." + name;
+		    }
+            var className = name.Replace(".", "_").Replace('[', '_').Replace(']', '_');
 			if (!string.IsNullOrEmpty(idPrefix))
 			{
 				name = name + idPrefix;
 				className = className + idPrefix;
 			}
 
-			var script = "<script>" +
+            var script = "<script>" +
 						 $"function onCascade{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); $('#{className}Wrapper').data('kendoTooltip').refresh();}}}}" +
 			             $"function clearField{className}() {{ $('input.{className}').data('kendoDropDownList').value('');}}" +
 							$"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});" +

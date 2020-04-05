@@ -25,9 +25,9 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Документ для значения по умолчанию 
 		/// </summary>
 		[Display(Name = "Документ")]
-		public long? IdDocument { get; set; }
+		public PartialDocumentViewModel Document { get; set; } = new PartialDocumentViewModel();
 
-		public HarmonizationCODSettings ToHarmonizationCODSettings()
+        public HarmonizationCODSettings ToHarmonizationCODSettings()
 		{
 			var settings = new HarmonizationCODSettings
 			{
@@ -48,7 +48,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				Level9Attribute = Level9Attribute,
 				Level10Attribute = Level10Attribute,
 				DefaultValue = DefaultValue,
-				IdDocument = IdDocument,
+				IdDocument = Document.IdDocument,
 				TaskFilter = IsTaskFilterUsed ? TaskFilter : null,
 				DateActual = IsDataActualUsed ? DataActual : null
 			};

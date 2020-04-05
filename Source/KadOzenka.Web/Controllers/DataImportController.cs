@@ -17,13 +17,13 @@ using Core.UI.Registers.Models.CoreUi;
 using ObjectModel.KO;
 using KadOzenka.Web.Models.Task;
 using ObjectModel.Common;
-using ObjectModel.Core.TD;
 using ObjectModel.Directory.Common;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using ObjectModel.Core.Shared;
 using static Core.UI.Registers.CoreUI.Registers.RegistersCommon;
 using System.Globalization;
+using KadOzenka.Dal.Tasks;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -31,7 +31,14 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly int _dataCountForBackgroundLoading = 1000;
 
-		[HttpGet]
+	    public TaskService TaskService { get; set; }
+
+	    public DataImportController(TaskService taskService)
+	    {
+	        TaskService = taskService;
+	    }
+
+        [HttpGet]
 		public IActionResult DataImport(string registerViewId, long? mainRegisterId)
 		{
 			if (!string.IsNullOrEmpty(registerViewId))
@@ -212,18 +219,13 @@ namespace KadOzenka.Web.Controllers
 		{
 			//SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_IMPORT, true, false, true);
 
-			OMInstance instance = new OMInstance
-			{
-				RegNumber = dto.IncomingDocumentRegNumber,
-				Description = dto.IncomingDocumentDescription,
-				CreateDate = dto.IncomingDocumentDate ?? DateTime.Now
-			};
-			instance.Save();
+		    var documentId = TaskService.CreateDocument(dto.IncomingDocumentRegNumber, dto.IncomingDocumentDescription,
+		        dto.IncomingDocumentDate);
 
-			OMTask task = new OMTask
+            OMTask task = new OMTask
 			{
 				TourId = dto.TourYear,
-				DocumentId = instance.Id,
+				DocumentId = documentId,
 				CreationDate = DateTime.Now,
 				EstimationDate = dto.EstimationDate,
 				NoteType_Code = dto.NoteType ?? ObjectModel.Directory.KoNoteType.None,

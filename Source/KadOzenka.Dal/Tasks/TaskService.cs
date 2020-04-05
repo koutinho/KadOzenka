@@ -118,6 +118,18 @@ namespace KadOzenka.Dal.Tasks
             return GetTemplateForTaskName(x.DocumentCreateDate, x.DocumentRegNumber, x.KoNoteType);
         }
 
+        public long CreateDocument(string regNumber, string description, DateTime? createDate = null)
+        {
+            OMInstance instance = new OMInstance
+            {
+                RegNumber = regNumber,
+                Description = description,
+                CreateDate = createDate ?? DateTime.Now
+            };
+
+            return instance.Save();
+        }
+
         #region Support Methods
 
         private DocumentDto GetDocumentById(long? documentId)

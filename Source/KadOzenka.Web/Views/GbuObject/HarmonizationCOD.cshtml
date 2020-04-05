@@ -201,14 +201,15 @@
                 @Html.KendoTextBoxFor(x => x.DefaultValue, isReadonly: false)
             </div>
         </div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(m => m.IdDocument)
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoDropDownListWithAutocompleteFor(m => m.IdDocument, (IEnumerable)ViewData["Documents"])
-            </div>
-        </div>
+    @(await Html.PartialAsync("Partials/PartialDocument", new PartialDocumentViewModel
+      {
+          ModelPrefix = $"{nameof(Model.Document)}",
+          IdDocument = Model.Document.IdDocument,
+          IsNewDocument = Model.Document.IsNewDocument,
+          NewDocumentName = Model.Document.NewDocumentName,
+          NewDocumentRegNumber = Model.Document.NewDocumentRegNumber,
+          NewDocumentDate = Model.Document.NewDocumentDate
+      }))
         <div class="form-group">
             <div class="col-sm-7">
                 @( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
@@ -469,6 +470,9 @@
                         if (response.Success) {
                             if (response.idResultAttribute && updateResultControl) {
                                 updateResultControl(response.idResultAttribute);
+                            }
+                            if (response.idDocument && updateDocumentControl) {
+                                updateDocumentControl(response.idDocument);
                             }
                             Common.ShowMessage(response.Success);
                         }

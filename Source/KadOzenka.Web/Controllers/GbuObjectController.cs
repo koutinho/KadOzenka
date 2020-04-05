@@ -165,7 +165,19 @@ namespace KadOzenka.Web.Controllers
 				model.IdAttributeResult = idAttr;
 			}
 
-			try
+		    if (model.Document.IsNewDocument)
+		    {
+		        var idDocument = _taskService.CreateDocument(model.Document.NewDocumentRegNumber,
+		            model.Document.NewDocumentName, model.Document.NewDocumentDate);
+                if (idDocument == 0)
+		        {
+		            SendErrorMessage("Не корректные данные для создания нового документа");
+		        }
+
+		        model.Document.IdDocument = idDocument;
+		    }
+
+		    try
 			{
 				SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
 			}
@@ -174,7 +186,12 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage(e.Message);
 			}
 
-			return Json(new { success = true , idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null });
+		    return Json(new
+		    {
+		        success = true,
+		        idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null,
+		        idDocument = model.Document.IsNewDocument ? model.Document.IdDocument : null
+		    });
 		}
 		#endregion
 
@@ -389,7 +406,19 @@ namespace KadOzenka.Web.Controllers
 				viewModel.IdAttributeResult = idAttr;
 			}
 
-			try
+		    if (viewModel.Document.IsNewDocument)
+		    {
+		        var idDocument = _taskService.CreateDocument(viewModel.Document.NewDocumentRegNumber,
+		            viewModel.Document.NewDocumentName, viewModel.Document.NewDocumentDate);
+		        if (idDocument == 0)
+		        {
+		            SendErrorMessage("Не корректные данные для создания нового документа");
+		        }
+
+		        viewModel.Document.IdDocument = idDocument;
+		    }
+
+            try
 			{
 				HarmonizationCodProcess.AddProcessToQueue(viewModel.ToHarmonizationCODSettings());
 			}
@@ -399,7 +428,13 @@ namespace KadOzenka.Web.Controllers
 				return BadRequest();
 			}
 
-			return Json(new { Success = "Процедура Гармонизации по классификатору ЦОД успешно добавлена в очередь, по результатам операции будет отправлено сообщение", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
+		    return Json(new
+		    {
+		        Success =
+		            "Процедура Гармонизации по классификатору ЦОД успешно добавлена в очередь, по результатам операции будет отправлено сообщение",
+		        idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null,
+		        idDocument = viewModel.Document.IsNewDocument ? viewModel.Document.IdDocument : null
+		    });
 		}
 
 		#endregion
