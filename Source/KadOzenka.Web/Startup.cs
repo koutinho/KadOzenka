@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
+using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Controllers;
 using KadOzenka.Web.SignalR;
@@ -60,6 +61,7 @@ namespace CIPJS
 			services.AddTransient<GbuObjectService>();
 			services.AddTransient<TaskService>();
 	        services.AddTransient<GbuLongProcessesService>();
+	        services.AddTransient<ExpressScoreService>();
             
 			services.AddHttpContextAccessor();
             services.AddSession(options =>

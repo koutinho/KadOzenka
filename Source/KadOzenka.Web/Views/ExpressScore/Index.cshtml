@@ -39,6 +39,11 @@
 	#select-count {
 		width: 100%;
 	}
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
 </style>
 
 <div class="form-horizontal col-sm-12">
@@ -72,13 +77,13 @@
 						@Html.CustomLabelFor("Площадь", true)
 					</div>
 					<div class="col-sm-4">
-						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+						@Html.Kendo().TextBox().Name("square").HtmlAttributes(new { style = "width: 100%", type = "number" })
 					</div>
 					<div class="col-sm-2">
 						@Html.CustomLabelFor("Этаж")
 					</div>
 					<div class="col-sm-3">
-						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" })
+						@Html.Kendo().TextBox().Name("floor").HtmlAttributes(new { style = "width: 100%" })
 					</div>
 				</div>
 				<div class="form-group">
@@ -148,31 +153,66 @@
 
 <script src="~/MapScripts/config.js" charset="utf-8"></script>
 <script src="~/js/jquery.fias.min.js"></script>
+<script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
-	$(document).ready(function() {
-		$('#Kn').on('blur', function () {
-			var val = $(this).val().replace(/_/gi, '');
-			$('#Kn').val(val);
-			if (!!val && !val.startsWith(':')) {
-				getAddressByKadNumber(val).then(function(data) {
-					if (data.address) {
-						$('#address').val(data.address.replace('Россия, ', ''));
-						setMarkerByGeoCoder(data.address).then(function () {});
-					}
-				}).catch(function(error) {
-					if (error.Message) {
-						Common.ShowError(error.Message);
-						$('#address').val('');
-						return;
-					}
-					console.error("Произошла ошибка при получении кадастрового номера", error);
-				});
+	var map;
+	var findPoints = [];
+	var $addresses = $('#address');
+	var typeShortList = [/г\./gi, /пгт\./gi, /п\./gi, /д\./gi, /c\./gi, /ул\./gi, /строение/gi];
+	var myMarker;
+	var myPlacemark;
+
+	function removeMyMarker() {
+		if (!!map) {
+			map.geoObjects.remove(myMarker);
+			myMarker = null;
+		}
+	}
+
+	function removeMyPlacemark() {
+		if (!!map) {
+			map.geoObjects.remove(myPlacemark);
+			myPlacemark = null;
+		}
+	}
+
+	function removeFindPoints() {
+		findPoints.forEach(function (item) {
+			if (!!map) {
+				map.geoObjects.remove(item);
 			}
 		});
+		findPoints = [];
+	}
+
+	$("#select-count").kendoButtonGroup({
+		items: [
+			{ text: "5", attributes: { class: "btn-count analogs" } },
+			{ text: "10", attributes: { class: "btn-count analogs " } },
+			{ text: "20", attributes: { class: "btn-count analogs" } }
+		]
 	});
 
-	var map;
 
+	//Устанавливаем кад номер в 2-х случиях
+	//1 - ввели самии адрес
+	// 2 - указали точку на карте
+	function setKadNumber(address) {
+		getKadNumber(address).then(function (data) {
+			if (data.kadNumber) {
+				$('#Kn').val(data.kadNumber);
+			}
+		}).catch(function (error) {
+			if (error.Message) {
+				Common.ShowError(error.Message);
+				$('#Kn').val('');
+				return;
+			}
+			console.error("Произошла ошибка при получении кадастрового номера", error);
+		});
+	}
+
+	// promises
 	var getKadNumber = (currentAddresses) => new Promise(function(resolve, reject) {
 		var url = "@Url.Action("GetKadNumber", "ExpressScore")" + `?address=${currentAddresses}`;
 		$.get(url).done(function (data) {
@@ -202,13 +242,10 @@
 			reject(data);
 		});
 	});
+	// end promises
 
 
-	var $addresses = $('#address');
-	var typeShortList = [/г\./gi, /пгт\./gi, /п\./gi, /д\./gi, /c\./gi, /ул\./gi, /строение/gi];
-
-	var myMarker;
-	var myPlacemark;
+	//fias
 	$addresses.fias({
 		oneString: true,
 		parentType: $.fias.type.region,
@@ -219,13 +256,17 @@
 		valueFormat: function(obj, query) {
 			return getCorrectRow(obj);
 		},
-		closeBefore: function() {
-			var myGeocoder = ymaps.geocode($('#address').val());
-			setMarkerByGeoCoder(myGeocoder).then(function (geoObject) {
-				if (geoObject.getPremiseNumber()) {
-					setKadNumber(geoObject.getAddressLine());
-				}
-			});
+		closeBefore: function () {
+			$('#address').blur();
+			if (!!$('#address').val()) {
+				var myGeocoder = ymaps.geocode($('#address').val());
+				setMarkerByGeoCoder(myGeocoder).then(function (geoObject) {
+					removeFindPoints();
+					if (geoObject.getPremiseNumber()) {
+						setKadNumber(geoObject.getAddressLine());
+					}
+				});
+			}
 		},
 		sendBefore: function(query) {
 			if (query.name) {
@@ -237,36 +278,6 @@
 			}
 		}
 	});
-
-	function setMarkerByGeoCoder(geocoder) {
-		if (typeof geocoder === 'string') {
-			geocoder = ymaps.geocode(geocoder);
-		}
-		return new Promise(function(resolve) {
-			geocoder.then(function (res) {
-
-				if (myMarker) {
-					map.geoObjects.remove(myMarker);
-				}
-
-				if (myPlacemark) {
-					map.geoObjects.remove(myPlacemark);
-				}
-
-				var firstGeoObject = res.geoObjects.get(0),
-					bounds = firstGeoObject.properties.get('boundedBy');
-
-				myMarker = firstGeoObject;
-				map.geoObjects.add(firstGeoObject);
-				map.setBounds(bounds,
-					{
-						checkZoomRange: true
-					});
-
-				resolve(firstGeoObject);
-			});
-		});
-	}
 
 	function getCorrectRow(obj) {
 		var arrayNames = [];
@@ -291,62 +302,135 @@
 		arrayNames.push(' ' + obj.typeShort + '. ' + obj.name);
 		return arrayNames.filter((v, i, a) => a.indexOf(v) === i).join(',');
 	}
+	// end fias
 
-	$("#select-count").kendoButtonGroup({
-		items: [
-			{ text: "5", attributes: { class: "btn-count" } }, { text: "10", attributes: { class: "btn-count" } },
-			{ text: "20", attributes: { class: "btn-count" } }
-		]
+	//fias geopoint
+	function setMarkerByGeoCoder(geocoder) {
+		if (typeof geocoder === 'string') {
+			geocoder = ymaps.geocode(geocoder);
+		}
+		return new Promise(function (resolve) {
+			geocoder.then(function (res) {
+
+				if (!!myMarker) {
+					removeMyMarker();
+				}
+
+				if (!!myPlacemark) {
+					removeMyPlacemark();
+				}
+
+				var firstGeoObject = res.geoObjects.get(0),
+					bounds = firstGeoObject.properties.get('boundedBy');
+
+				myMarker = firstGeoObject;
+				map.geoObjects.add(firstGeoObject);
+				map.setBounds(bounds,
+					{
+						checkZoomRange: true
+					});
+
+				resolve(firstGeoObject);
+			});
+		});
+	}
+	// end fias geopoint
+
+	$(document).ready(function() {
+		$('#Kn').on('blur', function () {
+			var val = $(this).val().replace(/_/gi, '');
+			$('#Kn').val(val);
+			if (!!val && !val.startsWith(':')) {
+				getAddressByKadNumber(val).then(function(data) {
+					if (data.address) {
+						$('#address').val(data.address.replace('Россия, ', ''));
+						setMarkerByGeoCoder(data.address).then(function () {});
+					}
+				}).catch(function(error) {
+					if (error.Message) {
+						Common.ShowError(error.Message);
+						$('#address').val('');
+						return;
+					}
+					console.error("Произошла ошибка при получении кадастрового номера", error);
+				});
+			}
+		});
+
+	
+		$('.analogs').on('click',
+			function () {
+				removeFindPoints();
+				var point = myPlacemark || myMarker;
+				var coordinates = (point && point.geometry.getCoordinates()) || null;
+				var floor = $('#floor').val();
+				var square = $('#square').val();
+				var segment = $('#segment').val();
+				var quality = $(this).text();
+			
+				//if (!square || square === "0") {
+				//	Common.ShowError('Заполните площадь');
+				//	return;
+				//}
+				if (!coordinates) {
+					Common.ShowError('Выберите или заполните целевой объект');
+					return;
+				}
+
+				kendo.ui.progress($('body'), true);
+				var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}`;
+				$.get(url).done(function (data) {
+
+					if (data.Errors) {
+						var errors = $.map(distinctErrors(data.Errors),
+							function(el) {
+								return el.Message;
+							});
+						Common.ShowError(errors);
+						return;
+					}
+						if (data.response && data.response.coordinates) {
+							data.response.coordinates.forEach(function (data) {
+								var coord = [data.Lat, data.Lng];
+								ymaps.geocode(coord).then(function(res) {
+									var firstGeoObject = res.geoObjects.get(0);
+
+									if (firstGeoObject) {
+										var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
+											{
+												iconCaption: 'поиск...'
+											},
+											{
+												preset: 'islands#orangeDotIconWithCaption'
+											});
+
+										newPoint.properties.set({
+											// Формируем строку с данными об объекте.
+											iconCaption: [
+												firstGeoObject.getLocalities().length
+												? firstGeoObject.getLocalities()
+												: firstGeoObject.getAdministrativeAreas(),
+												firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
+											].filter(Boolean).join(', '),
+											balloonContent: firstGeoObject.getAddressLine()
+										});
+
+										findPoints.push(newPoint);
+
+										map.geoObjects.add(newPoint);
+									}
+								});
+							});
+							map.setZoom(9);
+						}
+					}).always(function() {
+						kendo.ui.progress($('body'), false);
+					});
+			});
 	});
 
-	function createPlacemark(coords) {
-		return new ymaps.Placemark(coords,
-			{
-				iconCaption: 'поиск...'
-			},
-			{
-				preset: 'islands#violetDotIconWithCaption',
-				draggable: true
-			});
-	}
 
-	function setKadNumber(address) {
-		getKadNumber(address).then(function(data) {
-			if (data.kadNumber) {
-				$('#Kn').val(data.kadNumber);
-			}
-		}).catch(function (error) {
-			if (error.Message) {
-				Common.ShowError(error.Message);
-				$('#Kn').val('');
-				return;
-			}
-			console.error("Произошла ошибка при получении кадастрового номера", error);
-		});
-	}
-
-	function getAddress(coords) {
-		myPlacemark.properties.set('iconCaption', 'поиск...');
-		ymaps.geocode(coords).then(function(res) {
-			var firstGeoObject = res.geoObjects.get(0);
-
-			if (firstGeoObject.getPremiseNumber()) {
-				$('#address').val(firstGeoObject.getAddressLine().replace('Россия, ', ''));
-				setKadNumber(firstGeoObject.getAddressLine());
-			}
-			myPlacemark.properties.set({
-				// Формируем строку с данными об объекте.
-				iconCaption: [
-					firstGeoObject.getLocalities().length
-					? firstGeoObject.getLocalities()
-					: firstGeoObject.getAdministrativeAreas(),
-					firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
-				].filter(Boolean).join(', '),
-				balloonContent: firstGeoObject.getAddressLine()
-			});
-		});
-	}
-
+	// инициализация карты и евенты
 	function init() {
 		var script = document.createElement('script');
 		script.src =
@@ -366,10 +450,12 @@
 					function(e) {
 						// Получение координат щелчка
 						var coords = e.get('coords');
-
+						removeFindPoints();
+						clearFields();
 						if (myMarker) {
-							map.geoObjects.remove(myMarker);
+							removeMyMarker();
 						}
+
 						if (myPlacemark) {
 							myPlacemark.geometry.setCoordinates(coords);
 						} else {
@@ -388,4 +474,52 @@
 
 	init();
 
+	function clearFields() {
+		$('#address').val('');
+		$('#Kn').val('');
+	}
+
+	function getAddress(coords) {
+		myPlacemark.properties.set('iconCaption', 'поиск...');
+		ymaps.geocode(coords).then(function(res) {
+			var firstGeoObject = res.geoObjects.get(0);
+
+	
+			if (firstGeoObject.getAdministrativeAreas().length === 0 || firstGeoObject.getAdministrativeAreas().length > 1 ||
+				(firstGeoObject.getAdministrativeAreas() === 1 &&
+				firstGeoObject.getAdministrativeAreas()[0] !== "Москва")) {
+				removeMyPlacemark();
+				Common.ShowError("Объект за пределами г.Москва");
+				return;
+			}
+
+			if (firstGeoObject.getPremiseNumber()) {
+				$('#address').val(firstGeoObject.getAddressLine().replace('Россия, ', ''));
+				setKadNumber(firstGeoObject.getAddressLine());
+			}
+			
+			myPlacemark.properties.set({
+				// Формируем строку с данными об объекте.
+				iconCaption: [
+					firstGeoObject.getLocalities().length
+					? firstGeoObject.getLocalities()
+					: firstGeoObject.getAdministrativeAreas(),
+					firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
+				].filter(Boolean).join(', '),
+				balloonContent: firstGeoObject.getAddressLine()
+			});
+		});
+	}
+
+	function createPlacemark(coords) {
+		return new ymaps.Placemark(coords,
+			{
+				iconCaption: 'поиск...'
+			},
+			{
+				preset: 'islands#violetDotIconWithCaption',
+				draggable: true
+			});
+	}
+	// end инициализация карты
 </script>
