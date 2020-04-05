@@ -462,7 +462,7 @@ namespace KadOzenka.Web.Controllers
 					}).ToList()
 				}).AsEnumerable();
 
-			ViewData["Document"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
+			ViewData["Documents"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
 			{
 				Value = x.Id,
 				Text = x.Description
@@ -491,9 +491,26 @@ namespace KadOzenka.Web.Controllers
 				viewModel.IdAttributeResult = idAttr;
 			}
 
-			CodSelection.SelectByCadastralNumber(viewModel.ToCodSelectionSettings());
+		    if (viewModel.Document.IsNewDocument)
+		    {
+		        var idDocument = _taskService.CreateDocument(viewModel.Document.NewDocumentRegNumber,
+		            viewModel.Document.NewDocumentName, viewModel.Document.NewDocumentDate);
+		        if (idDocument == 0)
+		        {
+		            SendErrorMessage("Не корректные данные для создания нового документа");
+		        }
 
-			return Json(new {success = "Успешно выполнено", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
+		        viewModel.Document.IdDocument = idDocument;
+		    }
+
+            CodSelection.SelectByCadastralNumber(viewModel.ToCodSelectionSettings());
+
+		    return Json(new
+		    {
+		        success = "Успешно выполнено",
+		        idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null,
+		        idDocument = viewModel.Document.IsNewDocument ? viewModel.Document.IdDocument : null
+		    });
 		}
 
 		#endregion

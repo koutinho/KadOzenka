@@ -41,15 +41,14 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Документ для значения по умолчанию 
 		/// </summary>
 		[Display(Name = "Документ")]
-		[Required(ErrorMessage = "Выберете документ")]
-		public long? IdDocument { get; set; }
+        public PartialDocumentViewModel Document { get; set; } = new PartialDocumentViewModel();
 
-		public CodSelectionSettings ToCodSelectionSettings()
+        public CodSelectionSettings ToCodSelectionSettings()
 		{
 			return new CodSelectionSettings
 				{
 					IdAttributeFilter = IdAttributeFilter,
-					IdDocument = IdDocument,
+					IdDocument = Document.IdDocument,
 					IdAttributeResult = IdAttributeResult,
 					IdCodJob = IdCodJob,
 					PropertyType = PropertyType != null ? (PropertyTypes) PropertyType : PropertyTypes.UnitedPropertyComplex,
@@ -106,7 +105,15 @@ namespace KadOzenka.Web.Models.GbuObject
 					new ValidationResult(errorMessage: "Заполните результирующую характеристику",
 						memberNames: new[] { nameof(IdAttributeResult) });
 			}
-		}
+
+		    if (!Document.IsNewDocument && Document.IdDocument == null)
+		    {
+		        
+		        yield return
+		            new ValidationResult(errorMessage: "Выберете документ",
+		                memberNames: new[] { nameof(Document) });
+            }
+        }
 
 	}
 }

@@ -106,14 +106,15 @@
 		</div>
 	</fieldset>
 	<div class="form-group"></div>
-	<div class="form-group">
-		<div class="col-sm-2">
-			@Html.CustomLabelFor(m => m.IdDocument)
-		</div>
-		<div class="col-sm-10">
-			@Html.KendoDropDownListWithAutocompleteFor(m => m.IdDocument, (IEnumerable)ViewData["Document"])
-		</div>
-	</div>
+    @(await Html.PartialAsync("Partials/PartialDocument", new PartialDocumentViewModel
+      {
+          ModelPrefix = $"{nameof(Model.Document)}",
+          IdDocument = Model.Document.IdDocument,
+          IsNewDocument = Model.Document.IsNewDocument,
+          NewDocumentName = Model.Document.NewDocumentName,
+          NewDocumentRegNumber = Model.Document.NewDocumentRegNumber,
+          NewDocumentDate = Model.Document.NewDocumentDate
+      }))
 
 	<div class="form-group">
 		<div class="col-sm-7">
@@ -263,7 +264,10 @@
 						if (response.success) {
 							if (response.idResultAttribute && updateResultControl) {
 								updateResultControl(response.idResultAttribute);
-							}
+                            }
+						    if (response.idDocument && updateDocumentControl) {
+						        updateDocumentControl(response.idDocument);
+						    }
 							kendo.ui.progress($('body'), false);
 							Common.ShowMessage("Выполнено");
 						}
