@@ -74,6 +74,14 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-3">
+						@Html.CustomLabelFor("Сегмент", true)
+					</div>
+					<div class="col-sm-9">
+						@Html.Kendo().DropDownList().Name("segment").BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment))).NoDataTemplate("Ничего не найдено!")
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
 						@Html.CustomLabelFor("Площадь", true)
 					</div>
 					<div class="col-sm-4">
@@ -111,14 +119,6 @@
 					</div>
 					<div class="col-sm-9">
 						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" }).Enable(false)
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-3">
-						@Html.CustomLabelFor("Сегмент")
-					</div>
-					<div class="col-sm-9">
-						@Html.Kendo().DropDownList().Name("segment").BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment))).NoDataTemplate("Ничего не найдено!")
 					</div>
 				</div>
 				<div class="form-group">
@@ -376,10 +376,10 @@
 				var segment = $('#segment').val();
 				var quality = $(this).text();
 			
-				//if (!square || square === "0") {
-				//	Common.ShowError('Заполните площадь');
-				//	return;
-				//}
+				if (!segment || segment === "0") {
+					Common.ShowError('Заполните сегмент');
+					return;
+				}
 				if (!coordinates) {
 					Common.ShowError('Выберите или заполните целевой объект');
 					return;

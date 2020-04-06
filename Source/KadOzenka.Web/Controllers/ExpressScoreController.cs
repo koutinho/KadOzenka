@@ -57,29 +57,10 @@ namespace KadOzenka.Web.Controllers
 				new QSConditionSimple()
 				{
 					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMCoreObject.GetColumn(x => x.Area),
-					RightOperand = new QSColumnConstant(param.Square)
-				}
-			};
-			if (param.Floor != null)
-			{
-				conditions.Add(new QSConditionSimple
-				{
-					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMCoreObject.GetColumn(x => x.FloorsCount),
-					RightOperand = new QSColumnConstant(param.Floor)
-				});
-			}
-			if (param.Segment != null && param.Segment != MarketSegment.None)
-			{
-				conditions.Add(new QSConditionSimple
-				{
-					ConditionType = QSConditionType.Equal,
 					LeftOperand = OMCoreObject.GetColumn(x => x.PropertyMarketSegment_Code),
 					RightOperand = new QSColumnConstant(param.Segment)
-				});
-			}
-
+				}
+			};
 
 			var objects = OMCoreObject.Where(conditions.ToArray()).Select(x => new
 			{

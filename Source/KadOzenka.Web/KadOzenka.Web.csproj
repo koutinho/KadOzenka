@@ -783,6 +783,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Views\ExpressScore\Index.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Views\GbuObject\GroupingObject.cshtml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
