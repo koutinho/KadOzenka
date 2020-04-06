@@ -163,6 +163,31 @@ else
 
     .attrHistory {
     }
+
+    .k-tooltip-content {
+        padding-right: 0 !important;
+    }
+
+    .k-tooltip-button > a.k-icon.k-i-close{
+        padding: 2px;
+        width: 20px;
+        height: 20px;
+        border-width: 0;
+        opacity: .7;
+        border-radius: 6px;
+    }
+    .k-tooltip-button > a.k-icon.k-i-close:hover{
+         background-color: #e4e5ee;
+    }
+
+    .k-tooltip{
+        min-height: 30px !important;
+    }
+    .k-tooltip-content {
+        max-width: 800px !important;
+        max-height: 400px !important;
+        overflow: scroll !important;
+    }
 </style>
 
 
@@ -185,8 +210,7 @@ else
                     contentLoad: function () {
                         kendo.ui.progress($("div[class*='k-tooltip'"), false);
                     },
-                    width: 800,
-                    height: 400
+                    width: 800
                 });
             });
         });

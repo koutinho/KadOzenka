@@ -21,23 +21,42 @@
         </thead>
         <tbody>
             @foreach (var attributeValue in Model)
-            {<tr>
-                <td>@attributeValue.Value</td>
-                <td>@attributeValue.ActualDate.GetString()</td>
-                <td>@attributeValue.UserFullname</td>
-                <td>@attributeValue.Document</td>
-            </tr>
+            {
+                <tr>
+                    <td>@attributeValue.Value</td>
+                    <td>@attributeValue.ActualDate.GetString()</td>
+                    <td>@attributeValue.UserFullname</td>
+                    <td>@attributeValue.Document</td>
+                </tr>
             }
         </tbody>
     </table>
+    <style>
+        .k-grid-norecords {
+            font-family: 'Roboto', sans-serif;
+            text-align: center;
+            color: rgb(142, 142, 142);
+            padding-top: 15px;
+            padding-bottom: 15px;
+        }
+    </style>
     <script>
         $(function () {
             $('#Grid').kendoGrid({
                 selectable: true,
                 resizable: true,
-                scrollable: true,
-                sortable: true
+                sortable: true,
+                noRecords: {
+                    template: "Нет данных"
+                },
             });
+
+        });
+        $(document).ready(function () {
+            var rowCount = $("#Grid").data("kendoGrid").dataSource.data().length;
+            if (rowCount == 0) rowCount = 1;
+            var size = 60 + rowCount * 50;
+            window.frameElement.style.height = size + "px";
         });
     </script>
 </div>
