@@ -829,6 +829,13 @@ namespace KadOzenka.Dal.GbuObject
                         }
                     }
                 }
+                else
+                {
+	                lock (PriorityGrouping.locked)
+	                {
+		                PriorityGrouping.ErrorMessages.Add(errorCODStr);
+	                }
+                }
                 #endregion
             }
 
@@ -1055,8 +1062,15 @@ namespace KadOzenka.Dal.GbuObject
                             }
                         }
                     }
-                    #endregion
-                }
+                    else
+                    {
+	                    lock (PriorityGrouping.locked)
+	                    {
+		                    PriorityGrouping.ErrorMessages.Add(errorCODStr);
+	                    }
+                    }
+					#endregion
+				}
             }
         }
         #endregion
@@ -1071,7 +1085,6 @@ namespace KadOzenka.Dal.GbuObject
         /// Объект для блокировки счетчика в многопоточке
         /// </summary>
         public static object locked;
-
 
         /// <summary>
         /// Общее число объектов
@@ -1092,12 +1105,14 @@ namespace KadOzenka.Dal.GbuObject
 		/// </summary>
 		public static PriorityGroupList PrioritetList = null;
 
+		public static List<string> ErrorMessages;
         /// <summary>
         /// Выполнение операции группировки
         /// </summary>
         public static void SetPriorityGroup(GroupingSettings setting)
         {
-            locked = new object();
+	        ErrorMessages = new List<string>();
+			locked = new object();
             PrioritetList = new PriorityGroupList();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
@@ -1126,9 +1141,11 @@ namespace KadOzenka.Dal.GbuObject
 				Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
 				CurrentCount = 0;
 				MaxCount = 0;
+				var str = string.Join(',', ErrorMessages);
+				ErrorMessages?.Clear();
 				if (MaxCount != SuccessCount)
 				{
-					throw new Exception("Процедура нормализации была выполнена не для всех объектов");
+					throw new Exception(str);
 				}
 			}
 			else
@@ -1139,9 +1156,11 @@ namespace KadOzenka.Dal.GbuObject
                 Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
                 CurrentCount = 0;
                 MaxCount = 0;
-                if (MaxCount != SuccessCount)
+                var str = string.Join(',', ErrorMessages);
+                ErrorMessages?.Clear();
+				if (MaxCount != SuccessCount)
                 {
-	                throw new Exception("Процедура нормализации была выполнена не для всех объектов");
+	                throw new Exception(str);
                 }
 			}
 

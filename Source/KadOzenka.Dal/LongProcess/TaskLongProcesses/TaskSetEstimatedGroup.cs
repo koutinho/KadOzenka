@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.KoObject;
@@ -27,7 +28,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			catch (Exception e)
 			{
 				NotificationSender.SendNotification(processQueue, "Присвоение оценочной группы", $"Присвоение оценочной группы завершено с ошибкой. Подробнее в журнале ошибок");
-				throw new Exception(e.Message);
+				ErrorManager.LogError(e);
+				throw;
 			}
 		}
 	}
