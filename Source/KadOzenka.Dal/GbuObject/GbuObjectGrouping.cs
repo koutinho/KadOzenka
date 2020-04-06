@@ -1088,7 +1088,7 @@ namespace KadOzenka.Dal.GbuObject
             ParallelOptions options = new ParallelOptions
             {
                 CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 1
+                MaxDegreeOfParallelism = 20
             };
 
             List<ObjectModel.KO.OMCodDictionary> DictionaryItem = new List<ObjectModel.KO.OMCodDictionary>();
