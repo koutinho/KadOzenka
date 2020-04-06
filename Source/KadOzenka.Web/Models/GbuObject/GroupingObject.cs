@@ -138,7 +138,8 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Источник")]
 		public int? IdAttributeSource { get; set; }
 
-	    public int? IdAttributeDocument { get; set; }
+	    [Display(Name = "Документ")]
+        public int? IdAttributeDocument { get; set; }
 
 
         public GroupingSettings CovertToGroupingSettings()
