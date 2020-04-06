@@ -491,7 +491,7 @@ namespace KadOzenka.Dal.GbuObject
             attributeValue.Save();
 
         }
-        private void AddValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, long? idDoc, DateTime date, string value)
+         private void AddValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, long? idDoc, DateTime date, string value)
         {
             var attributeValue = new GbuObjectAttribute
             {
@@ -714,7 +714,12 @@ namespace KadOzenka.Dal.GbuObject
 
                         AddValueFactor(obj, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
-                        if (setting.IdAttributeSource != null)
+                        lock (PriorityGrouping.locked)
+                        {
+	                        PriorityGrouping.SuccessCount++;
+                        }
+
+						if (setting.IdAttributeSource != null)
                         {
                             string[] arrsource = source.Split(';');
                             string strsource = string.Empty;
@@ -830,11 +835,12 @@ namespace KadOzenka.Dal.GbuObject
         }
         public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual)
         {
-            lock (PriorityGrouping.locked)
-            {
-                PriorityGrouping.CurrentCount++;
-            }
-            if (unit.ObjectId != null)
+	        lock (PriorityGrouping.locked)
+	        {
+		        PriorityGrouping.CurrentCount++;
+	        }
+
+			if (unit.ObjectId != null)
             {
                 #region Поля
                 Code_Source_01 = string.Empty;
@@ -934,7 +940,12 @@ namespace KadOzenka.Dal.GbuObject
 
                             AddValueFactor(unit, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
-                            if (setting.IdAttributeSource != null)
+                            lock (PriorityGrouping.locked)
+                            {
+	                            PriorityGrouping.SuccessCount++;
+                            }
+
+							if (setting.IdAttributeSource != null)
                             {
                                 string[] arrsource = source.Split(';');
                                 string strsource = string.Empty;
@@ -1071,11 +1082,15 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static int CurrentCount = 0;
 
-
         /// <summary>
-        /// Справочник приоритетов
+        /// Количество объектов прошедших процедуру
         /// </summary>
-        public static PriorityGroupList PrioritetList = null;
+        public static int SuccessCount = 0;
+
+		/// <summary>
+		/// Справочник приоритетов
+		/// </summary>
+		public static PriorityGroupList PrioritetList = null;
 
         /// <summary>
         /// Выполнение операции группировки
@@ -1105,13 +1120,18 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     Objs.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId).SelectAll().Execute());
                 }
+
                 MaxCount = Objs.Count;
-                CurrentCount = 0;
-                Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
-                CurrentCount = 0;
-                MaxCount = 0;
-            }
-            else
+				CurrentCount = 0;
+				Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
+				CurrentCount = 0;
+				MaxCount = 0;
+				if (MaxCount != SuccessCount)
+				{
+					throw new Exception("Процедура нормализации была выполнена не для всех объектов");
+				}
+			}
+			else
             {
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
                 MaxCount = Objs.Count;
@@ -1119,7 +1139,11 @@ namespace KadOzenka.Dal.GbuObject
                 Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
                 CurrentCount = 0;
                 MaxCount = 0;
-            }
+                if (MaxCount != SuccessCount)
+                {
+	                throw new Exception("Процедура нормализации была выполнена не для всех объектов");
+                }
+			}
 
 
         }

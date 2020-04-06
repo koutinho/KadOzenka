@@ -42,11 +42,23 @@ namespace KadOzenka.Dal.KoObject
 
 	public class KoObjectSetEstimatedGroup
 	{
+		/// <summary>
+		/// Объект для блокировки счетчика в многопоточке
+		/// </summary>
+		public static object locked;
+
 		public static int CountAllUnits;
+
+		public static int SuccessCount;
+
+		public static List<string> ErrorMessages;
+
 		public static void Run(EstimatedGroupModel param)
 		{
+			locked = new object();
 			var units = OMUnit.Where(x => x.TaskId != null && x.TaskId == param.IdTask).SelectAll().Execute().ToList();
 			CountAllUnits = units.Count;
+			ErrorMessages = new List<string>();
 
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 			ParallelOptions options = new ParallelOptions
@@ -68,7 +80,11 @@ namespace KadOzenka.Dal.KoObject
 				ValueItem codeGroup = GetValueFactor(gbuObject, attributeCodeGroup.RegisterId, attributeCodeGroup.Id);
 				if (string.IsNullOrEmpty(codeGroup.Value))
 				{
-					throw new Exception($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber} ");
+					lock (locked)
+					{
+						ErrorMessages.Add($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber}");
+					}
+					return;
 				}
 
 				var complianceGuides = GetComplianceGuides(OMComplianceGuide.Where(x => x.Code == codeGroup.Value && x.TypeProperty == item.PropertyType).SelectAll().Execute());
@@ -78,7 +94,14 @@ namespace KadOzenka.Dal.KoObject
 					AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides[0].Group);
 				}
 
-				if (complianceGuides.Count <= 1) return;
+				if (complianceGuides.Count <= 1)
+				{
+					lock (locked)
+					{
+						ErrorMessages.Add($"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}");
+					}
+					return;
+				}
 				{
 					if (complianceGuides[0].IsResidential != null)
 					{
@@ -88,7 +111,11 @@ namespace KadOzenka.Dal.KoObject
 						ValueItem typeRoom = GetValueFactor(gbuObject, attributeRoom.RegisterId, attributeRoom.Id);
 						if (string.IsNullOrEmpty(typeRoom.Value))
 						{
-							throw new Exception($"Не найден тип помещения для объекта {gbuObject.CadastralNumber} ");
+							lock (locked)
+							{
+								ErrorMessages.Add($"Не найден тип помещения для объекта {gbuObject.CadastralNumber} ");
+							}
+							return;
 						}
 						var group = complianceGuides.FirstOrDefault(x => x.IsResidential == typeRoom.Value);
 						AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, group.Group);
@@ -102,13 +129,21 @@ namespace KadOzenka.Dal.KoObject
 
 					if (string.IsNullOrEmpty(codeQuarter.Value))
 					{
-						throw new Exception($"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.");
+						lock (locked)
+						{
+							ErrorMessages.Add($"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.");
+						}
+						return;
 					}
 
 					var kv = OMKadastrKvartal.Where(x => x.KadastrKvartal == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
 					if (kv == null)
 					{
-						throw new Exception($"Не найден кадастровый квартал {codeQuarter.Value}. Необходимо обновить справочник");
+						lock (locked)
+						{
+							ErrorMessages.Add($"Не найден кадастровый квартал {codeQuarter.Value}. Необходимо обновить справочник");
+						}
+						return;
 					}
 					var task = OMTask.Where(x => x.Id == param.IdTask).SelectAll().ExecuteFirstOrDefault();
 					var tourYear = OMTour.Where(x => x.Id == task.TourId).SelectAll().ExecuteFirstOrDefault().Year;
@@ -119,10 +154,25 @@ namespace KadOzenka.Dal.KoObject
 							AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2017).Group); break;
 						case 2020:
 							AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group); break;
-						default: throw new Exception("Для выбраного тура не предусмотренны параметры проставления оценки");
+						default:
+						{
+							lock (locked)
+							{
+								ErrorMessages.Add("Для выбраного тура не предусмотренны параметры проставления оценки");
+							}
+							return;
+						}
 					}
 				}
 			});
+			var strErrors = string.Join(',', ErrorMessages);
+
+			ErrorMessages?.Clear();
+
+			if (CountAllUnits != SuccessCount)
+			{
+				throw new Exception(strErrors);
+			}
 		}
 
 		#region HelpMetods
@@ -141,7 +191,15 @@ namespace KadOzenka.Dal.KoObject
 				Ot = date,
 				StringValue = value,
 			};
-			attributeValue.Save();
+			var id = attributeValue.Save();
+			if (id != 0)
+			{
+				lock(locked)
+				{
+					SuccessCount++;
+				}
+				
+			}
 
 		}
 

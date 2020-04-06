@@ -26,8 +26,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 			catch (Exception e)
 			{
-				NotificationSender.SendNotification(processQueue, "Присвоение оценочной группы", $"Присвоение оценочной группы завершено с ошибкой: {e.Message}");
-				throw;
+				NotificationSender.SendNotification(processQueue, "Присвоение оценочной группы", $"Присвоение оценочной группы завершено с ошибкой. Подробнее в журнале ошибок");
+				throw new Exception(e.Message);
 			}
 		}
 	}
