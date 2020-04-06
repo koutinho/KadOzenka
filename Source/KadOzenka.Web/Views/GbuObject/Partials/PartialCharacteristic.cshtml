@@ -8,14 +8,7 @@
 		@Html.CustomLabelFor(m => m.IdAttributeResult, true)
 	</div>
     <div class="col-sm-10">
-        @if (!string.IsNullOrEmpty(Model.AttributeResultSourceNameField))
-        {
-            @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeResult, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], useAddTag: true, addFunction: "addButton", onSelectEvent: "onAttributeResultSelectEvent")
-        }
-        else
-        {
-            @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeResult, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], useAddTag: true, addFunction: "addButton")
-        }
+        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeResult, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], useAddTag: true, addFunction: "addButton")
     </div>
 </div>
 <div class="form-group new-attribute-result" style="@(Model.IsNewAttribute ? "" : "display: none")">
@@ -102,9 +95,6 @@
 		$('#@nameof(Model.IdAttributeResult)').data('kendoDropDownTree').refresh();
         $('#@nameof(Model.IdAttributeResult)').data('kendoDropDownTree').value(id);
         $('#@nameof(Model.NameNewAttribute)').val("");
-        if ($("#@(Model.AttributeResultSourceNameField)")) {
-            $("#@(Model.AttributeResultSourceNameField)").val(selectedRegisterText);
-        }
 	}
 
 	function addButton() {
@@ -120,11 +110,4 @@
 				$('#@(nameof(Model.IsNewAttribute))').val(false);
 			});
     });
-
-    function onAttributeResultSelectEvent() {
-        if (!this.e.sender.dataItem(this.e.node).hasChildren) {
-            var node = this.e.sender.dataItem(this.e.node);
-            $("#@(Model.AttributeResultSourceNameField)").val(node.parentNode().text);
-        }
-	}
 </script>

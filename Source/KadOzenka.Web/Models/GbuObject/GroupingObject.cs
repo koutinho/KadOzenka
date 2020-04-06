@@ -136,23 +136,20 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Идентификатор атрибута, куда будут записаны источники 
 		/// </summary>
 		[Display(Name = "Источник")]
-		public string AttributeResultSourceName { get; set; }
+		public int? IdAttributeSource { get; set; }
 
-        public PartialDocumentViewModel Document { get; set; } = new PartialDocumentViewModel();
+	    public int? IdAttributeDocument { get; set; }
 
 
         public GroupingSettings CovertToGroupingSettings()
 		{
-		    var attributeResultSourceId = IdAttributeResult.HasValue
-		        ? RegisterCache.GetAttributeData(IdAttributeResult.Value).RegisterId
-		        : (long?) null;
 			return new GroupingSettings
 			{
 				IdCodJob = IdCodJob,
-				IdAttributeDocument = Document.IdDocument,
+				IdAttributeDocument = IdAttributeDocument,
 				IdAttributeFilter = IdAttributeFilter,
 				IdAttributeResult = IdAttributeResult,
-				IdAttributeSource = attributeResultSourceId,
+				IdAttributeSource = IdAttributeSource,
 				Level1 = Level1.ConvertToLevelItem(),
 				Level10 = Level10.ConvertToLevelItem(),
 				Level11 = Level11.ConvertToLevelItem(),

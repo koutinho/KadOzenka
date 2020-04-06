@@ -137,12 +137,6 @@ namespace KadOzenka.Web.Controllers
 					}).ToList()
 				}).AsEnumerable();
 
-		    ViewData["Documents"] = OMInstance.Where(x => x).SelectAll().Execute().Select(x => new
-		    {
-		        Text = x.Description,
-		        Value = x.Id,
-		    }).ToList();
-
             return View(new GroupingObject());
 		}
 
@@ -165,18 +159,6 @@ namespace KadOzenka.Web.Controllers
 				model.IdAttributeResult = idAttr;
 			}
 
-		    if (model.Document.IsNewDocument)
-		    {
-		        var idDocument = _taskService.CreateDocument(model.Document.NewDocumentRegNumber,
-		            model.Document.NewDocumentName, model.Document.NewDocumentDate);
-                if (idDocument == 0)
-		        {
-		            SendErrorMessage("Не корректные данные для создания нового документа");
-		        }
-
-		        model.Document.IdDocument = idDocument;
-		    }
-
 		    try
 			{
 				SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
@@ -189,8 +171,7 @@ namespace KadOzenka.Web.Controllers
 		    return Json(new
 		    {
 		        success = true,
-		        idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null,
-		        idDocument = model.Document.IsNewDocument ? model.Document.IdDocument : null
+		        idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null
 		    });
 		}
 		#endregion
