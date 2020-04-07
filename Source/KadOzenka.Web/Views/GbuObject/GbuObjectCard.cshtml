@@ -27,7 +27,7 @@
                     @Html.CustomLabelFor(m => m.DateActual, htmlAttributes: new {style = "font-weight: bold;"})
                 </div>
                 <div class="col-sm-2">
-                    @Html.Kendo().DatePickerFor(m => m.DateActual).Events(x => x.Change("onDateActualChange"))
+                    @Html.Kendo().DatePickerFor(m => m.DateActual).Events(x => x.Change("onDateActualChange")).Format("dd/MM/yyyy")
                 </div>
                 <div class="col-sm-3">
                     <button style="float: left" id="searchAttributes" class="k-button" type="button">Найти атрибуты</button>
@@ -79,8 +79,9 @@
 
         function updatePartialArea(objId, dateActual) {
             kendo.ui.progress($('#partialArea'), true);
-            if (dateActual) {
-                dateActual = encodeURIComponent((kendo.parseDate(dateActual)).toUTCString());
+			if (dateActual) {
+				debugger;
+				dateActual = encodeURIComponent((kendo.parseDate(dateActual)) && (kendo.parseDate(dateActual)).toUTCString() || (kendo.parseDate(dateActual.replace(/\//ig, '.'))).toUTCString()|| null);
             }
             $("#partialAttrView").load(
                 `/GbuObject/GetGbuObjectAttributes?objectId=${objId}&actualDate=${dateActual}`,

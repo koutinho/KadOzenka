@@ -80,14 +80,15 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult GetGbuObjectAttributes(long objectId, DateTime? actualDate)
 		{
+			var ts = new TimeSpan(23, 59, 59);
 			var viewModel = new List<RegisterDto>();
-
+			var date = actualDate.HasValue ? actualDate.Value.Date + ts : DateTime.Now.Date + ts;
 			var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 			var getSources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id && x.Id != 1).ToList();
 			foreach (var source in getSources)
 			{
 				var objAttributes = _service
-					.GetAllAttributes(objectId, new List<long> { source.Id }, null, actualDate ?? DateTime.Now)
+					.GetAllAttributes(objectId, new List<long> { source.Id }, null, date)
 					.ToList();
 				if (objAttributes.Count > 0)
 				{
