@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Register;
@@ -186,10 +187,10 @@ namespace KadOzenka.Dal.KoObject
 				AttributeId = idFactor.Value,
 				ObjectId = mObject.Id,
 				ChangeDocId = (idDoc == null) ? -1 : idDoc.Value,
-				S = date,
+				S = date.Date,
 				ChangeUserId = SRDSession.Current.UserID,
 				ChangeDate = DateTime.Now,
-				Ot = date,
+				Ot = date.Date.Date,
 				StringValue = value,
 			};
 			var id = attributeValue.Save();
