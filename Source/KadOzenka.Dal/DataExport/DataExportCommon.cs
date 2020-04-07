@@ -104,10 +104,10 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Добавление в Excel таблицы данных, начиная со строки с индексом Row
         /// </summary>
-        public static void AddRow(ExcelWorksheet sheet, int Row, object[,] values2, int _y = -1)
+        public static void AddRow(ExcelWorksheet sheet, int Row, object[,] _values, int _y = -1)
         {
-            int count_rows    = (_y == -1) ? values2.GetUpperBound(0) + 1 : _y;
-            int count_columns = values2.GetUpperBound(1)+1;
+            int count_rows    = (_y == -1) ? _values.GetUpperBound(0) + 1 : _y;
+            int count_columns = _values.GetUpperBound(1)+1;
 
             for (int inx_col=0; inx_col < count_columns; inx_col++)
             {
@@ -115,7 +115,7 @@ namespace KadOzenka.Dal.DataExport
                 object[] values = new object[count_rows];
                 for (int r = 0; r < count_rows; r++)
                 {
-                    values[r] = values2[r, inx_col];
+                    values[r] = _values[r, inx_col];
                 }
 
                 int inx_row = 0;
@@ -187,7 +187,94 @@ namespace KadOzenka.Dal.DataExport
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Добавление в Excel таблицы данных, начиная со строки с индексом Row и столбца Col
+        /// </summary>
+        public static void AddRow(ExcelWorksheet sheet, int Row, int Col, object[,] _values, int _y = -1)
+        {
+            int count_rows = (_y == -1) ? _values.GetUpperBound(0) + 1 : _y;
+            int count_columns = _values.GetUpperBound(1) + 1;
+
+            for (int inx_col = 0; inx_col < count_columns; inx_col++)
+            {
+                // Считываем r-ую строку
+                object[] values = new object[count_rows];
+                for (int r = 0; r < count_rows; r++)
+                {
+                    values[r] = _values[r, inx_col];
+                }
+
+                int inx_row = 0;
+                foreach (object value in values)
+                {
+                    if (value is Boolean) sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue(Convert.ToBoolean(value) ? "Да" : "Нет");
+                    else
+                    if (value is string) sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue(value as string);
+                    else
+                    if (value is int)
+                    {
+                        sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue((int)value);
+                        sheet.Rows[Row + inx_row].Cells[inx_col + Col].Style.NumberFormat = "#,##0";
+                    }
+                    else
+                    if (value is decimal || value is double)
+                    {
+                        sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue(Convert.ToDouble(value));
+                        sheet.Rows[Row + inx_row].Cells[inx_col + Col].Style.NumberFormat = "#,##0.00";
+                    }
+                    else
+                    if (value is DateTime)
+                    {
+                        sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue(Convert.ToDateTime(value));
+                        sheet.Rows[Row + inx_row].Cells[inx_col + Col].Style.NumberFormat = "mm/dd/yyyy";
+                    }
+                    else
+                    if (value is int?)
+                    {
+                        if (value == null)
+                        {
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue("-");
+                        }
+                        else
+                        {
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue((int)value);
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].Style.NumberFormat = "#,##0";
+                        }
+                    }
+                    else
+                    if (value is decimal?)
+                    {
+                        if (value == null)
+                        {
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue("-");
+                        }
+                        else
+                        {
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue(Convert.ToDouble(value));
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].Style.NumberFormat = "#,##0.00";
+                        }
+                    }
+                    else
+                    if (value is DateTime?)
+                    {
+                        if (value == null)
+                        {
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue("-");
+                        }
+                        else
+                        {
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].SetValue(Convert.ToDateTime(value));
+                            sheet.Rows[Row + inx_row].Cells[inx_col + Col].Style.NumberFormat = "mm/dd/yyyy";
+                        }
+                    }
+
+                    sheet.Rows[Row + inx_row].Cells[inx_col + Col].Style.Borders.SetBorders(GemBox.Spreadsheet.MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                    inx_row++;
+                }
+            }
+        }
+
         /// <summary>
         /// Добавление в Excel данных в строку с индексом Row и установка ширины столбцов
         /// </summary>
@@ -286,7 +373,7 @@ namespace KadOzenka.Dal.DataExport
         {
             _sheet.Rows[_y].Cells[_x].SetValue(_val);
         }
-        
+
         /// <summary>
         /// Объединение ячеек в одной строке и установка данных в Excel
         /// </summary>
@@ -294,17 +381,18 @@ namespace KadOzenka.Dal.DataExport
         {
             MergeCell(sheet, Row, Row, ColFirst, ColLast, value);
         }
-        
+
         /// <summary>
         /// Объединение ячеек и установка данных в Excel
         /// </summary>
-        public static void MergeCell(ExcelWorksheet sheet, int FirstRow, int LastRow, int ColFirst, int ColLast, string value)
+        public static void MergeCell(ExcelWorksheet sheet, int FirstRow, int LastRow, int ColFirst, int ColLast, string value, bool wrap = false)
         {
             sheet.Rows[FirstRow].Cells[ColFirst].SetValue(value);
             sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Merged = true;
             sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.Borders.SetBorders(GemBox.Spreadsheet.MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
             sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
             sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+            sheet.Cells.GetSubrangeAbsolute(FirstRow, ColFirst, LastRow, ColLast).Style.WrapText = wrap;
         }
         
         /// <summary>
@@ -404,6 +492,9 @@ namespace KadOzenka.Dal.DataExport
             return GetFullNumberGroup(_group) + " " + _group.GroupName;
         }
 
+        /// <summary>
+        /// Вставить текст в ячейку таблицы документа doc
+        /// </summary>
         public static void SetTextToCell(DocumentModel _document, TableCell _cell, 
                                     string _col1, double _size,
                                     HorizontalAlignment _align1, bool _border, bool _bold)
