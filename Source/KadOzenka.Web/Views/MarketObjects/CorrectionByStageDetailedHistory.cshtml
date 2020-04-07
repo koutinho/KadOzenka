@@ -106,7 +106,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Action("ChangeBuildingsStatusInCalculationByStage", "MarketObjects")',
-            data: { models: JSON.stringify({ models }) },              
+            data: { models: JSON.stringify({ models }), date: '@ViewBag.Date' },              
             success: function (response) {
                 Common.ShowMessage(response.Message);
             },

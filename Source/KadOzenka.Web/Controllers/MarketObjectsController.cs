@@ -310,7 +310,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]		
-		public JsonResult ChangeBuildingsStatusInCalculationByStage(string models)
+		public JsonResult ChangeBuildingsStatusInCalculationByStage(string models, DateTime date)
 		{
 			var historyJson = JObject.Parse(models).SelectToken("models").ToString();
 
@@ -322,7 +322,7 @@ namespace KadOzenka.Web.Controllers
 			string message;
 			if (isDataUpdated)
 			{
-				//CorrectionByStageForMarketObjectsLongProcess.AddProcessToQueue();
+				CorrectionByStageForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
 				message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
 			}
 			else
