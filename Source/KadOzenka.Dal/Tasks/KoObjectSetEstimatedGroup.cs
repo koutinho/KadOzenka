@@ -92,6 +92,7 @@ namespace KadOzenka.Dal.KoObject
 				if (complianceGuides.Count == 1)
 				{
 					AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides[0].Group);
+					return;
 				}
 
 				if (complianceGuides.Count <= 1)

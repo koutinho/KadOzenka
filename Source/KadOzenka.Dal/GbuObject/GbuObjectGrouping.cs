@@ -1,17 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Data;
-using System.Globalization;
-using System.Data.Common;
 using System.Collections.Generic;
-using Microsoft.Practices.EnterpriseLibrary.Data;
-
-using Core.Register;
-using Core.Numerator;
-using Core.Shared.Misc;
-using Core.Shared.Extensions;
-using Core.Register.RegisterEntities;
-using ObjectModel.Gbu.Harmonization;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
@@ -491,7 +479,7 @@ namespace KadOzenka.Dal.GbuObject
             attributeValue.Save();
 
         }
-         private void AddValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, long? idDoc, DateTime date, string value)
+	    private void AddValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, long? idDoc, DateTime date, string value)
         {
             var attributeValue = new GbuObjectAttribute
             {
@@ -1139,30 +1127,34 @@ namespace KadOzenka.Dal.GbuObject
                 MaxCount = Objs.Count;
 				CurrentCount = 0;
 				Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
-				CurrentCount = 0;
-				MaxCount = 0;
 				var str = string.Join(',', ErrorMessages);
 				ErrorMessages?.Clear();
 				if (MaxCount != SuccessCount)
 				{
 					throw new Exception(str);
 				}
-			}
+				CurrentCount = 0;
+				MaxCount = 0;
+				SuccessCount = 0;
+
+
+            }
 			else
             {
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
                 Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now : setting.DateActual.Value); });
-                CurrentCount = 0;
-                MaxCount = 0;
                 var str = string.Join(',', ErrorMessages);
                 ErrorMessages?.Clear();
-				if (MaxCount != SuccessCount)
+                if (MaxCount != SuccessCount)
                 {
 	                throw new Exception(str);
                 }
-			}
+				CurrentCount = 0;
+                MaxCount = 0;
+                SuccessCount = 0;
+            }
 
 
         }

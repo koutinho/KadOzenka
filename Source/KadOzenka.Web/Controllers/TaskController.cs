@@ -626,6 +626,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				return GenerateMessageNonValidModel();
 			}
+			//KoObjectSetEstimatedGroup.Run(viewModel.ToGroupModel());
 			TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask, viewModel.ToGroupModel());
 
 			return Json(new { });

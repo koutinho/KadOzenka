@@ -161,6 +161,7 @@ namespace KadOzenka.Web.Controllers
 
 		    try
 			{
+				//PriorityGrouping.SetPriorityGroup(model.CovertToGroupingSettings());
 				SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
 			}
 			catch (Exception e)
