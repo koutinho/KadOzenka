@@ -189,11 +189,15 @@ namespace KadOzenka.BlFrontEnd
 				() => new DataImporterCommon().StartProcess(null, 
 					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
 					new System.Threading.CancellationToken()));
-
+						
 			consoleHelper.AddCommand("5551", "Корректировка на этажность",
-				() => new Dal.LongProcess.CorrectionByStageForMarketObjectsLongProcess().StartProcess(null,
-					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 42661016 },
-					new System.Threading.CancellationToken()));
+				() => 
+				{
+					var q = ObjectModel.Core.LongProcess.OMQueue.Where(x => x.Id == 42661016).SelectAll().ExecuteFirstOrDefault();
+					new Dal.LongProcess.CorrectionByStageForMarketObjectsLongProcess().StartProcess(null,
+					 q,
+					 new System.Threading.CancellationToken());
+				});
 
 			consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
 		}

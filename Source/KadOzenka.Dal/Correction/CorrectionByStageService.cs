@@ -19,114 +19,109 @@ namespace KadOzenka.Dal.Correction
 
 			date = new DateTime(date.Year, date.Month, 1);
 
-			using (var ts = new TransactionScope())
-			{
-				//средняя цена подвальных помещений
-				var objsBasement = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
-					&& x.CadastralNumber != null
-					&& x.FloorNumber < 0)
-					.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
-					.ExecuteSelect(x => new
-					{
-						x.CadastralNumber,
-						Segment = x.PropertyMarketSegment_Code,
-						Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
-					});
-
-				//средняя цена надземных помещений
-				var objsStage = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
-					&& x.CadastralNumber != null
-					&& x.FloorNumber >= 0)
-					.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
-					.ExecuteSelect(x => new
-					{
-						x.CadastralNumber,
-						Segment = x.PropertyMarketSegment_Code,
-						Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
-					});
-
-				objsBasement = objsBasement.Where(x => x.Price > 0).ToList();
-				objsStage = objsStage.Where(x => x.Price > 0).ToList();
-
-				//здания, в которых есть и подземные, и надземные помещения
-				var ratioPrice = objsBasement.Join(objsStage,
-					x => new { x.CadastralNumber, x.Segment },
-					y => new { y.CadastralNumber, y.Segment },
-					(x, y) => new
-					{
-						x.CadastralNumber,
-						x.Segment,
-						Price = Math.Round((decimal)x.Price / (decimal)y.Price, 4)
-					}).ToList();
-
-				//перезапишем данные таблицы коэффициентов
-				//сохраним исключенные элементы на заданную дату
-				var excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded == true)
-					.SelectAll(false).Execute()
-					.Select(x => new { CadastralNumber = x.BuildingCadastralNumber, Segment = x.MarketSegment_Code });
-
-				//удалим и перезапишем историю на заданную дату
-				DeleteHistory(date);
-
-				foreach (var obj in ratioPrice)
+			//средняя цена подвальных помещений
+			var objsBasement = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
+				&& x.CadastralNumber != null
+				&& x.FloorNumber < 0)
+				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
+				.ExecuteSelect(x => new
 				{
-					bool isExcluded = excludedList.Any(x => x.CadastralNumber == obj.CadastralNumber && x.Segment == obj.Segment);
-					SaveHistory(date, obj.CadastralNumber, obj.Segment, obj.Price, isExcluded);
-				}
-
-				//здания, по которым производится расчет на заданную дату
-				var ratioPriceNotExcluded = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded != true)
-					.SelectAll(false).Execute();
-
-				//среднее по сегменту
-				Dictionary<MarketSegment, decimal> avgCoeff = ratioPriceNotExcluded.GroupBy(x => x.MarketSegment_Code)
-					.ToDictionary(g => g.Key, g => g.Average(x => x.StageCoefficient));
-
-				//все подвальные помещения
-				var basements = OMCoreObject
-					.Where(x => x.DealType_Code == DealType.SaleSuggestion
-						&& x.CadastralNumber != null
-						&& x.FloorNumber < 0)
-					.Select(x => x.CadastralNumber)
-					.Select(x => x.PropertyMarketSegment_Code)
-					.Select(x => x.Price)
-					.Select(x => x.PriceAfterCorrectionByRooms)
-					.Execute();
-
-				//из них отобраны те, по которым делался расчет
-				var resObjs = basements.Join(ratioPriceNotExcluded,
-					x => new { CadastralNumber = x.CadastralNumber, Segment = x.PropertyMarketSegment_Code },
-					y => new { CadastralNumber = y.BuildingCadastralNumber, Segment = y.MarketSegment_Code },
-					(basement, avg) => new OMCoreObject
-					{
-						Id = basement.Id,
-						CadastralNumber = basement.CadastralNumber,
-						PropertyMarketSegment_Code = basement.PropertyMarketSegment_Code,
-						Price = basement.Price,
-						PriceAfterCorrectionByRooms = basement.PriceAfterCorrectionByRooms
-					}).ToList();
-
-				//обнуляем предыдущие значения
-				basements.ForEach(basement =>
-				{
-					basement.PriceAfterCorrectionByStage = null;
-					basement.Save();
+					x.CadastralNumber,
+					Segment = x.PropertyMarketSegment_Code,
+					Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
 				});
 
-				//перемножаем средний коэффициент на стоимость подвальных помещений
-				foreach (var obj in resObjs)
+			//средняя цена надземных помещений
+			var objsStage = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
+				&& x.CadastralNumber != null
+				&& x.FloorNumber >= 0)
+				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
+				.ExecuteSelect(x => new
 				{
-					if (!avgCoeff.ContainsKey(obj.PropertyMarketSegment_Code))
-					{
-						continue;
-					}
-					decimal thisSegmentKoeff = avgCoeff[obj.PropertyMarketSegment_Code];
-					decimal thisPrice = obj.PriceAfterCorrectionByRooms ?? obj.Price ?? 0;
-					obj.PriceAfterCorrectionByStage = Math.Round(thisPrice * thisSegmentKoeff, 2);
-					obj.Save();
-				}
+					x.CadastralNumber,
+					Segment = x.PropertyMarketSegment_Code,
+					Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
+				});
 
-				ts.Complete();
+			objsBasement = objsBasement.Where(x => x.Price > 0).ToList();
+			objsStage = objsStage.Where(x => x.Price > 0).ToList();
+
+			//здания, в которых есть и подземные, и надземные помещения
+			var ratioPrice = objsBasement.Join(objsStage,
+				x => new { x.CadastralNumber, x.Segment },
+				y => new { y.CadastralNumber, y.Segment },
+				(x, y) => new
+				{
+					x.CadastralNumber,
+					x.Segment,
+					Price = Math.Round((decimal)x.Price / (decimal)y.Price, 4)
+				}).ToList();
+
+			//перезапишем данные таблицы коэффициентов
+			//сохраним исключенные элементы на заданную дату
+			var excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded == true)
+				.SelectAll(false).Execute()
+				.Select(x => new { CadastralNumber = x.BuildingCadastralNumber, Segment = x.MarketSegment_Code });
+
+			//удалим и перезапишем историю на заданную дату
+			DeleteHistory(date);
+
+			foreach (var obj in ratioPrice)
+			{
+				bool isExcluded = excludedList.Any(x => x.CadastralNumber == obj.CadastralNumber && x.Segment == obj.Segment);
+				SaveHistory(date, obj.CadastralNumber, obj.Segment, obj.Price, isExcluded);
+			}
+
+			//здания, по которым производится расчет на заданную дату
+			var ratioPriceNotExcluded = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded != true)
+				.SelectAll(false).Execute();
+
+			//среднее по сегменту
+			Dictionary<MarketSegment, decimal> avgCoeff = ratioPriceNotExcluded.GroupBy(x => x.MarketSegment_Code)
+				.ToDictionary(g => g.Key, g => g.Average(x => x.StageCoefficient));
+
+			//все подвальные помещения
+			var basements = OMCoreObject
+				.Where(x => x.DealType_Code == DealType.SaleSuggestion
+					&& x.CadastralNumber != null
+					&& x.FloorNumber < 0)
+				.Select(x => x.CadastralNumber)
+				.Select(x => x.PropertyMarketSegment_Code)
+				.Select(x => x.Price)
+				.Select(x => x.PriceAfterCorrectionByRooms)
+				.Execute();
+
+			//из них отобраны те, по которым делался расчет
+			var resObjs = basements.Join(ratioPriceNotExcluded,
+				x => new { CadastralNumber = x.CadastralNumber, Segment = x.PropertyMarketSegment_Code },
+				y => new { CadastralNumber = y.BuildingCadastralNumber, Segment = y.MarketSegment_Code },
+				(basement, avg) => new OMCoreObject
+				{
+					Id = basement.Id,
+					CadastralNumber = basement.CadastralNumber,
+					PropertyMarketSegment_Code = basement.PropertyMarketSegment_Code,
+					Price = basement.Price,
+					PriceAfterCorrectionByRooms = basement.PriceAfterCorrectionByRooms
+				}).ToList();
+
+			//обнуляем предыдущие значения
+			basements.ForEach(basement =>
+			{
+				basement.PriceAfterCorrectionByStage = null;
+				basement.Save();
+			});
+
+			//перемножаем средний коэффициент на стоимость подвальных помещений
+			foreach (var obj in resObjs)
+			{
+				if (!avgCoeff.ContainsKey(obj.PropertyMarketSegment_Code))
+				{
+					continue;
+				}
+				decimal thisSegmentKoeff = avgCoeff[obj.PropertyMarketSegment_Code];
+				decimal thisPrice = obj.PriceAfterCorrectionByRooms ?? obj.Price ?? 0;
+				obj.PriceAfterCorrectionByStage = Math.Round(thisPrice * thisSegmentKoeff, 2);
+				obj.Save();
 			}
 		}
 
