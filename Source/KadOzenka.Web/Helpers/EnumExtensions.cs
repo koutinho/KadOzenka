@@ -8,7 +8,7 @@ namespace KadOzenka.Web.Helpers
 {
     public static class EnumExtensions
     {
-        public static List<SelectListItem> GetSelectList(Type enumType, long[] filterValues = null, bool withEmpty = false)
+        public static List<SelectListItem> GetSelectList(Type enumType, long[] filterValues = null, bool withEmpty = false, List<long> exceptions = null)
         {
             var values = Enum.GetValues(enumType);
             var selectListItems = new List<SelectListItem>(values.Length);
@@ -22,6 +22,13 @@ namespace KadOzenka.Web.Helpers
                 var attributes = field.GetCustomAttributes(typeof(DescriptionAttribute), false);
                 var result = attributes.Length == 0 ? desc : ((DescriptionAttribute)attributes[0]).Description;
                 var value = Convert.ChangeType(curValue, Enum.GetUnderlyingType(enumType)).ToString();
+
+                if (long.TryParse(value, out var longValue))
+                {
+                    if (exceptions != null && exceptions.Contains(longValue))
+                        continue;
+                }
+
                 if (withEmpty && value == "0")
                 {
                     selectItem.Text = string.Empty;

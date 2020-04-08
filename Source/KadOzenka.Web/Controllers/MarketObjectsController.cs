@@ -212,7 +212,10 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult CorrectionByRoomGeneralCoefficients()
         {
-            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment));
+            var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
+
+            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), exceptions: exceptions);
+
             ViewBag.Segments = segments;
 
             return View();
