@@ -106,7 +106,7 @@
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("ChangeFirstFloorStatusInCalculation", "MarketObjects", new { date = ViewBag.Date })',
+            url: '@Url.Action("ChangeFirstFloorStatusInCalculation", "MarketObjects", new { date = ViewBag.Date, segmentCode = ViewBag.MarketSegmentCode })',
             data: { models: JSON.stringify({ models }) },
             success: function (response) {
                 Common.ShowMessage(response.Message);

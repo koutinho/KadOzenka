@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
-using DevExpress.DataProcessing;
 using KadOzenka.Dal.Correction.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Market;
@@ -11,123 +10,84 @@ namespace KadOzenka.Dal.Correction
 {
     public class CorrectionForFirstFloorService
     {
+        private const int PricePrecision = 2;
+        private const int RatioPrecision = 4;
+        // TODO: убрать флаг и оставить только расчет с учетом комнат
+        private const bool IncludeCorrectionByRooms = true;
 
-        public void UpdateMarketObjectsPrice(DateTime date)
+        public void MakeCorrections(DateTime date, MarketSegment? segment = null)
         {
-            throw new NotImplementedException();
+            var dateMonth = DateToMonth(date);
+
+            // Если это новый месяц, по которому статистика не собрана
+            // Предназначено для ежемесячного вызова по расписанию
+            if (dateMonth == DateToMonth(DateTime.Now)
+                && !CheckStatsExistence(dateMonth))
+                GatherData();
+
+            var firstFloors = GetFirstFloors(segment);
+            var rates = GetRatesByDate(dateMonth);
+
+            var correctionHistory =
+                OMPriceForFirstFloorHistory
+                    .Where(obj => obj.StatsDate == dateMonth)
+                    .SelectAll()
+                    .Execute();
+            var objectIds = firstFloors.Select(o => o.Id);
+            var marketPriceHistory =
+                OMPriceHistory
+                    .Where(o =>
+                        o.ChangingDate >= dateMonth
+                        && o.ParentCoreObject.DealType_Code == DealType.SaleSuggestion
+                        && o.ParentCoreObject.FloorNumber == 1
+                        && o.PriceValueFrom > 1
+                        && o.ParentCoreObject.PropertyMarketSegment_Code != MarketSegment.NoSegment)
+                    .And(o => objectIds.Contains(o.InitialId))
+                    .SelectAll()
+                    .Execute();
+
+            var objectsWithHistoricalPrice = RewindHistory(firstFloors, marketPriceHistory);
+
+            List<RoomRates> roomRatesList;
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (IncludeCorrectionByRooms)
+                roomRatesList = GetRoomRates(dateMonth);
+
+            foreach (var rate in rates)
+            {
+                var segmentRate = Math.Round(rate.FirstToUpperRate, RatioPrecision);
+                var roomRates = roomRatesList.FirstOrDefault(o => o.Segment == rate.Segment);
+
+                var objectsInSegment =
+                    objectsWithHistoricalPrice.Where(o => o.PropertyMarketSegment_Code == rate.Segment);
+                foreach (var coreObject in objectsInSegment)
+                {
+                    decimal? roomRate = null;
+                    // ReSharper disable once RedundantLogicalConditionalExpressionOperand
+                    if (IncludeCorrectionByRooms && roomRates != null)
+                    {
+                        if (coreObject.RoomsCount == 1) roomRate = roomRates.OneRoomRate;
+                        if (coreObject.RoomsCount == 3) roomRate = roomRates.ThreeRoomRate;
+                    }
+
+                    UpdateCorrection(correctionHistory, coreObject, dateMonth, segmentRate, roomRate);
+                }
+            }
         }
 
-        public void GatherData()
+        public string Test()
         {
-            var firstFloorsStats = GetFloorStats(true);
-            var upperFloorsStats = GetFloorStats();
-            var date = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            var combinedStats =
-                from f in firstFloorsStats
-                join u in upperFloorsStats
-                    on new { f.CadastralNumber, f.Segment }
-                    equals new { u.CadastralNumber, u.Segment }
-                select new
-                {
-                    f.CadastralNumber,
-                    f.Segment,
-                    firstUnitCost = f.UnitCost,
-                    upperUnitCost = u.UnitCost,
-                    firstToUpperRatio = f.UnitCost / u.UnitCost
-                };
-            var list = combinedStats.ToList();
-
-            //todo: сохранение в бд
-            List<OMCoefficientsForFirstFloorCorr> corrList = new List<OMCoefficientsForFirstFloorCorr>();
-            list.ForEach(obj=>
-                corrList.Add(new OMCoefficientsForFirstFloorCorr()
-                {
-                    BuildingCadastralNumber = obj.CadastralNumber,
-                    FirstToUpperFloorRate = obj.firstToUpperRatio,
-                    MarketSegment_Code = obj.Segment,
-                    StatsDate = date
-                }));
-            corrList.ForEach(corr=>corr.Save());
+            MakeCorrections(DateTime.Now);
+            return "";
         }
 
-        public List<Rates> GetRates(long marketSegmentCode)
+        public List<Rates> GetRatesBySegment(long marketSegmentCode)
         {
-            var stats = OMCoefficientsForFirstFloorCorr
+            var query = OMCoefficientsForFirstFloorCorr
                 .Where(w =>
                     w.MarketSegment_Code == (MarketSegment) marketSegmentCode
-                    && !w.IsExcludedFromCalculation)
-                .GroupBy(g => g.StatsDate)
-                .ExecuteSelect(s => new
-                {
-                    s.StatsDate,
-                    Count = s.Count(seg=>seg.Id),
-                    Min = s.Min(seg => seg.FirstToUpperFloorRate),
-                    Max = s.Max(seg => seg.FirstToUpperFloorRate),
-                    Rate = s.Avg(seg => seg.FirstToUpperFloorRate)
-                })
-                .Select(r => new Rates
-                {
-                    StatsDate = r.StatsDate,
-                    FirstToUpperRate = r.Rate,
-                    MinFirstToUpperRate = r.Min,
-                    MaxFirstToUpperRate = r.Max,
-                    Count = r.Count
-                })
-                .ToList();
-
-            return stats;
-        }
-
-        private List<FloorStats> GetFloorStats(bool firstFloor = false)
-        {
-            var query = OMCoreObject
-                .Where(o =>
-                    o.DealType_Code == DealType.SaleSuggestion
-                    && o.PropertyMarketSegment_Code != MarketSegment.NoSegment
-                    && o.PropertyMarketSegment_Code != MarketSegment.None
-                    && o.Price > 1 // Отсекаем пустые цены и цены в 1 (частое явление)
-                    && o.CadastralNumber != null
-                    && o.CadastralNumber != "");
-            var result =
-                (firstFloor ? query.And(o => o.FloorNumber == 1) : query.And(o => o.FloorNumber > 1))
-                .GroupBy(o => new
-                {
-                    o.CadastralNumber,
-                    o.PropertyMarketSegment_Code
-                })
-                .ExecuteSelect(obj => new
-                {
-                    obj.CadastralNumber,
-                    Segment = obj.PropertyMarketSegment_Code,
-                    // todo: Использовать PriceAfterCorrectionByRooms, после стабилизации сервиса рассчета коэффициентов для комнат
-                    // UnitCost = obj.Sum(ff => ff.PriceAfterCorrectionByRooms ?? ff.Price) / obj.Sum(ff => ff.Area)
-                    UnitCost = obj.Sum(ff => ff.Price) / obj.Sum(ff => ff.Area)
-                })
-                // ExecuteSelect не позволяет сразу привести к нужному типу
-                .Select(obj => new FloorStats
-                {
-                    CadastralNumber = obj.CadastralNumber,
-                    Segment = obj.Segment,
-                    UnitCost = obj.UnitCost
-                })
-                .ToList();
-            return result;
-        }
-
-        public class Rates
-        {
-            public DateTime StatsDate;
-            public decimal FirstToUpperRate;
-            public decimal MinFirstToUpperRate;
-            public decimal MaxFirstToUpperRate;
-            public long Count;
-        }
-
-        private class FloorStats
-        {
-            public string CadastralNumber;
-            public MarketSegment Segment;
-            public decimal UnitCost;
+                    && !w.IsExcludedFromCalculation);
+            return GetRates(query);
         }
 
         public List<CorrectionForFirstFloorDto> GetDetailsForSegmentAtDate(long marketSegmentCode, DateTime date)
@@ -148,8 +108,8 @@ namespace KadOzenka.Dal.Correction
                         StatsDate = obj.StatsDate,
                         IsExcludedFromCalculation = obj.IsExcludedFromCalculation
                     })
-                    .OrderBy(o=>o.FirstFloorCoefficient)
-                    .ThenByDescending(o=>o.IsExcludedFromCalculation)
+                    .OrderBy(o => o.FirstFloorCoefficient)
+                    .ThenByDescending(o => o.IsExcludedFromCalculation)
                     .ToList();
             return result;
         }
@@ -162,7 +122,8 @@ namespace KadOzenka.Dal.Correction
             var isDataUpdated = false;
             coefficients.ForEach(record =>
             {
-                var recordFromDb = OMCoefficientsForFirstFloorCorr.Where(x => x.Id == record.Id).SelectAll().ExecuteFirstOrDefault();
+                var recordFromDb = OMCoefficientsForFirstFloorCorr.Where(x => x.Id == record.Id).SelectAll()
+                    .ExecuteFirstOrDefault();
                 if (recordFromDb == null)
                     return;
 
@@ -175,5 +136,251 @@ namespace KadOzenka.Dal.Correction
 
             return isDataUpdated;
         }
+
+        #region Helper Methods
+
+        private List<Rates> GetRatesByDate(DateTime date)
+        {
+            var query = OMCoefficientsForFirstFloorCorr
+                .Where(w =>
+                    w.StatsDate == date
+                    && !w.IsExcludedFromCalculation);
+            return GetRates(query);
+        }
+
+        private List<Rates> GetRates(QSQuery<OMCoefficientsForFirstFloorCorr> query)
+        {
+            return query
+                .GroupBy(g => new {g.StatsDate, g.MarketSegment_Code})
+                .ExecuteSelect(s => new
+                {
+                    s.StatsDate,
+                    s.MarketSegment_Code,
+                    Count = s.Count(seg => seg.Id),
+                    Min = s.Min(seg => seg.FirstToUpperFloorRate),
+                    Max = s.Max(seg => seg.FirstToUpperFloorRate),
+                    Rate = s.Avg(seg => seg.FirstToUpperFloorRate)
+                })
+                .Select(r => new Rates
+                {
+                    StatsDate = r.StatsDate,
+                    Segment = r.MarketSegment_Code,
+                    FirstToUpperRate = r.Rate,
+                    MinFirstToUpperRate = r.Min,
+                    MaxFirstToUpperRate = r.Max,
+                    Count = r.Count
+                })
+                .ToList();
+        }
+
+        private static void GatherData()
+        {
+            var firstFloorsStats = GetFloorStats(true);
+            var upperFloorsStats = GetFloorStats();
+            var date = DateToMonth(DateTime.Now);
+            var combinedStats =
+                from f in firstFloorsStats
+                join u in upperFloorsStats
+                    on new {f.CadastralNumber, f.Segment}
+                    equals new {u.CadastralNumber, u.Segment}
+                select new
+                {
+                    f.CadastralNumber,
+                    f.Segment,
+                    firstUnitCost = f.UnitCost,
+                    upperUnitCost = u.UnitCost,
+                    firstToUpperRatio = f.UnitCost / u.UnitCost
+                };
+            var list = combinedStats.ToList();
+
+            var corrList = new List<OMCoefficientsForFirstFloorCorr>();
+            list.ForEach(obj =>
+                corrList.Add(new OMCoefficientsForFirstFloorCorr
+                {
+                    BuildingCadastralNumber = obj.CadastralNumber,
+                    FirstToUpperFloorRate = obj.firstToUpperRatio,
+                    MarketSegment_Code = obj.Segment,
+                    StatsDate = date
+                }));
+            corrList.ForEach(corr => corr.Save());
+        }
+
+        private static bool CheckStatsExistence(DateTime date)
+        {
+            var checkStatsExistence =
+                OMCoefficientsForFirstFloorCorr
+                    .Where(o => o.StatsDate == DateToMonth(date))
+                    .ExecuteExists();
+            return checkStatsExistence;
+        }
+
+        private static void UpdateCorrection(List<OMPriceForFirstFloorHistory> history, OMCoreObject coreObject,
+            DateTime dateMonth, decimal segmentRate, decimal? roomRate = null)
+        {
+            var resultingPrice = Math.Round(coreObject.Price.GetValueOrDefault() * segmentRate, PricePrecision);
+            if (roomRate != null)
+                resultingPrice *= roomRate.GetValueOrDefault();
+
+            var record = history.FirstOrDefault(x => x.ObjectId == coreObject.Id && x.StatsDate == dateMonth);
+            if (record == null)
+            {
+                new OMPriceForFirstFloorHistory
+                {
+                    ObjectId = coreObject.Id,
+                    StatsDate = dateMonth,
+                    PriceWithCorrectionForFirstFloor = resultingPrice
+                }.Save();
+            }
+            else
+            {
+                record.PriceWithCorrectionForFirstFloor =
+                    coreObject.PriceAfterCorrectionByRooms.GetValueOrDefault();
+                record.Save();
+            }
+
+            // Не обновляем данные в market_core_object если это правка прошлого месяца
+            if (dateMonth != DateToMonth(DateTime.Now)) return;
+
+            coreObject.PriceAfterCorrectionForFirstFloor = resultingPrice;
+            coreObject.Save();
+        }
+
+        private static List<OMCoreObject> GetFirstFloors(MarketSegment? segment = null)
+        {
+            var query =
+                OMCoreObject
+                    .Where(o =>
+                        o.FloorNumber == 1
+                        && o.Price > 1
+                        && o.DealType_Code == DealType.SaleSuggestion);
+
+            if (segment != null)
+                query = query.And(o => o.PropertyMarketSegment_Code == segment.GetValueOrDefault());
+
+            var firstFloors =
+                query
+                    .SelectAll()
+                    .Execute();
+            return firstFloors;
+        }
+
+        private static List<FloorStats> GetFloorStats(bool firstFloor = false)
+        {
+            var query = OMCoreObject
+                .Where(o =>
+                    o.DealType_Code == DealType.SaleSuggestion
+                    && o.PropertyMarketSegment_Code != MarketSegment.NoSegment
+                    && o.PropertyMarketSegment_Code != MarketSegment.None
+                    && o.Price > 1 // Отсекаем пустые цены и цены в 1 (частое явление)
+                    && o.CadastralNumber != null
+                    && o.CadastralNumber != "");
+            var result =
+                (firstFloor ? query.And(o => o.FloorNumber == 1) : query.And(o => o.FloorNumber > 1))
+                .GroupBy(o => new
+                {
+                    o.CadastralNumber,
+                    o.PropertyMarketSegment_Code
+                })
+                .ExecuteSelect(obj => new
+                {
+                    obj.CadastralNumber,
+                    Segment = obj.PropertyMarketSegment_Code,
+                    UnitCost = obj.Sum(ff =>
+#pragma warning disable 162
+                        // ReSharper disable once UnreachableCode
+                        (IncludeCorrectionByRooms ? ff.PriceAfterCorrectionByRooms : null)
+#pragma warning restore 162
+                        ?? ff.Price) / obj.Sum(ff => ff.Area)
+                })
+                // ExecuteSelect не позволяет сразу привести к нужному типу
+                .Select(obj => new FloorStats
+                {
+                    CadastralNumber = obj.CadastralNumber,
+                    Segment = obj.Segment,
+                    UnitCost = obj.UnitCost
+                })
+                .ToList();
+            return result;
+        }
+
+        private static List<OMCoreObject> RewindHistory(List<OMCoreObject> objects, List<OMPriceHistory> history)
+        {
+            var firstEntries =
+                history
+                    .GroupBy(o => o.InitialId)
+                    .Select(s => s.OrderByDescending(d => d.ChangingDate).FirstOrDefault())
+                    .ToList();
+
+
+            firstEntries.ForEach(entry =>
+            {
+                var obj = objects.FirstOrDefault(x => x.Id == entry.InitialId);
+                if (obj != null)
+                    obj.Price = entry.PriceValueFrom;
+            });
+            return objects;
+        }
+
+        private static DateTime DateToMonth(DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, 1);
+        }
+
+        #endregion
+
+        #region Support Classes
+
+        public class Rates
+        {
+            public long Count;
+            public decimal FirstToUpperRate;
+            public decimal MaxFirstToUpperRate;
+            public decimal MinFirstToUpperRate;
+            public MarketSegment Segment;
+            public DateTime StatsDate;
+        }
+
+        private class FloorStats
+        {
+            public string CadastralNumber;
+            public MarketSegment Segment;
+            public decimal UnitCost;
+        }
+
+        #endregion
+
+        #region RoomCorrection
+
+        private List<RoomRates> GetRoomRates(DateTime date)
+        {
+            var result =
+                OMCoefficientsForCorrectionByRooms
+                    .Where(x =>
+                        (x.IsExcluded == false || x.IsExcluded == null)
+                        && x.ChangingDate == date)
+                    .OrderByDescending(x => x.ChangingDate)
+                    .SelectAll().Execute()
+                    .GroupBy(x => new {x.MarketSegment_Code}).Select(
+                        group => new RoomRates
+                        {
+                            Segment = group.Key.MarketSegment_Code,
+                            OneRoomRate = Math.Round(
+                                group.ToList().DefaultIfEmpty().Average(x => x.OneRoomCoefficient),
+                                RatioPrecision),
+                            ThreeRoomRate = Math.Round(
+                                group.ToList().DefaultIfEmpty().Average(x => x.ThreeRoomsCoefficient),
+                                RatioPrecision)
+                        }).ToList();
+            return result;
+        }
+
+        private class RoomRates
+        {
+            public decimal OneRoomRate;
+            public MarketSegment Segment;
+            public decimal ThreeRoomRate;
+        }
+
+        #endregion
     }
 }

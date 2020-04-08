@@ -364,13 +364,13 @@ namespace KadOzenka.Web.Controllers
         }
         public JsonResult GetCorrectionForFirstFloorGeneral(long marketSegmentCode)
         {
-            var stats = CorrectionForFirstFloorService.GetRates(marketSegmentCode);
+            var stats = CorrectionForFirstFloorService.GetRatesBySegment(marketSegmentCode);
 
             return Json(stats);
         }
 
         [HttpPost]
-        public JsonResult ChangeFirstFloorStatusInCalculation(string models, DateTime date)
+        public JsonResult ChangeFirstFloorStatusInCalculation(string models, DateTime date, MarketSegment code)
         {
             var historyJson = JObject.Parse(models).SelectToken("models").ToString();
 
@@ -382,9 +382,8 @@ namespace KadOzenka.Web.Controllers
             string message;
             if (isDataUpdated)
             {
-                //Todo: фоновая задача рассчета
-                //CorrectionForFirstFloorForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
-                message = "Данные успешно обновлены";
+                CorrectionForFirstFloorForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionForFirstFloorRequest { Date = date, Segment = code });
+                message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на первый этаж добавлена в очередь";
             }
             else
             {
