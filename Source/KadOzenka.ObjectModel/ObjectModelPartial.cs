@@ -888,6 +888,30 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 115 Таблица, хранящая историю цен первых этажей
+    /// </summary>
+    public partial class OMPriceForFirstFloorHistory
+    {
+
+        public OMPriceForFirstFloorHistory()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMPriceForFirstFloorHistory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -2818,6 +2842,50 @@ namespace ObjectModel.Gbu.Custom
 
         }
         public OMSource39(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42430534 Источник: тестовый_2апреля
+    /// </summary>
+    public partial class OMSource24
+    {
+
+        public OMSource24()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource24(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42436643 Источник: источник информации
+    /// </summary>
+    public partial class OMSource25
+    {
+
+        public OMSource25()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource25(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

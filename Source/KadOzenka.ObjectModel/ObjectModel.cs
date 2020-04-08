@@ -1789,6 +1789,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private decimal? _priceaftercorrectionforfirstfloor;
+        /// <summary>
+        /// 10008800 Цена после корректировки на первый этаж (PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008800)]
+        public decimal? PriceAfterCorrectionForFirstFloor
+        {
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionForFirstFloor");
+                return _priceaftercorrectionforfirstfloor;
+            }
+            set
+            {
+                _priceaftercorrectionforfirstfloor = value;
+                NotifyPropertyChanged("PriceAfterCorrectionForFirstFloor");
+            }
+        }
+
     }
 }
 
@@ -4723,7 +4743,7 @@ namespace ObjectModel.Market
 
         private decimal _firsttoupperfloorrate;
         /// <summary>
-        /// 11400500 Отношение цены первого этажа к верхним (ID)
+        /// 11400500 Отношение цены первого этажа к верхним (FIRST_TO_UPPER_FLOOR_RATE)
         /// </summary>
         [RegisterAttribute(AttributeID = 11400500)]
         public decimal FirstToUpperFloorRate
@@ -4757,6 +4777,98 @@ namespace ObjectModel.Market
             {
                 _isexcludedfromcalculation = value;
                 NotifyPropertyChanged("IsExcludedFromCalculation");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 115 Таблица, хранящая историю цен первых этажей (MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY)
+    /// </summary>
+    [RegisterInfo(RegisterID = 115)]
+    [Serializable]
+    public partial class OMPriceForFirstFloorHistory : OMBaseClass<OMPriceForFirstFloorHistory>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11500100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private DateTime _statsdate;
+        /// <summary>
+        /// 11500200 Дата сбора данных (STATS_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11500200)]
+        public DateTime StatsDate
+        {
+            get
+            {
+                CheckPropertyInited("StatsDate");
+                return _statsdate;
+            }
+            set
+            {
+                _statsdate = value;
+                NotifyPropertyChanged("StatsDate");
+            }
+        }
+
+
+        private decimal _pricewithcorrectionforfirstfloor;
+        /// <summary>
+        /// 11500300 Цена с поправкой на первый этаж (PRICE_WITH_CORRECTION_FOR_FIRST_FLOOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11500300)]
+        public decimal PriceWithCorrectionForFirstFloor
+        {
+            get
+            {
+                CheckPropertyInited("PriceWithCorrectionForFirstFloor");
+                return _pricewithcorrectionforfirstfloor;
+            }
+            set
+            {
+                _pricewithcorrectionforfirstfloor = value;
+                NotifyPropertyChanged("PriceWithCorrectionForFirstFloor");
+            }
+        }
+
+
+        private long _objectid;
+        /// <summary>
+        /// 11500400 Объект аналог (OBJECT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11500400)]
+        public long ObjectId
+        {
+            get
+            {
+                CheckPropertyInited("ObjectId");
+                return _objectid;
+            }
+            set
+            {
+                _objectid = value;
+                NotifyPropertyChanged("ObjectId");
             }
         }
 
