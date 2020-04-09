@@ -213,7 +213,7 @@ namespace KadOzenka.Dal.KoObject
 				IdDocument = null,
 			};
 
-			List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(obj.Id, new List<long> { idRegister }, new List<long> { idFactor }, DateTime.Now);
+			List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(obj.Id, new List<long> { idRegister }, new List<long> { idFactor }, DateTime.Now.Date);
 			if (attribs.Count > 0)
 			{
 				if (attribs[0].StringValue != string.Empty && attribs[0].StringValue != null)
