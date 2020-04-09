@@ -11,7 +11,9 @@ namespace KadOzenka.Dal.Correction
     public class CorrectionForFirstFloorService
     {
         private const int PricePrecision = 2;
+
         private const int RatioPrecision = 4;
+
         // TODO: убрать флаг и оставить только расчет с учетом комнат
         private const bool IncludeCorrectionByRooms = true;
 
@@ -75,11 +77,6 @@ namespace KadOzenka.Dal.Correction
             }
         }
 
-        public string Test()
-        {
-            MakeCorrections(DateTime.Now);
-            return "";
-        }
 
         public List<Rates> GetRatesBySegment(long marketSegmentCode)
         {
@@ -170,6 +167,7 @@ namespace KadOzenka.Dal.Correction
                     MaxFirstToUpperRate = r.Max,
                     Count = r.Count
                 })
+                .OrderByDescending(o => o.StatsDate)
                 .ToList();
         }
 
@@ -200,8 +198,29 @@ namespace KadOzenka.Dal.Correction
                     BuildingCadastralNumber = obj.CadastralNumber,
                     FirstToUpperFloorRate = obj.firstToUpperRatio,
                     MarketSegment_Code = obj.Segment,
-                    StatsDate = date
+                    StatsDate = date,
+                    IsExcludedFromCalculation = false
                 }));
+
+            // Подтягиваем данные по исключенным зданиям за старый период
+            var previouslyExcluded =
+                OMCoefficientsForFirstFloorCorr
+                    .Where(c =>
+                        c.StatsDate == DateToMonth(DateTime.Now.AddMonths(-1))
+                        && c.IsExcludedFromCalculation)
+                    .SelectAll()
+                    .Execute();
+
+            previouslyExcluded.ForEach(corr =>
+            {
+                var correspondingRecord =
+                    corrList.FirstOrDefault(c =>
+                        c.MarketSegment_Code == corr.MarketSegment_Code
+                        && c.BuildingCadastralNumber == corr.BuildingCadastralNumber);
+                if (correspondingRecord != null)
+                    correspondingRecord.IsExcludedFromCalculation = true;
+            });
+
             corrList.ForEach(corr => corr.Save());
         }
 
