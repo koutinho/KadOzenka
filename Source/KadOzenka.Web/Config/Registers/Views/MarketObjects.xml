@@ -64,7 +64,7 @@
       </DropDownButtons>
     </Button>
 
-    <Button Caption="Корректировка на этажность" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
+    <Button Caption="Корректировка на цоколь/подвал" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
       <DropDownButtons>
         <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionByStageGeneralHistory" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-eye" />
       </DropDownButtons>
