@@ -288,11 +288,52 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         public static string getFormalizedAddress(string initialAddress)
         {
             Regex regexMain = new Regex("(^[0-9]{6}[ ])|" +
+                                        "(, кв .*)|(, кв[.] .*)|(, кв[.].*)|( кв[.].*)|( кв .*)|(,ап[.].*)|(, квартира.*)|(,кв[.][0-9].*)|" +
+                                        "(, административные помещен.*)|(, нежилое помещен.*)|(, нежилые помещен.*)|(, кладовое помещен.*)|(, помещен.*)|( помещен.*)|(, пом([ ]|[.]|[ещ.]|[I]).*)|" +
+                                        "(, м/м.*)|(, I м/м.*)|(, машиноместо.*)|(, машино-место.*)|" +
+                                        "(, бокс.*)|(, гараж-бокс.*)|(, гаражный бокс.*)|( гар.бокс.*)|(, гараж.*)", RegexOptions.IgnoreCase), regexSpaces = new Regex("[ ]{2,}");
+            return regexMain.Replace(regexSpaces.Replace(initialAddress, " "), string.Empty);
+        }
+
+        /// <summary>
+        /// Метод с дополнительной обработкой объектов, чей адрес был определен неправильно
+        /// </summary>
+        /// <param name="initialAddress"></param>
+        /// <returns></returns>
+        public static string getFormalizedAddressNew(string initialAddress)
+        {
+            Regex regexMain = new Regex("(^[0-9]{6}[ ])|" +
               "(, кв .*)|(, кв[.] .*)|(, кв[.].*)|( кв[.].*)|( кв .*)|(,ап[.].*)|(, квартира.*)|(,кв[.][0-9].*)|" +
               "(, административные помещен.*)|(, нежилое помещен.*)|(, нежилые помещен.*)|(, кладовое помещен.*)|(, помещен.*)|( помещен.*)|(, пом([ ]|[.]|[ещ.]|[I]).*)|" +
               "(, м/м.*)|(, I м/м.*)|(, машиноместо.*)|(, машино-место.*)|" +
               "(, бокс.*)|(, гараж-бокс.*)|(, гаражный бокс.*)|( гар.бокс.*)|(, гараж.*)", RegexOptions.IgnoreCase), regexSpaces = new Regex("[ ]{2,}");
-            return regexMain.Replace(regexSpaces.Replace(initialAddress, " "), string.Empty);
+
+            var patternForBrackets = new Regex(@"\((.*)\)");
+            string addressWithoutBrackets;
+            if (patternForBrackets.IsMatch(initialAddress))
+            {
+                var valueFromBrackets = patternForBrackets.Match(initialAddress).Value.Trim('(')?.TrimEnd(')');
+                var strWithoutDataInBrackets = patternForBrackets.Replace(initialAddress, string.Empty);
+                addressWithoutBrackets = new Regex(@"(г.Москва)|(г. Москва)", RegexOptions.IgnoreCase)
+                    .Replace(strWithoutDataInBrackets, m => $"{m.Value}, {valueFromBrackets},");
+            }
+            else
+            {
+                addressWithoutBrackets = initialAddress;
+            }
+
+            var addressWithoutDoubleCommas = Regex.Replace(addressWithoutBrackets, @"[,]{2,}", ",");
+
+            var addressWithoutLowData = Regex.Replace(addressWithoutDoubleCommas, "ОАО \"(.*)\"", string.Empty);
+
+            var addressWithComma = addressWithoutLowData.Contains(',')
+                ? addressWithoutLowData
+                : new Regex(@"(г.Москва)|(г. Москва)", RegexOptions.IgnoreCase).Replace(addressWithoutLowData, m => $"{ m.Value}, ");
+
+            var addressWithAlley = Regex.Replace(addressWithComma, "ал\\.", "аллея ");
+            var addressWithPromenade = Regex.Replace(addressWithAlley, "наб\\.", "набережная ");
+
+            return regexMain.Replace(regexSpaces.Replace(addressWithPromenade, " "), string.Empty);
         }
 
         public static void detectCategories(OMCoreObject obj, string propType, string propUse, string curUse)
@@ -542,13 +583,13 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             public int currentCounter;
         }
 
-        public static void SetRRFDBCoordinatesByYandex() 
+        public static void SetRRFDBCoordinatesByYandex()
         {
             List<OMCoreObject> AllObjects =
                 OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.AddressStep && x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr)
-                            .Select(x => new { x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code }).Execute().Take(Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"])).ToList();
+                    .Select(x => new { x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code }).Execute().Take(Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"])).ToList();
             int ACtr = AllObjects.Count, CCur = 0, SCtr = 0, ECtr = 0;
-            AllObjects.ForEach(x => 
+            AllObjects.ForEach(x =>
             {
                 CCur++;
                 try
@@ -559,11 +600,11 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Dealed;
                     SCtr++;
                 }
-                catch (Exception) 
+                catch (Exception)
                 {
                     x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Excluded;
                     x.ExclusionStatus_Code = ObjectModel.Directory.ExclusionStatus.NoAddress;
-                    ECtr++; 
+                    ECtr++;
                 }
                 x.Save();
                 ConsoleLog.WriteData("Присвоение координат объектам росреестра", ACtr, CCur, SCtr, ECtr);
