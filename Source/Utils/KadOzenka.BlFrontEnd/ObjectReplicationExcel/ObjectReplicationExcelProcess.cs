@@ -302,8 +302,15 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         /// <returns></returns>
         public static string getFormalizedAddressNew(string initialAddress)
         {
+            var generalPatternForApartments = "(, кв .*)|(, кв[.] .*)|(, кв[.].*)|( кв[.].*)|( кв .*)|(,ап[.].*)|(, квартира.*)|(,кв[.][0-9].*)|";
+            var specificPatternForApartments = new Regex("([0-9]{0,6} кв. [^0-9].*)|([0-9]{0,6}кв. [^0-9].*)");
+
+            var patternForApartments = specificPatternForApartments.IsMatch(initialAddress)
+                ? "([0-9]{0,6} кв. )|([0-9]{0,6}кв. )"
+                : generalPatternForApartments;
+
             Regex regexMain = new Regex("(^[0-9]{6}[ ])|" +
-              "(, кв .*)|(, кв[.] .*)|(, кв[.].*)|( кв[.].*)|( кв .*)|(,ап[.].*)|(, квартира.*)|(,кв[.][0-9].*)|" +
+              patternForApartments +
               "(, административные помещен.*)|(, нежилое помещен.*)|(, нежилые помещен.*)|(, кладовое помещен.*)|(, помещен.*)|( помещен.*)|(, пом([ ]|[.]|[ещ.]|[I]).*)|" +
               "(, м/м.*)|(, I м/м.*)|(, машиноместо.*)|(, машино-место.*)|" +
               "(, бокс.*)|(, гараж-бокс.*)|(, гаражный бокс.*)|( гар.бокс.*)|(, гараж.*)", RegexOptions.IgnoreCase), regexSpaces = new Regex("[ ]{2,}");
