@@ -420,6 +420,24 @@ namespace ObjectModel.Gbu
 }
 
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 24 Реестр хранения реестров с характеристиками объекта
+    /// </summary>
+    public partial class OMObjectsCharacteristicsRegister
+    {
+        /// <summary>
+        /// Ссылка на (930 Список реестров)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMRegister ParentRegister { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Market
 {
     /// <summary>
@@ -1064,24 +1082,6 @@ namespace ObjectModel.Declarations
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.Declarations.OMHarParcel ParentHarParcel { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 600 Реестр хранения реестров с характеристиками объекта
-    /// </summary>
-    public partial class OMObjectsCharacteristicsRegister
-    {
-        /// <summary>
-        /// Ссылка на (930 Список реестров)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Core.Register.OMRegister ParentRegister { get; set; }
 
     }
 }

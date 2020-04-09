@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="600" DefaultLayoutId="1000600" LinkedRegistersList="600, 930" AllowSearchPanelResize="false" IsBasic="false"
+<RegisterView RegisterId="24" DefaultLayoutId="1000600" LinkedRegistersList="24, 930" AllowSearchPanelResize="false" IsBasic="false"
                 OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowSettingsPanel="true"
                 ShowActualDate="false" ShowRowMenu="true" RightSplitterOrientation="Horizontal" SplitterSize="40%">
   <Buttons>
@@ -13,7 +13,7 @@
     </Button>
     <Button Caption="Редактировать источник" NavigateURL="~/ObjectsCharacteristics/EditSource" WindowHeight="200" WindowWidth="900" Icon="fas fa-edit">
       <Parameters>
-        <Parameter Key="registerId" Value="[60000200]" />
+        <Parameter Key="registerId" Value="[2400200]" />
       </Parameters>
     </Button>
   </Buttons>
@@ -21,7 +21,7 @@
   <Tabs>
     <Tab Caption="Характеристики" NavigateURL="~/ObjectsCharacteristics/Characteristics">
       <Parameters>
-        <Parameter Key="registerId" Value="[60000200]" />
+        <Parameter Key="registerId" Value="[2400200]" />
       </Parameters>
     </Tab>
   </Tabs>

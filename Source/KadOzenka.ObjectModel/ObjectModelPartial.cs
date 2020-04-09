@@ -512,6 +512,30 @@ namespace ObjectModel.Gbu
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 24 Реестр хранения реестров с характеристиками объекта
+    /// </summary>
+    public partial class OMObjectsCharacteristicsRegister
+    {
+
+        public OMObjectsCharacteristicsRegister()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMObjectsCharacteristicsRegister(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -2702,30 +2726,6 @@ namespace ObjectModel.Declarations
 
         }
         public OMHarParcelAdditionalInfo(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 600 Реестр хранения реестров с характеристиками объекта
-    /// </summary>
-    public partial class OMObjectsCharacteristicsRegister
-    {
-
-        public OMObjectsCharacteristicsRegister()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMObjectsCharacteristicsRegister(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
