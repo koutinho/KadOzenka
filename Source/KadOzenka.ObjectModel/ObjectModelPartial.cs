@@ -182,22 +182,22 @@ namespace ObjectModel.Gbu
     }
 }
 
-namespace ObjectModel
+namespace ObjectModel.Gbu
 {
     /// <summary>
     /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
     /// </summary>
-    public partial class OMStarage
-    {
+    public partial class OMSource9
+	{
 
-        public OMStarage()
+        public OMSource9()
         {
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMStarage(bool trackPropertyChanging) : this()
+        public OMSource9(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -997,7 +997,7 @@ namespace ObjectModel.Gbu
         /// Ссылка на (9 Источник: Департамент природопользования и охраны окружающей среды города Москвы)
         /// </summary>
         [Reference]
-        public List<ObjectModel.OMStarage> Starage { get; set; }
+        public List<ObjectModel.Gbu.OMSource9> Source9 { get; set; }
 
         /// <summary>
         /// Ссылка на (10 Источник: Росавтодор)
@@ -1112,7 +1112,7 @@ namespace ObjectModel.Gbu
 
             Source8 = new List<ObjectModel.Gbu.OMSource8>();
 
-            Starage = new List<ObjectModel.OMStarage>();
+            Source9 = new List<ObjectModel.Gbu.OMSource9>();
 
             Source10 = new List<ObjectModel.Gbu.OMSource10>();
 
@@ -2857,17 +2857,17 @@ namespace ObjectModel.Gbu.Custom
     /// <summary>
     /// 41937379 Источник: Test_All_Pri
     /// </summary>
-    public partial class OMSource22
-    {
+    public partial class OMSource38
+	{
 
-        public OMSource22()
+        public OMSource38()
         {
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMSource22(bool trackPropertyChanging) : this()
+        public OMSource38(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -2879,83 +2879,17 @@ namespace ObjectModel.Gbu.Custom
     /// <summary>
     /// 41983898 Источник: Атрибут кода группы
     /// </summary>
-    public partial class OMSource23
-    {
+    public partial class OMSource39
+	{
 
-        public OMSource23()
+        public OMSource39()
         {
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMSource23(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Gbu.Custom
-{
-    /// <summary>
-    /// 42430534 Источник: тестовый_2апреля
-    /// </summary>
-    public partial class OMSource24
-    {
-
-        public OMSource24()
-        {
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMSource24(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Gbu.Custom
-{
-    /// <summary>
-    /// 42436643 Источник: источник информации
-    /// </summary>
-    public partial class OMSource25
-    {
-
-        public OMSource25()
-        {
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMSource25(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Gbu.Custom
-{
-    /// <summary>
-    /// 42726724 Источник: Test_All_Pri_2
-    /// </summary>
-    public partial class OMSource26
-    {
-
-        public OMSource26()
-        {
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMSource26(bool trackPropertyChanging) : this()
+        public OMSource39(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

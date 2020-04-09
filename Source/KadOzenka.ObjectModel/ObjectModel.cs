@@ -43,62 +43,6 @@ namespace ObjectModel.Gbu
                 NotifyPropertyChanged("Id");
             }
         }
-
-
-        private bool _ад;
-        /// <summary>
-        /// 200400 Газ (1)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 200400)]
-        public bool ад
-        {
-            get
-            {
-                CheckPropertyInited("ад");
-                return _ад;
-            }
-            set
-            {
-                _ад = value;
-                NotifyPropertyChanged("ад");
-            }
-        }
-
-
-        private ObjectModel.Directory.Declarations.UvedType _ад_Code;
-        /// <summary>
-        /// 200400 Газ (справочный код) (2)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 200400)]
-        public ObjectModel.Directory.Declarations.UvedType ад_Code
-        {
-            get
-            {
-                CheckPropertyInited("ад_Code");
-                return this._ад_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_ад))
-                    {
-                         _ад = descr;
-                    }
-                }
-                else
-                {
-                     _ад = descr;
-                }
-
-                this._ад_Code = value;
-                NotifyPropertyChanged("ад");
-                NotifyPropertyChanged("ад_Code");
-            }
-        }
-
     }
 }
 
@@ -174,14 +118,14 @@ namespace ObjectModel.Gbu
     }
 }
 
-namespace ObjectModel
+namespace ObjectModel.Gbu
 {
     /// <summary>
     /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 9)]
     [Serializable]
-    public partial class OMStarage : OMBaseClass<OMStarage>
+    public partial class OMSource9 : OMBaseClass<OMSource9>
     {
     }
 }
@@ -1878,47 +1822,27 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _pricepermeter;
+        private decimal? _priceaftercorrectionbystage;
         /// <summary>
-        /// 10008500 Удельная цена сделки (PRICE_PER_METER)
+        /// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10008500)]
-        public decimal? PricePerMeter
+        public decimal? PriceAfterCorrectionByStage
         {
-            get
-            {
-                CheckPropertyInited("PricePerMeter");
-                return _pricepermeter;
-            }
-            set
-            {
-                _pricepermeter = value;
-                NotifyPropertyChanged("PricePerMeter");
-            }
+	        get
+	        {
+		        CheckPropertyInited("PriceAfterCorrectionByStage");
+		        return _priceaftercorrectionbystage;
+	        }
+	        set
+	        {
+		        _priceaftercorrectionbystage = value;
+		        NotifyPropertyChanged("PriceAfterCorrectionByStage");
+	        }
         }
 
 
-        private long? _formalizedaddressid;
-        /// <summary>
-        /// 10008600 Идентификатор формализованного адреса (FORMALIZED_ADDRESS_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10008600)]
-        public long? FormalizedAddressId
-        {
-            get
-            {
-                CheckPropertyInited("FormalizedAddressId");
-                return _formalizedaddressid;
-            }
-            set
-            {
-                _formalizedaddressid = value;
-                NotifyPropertyChanged("FormalizedAddressId");
-            }
-        }
-
-
-        private decimal? _priceaftercorrectionforfirstfloor;
+		private decimal? _priceaftercorrectionforfirstfloor;
         /// <summary>
         /// 10008800 Цена после корректировки на первый этаж (PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR)
         /// </summary>
@@ -21038,7 +20962,7 @@ namespace ObjectModel.Gbu.Custom
     /// </summary>
     [RegisterInfo(RegisterID = 41937379)]
     [Serializable]
-    public partial class OMSource22 : OMBaseClass<OMSource22>
+    public partial class OMSource38 : OMBaseClass<OMSource38>
     {
     }
 }
@@ -21050,43 +20974,7 @@ namespace ObjectModel.Gbu.Custom
     /// </summary>
     [RegisterInfo(RegisterID = 41983898)]
     [Serializable]
-    public partial class OMSource23 : OMBaseClass<OMSource23>
-    {
-    }
-}
-
-namespace ObjectModel.Gbu.Custom
-{
-    /// <summary>
-    /// 42430534 Источник: тестовый_2апреля (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 42430534)]
-    [Serializable]
-    public partial class OMSource24 : OMBaseClass<OMSource24>
-    {
-    }
-}
-
-namespace ObjectModel.Gbu.Custom
-{
-    /// <summary>
-    /// 42436643 Источник: источник информации (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 42436643)]
-    [Serializable]
-    public partial class OMSource25 : OMBaseClass<OMSource25>
-    {
-    }
-}
-
-namespace ObjectModel.Gbu.Custom
-{
-    /// <summary>
-    /// 42726724 Источник: Test_All_Pri_2 (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 42726724)]
-    [Serializable]
-    public partial class OMSource26 : OMBaseClass<OMSource26>
+    public partial class OMSource39 : OMBaseClass<OMSource39>
     {
     }
 }
