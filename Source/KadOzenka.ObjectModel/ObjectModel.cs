@@ -43,6 +43,62 @@ namespace ObjectModel.Gbu
                 NotifyPropertyChanged("Id");
             }
         }
+
+
+        private bool _ад;
+        /// <summary>
+        /// 200400 Газ (1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 200400)]
+        public bool ад
+        {
+            get
+            {
+                CheckPropertyInited("ад");
+                return _ад;
+            }
+            set
+            {
+                _ад = value;
+                NotifyPropertyChanged("ад");
+            }
+        }
+
+
+        private ObjectModel.Directory.Declarations.UvedType _ад_Code;
+        /// <summary>
+        /// 200400 Газ (справочный код) (2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 200400)]
+        public ObjectModel.Directory.Declarations.UvedType ад_Code
+        {
+            get
+            {
+                CheckPropertyInited("ад_Code");
+                return this._ад_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_ад))
+                    {
+                         _ад = descr;
+                    }
+                }
+                else
+                {
+                     _ад = descr;
+                }
+
+                this._ад_Code = value;
+                NotifyPropertyChanged("ад");
+                NotifyPropertyChanged("ад_Code");
+            }
+        }
+
     }
 }
 
@@ -118,14 +174,14 @@ namespace ObjectModel.Gbu
     }
 }
 
-namespace ObjectModel.Gbu
+namespace ObjectModel
 {
     /// <summary>
     /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 9)]
     [Serializable]
-    public partial class OMSource9 : OMBaseClass<OMSource9>
+    public partial class OMStarage : OMBaseClass<OMStarage>
     {
     }
 }
@@ -1822,22 +1878,42 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _priceaftercorrectionbystage;
+        private decimal? _pricepermeter;
         /// <summary>
-        /// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
+        /// 10008500 Удельная цена сделки (PRICE_PER_METER)
         /// </summary>
         [RegisterAttribute(AttributeID = 10008500)]
-        public decimal? PriceAfterCorrectionByStage
+        public decimal? PricePerMeter
         {
             get
             {
-                CheckPropertyInited("PriceAfterCorrectionByStage");
-                return _priceaftercorrectionbystage;
+                CheckPropertyInited("PricePerMeter");
+                return _pricepermeter;
             }
             set
             {
-                _priceaftercorrectionbystage = value;
-                NotifyPropertyChanged("PriceAfterCorrectionByStage");
+                _pricepermeter = value;
+                NotifyPropertyChanged("PricePerMeter");
+            }
+        }
+
+
+        private long? _formalizedaddressid;
+        /// <summary>
+        /// 10008600 Идентификатор формализованного адреса (FORMALIZED_ADDRESS_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008600)]
+        public long? FormalizedAddressId
+        {
+            get
+            {
+                CheckPropertyInited("FormalizedAddressId");
+                return _formalizedaddressid;
+            }
+            set
+            {
+                _formalizedaddressid = value;
+                NotifyPropertyChanged("FormalizedAddressId");
             }
         }
 
@@ -20014,6 +20090,86 @@ namespace ObjectModel.ES
     [Serializable]
     public partial class OMYearConstruction : OMBaseClass<OMYearConstruction>
     {
+
+        private long _id;
+        /// <summary>
+        /// 60100100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _numberrange;
+        /// <summary>
+        /// 60100200 Номер диапозона (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60100200)]
+        public long NumberRange
+        {
+            get
+            {
+                CheckPropertyInited("NumberRange");
+                return _numberrange;
+            }
+            set
+            {
+                _numberrange = value;
+                NotifyPropertyChanged("NumberRange");
+            }
+        }
+
+
+        private long _yearfrom;
+        /// <summary>
+        /// 60100300 Год постройки от (YEAR_FROM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60100300)]
+        public long YearFrom
+        {
+            get
+            {
+                CheckPropertyInited("YearFrom");
+                return _yearfrom;
+            }
+            set
+            {
+                _yearfrom = value;
+                NotifyPropertyChanged("YearFrom");
+            }
+        }
+
+
+        private long _yearto;
+        /// <summary>
+        /// 60100400 Год постройки до (YEAR_TO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60100400)]
+        public long YearTo
+        {
+            get
+            {
+                CheckPropertyInited("YearTo");
+                return _yearto;
+            }
+            set
+            {
+                _yearto = value;
+                NotifyPropertyChanged("YearTo");
+            }
+        }
+
     }
 }
 
@@ -20026,6 +20182,86 @@ namespace ObjectModel.ES
     [Serializable]
     public partial class OMSquare : OMBaseClass<OMSquare>
     {
+
+        private long _id;
+        /// <summary>
+        /// 60200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _numberrange;
+        /// <summary>
+        /// 60200200 Номер диапозона (NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60200200)]
+        public long NumberRange
+        {
+            get
+            {
+                CheckPropertyInited("NumberRange");
+                return _numberrange;
+            }
+            set
+            {
+                _numberrange = value;
+                NotifyPropertyChanged("NumberRange");
+            }
+        }
+
+
+        private long _squarefrom;
+        /// <summary>
+        /// 60200300 Площадь от (SQUARE_FROM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60200300)]
+        public long SquareFrom
+        {
+            get
+            {
+                CheckPropertyInited("SquareFrom");
+                return _squarefrom;
+            }
+            set
+            {
+                _squarefrom = value;
+                NotifyPropertyChanged("SquareFrom");
+            }
+        }
+
+
+        private long _squareto;
+        /// <summary>
+        /// 60200400 Площадь до (SQUARE_TO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60200400)]
+        public long SquareTo
+        {
+            get
+            {
+                CheckPropertyInited("SquareTo");
+                return _squareto;
+            }
+            set
+            {
+                _squareto = value;
+                NotifyPropertyChanged("SquareTo");
+            }
+        }
+
     }
 }
 
@@ -20802,7 +21038,7 @@ namespace ObjectModel.Gbu.Custom
     /// </summary>
     [RegisterInfo(RegisterID = 41937379)]
     [Serializable]
-    public partial class OMSource38 : OMBaseClass<OMSource38>
+    public partial class OMSource22 : OMBaseClass<OMSource22>
     {
     }
 }
@@ -20814,7 +21050,43 @@ namespace ObjectModel.Gbu.Custom
     /// </summary>
     [RegisterInfo(RegisterID = 41983898)]
     [Serializable]
-    public partial class OMSource39 : OMBaseClass<OMSource39>
+    public partial class OMSource23 : OMBaseClass<OMSource23>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42430534 Источник: тестовый_2апреля (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 42430534)]
+    [Serializable]
+    public partial class OMSource24 : OMBaseClass<OMSource24>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42436643 Источник: источник информации (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 42436643)]
+    [Serializable]
+    public partial class OMSource25 : OMBaseClass<OMSource25>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42726724 Источник: Test_All_Pri_2 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 42726724)]
+    [Serializable]
+    public partial class OMSource26 : OMBaseClass<OMSource26>
     {
     }
 }

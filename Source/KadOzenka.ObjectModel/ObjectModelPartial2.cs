@@ -150,12 +150,12 @@ namespace ObjectModel.Gbu
 }
 
 
-namespace ObjectModel.Gbu
+namespace ObjectModel
 {
     /// <summary>
     /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
     /// </summary>
-    public partial class OMSource9
+    public partial class OMStarage
     {
         /// <summary>
         /// Ссылка на (200 Объекты недвижимости)
