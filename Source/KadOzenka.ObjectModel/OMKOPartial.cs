@@ -448,7 +448,6 @@ namespace ObjectModel.KO
             else
                 return 251;
         }
-
         public static List<ObjectModel.KO.OMGroup> GetListGroupTour(long tourId, ObjectModel.Directory.KoGroupAlgoritm GroupAlgoritm)
         {
             List<ObjectModel.KO.OMGroup> res = new List<ObjectModel.KO.OMGroup>();
@@ -2243,5 +2242,49 @@ namespace ObjectModel.KO
             });
 
         }
+        public static void CalculateSelectGroup(KOCalcSettings setting)
+        {
+            //TODO
+        }
     }
+
+    /// <summary>
+    /// Настройки расчета
+    /// </summary>
+    public struct KOCalcSettings
+    {
+        /// <summary>
+        /// Тур оценки
+        /// </summary>
+        public long IdTour;
+        /// <summary>
+        /// Список заданий на оценку
+        /// </summary>
+        public List<long> TaskFilter;
+        /// <summary>
+        /// Объекты расчета: true-Земельный участок, false-ОКС
+        /// </summary>
+        public bool CalcParcel;
+        /// <summary>
+        /// Предварительный расчет
+        /// </summary>
+        public bool CalcStage1;
+        /// <summary>
+        /// Расчет поправок/коэффициентов
+        /// </summary>
+        public bool CalcStage2;
+        /// <summary>
+        /// Окончательный расчет
+        /// </summary>
+        public bool CalcStage3;
+        /// <summary>
+        /// Признак расчета всех групп: true - все группы, false - список выбранных групп
+        /// </summary>
+        public bool CalcAllGroups;
+        /// <summary>
+        /// Список выбранных групп
+        /// </summary>
+        public List<long> CalcGroups;
+    }
+
 }
