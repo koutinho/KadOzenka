@@ -10558,6 +10558,78 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+	/// <summary>
+	/// 255 Реестр для зависимостей расчета (KO_CALC_GROUP)
+	/// </summary>
+	[RegisterInfo(RegisterID = 255)]
+	[Serializable]
+	public partial class OMCalcGroup : OMBaseClass<OMCalcGroup>
+	{
+
+		private long _id;
+		/// <summary>
+		/// 25500100 Идентификатор (ID)
+		/// </summary>
+		[PrimaryKey(AttributeID = 25500100)]
+		public long Id
+		{
+			get
+			{
+				CheckPropertyInited("Id");
+				return _id;
+			}
+			set
+			{
+				_id = value;
+				NotifyPropertyChanged("Id");
+			}
+		}
+
+
+		private long? _idgroup;
+		/// <summary>
+		/// 25500200 Идентификатор группы (ID_GROUP)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25500200)]
+		public long? IdGroup
+		{
+			get
+			{
+				CheckPropertyInited("IdGroup");
+				return _idgroup;
+			}
+			set
+			{
+				_idgroup = value;
+				NotifyPropertyChanged("IdGroup");
+			}
+		}
+
+
+		private long? _idparentcalcgroup;
+		/// <summary>
+		/// 25500300 Идентификатор группы, на основе которой считается текущая группа (ID_PARENT_CALC_GROUP)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25500300)]
+		public long? IdParentCalcGroup
+		{
+			get
+			{
+				CheckPropertyInited("IdParentCalcGroup");
+				return _idparentcalcgroup;
+			}
+			set
+			{
+				_idparentcalcgroup = value;
+				NotifyPropertyChanged("IdParentCalcGroup");
+			}
+		}
+
+	}
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

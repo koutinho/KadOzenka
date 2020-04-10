@@ -1796,6 +1796,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+	/// <summary>
+	/// 255 Реестр для зависимостей расчета
+	/// </summary>
+	public partial class OMCalcGroup
+	{
+
+		public OMCalcGroup()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMCalcGroup(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
