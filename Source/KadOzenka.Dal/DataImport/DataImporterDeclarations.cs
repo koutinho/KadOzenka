@@ -82,7 +82,9 @@ namespace KadOzenka.Dal.DataImport
 				return;
 			}
 
-			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
+            WorkerCommon.SetProgress(processQueue, 0);
+
+            import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 			import.DateStarted = DateTime.Now;
 			import.Save();
 
@@ -91,11 +93,15 @@ namespace KadOzenka.Dal.DataImport
 
 			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
 			var columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
-			Stream resultFile = ImportDataFromExcel(excelTemplate, columns);
 
+            WorkerCommon.SetProgress(processQueue, 25);
 
-			// Сохранение файла
-			FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetResultFileName(import.Id));
+            Stream resultFile = ImportDataFromExcel(excelTemplate, columns);
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            // Сохранение файла
+            FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetResultFileName(import.Id));
 
 			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 			import.DateFinished = DateTime.Now;
@@ -103,7 +109,9 @@ namespace KadOzenka.Dal.DataImport
 
 			// Отправка уведомления о завершении загрузки
 			DataImporterCommon.SendResultNotification(import);
-		}
+
+            WorkerCommon.SetProgress(processQueue, 100);
+        }
 
 		public bool Test()
 		{

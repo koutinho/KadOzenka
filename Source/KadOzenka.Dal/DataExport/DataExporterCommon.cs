@@ -52,7 +52,9 @@ namespace KadOzenka.Dal.DataExport
 				return;
 			}
 
-			export.Status = 1;
+            WorkerCommon.SetProgress(processQueue, 0);
+
+            export.Status = 1;
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
@@ -62,16 +64,22 @@ namespace KadOzenka.Dal.DataExport
 			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
 			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
 
-			Stream resultFile = ExportDataToExcel((int)export.MainRegisterId, excelTemplate, columns);
+            WorkerCommon.SetProgress(processQueue, 25);
 
-			// Сохранение файла
-			export.Status = 2;
+            Stream resultFile = ExportDataToExcel((int)export.MainRegisterId, excelTemplate, columns);
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            // Сохранение файла
+            export.Status = 2;
 			export.DateFinished = DateTime.Now;
 			export.Save();
 
 			FileStorageManager.Save(resultFile, FileStorageName, export.DateFinished.Value, GetResultFileName(export.Id));
 
             SendResultNotification(export);
+
+            WorkerCommon.SetProgress(processQueue, 100);
         }
 
         public void LogError(long? objectId, Exception ex, long? errorId = null)

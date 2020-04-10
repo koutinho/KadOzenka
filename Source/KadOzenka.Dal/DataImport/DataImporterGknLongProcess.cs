@@ -116,7 +116,9 @@ namespace KadOzenka.Dal.DataImport
 				return;
 			}
 
-			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
+            WorkerCommon.SetProgress(processQueue, 0);
+
+            import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 			import.DateStarted = DateTime.Now;
 			import.Save();
 					   
@@ -166,7 +168,9 @@ namespace KadOzenka.Dal.DataImport
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 				import.DateFinished = DateTime.Now;
 				import.Save();
-			}
+
+                WorkerCommon.SetProgress(processQueue, 100);
+            }
 			catch (Exception ex)
 			{
 				long errorId = ErrorManager.LogError(ex);

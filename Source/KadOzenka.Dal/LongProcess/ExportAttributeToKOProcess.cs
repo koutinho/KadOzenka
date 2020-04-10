@@ -22,10 +22,14 @@ namespace KadOzenka.Dal.LongProcess
 		{
 			try
 			{
-				var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
+                WorkerCommon.SetProgress(processQueue, 0);
+
+                var settings = processQueue.Parameters.DeserializeFromXml<GbuExportAttributeSettings>();
 				ExportAttributeToKO.Run(settings);
 				SendSuccessNotification(processQueue);
-			}
+
+                WorkerCommon.SetProgress(processQueue, 100);
+            }
 			catch (Exception ex)
 			{
 				SendFailureNotification(processQueue, ex.Message);
@@ -45,8 +49,6 @@ namespace KadOzenka.Dal.LongProcess
 
 		private void SendSuccessNotification(OMQueue processQueue)
 		{
-			
-
 			new MessageService().SendMessages(new MessageDto
 			{
 				Addressers = new MessageAddressersDto{UserIds = processQueue.UserId.HasValue ? new[] { processQueue.UserId.Value } : new long[] { } },

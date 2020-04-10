@@ -42,20 +42,32 @@ namespace KadOzenka.Dal.DataImport
 				.Execute()
 				.FirstOrDefault();
 			if (import == null) return;
-			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
+
+            WorkerCommon.SetProgress(processQueue, 0);
+
+            import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 			import.DateStarted = DateTime.Now;
 			import.Save();
+
 			// Запустить формирование файла
 			var templateFile = FileStorageManager.GetFileStream(FileStorageName, import.DateCreated, GetTemplateName(import.Id));
 			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
-			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
+
+            WorkerCommon.SetProgress(processQueue, 25);
+
+            List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
 			Stream resultFile = ImportDataFromExcel((int)import.MainRegisterId, excelTemplate, columns);
-			// Сохранение файла
-			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            // Сохранение файла
+            import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 			import.DateFinished = DateTime.Now;
 			import.Save();
 			FileStorageManager.Save(resultFile, FileStorageName, import.DateFinished.Value, GetResultFileName(import.Id));
-		}
+
+            WorkerCommon.SetProgress(processQueue, 100);
+        }
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{

@@ -52,18 +52,24 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 				return;
 			}
 			WorkerCommon.SetProgress(processQueue, 0);
+
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Running;
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
 			var file = DataExporterSud.ExportStatisticCheck();
-			FileStorageManager.Save(file, StorageName, DateTime.Now, $"Статистика по положительным судебным решениям {export.Id}");
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            FileStorageManager.Save(file, StorageName, DateTime.Now, $"Статистика по положительным судебным решениям {export.Id}");
 
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
 			export.DateFinished = DateTime.Now;
 			export.TemplateFileName = $"Статистика по положительным судебным решениям {export.Id}";
 			export.Save();
+
 			WorkerCommon.SetProgress(processQueue, 100);
+
 			NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат выгрузки Статистики по положительным судебным решениям");
 		}
 	}

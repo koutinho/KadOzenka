@@ -69,7 +69,9 @@ namespace KadOzenka.Dal.DataImport
 				return;
 			}
 
-			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
+            WorkerCommon.SetProgress(processQueue, 0);
+
+            import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 			import.DateStarted = DateTime.Now;
 			import.Save();
 
@@ -77,11 +79,15 @@ namespace KadOzenka.Dal.DataImport
 			var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetTemplateName(import.Id));
 
 			ExcelFile excelTemplate = ExcelFile.Load(templateFile, LoadOptions.XlsxDefault);
-			
-			Stream resultFile = ImportDataSudFromExcel(excelTemplate);
 
-			// Сохранение файла
-			FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetResultFileName(import.Id));
+            WorkerCommon.SetProgress(processQueue, 25);
+
+            Stream resultFile = ImportDataSudFromExcel(excelTemplate);
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            // Сохранение файла
+            FileStorageManager.Save(resultFile, DataImporterCommon.FileStorageName, import.DateCreated, DataImporterCommon.GetResultFileName(import.Id));
 
 			import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 			import.DateFinished = DateTime.Now;
@@ -89,7 +95,9 @@ namespace KadOzenka.Dal.DataImport
 
 			// Отправка уведомления о завершении загрузки
 			DataImporterCommon.SendResultNotification(import);
-		}
+
+            WorkerCommon.SetProgress(processQueue, 100);
+        }
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{

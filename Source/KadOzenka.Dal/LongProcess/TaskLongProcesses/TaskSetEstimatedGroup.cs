@@ -21,10 +21,14 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			try
 			{
-				var param = processQueue.Parameters.DeserializeFromXml<EstimatedGroupModel>();
+                WorkerCommon.SetProgress(processQueue, 0);
+
+                var param = processQueue.Parameters.DeserializeFromXml<EstimatedGroupModel>();
 				KoObjectSetEstimatedGroup.Run(param);
 				NotificationSender.SendNotification(processQueue, "Присвоение оценочной группы", "Присвоение оценочной группы успешно завершено");
-			}
+
+                WorkerCommon.SetProgress(processQueue, 100);
+            }
 			catch (Exception e)
 			{
 				NotificationSender.SendNotification(processQueue, "Присвоение оценочной группы", $"Присвоение оценочной группы завершено с ошибкой. Подробнее в журнале ошибок");

@@ -21,6 +21,8 @@ namespace KadOzenka.Dal.LongProcess
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
+            WorkerCommon.SetProgress(processQueue, 0);
+
             DateTime date;
             MarketSegment? segment = null;
             var firstMonthDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
@@ -36,8 +38,9 @@ namespace KadOzenka.Dal.LongProcess
             }
 
             var correctionForFirstFloorService = new CorrectionForFirstFloorService();
-            
             correctionForFirstFloorService.MakeCorrections(date, segment);
+
+            WorkerCommon.SetProgress(processQueue, 100);
         }
     }
 }

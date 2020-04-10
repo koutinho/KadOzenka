@@ -25,6 +25,7 @@ namespace KadOzenka.Dal.LongProcess
 			try
 			{
 				WorkerCommon.SetProgress(processQueue, 0);
+
 				var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationCODSettings>();
 				var t = Task.Run(() => {
 					while (true)
@@ -51,6 +52,7 @@ namespace KadOzenka.Dal.LongProcess
 				cancelSource.Dispose();
 
 				WorkerCommon.SetProgress(processQueue, 100);
+
 				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации с использованием справочника ЦОД", "Операция успешно завершена");
 			}
 			catch (Exception ex)

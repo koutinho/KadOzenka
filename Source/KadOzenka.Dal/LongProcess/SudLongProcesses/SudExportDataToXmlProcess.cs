@@ -52,19 +52,25 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 				return;
 			}
 			WorkerCommon.SetProgress(processQueue, 0);
+
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Running;
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
 			var file = DataExporterSud.ExportDataToXml();
-			FileStorageManager.Save(file, StorageName, DateTime.Now, $"Выгрузка судебных решений на сайт в формате XML {export.Id}");
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            FileStorageManager.Save(file, StorageName, DateTime.Now, $"Выгрузка судебных решений на сайт в формате XML {export.Id}");
 
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
 			export.DateFinished = DateTime.Now;
 			export.TemplateFileName = $"Выгрузка судебных решений на сайт в формате XML {export.Id}";
 			export.Save();
-			WorkerCommon.SetProgress(processQueue, 100);
-			NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат Выгрузки судебных решений на сайт в формате XML", true);
-		}
+
+            NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат Выгрузки судебных решений на сайт в формате XML", true);
+
+            WorkerCommon.SetProgress(processQueue, 100);
+        }
 	}
 }

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.IO;
-using System.Runtime.Serialization.Json;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Messages;
@@ -17,7 +15,6 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Sud;
-using Platform.LongProcessManagment;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -25,14 +22,18 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			DbCommand command = DBMngr.Main.GetStoredProcCommand("additional_analysis_checker", processQueue.Id);
+            WorkerCommon.SetProgress(processQueue, 0);
+
+            DbCommand command = DBMngr.Main.GetStoredProcCommand("additional_analysis_checker", processQueue.Id);
 			DataTable dt = DBMngr.Main.ExecuteDataSet(command).Tables[0];
 
 			var res = dt.Rows[0].ItemArray[0];
 
 			var messageAddresses = JsonConvert.DeserializeObject<MessageAddressersDto>(processType.Parameters);
-	
-			if (res.ParseToInt() == 0)
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            if (res.ParseToInt() == 0)
 			{
 				SendResultNotificationWithoutChange(messageAddresses);
 			}
@@ -40,7 +41,9 @@ namespace KadOzenka.Dal.LongProcess
 			{
 				SendResultNotification(processQueue.Id, res.ParseToInt(), messageAddresses);
 			}
-		}
+
+            WorkerCommon.SetProgress(processQueue, 100);
+        }
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{

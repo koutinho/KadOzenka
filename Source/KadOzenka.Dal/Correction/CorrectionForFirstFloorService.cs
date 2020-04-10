@@ -17,6 +17,7 @@ namespace KadOzenka.Dal.Correction
         // TODO: убрать флаг и оставить только расчет с учетом комнат
         private const bool IncludeCorrectionByRooms = true;
 
+        //TODO добавь логирование прогресса в LongProcess, когда закончишь задачу
         public void MakeCorrections(DateTime date, MarketSegment? segment = null)
         {
             var dateMonth = DateToMonth(date);

@@ -52,17 +52,22 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 				return;
 			}
 			WorkerCommon.SetProgress(processQueue, 0);
+
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Running;
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
 			var file = DataExporterSud.ExportDataToExcelGbu();
-			FileStorageManager.Save(file, StorageName, DateTime.Now, $"Выгрузка судебных решений для ГБУ {export.Id}");
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            FileStorageManager.Save(file, StorageName, DateTime.Now, $"Выгрузка судебных решений для ГБУ {export.Id}");
 
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
 			export.DateFinished = DateTime.Now;
 			export.TemplateFileName = $"Выгрузка судебных решений для ГБУ {export.Id}";
 			export.Save();
+
 			WorkerCommon.SetProgress(processQueue, 100);
 			NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат Выгрузки судебных решений для ГБУ");
 		}

@@ -13,6 +13,7 @@ namespace KadOzenka.Dal.Correction
 {
 	public class CorrectionByStageService
 	{
+        //TODO добавь логирование прогресса в LongProcess, когда закончишь задачу
 		public void MakeCorrection(DateTime date)
 		{			
 			//TODO: для нового периода подтягивать данные старого периода по исключенным зданиям

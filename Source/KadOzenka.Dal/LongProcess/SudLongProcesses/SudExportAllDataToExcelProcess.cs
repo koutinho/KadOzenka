@@ -53,6 +53,7 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 			}
 
 			WorkerCommon.SetProgress(processQueue, 0);
+
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Running;
 			export.DateStarted = DateTime.Now;
 			export.Save();
@@ -64,7 +65,9 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 			export.DateFinished = DateTime.Now;
 			export.TemplateFileName = $"Полная выгрузка {export.Id}";
 			export.Save();
+
 			WorkerCommon.SetProgress(processQueue, 100);
+
 			NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат Полной выгрузки в Excel");
 		}
 	}

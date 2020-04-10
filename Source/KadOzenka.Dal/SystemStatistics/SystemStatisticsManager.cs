@@ -21,6 +21,8 @@ namespace KadOzenka.Dal.SystemStatistics
 
         public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
+            WorkerCommon.SetProgress(processQueue, 0);
+
             DbCommand command = DBMngr.Main.GetSqlStringCommand("select fill_system_daily_statistics()");
             DBMngr.Main.ExecuteNonQuery(command);
 
@@ -36,6 +38,8 @@ namespace KadOzenka.Dal.SystemStatistics
             /* Размер директории в файлового хранилища */
             try
             {
+                WorkerCommon.SetProgress(processQueue, 25);
+
                 long directorySize = 0;
                 StringBuilder sbInsert = new StringBuilder();
                 sbInsert.Append("insert into system_daily_stat_file_stor(stat_date, file_key, description, size_mb) VALUES");
@@ -53,8 +57,12 @@ namespace KadOzenka.Dal.SystemStatistics
                 sbInsert.Append(string.Join(",\r\n", values));
                 sbInsert.Append(";");
 
+                WorkerCommon.SetProgress(processQueue, 50);
+
                 DbCommand commandInsert = DBMngr.Main.GetSqlStringCommand(sbInsert.ToString());
                 DBMngr.Main.ExecuteNonQuery(commandInsert);
+
+                WorkerCommon.SetProgress(processQueue, 100);
             }
             catch (Exception ex)
             {

@@ -79,20 +79,11 @@ namespace KadOzenka.Dal.Correction
             };
         }
 
-        public void UpdateMarketObjectsPrice()
+        public List<OMCoreObject> GetMarketObjectsForUpdate()
         {
-            var marketObjects = OMCoreObject
+            return OMCoreObject
                 .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                 .SelectAll().Execute();
-
-            var consumerIndexes = OMIndexesForDateCorrection.Where(x => true).SelectAll().Execute();
-
-            marketObjects.ForEach(x =>
-            {
-                var priceWithCorrection = CalculatePriceAfterCorrectionByDate(x, consumerIndexes);
-                x.PriceAfterCorrectionByDate = priceWithCorrection;
-                x.Save();
-            });
         }
 
         public decimal? CalculatePriceAfterCorrectionByDate(OMCoreObject obj, List<OMIndexesForDateCorrection> consumerIndexes)

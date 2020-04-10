@@ -51,19 +51,26 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 			{
 				return;
 			}
+
 			WorkerCommon.SetProgress(processQueue, 0);
+
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Running;
 			export.DateStarted = DateTime.Now;
 			export.Save();
 
 			var file = DataExporterSud.ExportStatisticObject();
-			FileStorageManager.Save(file, StorageName, DateTime.Now, $"Статистика по объектам недвижимости {export.Id}");
+
+            WorkerCommon.SetProgress(processQueue, 75);
+
+            FileStorageManager.Save(file, StorageName, DateTime.Now, $"Статистика по объектам недвижимости {export.Id}");
 
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Completed;
 			export.DateFinished = DateTime.Now;
 			export.TemplateFileName = $"Статистика по объектам недвижимости {export.Id}";
 			export.Save();
+
 			WorkerCommon.SetProgress(processQueue, 100);
+
 			NotificationSender.SendExportResultNotificationWithAttachment(export, "Результат выгрузки Статистики по объектам недвижимости");
 		}
 	}
