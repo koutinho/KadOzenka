@@ -168,7 +168,7 @@ namespace KadOzenka.BlFrontEnd.ExportKO
                 Directory.CreateDirectory(dir_name);
 
             long? task_id = 1;
-            DEKODifferent.ExportToXls7(task_id, false, dir_name);
+            DEKODifferent.ExportToXls7(task_id, ObjectModel.Directory.PropertyTypes.Building, dir_name);
         }
 
         /// <summary>
@@ -176,7 +176,12 @@ namespace KadOzenka.BlFrontEnd.ExportKO
         /// </summary>
         public static void ExportXlsTable8()
         {
+            string dir_name = "D:\\Temp\\KO_Excel\\Table8";
+            if (!Directory.Exists(dir_name))
+                Directory.CreateDirectory(dir_name);
 
+            long? task_id = 1;
+            DEKODifferent.ExportToXls8(task_id, ObjectModel.Directory.PropertyTypes.Building, dir_name);
         }
 
         /// <summary>

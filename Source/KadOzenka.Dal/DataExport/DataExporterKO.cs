@@ -17,7 +17,6 @@ using System.Configuration;
 using ObjectModel.KO;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
-using ObjectModel.Directory.Declarations;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -38,6 +37,7 @@ namespace KadOzenka.Dal.DataExport
         public int       NumberGroup   = 0;  //Количество групп
         public int       CountObj      = 0;  //Количество объектов в районе
         public string    CadastralArea = ""; //Номер кадастрового района
+        public string    CadastralBlok = ""; //Номер кадастрового квартала
         public double[,] MinAvgMax;          //Массив УПКСЗ по группам
 
         public GeneralizedValuesUPKSZ(int _num)
@@ -2116,26 +2116,26 @@ namespace KadOzenka.Dal.DataExport
         /// Выгрузка файлов Excel "Таблица 7."
         /// </summary>
         /// <param name="_task_id">Идентификатор задания на оценку</param>
-        /// <param name="is_site">Признак выгружаемого типа объектов. True - выгрузка ЗУ, False - выгрузка ОКС</param>
+        /// <param name="_obj_type">Тип объектов. Stead - выгрузка ЗУ, Building - выгрузка ОКС</param>
         /// <param name="_dir_name">Путь сохранения файлов</param>
-        public static void ExportToXls7(long? _task_id, bool is_stead, string _dir_name)
+        public static void ExportToXls7(long? _task_id, PropertyTypes _obj_type, string _dir_name)
         {
             int num_unit = 0;
             int num_save = 0;
-            int count_group = (is_stead)?13:16;
+            int count_group = (_obj_type == PropertyTypes.Stead) ?13:16;
             List<GeneralizedValuesUPKSZ> list_statistics = new List<GeneralizedValuesUPKSZ>(count_group);
 
             #region Собираем статистику
-            if (is_stead)
+            if (_obj_type == PropertyTypes.Stead)
             {   //Выгружаем Земельные участки 
-                List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == PropertyTypes.Stead).SelectAll().Execute();
+                List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == PropertyTypes.Stead).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
                 foreach (OMUnit unit in units_zu)
                 {
                     OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
                     if (!group.Number.IsNullOrEmpty())
                     {
                         int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                        CalculationStat(ref list_statistics, unit, num_group, count_group);
+                        CalculationStat7(ref list_statistics, unit, num_group, count_group);
                         num_save++;
                     }
                     num_unit++;
@@ -2158,7 +2158,7 @@ namespace KadOzenka.Dal.DataExport
                 foreach (PropertyTypes prop_type in prop_types)
                 {
                     num_prop++;
-                    List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == prop_type).SelectAll().Execute();
+                    List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
                     foreach(OMUnit unit in units_oks)
                     {
                         OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
@@ -2167,7 +2167,7 @@ namespace KadOzenka.Dal.DataExport
                             if (!group.Number.IsNullOrEmpty())
                             {
                                 int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                                CalculationStat(ref list_statistics, unit, num_group, count_group);
+                                CalculationStat7(ref list_statistics, unit, num_group, count_group);
                                 num_save++;
                             }
                         }
@@ -2209,12 +2209,13 @@ namespace KadOzenka.Dal.DataExport
 
             #region Формирование отчета
             Console.WriteLine("Формирование отчета ...");
-            SaveExcel7(list_statistics, is_stead, count_group, _dir_name);
+            SaveExcel7(list_statistics, _obj_type, count_group, _dir_name);
             #endregion
         }
 
-        public static void CalculationStat(ref List<GeneralizedValuesUPKSZ> _list_statistics, OMUnit _unit, int _num, int _count_group)
+        public static void CalculationStat7(ref List<GeneralizedValuesUPKSZ> _list_statistics, OMUnit _unit, int _num, int _count_group)
         {
+            int my_i = 1;
             bool is_find = false;
             string cad_area = _unit.CadastralBlock.Substring(0, 5);
 
@@ -2227,7 +2228,7 @@ namespace KadOzenka.Dal.DataExport
                                                        ? (double)_unit.Upks
                                                        : Math.Min(statistic.MinAvgMax[0, _num - 1], (double)_unit.Upks);
                     statistic.MinAvgMax[1, _num - 1] += (double)_unit.Upks;
-                    statistic.MinAvgMax[2, _num - 1] = Math.Max(statistic.MinAvgMax[0, _num - 1], (double)_unit.Upks);
+                    statistic.MinAvgMax[2, _num - 1] = Math.Max(statistic.MinAvgMax[2, _num - 1], (double)_unit.Upks);
                     statistic.MinAvgMax[3, _num - 1]++;
                     is_find = true;
                     break;
@@ -2246,9 +2247,9 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
-        private static void SaveExcel7(List<GeneralizedValuesUPKSZ> _statistics, bool _is_stead, int _count_group, string _dir_name)
+        private static void SaveExcel7(List<GeneralizedValuesUPKSZ> _statistics, PropertyTypes _obj_type, int _count_group, string _dir_name)
         {
-            FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_is_stead)?"Table7_zu": "Table7_oks", ".xlsx", "ExcelTemplates");
+            FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_obj_type == PropertyTypes.Stead) ?"Table7_zu": "Table7_oks", ".xlsx", "ExcelTemplates");
             ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
             var sheet_edit = excel_edit.Worksheets[0];
 
@@ -2275,7 +2276,163 @@ namespace KadOzenka.Dal.DataExport
             }
 
             string file_name = _dir_name + "\\Таблица 7. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым районам города Москвы"
-                                         + "." + ((_is_stead) ? "ЗУ" : "ОКС") + ".xlsx";
+                                         + "." + ((_obj_type == PropertyTypes.Stead) ? "ЗУ" : "ОКС") + ".xlsx";
+            excel_edit.Save(file_name);
+        }
+
+        /// <summary>
+        /// Выгрузка файлов Excel "Таблица 8."
+        /// </summary>
+        /// <param name="_task_id">Идентификатор задания на оценку</param>
+        /// <param name="_obj_type">Тип объектов. Stead - выгрузка ЗУ, Building - выгрузка ОКС</param>
+        /// <param name="_dir_name">Путь сохранения файлов</param>
+        public static void ExportToXls8(long? _task_id, PropertyTypes _obj_type, string _dir_name)
+        {
+            int num_unit = 0;
+            int num_save = 0;
+            int count_group = (_obj_type == PropertyTypes.Stead) ? 13 : 16;
+            List<GeneralizedValuesUPKSZ> list_statistics = new List<GeneralizedValuesUPKSZ>(count_group);
+
+            #region Собираем статистику
+            if (_obj_type == PropertyTypes.Stead)
+            {   //Выгружаем Земельные участки 
+                List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == PropertyTypes.Stead).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
+                foreach (OMUnit unit in units_zu)
+                {
+                    OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                    if (!group.Number.IsNullOrEmpty())
+                    {
+                        int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                        CalculationStat8(ref list_statistics, unit, num_group, count_group);
+                        num_save++;
+                    }
+                    num_unit++;
+                    string message = "Объект (" + num_unit.ToString() + "-" + units_zu.Count.ToString() + ")  --  обработан  " + num_save.ToString();
+                    Console.WriteLine(message);
+                }
+            }
+            else
+            {   //Выгружаем объекты ОКС
+                List<PropertyTypes> prop_types = new List<PropertyTypes>()
+                {
+                    PropertyTypes.Building,
+                    PropertyTypes.Pllacement,
+                    PropertyTypes.Construction,
+                    PropertyTypes.OtherMore,
+                    PropertyTypes.Parking,
+                };
+
+                int num_prop = 0;
+                foreach (PropertyTypes prop_type in prop_types)
+                {
+                    num_prop++;
+                    List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
+                    foreach (OMUnit unit in units_oks)
+                    {
+                        OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                        if (group != null)
+                        {
+                            if (!group.Number.IsNullOrEmpty())
+                            {
+                                int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                                CalculationStat8(ref list_statistics, unit, num_group, count_group);
+                                num_save++;
+                            }
+                        }
+                        num_unit++;
+                        string message = "Тип (" + num_prop.ToString() + "-" + prop_types.Count.ToString() + ")" +
+                            " - объект (" + num_unit.ToString() + "-" + units_oks.Count.ToString() + ")  --  обработан  " + num_save.ToString();
+                        Console.WriteLine(message);
+                    }
+                }
+            }
+            #endregion
+
+            #region Пересчитываем средние
+            Console.WriteLine("Пересчитываем средние ...");
+            foreach (GeneralizedValuesUPKSZ stat in list_statistics)
+            {
+                for (int i = 0; i < count_group; i++)
+                {
+                    if (stat.MinAvgMax[3, i] != 0)
+                    {
+                        stat.MinAvgMax[1, i] = stat.MinAvgMax[1, i] / stat.MinAvgMax[3, i];
+                    }
+                }
+            }
+            #endregion
+
+            #region Формирование отчета
+            Console.WriteLine("Формирование отчета ...");
+            SaveExcel8(list_statistics, _obj_type, count_group, _dir_name);
+            #endregion
+        }
+
+        public static void CalculationStat8(ref List<GeneralizedValuesUPKSZ> _list_statistics, OMUnit _unit, int _num, int _count_group)
+        {
+            bool is_find = false;
+            string cad_area = _unit.CadastralBlock.Substring(0, 5);
+
+            foreach (var statistic in _list_statistics)
+            {
+                if (statistic.CadastralBlok == _unit.CadastralBlock)
+                {
+                    statistic.CountObj++;
+                    statistic.MinAvgMax[0, _num - 1] = (statistic.MinAvgMax[0, _num - 1] == -1)
+                                                       ? (double)_unit.Upks
+                                                       : Math.Min(statistic.MinAvgMax[0, _num - 1], (double)_unit.Upks);
+                    statistic.MinAvgMax[1, _num - 1] += (double)_unit.Upks;
+                    statistic.MinAvgMax[2, _num - 1] = Math.Max(statistic.MinAvgMax[2, _num - 1], (double)_unit.Upks);
+                    statistic.MinAvgMax[3, _num - 1]++;
+                    is_find = true;
+                    break;
+                }
+            }
+            if (!is_find)
+            {   //Добавить новый кадастровый квартал
+                GeneralizedValuesUPKSZ statistic_new = new GeneralizedValuesUPKSZ(_count_group);
+                statistic_new.CadastralArea = cad_area;
+                statistic_new.CadastralBlok = _unit.CadastralBlock;
+                statistic_new.CountObj = 1;
+                statistic_new.MinAvgMax[0, _num - 1] = (double)_unit.Upks; //Минимальное
+                statistic_new.MinAvgMax[1, _num - 1] = (double)_unit.Upks; //Сумма УПКСЗ, потом запишется среднее
+                statistic_new.MinAvgMax[2, _num - 1] = (double)_unit.Upks; //Максимальное
+                statistic_new.MinAvgMax[3, _num - 1] = 1;                  //Количество объектов этой группы. Для расчета среднего УПКСЗ
+                _list_statistics.Add(statistic_new);
+            }
+        }
+
+        private static void SaveExcel8(List<GeneralizedValuesUPKSZ> _statistics, PropertyTypes _obj_type, int _count_group, string _dir_name)
+        {
+            FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_obj_type == PropertyTypes.Stead) ? "Table8_zu" : "Table8_oks", ".xlsx", "ExcelTemplates");
+            ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
+            var sheet_edit = excel_edit.Worksheets[0];
+
+            int num_pp = 0;
+            int start_rows = 7;
+            foreach (GeneralizedValuesUPKSZ stat in _statistics)
+            {
+                object[,] objvals = new object[3, _count_group + 1];
+                objvals[0, 0] = "Минимальное";
+                objvals[1, 0] = "Среднее";
+                objvals[2, 0] = "Максимальное";
+                for (int i = 1; i <= _count_group; i++)
+                {
+                    objvals[0, i] = (stat.MinAvgMax[0, i - 1] == 0 || stat.MinAvgMax[0, i - 1] == -1) ? "-" : stat.MinAvgMax[0, i - 1].ToString();
+                    objvals[1, i] = (stat.MinAvgMax[1, i - 1] == 0 || stat.MinAvgMax[0, i - 1] == -1) ? "-" : stat.MinAvgMax[1, i - 1].ToString();
+                    objvals[2, i] = (stat.MinAvgMax[2, i - 1] == 0 || stat.MinAvgMax[0, i - 1] == -1) ? "-" : stat.MinAvgMax[2, i - 1].ToString();
+                }
+                num_pp++;
+                DataExportCommon.AddRow(sheet_edit, start_rows, 4, objvals);
+                DataExportCommon.MergeCell(sheet_edit, start_rows, start_rows + 2, 0, 0, num_pp.ToString(), false);
+                DataExportCommon.MergeCell(sheet_edit, start_rows, start_rows + 2, 1, 1, stat.CadastralArea, false);
+                DataExportCommon.MergeCell(sheet_edit, start_rows, start_rows + 2, 2, 2, stat.CadastralBlok, false);
+                DataExportCommon.MergeCell(sheet_edit, start_rows, start_rows + 2, 3, 3, stat.CountObj.ToString(), false);
+                start_rows += 3;
+            }
+
+            string file_name = _dir_name + "\\Таблица 8. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым кварталам города Москвы"
+                                         + "." + ((_obj_type == PropertyTypes.Stead) ? "ЗУ" : "ОКС") + ".xlsx";
             excel_edit.Save(file_name);
         }
 
@@ -2348,7 +2505,6 @@ namespace KadOzenka.Dal.DataExport
                     curindval = -1;
                     objvals = new object[100, count_cells];
                 }
-
                 curindval++;
                 start_rows++;
             }
