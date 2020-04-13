@@ -1820,6 +1820,30 @@ namespace ObjectModel.KO
 	}
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 256 Реестр для изменения сведений об объектах оценки
+    /// </summary>
+    public partial class OMUnitChange
+    {
+
+        public OMUnitChange()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnitChange(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

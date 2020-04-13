@@ -2253,6 +2253,164 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Статус изменения единицы оценки (212)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 212)]
+    public enum KoChangeStatus : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Тип_объекта (1)
+		/// </summary>
+		[Description("Тип_объекта")]
+        [EnumCode("1")]
+        [ShortTitle("Тип_объекта")]
+        TypeObject = 1,
+		/// <summary>
+		/// Площадь (2)
+		/// </summary>
+		[Description("Площадь")]
+        [EnumCode("2")]
+        [ShortTitle("Площадь")]
+        Square = 2,
+		/// <summary>
+		/// Номер ЗУ (3)
+		/// </summary>
+		[Description("Номер ЗУ")]
+        [EnumCode("3")]
+        [ShortTitle("Номер ЗУ")]
+        NumberParcel = 3,
+		/// <summary>
+		/// Наименование (4)
+		/// </summary>
+		[Description("Наименование")]
+        [EnumCode("4")]
+        [ShortTitle("Наименование")]
+        Name = 4,
+		/// <summary>
+		/// Назначение (5)
+		/// </summary>
+		[Description("Назначение")]
+        [EnumCode("5")]
+        [ShortTitle("Назначение")]
+        Assignment = 5,
+		/// <summary>
+		/// Адрес (6)
+		/// </summary>
+		[Description("Адрес")]
+        [EnumCode("6")]
+        [ShortTitle("Адрес")]
+        Adress = 6,
+		/// <summary>
+		/// Местоположение (7)
+		/// </summary>
+		[Description("Местоположение")]
+        [EnumCode("7")]
+        [ShortTitle("Местоположение")]
+        Place = 7,
+		/// <summary>
+		/// Год постройки (8)
+		/// </summary>
+		[Description("Год постройки")]
+        [EnumCode("8")]
+        [ShortTitle("Год постройки")]
+        YearBuild = 8,
+		/// <summary>
+		/// Год ввода в эксплуатацию (9)
+		/// </summary>
+		[Description("Год ввода в эксплуатацию")]
+        [EnumCode("9")]
+        [ShortTitle("Год ввода в эксплуатацию")]
+        YearUse = 9,
+		/// <summary>
+		/// Этажность (10)
+		/// </summary>
+		[Description("Этажность")]
+        [EnumCode("10")]
+        [ShortTitle("Этажность")]
+        Floors = 10,
+		/// <summary>
+		/// Подземная этажность (11)
+		/// </summary>
+		[Description("Подземная этажность")]
+        [EnumCode("11")]
+        [ShortTitle("Подземная этажность")]
+        DownFloors = 11,
+		/// <summary>
+		/// Кадастровый квартал (12)
+		/// </summary>
+		[Description("Кадастровый квартал")]
+        [EnumCode("12")]
+        [ShortTitle("Кадастровый квартал")]
+        CadastralBlock = 12,
+		/// <summary>
+		/// Материал стен (13)
+		/// </summary>
+		[Description("Материал стен")]
+        [EnumCode("13")]
+        [ShortTitle("Материал стен")]
+        Walls = 13,
+		/// <summary>
+		/// Кадастровый номер здания (14)
+		/// </summary>
+		[Description("Кадастровый номер здания")]
+        [EnumCode("14")]
+        [ShortTitle("Кадастровый номер здания")]
+        CadastralBuilding = 14,
+		/// <summary>
+		/// Этаж (15)
+		/// </summary>
+		[Description("Этаж")]
+        [EnumCode("15")]
+        [ShortTitle("Этаж")]
+        NumberFloor = 15,
+		/// <summary>
+		/// Характеристика (16)
+		/// </summary>
+		[Description("Характеристика")]
+        [EnumCode("16")]
+        [ShortTitle("Характеристика")]
+        Parameter = 16,
+		/// <summary>
+		/// Процент готовности (17)
+		/// </summary>
+		[Description("Процент готовности")]
+        [EnumCode("17")]
+        [ShortTitle("Процент готовности")]
+        Procent = 17,
+		/// <summary>
+		/// Вид использования (18)
+		/// </summary>
+		[Description("Вид использования")]
+        [EnumCode("18")]
+        [ShortTitle("Вид использования")]
+        Use = 18,
+		/// <summary>
+		/// Категория (19)
+		/// </summary>
+		[Description("Категория")]
+        [EnumCode("19")]
+        [ShortTitle("Категория")]
+        Category = 19,
+		/// <summary>
+		/// Обращение (20)
+		/// </summary>
+		[Description("Обращение")]
+        [EnumCode("20")]
+        [ShortTitle("Обращение")]
+        Appeal = 20,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>

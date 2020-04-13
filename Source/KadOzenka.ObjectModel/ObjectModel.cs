@@ -10630,6 +10630,159 @@ namespace ObjectModel.KO
 	}
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 256 Реестр для изменения сведений об объектах оценки (KO_UNIT_CHANGE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 256)]
+    [Serializable]
+    public partial class OMUnitChange : OMBaseClass<OMUnitChange>
+    {
+
+        private long _id;
+
+        /// <summary>
+        /// 25600100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 25600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _unitid;
+
+        /// <summary>
+        /// 25600200 Идентификатор единицы оценки (ID_UNIT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25600200)]
+        public long UnitId
+        {
+            get
+            {
+                CheckPropertyInited("UnitId");
+                return _unitid;
+            }
+            set
+            {
+                _unitid = value;
+                NotifyPropertyChanged("UnitId");
+            }
+        }
+
+
+        private string _oldvalue;
+
+        /// <summary>
+        /// 25600300 Cтарое значение (OLD_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25600300)]
+        public string OldValue
+        {
+            get
+            {
+                CheckPropertyInited("OldValue");
+                return _oldvalue;
+            }
+            set
+            {
+                _oldvalue = value;
+                NotifyPropertyChanged("OldValue");
+            }
+        }
+
+
+        private string _newvalue;
+
+        /// <summary>
+        /// 25600400 Новое значение (NEW_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25600400)]
+        public string NewValue
+        {
+            get
+            {
+                CheckPropertyInited("NewValue");
+                return _newvalue;
+            }
+            set
+            {
+                _newvalue = value;
+                NotifyPropertyChanged("NewValue");
+            }
+        }
+
+
+        private string _changestatus;
+
+        /// <summary>
+        /// 25600500 Статус изменения (STATUS_CHANGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25600500)]
+        public string ChangeStatus
+        {
+            get
+            {
+                CheckPropertyInited("ChangeStatus");
+                return _changestatus;
+            }
+            set
+            {
+                _changestatus = value;
+                NotifyPropertyChanged("ChangeStatus");
+            }
+        }
+
+
+        private KoChangeStatus _changestatus_Code;
+
+        /// <summary>
+        /// 25600500 Статус изменения (справочный код) (STATUS_CHANGE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25600500)]
+        public KoChangeStatus ChangeStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("ChangeStatus_Code");
+                return this._changestatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_changestatus))
+                    {
+                        _changestatus = descr;
+                    }
+                }
+                else
+                {
+                    _changestatus = descr;
+                }
+
+                this._changestatus_Code = value;
+                NotifyPropertyChanged("ChangeStatus");
+                NotifyPropertyChanged("ChangeStatus_Code");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
