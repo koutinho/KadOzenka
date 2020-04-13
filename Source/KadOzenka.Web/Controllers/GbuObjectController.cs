@@ -154,7 +154,7 @@ namespace KadOzenka.Web.Controllers
 				int idAttr = _service.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
-					SendErrorMessage("Не корректные данные для создания нового атрибута");
+					return SendErrorMessage("Не корректные данные для создания нового атрибута");
 				}
 
 				model.IdAttributeResult = idAttr;
@@ -162,7 +162,6 @@ namespace KadOzenka.Web.Controllers
 
 		    try
 			{
-				//PriorityGrouping.SetPriorityGroup(model.CovertToGroupingSettings());
 				SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
 			}
 			catch (Exception e)
@@ -319,7 +318,7 @@ namespace KadOzenka.Web.Controllers
 				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
-					SendErrorMessage("Не корректные данные для создания нового атрибута");
+					return SendErrorMessage("Не корректные данные для создания нового атрибута");
 				}
 
 				viewModel.IdAttributeResult = idAttr;
@@ -383,7 +382,7 @@ namespace KadOzenka.Web.Controllers
 				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
-					SendErrorMessage("Не корректные данные для создания нового атрибута");
+					return SendErrorMessage("Не корректные данные для создания нового атрибута");
 				}
 
 				viewModel.IdAttributeResult = idAttr;
@@ -395,7 +394,7 @@ namespace KadOzenka.Web.Controllers
 		            viewModel.Document.NewDocumentName, viewModel.Document.NewDocumentDate);
 		        if (idDocument == 0)
 		        {
-		            SendErrorMessage("Не корректные данные для создания нового документа");
+		            return SendErrorMessage("Не корректные данные для создания нового документа");
 		        }
 
 		        viewModel.Document.IdDocument = idDocument;
@@ -468,7 +467,7 @@ namespace KadOzenka.Web.Controllers
 				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
-					SendErrorMessage("Не корректные данные для создания нового атрибута");
+					return SendErrorMessage("Не корректные данные для создания нового атрибута");
 				}
 
 				viewModel.IdAttributeResult = idAttr;
@@ -480,7 +479,7 @@ namespace KadOzenka.Web.Controllers
 		            viewModel.Document.NewDocumentName, viewModel.Document.NewDocumentDate);
 		        if (idDocument == 0)
 		        {
-		            SendErrorMessage("Не корректные данные для создания нового документа");
+		            return SendErrorMessage("Не корректные данные для создания нового документа");
 		        }
 
 		        viewModel.Document.IdDocument = idDocument;

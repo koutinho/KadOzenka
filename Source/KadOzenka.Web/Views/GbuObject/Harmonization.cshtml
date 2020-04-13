@@ -426,12 +426,8 @@
                     formObject.ValuesFilter = $("#valuesFilter").data("kendoMultiSelect").value();
                     formObject.TaskFilter = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
 					$.post(form.attr('action'), formObject).done(function(response) {
-						kendo.ui.progress($('body'), false);
 						if (response.Errors) {
-							var errors = $.map(distinctErrors(response.Errors),
-								function(el) {
-									return el.Message;
-								});
+                            var errors = getErrors(response.Errors);
 							Common.ShowError(errors);
 							return;
 						}
@@ -442,8 +438,9 @@
 							Common.ShowMessage(response.Success);
 						}
 					}).fail(function (response, textStatus, errorThrown) {
-						kendo.ui.progress($('body'), false);
 						Common.ShowError(response.responseText);
+					}).always(function () {
+					    kendo.ui.progress($('body'), false);
 					});
 				});
 		});

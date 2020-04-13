@@ -86,15 +86,14 @@
 			$.post(form.attr('action'), formObject)
 				.done(function (response) {
 					if (response.Errors) {
-						var errors = $.map(distinctErrors(response.Errors),
-							function(el) {
-								return el.Message;
-							});
+                        var errors = getErrors(response.Errors);
 						Common.ShowError(errors);
 						return;
 					}
 					Common.ShowMessage("Операция успешно добавлена в очередь");
-				}).always(function () {
+				}).fail(function (response, textStatus, errorThrown) {
+			        Common.ShowError(response.responseText);
+			    }).always(function () {
 				kendo.ui.progress($('body'), false);
 			});
 		});

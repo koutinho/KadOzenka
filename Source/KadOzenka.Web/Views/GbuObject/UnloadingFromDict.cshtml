@@ -250,13 +250,8 @@
 					console.log('formObject', formObject);
 					kendo.ui.progress($('body'), true);
 					$.post(form.attr('action'), formObject).done(function(response) {
-						kendo.ui.progress($('body'), false);
 						if (response.Errors) {
-							kendo.ui.progress($('body'), false);
-							var errors = $.map(distinctErrors(response.Errors),
-								function(el) {
-									return el.Message;
-								});
+                            var errors = getErrors(response.Errors);
 							Common.ShowError(errors);
 							return;
 						}
@@ -268,10 +263,13 @@
 						    if (response.idDocument && updateDocumentControl) {
 						        updateDocumentControl(response.idDocument);
 						    }
-							kendo.ui.progress($('body'), false);
 							Common.ShowMessage("Выполнено");
 						}
-					});
+					}).fail(function (response, textStatus, errorThrown) {
+					    Common.ShowError(response.responseText);
+					}).always(function () {
+				        kendo.ui.progress($('body'), false);
+				    });
 				});
 		});
 	</script>

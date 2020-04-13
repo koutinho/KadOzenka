@@ -608,32 +608,26 @@
 				
 				kendo.ui.progress($('body'), true);
 
-				$.post(form.attr('action'), formObject).done(function(response) {
-					kendo.ui.progress($('body'), false);
-					if (response.Error) {
-						kendo.ui.progress($('body'), false);
-						Common.ShowError(response.Error);
-						return;
-					}
-
-					if (response.Errors) {
-						kendo.ui.progress($('body'), false);
-						var errors = $.map(distinctErrors(response.Errors),
-							function(el) {
-								return el.Message;
-							});
-						Common.ShowError(errors);
-						return;
-					}
-					if (response.success) {
-						if (response.idResultAttribute && updateResultControl) {
-							updateResultControl(response.idResultAttribute);
-                        }
-					    
-						kendo.ui.progress($('body'), false);
-					    Common.ShowMessage("Процедура нормализации данных успешно добавлена в очередь, по результатам операции будет отправлено сообщение");
-					}
-				});
+			    $.post(form.attr('action'), formObject).done(function(response) {
+			            if (response.Errors) {
+			                var errors = getErrors(response.Errors);
+			                Common.ShowError(errors);
+			                return;
+			            }
+			            if (response.success) {
+			                if (response.idResultAttribute && updateResultControl) {
+			                    updateResultControl(response.idResultAttribute);
+			                }
+			                Common.ShowMessage(
+			                    "Процедура нормализации данных успешно добавлена в очередь, по результатам операции будет отправлено сообщение");
+			            }
+			        })
+			        .fail(function(response, textStatus, errorThrown) {
+			            Common.ShowError(response.responseText);
+			        })
+			        .always(function() {
+			            kendo.ui.progress($('body'), false);
+			        });
 			});
 	});
 </script>
