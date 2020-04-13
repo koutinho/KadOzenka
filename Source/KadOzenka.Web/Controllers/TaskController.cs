@@ -14,7 +14,6 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
-using KadOzenka.Dal.KoObject;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Model;
@@ -631,9 +630,36 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { });
 		}
-		#endregion
+        #endregion
 
-		public ActionResult DataMapping(long taskId)
+        #region Расчет кадастровой стоимости
+
+        [HttpGet]
+        public ActionResult CalculateCadastralPrice()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult CalculateCadastralPrice(CadastralPriceCalculationModel model)
+        {
+            return View();
+        }
+
+        //TODO
+        public ActionResult GetRowForCadastralPriceCalculation([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] bool isParcel)
+        {
+            ViewData["TreeAttributes"] = new List<DropDownTreeItemModel>();
+
+            ViewData["RowNumber"] = rowNumber.ToString();
+
+            return PartialView("/Views/Task/PartialCadastralPriceCalculationRow.cshtml", new PartialCadastralPriceCalculationRowModel());
+        }
+
+
+        #endregion
+
+        public ActionResult DataMapping(long taskId)
 		{
 			OMTask task = OMTask.Where(x => x.Id == taskId)				
 				.ExecuteFirstOrDefault();

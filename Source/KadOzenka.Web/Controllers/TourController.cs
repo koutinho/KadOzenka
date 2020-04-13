@@ -14,6 +14,7 @@ using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.Tour;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -463,11 +464,44 @@ namespace KadOzenka.Web.Controllers
 		    return Json(tours);
 		}
 
-		#endregion
+        public JsonResult GetGroupsByTourAndMainGroup(long tourId, bool isParcel, string id)
+        {
+            tourId = 17618025;
 
-		#region Метки
 
-		public ActionResult MarkCatalog()
+            var allGroups = new GroupService().GetGroups();
+            var allGroupsInTour = allGroups.Where(x => x.TourId == tourId).ToList();
+
+            var subgroups = allGroupsInTour.Where(x => x.ParentId != (long)KoGroupAlgoritm.MainOKS && x.ParentId != (long)KoGroupAlgoritm.MainParcel).ToList();
+            var groupsIds = subgroups.Select(x => x.ParentId).ToList();
+            var groups = allGroups.Where(x => groupsIds.Contains(x.Id)).ToList();
+
+            var mainGroupId = isParcel ? (long)KoGroupAlgoritm.MainParcel : (long)KoGroupAlgoritm.MainOKS;
+
+            var models = groups.Where(group => group.ParentId == mainGroupId)
+                .Select(group => new DropDownTreeItemModel
+                {
+                    Id = group.Id.ToString(),
+                    Value = group.Id.ToString(),
+                    Text = group.GroupName,
+                    HasChildren = subgroups.Count(subgroup => subgroup.ParentId == group.Id) > 0,
+                    Items = subgroups.Where(subgroup => subgroup.ParentId == group.Id)
+                        .Select(subgroup => new DropDownTreeItemModel
+                        {
+                            Id = subgroup.Id.ToString(),
+                            Value = subgroup.Id.ToString(),
+                            Text = subgroup.GroupName
+                        }).ToList()
+                }).AsEnumerable();
+
+            return Json(models);
+        }
+
+        #endregion
+
+        #region Метки
+
+        public ActionResult MarkCatalog()
 		{			
 			return View();
 		}

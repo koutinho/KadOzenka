@@ -1,0 +1,10 @@
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.Task.PartialCadastralPriceCalculationRowModel;
+
+<div class="form-group attributes-list">
+    <div class="col-sm-5 col-sm-offset-2">
+        <div>
+            @Html.KendoDropDownListTreeWithButton(m => m.SubGroupId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: (string)ViewData["RowNumber"])
+        </div>
+    </div>
+</div>
