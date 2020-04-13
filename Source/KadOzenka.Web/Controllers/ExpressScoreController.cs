@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using CIPJS.Models.ExpressScore;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Web.Models.ExpressScore;
 using Microsoft.AspNetCore.Mvc;
+using ObjectModel.ES;
 using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
@@ -86,6 +89,36 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new {response = new { coordinates } });
 		}
-	}
+
+	    [HttpGet]
+	    public ActionResult WallMaterial(long id)
+	    {
+	        var wallMaterial = OMWallMaterial.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            return View(WallMaterialViewModel.FromEntity(wallMaterial));
+	    }
+
+	    [HttpPost]
+	    public ActionResult WallMaterial(WallMaterialViewModel model)
+	    {
+	        if (!ModelState.IsValid)
+	        {
+	            return GenerateMessageNonValidModel();
+	        }
+
+	        long id;
+	        try
+	        {
+	            id = model.Id == -1
+	                ? _service.AddWallMaterial(model.WallMaterial, model.Mark.Value)
+	                : _service.UpdateEWallMaterial(model.Id, model.WallMaterial, model.Mark.Value);
+	        }
+	        catch (Exception e)
+	        {
+	            return SendErrorMessage(e.Message);
+            }
+
+	        return Json(new { Success = "Сохранено успешно", Id = id });
+	    }
+    }
 }
 

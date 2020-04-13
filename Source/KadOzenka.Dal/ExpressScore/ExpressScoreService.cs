@@ -127,5 +127,25 @@ namespace KadOzenka.Dal.ExpressScore
 
 			return new List<CoordinatesDto>();
 		}
+
+	    public long AddWallMaterial(string wallMaterial, long mark)
+	    {
+	        return new OMWallMaterial {WallMaterial = wallMaterial, Mark = mark}.Save();
+	    }
+
+	    public long UpdateEWallMaterial(long id, string wallMaterial, long mark)
+	    {
+	        var entity = OMWallMaterial.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+	        if (entity == null)
+	        {
+	            throw new Exception($"Не найден материал стен с ИД {id}");
+	        }
+
+	        entity.WallMaterial = wallMaterial;
+	        entity.Mark = mark;
+	        entity.Save();
+
+	        return entity.Id;
+	    }
 	}
 }
