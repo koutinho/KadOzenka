@@ -14,153 +14,153 @@
     @Html.HiddenFor(m => m.BookId)
     @Html.HiddenFor(m => m.UserIspId)
     <ul id="ls_panelbar" class="panelbar">
-	    <li id="Section_Making_Declaration" data-expand>
-		    <span>Подача декларации</span>
-		    <div>
-			    <div class="form-horizontal col-sm-12">
-				    <div class="form-group"></div>
-				    <div class="form-group">
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.OwnerType)
-					    </div>
-					    <div class="col-sm-3">
-						    @Html.KendoEnumDropDownListFor(m => m.OwnerType, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-				    </div>
-				    <div class="form-group form-group-with-frame">
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.OwnerId)
-					    </div>
-						<div class="col-sm-4">
-							@if (Model.IsEditDeclarationSupplyBlock)
-							{
-								@Html.PlatformAutoCompleteWithEditButtonFor(m => m.OwnerDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearOwnerEvent", "editOwner", "selectOwnerEvent")
-							}
-							else
-							{
-								@Html.KendoTextBoxFor(m => m.OwnerDisplay, isReadonly: true)
-							}
-						</div>
-					    <div class="col-sm-1"></div>
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.UvedTypeOwner)
-					    </div>
-					    <div class="col-sm-3">
-						    @Html.KendoEnumDropDownListFor(m => m.UvedTypeOwner, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-				    </div>
-				    <div class="form-group form-group-with-frame">
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.AgentId)
-					    </div>
-					    <div class="col-sm-4">
-						    @if (Model.IsEditDeclarationSupplyBlock)
-						    {
-							    @Html.PlatformAutoCompleteWithEditButtonFor(m => m.AgentDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearAgentEvent", "editAgent", "selectAgentEvent")
-						    }
-						    else
-						    {
-							    @Html.KendoTextBoxFor(m => m.AgentDisplay, isReadonly: true)
-						    }
-					    </div>
-					    <div class="col-sm-1"></div>
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.UvedTypeAgent)
-					    </div>
-					    <div class="col-sm-3">
-						    @Html.KendoEnumDropDownListFor(m => m.UvedTypeAgent, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-				    </div>
-				    <div class="form-group">
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.CertificateName)
-					    </div>
-					    <div class="col-sm-3">
-						    @Html.KendoTextBoxFor(m => m.CertificateName, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-					    <div class="col-sm-2"></div>
-					    <div class="col-sm-1">
-						    @Html.CustomLabelFor(m => m.CertificateNum)
-					    </div>
-					    <div class="col-sm-1">
-						    @Html.KendoTextBoxFor(m => m.CertificateNum, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-					    <div class="col-sm-1">
-						    @Html.CustomLabelFor(m => m.CertificateDate)
-					    </div>
-					    <div class="col-sm-2">
-						    @Html.KendoDatePickerFor(m => m.CertificateDate, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-				    </div>
-				    <div class="form-group">
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.CadastralObjectNumber)
-					    </div>
-					    <div class="col-sm-3">
-						    @Html.KendoTextBoxFor(m => m.CadastralObjectNumber, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-					    <div class="col-sm-2"></div>
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.ObjectType)
-					    </div>
-					    <div class="col-sm-3">
-						    @Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-				    </div>
-				    <div class="form-group">
-					    <div class="col-sm-2">
-						    @Html.CustomLabelFor(m => m.DateIn)
-					    </div>
-					    <div class="col-sm-2">
-						    @Html.KendoDatePickerFor(m => m.DateIn, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-					    <div class="col-sm-1">
-						    @Html.CustomLabelFor(m => m.NumberIn)
-					    </div>
-					    <div class="col-sm-1">
-						    @Html.KendoTextBoxFor(m => m.NumberIn, isReadonly: !Model.IsEditDeclarationSupplyBlock)
-					    </div>
-					    <div class="col-sm-1"></div>
-					    <div class="col-sm-1">
-						    @Html.CustomLabelFor(m => m.BookId)
-					    </div>
-					    <div class="col-sm-4">
-						    <div class="form-group">
-							    @if (Model.IsEditDeclarationSupplyBlock)
-							    {
-								    @Html.PlatformAutoCompleteWithEditButtonFor(m => m.BookDisplay, "Value", "Declarations", "GetAutoCompleteBook", "clearBookEvent", "editBook", "selectBookEvent")
-							    }
-							    else
-							    {
-								    @Html.KendoTextBoxFor(m => m.BookDisplay, isReadonly: true)
-							    }
-						    </div>
-					    </div>
-				    </div>
-			    </div>
-		    </div>
-	    </li>
-	    <li id="Section_Attachment" data-expand>
-		    <span>Образы</span>
-		    <div class="form-group">
-				    <div class="attachment-declaration @(Model.Id == -1 ? "hidden" : "")">
-					    @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
-							new AttachmentPartialModel {ObjectId = (int)Model.Id, RegisterId = Model.RegisterId, IsReadonlyMode = !Model.IsEditDeclarationAttachments } )
-				    </div>
-			    </div>
-	    </li>
+        <li id="Section_Making_Declaration" data-expand>
+            <span>Подача декларации</span>
+            <div>
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.OwnerType)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoEnumDropDownListFor(m => m.OwnerType, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group form-group-with-frame">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.OwnerId)
+                        </div>
+                        <div class="col-sm-4">
+                            @if (Model.IsEditDeclarationSupplyBlock)
+                            {
+                                @Html.PlatformAutoCompleteWithEditButtonFor(m => m.OwnerDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearOwnerEvent", "editOwner", "selectOwnerEvent")
+                            }
+                            else
+                            {
+                                @Html.KendoTextBoxFor(m => m.OwnerDisplay, isReadonly: true)
+                            }
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.UvedTypeOwner)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoEnumDropDownListFor(m => m.UvedTypeOwner, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group form-group-with-frame">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.AgentId)
+                        </div>
+                        <div class="col-sm-4">
+                            @if (Model.IsEditDeclarationSupplyBlock)
+                            {
+                                @Html.PlatformAutoCompleteWithEditButtonFor(m => m.AgentDisplay, "Value", "Declarations", "GetAutoCompleteSubject", "clearAgentEvent", "editAgent", "selectAgentEvent")
+                            }
+                            else
+                            {
+                                @Html.KendoTextBoxFor(m => m.AgentDisplay, isReadonly: true)
+                            }
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.UvedTypeAgent)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoEnumDropDownListFor(m => m.UvedTypeAgent, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.CertificateName)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoTextBoxFor(m => m.CertificateName, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CertificateNum)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.KendoTextBoxFor(m => m.CertificateNum, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.CertificateDate)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.CertificateDate, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.CadastralObjectNumber)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoTextBoxFor(m => m.CadastralObjectNumber, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.ObjectType)
+                        </div>
+                        <div class="col-sm-3">
+                            @Html.KendoEnumDropDownListFor(m => m.ObjectType, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateIn)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateIn, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.NumberIn)
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.KendoTextBoxFor(m => m.NumberIn, isReadonly: !Model.IsEditDeclarationSupplyBlock)
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-1">
+                            @Html.CustomLabelFor(m => m.BookId)
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                @if (Model.IsEditDeclarationSupplyBlock)
+                                {
+                                    @Html.PlatformAutoCompleteWithEditButtonFor(m => m.BookDisplay, "Value", "Declarations", "GetAutoCompleteBook", "clearBookEvent", "editBook", "selectBookEvent")
+                                }
+                                else
+                                {
+                                    @Html.KendoTextBoxFor(m => m.BookDisplay, isReadonly: true)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li id="Section_Attachment" data-expand>
+            <span>Образы</span>
+            <div class="form-group">
+                <div class="attachment-declaration @(Model.Id == -1 ? "hidden" : "")">
+                    @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+                        new AttachmentPartialModel {ObjectId = (int)Model.Id, RegisterId = Model.RegisterId, IsReadonlyMode = !Model.IsEditDeclarationAttachments } )
+                </div>
+            </div>
+        </li>
         <li id="Section_Process_Declaration" data-expand>
             <span>Обработка декларации</span>
             <div>
                 <div class="form-horizontal col-sm-12">
-	                <div class="form-group"></div>
+                    <div class="form-group"></div>
                     <div class="form-group">
-						<div class="col-sm-2">
-							@Html.CustomLabelFor(m => m.DateInPlan)
-						</div>
-						<div class="col-sm-2">
-							@Html.KendoDatePickerFor(m => m.DateInPlan, isReadonly: !Model.IsEditDeclarationProcessingBlock)
-						</div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateInPlan)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateInPlan, isReadonly: !Model.IsEditDeclarationProcessingBlock)
+                        </div>
                         <div class="col-sm-3"></div>
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(m => m.UserIspId)
@@ -170,12 +170,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-						<div class="col-sm-2">
-							@Html.CustomLabelFor(m => m.DateInIsp)
-						</div>
-						<div class="col-sm-2">
-							@Html.KendoDatePickerFor(m => m.DateInIsp, isReadonly: !Model.IsEditDeclarationProcessingBlock)
-						</div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.DateInIsp)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoDatePickerFor(m => m.DateInIsp, isReadonly: !Model.IsEditDeclarationProcessingBlock)
+                        </div>
                         <div class="col-sm-3"></div>
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(m => m.DateInFact)
@@ -240,22 +240,24 @@
         #ls_panelbar {
             width: 99% !important;
         }
-		.hidden {
-			display: none;
-		}
 
-		.form-group-with-frame {
-			border: 1px solid #c8c6cc;
-			border-radius: 6px;
-			padding-top: 10px;
-			padding-bottom: 10px;
-			margin-right: 0 !important;
-			margin-left: 0px !important;
-		}
+        .hidden {
+            display: none;
+        }
+
+        .form-group-with-frame {
+            border: 1px solid #c8c6cc;
+            border-radius: 6px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            margin-right: 0 !important;
+            margin-left: 0px !important;
+        }
     </style>
 }
 
 @section scripts {
+    <script src="~/js/custom-validation.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -294,7 +296,7 @@
                 ]
             );
             tabStrip.select(0);
-            
+
 			if (jQuery("#FormalCheckModel_DateCheckPlan").attr("editmode") == "false") {
 				$("#FormalCheckModel_DateCheckPlan").addClass("k-textbox");
 				if ($("#FormalCheckModel_DateCheckPlan").val()) {
@@ -305,7 +307,7 @@
 				jQuery("#FormalCheckModel_DateCheckPlan").kendoDatePicker(
 					{ "culture": "ru-RU", "format": "dd.MM.yyyy", "parseFormats": ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"] });
 			}
-           
+
 			if (jQuery("#FormalCheckModel_DateCheckFact").attr("editmode") == "false") {
 				$("#FormalCheckModel_DateCheckFact").addClass("k-textbox");
 				if ($("#FormalCheckModel_DateCheckFact").val()) {
@@ -336,12 +338,8 @@
                     kendo.ui.progress($('body'), true);
 
                     $.post(form.attr('action'), formObject).done(function (response) {
-                        kendo.ui.progress($('body'), false);
                         if (response.Errors) {
-                            var errors = $.map(distinctErrors(response.Errors),
-                                function(el) {
-                                    return el.Message;
-                                });
+                            var errors = getErrors(response.Errors);
                             Common.ShowError(errors);
                             return;
                         }
@@ -381,6 +379,10 @@
                             tabStrip.reload("li:eq(2)");
                             tabStrip.reload("li:eq(1)");
                         }
+                    }).fail(function (response, textStatus, errorThrown) {
+                        Common.ShowError(response.responseText);
+                    }).always(function () {
+                        kendo.ui.progress($('body'), false);
                     });
                 });
 
@@ -488,22 +490,6 @@
                     $(displayField).val("");
                 }
             });
-        }
-
-        function distinctErrors(errors) {
-            var result = [];
-            $.each(errors,
-                function(index, event) {
-                    var events = $.grep(result,
-                        function(e) {
-                            return event.Message === e.Message;
-                        });
-                    if (events.length === 0) {
-                        result.push(event);
-                    }
-                });
-
-            return result;
         }
     </script>
 }

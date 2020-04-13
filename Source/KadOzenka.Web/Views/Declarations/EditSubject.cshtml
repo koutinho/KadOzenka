@@ -136,6 +136,7 @@
 }
 
 @section scripts {
+    <script src="~/js/custom-validation.js"></script>
     <script src="~/js/jquery.fias.min.js"></script>
     <script type="text/javascript">
         const cityTypeShortList = ['г. ', 'пгт. ','п. ', 'д. ', 'c. ', 'тер. '];
@@ -171,12 +172,8 @@
                     var formObject = Common.Functions.FormToObject(form);
 
                     $.post(form.attr('action'), formObject).done(function(response) {
-                        kendo.ui.progress($('body'), false);
                         if (response.Errors) {
-                            var errors = $.map(distinctErrors(response.Errors),
-                                function(el) {
-                                    return el.Message;
-                                });
+                            var errors = getErrors(response.Errors);
                             Common.ShowError(errors);
                             return;
                         }
@@ -190,25 +187,13 @@
                                 .attr("disabled", true);
                             Common.ShowMessage(response.Success);
                         }
+                    }).fail(function (response, textStatus, errorThrown) {
+                        Common.ShowError(response.responseText);
+                    }).always(function () {
+                        kendo.ui.progress($('body'), false);
                     });
                 });
         });
-
-        function distinctErrors(errors) {
-            var result = [];
-            $.each(errors,
-                function(index, event) {
-                    var events = $.grep(result,
-                        function(e) {
-                            return event.Message === e.Message;
-                        });
-                    if (events.length === 0) {
-                        result.push(event);
-                    }
-                });
-
-            return result;
-        }
 
         function changeFieldsVisability(hide) {
             if (hide) {

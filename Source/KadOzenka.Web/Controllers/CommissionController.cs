@@ -16,8 +16,8 @@ using ObjectModel.Commission;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class CommissionController : BaseController
-	{
+	public class CommissionController : KoBaseController
+    {
 		[HttpGet]
 		public ActionResult EditCommission(long id)
 		{
@@ -38,22 +38,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
+			    return GenerateMessageNonValidModel();
 			}
 
 			OMCost commission = OMCost
@@ -82,16 +67,8 @@ namespace KadOzenka.Web.Controllers
 				}
 				catch (Exception e)
 				{
-					return Json(new
-					{
-						Errors =
-							new
-							{
-								Control = string.Empty,
-								e.Message
-							}
-					});
-				}
+					return SendErrorMessage(e.Message);
+                }
 			}
 
 			commissionViewModel.Id = id;

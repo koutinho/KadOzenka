@@ -155,6 +155,7 @@
     </style>
 }
 
+<script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
 	var isEditApproveNotifications = @(Model.IsEditApproveNotifications ? "true" : "false");
 	var isEditOtherNotifications = @(Model.IsEditOtherNotifications ? "true" : "false");
@@ -184,12 +185,8 @@
 				}
 
 				$.post(form.attr('action'), formObject).done(function (response) {
-					kendo.ui.progress($('body'), false);
 					if (response.Errors) {
-						var errors = $.map(distinctErrors(response.Errors),
-							function(el) {
-								return el.Message;
-							});
+                        var errors = getErrors(response.Errors);
 						Common.ShowError(errors);
 						return;
 					}
@@ -198,23 +195,13 @@
 						$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
 						Common.ShowMessage(response.Success);
 					}
+				}).fail(function (response, textStatus, errorThrown) {
+				    Common.ShowError(response.responseText);
+				}).always(function () {
+				    kendo.ui.progress($('body'), false);
 				});
 			});
 	});
-
-	function distinctErrors(errors) {
-		var result = [];
-		$.each(errors, function(index, event) {
-			var events = $.grep(result, function (e) {
-				return event.Message === e.Message;
-			});
-			if (events.length === 0) {
-				result.push(event);
-			}
-		});
-
-		return result;
-	}
 
 	function selectBookEvent() {
 		$('#@Html.IdFor(m => m.BookId)').val(this.e.dataItem.Id);

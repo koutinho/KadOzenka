@@ -28,8 +28,8 @@ using ObjectModel.Core.Shared;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class DeclarationsController : BaseController
-	{
+	public class DeclarationsController : KoBaseController
+    {
 		/// <summary>
 		/// Срок рассмотрения декларации в соответствии с Приказом 318 составляет 50 рабочих дней со дня поступления декларации
 		/// </summary>
@@ -134,22 +134,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
+				return GenerateMessageNonValidModel();
 			}
 
 			var omDeclaration = OMDeclaration
@@ -190,15 +175,7 @@ namespace KadOzenka.Web.Controllers
 				}
 				catch (Exception e)
 				{
-					return Json(new
-					{
-						Errors =
-							new
-							{
-								Control = string.Empty,
-								e.Message
-							}
-					});
+				    return SendErrorMessage(e.Message);
 				}
 			}
 
@@ -355,22 +332,7 @@ namespace KadOzenka.Web.Controllers
 			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS, true, false, true);
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
+				return GenerateMessageNonValidModel();
 			}
 
 			var characteristic = OMHarParcel
@@ -402,28 +364,36 @@ namespace KadOzenka.Web.Controllers
 				.ExecuteFirstOrDefault();
 			if (result == null)
 			{
-				throw new Exception($"не найдены результаты для декларации с идентификатором {parcelCharacteristicsViewModel.DeclarationId}");
+			    return SendErrorMessage(
+			        $"Не найдены результаты для декларации с идентификатором {parcelCharacteristicsViewModel.DeclarationId}");
 			}
 
 			ParcelCharacteristicsModel.ToEntity(parcelCharacteristicsViewModel, ref characteristic, ref characteristicAdditionalInfo);
 			long id;
-			using (var ts = new TransactionScope())
-			{
-				id = characteristic.Save();
-				foreach (var omHarOksAdditionalInfo in characteristicAdditionalInfo)
-				{
-					omHarOksAdditionalInfo.HarParcelId = id;
-					omHarOksAdditionalInfo.Save();
-				}
+		    try
+		    {
+		        using (var ts = new TransactionScope())
+		        {
+		            id = characteristic.Save();
+		            foreach (var omHarOksAdditionalInfo in characteristicAdditionalInfo)
+		            {
+		                omHarOksAdditionalInfo.HarParcelId = id;
+		                omHarOksAdditionalInfo.Save();
+		            }
 
-				result.TextYes = parcelCharacteristicsViewModel.GetAcceptedCharacteristics();
-				result.TextNo = parcelCharacteristicsViewModel.GetRejectedCharacteristics();
-				result.Save();
+		            result.TextYes = parcelCharacteristicsViewModel.GetAcceptedCharacteristics();
+		            result.TextNo = parcelCharacteristicsViewModel.GetRejectedCharacteristics();
+		            result.Save();
 
-				ts.Complete();
-			}
+		            ts.Complete();
+		        }
+		    }
+		    catch (Exception ex)
+		    {
+		        return SendErrorMessage(ex.Message);
+		    }
 
-			parcelCharacteristicsViewModel.Id = id;
+		    parcelCharacteristicsViewModel.Id = id;
 			parcelCharacteristicsViewModel.IsEditDeclarationCharacteristics =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
 			return Json(new { Success = "Сохранено успешно", data = parcelCharacteristicsViewModel });
@@ -468,22 +438,7 @@ namespace KadOzenka.Web.Controllers
 			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS, true, false, true);
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
+				return GenerateMessageNonValidModel();
 			}
 
 			var characteristic = OMHarOKS
@@ -502,8 +457,9 @@ namespace KadOzenka.Web.Controllers
 				.ExecuteFirstOrDefault();
 			if (result == null)
 			{
-				throw new Exception($"не найдены результаты для декларации с идентификатором {oksCharacteristicsViewModel.DeclarationId}");
-			}
+			    return SendErrorMessage(
+			        $"Не найдены результаты для декларации с идентификатором {oksCharacteristicsViewModel.DeclarationId}");
+            }
 
 			List<OMHarOKSAdditionalInfo> characteristicAdditionalInfo = null;
 			if (characteristic == null)
@@ -520,24 +476,31 @@ namespace KadOzenka.Web.Controllers
 
 			OksCharacteristicsModel.ToEntity(oksCharacteristicsViewModel, ref characteristic, ref characteristicAdditionalInfo);
 			long id;
-			using (var ts = new TransactionScope())
-			{
-				id = characteristic.Save();
+		    try
+		    {
+		        using (var ts = new TransactionScope())
+		        {
+		            id = characteristic.Save();
 
-				foreach (var omHarOksAdditionalInfo in characteristicAdditionalInfo)
-				{
-					omHarOksAdditionalInfo.HarOKSId = id;
-					omHarOksAdditionalInfo.Save();
-				}
+		            foreach (var omHarOksAdditionalInfo in characteristicAdditionalInfo)
+		            {
+		                omHarOksAdditionalInfo.HarOKSId = id;
+		                omHarOksAdditionalInfo.Save();
+		            }
 
-				result.TextYes = oksCharacteristicsViewModel.GetAcceptedCharacteristics();
-				result.TextNo = oksCharacteristicsViewModel.GetRejectedCharacteristics();
-				result.Save();
+		            result.TextYes = oksCharacteristicsViewModel.GetAcceptedCharacteristics();
+		            result.TextNo = oksCharacteristicsViewModel.GetRejectedCharacteristics();
+		            result.Save();
 
-				ts.Complete();
-			}
+		            ts.Complete();
+		        }
+		    }
+		    catch (Exception ex)
+		    {
+		        return SendErrorMessage(ex.Message);
+		    }
 
-			oksCharacteristicsViewModel.Id = id;
+		    oksCharacteristicsViewModel.Id = id;
 			oksCharacteristicsViewModel.IsEditDeclarationCharacteristics =
 				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_CHARACTERISTICS);
 			return Json(new { Success = "Сохранено успешно", data = oksCharacteristicsViewModel });
@@ -672,22 +635,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
+				return GenerateMessageNonValidModel();
 			}
 
 			var omBook = OMBook
@@ -710,25 +658,13 @@ namespace KadOzenka.Web.Controllers
 			BookModel.ToEntity(bookViewModel, ref omBook);
 
 			long id;
-			using (var ts = new TransactionScope())
+			try
 			{
-				try
-				{
-					id = omBook.Save();
-					ts.Complete();
-				}
-				catch (Exception e)
-				{
-					return Json(new
-					{
-						Errors =
-							new
-							{
-								Control = string.Empty,
-								e.Message
-							}
-					});
-				}
+				id = omBook.Save();
+			}
+			catch (Exception e)
+			{
+				return SendErrorMessage(e.Message);
 			}
 
 			bookViewModel.Id = id;
@@ -766,22 +702,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
+				return GenerateMessageNonValidModel();
 			}
 
 			var omSubject = OMSubject
@@ -804,25 +725,13 @@ namespace KadOzenka.Web.Controllers
 			SubjectModel.ToEntity(subjectViewModel, ref omSubject);
 
 			long id;
-			using (var ts = new TransactionScope())
+			try
 			{
-				try
-				{
-					id = omSubject.Save();
-					ts.Complete();
-				}
-				catch (Exception e)
-				{
-					return Json(new
-					{
-						Errors =
-							new
-							{
-								Control = string.Empty,
-								e.Message
-							}
-					});
-				}
+				id = omSubject.Save();
+			}
+			catch (Exception e)
+			{
+				return SendErrorMessage(e.Message);
 			}
 
 			subjectViewModel.Id = id;
@@ -896,23 +805,8 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
-			}
+				return GenerateMessageNonValidModel();
+            }
 
 			var omUved = OMUved
 				.Where(x => x.Id == notificationViewModel.Id)
@@ -947,65 +841,74 @@ namespace KadOzenka.Web.Controllers
 
 			NotificationModel.ToEntity(notificationViewModel, ref omUved);
 			long id;
-			using (var ts = new TransactionScope())
-			{
-				id = omUved.Save();
-				if (isNotificationTypeChanged)
-				{
-					var registerId = OMUved.GetRegisterId();
-					var savedReports = OMSavedReport.Where(x =>
-							x.ObjectId == id &&
-							x.ObjectRegisterId == registerId &&
-							(x.IsDeleted == null || x.IsDeleted == false))
-						.SelectAll()
-						.Execute();
-					foreach (var savedReport in savedReports)
-					{
-						savedReport.IsDeleted = true;
-						savedReport.Save();
-					}
+		    try
+		    {
+		        using (var ts = new TransactionScope())
+		        {
+		            id = omUved.Save();
+		            if (isNotificationTypeChanged)
+		            {
+		                var registerId = OMUved.GetRegisterId();
+		                var savedReports = OMSavedReport.Where(x =>
+		                        x.ObjectId == id &&
+		                        x.ObjectRegisterId == registerId &&
+		                        (x.IsDeleted == null || x.IsDeleted == false))
+		                    .SelectAll()
+		                    .Execute();
+		                foreach (var savedReport in savedReports)
+		                {
+		                    savedReport.IsDeleted = true;
+		                    savedReport.Save();
+		                }
 
-					if (notificationViewModel.Type.GetValueOrDefault() != UvedType.Item5)
-					{
-						var rejectionReasonTypes =
-							OMUvedRejectionReasonType.Where(x => x.UvedId == id).SelectAll().Execute();
-						foreach (var rejectionReasonType in rejectionReasonTypes)
-						{
-							rejectionReasonType.Destroy();
-						}
-					}
-				}
+		                if (notificationViewModel.Type.GetValueOrDefault() != UvedType.Item5)
+		                {
+		                    var rejectionReasonTypes =
+		                        OMUvedRejectionReasonType.Where(x => x.UvedId == id).SelectAll().Execute();
+		                    foreach (var rejectionReasonType in rejectionReasonTypes)
+		                    {
+		                        rejectionReasonType.Destroy();
+		                    }
+		                }
+		            }
 
-				if (notificationViewModel.Type.GetValueOrDefault() == UvedType.Item5)
-				{
-					var existedRejectionReasonTypes =
-						OMUvedRejectionReasonType.Where(x => x.UvedId == id).SelectAll().Execute();
-					var addedRejectionReasonTypes = notificationViewModel.RejectionReasonTypes?.Where(x =>
-						existedRejectionReasonTypes.All(y => y.RejectionReasonType_Code != x));
-					var deletedRejectionReasonTypes = existedRejectionReasonTypes.Where(x =>
-						notificationViewModel.RejectionReasonTypes != null && notificationViewModel.RejectionReasonTypes.All(y => y != x.RejectionReasonType_Code));
-					foreach (var deletedRejectionReasonType in deletedRejectionReasonTypes)
-					{
-						deletedRejectionReasonType.Destroy();
-					}
-					if (addedRejectionReasonTypes != null)
-					{
-						foreach (var addedRejectionReasonType in addedRejectionReasonTypes)
-						{
-							var rejectionReasonType = new OMUvedRejectionReasonType
-							{
-								UvedId = id,
-								RejectionReasonType_Code = addedRejectionReasonType
-							};
-							rejectionReasonType.Save();
-						}
-					}
-				}
+		            if (notificationViewModel.Type.GetValueOrDefault() == UvedType.Item5)
+		            {
+		                var existedRejectionReasonTypes =
+		                    OMUvedRejectionReasonType.Where(x => x.UvedId == id).SelectAll().Execute();
+		                var addedRejectionReasonTypes = notificationViewModel.RejectionReasonTypes?.Where(x =>
+		                    existedRejectionReasonTypes.All(y => y.RejectionReasonType_Code != x));
+		                var deletedRejectionReasonTypes = existedRejectionReasonTypes.Where(x =>
+		                    notificationViewModel.RejectionReasonTypes != null &&
+		                    notificationViewModel.RejectionReasonTypes.All(y => y != x.RejectionReasonType_Code));
+		                foreach (var deletedRejectionReasonType in deletedRejectionReasonTypes)
+		                {
+		                    deletedRejectionReasonType.Destroy();
+		                }
 
-				ts.Complete();
-			}
+		                if (addedRejectionReasonTypes != null)
+		                {
+		                    foreach (var addedRejectionReasonType in addedRejectionReasonTypes)
+		                    {
+		                        var rejectionReasonType = new OMUvedRejectionReasonType
+		                        {
+		                            UvedId = id,
+		                            RejectionReasonType_Code = addedRejectionReasonType
+		                        };
+		                        rejectionReasonType.Save();
+		                    }
+		                }
+		            }
 
-			notificationViewModel.Id = id;
+		            ts.Complete();
+		        }
+		    }
+		    catch (Exception ex)
+		    {
+                return SendErrorMessage(ex.Message);
+            }
+
+		    notificationViewModel.Id = id;
 			notificationViewModel.IsEditApproveNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION);
 			notificationViewModel.IsEditOtherNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS);
 			return Json(new { Success = "Сохранено успешно", data = notificationViewModel });
@@ -1048,46 +951,39 @@ namespace KadOzenka.Web.Controllers
 						.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION
 					: ObjectModel.SRD.SRDCoreFunctions
 						.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS, true, false, true);
-			using (var ts = new TransactionScope())
+			
+			try
 			{
-				try
+				using (var ts = new TransactionScope())
 				{
-					var registerId = OMUved.GetRegisterId();
-					var savedReports = OMSavedReport.Where(x =>
-							x.ObjectId == notificationId && 
-							x.ObjectRegisterId == registerId &&
-							(x.IsDeleted == null || x.IsDeleted == false))
-						.SelectAll()
-						.Execute();
-					foreach (var savedReport in savedReports)
-					{
-						savedReport.IsDeleted = true;
-						savedReport.Save();
-					}
+				    var registerId = OMUved.GetRegisterId();
+				    var savedReports = OMSavedReport.Where(x =>
+				            x.ObjectId == notificationId &&
+				            x.ObjectRegisterId == registerId &&
+				            (x.IsDeleted == null || x.IsDeleted == false))
+				        .SelectAll()
+				        .Execute();
+				    foreach (var savedReport in savedReports)
+				    {
+				        savedReport.IsDeleted = true;
+				        savedReport.Save();
+				    }
 
-					var rejectionReasonTypes =
-						OMUvedRejectionReasonType.Where(x => x.UvedId == notificationId).SelectAll().Execute();
-					foreach (var rejectionReasonType in rejectionReasonTypes)
-					{
-						rejectionReasonType.Destroy();
-					}
+				    var rejectionReasonTypes =
+				        OMUvedRejectionReasonType.Where(x => x.UvedId == notificationId).SelectAll().Execute();
+				    foreach (var rejectionReasonType in rejectionReasonTypes)
+				    {
+				        rejectionReasonType.Destroy();
+				    }
 
-					omUved.Destroy();
+				    omUved.Destroy();
 
-					ts.Complete();
+				    ts.Complete();
 				}
-				catch (Exception e)
-				{
-					return Json(new
-					{
-						Errors =
-							new
-							{
-								Control = string.Empty,
-								e.Message
-							}
-					});
-				}
+			}
+			catch (Exception e)
+			{
+				return SendErrorMessage(e.Message);
 			}
 			
 			return EmptyResponse();
@@ -1190,22 +1086,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			if (!ModelState.IsValid)
 			{
-				return Json(new
-				{
-					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-					{
-						Control = x.Key,
-						Message = string.Join("\n", x.Value.Errors.Select(e =>
-						{
-							if (e.ErrorMessage == "The value '' is invalid.")
-							{
-								return $"{e.ErrorMessage} Поле {x.Key}";
-							}
-
-							return e.ErrorMessage;
-						}))
-					})
-				});
+				return GenerateMessageNonValidModel();
 			}
 
 			var signatory = OMSignatory
@@ -1228,25 +1109,13 @@ namespace KadOzenka.Web.Controllers
 			SignatoryModel.ToEntity(signatoryViewModel, ref signatory);
 
 			long id;
-			using (var ts = new TransactionScope())
+			try
 			{
-				try
-				{
-					id = signatory.Save();
-					ts.Complete();
-				}
-				catch (Exception e)
-				{
-					return Json(new
-					{
-						Errors =
-							new
-							{
-								Control = string.Empty,
-								e.Message
-							}
-					});
-				}
+				id = signatory.Save();
+			}
+			catch (Exception e)
+			{
+				return SendErrorMessage(e.Message);
 			}
 
 			signatoryViewModel.Id = id;
