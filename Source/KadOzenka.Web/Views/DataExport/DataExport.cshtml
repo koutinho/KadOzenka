@@ -214,7 +214,14 @@
 				var dataSource = treeView.dataSource;
 				filter(dataSource, query);
 				treeView.expand(".k-item");
-			});
+            });
+
+            $("#filter").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
 
 			$("#matchButton").kendoButton({
 				iconClass: "my-custom-icon-class",
@@ -346,10 +353,49 @@
 				dataTextField: "Name",
 				change: function (e) {
 					const treeView = $("#treeview").data('kendoTreeView');
-					if (treeView) {
+                    if (treeView) {
+                        var element = e.sender.select();
+                        var dataItem = e.sender.dataItem(element[0]);
+                        var name = dataItem.Name;
+						
+                        var dataSource = treeView.dataSource;
+                        var treeData = dataSource.data()[0].items;
+
+                        var uid;
+                        var node = null;
+                        var filterText = "";
+                        treeView.select(null);
+                        $('#filter').val(filterText).trigger('input');
+
+                        var directMatch = treeData.filter(i => i.text.toLowerCase() === name.toLowerCase());
+
+                        if (directMatch.length === 1) {
+                            uid = directMatch[0].uid;
+                            node = treeView.findByUid(uid);
+                            filterText = name;
+                        }
+                        else {
+                            var firstWordMatch =
+                                treeData.filter(i => i.text.toLowerCase().includes(name.toLowerCase().split(' ')[0]));
+                            filterText = name.split(' ')[0];
+
+                            if (firstWordMatch.length === 1) {
+                                uid = firstWordMatch[0].uid;
+                                node = treeView.findByUid(uid);
+                            }
+                            if (firstWordMatch.length === 0) {
+                                filterText = "";
+                            }
+                        }
+
+                        treeView.select(node);
+                        if (node != null)
+                            treeView.trigger('select', { node: node });
+                        $('#filter').val(filterText).trigger('input');
+                        
 						var selected = treeView.select();
-						var data = treeView.dataItem(selected);
-						if (data) {
+                        var data = treeView.dataItem(selected);
+                        if (data) {
 							$("#matchButton").data('kendoButton').enable(true);
 						}
 					}
@@ -386,8 +432,12 @@
 				url: '/CoreUi/GetAttributes',
 				data: { registerViewId: registerViewId },
 				success: function (data) {
-					if (data) {
-						$("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(data));
+                    if (data) {
+                        const filtered = data.filter(function (x) {
+							// Оставляем только объекты аналоги (Реестр №100)
+                            return (x.ItemId == 100) || (x.AttributeId < '10100000' && x.AttributeId != '0');
+                        });
+						$("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(filtered));
 					}
 				},
 				error: function (response) {
