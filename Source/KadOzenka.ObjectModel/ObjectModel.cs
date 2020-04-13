@@ -10588,42 +10588,42 @@ namespace ObjectModel.KO
 		}
 
 
-		private long? _idgroup;
+		private long? _groupid;
 		/// <summary>
-		/// 25500200 Идентификатор группы (ID_GROUP)
+		/// 25500200 Идентификатор группы (GROUP_ID)
 		/// </summary>
 		[RegisterAttribute(AttributeID = 25500200)]
-		public long? IdGroup
+		public long? GroupId
 		{
 			get
 			{
-				CheckPropertyInited("IdGroup");
-				return _idgroup;
+				CheckPropertyInited("GroupId");
+				return _groupid;
 			}
 			set
 			{
-				_idgroup = value;
-				NotifyPropertyChanged("IdGroup");
+				_groupid = value;
+				NotifyPropertyChanged("GroupId");
 			}
 		}
 
 
-		private long? _idparentcalcgroup;
+		private long? _parentcalcgroupid;
 		/// <summary>
-		/// 25500300 Идентификатор группы, на основе которой считается текущая группа (ID_PARENT_CALC_GROUP)
+		/// 25500300 Идентификатор группы, на основе которой считается текущая группа (PARENT_CALC_GROUP_ID)
 		/// </summary>
 		[RegisterAttribute(AttributeID = 25500300)]
-		public long? IdParentCalcGroup
+		public long? ParentCalcGroupId
 		{
 			get
 			{
-				CheckPropertyInited("IdParentCalcGroup");
-				return _idparentcalcgroup;
+				CheckPropertyInited("ParentCalcGroupId");
+				return _parentcalcgroupid;
 			}
 			set
 			{
-				_idparentcalcgroup = value;
-				NotifyPropertyChanged("IdParentCalcGroup");
+				_parentcalcgroupid = value;
+				NotifyPropertyChanged("ParentCalcGroupId");
 			}
 		}
 
