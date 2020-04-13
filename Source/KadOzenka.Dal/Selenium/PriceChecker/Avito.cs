@@ -10,6 +10,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using KadOzenka.Dal.YandexParser;
 using System.Configuration;
+using System.Transactions;
 using Core.Main.FileStorages;
 using KadOzenka.Dal.AvitoParsing.Parsers;
 using KadOzenka.Dal.Logger;
@@ -38,7 +39,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 driver.Manage().Window.Maximize();
                 IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
                 WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
-                int OCur = 0, OCor = 0, OErr = 0, NPub = 0, CScr = 0, OCtr = AllObjects.Count;
+                int OCur = 0, OCor = 0, OErr = 0, NDel = 0, NPub = 0, CScr = 0, OCtr = AllObjects.Count;
                 List<string> errorLog = new List<string>();
                 foreach (OMCoreObject initialObject in AllObjects)
                 {
@@ -47,7 +48,16 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                     {
                         driver.Navigate().GoToUrl(initialObject.Url);
                         AvitoParser.CheckCapcha(driver, initialObject.Url);
-                        if (bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkAvitoUnpublished"]).ToString()))
+                        if (driver.Url != initialObject.Url)
+                        {
+                            initialObject.LastDateUpdate = currentTime;
+                            initialObject.ExclusionStatus_Code = ExclusionStatus.Deleted;
+                            initialObject.ProcessType_Code = ProcessStep.Excluded;
+                            NDel++;
+                            initialObject.Save();
+                            errorLog.Add($"[{DateTime.Now}]({initialObject.Id}): {initialObject.Url}\nОбъявление удалено\n");
+                        }
+                        else if (bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkAvitoUnpublished"]).ToString()))
                         {
                             initialObject.LastDateUpdate = currentTime;
                             initialObject.ExclusionStatus_Code = ExclusionStatus.Unpublished;
@@ -62,13 +72,17 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                             OMPriceHistory lastPrice = OMPriceHistory.Where(x => x.InitialId == initialObject.Id).SelectAll().OrderByDescending(x => x.ChangingDate).ExecuteFirstOrDefault();
                             if (lastPrice == null || price != lastPrice.PriceValueTo)
                             {
-                                new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueTo = price }.Save();
-                                AvitoParser.SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, MarketTypes.Avito, initialObject.Id, testBoot);
-                                initialObject.Price = price;
-                                initialObject.LastDateUpdate = currentTime;
-                                CScr++;
-                                initialObject.Save();
-                                errorLog.Add($"[{DateTime.Now}]({initialObject.Id}): {initialObject.Url}\nСделан скриншот и обновлена цена: {price}\n");
+                                using (var ts = new TransactionScope(TransactionScopeOption.RequiresNew))
+                                {
+                                    new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueTo = price }.Save();
+                                    AvitoParser.SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, MarketTypes.Avito, initialObject.Id, testBoot);
+                                    initialObject.Price = price;
+                                    initialObject.LastDateUpdate = currentTime;
+                                    CScr++;
+                                    initialObject.Save();
+                                    errorLog.Add($"[{DateTime.Now}]({initialObject.Id}): {initialObject.Url}\nСделан скриншот и обновлена цена: {price}\n");
+                                    ts.Complete();
+                                }
                             }
                         }
                         OCor++;
@@ -79,9 +93,9 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                         OErr++;
                     }
                     OCur++;
-                    ConsoleLog.WriteData("Обновление цен", OCtr, OCur, OCor, OErr, unpub: NPub, screen: CScr);
+                    ConsoleLog.WriteData("Обновление цен", OCtr, OCur, OCor, OErr, nspErr: NDel, unpub: NPub, screen: CScr);
                 }
-                errorLog.Add($"========> Обновление цен завершено ({ConsoleLog.GetResultData(OCtr, OCur, OCor, OErr, unpub: NPub, screen: CScr)})\n");
+                errorLog.Add($"========> Обновление цен завершено ({ConsoleLog.GetResultData(OCtr, OCur, OCor, OErr, nspErr: NDel, unpub: NPub, screen: CScr)})\n");
                 ConsoleLog.LogError(errorLog.ToArray(), "Присвоение координат объектам из исходного файла");
             }
             ConsoleLog.WriteFotter("Обновление цен завершено");
