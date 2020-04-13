@@ -2804,6 +2804,30 @@ namespace ObjectModel.ES
     }
 }
 
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 603 Экспресс оценка. Материал стен
+    /// </summary>
+    public partial class OMWallMaterial
+    {
+
+        public OMWallMaterial()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMWallMaterial(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>
