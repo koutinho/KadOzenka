@@ -173,6 +173,16 @@ body {
     cursor:pointer;
 }
 
+.MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Link.Avito {
+	background-image: url(/MapIcons/AvitoLogoOnly.png);
+	background-size: 21px 31px;
+	background-repeat: no-repeat;
+	background-position: center right;
+	width: 21px;
+	height: 31px;
+	cursor:pointer;
+}
+
 .MapContainer .Data .DataContentContainer .DataItemContainer .Container .Header .Content .Link.Yandex {
     background-image: url(/MapIcons/YandexLogoOnly.png);
     background-size: 21px 31px;
