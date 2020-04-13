@@ -77,7 +77,7 @@
 						@Html.CustomLabelFor("Сегмент", true)
 					</div>
 					<div class="col-sm-9">
-						@Html.Kendo().DropDownList().Name("segment").BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment))).NoDataTemplate("Ничего не найдено!")
+						@Html.Kendo().DropDownList().Name("segment").BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment))).NoDataTemplate("Ничего не найдено!").Value("750").Enable(false)
 					</div>
 				</div>
 				<div class="form-group">
@@ -161,6 +161,16 @@
 	var typeShortList = [/г\./gi, /пгт\./gi, /п\./gi, /д\./gi, /c\./gi, /ул\./gi, /строение/gi];
 	var myMarker;
 	var myPlacemark;
+	var currentAddress = null;
+
+	function setCurrentAddress(address) {
+		if (address) {
+			currentAddress = address;
+			return;
+		}
+		currentAddress = null;
+	}
+
 
 	function removeMyMarker() {
 		if (!!map) {
@@ -202,34 +212,36 @@
 			if (data.kadNumber) {
 				$('#Kn').val(data.kadNumber);
 			}
-		}).catch(function (error) {
-			if (error.Message) {
-				Common.ShowError(error.Message);
-				$('#Kn').val('');
-				return;
-			}
-			console.error("Произошла ошибка при получении кадастрового номера", error);
+		}).catch(function (data) {
+			var errors = getErrors(data.Errors);
+			Common.ShowError(errors);
+			$('#Kn').val('');
+			console.error("Произошла ошибка при получении кадастрового номера", data);
 		});
 	}
 
 	// promises
 	var getKadNumber = (currentAddresses) => new Promise(function(resolve, reject) {
 		var url = "@Url.Action("GetKadNumber", "ExpressScore")" + `?address=${currentAddresses}`;
+		kendo.ui.progress($('body'), true);
 		$.get(url).done(function (data) {
 			if (data.response) {
 				resolve(data.response);
 			}
 			if (data.Errors) {
-				reject(data.Errors);
+				reject(data);
 			}
 			
 		}).fail(function(data) {
 			reject(data);
+		}).always(function() {
+			kendo.ui.progress($('body'), false);
 		});
 	});
 
 	var getAddressByKadNumber = (kadNumber) => new Promise(function(resolve, reject) {
 		var url = "@Url.Action("GetAddressByKadNumber", "ExpressScore")" + `?kadNumber=${kadNumber}`;
+		kendo.ui.progress($('body'), true);
 		$.get(url).done(function (data) {
 			if (data.response) {
 				resolve(data.response);
@@ -240,6 +252,8 @@
 			
 		}).fail(function(data) {
 			reject(data);
+		}).always(function() {
+			kendo.ui.progress($('body'), false);
 		});
 	});
 	// end promises
@@ -260,6 +274,7 @@
 			setMarkerByGeoCoder(myGeocoder).then(function (geoObject) {
 				removeFindPoints();
 				if (geoObject.getPremiseNumber()) {
+					setCurrentAddress(geoObject.getAddressLine());
 					setKadNumber(geoObject.getAddressLine());
 				}
 			});
@@ -352,15 +367,14 @@
 				getAddressByKadNumber(val).then(function(data) {
 					if (data.address) {
 						$('#address').val(data.address.replace('Россия, ', ''));
-						setMarkerByGeoCoder(data.address).then(function () {});
+						setMarkerByGeoCoder(data.address).then(function () { });
+						setCurrentAddress(data.address);
 					}
-				}).catch(function(error) {
-					if (error.Message) {
-						Common.ShowError(error.Message);
-						$('#address').val('');
-						return;
-					}
-					console.error("Произошла ошибка при получении кадастрового номера", error);
+				}).catch(function (data) {
+					var errors = getErrors(data);
+					$('#address').val('');
+					Common.ShowError(errors);
+					console.error("Произошла ошибка при получении адреса", error);
 				});
 			}
 		});
@@ -386,13 +400,11 @@
 				}
 
 				kendo.ui.progress($('body'), true);
-				var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}`;
+				var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}
+														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Address=${currentAddress}`;
 				$.get(url).done(function (data) {
 					if (data.Errors) {
-						var errors = $.map(distinctErrors(data.Errors),
-							function(el) {
-								return el.Message;
-							});
+						var errors = getErrors(data.Errors);
 						Common.ShowError(errors);
 						return;
 					}
@@ -503,6 +515,7 @@
 			if (firstGeoObject.getPremiseNumber()) {
 				$('#address').val(firstGeoObject.getAddressLine().replace('Россия, ', ''));
 				setKadNumber(firstGeoObject.getAddressLine());
+				setCurrentAddress(firstGeoObject.getAddressLine());
 			}
 			
 			myPlacemark.properties.set({

@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using CIPJS.Models.ExpressScore;
-using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ExpressScore;
+using KadOzenka.Dal.ExpressScore.Dto;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.Directory;
 using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
@@ -52,34 +50,39 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 			}
 
-			List<QSCondition> conditions = new List<QSCondition>
-			{
-				new QSConditionSimple()
-				{
-					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMCoreObject.GetColumn(x => x.PropertyMarketSegment_Code),
-					RightOperand = new QSColumnConstant(param.Segment)
-				}
-			};
+			string resMessage = _service.GetSearchParamForNearestObject(param.Address, param.Square.GetValueOrDefault(),
+				out var yearRange, out var squareRange);
 
-			var objects = OMCoreObject.Where(conditions.ToArray()).Select(x => new
+			if (!string.IsNullOrEmpty(resMessage))
 			{
+				return SendErrorMessage(resMessage);
+			}
+
+
+			var objects = OMCoreObject.Where(x => x.PropertyMarketSegment_Code == param.Segment
+				&& x.BuildingYear!= null && x.BuildingYear < yearRange.YearTo && yearRange.YearFrom < x.BuildingYear
+				&& x.Area != null && x.Area < squareRange.SquareTo && squareRange.SquareFrom < x.Area)
+				.Select(x => new {
 				x.Id,
 				x.Lat,
 				x.Lng
-			}).Execute()
-				.Select(x => new
+				}).Execute().Select(x => new CoordinatesDto
 				 {
-					 x.Id,
-					 x.Lat,
-					 x.Lng,
-				 }).ToDictionary(x => x.Id, y => new CoordinatesDto
+					Id = x.Id,
+					Lat = x.Lat.GetValueOrDefault(),
+					Lng = x.Lng.GetValueOrDefault(),
+				 }).Distinct().ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto
 				 {
-					 Lat = y.Lat.GetValueOrDefault(),
-					 Lng = y.Lng.GetValueOrDefault()
+					 Lat = y.Lat,
+					 Lng = y.Lng
 				 });
 
-			var coordinates = _service.GetNearestCoordinates(objects, param.SelectedLat.GetValueOrDefault(), param.SelectedLng.GetValueOrDefault(), param.Quality.GetValueOrDefault());
+			var coordinates = _service.GetCoordinatesPointAtSelectedDistance(objects, param.SelectedLat.GetValueOrDefault(), param.SelectedLng.GetValueOrDefault(), param.Quality.GetValueOrDefault());
+
+			if (coordinates.Count == 0)
+			{
+				return SendErrorMessage("Объекты аналоги не найдены");
+			}
 
 			return Json(new {response = new { coordinates } });
 		}

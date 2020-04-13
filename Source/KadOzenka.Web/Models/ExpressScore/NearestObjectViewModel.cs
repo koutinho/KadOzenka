@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 using ObjectModel.Directory;
 
 namespace CIPJS.Models.ExpressScore
@@ -11,10 +10,12 @@ namespace CIPJS.Models.ExpressScore
 		///// </summary>
 		//public int? Floor { get; set; }
 
-		///// <summary>
-		///// Площадь
-		///// </summary>
-		//public decimal? Square { get; set; }
+		/// <summary>
+		/// Площадь
+		/// </summary>
+		[Required(ErrorMessage = "Заполните площадь")]
+		[Range(1, 5000, ErrorMessage = "Диапозон значений площади от 1 до 5000 кв. м")]
+		public decimal? Square { get; set; }
 
 		/// <summary>
 		/// Сегмент рынка
@@ -39,6 +40,12 @@ namespace CIPJS.Models.ExpressScore
 		/// </summary>
 		[Required(ErrorMessage = "Не указана долгота. Обратитесь к администратору.")]
 		public decimal? SelectedLng { get; set; }
+
+		/// <summary>
+		/// Адрес объекта 
+		/// </summary>
+		[Required(ErrorMessage = "Не указан адрес")]
+		public string Address { get; set; }
 
 	}
 }

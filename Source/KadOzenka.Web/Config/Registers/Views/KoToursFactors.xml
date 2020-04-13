@@ -10,7 +10,7 @@
                 <Parameter Key="ObjectId" Value="[ObjectID]" />
                 <Parameter Key="RegisterId" Value="[RegisterId]" />
                 <Parameter Key="LightMode" Value="true" />
-            </Parameters>
+            </Parameters> 
         </Button>
         <Button Caption="Туры оценки" NavigateURL="/Tour/TourEstimates" WindowHeight="500" WindowWidth="800" Icon="fas fa-plus">
         </Button>

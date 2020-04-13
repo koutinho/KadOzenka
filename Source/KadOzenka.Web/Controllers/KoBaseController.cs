@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Core.SRD;
 using Core.UI.Registers.Controllers;
@@ -60,12 +61,15 @@ namespace KadOzenka.Web.Controllers
         {
 	        return Json(new
 	        {
-		        Errors = new
-		        {
-			        Control = 0,
-			        Message = errorMessage
-		        }
+				Errors = new List<object>
+				{
+					new {
+						Control = 0,
+						Message = errorMessage
+					}
+				}
 	        });
+
         }
 
 	}
