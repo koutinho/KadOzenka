@@ -1829,20 +1829,20 @@ namespace ObjectModel.Market
         [RegisterAttribute(AttributeID = 10008500)]
         public decimal? PriceAfterCorrectionByStage
         {
-	        get
-	        {
-		        CheckPropertyInited("PriceAfterCorrectionByStage");
-		        return _priceaftercorrectionbystage;
-	        }
-	        set
-	        {
-		        _priceaftercorrectionbystage = value;
-		        NotifyPropertyChanged("PriceAfterCorrectionByStage");
-	        }
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionByStage");
+                return _priceaftercorrectionbystage;
+            }
+            set
+            {
+                _priceaftercorrectionbystage = value;
+                NotifyPropertyChanged("PriceAfterCorrectionByStage");
+            }
         }
 
 
-		private decimal? _priceaftercorrectionforfirstfloor;
+        private decimal? _priceaftercorrectionforfirstfloor;
         /// <summary>
         /// 10008800 Цена после корректировки на первый этаж (PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR)
         /// </summary>
@@ -3708,22 +3708,22 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _consumerpricechange;
+        private decimal? _averagepricepermeter;
         /// <summary>
-        /// 10800300 Изменение потребительских цен к предыдущему месяцу (CONSUMER_PRICE_CHANGE)
+        /// 10800300 Средняя цена за кв.м. (AVERAGE_PRICE_PER_METER)
         /// </summary>
         [RegisterAttribute(AttributeID = 10800300)]
-        public decimal? ConsumerPriceChange
+        public decimal? AveragePricePerMeter
         {
             get
             {
-                CheckPropertyInited("ConsumerPriceChange");
-                return _consumerpricechange;
+                CheckPropertyInited("AveragePricePerMeter");
+                return _averagepricepermeter;
             }
             set
             {
-                _consumerpricechange = value;
-                NotifyPropertyChanged("ConsumerPriceChange");
+                _averagepricepermeter = value;
+                NotifyPropertyChanged("AveragePricePerMeter");
             }
         }
 
@@ -3744,26 +3744,6 @@ namespace ObjectModel.Market
             {
                 _consumerpriceindex = value;
                 NotifyPropertyChanged("ConsumerPriceIndex");
-            }
-        }
-
-
-        private decimal? _consumerpriceindexrosstat;
-        /// <summary>
-        /// 10800500 Индекс потребительских цен тов и усл Росстат (CONSUMER_PRICE_INDEX_ROSSTAT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10800500)]
-        public decimal? ConsumerPriceIndexRosstat
-        {
-            get
-            {
-                CheckPropertyInited("ConsumerPriceIndexRosstat");
-                return _consumerpriceindexrosstat;
-            }
-            set
-            {
-                _consumerpriceindexrosstat = value;
-                NotifyPropertyChanged("ConsumerPriceIndexRosstat");
             }
         }
 
@@ -10560,74 +10540,74 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
-	/// <summary>
-	/// 255 Реестр для зависимостей расчета (KO_CALC_GROUP)
-	/// </summary>
-	[RegisterInfo(RegisterID = 255)]
-	[Serializable]
-	public partial class OMCalcGroup : OMBaseClass<OMCalcGroup>
-	{
+    /// <summary>
+    /// 255 Реестр для зависимостей расчета (KO_CALC_GROUP)
+    /// </summary>
+    [RegisterInfo(RegisterID = 255)]
+    [Serializable]
+    public partial class OMCalcGroup : OMBaseClass<OMCalcGroup>
+    {
 
-		private long _id;
-		/// <summary>
-		/// 25500100 Идентификатор (ID)
-		/// </summary>
-		[PrimaryKey(AttributeID = 25500100)]
-		public long Id
-		{
-			get
-			{
-				CheckPropertyInited("Id");
-				return _id;
-			}
-			set
-			{
-				_id = value;
-				NotifyPropertyChanged("Id");
-			}
-		}
-
-
-		private long? _groupid;
-		/// <summary>
-		/// 25500200 Идентификатор группы (GROUP_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 25500200)]
-		public long? GroupId
-		{
-			get
-			{
-				CheckPropertyInited("GroupId");
-				return _groupid;
-			}
-			set
-			{
-				_groupid = value;
-				NotifyPropertyChanged("GroupId");
-			}
-		}
+        private long _id;
+        /// <summary>
+        /// 25500100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 25500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
 
 
-		private long? _parentcalcgroupid;
-		/// <summary>
-		/// 25500300 Идентификатор группы, на основе которой считается текущая группа (PARENT_CALC_GROUP_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 25500300)]
-		public long? ParentCalcGroupId
-		{
-			get
-			{
-				CheckPropertyInited("ParentCalcGroupId");
-				return _parentcalcgroupid;
-			}
-			set
-			{
-				_parentcalcgroupid = value;
-				NotifyPropertyChanged("ParentCalcGroupId");
-			}
-		}
+        private long? _groupid;
+        /// <summary>
+        /// 25500200 Идентификатор группы (GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25500200)]
+        public long? GroupId
+        {
+            get
+            {
+                CheckPropertyInited("GroupId");
+                return _groupid;
+            }
+            set
+            {
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
+            }
+        }
 
-	}
+
+        private long? _parentcalcgroupid;
+        /// <summary>
+        /// 25500300 Идентификатор группы, на основе которой считается текущая группа (PARENT_CALC_GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25500300)]
+        public long? ParentCalcGroupId
+        {
+            get
+            {
+                CheckPropertyInited("ParentCalcGroupId");
+                return _parentcalcgroupid;
+            }
+            set
+            {
+                _parentcalcgroupid = value;
+                NotifyPropertyChanged("ParentCalcGroupId");
+            }
+        }
+
+    }
 }
 
 namespace ObjectModel.KO
@@ -10641,7 +10621,6 @@ namespace ObjectModel.KO
     {
 
         private long _id;
-
         /// <summary>
         /// 25600100 Идентификатор (ID)
         /// </summary>
@@ -10662,7 +10641,6 @@ namespace ObjectModel.KO
 
 
         private long _unitid;
-
         /// <summary>
         /// 25600200 Идентификатор единицы оценки (ID_UNIT)
         /// </summary>
@@ -10683,7 +10661,6 @@ namespace ObjectModel.KO
 
 
         private string _oldvalue;
-
         /// <summary>
         /// 25600300 Cтарое значение (OLD_VALUE)
         /// </summary>
@@ -10704,7 +10681,6 @@ namespace ObjectModel.KO
 
 
         private string _newvalue;
-
         /// <summary>
         /// 25600400 Новое значение (NEW_VALUE)
         /// </summary>
@@ -10725,7 +10701,6 @@ namespace ObjectModel.KO
 
 
         private string _changestatus;
-
         /// <summary>
         /// 25600500 Статус изменения (STATUS_CHANGE)
         /// </summary>
@@ -10746,7 +10721,6 @@ namespace ObjectModel.KO
 
 
         private KoChangeStatus _changestatus_Code;
-
         /// <summary>
         /// 25600500 Статус изменения (справочный код) (STATUS_CHANGE_CODE)
         /// </summary>
@@ -10766,12 +10740,12 @@ namespace ObjectModel.KO
                 {
                     if (string.IsNullOrEmpty(_changestatus))
                     {
-                        _changestatus = descr;
+                         _changestatus = descr;
                     }
                 }
                 else
                 {
-                    _changestatus = descr;
+                     _changestatus = descr;
                 }
 
                 this._changestatus_Code = value;
@@ -21259,7 +21233,7 @@ namespace ObjectModel.Gbu.Custom
     /// </summary>
     [RegisterInfo(RegisterID = 41937379)]
     [Serializable]
-    public partial class OMSource38 : OMBaseClass<OMSource38>
+    public partial class OMSource22 : OMBaseClass<OMSource22>
     {
     }
 }
@@ -21271,7 +21245,7 @@ namespace ObjectModel.Gbu.Custom
     /// </summary>
     [RegisterInfo(RegisterID = 41983898)]
     [Serializable]
-    public partial class OMSource39 : OMBaseClass<OMSource39>
+    public partial class OMSource23 : OMBaseClass<OMSource23>
     {
     }
 }

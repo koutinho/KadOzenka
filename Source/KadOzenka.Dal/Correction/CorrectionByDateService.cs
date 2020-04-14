@@ -33,28 +33,21 @@ namespace KadOzenka.Dal.Correction
             return ToDto(index);
         }
 
-        public void EditConsumerIndex(CorrectionByDateDto input)
+        public void UpdateConsumerPriceIndexes()
         {
-            var index = OMIndexesForDateCorrection.Where(x => x.Id == input.Id).SelectAll()
-                .ExecuteFirstOrDefault();
-            if (index == null)
-                throw new Exception($"Не найден индекс по Id '{input.Id}' ");
+            var indexes = OMIndexesForDateCorrection.Where(x => true).SelectAll().OrderByDescending(x => x.Date).Execute();
 
-            //добавляем новое значение
-            if (index.ConsumerPriceIndex == 1 && index.ConsumerPriceChange == null && index.ConsumerPriceIndexRosstat == null)
-            {
-                GetDefaultNewConsumerIndex(index.Date.AddMonths(1)).Save();
-            }
+            RecalculateConsumerPriceIndexes(indexes);
 
             using (var ts = new TransactionScope())
             {
-                index.ConsumerPriceIndexRosstat = input.ConsumerPriceIndexRosstat;
-                index.Save();
+                for (var i = 0; i < indexes.Count; i++)
+                {
+                    indexes[i].Save();
+                }
 
                 ts.Complete();
             }
-
-            UpdateConsumerPriceIndexes();
 
             CorrectionByDateForMarketObjectsLongProcess.AddProcessToQueue();
         }
@@ -99,11 +92,11 @@ namespace KadOzenka.Dal.Correction
                 if (next == null)
                     continue;
 
-                var consumerPriceChange = (next.ConsumerPriceIndexRosstat - 100) / 100;
-                var consumerPriceIndex = current.ConsumerPriceIndex * (1 + consumerPriceChange);
+                //var consumerPriceChange = (next.ConsumerPriceIndexRosstat - 100) / 100;
+                //var consumerPriceIndex = current.ConsumerPriceIndex * (1 + consumerPriceChange);
 
-                next.ConsumerPriceChange = consumerPriceChange;
-                next.ConsumerPriceIndex = consumerPriceIndex;
+                //next.ConsumerPriceChange = consumerPriceChange;
+                //next.ConsumerPriceIndex = consumerPriceIndex;
             }
 
             return indexes;
@@ -112,31 +105,12 @@ namespace KadOzenka.Dal.Correction
 
         #region Support Methods
 
-        private void UpdateConsumerPriceIndexes()
-        {
-            var indexes = OMIndexesForDateCorrection.Where(x => true).SelectAll().OrderByDescending(x => x.Date).Execute();
-
-            RecalculateConsumerPriceIndexes(indexes);
-
-            using (var ts = new TransactionScope())
-            {
-                //первый эл-т не изменяется, если попробовать его сохранить, то ORM выдает исключение
-                for (var i = 1; i < indexes.Count; i++)
-                {
-                    indexes[i].Save();
-                }
-
-                ts.Complete();
-            }
-        }
-
         private CorrectionByDateDto ToDto(OMIndexesForDateCorrection omCorrection)
         {
-            return new CorrectionByDateDto(omCorrection.ConsumerPriceIndex, omCorrection.ConsumerPriceChange)
+            return new CorrectionByDateDto(omCorrection.ConsumerPriceIndex)
             {
                 Id = omCorrection.Id,
                 Date = omCorrection.Date,
-                ConsumerPriceIndexRosstat = omCorrection.ConsumerPriceIndexRosstat
             };
         }
 

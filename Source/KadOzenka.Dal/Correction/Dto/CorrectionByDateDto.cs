@@ -6,7 +6,6 @@ namespace KadOzenka.Dal.Correction.Dto
     {
         public long Id { get; set; }
         public DateTime Date { get; set; }
-        public decimal? ConsumerPriceChange { get; }
         public decimal? ConsumerPriceIndex { get; }
         public decimal? ConsumerPriceIndexRosstat { get; set; }
 
@@ -15,10 +14,9 @@ namespace KadOzenka.Dal.Correction.Dto
             
         }
 
-        public CorrectionByDateDto(decimal? consumerPriceIndex, decimal? consumerPriceChange)
+        public CorrectionByDateDto(decimal? consumerPriceIndex)
         {
             ConsumerPriceIndex = consumerPriceIndex;
-            ConsumerPriceChange = consumerPriceChange;
         }
     }
 }

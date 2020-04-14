@@ -30,7 +30,6 @@ namespace KadOzenka.Web.Models.MarketObject
             {
                 Id = correction.Id,
                 IndexDate = correction.Date,
-                ConsumerPriceIndexChange = correction.ConsumerPriceChange,
                 ConsumerPriceIndex = correction.ConsumerPriceIndex,
                 ConsumerPriceIndexRosstat = correction.ConsumerPriceIndexRosstat
             };

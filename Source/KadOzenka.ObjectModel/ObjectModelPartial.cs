@@ -188,7 +188,7 @@ namespace ObjectModel.Gbu
     /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
     /// </summary>
     public partial class OMSource9
-	{
+    {
 
         public OMSource9()
         {
@@ -1798,26 +1798,26 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
-	/// <summary>
-	/// 255 Реестр для зависимостей расчета
-	/// </summary>
-	public partial class OMCalcGroup
-	{
+    /// <summary>
+    /// 255 Реестр для зависимостей расчета
+    /// </summary>
+    public partial class OMCalcGroup
+    {
 
-		public OMCalcGroup()
-		{
+        public OMCalcGroup()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMCalcGroup(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMCalcGroup(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
 
 namespace ObjectModel.KO
@@ -2929,39 +2929,17 @@ namespace ObjectModel.Gbu.Custom
     /// <summary>
     /// 41937379 Источник: Test_All_Pri
     /// </summary>
-    public partial class OMSource38
-	{
+    public partial class OMSource22
+    {
 
-        public OMSource38()
+        public OMSource22()
         {
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
 
         }
-        public OMSource38(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Gbu.Custom
-{
-    /// <summary>
-    /// 41983898 Источник: Атрибут кода группы
-    /// </summary>
-    public partial class OMSource39
-	{
-
-        public OMSource39()
-        {
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMSource39(bool trackPropertyChanging) : this()
+        public OMSource22(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
