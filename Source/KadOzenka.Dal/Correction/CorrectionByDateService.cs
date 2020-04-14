@@ -23,17 +23,6 @@ namespace KadOzenka.Dal.Correction
             return result;
         }
 
-        public CorrectionByDateDto GetConsumerIndexByDate(DateTime date)
-        {
-            var dateToCompare = new DateTime(date.Year, date.Month, 1);
-
-            var index = OMIndexesForDateCorrection.Where(x => x.Date == dateToCompare).SelectAll()
-                .ExecuteFirstOrDefault();
-            if (index == null)
-                throw new Exception($"Не найдено индекса на дату: {date.ToString(Consts.DateFormatForDateCorrection)} ");
-
-            return ToDto(index);
-        }
 
         public CorrectionByDateDto GetNextConsumerIndex()
         {

@@ -124,56 +124,6 @@ namespace KadOzenka.Web.Controllers
             return Json(models.ToDataSourceResult(request));
         }
 
-        [HttpGet]
-        public ActionResult AddConsumerPriceIndexRosstat()
-        {
-            var nexIndex = CorrectionByDateService.GetNextConsumerIndex();
-
-            var model = new CorrectionByDateModel
-            {
-                Id = nexIndex.Id,
-                IsDateReadOnly = true,
-                IndexDate = nexIndex.Date
-            };
-
-            return View("~/Views/MarketObjects/EditConsumerPriceIndexRosstat.cshtml", model);
-        }
-
-        [HttpGet]
-        public ActionResult EditConsumerPriceIndexRosstat()
-        {
-            var nexIndex = CorrectionByDateService.GetNextConsumerIndex();
-            var model = new CorrectionByDateModel
-            {
-                MaxIndexDate = nexIndex.Date.AddMonths(-1)
-            };
-            return View(model);
-        }
-
-        [HttpGet]
-        public JsonResult GetCorrectionByDate(DateTime? date)
-        {
-            if (date == null)
-                throw new ArgumentException("Дата не может быть пустой");
-
-            var index = CorrectionByDateService.GetConsumerIndexByDate(date.Value);
-            var model = CorrectionByDateModel.Map(index);
-
-            return Json(new { Correction = model });
-        }
-
-        [HttpPost]
-        public JsonResult EditConsumerPriceIndexRosstat(CorrectionByDateModel model)
-        {
-            if (!ModelState.IsValid)
-                return GenerateMessageNonValidModel();
-
-            CorrectionByDateService.EditConsumerIndex(CorrectionByDateModel.UnMap(model));
-            var message = "Индекс успешно обновлен. Процесс перерассчета стоимости объектов добавлен в очередь.";
-
-            return Json(new { Message = message });
-        }
-
         #endregion
 
         
