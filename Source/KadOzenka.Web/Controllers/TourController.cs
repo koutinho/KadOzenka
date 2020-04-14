@@ -464,11 +464,8 @@ namespace KadOzenka.Web.Controllers
 		    return Json(tours);
 		}
 
-        public JsonResult GetGroupsByTourAndMainGroup(long tourId, bool isParcel, string id)
+        public JsonResult GetGroupsByTourAndMainGroup(long tourId, bool isParcel)
         {
-            tourId = 17618025;
-
-
             var allGroups = new GroupService().GetGroups();
             var allGroupsInTour = allGroups.Where(x => x.TourId == tourId).ToList();
 
@@ -479,19 +476,21 @@ namespace KadOzenka.Web.Controllers
             var mainGroupId = isParcel ? (long)KoGroupAlgoritm.MainParcel : (long)KoGroupAlgoritm.MainOKS;
 
             var models = groups.Where(group => group.ParentId == mainGroupId)
-                .Select(group => new DropDownTreeItemModel
+                .Select(group =>
                 {
-                    Id = group.Id.ToString(),
-                    Value = group.Id.ToString(),
-                    Text = group.GroupName,
-                    HasChildren = subgroups.Count(subgroup => subgroup.ParentId == group.Id) > 0,
-                    Items = subgroups.Where(subgroup => subgroup.ParentId == group.Id)
-                        .Select(subgroup => new DropDownTreeItemModel
-                        {
-                            Id = subgroup.Id.ToString(),
-                            Value = subgroup.Id.ToString(),
-                            Text = subgroup.GroupName
-                        }).ToList()
+                    return new DropDownTreeItemModel
+                    {
+                        Id = group.Id.ToString(),
+                        Value = group.Id.ToString(),
+                        Text = group.GroupName,
+                        Items = subgroups.Where(subgroup => subgroup.ParentId == group.Id).Select(subgroup =>
+                            new DropDownTreeItemModel
+                            {
+                                Id = subgroup.Id.ToString(),
+                                Value = subgroup.Id.ToString(),
+                                Text = subgroup.GroupName
+                            }).ToList()
+                    };
                 }).AsEnumerable();
 
             return Json(models);

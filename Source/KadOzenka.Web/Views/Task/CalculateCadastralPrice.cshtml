@@ -1,7 +1,4 @@
-﻿@using System.Collections
-@using KadOzenka.Dal.Oks
-@using KadOzenka.Web.Helpers
-@model KadOzenka.Web.Models.Task.CadastralPriceCalculationModel
+﻿@model KadOzenka.Web.Models.Task.CadastralPriceCalculationModel
 
 @using (Html.BeginForm("CalculateCadastralPrice", "Task", FormMethod.Post))
 {
@@ -11,7 +8,7 @@
                 @Html.CustomLabel("Тур оценки")
             </div>
             <div class="col-sm-2">
-                @(Html.Kendo().DropDownList().Enable(false)
+                @(Html.Kendo().DropDownList()
                                     .Name("RatingTour")
                                     .DataTextField("Text")
                                     .DataValueField("Value"))
@@ -68,34 +65,31 @@
         </div>
         
         <div id="groups" class="col-sm-9 col-sm-offset-2 group" style="border: 1px solid #cccdcf;">
-            <div id="attributesList">
-                <div class="form-group">
-                    <div class="group col-sm-12">
-                        <div id="SubGroupId1"></div>
-                    </div>
-                    <div class="group">
-                        <div id="SubGroupId2"></div>
-                    </div>
-                    <div class="group">
-                        <div id="SubGroupId3"></div>
-                    </div>
-                    <div class="group">
-                        <div id="SubGroupId4"></div>
-                    </div>
-                    <div class="group">
-                        <div id="SubGroupId5"></div>
-                    </div>
+            <div id="groupsList" class="form-group">
+                <div class="group col-sm-12">
+                    <div id="SubGroupId1"></div>
+                </div>
+                <div class="group">
+                    <div id="SubGroupId2"></div>
+                </div>
+                <div class="group">
+                    <div id="SubGroupId3"></div>
+                </div>
+                <div class="group">
+                    <div id="SubGroupId4"></div>
+                </div>
+                <div class="group">
+                    <div id="SubGroupId5"></div>
                 </div>
             </div>
-
             <div class="col-sm-2">
-                @(Html.Kendo().Button().Enable(false).Name("addGroup").Icon("add").HtmlAttributes(new { @type = "button" }))
+                @(Html.Kendo().Button().Name("addGroup").Icon("add").HtmlAttributes(new { @type = "button" }))
             </div>
         </div>
         
         <div class="form-group">
             <div class="col-sm-1 col-sm-offset-10" style="padding: 1%;">
-                @(Html.Kendo().Button().Enable(false).Name("execute").Content("Расчет").HtmlAttributes(new { @type = "button" }))
+                @(Html.Kendo().Button().Name("execute").Content("Расчет").HtmlAttributes(new { @type = "button" }))
             </div>
         </div>
 
@@ -103,7 +97,8 @@
 }
 
 <script type="text/x-kendo-template" id="templateRow">
-    <div class="wrapper-#: rowNumber #" style="display: none">
+    <div class="group dynamicGroup" style="display: none">
+        <div id="SubGroupId#: rowNumber #"></div>
     </div>
 </script>
 
@@ -116,8 +111,8 @@
         padding-left: 2%;
     }
 
-    #attributesList .k-dropdowntree {
-        width: 600px;
+    #groupsList .k-dropdowntree {
+        width: 100%;
     }
 </style>
 
@@ -142,40 +137,28 @@
         $('[name="IsAllGroups"]').change(SetGroupsVisibility);
 
         $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initTasksList);
-        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', initGroupList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('dataBound', resetGroupList);
         $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initTasksList);
-        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', initGroupList);
+        $('[name="RatingTour"]').data('kendoDropDownList').bind('change', resetGroupList);
 
-        $('[name="IsParcel"]').on('change', initGroupList);
+        $('[name="IsParcel"]').on('change', resetGroupList);
 
         $('#addGroup').on('click', addGroup);
         $('#execute').on('click', calculateCadastralPrice);
 	});
 
 
+
     var rowNumber = 6;
     function addGroup() {
-        kendo.ui.progress($('body'), true);
         var data = [{ rowNumber }];
-
         var templateContent = $("#templateRow").html();
         var template = kendo.template(templateContent);
-
         var result = kendo.render(template, data);
-
-        $("#attributesList").append(result);
-
-        var classWrapper = ".wrapper-" + rowNumber;
-
-        var idTour = $('#RatingTour').data('kendoDropDownList').value();
-        var isParcel = $('input[name="IsParcel"]:checked').val();
-
-        var url = "@Url.Action("GetRowForCadastralPriceCalculation", "Task")";
-        $(classWrapper).load(url, { rowNumber: rowNumber, tourId: idTour, isParcel: isParcel }, function(response) {
-            $(classWrapper).show(500);
-            rowNumber++;
-            kendo.ui.progress($('body'), false);
-        });
+        $("#groupsList").append(result);
+        $(".dynamicGroup").show(500);
+        initGroupList();
+        rowNumber++;
     }
 
 
@@ -204,9 +187,16 @@
     }
 
 
+    function resetGroupList() {
+        initGroupListInternal(true);
+    }
     function initGroupList() {
+        initGroupListInternal(false);
+    }
+    function initGroupListInternal(resetGroups) {
         var tourId = $('#RatingTour').val();
         var isParcel = $('input[name="IsParcel"]:checked').val();
+        kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
             url: "@Url.Action("GetGroupsByTourAndMainGroup", "Tour")",
@@ -226,17 +216,35 @@
                         })
                     }
                 });
-                //$('[id^="SubGroupId"]').each(function() {
-                //    $(this).kendoDropDownTree({
-                //        filter: "contains",
-                //        dataTextField: 'Text',
-                //        dataValueField: 'Value',
-                //        dataSource: data
-                //    });
-                //});
+                if (resetGroups) {
+                    $('[id^="SubGroupId"]').each(function () {
+                        var subGroupTree = $(this).data("kendoDropDownTree");
+                        if (subGroupTree) {
+                            subGroupTree.value('');
+                        }
+                    });
+                }
+                $('[id^="SubGroupId"]').each(function() {
+                    $(this).kendoDropDownTree({
+                        filter: "contains",
+                        dataTextField: 'Text',
+                        dataValueField: 'Value',
+                        dataSource: data
+                    });
+                    var subGroupTree = $(this).data("kendoDropDownTree");
+                    var subGroupTreeSelect = function(e){
+                        if(e.sender.dataItem(e.node).hasChildren) {
+                            e.preventDefault();
+                        }
+                    };
+                    subGroupTree.treeview.bind("select", subGroupTreeSelect);
+                });
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
             }
         });
     }
@@ -252,38 +260,35 @@
     }
 
 
-    function parseFormObject(formObject) {
+    function addGroupsToFormObject(formObject) {
         if (!formObject) {
             return formObject;
         }
         var subGroups = [];
         for (var i = 1; i < rowNumber; i++) {
-            var name = '#SubGroupId' + i;
-            var value = $(name).data("kendoDropDownTree").value();
-            //console.log('tree value ', value);
-            subGroups.push({
-                SubGroupId: value
-            });
-            //delete formObject[name];
+            var id = '#SubGroupId' + i;
+            var value = $(id).data("kendoDropDownTree").value();
+            var result = 0;
+            if (value)
+                result = parseInt(value);
+            subGroups.push(result);
         }
         return Object.assign({}, formObject, { SubGroups: subGroups});
     }
+
 
     function calculateCadastralPrice() {
 		var form = $('form');
 		var formObject = Common.Functions.FormToObject(form);
 		formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
-
-        formObject = parseFormObject(formObject);
-		console.log('formObject', formObject);
-
-		kendo.ui.progress($('body'), true);
+        formObject = addGroupsToFormObject(formObject);
+        kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'POST',
 			url: form.attr('action'),
 			data: formObject,
 			success: function() {
-				Common.ShowMessage('Операция успешно добавлена в очередь фоновых процессов');
+				Common.ShowMessage('Операция выполнена успешно');
 			},
 			error: function(response) {
 				Common.ShowError(response.responseText);

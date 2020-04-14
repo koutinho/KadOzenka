@@ -28,7 +28,7 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Все группы")]
         public bool IsAllGroups { get; set; }
 
-        public List<PartialCadastralPriceCalculationRowModel> SubGroups { get; set; }
+        public List<long> SubGroups { get; set; }
 
 
         public static KOCalcSettings UnMap(CadastralPriceCalculationModel model)
@@ -42,7 +42,7 @@ namespace KadOzenka.Web.Models.Task
                 CalcStage2 = model.IsCorrectionsOrCoefficients,
                 CalcStage3 = model.IsFinalCalculation,
                 CalcAllGroups = model.IsAllGroups,
-                CalcGroups = model.SubGroups.Select(x => x.SubGroupId).ToList()
+                CalcGroups = model.SubGroups
             };
         }
     }

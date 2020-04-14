@@ -646,17 +646,6 @@ namespace KadOzenka.Web.Controllers
             return View();
         }
 
-        //TODO
-        public ActionResult GetRowForCadastralPriceCalculation([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] bool isParcel)
-        {
-            ViewData["TreeAttributes"] = new List<DropDownTreeItemModel>();
-
-            ViewData["RowNumber"] = rowNumber.ToString();
-
-            return PartialView("/Views/Task/PartialCadastralPriceCalculationRow.cshtml", new PartialCadastralPriceCalculationRowModel());
-        }
-
-
         #endregion
 
         public ActionResult DataMapping(long taskId)
