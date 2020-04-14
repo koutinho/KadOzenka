@@ -23,7 +23,6 @@ namespace KadOzenka.Dal.Correction
             return result;
         }
 
-
         public CorrectionByDateDto GetNextConsumerIndex()
         {
             var index = OMIndexesForDateCorrection.Where(x => true).SelectAll()
@@ -105,12 +104,13 @@ namespace KadOzenka.Dal.Correction
 
         #region Support Methods
 
-        private CorrectionByDateDto ToDto(OMIndexesForDateCorrection omCorrection)
+        private CorrectionByDateDto ToDto(OMIndexesForDateCorrection index)
         {
-            return new CorrectionByDateDto(omCorrection.ConsumerPriceIndex)
+            return new CorrectionByDateDto
             {
-                Id = omCorrection.Id,
-                Date = omCorrection.Date,
+                Date = index.Date,
+                AvaragePricePerMeter = index.AveragePricePerMeter,
+                ConsumerPriceIndex = index.ConsumerPriceIndex
             };
         }
 
