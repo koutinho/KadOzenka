@@ -42,7 +42,7 @@ namespace KadOzenka.Web.Models.Task
                 CalcStage2 = model.IsCorrectionsOrCoefficients,
                 CalcStage3 = model.IsFinalCalculation,
                 CalcAllGroups = model.IsAllGroups,
-                CalcGroups = model.SubGroups
+                CalcGroups = model.IsAllGroups ? null : model.SubGroups
             };
         }
     }

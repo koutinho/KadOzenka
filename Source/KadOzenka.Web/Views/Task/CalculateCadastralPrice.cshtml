@@ -26,7 +26,7 @@
 
         <div class="form-group">
             <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.IsParcel)
+                @Html.LabelFor(x => x.IsParcel)
             </div>
             <div class="col-sm-9">
                 @(Html.Kendo().RadioButtonFor(m => m.IsParcel).Label("ОКС").Value(false))
@@ -260,26 +260,11 @@
     }
 
 
-    function addGroupsToFormObject(formObject) {
-        if (!formObject) {
-            return formObject;
-        }
-        var subGroups = [];
-        for (var i = 1; i < rowNumber; i++) {
-            var id = '#SubGroupId' + i;
-            var value = $(id).data("kendoDropDownTree").value();
-            var result = 0;
-            if (value)
-                result = parseInt(value);
-            subGroups.push(result);
-        }
-        return Object.assign({}, formObject, { SubGroups: subGroups});
-    }
-
-
     function calculateCadastralPrice() {
 		var form = $('form');
-		var formObject = Common.Functions.FormToObject(form);
+        var formObject = Common.Functions.FormToObject(form);
+        var tourId = $('#RatingTour').val();
+        formObject['TourId'] = tourId;
 		formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
         formObject = addGroupsToFormObject(formObject);
         kendo.ui.progress($('body'), true);
@@ -287,8 +272,8 @@
 			type: 'POST',
 			url: form.attr('action'),
 			data: formObject,
-			success: function() {
-				Common.ShowMessage('Операция выполнена успешно');
+			success: function(response) {
+                Common.ShowMessage(response.Message);
 			},
 			error: function(response) {
 				Common.ShowError(response.responseText);
@@ -297,5 +282,21 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
-	}
+    }
+
+    function addGroupsToFormObject(formObject) {
+        if (!formObject) {
+            return formObject;
+        }
+        var subGroups = [];
+        for (var i = 1; i < rowNumber; i++) {
+            var id = '#SubGroupId' + i;
+            var value = $(id).data("kendoDropDownTree").value();
+            if (value) {
+                var result = parseInt(value);
+                subGroups.push(result);
+            }
+        }
+        return Object.assign({}, formObject, { SubGroups: subGroups });
+    }
 </script>

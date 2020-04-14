@@ -641,9 +641,18 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult CalculateCadastralPrice(CadastralPriceCalculationModel model)
+        public JsonResult CalculateCadastralPrice(CadastralPriceCalculationModel model)
         {
-            return View();
+            if (model.TaskFilter == null || model.TaskFilter.Count == 0)
+                throw new ArgumentException("Не выбраны задания на оценку");
+
+            if (!model.IsAllGroups && (model.SubGroups == null || model.SubGroups.Count == 0))
+                throw new ArgumentException("Не выбраны группы");
+
+            var settings = CadastralPriceCalculationModel.UnMap(model);
+            OMGroup.CalculateSelectGroup(settings);
+
+            return Json(new {Message = "Операция выполнена успешно"});
         }
 
         #endregion
