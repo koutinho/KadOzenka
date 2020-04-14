@@ -713,6 +713,113 @@ namespace KadOzenka.Web.Controllers
             return EmptyResponse();
         }
 
-        #endregion
-    }
+		#endregion
+
+		#region Зависимости при расчете подгрупп
+
+		public JsonResult GetCalcGroups(long groupId)
+		{
+			var groupList = OMCalcGroup.Where(x => x.GroupId == groupId)
+				.SelectAll().Execute();
+
+			var groupIds = groupList.Select(x => x.ParentCalcGroupId).ToList();
+
+			var groups = OMGroup.Where(x => groupIds.Contains(x.Id))
+				.Select(x => x.GroupName).Execute();
+
+			var result = groupList.Join(groups,
+				calc => calc.ParentCalcGroupId,
+				group => group.Id,
+				(calc, group) => new ParentCalcGroupModel
+				{
+					Id = calc.Id,
+					GroupId = calc.GroupId,
+					ParentCalcGroupId = calc.ParentCalcGroupId,
+					Title = group.GroupName
+				}).ToList();
+
+			return Json(result);
+		}
+
+		public JsonResult GetSubgroups(long groupId)
+		{
+			var group = OMGroup.Where(x => x.Id == groupId)
+				.Select(x => x.ParentId)				
+				.ExecuteFirstOrDefault();
+			long? parentId = group.ParentId;
+
+			var tg = OMTourGroup.Where(x => x.GroupId == groupId)
+				.Select(x => x.TourId)
+				.ExecuteFirstOrDefault();
+
+			if (tg == null)
+				throw new Exception("Не найден тур для выбранной группы");
+
+			var sameGroups = OMTourGroup.Where(x => x.TourId == tg.TourId)
+				.Select(x => x.GroupId)
+				.Execute()
+				.Select(x => x.GroupId).ToList();
+
+			var subGroups = OMGroup.Where(x => x.ParentId == parentId && sameGroups.Contains(x.Id) && x.Id != groupId)
+				.Select(x => x.GroupName).Execute();
+			var res = subGroups.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.GroupName });
+
+			return Json(res);
+		}
+
+		public ActionResult EditCalcGroup(long? id, long groupId)
+		{
+			OMCalcGroup calcGroup;
+
+			if (id.HasValue)
+			{
+				calcGroup = OMCalcGroup.Where(x => x.Id == id)
+					.SelectAll().ExecuteFirstOrDefault();
+
+				if (calcGroup == null)
+				{
+					throw new Exception("Не найдена строка реестра расчета подгрупп с Id " + id);
+				}
+			}
+			else
+			{
+				calcGroup = new OMCalcGroup
+				{
+					GroupId = groupId
+				};
+			}
+
+			return View(calcGroup);
+		}
+
+		[HttpPost]
+		public ActionResult EditCalcGroup(OMCalcGroup calcGroup)
+		{
+			bool isExists = OMCalcGroup.Where(x => x.GroupId == calcGroup.GroupId && x.ParentCalcGroupId == calcGroup.ParentCalcGroupId)
+				.ExecuteExists();
+
+			if (isExists)
+				throw new Exception("Данная группа уже была выбрана ранее");
+
+			calcGroup.Save();
+			return Json(new { Success = "Изменения успешно сохранены" });
+		}
+
+		[HttpPost]
+		public ActionResult DeleteCalcGroup(long id)
+		{
+			OMCalcGroup calcGroup = OMCalcGroup.Where(x => x.Id == id)
+				.SelectAll().ExecuteFirstOrDefault();
+
+			if (calcGroup == null)
+			{
+				throw new Exception("Не найдена строка реестра расчета подгрупп с Id " + id);
+			}
+
+			calcGroup.Destroy();
+			return Json(new { Success = "Удаление выполненно" });
+		}
+
+		#endregion
+	}
 }

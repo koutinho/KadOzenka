@@ -30,11 +30,158 @@
             </div>
         </div>
     </div>
-</div>
 
+    <div class="row">
+        <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+            <div class="form-group col-sm-12">
+                <div style="padding-top: 2%;">
+                    <div id="reestrToolbar"></div>
+                </div>
+
+                <div style="display: flex;">
+                    <div style="align-items: stretch">
+                        <div id="reestrGrid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script type="text/javascript">
     $(document).ready(function () {
+
+        $('#reestrToolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'add-group',
+                    text: '',
+                    attributes: { title: "Добавить" },
+                    icon: 'add'
+                },
+                {
+                    type: 'button',
+                    id: 'edit-group',
+                    text: '',
+                    attributes: { title: "Изменить" },
+                    icon: 'edit'
+                },
+                {
+                    type: 'button',
+                    id: 'remove-group',
+                    text: '',
+                    attributes: { title: "Удалить" },
+                    icon: 'delete'
+                }
+            ]
+        });
+
+        var reestrGridDataSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetCalcGroups", "Tour")',
+                    contentType: 'application/json; charset=utf-8',
+                    data: { groupId: @Model.Id },
+                    dataType: 'json'
+                }
+            }, pageSize: 4
+        });
+        $('#reestrGrid').kendoGrid({
+            dataSource: reestrGridDataSource,
+            columns: [
+                {
+                    field: 'Id', hidden: true
+                }, {
+                    field: 'GroupId', hidden: true
+                }, {
+                    field: 'ParentCalcGroupId', hidden: true
+                }, {
+                    field: 'Title', title: 'Группа, на основе которой считается текущая группа'
+                }
+            ],
+            width: '100%',
+            pageable: true,
+            scrollable: true,
+            selectable: true
+        });
+
+        $("#reestrGrid").data("kendoGrid").bind('change', ReestrGridChanged);
+        function ReestrGridChanged() {
+            var grid = $("#reestrGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length == 0) {
+                $('#edit-group').addClass('k-state-disabled');
+                $('#remove-group').addClass('k-state-disabled');                
+            }
+            else {
+                $('#edit-group').removeClass('k-state-disabled');
+                $('#remove-group').removeClass('k-state-disabled');                
+            }
+        }
+
+        $('#edit-group').addClass('k-state-disabled');
+        $('#remove-group').addClass('k-state-disabled');
+
+        $('#add-group').on('click', function () {           
+            Common.UI.ShowWindow('Редактирование группы',
+                '@Url.Action("EditCalcGroup", "Tour")' + '?groupId=@Model.Id',
+                'editCalcWindow',
+                function (e, param) {
+                        if (param == true) {
+                            UpdateView();
+                        }
+                    },
+                800, 200);
+        });
+
+        $('#edit-group').on('click', function () {
+            var grid = $("#reestrGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);                
+                Common.UI.ShowWindow('Редактирование группы',
+                    '@Url.Action("EditCalcGroup", "Tour")' + '?groupId=@Model.Id&id=' + data.Id,
+                'editCalcWindow',
+                function (e, param) {
+                        if (param == true) {
+                            UpdateView();
+                        }
+                    },
+                800, 200);
+            }           
+        });
+
+        $('#remove-group').on('click', function () {
+            var grid = $("#reestrGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                Common.UI.ShowConfirm({
+                    title: '',
+                    content: 'Удалить группу?',
+                    onSuccess: function () {
+                        kendo.ui.progress($('body'), true);
+                        $.ajax({
+                            url: '@Url.Action("DeleteCalcGroup", "Tour")',
+                            type: 'POST',
+                            data: { id: data.Id },
+                            success: function (response) {
+                                kendo.ui.progress($('body'), false);
+                                if (response.Success) {
+                                    Common.ShowMessage(response.Success);
+                                    UpdateView();
+                                }
+                            },
+                            error: function (response) {
+                                kendo.ui.progress($('body'), false);
+                                Common.ShowError(response.responseText);
+                            }
+                        });
+                    }
+                });
+            }
+        });        
 
         @{
             if (Model.IsReadOnly)
