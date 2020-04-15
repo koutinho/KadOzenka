@@ -20934,6 +20934,78 @@ namespace ObjectModel.ES
     }
 }
 
+namespace ObjectModel.ES
+{
+	/// <summary>
+	/// 608 Связь экспресс оценки и объектов аналогов (ES_TO_MARKET_CORE_OBJECT)
+	/// </summary>
+	[RegisterInfo(RegisterID = 608)]
+	[Serializable]
+	public partial class OMEsToMarketCoreObject : OMBaseClass<OMEsToMarketCoreObject>
+	{
+
+		private long _id;
+		/// <summary>
+		/// 60800100 Идентификатор (ID)
+		/// </summary>
+		[PrimaryKey(AttributeID = 60800100)]
+		public long Id
+		{
+			get
+			{
+				CheckPropertyInited("Id");
+				return _id;
+			}
+			set
+			{
+				_id = value;
+				NotifyPropertyChanged("Id");
+			}
+		}
+
+
+		private long _esid;
+		/// <summary>
+		/// 60800200 Идентификатор экспресс оценки (ES_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 60800200)]
+		public long EsId
+		{
+			get
+			{
+				CheckPropertyInited("EsId");
+				return _esid;
+			}
+			set
+			{
+				_esid = value;
+				NotifyPropertyChanged("EsId");
+			}
+		}
+
+
+		private long _marketobjectid;
+		/// <summary>
+		/// 60800300 Идентификатор объктов аналогов (MARKET_OBJECT_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 60800300)]
+		public long MarketObjectId
+		{
+			get
+			{
+				CheckPropertyInited("MarketObjectId");
+				return _marketobjectid;
+			}
+			set
+			{
+				_marketobjectid = value;
+				NotifyPropertyChanged("MarketObjectId");
+			}
+		}
+
+	}
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

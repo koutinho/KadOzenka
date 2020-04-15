@@ -2973,6 +2973,30 @@ namespace ObjectModel.ES
     }
 }
 
+namespace ObjectModel.ES
+{
+	/// <summary>
+	/// 608 Связь экспресс оценки и объектов аналогов
+	/// </summary>
+	public partial class OMEsToMarketCoreObject
+	{
+
+		public OMEsToMarketCoreObject()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMEsToMarketCoreObject(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>
