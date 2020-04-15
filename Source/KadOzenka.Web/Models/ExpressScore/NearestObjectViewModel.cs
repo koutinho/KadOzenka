@@ -5,11 +5,6 @@ namespace CIPJS.Models.ExpressScore
 {
 	public class NearestObjectViewModel
 	{
-		///// <summary>
-		///// Этажей в здании
-		///// </summary>
-		//public int? Floor { get; set; }
-
 		/// <summary>
 		/// Площадь
 		/// </summary>

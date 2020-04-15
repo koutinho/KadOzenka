@@ -1,4 +1,5 @@
-﻿@using ObjectModel.Directory
+﻿@using KadOzenka.Dal.Enum
+@using ObjectModel.Directory
 
 <link rel="stylesheet" href="~/css/jquery.fias.min.css" />
 <style>
@@ -43,6 +44,9 @@
 	input::-webkit-inner-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
+	}
+	.wrapper-scenario {
+		margin: 10px
 	}
 </style>
 
@@ -150,18 +154,29 @@
 		</div>
 	</div>
 </div>
+<div id="dialog">
+</div>
+
 
 <script src="~/MapScripts/config.js" charset="utf-8"></script>
 <script src="~/js/jquery.fias.min.js"></script>
 <script src="~/js/custom-validation.js"></script>
+
+<script id="javascriptTemplate" type="text/x-kendo-template">
+	
+</script>
+
+<!-- Поиск точек, поиск адреса и кад номера. Настройки карты-->
 <script type="text/javascript">
 	var map;
 	var findPoints = [];
+	var findPointsIds = [];
 	var $addresses = $('#address');
 	var typeShortList = [/г\./gi, /пгт\./gi, /п\./gi, /д\./gi, /c\./gi, /ул\./gi, /строение/gi];
 	var myMarker;
 	var myPlacemark;
 	var currentAddress = null;
+	var targetObjectId = null;
 
 	function setCurrentAddress(address) {
 		if (address) {
@@ -193,6 +208,7 @@
 			}
 		});
 		findPoints = [];
+		findPointsIds = [];
 	}
 
 	$("#select-count").kendoButtonGroup({
@@ -408,43 +424,48 @@
 						Common.ShowError(errors);
 						return;
 					}
-						if (data.response && data.response.coordinates) {
-							data.response.coordinates.forEach(function (data) {
-								var coord = [data.Lat, data.Lng];
-								ymaps.geocode(coord).then(function(res) {
-									var firstGeoObject = res.geoObjects.get(0);
+					if (data.response && data.response.targetObjectId) {
+						targetObjectId = data.response.targetObjectId;
+					}
 
-									if (firstGeoObject) {
-										var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
-											{
-												iconCaption: 'поиск...'
-											},
-											{
-												preset: 'islands#orangeDotIconWithCaption'
-											});
+					if (data.response && data.response.coordinates) {
+						data.response.coordinates.forEach(function (data) {
+							findPointsIds.push(data.Id);
+							var coord = [data.Lat, data.Lng];
+							ymaps.geocode(coord).then(function(res) {
+								var firstGeoObject = res.geoObjects.get(0);
 
-										newPoint.properties.set({
-											// Формируем строку с данными об объекте.
-											iconCaption: [
-												firstGeoObject.getLocalities().length
-												? firstGeoObject.getLocalities()
-												: firstGeoObject.getAdministrativeAreas(),
-												firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
-											].filter(Boolean).join(', '),
-											balloonContent: firstGeoObject.getAddressLine()
+								if (firstGeoObject) {
+									var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
+										{
+											iconCaption: 'поиск...'
+										},
+										{
+											preset: 'islands#orangeDotIconWithCaption'
 										});
 
-										findPoints.push(newPoint);
+									newPoint.properties.set({
+										// Формируем строку с данными об объекте.
+										iconCaption: [
+											firstGeoObject.getLocalities().length
+											? firstGeoObject.getLocalities()
+											: firstGeoObject.getAdministrativeAreas(),
+											firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
+										].filter(Boolean).join(', '),
+										balloonContent: firstGeoObject.getAddressLine()
+									});
 
-										map.geoObjects.add(newPoint);
-									}
-								});
+									findPoints.push(newPoint);
+
+									map.geoObjects.add(newPoint);
+								}
 							});
-							map.setZoom(9);
-						}
-					}).always(function() {
-						kendo.ui.progress($('body'), false);
-					});
+						});
+						map.setZoom(13);
+					}
+				}).always(function() {
+					kendo.ui.progress($('body'), false);
+				});
 			});
 	});
 
@@ -505,7 +526,7 @@
 
 	
 			if (firstGeoObject.getAdministrativeAreas().length === 0 || firstGeoObject.getAdministrativeAreas().length > 1 ||
-				(firstGeoObject.getAdministrativeAreas() === 1 &&
+			(firstGeoObject.getAdministrativeAreas() === 1 &&
 				firstGeoObject.getAdministrativeAreas()[0] !== "Москва")) {
 				removeMyPlacemark();
 				Common.ShowError("Объект за пределами г.Москва");
@@ -542,4 +563,66 @@
 			});
 	}
 	// end инициализация карты
+</script>
+
+<!--Пересчет стоимости-->
+<script type="text/javascript">
+	$(document).ready(function () {
+		initDialog();
+		$('.calculate').on('click', function () {
+			showModal();
+		});
+	});
+	function executeCalculate(scenarioType = null) {
+		if (scenarioType == null) {
+			return;
+		}
+		var data = {
+			selectedPoints: findPointsIds,
+			targetObjectId,
+			floor: $('#floor').val()
+		}
+
+		var url = "@Url.Action("CalculateCostTargetObject", "ExpressScore")";
+		$.post(url, data).done(function(data) {
+			if (data.Errors) {
+				var errors = getErrors(data.Errors);
+				Common.ShowError(errors);
+			}
+		}).always();
+
+	}
+
+	function showModal() {
+		$('#dialog').data('kendoDialog') && $('#dialog').data('kendoDialog').open();
+	}
+
+
+	function initDialog() {
+			$('#dialog').kendoDialog({
+				width: "450px",
+				title: "Выберите сценарий расчета",
+				closable: false,
+				modal: true,
+				content: '<div class="wrapper-scenario">'+
+					'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioCalculateEnum))).NoDataTemplate("Ничего не найдено!").ToClientTemplate()'
+					+ '</div>',
+				visible: false,
+				buttonLayout: "normal",
+				actions: [
+					{ text: 'Отмена' },
+					{
+						text: 'Выбрать', primary: true,
+						action: function (e) {
+							if (e.sender.element.find('#scenario')) {
+								var value = e.sender.element.find('#scenario').data('kendoDropDownList') &&
+									e.sender.element.find('#scenario').data('kendoDropDownList').value() || null;
+								executeCalculate(value);
+							}
+							return true;
+						}
+					}
+				]
+			});
+		}
 </script>
