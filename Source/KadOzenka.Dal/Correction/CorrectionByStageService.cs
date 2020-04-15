@@ -8,15 +8,25 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
 using System.Transactions;
+using Core.Register.LongProcessManagment;
+using ObjectModel.Core.LongProcess;
 
 namespace KadOzenka.Dal.Correction
 {
 	public class CorrectionByStageService
 	{
-        //TODO добавь логирование прогресса в LongProcess, когда закончишь задачу
+		readonly OMQueue processQueue;
+
+		public CorrectionByStageService(OMQueue queue)
+		{
+			processQueue = queue;
+		}
+
 		public void MakeCorrection(DateTime date)
-		{			
+		{
 			//TODO: для нового периода подтягивать данные старого периода по исключенным зданиям
+
+			WorkerCommon.SetProgress(processQueue, 0);
 
 			date = new DateTime(date.Year, date.Month, 1);
 
@@ -57,6 +67,8 @@ namespace KadOzenka.Dal.Correction
 					x.Segment,
 					Price = Math.Round((decimal)x.Price / (decimal)y.Price, 4)
 				}).ToList();
+			
+			WorkerCommon.SetProgress(processQueue, 20);
 
 			//перезапишем данные таблицы коэффициентов
 			//сохраним исключенные элементы на заданную дату
@@ -72,6 +84,8 @@ namespace KadOzenka.Dal.Correction
 				bool isExcluded = excludedList.Any(x => x.CadastralNumber == obj.CadastralNumber && x.Segment == obj.Segment);
 				SaveHistory(date, obj.CadastralNumber, obj.Segment, obj.Price, isExcluded);
 			}
+			
+			WorkerCommon.SetProgress(processQueue, 60);
 
 			//здания, по которым производится расчет на заданную дату
 			var ratioPriceNotExcluded = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded != true)
@@ -112,6 +126,8 @@ namespace KadOzenka.Dal.Correction
 				basement.Save();
 			});
 
+			WorkerCommon.SetProgress(processQueue, 75);
+
 			//перемножаем средний коэффициент на стоимость подвальных помещений
 			foreach (var obj in resObjs)
 			{
@@ -124,6 +140,8 @@ namespace KadOzenka.Dal.Correction
 				obj.PriceAfterCorrectionByStage = Math.Round(thisPrice * thisSegmentKoeff, 2);
 				obj.Save();
 			}
+
+			WorkerCommon.SetProgress(processQueue, 100);
 		}
 
 		private void SaveHistory(DateTime date, string buildingCadastralNumber, MarketSegment segment, decimal coefficient, bool isExcluded)

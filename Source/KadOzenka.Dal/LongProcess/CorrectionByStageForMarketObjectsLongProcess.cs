@@ -21,8 +21,6 @@ namespace KadOzenka.Dal.LongProcess
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
-            WorkerCommon.SetProgress(processQueue, 0);
-
             DateTime date;
             var firstMonthDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
             if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
@@ -35,10 +33,8 @@ namespace KadOzenka.Dal.LongProcess
                 date = firstMonthDate;
             }
 
-            var correctionByStageService = new CorrectionByStageService();
+            var correctionByStageService = new CorrectionByStageService(processQueue);
             correctionByStageService.MakeCorrection(date);
-
-            WorkerCommon.SetProgress(processQueue, 100);
         }
     }
 }

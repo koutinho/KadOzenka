@@ -199,7 +199,7 @@ namespace KadOzenka.BlFrontEnd
 					 new System.Threading.CancellationToken());
 				});
 
-			consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
+			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
 		}
 
 	}
