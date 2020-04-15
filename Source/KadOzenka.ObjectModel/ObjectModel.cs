@@ -20780,6 +20780,25 @@ namespace ObjectModel.ES
             }
         }
 
+        private string _namefactor;
+        /// <summary>
+        /// 60700300 Наименование фактора (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60700300)]
+        public string NameFactor
+        {
+	        get
+	        {
+		        CheckPropertyInited("NameFactor");
+		        return _namefactor;
+	        }
+	        set
+	        {
+		        _namefactor = value;
+		        NotifyPropertyChanged("NameFactor");
+	        }
+        }
+
     }
 }
 
