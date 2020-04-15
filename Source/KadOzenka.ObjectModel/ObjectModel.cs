@@ -20460,6 +20460,329 @@ namespace ObjectModel.ES
     }
 }
 
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 604 Экспресс оценка. Индекс дата (ES_INDEX_DATE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 604)]
+    [Serializable]
+    public partial class OMIdexDate : OMBaseClass<OMIdexDate>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 60400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private DateTime _date;
+        /// <summary>
+        /// 60400200 Дата (DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60400200)]
+        public DateTime Date
+        {
+            get
+            {
+                CheckPropertyInited("Date");
+                return _date;
+            }
+            set
+            {
+                _date = value;
+                NotifyPropertyChanged("Date");
+            }
+        }
+
+
+        private decimal _index;
+        /// <summary>
+        /// 60400300 Индекс цен (INDEX)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60400300)]
+        public decimal Index
+        {
+            get
+            {
+                CheckPropertyInited("Index");
+                return _index;
+            }
+            set
+            {
+                _index = value;
+                NotifyPropertyChanged("Index");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 605 Экспресс оценка. Доля ЗУ (ES_LAND_SHARE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 605)]
+    [Serializable]
+    public partial class OMLandShare : OMBaseClass<OMLandShare>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 60500100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60500100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _floor;
+        /// <summary>
+        /// 60500200 Этаж (FLOOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60500200)]
+        public long Floor
+        {
+            get
+            {
+                CheckPropertyInited("Floor");
+                return _floor;
+            }
+            set
+            {
+                _floor = value;
+                NotifyPropertyChanged("Floor");
+            }
+        }
+
+
+        private decimal _factor;
+        /// <summary>
+        /// 60500300 Фактор (FACTOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60500300)]
+        public decimal Factor
+        {
+            get
+            {
+                CheckPropertyInited("Factor");
+                return _factor;
+            }
+            set
+            {
+                _factor = value;
+                NotifyPropertyChanged("Factor");
+            }
+        }
+
+
+        private string _segmenttype;
+        /// <summary>
+        /// 60500400 Тип сегмента ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60500400)]
+        public string SegmentType
+        {
+            get
+            {
+                CheckPropertyInited("SegmentType");
+                return _segmenttype;
+            }
+            set
+            {
+                _segmenttype = value;
+                NotifyPropertyChanged("SegmentType");
+            }
+        }
+
+
+        private MarketSegment _segmenttype_Code;
+        /// <summary>
+        /// 60500400 Тип сегмента (справочный код) (SEGMENT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60500400)]
+        public MarketSegment SegmentType_Code
+        {
+            get
+            {
+                CheckPropertyInited("SegmentType_Code");
+                return this._segmenttype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_segmenttype))
+                    {
+                        _segmenttype = descr;
+                    }
+                }
+                else
+                {
+                    _segmenttype = descr;
+                }
+
+                this._segmenttype_Code = value;
+                NotifyPropertyChanged("SegmentType");
+                NotifyPropertyChanged("SegmentType_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 606 Экспресс оценка. Этаж расположения (ES_FLOOR)
+    /// </summary>
+    [RegisterInfo(RegisterID = 606)]
+    [Serializable]
+    public partial class OMFloor : OMBaseClass<OMFloor>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 60600100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _floorname;
+        /// <summary>
+        /// 60600200 Расположение (FLOOR_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60600200)]
+        public string FloorName
+        {
+            get
+            {
+                CheckPropertyInited("FloorName");
+                return _floorname;
+            }
+            set
+            {
+                _floorname = value;
+                NotifyPropertyChanged("FloorName");
+            }
+        }
+
+
+        private decimal _factor;
+        /// <summary>
+        /// 60600300 Фактор (FACTOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60600300)]
+        public decimal Factor
+        {
+            get
+            {
+                CheckPropertyInited("Factor");
+                return _factor;
+            }
+            set
+            {
+                _factor = value;
+                NotifyPropertyChanged("Factor");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 607 Экспресс оценка. Ценообразующие факторы (ES_COST_FACTOR)
+    /// </summary>
+    [RegisterInfo(RegisterID = 607)]
+    [Serializable]
+    public partial class OMCostFactor : OMBaseClass<OMCostFactor>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 60700100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private decimal _factor;
+        /// <summary>
+        /// 60700200 Фактор влияния (FACTOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60700200)]
+        public decimal Factor
+        {
+            get
+            {
+                CheckPropertyInited("Factor");
+                return _factor;
+            }
+            set
+            {
+                _factor = value;
+                NotifyPropertyChanged("Factor");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

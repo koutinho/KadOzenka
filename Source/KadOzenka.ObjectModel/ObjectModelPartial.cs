@@ -2852,6 +2852,102 @@ namespace ObjectModel.ES
     }
 }
 
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 604 Экспресс оценка. Индекс дата
+    /// </summary>
+    public partial class OMIdexDate
+    {
+
+        public OMIdexDate()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMIdexDate(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 605 Экспресс оценка. Доля ЗУ
+    /// </summary>
+    public partial class OMLandShare
+    {
+
+        public OMLandShare()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMLandShare(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 606 Экспресс оценка. Этаж расположения
+    /// </summary>
+    public partial class OMFloor
+    {
+
+        public OMFloor()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMFloor(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 607 Экспресс оценка. Ценообразующие факторы
+    /// </summary>
+    public partial class OMCostFactor
+    {
+
+        public OMCostFactor()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMCostFactor(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>
