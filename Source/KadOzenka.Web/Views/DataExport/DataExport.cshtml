@@ -205,7 +205,7 @@
 
 		$(document).ready(function () {
 			const mainRegisterId = @((long)ViewBag.MainRegisterId);
-			const registerViewId = '@((string)ViewBag.RegisterViewId)';
+            const registerViewId = '@((string)ViewBag.RegisterViewId)';
 			const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
 
 			$("#filter").on("input", function () {
@@ -433,10 +433,14 @@
 				data: { registerViewId: registerViewId },
 				success: function (data) {
                     if (data) {
-                        const filtered = data.filter(function (x) {
-							// Оставляем только объекты аналоги (Реестр №100)
+                        var filtered = data;
+						// При вызове для объектов аналогов
+                        if (registerViewId==='MarketObjects') {
+                            filtered = data.filter(function (x) {
+							// Оставляем только атрибуты объектов аналогов (Реестр №100)
                             return (x.ItemId == 100) || (x.AttributeId < '10100000' && x.AttributeId != '0');
-                        });
+                            });
+                        }
 						$("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(filtered));
 					}
 				},
