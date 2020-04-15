@@ -20691,7 +20691,7 @@ namespace ObjectModel.ES
 
         private string _floorname;
         /// <summary>
-        /// 60600200 Расположение (FLOOR_NAME)
+        /// 60600200 Наименование этажа (FLOOR_NAME)
         /// </summary>
         [RegisterAttribute(AttributeID = 60600200)]
         public string FloorName
@@ -20728,7 +20728,27 @@ namespace ObjectModel.ES
             }
         }
 
-    }
+        private long _floor;
+        /// <summary>
+        /// 60600400 Этаж (FLOOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60600400)]
+        public long Floor
+        {
+	        get
+	        {
+		        CheckPropertyInited("Floor");
+		        return _floor;
+	        }
+	        set
+	        {
+		        _floor = value;
+		        NotifyPropertyChanged("Floor");
+	        }
+        }
+
+
+	}
 }
 
 namespace ObjectModel.ES
