@@ -55,7 +55,9 @@ namespace KadOzenka.Dal.DataImport
 		{
 			if (!processQueue.ObjectId.HasValue)
 			{
-				return;
+                WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, LongProcess.Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                return;
 			}
 
 			OMImportDataLog import = OMImportDataLog
@@ -66,7 +68,9 @@ namespace KadOzenka.Dal.DataImport
 
 			if (import == null)
 			{
-				return;
+                WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
+                WorkerCommon.SetProgress(processQueue, LongProcess.Consts.Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
+                return;
 			}
 
             WorkerCommon.SetProgress(processQueue, 0);

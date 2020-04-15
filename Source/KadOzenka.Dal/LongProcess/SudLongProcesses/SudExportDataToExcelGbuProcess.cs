@@ -38,7 +38,9 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 		{
 			if (!processQueue.ObjectId.HasValue)
 			{
-				return;
+                WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                return;
 			}
 
 			OMExportByTemplates export = OMExportByTemplates
@@ -49,8 +51,11 @@ namespace KadOzenka.Dal.LongProcess.SudLongProcesses
 
 			if (export == null)
 			{
-				return;
+                WorkerCommon.SetMessage(processQueue, Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
+                WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
+                return;
 			}
+
 			WorkerCommon.SetProgress(processQueue, 0);
 
 			export.Status = (long)ObjectModel.Directory.Common.ImportStatus.Running;

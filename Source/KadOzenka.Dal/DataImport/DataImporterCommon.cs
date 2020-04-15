@@ -35,13 +35,24 @@ namespace KadOzenka.Dal.DataImport
 
 		public void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			if (!processQueue.ObjectId.HasValue) return; 
+            if (!processQueue.ObjectId.HasValue)
+            {
+                WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, LongProcess.Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                return;
+            } 
+
 			OMImportDataLog import = OMImportDataLog
 				.Where(x => x.Id == processQueue.ObjectId)
 				.SelectAll()
 				.Execute()
 				.FirstOrDefault();
-			if (import == null) return;
+            if (import == null)
+            {
+                WorkerCommon.SetMessage(processQueue, LongProcess.Consts.Consts.GetMessageForProcessInterruptedBecauseOfNoDataLog(processQueue.ObjectId.Value));
+                WorkerCommon.SetProgress(processQueue, LongProcess.Consts.Consts.ProgressForProcessInterruptedBecauseOfNoDataLog);
+                return;
+            }
 
             WorkerCommon.SetProgress(processQueue, 0);
 
