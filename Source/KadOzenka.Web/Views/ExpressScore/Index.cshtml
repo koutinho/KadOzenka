@@ -48,6 +48,16 @@
 	.wrapper-scenario {
 		margin: 10px
 	}
+
+	.wrapper-success-dialog {
+		margin: 10px
+	}
+
+	.wrapper-success-dialog label {
+		font-weight: bold !important;
+		display: block;
+		padding: 2px;
+	}
 </style>
 
 <div class="form-horizontal col-sm-12">
@@ -156,15 +166,14 @@
 </div>
 <div id="dialog">
 </div>
+<div id="successDialog">
+</div>
 
 
 <script src="~/MapScripts/config.js" charset="utf-8"></script>
 <script src="~/js/jquery.fias.min.js"></script>
 <script src="~/js/custom-validation.js"></script>
 
-<script id="javascriptTemplate" type="text/x-kendo-template">
-	
-</script>
 
 <!-- Поиск точек, поиск адреса и кад номера. Настройки карты-->
 <script type="text/javascript">
@@ -580,16 +589,31 @@
 		var data = {
 			selectedPoints: findPointsIds,
 			targetObjectId,
-			floor: $('#floor').val()
+			floor: $('#floor').val(),
+			square: $('#square').val()
 		}
-
+		kendo.ui.progress($('body'), true);
 		var url = "@Url.Action("CalculateCostTargetObject", "ExpressScore")";
 		$.post(url, data).done(function(data) {
 			if (data.Errors) {
 				var errors = getErrors(data.Errors);
 				Common.ShowError(errors);
+				return;
 			}
-		}).always();
+
+			if (!!data.response.costSquareMeter && !!data.response.summaryCost) {
+				var cost = data.response.summaryCost.toLocaleString();
+				var squareCost = data.response.costSquareMeter.toLocaleString();
+				$('#cost').text(cost.toString());
+				$('#squareCost').text(squareCost.toString());
+
+				$('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
+
+
+			}
+		}).always(function() {
+			kendo.ui.progress($('body'), false);
+		});
 
 	}
 
@@ -605,7 +629,7 @@
 				closable: false,
 				modal: true,
 				content: '<div class="wrapper-scenario">'+
-					'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioCalculateEnum))).NoDataTemplate("Ничего не найдено!").ToClientTemplate()'
+					'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioCalculateEnum))).NoDataTemplate("Ничего не найдено!").Value("2").Enable(false).ToClientTemplate()'
 					+ '</div>',
 				visible: false,
 				buttonLayout: "normal",
@@ -622,6 +646,20 @@
 							return true;
 						}
 					}
+				]
+			});
+
+			$('#successDialog').kendoDialog({
+				width: "450px",
+				title: "Расчет успешно выполнен",
+				closable: false,
+				modal: true,
+				content: '<div class="wrapper-success-dialog">'
+					+ '<label for="cost">Цена: </label><text id="cost"></text><label for="squareCost">Цена за кв.м: </label><text id="squareCost"></text>' + '</div>',
+				visible: false,
+				buttonLayout: "normal",
+				actions: [
+					{ text: 'Ок' }
 				]
 			});
 		}

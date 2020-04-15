@@ -6,6 +6,12 @@ namespace KadOzenka.Web.Models.ExpressScore
 	public class CalculateCostTargetObjectViewModel
 	{
 		/// <summary>
+		/// Площадь
+		/// </summary>
+		[Required(ErrorMessage = "Заполните поле площадь")]
+		public decimal? Square { get; set; }
+
+		/// <summary>
 		/// Этаж
 		/// </summary>
 		[Required(ErrorMessage = "Заполните поле этаж")]

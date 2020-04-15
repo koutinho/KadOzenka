@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.ErrorManagment;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore.Dto;
+using ObjectModel.Directory;
 using ObjectModel.ES;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -186,6 +190,242 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 
 			return new List<CoordinatesDto>();
+		}
+
+		public string CalculateExpressScore(List<OMCoreObject> analogs, int targetObjectId, int targetObjectFloor, decimal square, out decimal costSquareMeter, out decimal summaryCost)
+		{
+			costSquareMeter = 0;
+			summaryCost = 0;
+
+			const double cTorg = 0.9231;
+			List<decimal> res = new List<decimal>();
+			List<long> successAnalogIds = new List<long>();
+
+			var estimatedParametersTargetObject = GetEstimateParametersById(targetObjectId);
+
+			if (estimatedParametersTargetObject == null)
+			{
+				return "Не найденны данные для целевого объекта";
+			}
+
+			foreach (var analog in analogs)
+			{
+				decimal yPrice = 0; // Удельный показатель стоимости
+
+
+				if (analog.Price != null && analog.Area != null && analog.Area.GetValueOrDefault() != 0)
+				{
+					yPrice = analog.Price.GetValueOrDefault() / analog.Area.GetValueOrDefault();
+				}
+
+				//Корректировка на дату 
+				var dateEstimate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+
+				var indexDateEstimate = OMIdexDate.Where(x => x.Date == dateEstimate).SelectAll().ExecuteFirstOrDefault();
+				if (indexDateEstimate == null)
+				{
+					indexDateEstimate = OMIdexDate.Where(x => x).SelectAll().Execute().OrderByDescending(x => x.Date).First();
+				}
+
+				OMIdexDate indexAnalogDate = null;
+				if (analog.LastDateUpdate != null)
+				{
+					var analogDate = new DateTime(analog.LastDateUpdate.Value.Year, analog.LastDateUpdate.Value.Month,
+						1);
+
+					indexAnalogDate = OMIdexDate.Where(x => x.Date == analogDate).SelectAll().ExecuteFirstOrDefault();
+				}
+
+				if (indexAnalogDate == null)
+				{
+					continue;
+				}
+
+				decimal kDate = indexAnalogDate.Index / indexDateEstimate.Index; // Корректировка на дату
+
+				var cost = kDate * yPrice;
+				cost = cost * (decimal)cTorg;
+
+				OMLandShare landShare = null;
+				if (analog.FloorsCount != null)
+				{
+					landShare = OMLandShare.Where(x => x.Floor == analog.FloorsCount && x.SegmentType_Code == MarketSegment.Office).SelectAll().ExecuteFirstOrDefault();
+					if (landShare == null)
+					{
+						var tmpLandShares = OMLandShare.Where(x => x.SegmentType_Code == MarketSegment.Office)
+							.SelectAll().Execute().OrderByDescending(x => x.Floor).ToList();
+						landShare = tmpLandShares.Count > 1 ? tmpLandShares[1] : null;
+						if (tmpLandShares.Count > 0 && tmpLandShares[1].Floor < analog.FloorsCount)
+						{
+							landShare = tmpLandShares[0];
+
+						}
+					}
+				}
+
+				if (landShare != null)
+				{
+					cost = cost * landShare.Factor;
+				}
+
+
+				var estimatedParameters = GetEstimateParametersByKn(analog.CadastralNumber);
+
+				// Начинаются оценочные факторы
+				var wallMaterial = OMWallMaterial.Where(x => x.WallMaterial.Contains(estimatedParameters.WallMaterial)).SelectAll()
+					.ExecuteFirstOrDefault();
+
+				var wallMaterialTargetObject = OMWallMaterial.Where(x => x.WallMaterial.Contains(estimatedParametersTargetObject.WallMaterial)).SelectAll()
+					.ExecuteFirstOrDefault();
+
+				if (wallMaterial != null && wallMaterialTargetObject != null)
+				{
+					var costFactor = OMCostFactor.Where(x => x.Id == 1).SelectAll().ExecuteFirstOrDefault();
+					var factor = Math.Exp((double)(wallMaterialTargetObject.Mark * costFactor.Factor)) / Math.Exp((double)(wallMaterial.Mark * costFactor.Factor));
+					cost = cost * (decimal)factor;
+				}
+
+				{
+					var costFactor = OMCostFactor.Where(x => x.Id == 2).SelectAll().ExecuteFirstOrDefault();
+					var factor = Math.Exp((double)(estimatedParametersTargetObject.DistanceToMetro * costFactor.Factor))
+								 / Math.Exp((double)(estimatedParameters.DistanceToMetro * costFactor.Factor));
+					cost = cost * (decimal)factor;
+				}
+
+				{
+					var costFactor = OMCostFactor.Where(x => x.Id == 3).SelectAll().ExecuteFirstOrDefault();
+					var factor = Math.Exp((double)(estimatedParametersTargetObject.DistanceToHistoryCityCenter * costFactor.Factor))
+								 / Math.Exp((double)(estimatedParameters.DistanceToHistoryCityCenter * costFactor.Factor));
+					cost = cost * (decimal)factor;
+				}
+
+				{
+					var costFactor = OMCostFactor.Where(x => x.Id == 4).SelectAll().ExecuteFirstOrDefault();
+					decimal distA = estimatedParametersTargetObject.DistanceToHighway > 500
+						? 500
+						: estimatedParametersTargetObject.DistanceToHighway; // нормируем расстояние по условию
+
+					decimal distB = estimatedParameters.DistanceToHighway > 500
+						? 500
+						: estimatedParameters.DistanceToHighway; // нормируем расстояние по условию
+
+					var factor = Math.Exp((double)(distA * costFactor.Factor)) / Math.Exp((double)(distB * costFactor.Factor));
+					cost = cost * (decimal)factor;
+
+				}
+
+				{
+					var costFactor = OMCostFactor.Where(x => x.Id == 5).SelectAll().ExecuteFirstOrDefault();
+					var isIndustrialZoneTargetObject =
+						estimatedParametersTargetObject.IndustrialZone == IndustrialZoneEnum.Yes.GetEnumDescription()
+							? 1
+							: 0;
+
+					var isIndustrialZone =
+						estimatedParameters.IndustrialZone == IndustrialZoneEnum.Yes.GetEnumDescription()
+							? 1
+							: 0;
+
+					var factor = Math.Exp((double)(isIndustrialZoneTargetObject * costFactor.Factor)) / Math.Exp((double)(isIndustrialZone * costFactor.Factor));
+					cost = cost * (decimal)factor;
+				}
+
+				{
+					var costFactor = OMCostFactor.Where(x => x.Id == 6).SelectAll().ExecuteFirstOrDefault();
+					var factor = Math.Exp((double)(estimatedParametersTargetObject.CoefficientTerritoryValue * costFactor.Factor))
+								 / Math.Exp((double)(estimatedParameters.CoefficientTerritoryValue * costFactor.Factor));
+					cost = cost * (decimal)factor;
+				}
+
+				{
+					var floor = analog.FloorNumber ?? estimatedParameters.Floor;
+					var floors = OMFloor.Where(x => x).SelectAll().Execute().OrderByDescending(x => x.Floor).ToList();
+
+					var floorFactor = floor != 0
+						? floor > floors[0].Floor ? floors[0].Factor :
+						floors?.FirstOrDefault(x => x.Floor == floor)?.Factor
+						: 0;
+
+					var targetObjectFloorFactor =
+						targetObjectFloor > floors[0].Floor ? floors[0]?.Factor :
+						floors?.FirstOrDefault(x => x.Floor == targetObjectFloor)?.Factor;
+
+					if (floorFactor != null && floorFactor != 0 && targetObjectFloorFactor != null)
+					{
+						var factor = targetObjectFloorFactor / floorFactor;
+						cost = cost * (decimal)factor;
+					}
+
+				}
+				res.Add(Math.Round(cost, 2));
+				successAnalogIds.Add(analog.Id);
+
+			}
+
+			costSquareMeter = res.Sum(x => x) / res.Count;
+			summaryCost = costSquareMeter * square;
+
+			var msg = AddSuccessExpressScore(targetObjectId, summaryCost, costSquareMeter);
+
+			if (!string.IsNullOrEmpty(msg))
+			{
+				return msg;
+			}
+
+			msg = AddDependenceEsFromMarketCoreObject(targetObjectId, successAnalogIds);
+
+			if (!string.IsNullOrEmpty(msg))
+			{
+				return msg;
+			}
+			return "";
+		}
+
+		public string AddSuccessExpressScore(int targetObjectId, decimal cost, decimal costSquareMeter)
+		{
+			try
+			{
+				var kn = OMUnit.Where(x => x.Id == targetObjectId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault()
+					?.CadastralNumber;
+				new OMExpressScore
+				{
+					KadastralNumber = kn,
+					CostSquareMeter = costSquareMeter,
+					DateCost = DateTime.Now.Date,
+					SummaryCost = cost
+				}.Save();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				return "Сохранение результатов оценки не выполненно. Подробнее в журнале ошибок";
+			}
+
+			return "";
+		}
+
+		public string AddDependenceEsFromMarketCoreObject(int targetObjectId, List<long> objectIds)
+		{
+			try
+			{
+				foreach (var objId in objectIds)
+				{
+					new OMEsToMarketCoreObject
+					{
+						EsId = targetObjectId,
+						MarketObjectId = objId
+					}.Save();
+				}
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				return "Добавление связи экспресс оценки и аналогв не выполненно. Подробнее в журнале ошибок";
+			}
+			return "";
 		}
 
 	    public long AddWallMaterial(string wallMaterial, long mark)

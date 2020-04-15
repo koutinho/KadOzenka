@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="600" DefaultLayoutId="61" LinkedRegistersList="600" AllowSearchPanelResize="false"
+              Description="Экспресс оценка" IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left"
+              ShowListsMenu="false" ShowActualDate="false"
+              ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%">
+	<Buttons>
+		<Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
+			<Parameters>
+				<Parameter Key="ObjectId" Value="[ObjectID]" />
+				<Parameter Key="RegisterId" Value="[RegisterId]" />
+			</Parameters>
+		</Button>
+		<Button Caption="Экспресс оценка" NavigateURL="/ExpressScore" Icon="fas fa-edit"/>
+	</Buttons>
+	<Tabs>
+		<Tab Caption="Аналоги" NavigateURL="/RegistersView/KoObjectsCard?Transition=1">
+			<!--<Parameters>
+				<Parameter Key="20100400" Value="[ObjectId]" />
+			</Parameters>-->
+		</Tab>
+	</Tabs>
+</RegisterView>
