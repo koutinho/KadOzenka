@@ -20206,6 +20206,118 @@ namespace ObjectModel.Declarations
 
 namespace ObjectModel.ES
 {
+	/// <summary>
+	/// 600 Экспресс оценка (ES_EXPRESS_SCORE)
+	/// </summary>
+	[RegisterInfo(RegisterID = 600)]
+	[Serializable]
+	public partial class OMExpressScore : OMBaseClass<OMExpressScore>
+	{
+
+		private long _id;
+		/// <summary>
+		/// 60000100 Идентификатор (Id)
+		/// </summary>
+		[PrimaryKey(AttributeID = 60000100)]
+		public long Id
+		{
+			get
+			{
+				CheckPropertyInited("Id");
+				return _id;
+			}
+			set
+			{
+				_id = value;
+				NotifyPropertyChanged("Id");
+			}
+		}
+
+
+		private string _kadastralnumber;
+		/// <summary>
+		/// 60000200 Кадастровый номер (KN)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 60000200)]
+		public string KadastralNumber
+		{
+			get
+			{
+				CheckPropertyInited("KadastralNumber");
+				return _kadastralnumber;
+			}
+			set
+			{
+				_kadastralnumber = value;
+				NotifyPropertyChanged("KadastralNumber");
+			}
+		}
+
+
+		private DateTime? _datecost;
+		/// <summary>
+		/// 60000300 Дата оценки (DATE_COST)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 60000300)]
+		public DateTime? DateCost
+		{
+			get
+			{
+				CheckPropertyInited("DateCost");
+				return _datecost;
+			}
+			set
+			{
+				_datecost = value;
+				NotifyPropertyChanged("DateCost");
+			}
+		}
+
+
+		private decimal? _summarycost;
+		/// <summary>
+		/// 60000400 Общая стоимость (SUMMARY_COST)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 60000400)]
+		public decimal? SummaryCost
+		{
+			get
+			{
+				CheckPropertyInited("SummaryCost");
+				return _summarycost;
+			}
+			set
+			{
+				_summarycost = value;
+				NotifyPropertyChanged("SummaryCost");
+			}
+		}
+
+
+		private decimal? _costsquaremeter;
+		/// <summary>
+		/// 60000500 Стоимость за квадратный метр (COST_SQUARE_METER)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 60000500)]
+		public decimal? CostSquareMeter
+		{
+			get
+			{
+				CheckPropertyInited("CostSquareMeter");
+				return _costsquaremeter;
+			}
+			set
+			{
+				_costsquaremeter = value;
+				NotifyPropertyChanged("CostSquareMeter");
+			}
+		}
+
+	}
+}
+
+namespace ObjectModel.ES
+{
     /// <summary>
     /// 601 Экспресс оценка. Год постройки (ES_YEAR_CONSTRUCTION)
     /// </summary>

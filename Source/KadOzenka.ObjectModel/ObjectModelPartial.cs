@@ -2781,11 +2781,36 @@ namespace ObjectModel.Declarations
 }
 
 namespace ObjectModel.ES
+{    
+	
+	/// <summary>
+	/// 600 Экспресс оценка
+	/// </summary>
+	public partial class OMExpressScore
+	{
+
+		public OMExpressScore()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMExpressScore(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
+namespace ObjectModel.ES
 {
-    /// <summary>
-    /// 601 Экспресс оценка. Год постройки
-    /// </summary>
-    public partial class OMYearConstruction
+
+	/// 601 Экспресс оценка. Год постройки
+	/// </summary>
+	public partial class OMYearConstruction
     {
 
         public OMYearConstruction()
