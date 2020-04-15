@@ -2807,7 +2807,7 @@ namespace ObjectModel.ES
 
 namespace ObjectModel.ES
 {
-
+	/// <summary>
 	/// 601 Экспресс оценка. Год постройки
 	/// </summary>
 	public partial class OMYearConstruction
