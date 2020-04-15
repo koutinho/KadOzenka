@@ -43,12 +43,6 @@
             </Parameters>
         </Button>
 
-        <Button Caption="Объект недвижимости" NavigateURL="~/GbuObject/GbuObjectCard" Icon="icon-contract" >
-            <Parameters>
-                <Parameter Key="objectId" Value="[ObjectID]" />
-            </Parameters>
-        </Button>
-
         <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
 
         <Button Caption="Гармонизация" NavigateURL="/GbuObject/Harmonization" WindowHeight="800" WindowWidth="1000"  Icon="fas fa-wrench"/>
@@ -57,18 +51,14 @@
     </Buttons>
 
     <Tabs>
-        <Tab Caption="Основные данные" NavigateURL="/GbuObjects/ObjectCard">
+        <Tab Caption="Основные данные" NavigateURL="/GbuObject/GbuObjectCard">
             <Parameters>
-                <Parameter Key="id" Value="[ObjectId]" />
+                <Parameter Key="objectId" Value="[ObjectId]" />
             </Parameters>
         </Tab>
     </Tabs>
 
     <RowMenuButtons>
-        <Button Caption="Объект недвижимости" Icon="far fa-file-alt" NavigateURL="~/GbuObject/GbuObjectCard">
-            <Parameters>
-                <Parameter Key="objectId" Value="[ObjectID]" />
-            </Parameters>
-        </Button>
+        <Button Caption="Объект недвижимости" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
     </RowMenuButtons>
 </RegisterView>

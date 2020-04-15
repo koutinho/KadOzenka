@@ -785,8 +785,14 @@
     <Content Update="Views\ExpressScore\WallMaterial.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="Views\GbuObject\GbuObjectCardNew.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="Views\GbuObject\GroupingObject.cshtml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\GbuObject\_gbuObjectCardPanelBar.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="Views\Report\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>

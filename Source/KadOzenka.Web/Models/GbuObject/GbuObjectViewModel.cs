@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 
@@ -21,15 +23,18 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Дата актуализации")]
 		public DateTime? DateActual { get; set; }
 
-		public static GbuObjectViewModel FromEntity(OMMainObject entity, DateTime? dateActual)
+        public List<RegisterDto> RegisterDtoList { get; set; }
+
+        public static GbuObjectViewModel FromEntity(OMMainObject entity, DateTime? dateActual, List<RegisterDto> registerDtoList)
 		{
 			if (entity == null)
 			{
 				return new GbuObjectViewModel
 				{
 					Id = -1,
-					DateActual = dateActual
-				};
+					DateActual = dateActual,
+				    RegisterDtoList = registerDtoList
+                };
 			}
 
 			return new GbuObjectViewModel
@@ -37,7 +42,8 @@ namespace KadOzenka.Web.Models.GbuObject
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
 				ObjectType = entity.ObjectType_Code,
-				DateActual = dateActual
+				DateActual = dateActual,
+                RegisterDtoList = registerDtoList
 			};
 		}
 	}
