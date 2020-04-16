@@ -180,7 +180,9 @@ namespace KadOzenka.Dal.DataImport
 				import.DateFinished = DateTime.Now;
 				import.ResultMessage = $"{ex.Message}{($" (журнал № {errorId})")}";
 				import.Save();
-			}			
+
+                throw;
+            }			
 
 			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
 			task.Status_Code = ObjectModel.Directory.KoTaskStatus.Ready;
