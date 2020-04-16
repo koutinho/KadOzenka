@@ -57,6 +57,24 @@
             if (rowCount == 0) rowCount = 1;
             var size = 60 + rowCount * 50;
             window.frameElement.style.height = size + "px";
+            $("#Grid").data("kendoGrid").thead.kendoTooltip({
+                filter: "th",
+                content: function (e) {
+                    return e.target.text();
+                },
+                position: "top",
+                autoHide: true,
+                showAfter: 500
+            });
+            $("#Grid").data("kendoGrid").tbody.kendoTooltip({
+                filter: "td",
+                content: function (e) {
+                    return e.target.text();
+                },
+                position: "top",
+                autoHide: true,
+                showAfter: 500
+            });
         });
     </script>
 </div>
