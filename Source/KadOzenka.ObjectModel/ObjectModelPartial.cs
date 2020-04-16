@@ -2781,36 +2781,35 @@ namespace ObjectModel.Declarations
 }
 
 namespace ObjectModel.ES
-{    
-	
-	/// <summary>
-	/// 600 Экспресс оценка
-	/// </summary>
-	public partial class OMExpressScore
-	{
+{
+    /// <summary>
+    /// 600 Экспресс оценка
+    /// </summary>
+    public partial class OMExpressScore
+    {
 
-		public OMExpressScore()
-		{
+        public OMExpressScore()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMExpressScore(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMExpressScore(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
 
 namespace ObjectModel.ES
 {
-	/// <summary>
-	/// 601 Экспресс оценка. Год постройки
-	/// </summary>
-	public partial class OMYearConstruction
+    /// <summary>
+    /// 601 Экспресс оценка. Год постройки
+    /// </summary>
+    public partial class OMYearConstruction
     {
 
         public OMYearConstruction()
@@ -2975,26 +2974,74 @@ namespace ObjectModel.ES
 
 namespace ObjectModel.ES
 {
-	/// <summary>
-	/// 608 Связь экспресс оценки и объектов аналогов
-	/// </summary>
-	public partial class OMEsToMarketCoreObject
-	{
+    /// <summary>
+    /// 608 Связь экспресс оценки и объектов аналогов
+    /// </summary>
+    public partial class OMEsToMarketCoreObject
+    {
 
-		public OMEsToMarketCoreObject()
-		{
+        public OMEsToMarketCoreObject()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMEsToMarketCoreObject(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMEsToMarketCoreObject(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 609 Экспресс оценка. Справочники
+    /// </summary>
+    public partial class OMEsReference
+    {
+
+        public OMEsReference()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMEsReference(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 610 Экспресс оценка. Значения справочников
+    /// </summary>
+    public partial class OMEsReferenceItem
+    {
+
+        public OMEsReferenceItem()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMEsReferenceItem(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
 
 namespace ObjectModel.Common

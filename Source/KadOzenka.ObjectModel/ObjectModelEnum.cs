@@ -3244,6 +3244,45 @@ namespace ObjectModel.Directory.Declarations
     }
 }
 
+namespace ObjectModel.Directory.ES
+{
+    /// <summary>
+    /// Тип данных кода справочника (600)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 600)]
+    public enum ReferenceItemCodeType : long
+    {
+		/// <summary>
+		/// Целое число (1)
+		/// </summary>
+		[Description("Целое число")]
+        [EnumCode("1")]
+        [ShortTitle("Целое число")]
+        Integer = 1,
+		/// <summary>
+		/// Десятичное число (2)
+		/// </summary>
+		[Description("Десятичное число")]
+        [EnumCode("2")]
+        [ShortTitle("Десятичное число")]
+        Decimal = 2,
+		/// <summary>
+		/// Строка (4)
+		/// </summary>
+		[Description("Строка")]
+        [EnumCode("4")]
+        [ShortTitle("Строка")]
+        String = 4,
+		/// <summary>
+		/// Дата и время (5)
+		/// </summary>
+		[Description("Дата и время")]
+        [EnumCode("5")]
+        [ShortTitle("Дата и время")]
+        Date = 5,
+    }
+}
+
 namespace ObjectModel.Directory.Common
 {
     /// <summary>

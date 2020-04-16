@@ -20206,114 +20206,114 @@ namespace ObjectModel.Declarations
 
 namespace ObjectModel.ES
 {
-	/// <summary>
-	/// 600 Экспресс оценка (ES_EXPRESS_SCORE)
-	/// </summary>
-	[RegisterInfo(RegisterID = 600)]
-	[Serializable]
-	public partial class OMExpressScore : OMBaseClass<OMExpressScore>
-	{
+    /// <summary>
+    /// 600 Экспресс оценка (ES_EXPRESS_SCORE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 600)]
+    [Serializable]
+    public partial class OMExpressScore : OMBaseClass<OMExpressScore>
+    {
 
-		private long _id;
-		/// <summary>
-		/// 60000100 Идентификатор (Id)
-		/// </summary>
-		[PrimaryKey(AttributeID = 60000100)]
-		public long Id
-		{
-			get
-			{
-				CheckPropertyInited("Id");
-				return _id;
-			}
-			set
-			{
-				_id = value;
-				NotifyPropertyChanged("Id");
-			}
-		}
-
-
-		private string _kadastralnumber;
-		/// <summary>
-		/// 60000200 Кадастровый номер (KN)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 60000200)]
-		public string KadastralNumber
-		{
-			get
-			{
-				CheckPropertyInited("KadastralNumber");
-				return _kadastralnumber;
-			}
-			set
-			{
-				_kadastralnumber = value;
-				NotifyPropertyChanged("KadastralNumber");
-			}
-		}
+        private long _id;
+        /// <summary>
+        /// 60000100 Идентификатор (Id)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
 
 
-		private DateTime? _datecost;
-		/// <summary>
-		/// 60000300 Дата оценки (DATE_COST)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 60000300)]
-		public DateTime? DateCost
-		{
-			get
-			{
-				CheckPropertyInited("DateCost");
-				return _datecost;
-			}
-			set
-			{
-				_datecost = value;
-				NotifyPropertyChanged("DateCost");
-			}
-		}
+        private string _kadastralnumber;
+        /// <summary>
+        /// 60000200 Кадастровый номер (KN)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000200)]
+        public string KadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("KadastralNumber");
+                return _kadastralnumber;
+            }
+            set
+            {
+                _kadastralnumber = value;
+                NotifyPropertyChanged("KadastralNumber");
+            }
+        }
 
 
-		private decimal? _summarycost;
-		/// <summary>
-		/// 60000400 Общая стоимость (SUMMARY_COST)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 60000400)]
-		public decimal? SummaryCost
-		{
-			get
-			{
-				CheckPropertyInited("SummaryCost");
-				return _summarycost;
-			}
-			set
-			{
-				_summarycost = value;
-				NotifyPropertyChanged("SummaryCost");
-			}
-		}
+        private DateTime? _datecost;
+        /// <summary>
+        /// 60000300 Дата оценки (DATE_COST)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000300)]
+        public DateTime? DateCost
+        {
+            get
+            {
+                CheckPropertyInited("DateCost");
+                return _datecost;
+            }
+            set
+            {
+                _datecost = value;
+                NotifyPropertyChanged("DateCost");
+            }
+        }
 
 
-		private decimal? _costsquaremeter;
-		/// <summary>
-		/// 60000500 Стоимость за квадратный метр (COST_SQUARE_METER)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 60000500)]
-		public decimal? CostSquareMeter
-		{
-			get
-			{
-				CheckPropertyInited("CostSquareMeter");
-				return _costsquaremeter;
-			}
-			set
-			{
-				_costsquaremeter = value;
-				NotifyPropertyChanged("CostSquareMeter");
-			}
-		}
+        private decimal? _summarycost;
+        /// <summary>
+        /// 60000400 Общая стоимость (SUMMARY_COST)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000400)]
+        public decimal? SummaryCost
+        {
+            get
+            {
+                CheckPropertyInited("SummaryCost");
+                return _summarycost;
+            }
+            set
+            {
+                _summarycost = value;
+                NotifyPropertyChanged("SummaryCost");
+            }
+        }
 
-	}
+
+        private decimal? _costsquaremeter;
+        /// <summary>
+        /// 60000500 Стоимость за квадратный метр (COST_SQUARE_METER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000500)]
+        public decimal? CostSquareMeter
+        {
+            get
+            {
+                CheckPropertyInited("CostSquareMeter");
+                return _costsquaremeter;
+            }
+            set
+            {
+                _costsquaremeter = value;
+                NotifyPropertyChanged("CostSquareMeter");
+            }
+        }
+
+    }
 }
 
 namespace ObjectModel.ES
@@ -20754,12 +20754,12 @@ namespace ObjectModel.ES
                 {
                     if (string.IsNullOrEmpty(_segmenttype))
                     {
-                        _segmenttype = descr;
+                         _segmenttype = descr;
                     }
                 }
                 else
                 {
-                    _segmenttype = descr;
+                     _segmenttype = descr;
                 }
 
                 this._segmenttype_Code = value;
@@ -20840,6 +20840,7 @@ namespace ObjectModel.ES
             }
         }
 
+
         private long _floor;
         /// <summary>
         /// 60600400 Этаж (FLOOR)
@@ -20847,20 +20848,19 @@ namespace ObjectModel.ES
         [RegisterAttribute(AttributeID = 60600400)]
         public long Floor
         {
-	        get
-	        {
-		        CheckPropertyInited("Floor");
-		        return _floor;
-	        }
-	        set
-	        {
-		        _floor = value;
-		        NotifyPropertyChanged("Floor");
-	        }
+            get
+            {
+                CheckPropertyInited("Floor");
+                return _floor;
+            }
+            set
+            {
+                _floor = value;
+                NotifyPropertyChanged("Floor");
+            }
         }
 
-
-	}
+    }
 }
 
 namespace ObjectModel.ES
@@ -20912,6 +20912,7 @@ namespace ObjectModel.ES
             }
         }
 
+
         private string _namefactor;
         /// <summary>
         /// 60700300 Наименование фактора (NAME)
@@ -20919,16 +20920,16 @@ namespace ObjectModel.ES
         [RegisterAttribute(AttributeID = 60700300)]
         public string NameFactor
         {
-	        get
-	        {
-		        CheckPropertyInited("NameFactor");
-		        return _namefactor;
-	        }
-	        set
-	        {
-		        _namefactor = value;
-		        NotifyPropertyChanged("NameFactor");
-	        }
+            get
+            {
+                CheckPropertyInited("NameFactor");
+                return _namefactor;
+            }
+            set
+            {
+                _namefactor = value;
+                NotifyPropertyChanged("NameFactor");
+            }
         }
 
     }
@@ -20936,74 +20937,273 @@ namespace ObjectModel.ES
 
 namespace ObjectModel.ES
 {
-	/// <summary>
-	/// 608 Связь экспресс оценки и объектов аналогов (ES_TO_MARKET_CORE_OBJECT)
-	/// </summary>
-	[RegisterInfo(RegisterID = 608)]
-	[Serializable]
-	public partial class OMEsToMarketCoreObject : OMBaseClass<OMEsToMarketCoreObject>
-	{
+    /// <summary>
+    /// 608 Связь экспресс оценки и объектов аналогов (ES_TO_MARKET_CORE_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 608)]
+    [Serializable]
+    public partial class OMEsToMarketCoreObject : OMBaseClass<OMEsToMarketCoreObject>
+    {
 
-		private long _id;
-		/// <summary>
-		/// 60800100 Идентификатор (ID)
-		/// </summary>
-		[PrimaryKey(AttributeID = 60800100)]
-		public long Id
-		{
-			get
-			{
-				CheckPropertyInited("Id");
-				return _id;
-			}
-			set
-			{
-				_id = value;
-				NotifyPropertyChanged("Id");
-			}
-		}
-
-
-		private long _esid;
-		/// <summary>
-		/// 60800200 Идентификатор экспресс оценки (ES_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 60800200)]
-		public long EsId
-		{
-			get
-			{
-				CheckPropertyInited("EsId");
-				return _esid;
-			}
-			set
-			{
-				_esid = value;
-				NotifyPropertyChanged("EsId");
-			}
-		}
+        private long _id;
+        /// <summary>
+        /// 60800100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60800100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
 
 
-		private long _marketobjectid;
-		/// <summary>
-		/// 60800300 Идентификатор объктов аналогов (MARKET_OBJECT_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 60800300)]
-		public long MarketObjectId
-		{
-			get
-			{
-				CheckPropertyInited("MarketObjectId");
-				return _marketobjectid;
-			}
-			set
-			{
-				_marketobjectid = value;
-				NotifyPropertyChanged("MarketObjectId");
-			}
-		}
+        private long _esid;
+        /// <summary>
+        /// 60800200 Идентификатор экспресс оценки (ES_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60800200)]
+        public long EsId
+        {
+            get
+            {
+                CheckPropertyInited("EsId");
+                return _esid;
+            }
+            set
+            {
+                _esid = value;
+                NotifyPropertyChanged("EsId");
+            }
+        }
 
-	}
+
+        private long _marketobjectid;
+        /// <summary>
+        /// 60800300 Идентификатор объктов аналогов (MARKET_OBJECT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60800300)]
+        public long MarketObjectId
+        {
+            get
+            {
+                CheckPropertyInited("MarketObjectId");
+                return _marketobjectid;
+            }
+            set
+            {
+                _marketobjectid = value;
+                NotifyPropertyChanged("MarketObjectId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 609 Экспресс оценка. Справочники (ES_REFERENCE)
+    /// </summary>
+    [RegisterInfo(RegisterID = 609)]
+    [Serializable]
+    public partial class OMEsReference : OMBaseClass<OMEsReference>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 60900100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 60900100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 60900200 Наименование справочника (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60900200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.ES
+{
+    /// <summary>
+    /// 610 Экспресс оценка. Значения справочников (ES_REFERENCE_ITEM)
+    /// </summary>
+    [RegisterInfo(RegisterID = 610)]
+    [Serializable]
+    public partial class OMEsReferenceItem : OMBaseClass<OMEsReferenceItem>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 61000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 61000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _referenceid;
+        /// <summary>
+        /// 61000200 Идентификатор справочника (ES_REFERENCE_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000200)]
+        public long ReferenceId
+        {
+            get
+            {
+                CheckPropertyInited("ReferenceId");
+                return _referenceid;
+            }
+            set
+            {
+                _referenceid = value;
+                NotifyPropertyChanged("ReferenceId");
+            }
+        }
+
+
+        private string _value;
+        /// <summary>
+        /// 61000300 Значение (VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000300)]
+        public string Value
+        {
+            get
+            {
+                CheckPropertyInited("Value");
+                return _value;
+            }
+            set
+            {
+                _value = value;
+                NotifyPropertyChanged("Value");
+            }
+        }
+
+
+        private string _valuetype;
+        /// <summary>
+        /// 61000400 Тип значения (VALUE_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000400)]
+        public string ValueType
+        {
+            get
+            {
+                CheckPropertyInited("ValueType");
+                return _valuetype;
+            }
+            set
+            {
+                _valuetype = value;
+                NotifyPropertyChanged("ValueType");
+            }
+        }
+
+
+        private ObjectModel.Directory.ES.ReferenceItemCodeType _valuetype_Code;
+        /// <summary>
+        /// 61000400 Тип значения (справочный код) (VALUE_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000400)]
+        public ObjectModel.Directory.ES.ReferenceItemCodeType ValueType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ValueType_Code");
+                return this._valuetype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_valuetype))
+                    {
+                         _valuetype = descr;
+                    }
+                }
+                else
+                {
+                     _valuetype = descr;
+                }
+
+                this._valuetype_Code = value;
+                NotifyPropertyChanged("ValueType");
+                NotifyPropertyChanged("ValueType_Code");
+            }
+        }
+
+
+        private decimal? _calculationvalue;
+        /// <summary>
+        /// 61000500 Значение для расчета (CALCULATION_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 61000500)]
+        public decimal? CalculationValue
+        {
+            get
+            {
+                CheckPropertyInited("CalculationValue");
+                return _calculationvalue;
+            }
+            set
+            {
+                _calculationvalue = value;
+                NotifyPropertyChanged("CalculationValue");
+            }
+        }
+
+    }
 }
 
 namespace ObjectModel.Common
