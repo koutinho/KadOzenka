@@ -11,12 +11,14 @@
 			</Parameters>
 		</Button>
 		<Button Caption="Экспресс оценка" NavigateURL="/ExpressScore" Icon="fas fa-edit"/>
+
+		<Button Caption="Материал стен" NavigateURL="/ExpressScore/WallMaterial" Icon="fas fa-plus-square"/>
 	</Buttons>
 	<Tabs>
-		<Tab Caption="Аналоги" NavigateURL="/RegistersView/KoObjectsCard?Transition=1">
-			<!--<Parameters>
-				<Parameter Key="20100400" Value="[ObjectId]" />
-			</Parameters>-->
+		<Tab Caption="Аналоги" NavigateURL="/ExpressScore/AnalogObjectsCard">
+			<Parameters>
+				<Parameter Key="objectId" Value="[ObjectId]" />
+			</Parameters>
 		</Tab>
 	</Tabs>
 </RegisterView>

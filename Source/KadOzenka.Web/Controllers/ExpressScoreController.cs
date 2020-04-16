@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CIPJS.Models.ExpressScore;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
@@ -164,6 +165,14 @@ namespace KadOzenka.Web.Controllers
 			return Json(new {response = new { costSquareMeter, summaryCost } });
 		}
 
+		public ActionResult AnalogObjectsCard(int objectId)
+		{
+			var marketIds = OMEsToMarketCoreObject.Where(x => x.EsId == objectId).SelectAll().Execute().Select(x => x.MarketObjectId).ToList();
+
+			ViewBag.filter = $"10002000={string.Join(',', marketIds)}";
+
+			return View();
+		}
 	}
 }
 

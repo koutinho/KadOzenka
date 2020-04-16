@@ -365,14 +365,14 @@ namespace KadOzenka.Dal.ExpressScore
 			costSquareMeter = res.Sum(x => x) / res.Count;
 			summaryCost = costSquareMeter * square;
 
-			var msg = AddSuccessExpressScore(targetObjectId, summaryCost, costSquareMeter);
+			var msg = AddSuccessExpressScore(targetObjectId, summaryCost, costSquareMeter, out int id );
 
 			if (!string.IsNullOrEmpty(msg))
 			{
 				return msg;
 			}
 
-			msg = AddDependenceEsFromMarketCoreObject(targetObjectId, successAnalogIds);
+			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
 
 			if (!string.IsNullOrEmpty(msg))
 			{
@@ -381,13 +381,14 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
-		public string AddSuccessExpressScore(int targetObjectId, decimal cost, decimal costSquareMeter)
+		public string AddSuccessExpressScore(int targetObjectId, decimal cost, decimal costSquareMeter, out int id)
 		{
+			id = 0;
 			try
 			{
 				var kn = OMUnit.Where(x => x.Id == targetObjectId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault()
 					?.CadastralNumber;
-				new OMExpressScore
+				id = new OMExpressScore
 				{
 					KadastralNumber = kn,
 					CostSquareMeter = costSquareMeter,
