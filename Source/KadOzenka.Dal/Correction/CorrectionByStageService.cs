@@ -25,10 +25,9 @@ namespace KadOzenka.Dal.Correction
 		public CorrectionByStageService()
 		{
 		}
+
 		public void MakeCorrection(DateTime date)
 		{
-			//TODO: для нового периода подтягивать данные старого периода по исключенным зданиям
-
 			WorkerCommon.SetProgress(processQueue, 0);
 
 			date = new DateTime(date.Year, date.Month, 1);
@@ -73,14 +72,38 @@ namespace KadOzenka.Dal.Correction
 			
 			WorkerCommon.SetProgress(processQueue, 20);
 
-			//перезапишем данные таблицы коэффициентов
-			//сохраним исключенные элементы на заданную дату
-			var excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded == true)
-				.SelectAll(false).Execute()
-				.Select(x => new { CadastralNumber = x.BuildingCadastralNumber, Segment = x.MarketSegment_Code });
+			//проверка, что данный период обрабатывался ранее
+			bool thisPeriodExists = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date)
+				.Select(x => x.Id).ExecuteExists();
 
-			//удалим и перезапишем историю на заданную дату
-			DeleteHistory(date);
+			List<CadSegment> excludedList;
+
+			if (thisPeriodExists)
+			{
+				//сохраним исключенные элементы на заданную дату
+				excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded == true)
+					.SelectAll(false).Execute()
+					.Select(x => new CadSegment
+					{
+						CadastralNumber = x.BuildingCadastralNumber,
+						Segment = x.MarketSegment_Code
+					}).ToList();
+
+				//удалим и перезапишем историю на заданную дату
+				DeleteHistory(date);
+			}
+			else
+			{
+				//берем данные предыдущего периода
+				DateTime prevDate = date.AddMonths(-1);
+				excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == prevDate && x.IsExcluded == true)
+					.SelectAll(false).Execute()
+					.Select(x => new CadSegment
+					{
+						CadastralNumber = x.BuildingCadastralNumber,
+						Segment = x.MarketSegment_Code
+					}).ToList();
+			}
 
 			foreach (var obj in ratioPrice)
 			{
@@ -222,5 +245,11 @@ namespace KadOzenka.Dal.Correction
 			return isDataUpdated;
 		}
 
+	}
+
+	class CadSegment
+	{
+		public string CadastralNumber { get; set; }
+		public MarketSegment Segment { get; set; }
 	}
 }
