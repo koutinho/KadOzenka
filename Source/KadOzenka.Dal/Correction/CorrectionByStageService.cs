@@ -22,6 +22,9 @@ namespace KadOzenka.Dal.Correction
 			processQueue = queue;
 		}
 
+		public CorrectionByStageService()
+		{
+		}
 		public void MakeCorrection(DateTime date)
 		{
 			//TODO: для нового периода подтягивать данные старого периода по исключенным зданиям
