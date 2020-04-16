@@ -13,7 +13,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class GbuCodController : BaseController
+	public class GbuCodController : KoBaseController
 	{
 		#region CodJob
 
@@ -43,20 +43,12 @@ namespace KadOzenka.Web.Controllers
 			long id;
 			try
 			{
-				id = codJob.Save();
+                id = codJob.Save();
 			}
 			catch (Exception e)
 			{
-				return Json(new
-				{
-					Errors =
-						new
-						{
-							Control = string.Empty,
-							e.Message
-						}
-				});
-			}
+			    return SendErrorMessage(e.Message);
+            }
 			viewModel.Id = id;
 			return Json(new { Success = "Сохранено успешно", data = viewModel });
 		}
@@ -148,15 +140,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			catch (Exception e)
 			{
-				return Json(new
-				{
-					Errors =
-						new
-						{
-							Control = string.Empty,
-							e.Message
-						}
-				});
+			    return SendErrorMessage(e.Message);
 			}
 			viewModel.Id = id;
 			return Json(new { Success = "Сохранено успешно", data = viewModel });

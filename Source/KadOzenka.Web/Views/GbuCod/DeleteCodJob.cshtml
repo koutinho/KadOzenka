@@ -33,12 +33,12 @@
                 var formObject = Common.Functions.FormToObject(form);
 
                 $.post(form.attr('action'), formObject).done(function (response) {
-                    kendo.ui.progress($('body'), false);
                     Common.ShowMessage("Задание ЦОД успешно удалено");
                     $(btn).attr('disabled', true);
                 }).fail(function (response, textStatus, errorThrown) {
-                    kendo.ui.progress($('body'), false);
                     Common.ShowError(response.responseText);
+                }).always(function () {
+                    kendo.ui.progress($('body'), false);
                 });
             });
     });
