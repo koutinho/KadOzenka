@@ -2999,4 +2999,18 @@ namespace KadOzenka.Dal.DataExport
             _sheet.Rows[1].Height = 4 * 256;
         }
     }
+
+    /// <summary>
+    /// Класс итоговой выгрузки результатов
+    /// </summary>
+    public class KOUnloadResult
+    {
+        /// <summary>
+        /// Выгрузка результатов
+        /// </summary>
+        public static void Unload(KOUnloadSettings setting)
+        {
+            //todo
+        }
+    }
 }

@@ -2317,7 +2317,67 @@ namespace ObjectModel.KO
         public List<long> CalcGroups;
     }
 
-    public partial class OMUnitChange
+    /// <summary>
+    /// Настройки выгрузки отчетов
+    /// </summary>
+    public struct KOUnloadSettings
     {
+        /// <summary>
+        /// Тур оценки
+        /// </summary>
+        public long IdTour;
+        /// <summary>
+        /// Список заданий на оценку
+        /// </summary>
+        public List<long> TaskFilter;
+        /// <summary>
+        /// Объекты выгрузки: true-Земельный участок, false-ОКС
+        /// </summary>
+        public bool UnloadParcel;
+
+        /// <summary>
+        /// Выгрузка изменений
+        /// </summary>
+        public bool UnloadChange;
+        /// <summary>
+        /// Выгрузка истории по объектам
+        /// </summary>
+        public bool UnloadHistory;
+        /// <summary>
+        /// Таблица 4. Группировка объектов недвижимости
+        /// </summary>
+        public bool UnloadTable04;
+        /// <summary>
+        /// Таблица 5. Результаты моделирования
+        /// </summary>
+        public bool UnloadTable05;
+        /// <summary>
+        /// Таблица 7. Обобщенные показатели по кадастровым районам
+        /// </summary>
+        public bool UnloadTable07;
+        /// <summary>
+        /// Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам
+        /// </summary>
+        public bool UnloadTable08;
+        /// <summary>
+        /// Таблица 9. Результаты определения кадастровой стоимости
+        /// </summary>
+        public bool UnloadTable09;
+        /// <summary>
+        /// Таблица 10. Результаты государственной кадастровой оценки
+        /// </summary>
+        public bool UnloadTable10;
+        /// <summary>
+        /// Таблица 11. Сводные результаты по кадастровому району
+        /// </summary>
+        public bool UnloadTable11;
+        /// <summary>
+        /// Выгрузка XML 1
+        /// </summary>
+        public bool UnloadXML1;
+        /// <summary>
+        /// Выгрузка XML 2
+        /// </summary>
+        public bool UnloadXML2;
     }
 }
