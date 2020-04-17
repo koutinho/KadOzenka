@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.Correction
             return new OMIndexesForDateCorrection
             {
                 Date = date,
-                ConsumerPriceIndex = 1
+                Coefficient = 1
             };
         }
 
@@ -75,7 +75,7 @@ namespace KadOzenka.Dal.Correction
             var date = obj.LastDateUpdate ?? obj.ParserTime.Value;
             var dateToCompare = new DateTime(date.Year, date.Month, 1);
 
-            var inflationRate = consumerIndexes.Where(x => x.Date >= dateToCompare).Sum(x => x.ConsumerPriceIndex.GetValueOrDefault());
+            var inflationRate = consumerIndexes.Where(x => x.Date >= dateToCompare).Sum(x => x.Coefficient);
 
             var priceDifference = (obj.Price * inflationRate) / 100;
             return obj.Price + priceDifference;
@@ -106,11 +106,16 @@ namespace KadOzenka.Dal.Correction
 
         private CorrectionByDateDto ToDto(OMIndexesForDateCorrection index)
         {
+            if (index == null)
+                return new CorrectionByDateDto();
+
             return new CorrectionByDateDto
             {
-                Date = index.Date,
-                AvaragePricePerMeter = index.AveragePricePerMeter,
-                ConsumerPriceIndex = index.ConsumerPriceIndex
+                Id = index.Id,
+                BuildingCadastralNumber = index.BuildingCadastralNumber,
+                MarketSegment = index.MarketSegment_Code,
+                Coefficient = index.Coefficient,
+                IsExcludeFromCalculation = index.IsExcluded.GetValueOrDefault()
             };
         }
 

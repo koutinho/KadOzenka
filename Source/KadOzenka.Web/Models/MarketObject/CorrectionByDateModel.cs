@@ -6,23 +6,40 @@ namespace KadOzenka.Web.Models.MarketObject
 {
     public class CorrectionByDateModel
     {
+        public long Id { get; set; }
+        public bool IsDirty { get; set; }
+
         [Display(Name = "Дата")]
-        public DateTime? IndexDate { get; set; }
+        public DateTime Date { get; set; }
 
-        [Display(Name = "Средняя цена за кв.м.")]
-        public decimal? AveragePricePerMeter { get; set; }
+        [Display(Name = "Кадастровый номер здания")]
+        public string BuildingCadastralNumber { get; set; }
 
-        [Display(Name = "Индекс цен")]
-        public decimal? ConsumerPriceIndex { get; set; }
+        [Display(Name = "Коэффициент")]
+        public decimal Coefficient { get; set; }
+
+        [Display(Name = "Исключить из расчета")]
+        public bool IsExcludeFromCalculation { get; set; }
 
 
-        public static CorrectionByDateModel Map(CorrectionByDateDto index)
+        public static CorrectionByDateModel Map(CorrectionByDateDto coefficient)
         {
             return new CorrectionByDateModel
             {
-                IndexDate = index.Date,
-                AveragePricePerMeter = index.AvaragePricePerMeter,
-                ConsumerPriceIndex = index.ConsumerPriceIndex
+                Id = coefficient.Id,
+                BuildingCadastralNumber = coefficient.BuildingCadastralNumber,
+                Date = coefficient.Date,
+                Coefficient = coefficient.Coefficient,
+                IsExcludeFromCalculation = coefficient.IsExcludeFromCalculation
+            };
+        }
+
+        public static CorrectionByDateDto UnMap(CorrectionByDateModel model)
+        {
+            return new CorrectionByDateDto
+            {
+                Id = model.Id,
+                IsExcludeFromCalculation = model.IsExcludeFromCalculation
             };
         }
     }

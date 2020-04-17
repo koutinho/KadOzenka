@@ -6,9 +6,8 @@
             .Name("Grid")
             .Columns(columns =>
             {
-                columns.Bound(x => x.IndexDate).Format("{0:" + KadOzenka.Dal.Correction.Consts.DateFormatForDateCorrection + "}");
-                columns.Bound(x => x.AveragePricePerMeter);
-                columns.Bound(x => x.ConsumerPriceIndex).Title("Индекс цен к " + ViewBag.LastDate);
+                columns.Bound(x => x.Date).Format("{0:" + KadOzenka.Dal.Correction.Consts.DateFormatForDateCorrection + "}");
+                columns.Bound(x => x.Coefficient).Title("Индекс цен к " + ViewBag.LastDate);
             })
             .Navigatable()
             .Pageable()

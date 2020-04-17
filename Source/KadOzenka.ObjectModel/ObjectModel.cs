@@ -3708,42 +3708,117 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _averagepricepermeter;
+        private decimal _coefficient;
         /// <summary>
-        /// 10800300 Средняя цена за кв.м. (AVERAGE_PRICE_PER_METER)
+        /// 10800400 Коэффициент (COEFFICIENT)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10800300)]
-        public decimal? AveragePricePerMeter
+        [RegisterAttribute(AttributeID = 10800400)]
+        public decimal Coefficient
         {
             get
             {
-                CheckPropertyInited("AveragePricePerMeter");
-                return _averagepricepermeter;
+                CheckPropertyInited("Coefficient");
+                return _coefficient;
             }
             set
             {
-                _averagepricepermeter = value;
-                NotifyPropertyChanged("AveragePricePerMeter");
+                _coefficient = value;
+                NotifyPropertyChanged("Coefficient");
             }
         }
 
 
-        private decimal? _consumerpriceindex;
+        private string _buildingcadastralnumber;
         /// <summary>
-        /// 10800400 Индекс потребительских цен (CONSUMER_PRICE_INDEX)
+        /// 10800600 Кадастровый номер здания (BUILDING_CADASTRAL_NUMBER)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10800400)]
-        public decimal? ConsumerPriceIndex
+        [RegisterAttribute(AttributeID = 10800600)]
+        public string BuildingCadastralNumber
         {
             get
             {
-                CheckPropertyInited("ConsumerPriceIndex");
-                return _consumerpriceindex;
+                CheckPropertyInited("BuildingCadastralNumber");
+                return _buildingcadastralnumber;
             }
             set
             {
-                _consumerpriceindex = value;
-                NotifyPropertyChanged("ConsumerPriceIndex");
+                _buildingcadastralnumber = value;
+                NotifyPropertyChanged("BuildingCadastralNumber");
+            }
+        }
+
+
+        private string _marketsegment;
+        /// <summary>
+        /// 10800900 Сегмент рынка (MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10800900)]
+        public string MarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment");
+                return _marketsegment;
+            }
+            set
+            {
+                _marketsegment = value;
+                NotifyPropertyChanged("MarketSegment");
+            }
+        }
+
+
+        private MarketSegment _marketsegment_Code;
+        /// <summary>
+        /// 10800900 Сегмент рынка (справочный код) (MARKET_SEGMENT_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10800900)]
+        public MarketSegment MarketSegment_Code
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment_Code");
+                return this._marketsegment_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_marketsegment))
+                    {
+                         _marketsegment = descr;
+                    }
+                }
+                else
+                {
+                     _marketsegment = descr;
+                }
+
+                this._marketsegment_Code = value;
+                NotifyPropertyChanged("MarketSegment");
+                NotifyPropertyChanged("MarketSegment_Code");
+            }
+        }
+
+
+        private bool? _isexcluded;
+        /// <summary>
+        /// 10801000 Исключение здания из рассчета (IS_EXCLUDED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10801000)]
+        public bool? IsExcluded
+        {
+            get
+            {
+                CheckPropertyInited("IsExcluded");
+                return _isexcluded;
+            }
+            set
+            {
+                _isexcluded = value;
+                NotifyPropertyChanged("IsExcluded");
             }
         }
 
@@ -21992,6 +22067,42 @@ namespace ObjectModel.Gbu.Custom
     [RegisterInfo(RegisterID = 41983898)]
     [Serializable]
     public partial class OMSource23 : OMBaseClass<OMSource23>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42430534 Источник: тестовый_2апреля (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 42430534)]
+    [Serializable]
+    public partial class OMSource24 : OMBaseClass<OMSource24>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42436643 Источник: источник информации (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 42436643)]
+    [Serializable]
+    public partial class OMSource25 : OMBaseClass<OMSource25>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42726724 Источник: Test_All_Pri_2 (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 42726724)]
+    [Serializable]
+    public partial class OMSource26 : OMBaseClass<OMSource26>
     {
     }
 }
