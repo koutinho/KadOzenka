@@ -104,29 +104,72 @@ namespace KadOzenka.Web.Controllers
         #region Correction By Date
 
         [HttpGet]
-        public ActionResult ConsumerPriceIndexes()
+        public ActionResult CorrectionByDateGeneralCoefficients()
         {
-            var nextIndex = CorrectionByDateService.GetNextConsumerIndex();
+            var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
 
-            ViewBag.LastDate = nextIndex?.Date.ToString("dd.MM.yyyy");
+            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), exceptions: exceptions);
+
+            ViewBag.Segments = segments;
 
             return View();
         }
 
-        [HttpGet]
-        public JsonResult GetConsumerPriceIndexes([DataSourceRequest]DataSourceRequest request)
+        public JsonResult GetCorrectionByDateGeneralCoefficients(long marketSegmentCode)
         {
-            var indexes = CorrectionByDateService.GetAllConsumerIndexes();
+            var history = CorrectionByDateService.GetAverageCoefficients(marketSegmentCode);
 
-            var models = new List<CorrectionByDateModel>();
-            indexes.ForEach(x => models.Add(CorrectionByDateModel.Map(x)));
+            return Json(history.Select(CorrectionByDateModel.Map).ToList());
+        }
 
-            return Json(models.ToDataSourceResult(request));
+        [HttpGet]
+        public ActionResult CorrectionByDateDetailedCoefficients(long marketSegmentCode, DateTime date)
+        {
+            var marketSegment = (MarketSegment)marketSegmentCode;
+
+            ViewBag.Date = date;
+            ViewBag.MarketSegmentCode = marketSegmentCode;
+            ViewBag.MarketSegment = marketSegment.GetEnumDescription();
+
+            return View();
+        }
+
+        public JsonResult GetCorrectionByDateDetailedCoefficients(long marketSegmentCode, DateTime date)
+        {
+            var historyRecords = CorrectionByDateService.GetDetailedCoefficients(marketSegmentCode, date);
+            var models = historyRecords.Select(CorrectionByDateModel.Map).ToList();
+
+            return Json(models);
+        }
+
+        [HttpPost]
+        public JsonResult ChangeBuildingsStatusInCalculationForCorrectionByDate(string models, DateTime date)
+        {
+            var historyJson = JObject.Parse(models).SelectToken("models").ToString();
+
+            var allRecords = JsonConvert.DeserializeObject<List<CorrectionByDateModel>>(historyJson);
+            var changedRecords = allRecords.Where(x => x.IsDirty).Select(CorrectionByDateModel.UnMap).ToList();
+
+            var isDataUpdated = CorrectionByDateService.ChangeBuildingsStatusInCalculation(changedRecords);
+
+            string message;
+            if (isDataUpdated)
+            {
+                //TODO
+                //CorrectionByRoomForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
+                message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
+            }
+            else
+            {
+                message = "Не найдено данных для изменения";
+            }
+
+            return Json(new { Message = message });
         }
 
         #endregion
 
-        
+
         #region Correction By Bargain
 
         [HttpGet]
@@ -212,7 +255,7 @@ namespace KadOzenka.Web.Controllers
             if (isDataUpdated)
             {
                 CorrectionByRoomForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
-                message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
+                message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на комнатность добавлена в очередь";
             }
             else
             {

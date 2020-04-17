@@ -36,7 +36,7 @@
 
 	  <Button Caption="Корректировка на дату" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
 		  <DropDownButtons>
-        <Button Caption="Список индексов" NavigateURL="~/MarketObjects/ConsumerPriceIndexes" OpenInNewWindow="true" Icon="icon-contract" />
+        <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionByDateGeneralCoefficients" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-eye" />
         <Button Caption="Отчет" NavigateURL="~/Report/Viewer" OpenInNewWindow="true" Icon="fas fa-images">
         <Parameters>
           <Parameter Key="ReportTypeId" Value="1007" />
