@@ -36,13 +36,8 @@
 
 	  <Button Caption="Корректировка на дату" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
 		  <DropDownButtons>
-        <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionByDateGeneralCoefficients" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-eye" />
-        <Button Caption="Отчет" NavigateURL="~/Report/Viewer" OpenInNewWindow="true" Icon="fas fa-images">
-        <Parameters>
-          <Parameter Key="ReportTypeId" Value="1007" />
-        </Parameters>
-        </Button>
-		  </DropDownButtons>
+        <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionByDateGeneralCoefficients" OpenInRadWindow="true" WindowHeight="550" WindowWidth="1000" Icon="fas fa-eye" />
+      </DropDownButtons>
 	  </Button>
 
       <Button Caption="Корректировка на торг" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
