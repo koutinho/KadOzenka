@@ -62,6 +62,7 @@ namespace CIPJS
 			services.AddTransient<TaskService>();
 	        services.AddTransient<GbuLongProcessesService>();
 	        services.AddTransient<ExpressScoreService>();
+	        services.AddTransient<ExpressScoreReferenceService>();
             
 			services.AddHttpContextAccessor();
             services.AddSession(options =>

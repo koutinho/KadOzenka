@@ -3253,19 +3253,12 @@ namespace ObjectModel.Directory.ES
     public enum ReferenceItemCodeType : long
     {
 		/// <summary>
-		/// Целое число (1)
+		/// Число (1)
 		/// </summary>
-		[Description("Целое число")]
+		[Description("Число")]
         [EnumCode("1")]
-        [ShortTitle("Целое число")]
-        Integer = 1,
-		/// <summary>
-		/// Десятичное число (2)
-		/// </summary>
-		[Description("Десятичное число")]
-        [EnumCode("2")]
-        [ShortTitle("Десятичное число")]
-        Decimal = 2,
+        [ShortTitle("Число")]
+        Number = 1,
 		/// <summary>
 		/// Строка (4)
 		/// </summary>
