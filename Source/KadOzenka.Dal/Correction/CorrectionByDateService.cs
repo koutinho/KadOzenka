@@ -94,6 +94,8 @@ namespace KadOzenka.Dal.Correction
             var coefficients = GetAverageCoefficientsBySegments();
 
             var objects = GetMarketObjectsForUpdate();
+            var objectsIds = objects.Select(x => x.Id);
+            var priceChangingHistory = OMPriceAfterCorrectionByDateHistory.Where(x => objectsIds.Contains(x.InitialId)).SelectAll().Execute();
 
             objects.ForEach(obj =>
             {
@@ -104,9 +106,13 @@ namespace KadOzenka.Dal.Correction
                 if (coefficientByMarketSegment == null)
                     return;
 
+                var newPrice = Math.Round(obj.Price.GetValueOrDefault() * coefficientByMarketSegment.Coefficient,
+                    PrecisionForPrice);
                 using (var ts = new TransactionScope())
                 {
-                    obj.PriceAfterCorrectionByDate = Math.Round(obj.Price.GetValueOrDefault() * coefficientByMarketSegment.Coefficient, PrecisionForPrice);
+                    SavePriceChangingHistory(priceChangingHistory, obj, newPrice);
+
+                    obj.PriceAfterCorrectionByDate = newPrice;
                     obj.Save();
 
                     ts.Complete();
@@ -138,6 +144,28 @@ namespace KadOzenka.Dal.Correction
                         Coefficient = Math.Round(group.ToList().DefaultIfEmpty().Average(x => x.Coefficient),
                             PrecisionForCoefficients)
                     }).ToList();
+        }
+
+        private void SavePriceChangingHistory(List<OMPriceAfterCorrectionByDateHistory> history, OMCoreObject obj, decimal newPrice)
+        {
+            var date = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var existedRecord = history.FirstOrDefault(x => x.InitialId == obj.Id && x.ChangingDate == date);
+            if (existedRecord == null)
+            {
+                new OMPriceAfterCorrectionByDateHistory
+                {
+                    InitialId = obj.Id,
+                    ChangingDate = date,
+                    PriceValueFrom = obj.PriceAfterCorrectionByDate.GetValueOrDefault(),
+                    PriceValueTo = newPrice
+                }.Save();
+            }
+            else
+            {
+                existedRecord.PriceValueFrom = obj.PriceAfterCorrectionByDate.GetValueOrDefault();
+                existedRecord.PriceValueTo = newPrice;
+                existedRecord.Save();
+            }
         }
 
         #endregion
