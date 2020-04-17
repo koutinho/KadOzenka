@@ -53,6 +53,7 @@
             schema: {
                 model: {
                     fields: {
+                        Id: { editable: false },
                         Date: { editable: false},
                         Coefficient: { editable: false }
                     }
@@ -60,22 +61,29 @@
             },
             pageSize: 7
         });
-        var hrefTemplate = '<a target="_blank" href="/MarketObjects/CorrectionByDateDetailedCoefficients?date=#=Date#&marketSegmentCode=' + marketSegmentCode +'">#=';
-        $('#historyGrid').kendoGrid({
-            dataSource: historyGridDataSource,
-            columns: [
-                {
-                    field: 'Date',
-                    title: 'Месяц',
-                    template: "#= kendo.toString(kendo.parseDate(Date, 'yyyy-MM-dd'), 'MMMM yyyy') #"
-                }, {
-                    field: 'OneRoomCoefficient',
-                    title: 'Коэффициент',
-                    template: hrefTemplate + 'Coefficient#</a>'
-                }
-            ],
-            scrollable: true,
-            pageable: true
-        });
+        var hrefTemplate = '<a target="_blank" href="/MarketObjects/CorrectionByDateDetailedCoefficients?date=#=Date#&marketSegmentCode=' + marketSegmentCode + '">#=';
+
+        var grid = $("#historyGrid").data("kendoGrid");
+        if (grid) {
+            grid.setDataSource(historyGridDataSource);
+        }
+        else {
+            $('#historyGrid').kendoGrid({
+                dataSource: historyGridDataSource,
+                columns: [
+                    {
+                        field: 'Date',
+                        title: 'Месяц',
+                        template: "#= kendo.toString(kendo.parseDate(Date, 'yyyy-MM-dd'), 'MMMM yyyy') #"
+                    }, {
+                        field: 'OneRoomCoefficient',
+                        title: 'Коэффициент',
+                        template: hrefTemplate + 'Coefficient#</a>'
+                    }
+                ],
+                scrollable: true,
+                pageable: true
+            });
+        }
     }
 </script>
