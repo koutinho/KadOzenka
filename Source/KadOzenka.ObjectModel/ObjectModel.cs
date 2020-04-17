@@ -4982,6 +4982,118 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 116 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на дату (MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H)
+    /// </summary>
+    [RegisterInfo(RegisterID = 116)]
+    [Serializable]
+    public partial class OMPriceAfterCorrectionByDateHistory : OMBaseClass<OMPriceAfterCorrectionByDateHistory>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11600100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11600100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private decimal _pricevalueto;
+        /// <summary>
+        /// 11600200 Значение стоимости до (PRICE_VALUE_TO)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11600200)]
+        public decimal PriceValueTo
+        {
+            get
+            {
+                CheckPropertyInited("PriceValueTo");
+                return _pricevalueto;
+            }
+            set
+            {
+                _pricevalueto = value;
+                NotifyPropertyChanged("PriceValueTo");
+            }
+        }
+
+
+        private long _initialid;
+        /// <summary>
+        /// 11600300 Идентификатор объекта (INITIAL_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11600300)]
+        public long InitialId
+        {
+            get
+            {
+                CheckPropertyInited("InitialId");
+                return _initialid;
+            }
+            set
+            {
+                _initialid = value;
+                NotifyPropertyChanged("InitialId");
+            }
+        }
+
+
+        private DateTime _changingdate;
+        /// <summary>
+        /// 11600400 Время изменения цены (CHANGING_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11600400)]
+        public DateTime ChangingDate
+        {
+            get
+            {
+                CheckPropertyInited("ChangingDate");
+                return _changingdate;
+            }
+            set
+            {
+                _changingdate = value;
+                NotifyPropertyChanged("ChangingDate");
+            }
+        }
+
+
+        private decimal _pricevaluefrom;
+        /// <summary>
+        /// 11600500 Значение стоимости от (PRICE_VALUE_FROM)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11600500)]
+        public decimal PriceValueFrom
+        {
+            get
+            {
+                CheckPropertyInited("PriceValueFrom");
+                return _pricevaluefrom;
+            }
+            set
+            {
+                _pricevaluefrom = value;
+                NotifyPropertyChanged("PriceValueFrom");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>

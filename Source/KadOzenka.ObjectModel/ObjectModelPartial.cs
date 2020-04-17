@@ -936,6 +936,30 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 116 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на дату
+    /// </summary>
+    public partial class OMPriceAfterCorrectionByDateHistory
+    {
+
+        public OMPriceAfterCorrectionByDateHistory()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMPriceAfterCorrectionByDateHistory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
