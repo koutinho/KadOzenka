@@ -189,6 +189,59 @@ namespace KadOzenka.Dal.DataExport
     }
 
     /// <summary>
+    /// Класс выгрузки изменений по объектам.
+    /// </summary>
+    public class DEKOChange
+    {
+        /// <summary>
+        /// Выгрузка изменений
+        /// </summary>
+        public static void ExportUnitChangeToExcel(KOUnloadSettings settings)
+        {
+            string filename = "C:\\WORK\\TMP\\Список_изменений_"+DateTime.Now.ToString("dd_MM_yyyy_HH_mm_ss")+".xlsx";
+            ExcelFile excelTemplate = new ExcelFile();
+
+            var mainWorkSheet = excelTemplate.Worksheets.Add("Изменения");
+
+            DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "КН", "Дата изменения", "Тип", "Статус", "Старое значение", "Новое значение", "Изменение" });
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 20
+            };
+
+            foreach (long taskId in settings.TaskFilter)
+            {
+                List<ObjectModel.KO.OMUnit> units = null;
+                if (settings.UnloadParcel)
+                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).SelectAll().Execute();
+                else
+                    units = ObjectModel.KO.OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code != PropertyTypes.Stead).SelectAll().Execute();
+
+                if (units.Count > 0)
+                {
+                    int row = 1;
+
+                    foreach (ObjectModel.KO.OMUnit unit in units)
+                    {
+                        List<ObjectModel.KO.OMUnitChange> changes = ObjectModel.KO.OMUnitChange.Where(x => x.UnitId == unit.Id).SelectAll().Execute();
+
+                        foreach (ObjectModel.KO.OMUnitChange change in changes)
+                        {
+                            DataExportCommon.AddRow(mainWorkSheet, row, new object[] { unit.CadastralNumber, unit.CreationDate.Value, unit.PropertyType, unit.StatusRepeatCalc, change.OldValue, change.NewValue, change.ChangeStatus });
+                            row++;
+                        }
+                    }
+                }
+            }
+
+            excelTemplate.Save(filename, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
+        }
+    }
+
+
+    /// <summary>
     /// Класс выгрузки в XML результатов Кадастровой оценки по объектам.
     /// </summary>
     public class DEKOUnit
@@ -3010,7 +3063,8 @@ namespace KadOzenka.Dal.DataExport
         /// </summary>
         public static void Unload(KOUnloadSettings setting)
         {
-            //todo
+            if (setting.UnloadChange)
+                DEKOChange.ExportUnitChangeToExcel(setting);
         }
     }
 }
