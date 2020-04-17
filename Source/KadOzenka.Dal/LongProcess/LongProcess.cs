@@ -27,15 +27,5 @@ namespace KadOzenka.Dal.LongProcess
 		{
 			return true;
 		}
-
-        protected static void LogProgress(OMQueue processQueue, int i, int numberOfObjects, ref int nextPercent)
-        {
-            var currentPercent = (i * 100) / numberOfObjects;
-            if (currentPercent < nextPercent)
-                return;
-
-            WorkerCommon.SetProgress(processQueue, currentPercent);
-            nextPercent = currentPercent + PercentageInterval;
-        }
     }
 }

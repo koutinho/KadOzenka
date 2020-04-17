@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
+using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Correction.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Market;
@@ -13,9 +15,9 @@ namespace KadOzenka.Dal.Correction
         public static readonly int PrecisionForCoefficients = 4;
 
 
-        public List<CorrectionByDateDto> GetAverageCoefficients(long marketSegmentCode)
+        public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
         {
-            return GetAverageCoefficients().Where(x => x.MarketSegment == (MarketSegment)marketSegmentCode).ToList();
+            return GetAverageCoefficientsBySegments().Where(x => x.MarketSegment == (MarketSegment)marketSegmentCode).ToList();
         }
 
         public List<CorrectionByDateDto> GetDetailedCoefficients(long marketSegmentCode, DateTime date)
@@ -88,6 +90,30 @@ namespace KadOzenka.Dal.Correction
             }
         }
 
+        public void CalculatePriceAfterCorrectionByDate()
+        {
+            var coefficients = GetAverageCoefficientsBySegments();
+
+            var objects = GetMarketObjectsForUpdate();
+
+            objects.ForEach(obj =>
+            {
+                var parserTime = obj.ParserTime.Value;
+                var date = new DateTime(parserTime.Year, parserTime.Month, 1);
+
+                var coefficientByMarketSegment = coefficients.FirstOrDefault(x => x.MarketSegment == obj.PropertyMarketSegment_Code && x.Date == date);
+                if (coefficientByMarketSegment == null)
+                    return;
+
+                using (var ts = new TransactionScope())
+                {
+                    obj.PriceAfterCorrectionByDate = Math.Round(obj.Price.GetValueOrDefault() * coefficientByMarketSegment.Coefficient, PrecisionForPrice);
+                    obj.Save();
+
+                    ts.Complete();
+                }
+            });
+        }
 
         public CorrectionByDateDto GetNextConsumerIndex()
         {
@@ -96,78 +122,6 @@ namespace KadOzenka.Dal.Correction
                 .ExecuteFirstOrDefault();
 
             return ToDto(index);
-        }
-
-        public void UpdateConsumerPriceIndexes()
-        {
-            var startDate = new DateTime(2019, 01, 01);
-            var endDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
-
-            var coefficients = GetCoefficients();
-
-            var objectsGroupedBySegment = OMCoreObject.Where(x =>
-                    (x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal) &&
-                    x.BuildingCadastralNumber != null && x.BuildingCadastralNumber != "" &&
-                    x.PropertyMarketSegment != null &&
-                    x.ParserTime != null && x.ParserTime >= startDate && x.ParserTime <= endDate)
-                .SelectAll(false)
-                //todo remove
-                //.SetPackageSize(10000).SetPackageIndex(0)
-                .Execute()
-                .GroupBy(x => x.PropertyMarketSegment_Code)
-                .ToList();
-
-            objectsGroupedBySegment.ForEach(groupBySegment =>
-            {
-                var objectsGroupedByBuilding = groupBySegment.GroupBy(x => x.BuildingCadastralNumber).ToList();
-
-                objectsGroupedByBuilding.ForEach(groupByBuilding =>
-                {
-                    var objectsInBuilding = groupByBuilding.ToList();
-
-                    for (var i = startDate; i <= endDate; i = i.AddMonths(1))
-                    {
-                        var currentPeriod = i;
-                        var previousPeriod = i.AddYears(-1);
-
-                        var objectFromCurrentPeriod = objectsInBuilding.Where(x =>
-                            x.ParserTime?.Year == currentPeriod.Year && x.ParserTime?.Month == currentPeriod.Month).ToList();
-
-                        var objectFromPreviousPeriod = objectsInBuilding.Where(x =>
-                            x.ParserTime?.Year == previousPeriod.Year && x.ParserTime?.Month == previousPeriod.Month).ToList();
-
-                        var isBuildingContainSalesInTwoPeriods = objectFromCurrentPeriod.Count > 0 && objectFromPreviousPeriod.Count > 0;
-
-                        if (isBuildingContainSalesInTwoPeriods)
-                        {
-                            var averagePriceForObjectsFromCurrentPeriod = GetAveragePricePerMeter(objectFromCurrentPeriod);
-                            var averagePriceForObjectsFromPreviousPeriod = GetAveragePricePerMeter(objectFromPreviousPeriod);
-
-                            var coefficient = Math.Round(averagePriceForObjectsFromCurrentPeriod / averagePriceForObjectsFromPreviousPeriod, PrecisionForCoefficients);
-
-                            SaveCoefficients(coefficients, currentPeriod, groupByBuilding.Key, groupBySegment.Key, coefficient);
-                        }
-                    }
-                });
-            });
-
-            //TODO update price
-
-            //var indexes = OMIndexesForDateCorrection.Where(x => true).SelectAll().OrderByDescending(x => x.Date).Execute();
-
-            //RecalculateConsumerPriceIndexes(indexes);
-
-            //using (var ts = new TransactionScope())
-            //{
-            //    for (var i = 0; i < indexes.Count; i++)
-            //    {
-            //        indexes[i].Save();
-            //    }
-
-            //    ts.Complete();
-            //}
-
-            //CorrectionByDateForMarketObjectsLongProcess.AddProcessToQueue();
         }
 
         public OMIndexesForDateCorrection GetDefaultNewConsumerIndex(DateTime date)
@@ -182,7 +136,8 @@ namespace KadOzenka.Dal.Correction
         public List<OMCoreObject> GetMarketObjectsForUpdate()
         {
             return OMCoreObject
-                .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
+                .Where(x => x.DealType_Code == DealType.SaleSuggestion ||
+                            x.DealType_Code == DealType.SaleDeal && x.ParserTime != null && x.PropertyMarketSegment != null)
                 .SelectAll().Execute();
         }
 
@@ -223,18 +178,17 @@ namespace KadOzenka.Dal.Correction
 
         #region Support Methods
 
-        private List<CorrectionByDateDto> GetAverageCoefficients()
+        private List<CorrectionByDateDto> GetAverageCoefficientsBySegments()
         {
             return OMIndexesForDateCorrection.Where(x => x.IsExcluded == false || x.IsExcluded == null)
                 .OrderByDescending(x => x.Date)
                 .SelectAll().Execute()
-                .GroupBy(x => new { x.MarketSegment_Code, x.Date }).Select(
+                .GroupBy(x => new {x.MarketSegment_Code, x.Date}).Select(
                     group => new CorrectionByDateDto
                     {
                         Date = group.Key.Date,
                         MarketSegment = group.Key.MarketSegment_Code,
-                        Coefficient = Math.Round(
-                            group.ToList().DefaultIfEmpty().Average(x => x.Coefficient),
+                        Coefficient = Math.Round(group.ToList().DefaultIfEmpty().Average(x => x.Coefficient),
                             PrecisionForCoefficients)
                     }).ToList();
         }

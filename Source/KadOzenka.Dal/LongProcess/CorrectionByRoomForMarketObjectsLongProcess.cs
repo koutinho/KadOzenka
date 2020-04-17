@@ -59,10 +59,13 @@ namespace KadOzenka.Dal.LongProcess
                         var twoRoomsAveragePricePerMeter = correctionByRoomService.GetAveragePricePerMeter(objectsInBuilding, 2);
                         var threeRoomsAveragePricePerMeter = correctionByRoomService.GetAveragePricePerMeter(objectsInBuilding, 3);
 
-                        var oneRoomCoefficient = Math.Round(twoRoomsAveragePricePerMeter / oneRoomAveragePricePerMeter,
-                            CorrectionByRoomService.PrecisionForCoefficients);
-                        var threeRoomsCoefficient =
-                            Math.Round(twoRoomsAveragePricePerMeter / threeRoomsAveragePricePerMeter,
+                        var oneRoomCoefficient = oneRoomAveragePricePerMeter == 0
+                            ? 0
+                            : Math.Round(twoRoomsAveragePricePerMeter / oneRoomAveragePricePerMeter,
+                                CorrectionByRoomService.PrecisionForCoefficients);
+                        var threeRoomsCoefficient = threeRoomsAveragePricePerMeter == 0
+                            ? 0
+                            : Math.Round(twoRoomsAveragePricePerMeter / threeRoomsAveragePricePerMeter,
                                 CorrectionByRoomService.PrecisionForCoefficients);
 
                         correctionByRoomService.SaveCoefficients(coefficients, date, groupByBuilding.Key,

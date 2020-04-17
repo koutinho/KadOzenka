@@ -13,8 +13,6 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
-using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Directory;
@@ -117,7 +115,7 @@ namespace KadOzenka.Web.Controllers
 
         public JsonResult GetCorrectionByDateGeneralCoefficients(long marketSegmentCode)
         {
-            var history = CorrectionByDateService.GetAverageCoefficients(marketSegmentCode);
+            var history = CorrectionByDateService.GetAverageCoefficientsBySegments(marketSegmentCode);
 
             return Json(history.Select(CorrectionByDateModel.Map).ToList());
         }
@@ -155,8 +153,7 @@ namespace KadOzenka.Web.Controllers
             string message;
             if (isDataUpdated)
             {
-                //TODO
-                //CorrectionByRoomForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
+                CorrectionByDateForMarketObjectsLongProcess.AddProcessToQueue();
                 message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
             }
             else
