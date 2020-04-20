@@ -99,10 +99,10 @@ namespace KadOzenka.Dal.Correction
 
             objects.ForEach(obj =>
             {
-                var parserTime = obj.ParserTime.Value;
-                var date = new DateTime(parserTime.Year, parserTime.Month, 1);
+                var date = obj.LastDateUpdate ?? obj.ParserTime.Value;
+                var dateToCompare = new DateTime(date.Year, date.Month, 1);
 
-                var coefficientByMarketSegment = coefficients.FirstOrDefault(x => x.MarketSegment == obj.PropertyMarketSegment_Code && x.Date == date);
+                var coefficientByMarketSegment = coefficients.FirstOrDefault(x => x.MarketSegment == obj.PropertyMarketSegment_Code && x.Date == dateToCompare);
                 if (coefficientByMarketSegment == null)
                     return;
 
