@@ -123,8 +123,9 @@ namespace KadOzenka.Dal.Correction
         public List<OMCoreObject> GetMarketObjectsForUpdate()
         {
             return OMCoreObject
-                .Where(x => x.DealType_Code == DealType.SaleSuggestion ||
-                            x.DealType_Code == DealType.SaleDeal && x.ParserTime != null && x.PropertyMarketSegment != null)
+                .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal && 
+                            (x.ParserTime != null || x.LastDateUpdate != null) && 
+                            x.PropertyMarketSegment != null)
                 .SelectAll().Execute();
         }
 

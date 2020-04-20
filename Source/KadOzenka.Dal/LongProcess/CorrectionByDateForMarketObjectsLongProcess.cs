@@ -34,7 +34,8 @@ namespace KadOzenka.Dal.LongProcess
                     (x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal) &&
                     x.BuildingCadastralNumber != null && x.BuildingCadastralNumber != "" &&
                     x.PropertyMarketSegment != null &&
-                    x.ParserTime != null && x.ParserTime >= startDate && x.ParserTime <= endDate)
+                    ((x.ParserTime != null && x.ParserTime >= startDate && x.ParserTime <= endDate) || 
+                    (x.LastDateUpdate != null && x.LastDateUpdate >= startDate && x.LastDateUpdate <= endDate)))
                 .SelectAll(false)
                 .Execute()
                 .GroupBy(x => x.PropertyMarketSegment_Code)
@@ -57,11 +58,14 @@ namespace KadOzenka.Dal.LongProcess
                         var currentPeriod = i;
                         var previousPeriod = i.AddYears(-1);
 
-                        var objectFromCurrentPeriod = objectsInBuilding.Where(x =>
-                            x.ParserTime?.Year == currentPeriod.Year && x.ParserTime?.Month == currentPeriod.Month).ToList();
+                        var objectFromCurrentPeriod = objectsInBuilding.Where(x => x.LastDateUpdate == null
+                                ? x.ParserTime?.Year == currentPeriod.Year && x.ParserTime?.Month == currentPeriod.Month
+                                : x.LastDateUpdate?.Year == currentPeriod.Year && x.LastDateUpdate?.Month == currentPeriod.Month)
+                            .ToList();
 
-                        var objectFromPreviousPeriod = objectsInBuilding.Where(x =>
-                            x.ParserTime?.Year == previousPeriod.Year && x.ParserTime?.Month == previousPeriod.Month).ToList();
+                        var objectFromPreviousPeriod = objectsInBuilding.Where(x => x.LastDateUpdate == null
+                            ? x.ParserTime?.Year == previousPeriod.Year && x.ParserTime?.Month == previousPeriod.Month
+                            : x.LastDateUpdate?.Year == previousPeriod.Year && x.LastDateUpdate?.Month == previousPeriod.Month).ToList();
 
                         var isBuildingContainSalesInTwoPeriods = objectFromCurrentPeriod.Count > 0 && objectFromPreviousPeriod.Count > 0;
 
