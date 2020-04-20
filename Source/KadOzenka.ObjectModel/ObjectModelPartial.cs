@@ -3028,6 +3028,12 @@ namespace ObjectModel.ES
     public partial class OMEsReference
     {
 
+
+        /// <summary>
+        /// Ссылка на (610 Экспресс оценка. Значения справочников)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.ES.OMEsReferenceItem> EsReferenceItem { get; set; }
         public OMEsReference()
         {
 
@@ -3035,6 +3041,8 @@ namespace ObjectModel.ES
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            EsReferenceItem = new List<ObjectModel.ES.OMEsReferenceItem>();
 
         }
         public OMEsReference(bool trackPropertyChanging) : this()

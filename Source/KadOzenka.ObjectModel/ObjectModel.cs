@@ -20500,6 +20500,66 @@ namespace ObjectModel.ES
             }
         }
 
+
+        private decimal _square;
+        /// <summary>
+        /// 60000600 Площадь (SQUARE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000600)]
+        public decimal Square
+        {
+            get
+            {
+                CheckPropertyInited("Square");
+                return _square;
+            }
+            set
+            {
+                _square = value;
+                NotifyPropertyChanged("Square");
+            }
+        }
+
+
+        private long _floor;
+        /// <summary>
+        /// 60000700 Этаж (FLOOR)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000700)]
+        public long Floor
+        {
+            get
+            {
+                CheckPropertyInited("Floor");
+                return _floor;
+            }
+            set
+            {
+                _floor = value;
+                NotifyPropertyChanged("Floor");
+            }
+        }
+
+
+        private long _objectid;
+        /// <summary>
+        /// 60000800 Ид объекта из таблицы ОКС (OBJECT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000800)]
+        public long Objectid
+        {
+            get
+            {
+                CheckPropertyInited("Objectid");
+                return _objectid;
+            }
+            set
+            {
+                _objectid = value;
+                NotifyPropertyChanged("Objectid");
+            }
+        }
+
     }
 }
 
