@@ -16,6 +16,7 @@ using Core.Register;
 using ObjectModel.Common;
 using Core.SRD;
 using KadOzenka.Web.Models.DataImporterLayout;
+using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -219,5 +220,18 @@ namespace KadOzenka.Web.Controllers
 
             return File(file, Helpers.Consts.ExcelContentType, "Результат выгрузки данных по списку" + ".xlsx");
         }
-    }
+
+		public ActionResult UnloadSettings()
+		{
+			KOUnloadSettings settings = new KOUnloadSettings();
+			return View(settings);
+		}
+
+		[HttpPost]
+		public ActionResult UnloadSettings(UnloadSettingsDto settings)
+		{
+			KOUnloadResult.Unload(UnloadSettingsDto.Map(settings));
+			return Ok();
+		}
+	}
 }
