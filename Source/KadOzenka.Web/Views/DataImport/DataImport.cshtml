@@ -230,13 +230,16 @@
 					const treeView = $("#treeview").data('kendoTreeView');
 					const listBox = $("#columnsListBox").data('kendoListBox');
                     if (treeView && listBox) {
+                        var treeViewData = treeView.dataItem(treeView.select());
+
                         @if ((long)ViewBag.MainRegisterId != 100)
                         {<text>
                         //change or set mainregister
-                        mainRegisterId = treeView.dataItem(treeView.select()).parentId;
+                        if (treeViewData != null) {
+                            mainRegisterId = treeViewData.parentId;
+                        }
                         </text>}
 
-						var treeViewData = treeView.dataItem(treeView.select());
 						var listBoxData = listBox.dataItem(listBox.select());
 						if (treeViewData && listBoxData) {
 							treeView.enable(treeView.select(), false);
