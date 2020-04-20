@@ -53,7 +53,7 @@
 
     <Button Caption="Корректировка на комнатность" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
       <DropDownButtons>
-        <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionByRoomGeneralCoefficients" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-eye" />
+        <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionByRoomGeneralCoefficients" OpenInRadWindow="true" WindowHeight="550" WindowWidth="1000" Icon="fas fa-eye" />
       </DropDownButtons>
     </Button>
 
