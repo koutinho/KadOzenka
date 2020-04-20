@@ -5,6 +5,10 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 	public class YearDto
 	{
 		public int Id { get; set; }
+		
+		/// <summary>
+		/// Год постройки 
+		/// </summary>
 		public int? Year { get; set; }
 	}
 }

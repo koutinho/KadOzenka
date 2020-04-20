@@ -142,19 +142,8 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 			}
 
-			var analogs = OMCoreObject.Where(x => viewModel.SelectedPoints.Contains((int)x.Id))
-				.Select(x => new
-				{
-					x.Id,
-					x.CadastralNumber,
-					x.Price,
-					x.Area,
-					x.LastDateUpdate,
-					x.FloorsCount,
-					x.FloorNumber
-				}).Execute();
-
-			string resMsg = _service.CalculateExpressScore(analogs, viewModel.TargetObjectId.GetValueOrDefault(), viewModel.Floor.GetValueOrDefault(), viewModel.Square.GetValueOrDefault(),
+			string resMsg = _service.CalculateExpressScore(_service.GetAnalogsByIds(viewModel.SelectedPoints),
+				viewModel.TargetObjectId.GetValueOrDefault(), viewModel.Floor.GetValueOrDefault(), viewModel.Square.GetValueOrDefault(),
 				out decimal costSquareMeter, out decimal summaryCost);
 
 			if (!string.IsNullOrEmpty(resMsg))
@@ -169,10 +158,48 @@ namespace KadOzenka.Web.Controllers
 		{
 			var marketIds = OMEsToMarketCoreObject.Where(x => x.EsId == objectId).SelectAll().Execute().Select(x => x.MarketObjectId).ToList();
 
-			ViewBag.filter = $"10002000={string.Join(',', marketIds)}";
+			ViewBag.Filter = $"10002000={string.Join(',', marketIds)}";
+			ViewBag.EsId = objectId;
 
 			return View();
 		}
+
+		#region Delete Analog
+		[HttpGet]
+		public ActionResult DeleteAnalog(int objectId, int esId)
+		{
+			ViewBag.DeleteAnalogId = objectId;
+			ViewBag.EsId = esId;
+			return View();
+		}
+
+		[HttpPost]
+		public JsonResult PostDeleteAnalog([FromForm]int removeAnalogId, [FromForm]int expressScoreId)
+		{
+			var removeDependency = OMEsToMarketCoreObject.Where(x => x.EsId == expressScoreId && x.MarketObjectId == removeAnalogId)
+				.SelectAll().ExecuteFirstOrDefault();
+
+			if (removeDependency == null)
+			{
+				return SendErrorMessage("Объект из результатов оценки был исключен ранее. Закройте окно.");
+			}
+
+			var obj = OMExpressScore.Where(x => x.Id == expressScoreId).SelectAll().ExecuteFirstOrDefault();
+			var analogIds = OMEsToMarketCoreObject.Where(x => x.EsId == expressScoreId).SelectAll().Execute()
+				.Select(x => (int)x.MarketObjectId).ToList();
+
+			string resMsg = _service.RemoveAnalogAndRecalculateExpressScore(_service.GetAnalogsByIds(analogIds), removeAnalogId,
+				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, out List<long> successAnalogIds);
+
+			if (!string.IsNullOrEmpty(resMsg))
+			{
+				return SendErrorMessage(resMsg);
+			}
+
+			return Json( new {success = new { successAnalogIds } });
+		}
+
+		#endregion
 	}
 }
 

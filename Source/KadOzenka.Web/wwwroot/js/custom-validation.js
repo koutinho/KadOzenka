@@ -6,6 +6,7 @@
  * Message: string
  * }
  * ]} errors
+ * @return {string[]}
  */
 function getErrors(errors) {
 	return $.map(distinctErrors(errors),

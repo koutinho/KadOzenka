@@ -19,7 +19,7 @@ namespace KadOzenka.Dal.ExpressScore
 		{
 			//TODO Маг числа: 2018 - ид тура в котором ищем
 			return OMUnit.Where(x => x.CadastralNumber == kn && x.TourId == 2018)
-				.Select(x => x.Id).Execute().Select(x => x.Id).OrderByDescending(x => x).ToList();
+				.Select(x => x.Id).Execute().Select(x => x.Id).ToList();
 		}
 
 		public EstimatedDto GetEstimateParametersByKn(string kn)
@@ -192,20 +192,88 @@ namespace KadOzenka.Dal.ExpressScore
 			return new List<CoordinatesDto>();
 		}
 
-		public string CalculateExpressScore(List<OMCoreObject> analogs, int targetObjectId, int targetObjectFloor, decimal square, out decimal costSquareMeter, out decimal summaryCost)
+		public List<AnalogDto> GetAnalogsByIds(List<int> ids)
 		{
-			costSquareMeter = 0;
+			return OMCoreObject.Where(x => ids.Contains((int)x.Id))
+				.Select(x => new
+				{
+					x.Id,
+					x.CadastralNumber,
+					x.Price,
+					x.Area,
+					x.LastDateUpdate,
+					x.FloorsCount,
+					x.FloorNumber
+				}).Execute().Select(x => new AnalogDto
+				{
+					Id = x.Id,
+					Kn = x.CadastralNumber,
+					Price = x.Price.GetValueOrDefault(),
+					Square = x.Area.GetValueOrDefault(),
+					LastDateUpdate = x.LastDateUpdate ?? DateTime.MinValue,
+					FloorsCount = x.FloorsCount.GetValueOrDefault(),
+					Floor = x.FloorNumber.GetValueOrDefault()
+				}).ToList();
+		}
+
+		public string CalculateExpressScore(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, decimal targetObjectSquare, out decimal squareCost, out decimal summaryCost)
+		{
+			squareCost = 0;
 			summaryCost = 0;
+			squareCost = CalculateSquareCost(analogs, targetObjectId, targetObjectFloor, out string msg, out List<long> successAnalogIds);
+
+			summaryCost = squareCost * targetObjectSquare;
+			if (squareCost == 0)
+			{
+				return string.IsNullOrEmpty(msg) ? "При расчете что то пошло не так" : msg;
+			}
+
+			msg = SaveSuccessExpressScore(targetObjectId, summaryCost, squareCost, out int id, square: targetObjectSquare, floor: targetObjectFloor);
+			if (!string.IsNullOrEmpty(msg)) return msg;
+
+			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
+
+			return msg;
+		}
+
+		public string RemoveAnalogAndRecalculateExpressScore(List<AnalogDto> analogs, int removeAnalogId,
+			int targetObjectId, int targetObjectFloor, decimal square, int expressScoreId, out List<long> successAnalogIds)
+		{
+			successAnalogIds = new List<long>();
+			if (analogs.Count <= 1)
+			{
+				return "Нельзя удалять последний анлог";
+			}
+			var squareCost = CalculateSquareCost(analogs.Where(x => (int)x.Id != removeAnalogId).ToList(),
+				targetObjectId, targetObjectFloor, out string msg, out successAnalogIds);
+			if (!string.IsNullOrEmpty(msg)) return msg;
+
+			msg = SaveSuccessExpressScore(targetObjectId, squareCost * square, squareCost, out int id, expressScoreId);
+			if (!string.IsNullOrEmpty(msg)) return msg;
+
+			msg = RemoveDependenceEsFromMarketCoreObject(id, analogs.Select(x => x.Id).ToList());
+			if (!string.IsNullOrEmpty(msg)) return msg;
+
+			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
+
+			return msg;
+		}
+
+
+		private decimal CalculateSquareCost(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, out string msg, out List<long> successAnalogIds)
+		{
+			msg = "";
 
 			const double cTorg = 0.9231;
 			List<decimal> res = new List<decimal>();
-			List<long> successAnalogIds = new List<long>();
+			successAnalogIds = new List<long>();
 
 			var estimatedParametersTargetObject = GetEstimateParametersById(targetObjectId);
 
 			if (estimatedParametersTargetObject == null)
 			{
-				return "Не найденны данные для целевого объекта";
+				 msg = "Не найденны данные для целевого объекта";
+				 return 0;
 			}
 
 			foreach (var analog in analogs)
@@ -213,9 +281,9 @@ namespace KadOzenka.Dal.ExpressScore
 				decimal yPrice = 0; // Удельный показатель стоимости
 
 
-				if (analog.Price != null && analog.Area != null && analog.Area.GetValueOrDefault() != 0)
+				if (analog.Price != 0 && analog.Square != 0)
 				{
-					yPrice = analog.Price.GetValueOrDefault() / analog.Area.GetValueOrDefault();
+					yPrice = analog.Price / analog.Square;
 				}
 
 				//Корректировка на дату 
@@ -228,9 +296,9 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				OMIdexDate indexAnalogDate = null;
-				if (analog.LastDateUpdate != null)
+				if (analog.LastDateUpdate != DateTime.MinValue)
 				{
-					var analogDate = new DateTime(analog.LastDateUpdate.Value.Year, analog.LastDateUpdate.Value.Month,
+					var analogDate = new DateTime(analog.LastDateUpdate.Year, analog.LastDateUpdate.Month,
 						1);
 
 					indexAnalogDate = OMIdexDate.Where(x => x.Date == analogDate).SelectAll().ExecuteFirstOrDefault();
@@ -247,7 +315,7 @@ namespace KadOzenka.Dal.ExpressScore
 				cost = cost * (decimal)cTorg;
 
 				OMLandShare landShare = null;
-				if (analog.FloorsCount != null)
+				if (analog.FloorsCount != 0)
 				{
 					landShare = OMLandShare.Where(x => x.Floor == analog.FloorsCount && x.SegmentType_Code == MarketSegment.Office).SelectAll().ExecuteFirstOrDefault();
 					if (landShare == null)
@@ -269,7 +337,7 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 
-				var estimatedParameters = GetEstimateParametersByKn(analog.CadastralNumber);
+				var estimatedParameters = GetEstimateParametersByKn(analog.Kn);
 
 				// Начинаются оценочные факторы
 				var wallMaterial = OMWallMaterial.Where(x => x.WallMaterial.Contains(estimatedParameters.WallMaterial)).SelectAll()
@@ -338,17 +406,17 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				{
-					var floor = analog.FloorNumber ?? estimatedParameters.Floor;
+					var floor = (int)analog.Floor;
 					var floors = OMFloor.Where(x => x).SelectAll().Execute().OrderByDescending(x => x.Floor).ToList();
 
 					var floorFactor = floor != 0
 						? floor > floors[0].Floor ? floors[0].Factor :
-						floors?.FirstOrDefault(x => x.Floor == floor)?.Factor
+						floors.FirstOrDefault(x => x.Floor == floor)?.Factor
 						: 0;
 
 					var targetObjectFloorFactor =
 						targetObjectFloor > floors[0].Floor ? floors[0]?.Factor :
-						floors?.FirstOrDefault(x => x.Floor == targetObjectFloor)?.Factor;
+						floors.FirstOrDefault(x => x.Floor == targetObjectFloor)?.Factor;
 
 					if (floorFactor != null && floorFactor != 0 && targetObjectFloorFactor != null)
 					{
@@ -362,39 +430,32 @@ namespace KadOzenka.Dal.ExpressScore
 
 			}
 
-			costSquareMeter = res.Sum(x => x) / res.Count;
-			summaryCost = costSquareMeter * square;
-
-			var msg = AddSuccessExpressScore(targetObjectId, summaryCost, costSquareMeter, out int id );
-
-			if (!string.IsNullOrEmpty(msg))
+			if (res.Count == 0)
 			{
-				return msg;
+				msg = "Не один аналог не подошел для расчета.";
+				return 0;
 			}
+			return res.Sum(x => x) / res.Count;
 
-			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
-
-			if (!string.IsNullOrEmpty(msg))
-			{
-				return msg;
-			}
-			return "";
 		}
 
-		public string AddSuccessExpressScore(int targetObjectId, decimal cost, decimal costSquareMeter, out int id)
+		public string SaveSuccessExpressScore(int targetObjectId, decimal summaryCost, decimal costSquareMeter, out int id, int? expressScoreId = null,
+			decimal? square = null, int? floor = null)
 		{
 			id = 0;
 			try
 			{
 				var kn = OMUnit.Where(x => x.Id == targetObjectId).Select(x => x.CadastralNumber).ExecuteFirstOrDefault()
 					?.CadastralNumber;
-				id = new OMExpressScore
+
+				if (expressScoreId == null && (square == null || floor == null))
 				{
-					KadastralNumber = kn,
-					CostSquareMeter = costSquareMeter,
-					DateCost = DateTime.Now.Date,
-					SummaryCost = cost
-				}.Save();
+					return "Невозможно выполнить сохранение. Не задана площадь или этаж";
+				}
+
+				id = expressScoreId == null
+					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId)
+					:  UpdateCostsExpressScore(expressScoreId.Value, summaryCost, costSquareMeter);
 			}
 			catch (Exception e)
 			{
@@ -406,7 +467,34 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
-		public string AddDependenceEsFromMarketCoreObject(int targetObjectId, List<long> objectIds)
+		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId)
+		{
+			return new OMExpressScore
+			{
+				KadastralNumber = kn,
+				CostSquareMeter = costSquareMeter,
+				DateCost = DateTime.Now.Date,
+				SummaryCost = cost,
+				Objectid = targetObjectId,
+				Floor = floor,
+				Square = square
+			}.Save();
+		}
+
+		private int UpdateCostsExpressScore(int expressScoreId, decimal summaryCost, decimal costSquareMeter)
+		{
+			var obj = OMExpressScore.Where(x => x.Id == expressScoreId).SelectAll().ExecuteFirstOrDefault();
+			if (obj == null)
+			{
+				return 0;
+			}
+
+			obj.CostSquareMeter = costSquareMeter;
+			obj.SummaryCost = summaryCost;
+			return obj.Save();
+		}
+
+		private string AddDependenceEsFromMarketCoreObject(int expressScoreId, List<long> objectIds)
 		{
 			try
 			{
@@ -414,7 +502,7 @@ namespace KadOzenka.Dal.ExpressScore
 				{
 					new OMEsToMarketCoreObject
 					{
-						EsId = targetObjectId,
+						EsId = expressScoreId,
 						MarketObjectId = objId
 					}.Save();
 				}
@@ -429,7 +517,26 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
-	    public long AddWallMaterial(string wallMaterial, long mark)
+		private string RemoveDependenceEsFromMarketCoreObject(int expressScoreId, List<long> objectIds)
+		{
+			try
+			{
+				foreach (var objId in objectIds)
+				{
+					 OMEsToMarketCoreObject.Where(x => x.EsId == expressScoreId && x.MarketObjectId == objId).ExecuteFirstOrDefault().Destroy();
+				}
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				ErrorManager.LogError(e);
+				return "Удаление связи экспресс оценки и аналогв не выполненно. Подробнее в журнале ошибок";
+			}
+			return "";
+		}
+
+		public long AddWallMaterial(string wallMaterial, long mark)
 	    {
 	        return new OMWallMaterial {WallMaterial = wallMaterial, Mark = mark}.Save();
 	    }

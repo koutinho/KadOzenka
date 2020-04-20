@@ -1,0 +1,78 @@
+﻿@using DocumentFormat.OpenXml.Wordprocessing
+<div class="form-horizontal col-sm-12">
+	<div class="form-group"></div>
+	<div class="form-group">
+		<div class="col-sm-12">
+			@Html.CustomLabelFor("Исключить аналог из экспресс оценки и выполнить перерасчет?", htmlAttributes: new {style = "padding-top: 10px; font-weight: bold;" })
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-offset-8 col-sm-3">
+			<button style="float: right" class="k-button re-calculate" type="button">Пересчитать стоимость</button>
+		</div>
+	</div>
+</div>
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+
+	function updateQueryStringParameter(uri, key, value) {
+		var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+		var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+		if (uri.match(re)) {
+			return uri.replace(re, '$1' + key + "=" + value + '$2');
+		}
+		else {
+			return uri + separator + key + "=" + value;
+		}
+	}
+
+	$(document).ready(function () {
+		var removeAnalogId = "@ViewBag.DeleteAnalogId";
+		var expressScoreId = "@ViewBag.EsId";
+
+		var $bodyTop = $(window.top.document.body);
+		var $analogIframe = $bodyTop.find('.k-tabstrip-iframecontent').contents();
+		var transactionQueryString = $analogIframe.find("#TransitionQueryString-100");
+		var requestUrl = $analogIframe.find("#RequestUrl-100");
+
+	
+		$('.re-calculate').on('click',
+			function () {
+				var data = {
+					removeAnalogId,
+					expressScoreId
+				}
+				//
+				//debugger;
+				//var requestVal = updateQueryStringParameter(requestUrl.val(), "10002000", [100,1200,300].join(','));
+				//var transactionVal = updateQueryStringParameter(transactionQueryString.val(), "10002000", [100,200,300].join(','));
+				//
+				kendo.ui.progress($bodyTop, true);
+
+				$.post("@Url.Action("PostDeleteAnalog", "ExpressScore")", data).done(function (data) {
+					debugger;
+					if (data.Errors) {
+						var errors = getErrors(data.Errors);
+						Common.ShowError(errors);
+					}
+
+					if (data.success && data.success.successAnalogIds.length > 0) {
+						debugger;
+						var requestVal = updateQueryStringParameter(requestUrl.val(), "10002000", data.success.successAnalogIds.join(','));
+						var transactionVal = updateQueryStringParameter(transactionQueryString.val(), "10002000", data.success.successAnalogIds.join(','));
+						transactionQueryString.val(transactionVal);
+						requestUrl.val(requestVal);
+						Common.ShowMessage("Перерасчет успешно выполнен. Закройте окно.");
+					}
+
+				}).always(function() {
+					kendo.ui.progress($bodyTop, false);
+				});
+
+				//$analogIframe.find('.k-widget.k-window.k-state-focused').data("kendoWindow").close();
+				//$analogIframe.find('.k-widget');
+			});
+		//
+	});
+</script>

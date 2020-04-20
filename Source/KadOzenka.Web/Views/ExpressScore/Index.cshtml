@@ -579,11 +579,21 @@
 	$(document).ready(function () {
 		initDialog();
 		$('.calculate').on('click', function () {
+			if (!$('#floor').val()) {
+				Common.ShowError("Заполните поле этаж");
+				return;
+			}
+
+			if (!$('#square').val()) {
+				Common.ShowError("Заполните поле площадь");
+				return;
+			}
 			showModal();
 		});
 	});
 	function executeCalculate(scenarioType = null) {
 		if (scenarioType == null) {
+			Common.ShowError("Не удалось получить тип расчета. Попробуйте еще раз");
 			return;
 		}
 		var data = {
@@ -609,12 +619,13 @@
 
 				$('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
 
-
+			} else {
+				Common.ShowError("Расчет произведен. Нет параметров стоимости Обратитесь к администратору");
 			}
 		}).always(function() {
 			kendo.ui.progress($('body'), false);
 		});
-
+		return;
 	}
 
 	function showModal() {
