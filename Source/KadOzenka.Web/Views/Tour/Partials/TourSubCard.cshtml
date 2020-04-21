@@ -38,7 +38,7 @@
                 success: function (response) {
                     Common.ShowMessage(response.Success);
                     //метод из TourCard
-                    ReloadTourCartTab();
+					ReloadTourCartTab(data.id, null, null);
                 },
                 error: function (response) {
                     Common.ShowError(response.responseText);

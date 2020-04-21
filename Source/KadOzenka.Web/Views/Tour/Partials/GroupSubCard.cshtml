@@ -200,11 +200,11 @@
             data: { 'groupId': '@Model.Id' },
             success: function (response) {
                 console.log("success");
-                $('#modelContent').append(response);
+                $('#modelContent').html(response);
                 kendo.ui.progress($('body'), false);
             },
             error: function () {
-                $('#modelContent').append("<span style='color:red;'>Модель для группы не найдена</span>");
+				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
                 kendo.ui.progress($('body'), false);
             }
         });
@@ -222,7 +222,7 @@
                 success: function (response) {
                     Common.ShowMessage("Данные обновлены");
                     //метод из TourCard
-                    ReloadTourCartTab();
+					ReloadTourCartTab('@Model.RatingTourId', '@Model.ParentGroupId', data.id);
                 },
                 error: function (response) {
                     Common.ShowError(response.responseText);

@@ -15,9 +15,10 @@
                 <div class="col-sm-4">
                     <label>Тур:</label>
                 </div>
-                <div class="col-sm-7 col-sm-offset-1">
-                    <label id="tourYear"></label>
-                </div>
+	            <div class="col-sm-7 col-sm-offset-1">
+		            <input id="tourYearId" type="text" style="display: none" />
+		            <label id="tourYear"></label>
+	            </div>
             </div>
         </div>
         <div class="form-group">
@@ -86,7 +87,6 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-
         $('#additionToolbar').removeClass("k-widget");
 
         $("#add-tour").click(function () {
@@ -110,67 +110,214 @@
             SaveGroup($("#groupForm").is(":visible"));
         });
 
-        var dataSource = new kendo.data.TreeListDataSource({
-			transport: {
-				read: {
-					url: "@Url.Action("GetGroupsForTour", "Tour", new {tourId = ViewBag.TourId})",
-					dataType: "json"
-				}
-			},
-			schema: {
-				model: {
-					id: "Id",
-					parentId: "ParentId",
-					fields: {
-                        ParentId: { field: "ParentId", nullable: true },
-                        Id: { field: "Id", type: "number", nullable: true },
-                        TourId: { field: "TourId", type: "number", nullable: true },
-                        UrlForEdit: { field: "UrlForEdit", type: "string" },
-                        GroupName: { field: "GroupName", type: "string" },
-                        GroupType: { field: "GroupType", type: "string" }
-                    },
-					expanded: true
-				}
-			}
-		});
-        $("#treeList").kendoTreeList({
-            dataSource: dataSource,
-            height: "90%",
-            selectable: true,
-            columns: [
-                {
-                    field: "GroupName", title: "Имя группы", headerAttributes: {
-                        style: "display: none"
-                    }
-                }
-            ],
-            change: UpdateMainContent
-        });
 
-        $("#treeList").data("kendoTreeList").dataSource.filter({ field: "TourId", operator: "equals", value: @ViewBag.TourId });
-
-        $('#mainContent').load('@Url.Action("TourSubCard", "Tour", new {tourId = ViewBag.TourId })');
-
+		DownloadTours();
     });
 
-    function UpdateMainContent() {
-        var row = GetSelectedRowInTree();
-        if (row.length > 0) {
-            var data = GetDataFromRowInTree(row);
-            $('#mainContent').load(data.UrlForEdit);
+	
+
+	function DownloadTours() {
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: 'GET',
+			url: "@Url.Action("GetAllTours", "Tour")",
+			dataType: "json",
+			success: function(response) {
+				var data = response.map(function(tour) {
+					return {
+						Id: tour.Id,
+						GroupName: tour.GroupName,
+						IsTour: true,
+						UrlForEdit: tour.UrlForEdit,
+						GroupType: tour.GroupType,
+						AreGroupsDownloaded: false,
+						items: tour.Items.map(function(emptyGroup) {
+							return {
+								Id: emptyGroup.Id,
+								GroupName: emptyGroup.GroupName
+							}
+						})
+					}
+				});
+				$("#treeList").kendoTreeView({
+					dataSource: data,
+					dataTextField: 'GroupName',
+					dataValueField: 'Id',
+					change: UpdateMainContent,
+					expand: function (tree) {
+						DownloadGroupsForTour(tree);
+					}
+				});
+
+				FocusOnTour();
+			},
+			error: function(response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function() {
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
+
+
+	function DownloadGroupsForTour(tree) {
+		var node = $('#treeList').data('kendoTreeView').dataItem(tree.node);
+		//подгружаем список групп только для тура и только один раз
+		if (!node || !node.IsTour || node.AreGroupsDownloaded)
+			return;
+		var tourId = node.Id;
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: 'GET',
+			url: "@Url.Action("GetGroupsForTour", "Tour")",
+			data: { tourId: tourId },
+			dataType: "json",
+			success: function (response) {
+				if (!response)
+					return;
+				var result = response.map(function(mainGroup) {
+					return {
+						Id: mainGroup.Id,
+						GroupName: mainGroup.GroupName,
+						UrlForEdit: mainGroup.UrlForEdit,
+						GroupType: mainGroup.GroupType,
+						items: mainGroup.Items.map(function(group) {
+							return {
+								Id: group.Id,
+								GroupName: group.GroupName,
+								UrlForEdit: group.UrlForEdit,
+								GroupType: group.GroupType,
+								items: group.Items.map(function(subgroup) {
+									return {
+										Id: subgroup.Id,
+										GroupName: subgroup.GroupName,
+										UrlForEdit: subgroup.UrlForEdit,
+										GroupType: subgroup.GroupType
+									}
+								})
+							}
+						})
+					}
+				});
+				node.items.length = 0;
+				result.forEach(function(e) {
+					node.items.push(e);
+				});
+				node.AreGroupsDownloaded = true;
+				FocusOnGroup();
+			},
+			error: function(response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function() {
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
+
+
+
+	function UpdateMainContent() {
+		var row = GetSelectedRowInTree();
+		if (row.length > 0) {
+			var data = GetDataFromRowInTree(row);
+			$('#mainContent').load(data.UrlForEdit);
         }
     }
 
+
     function GetSelectedRowInTree() {
-        var treeList = $("#treeList").data("kendoTreeList");
+		var treeList = $("#treeList").data("kendoTreeView");
         return treeList.select();
     }
 
+
     function GetDataFromRowInTree(row) {
-        var treeList = $("#treeList").data("kendoTreeList");
+		var treeList = $("#treeList").data("kendoTreeView");
         var data = treeList.dataItem(row);
         return data;
+	}
+
+
+	function GetParentFromTree(row) {
+		var tree = $("#treeList").data("kendoTreeView");
+		var parent = tree.parent(row);
+		return parent;
+	}
+
+
+	function FocusOnTour() {
+		var tourId = '@ViewBag.ChangedTourId';
+		if (tourId == 0)
+			return;
+		var treeView = $("#treeList").data("kendoTreeView");
+		var allData = treeView.dataSource._data;
+		ExpandNode(allData, tourId);
+	}
+
+
+    var shouldFocus = true;
+	function FocusOnGroup() {
+		if (!shouldFocus)
+			return;
+	    var tourId = '@ViewBag.ChangedTourId';
+	    var parentGroupId = '@ViewBag.ChangedGroupParentGroupId';
+		var groupId = '@ViewBag.ChangedGroupId';
+		if (tourId == 0 || parentGroupId == 0 || groupId == 0)
+		    return;
+	    var treeView = $("#treeList").data("kendoTreeView");
+	    var allData = treeView.dataSource._data;
+	    allData.forEach(function(tour) {
+			if (tour.Id == tourId) {
+				var mainGroups = tour.children._data;
+				var isParentWasFound = false;
+				//нужно раскрыть списки до группы
+			    mainGroups.forEach(function(mainGroup) {
+					if (mainGroup.Id == parentGroupId) {
+						isParentWasFound = true;
+						var groups = mainGroup.children._data;
+						ExpandNode(mainGroups, parentGroupId);
+						ExpandNode(groups, groupId);
+					}
+				});
+				//нужно раскрыть списки до подгруппы
+				if (!isParentWasFound) {
+					mainGroups.forEach(function(mainGroup) {
+						var groups = mainGroup.children._data;
+						groups.forEach(function (group) {
+							if (group.Id == parentGroupId) {
+								var subGroups = group.children._data;
+								subGroups.forEach(function (subGroup) {
+									if (subGroup.Id == groupId) {
+										ExpandNode(mainGroups, mainGroup.Id);
+										ExpandNode(groups, parentGroupId);
+										ExpandNode(subGroups, groupId);
+									}
+								});
+							}
+						});
+					});
+				}
+		    }
+		});
+		shouldFocus = false;
     }
+
+
+    function ExpandNode(allData, nodeId) {
+	    var treeView = $("#treeList").data("kendoTreeView");
+	    allData.forEach(function (e) {
+		    var node = treeView.findByUid(e.uid);
+			if (e.Id == nodeId) {
+			    treeView.select(node);
+			    treeView.expand(node);
+			} else {
+			    treeView.collapse(node);
+		    }
+	    });
+    }
+
 
     function ShowInfoWindow(message) {
         Common.UI.ShowInfo({
@@ -180,6 +327,7 @@
             }
         });
     }
+
 
     function ShowModal(modal, width, height) {
         if (!modal.data("kendoWindow")) {
@@ -194,13 +342,13 @@
         modal.data("kendoWindow").open();
     }
 
+
     function SaveTour() {
         kendo.ui.progress($('body'), true);
         var data = {
             id: -1,
             year: $('#addTourInput').val()
         };
-
         $.ajax({
             type: 'POST',
             url: '@Url.Action("TourEstimates", "Tour")',
@@ -219,6 +367,7 @@
         });
     }
 
+
     function ShowAddGroupModal() {
         var row = GetSelectedRowInTree();
         if (row.length <= 0) {
@@ -227,16 +376,19 @@
             var data = GetDataFromRowInTree(row);
             if (data.GroupType != "2")
                 ShowInfoWindow("Нужно выбрать основную группу из дерева");
-            else {
-                FillYear();
-                //заполняем данные для основной группы
-                $("#mainGroupId").val(data.Id);
-                $("#mainGroupName").html(data.GroupName);
+            else { ;
+	            var parentYear = GetParentFromTree(row);
+				var parentYearData = GetDataFromRowInTree(parentYear);
+	            $("#tourYearId").val(parentYearData.Id);
+				$("#tourYear").html(parentYearData.GroupName);
+	            $("#mainGroupId").val(data.Id);
+				$("#mainGroupName").html(data.GroupName);
                 var modal = $("#groupAdditionModal");
                 ShowModal(modal, '50%', '30%');
             }
         }
     }
+
 
     function ShowAddSubGroupModal() {
         var row = GetSelectedRowInTree();
@@ -247,49 +399,34 @@
             if (data.GroupType != "3")
                 ShowInfoWindow("Нужно выбрать неосновную группу из дерева");
             else {
-                FillYear();
+	            var parentMainGroup = GetParentFromTree(row);
+				var parentMainGroupData = GetDataFromRowInTree(parentMainGroup);
+				$("#mainGroupId").val(parentMainGroupData.Id);
+				$("#mainGroupName").html(parentMainGroupData.GroupName);
 
-                //ищем основную группу в дереве
-                var treeList = $("#treeList").data("kendoTreeList");
-                var rows = $("tr.k-treelist-group", treeList.tbody);
-                if (rows.length > 0) {
-                    rows.each(function() {
-                        var currentRowData = GetDataFromRowInTree(this);
-                        if (currentRowData.Id == data.ParentId) {
-                            $("#mainGroupId").val(currentRowData.Id);
-                            $("#mainGroupName").html(currentRowData.GroupName);
-                        }
-                    });
-                }
+				var parentYear = GetParentFromTree(parentMainGroup);
+				var parentYearData = GetDataFromRowInTree(parentYear);
+				$("#tourYearId").val(parentYearData.Id);
+				$("#tourYear").html(parentYearData.GroupName);
 
-                $("#groupId").val(data.Id);
-                $("#groupName").html(data.GroupName);
+				$("#groupId").val(data.Id);
+				$("#groupName").html(data.GroupName);
                 var modal = $("#groupAdditionModal");
                 ShowModal(modal, '50%', '30%');
             }
         }
     }
 
-    function FillYear() {
-        //ищем корень дерева с Туром
-        var treeList = $("#treeList").data("kendoTreeList");
-        var rows = $("tr.k-treelist-group", treeList.tbody);
-        if (rows.length > 0) {
-            var root = rows[0];
-            $("#tourYear").html(GetDataFromRowInTree(root).GroupName);
-        }
-    }
 
     function SaveGroup(isSubGroup) {
         kendo.ui.progress($('body'), true);
         var dto = {
             Id: null,
-            RatingTourId: '@ViewBag.TourId',
+			RatingTourId: $('#tourYearId').val(),
             ParentGroupId: !isSubGroup ? null : $('#groupId').val(),
             GroupingMechanismId: $('#mainGroupId').val(),
             Name: $('#addGroupInput').val()
         };
-
         $.ajax({
             url: '@Url.Action("EditGroup", "Tour")',
             type: 'POST',
@@ -308,9 +445,11 @@
         });
     }
 
-    function ReloadTourCartTab() {
-        window.location.replace('@Url.Action("TourCard", "Tour", new { tourId = ViewBag.TourId})');
-    }
+
+	function ReloadTourCartTab(tourId, parentGroupId, groupId) {
+		window.location.replace('@Url.Action("TourCard", "Tour")' + "?tourId=" +
+			tourId + "&parentGroupId=" + parentGroupId + "&groupId=" + groupId);
+	}
 
 </script>
 

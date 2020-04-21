@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Groups.Dto;
+﻿using System.Collections.Generic;
+using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 
 namespace KadOzenka.Web.Models.Tour
@@ -11,6 +12,8 @@ namespace KadOzenka.Web.Models.Tour
 		public long? TourId { get; set; }
         public string UrlForEdit { get; set; }
         public GroupType GroupType { get; set; }
+        public bool HasChildren { get; set; }
+		public List<GroupTreeModel> Items { get; set; }
 
 
         public static GroupTreeModel ToModel(GroupTreeDto tree)

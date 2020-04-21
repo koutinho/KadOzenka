@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Transactions;
 using KadOzenka.Dal.Tours.Dto;
 using ObjectModel.KO;
@@ -15,6 +16,11 @@ namespace KadOzenka.Dal.Tours
                 Id = tour.Id,
                 Year = tour.Year
             };
+        }
+
+        public List<OMTour> GetTours()
+        {
+            return OMTour.Where(x => true).SelectAll().Execute();
         }
 
         public TourDto GetTourByYear(long? year)

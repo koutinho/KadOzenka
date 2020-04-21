@@ -1,10 +1,13 @@
-﻿namespace KadOzenka.Dal.Groups.Dto
+﻿using ObjectModel.Directory;
+
+namespace KadOzenka.Dal.Groups.Dto
 {
     public class GroupDto
     {
         public long? Id { get; set; }
         public string Name { get; set; }
         public long? GroupingMechanismId { get; set; }
+        public KoGroupAlgoritm GroupAlgoritmCode { get; set; }
         public long? ParentGroupId { get; set; }
         public long? RatingTourId { get; set; }
     }

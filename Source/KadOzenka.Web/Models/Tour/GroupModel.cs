@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Tour
 {
@@ -22,11 +23,26 @@ namespace KadOzenka.Web.Models.Tour
 
         public static GroupModel ToModel(GroupDto group)
         {
-            return new GroupModel
+	        var parentId = group.ParentGroupId;
+	        if (parentId == -1)
+	        {
+		        if (group.GroupAlgoritmCode == KoGroupAlgoritm.MainOKS)
+		        {
+			        parentId = (long?)KoGroupAlgoritm.MainOKS;
+		        }
+		        else if (group.GroupAlgoritmCode == KoGroupAlgoritm.MainParcel)
+		        {
+			        parentId = (long?)KoGroupAlgoritm.MainParcel;
+		        }
+	        }
+
+			return new GroupModel
             {
                 Id = group.Id,
-                Name = group.Name
-            };
+				RatingTourId = group.RatingTourId,
+                Name = group.Name,
+				ParentGroupId = parentId
+			};
         }
 
         public static GroupDto FromModel(GroupModel group)

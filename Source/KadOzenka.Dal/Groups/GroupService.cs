@@ -24,11 +24,13 @@ namespace KadOzenka.Dal.Groups
         public GroupDto GetGroupById(long? groupId)
         {
             var group = GetGroupByIdInternal(groupId);
-
-            return new GroupDto
+            
+			return new GroupDto
             {
                 Id = group.Id,
-                Name = group.GroupName
+                Name = group.GroupName,
+				ParentGroupId = group.ParentId,
+				GroupAlgoritmCode = group.GroupAlgoritm_Code
             };
         }
 
