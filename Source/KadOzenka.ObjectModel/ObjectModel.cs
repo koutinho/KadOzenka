@@ -21303,6 +21303,61 @@ namespace ObjectModel.ES
             }
         }
 
+
+        private string _valuetype;
+        /// <summary>
+        /// 60900300 Тип значения (VALUE_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60900300)]
+        public string ValueType
+        {
+            get
+            {
+                CheckPropertyInited("ValueType");
+                return _valuetype;
+            }
+            set
+            {
+                _valuetype = value;
+                NotifyPropertyChanged("ValueType");
+            }
+        }
+
+
+        private ObjectModel.Directory.ES.ReferenceItemCodeType _valuetype_Code;
+        /// <summary>
+        /// 60900300 Тип значения (справочный код) (VALUE_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60900300)]
+        public ObjectModel.Directory.ES.ReferenceItemCodeType ValueType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ValueType_Code");
+                return this._valuetype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_valuetype))
+                    {
+                         _valuetype = descr;
+                    }
+                }
+                else
+                {
+                     _valuetype = descr;
+                }
+
+                this._valuetype_Code = value;
+                NotifyPropertyChanged("ValueType");
+                NotifyPropertyChanged("ValueType_Code");
+            }
+        }
+
     }
 }
 
@@ -21372,61 +21427,6 @@ namespace ObjectModel.ES
             {
                 _value = value;
                 NotifyPropertyChanged("Value");
-            }
-        }
-
-
-        private string _valuetype;
-        /// <summary>
-        /// 61000400 Тип значения (VALUE_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 61000400)]
-        public string ValueType
-        {
-            get
-            {
-                CheckPropertyInited("ValueType");
-                return _valuetype;
-            }
-            set
-            {
-                _valuetype = value;
-                NotifyPropertyChanged("ValueType");
-            }
-        }
-
-
-        private ObjectModel.Directory.ES.ReferenceItemCodeType _valuetype_Code;
-        /// <summary>
-        /// 61000400 Тип значения (справочный код) (VALUE_TYPE_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 61000400)]
-        public ObjectModel.Directory.ES.ReferenceItemCodeType ValueType_Code
-        {
-            get
-            {
-                CheckPropertyInited("ValueType_Code");
-                return this._valuetype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_valuetype))
-                    {
-                         _valuetype = descr;
-                    }
-                }
-                else
-                {
-                     _valuetype = descr;
-                }
-
-                this._valuetype_Code = value;
-                NotifyPropertyChanged("ValueType");
-                NotifyPropertyChanged("ValueType_Code");
             }
         }
 

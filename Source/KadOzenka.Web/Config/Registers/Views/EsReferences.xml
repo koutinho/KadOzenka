@@ -19,10 +19,10 @@
 	        </Parameters>
 	    </Button>
 
-	    <Button Caption="Добавить" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="150" WindowWidth="800" Icon="fas fa-plus">
+	    <Button Caption="Добавить" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="200" WindowWidth="800" Icon="fas fa-plus">
 	    </Button>
 
-	    <Button Caption="Редактировать" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="150" WindowWidth="800" Icon="fas fa-edit" >
+	    <Button Caption="Редактировать" NavigateURL="/ExpressScopeReference/ReferenceCard" WindowHeight="200" WindowWidth="800" Icon="fas fa-edit" >
 	        <ConditionGroups>
 	            <ConditionGroup HideOrDisable="Disable">
 	                <Conditions>
@@ -48,18 +48,8 @@
 	        </Parameters>
 	    </Button>
 
-	    <!--<Button Caption="Импорт классификатора ЦОД" NavigateURL="/GbuCod/ImportCod" WindowHeight="320" WindowWidth="840" Icon="fas fa-code">
-	        <ConditionGroups>
-	            <ConditionGroup HideOrDisable="Disable">
-	                <Conditions>
-	                    <Condition Key="NeedSelectedRow" Operation="" Value="true" />
-	                </Conditions>
-	            </ConditionGroup>
-	        </ConditionGroups>
-	        <Parameters>
-	            <Parameter Key="codJobId" Value="[ObjectID]" />
-	        </Parameters>
-	    </Button>-->
+	    <Button Caption="Импорт справочника" NavigateURL="/ExpressScopeReference/DataImport" WindowHeight="470" WindowWidth="840" Icon="fas fa-code">
+	    </Button>
   </Buttons>
 
   <Tabs>

@@ -16,6 +16,7 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         public long ReferenceId { get; set; }
 
         public string ReferenceName { get; set; }
+        public ReferenceItemCodeType ReferenceValueType { get; set; }
 
         /// <summary>
         /// Код справочника
@@ -26,14 +27,6 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         public decimal? NumberValue { get; set; }
 
         public DateTime? DateTimeValue { get; set; }
-
-
-        /// <summary>
-        /// Тип данных значения справочника
-        /// </summary>
-        [Display(Name = "Тип данных")]
-        [Required(ErrorMessage = "Поле Тип данных значения справочника обязательное")]
-        public ReferenceItemCodeType ValueType { get; set; } = ReferenceItemCodeType.String;
 
         /// <summary>
         /// Значение для расчета
@@ -50,16 +43,17 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                     Id = -1,
                     ReferenceId = reference.Id,
                     ReferenceName = reference.Name,
+                    ReferenceValueType = reference.ValueType_Code
                 };
             }
 
-            var value = entity.ValueType_Code == ReferenceItemCodeType.String && entity.Value != null
+            var value = reference.ValueType_Code == ReferenceItemCodeType.String && entity.Value != null
                 ? entity.Value
                 : null;
-            var numberValue = entity.ValueType_Code == ReferenceItemCodeType.Number && entity.Value != null
+            var numberValue = reference.ValueType_Code == ReferenceItemCodeType.Number && entity.Value != null
                 ? decimal.Parse(entity.Value)
                 : (decimal?) null;
-            var dateValue = entity.ValueType_Code == ReferenceItemCodeType.Date && entity.Value != null
+            var dateValue = reference.ValueType_Code == ReferenceItemCodeType.Date && entity.Value != null
                 ? DateTime.Parse(entity.Value)
                 : (DateTime?)null;
 
@@ -68,10 +62,10 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                 Id = entity.Id,
                 ReferenceId = entity.ReferenceId,
                 ReferenceName = reference.Name,
+                ReferenceValueType = reference.ValueType_Code,
                 Value = value,
                 NumberValue = numberValue,
                 DateTimeValue = dateValue,
-                ValueType = entity.ValueType_Code,
                 CalcValue = entity.CalculationValue
             };
         }
@@ -79,10 +73,10 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
         public ReferenceItemDto ToDto()
         {
             string value = null;
-            if (ValueType == ReferenceItemCodeType.Date)
+            if (ReferenceValueType == ReferenceItemCodeType.Date)
             {
                 value = DateTimeValue?.Date.ToString(CultureInfo.CurrentCulture);
-            } else if (ValueType == ReferenceItemCodeType.Number)
+            } else if (ReferenceValueType == ReferenceItemCodeType.Number)
             {
                 value = NumberValue?.ToString();
             }
@@ -96,7 +90,6 @@ namespace KadOzenka.Web.Models.ExpressScoreReference
                 Id = Id,
                 ReferenceId = ReferenceId,
                 Value = value,
-                ValueType = ValueType,
                 CalcValue = CalcValue
             };
         }

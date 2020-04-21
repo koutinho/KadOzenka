@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using Core.ErrorManagment;
 using KadOzenka.Dal.ExpressScore;
+using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Web.Models.ExpressScoreReference;
 using KadOzenka.Web.Models.GbuCod;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.ES;
 using ObjectModel.KO;
@@ -23,8 +27,9 @@ namespace KadOzenka.Web.Controllers
         public ActionResult ReferenceCard(long id, bool showItems = false)
         {
             var entity = OMEsReference.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            var isReferenceEmpty = entity == null || !OMEsReferenceItem.Where(x => x.ReferenceId == id).ExecuteExists();
 
-            return View(ReferenceViewModel.FromEntity(entity, showItems));
+            return View(ReferenceViewModel.FromEntity(entity, isReferenceEmpty, showItems));
         }
 
         [HttpPost]
@@ -40,11 +45,11 @@ namespace KadOzenka.Web.Controllers
             {
                 if (id == -1)
                 {
-                    id = ReferenceService.CreateReference(viewModel.Name);
+                    id = ReferenceService.CreateReference(viewModel.Name, viewModel.ValueType);
                 }
                 else
                 {
-                    ReferenceService.UpdateReference(viewModel.Id, viewModel.Name);
+                    ReferenceService.UpdateReference(viewModel.Id, viewModel.Name, viewModel.ValueType);
                 }
             }
             catch (Exception e)
@@ -142,5 +147,58 @@ namespace KadOzenka.Web.Controllers
 
             return Json(new { Success = true });
         }
+
+        [HttpGet]
+        public IActionResult DataImport()
+        {
+            ViewData["References"] = OMEsReference.Where(x => x).SelectAll().Execute().Select(x => new
+            {
+                Text = x.Name,
+                Value = x.Id,
+            }).ToList();
+
+            return View(new ImportDataViewModel());
+        }
+
+        [HttpPost]
+        public IActionResult DataImport(IFormFile file, ImportDataViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
+            {
+                return GenerateMessageNonValidModel();
+            }
+
+            long? referenceId = null;
+            try
+            {
+                using (Stream fileStream = file.OpenReadStream())
+                {
+                    var importInfo = new ImportReferenceFileInfoDto
+                    {
+                        ValueColumnName = viewModel.Value,
+                        CalcValueColumnName = viewModel.CalcValue,
+                        ValueType = viewModel.ValueType
+                    };
+
+                    if (viewModel.Reference.IsNewReference)
+                    {
+                        referenceId = ReferenceService.CreateReferenceFromExcel(fileStream, importInfo, viewModel.Reference.NewReferenceName);
+                       
+                    }
+                    else
+                    {
+                        ReferenceService.UpdateReferenceFromExcel(fileStream, importInfo, viewModel.Reference.IdReference.Value, viewModel.Reference.DeleteOldValues);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorManager.LogError(ex);
+                return SendErrorMessage(ex.Message);
+            }
+
+            return Json(new { Success = true, idNewReference = viewModel.Reference.IsNewReference ? referenceId : null });
+        }
+
     }
 }

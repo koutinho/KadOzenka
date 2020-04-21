@@ -7,7 +7,7 @@
         <div class="form-group"></div>
         <div class="form-group">
             <div class="col-sm-12">
-                @Html.CustomLabel($"Вы уверены что хотите удалить значение '{Model.Value}' справочника '{Model.ReferenceName}' (ИД {Model.ReferenceId})?")
+                @Html.CustomLabel($"Вы уверены что хотите удалить значение '{Model.Value ?? (Model.NumberValue != null ? Model.NumberValue.ToString() : (Model.DateTimeValue != null ? Model.DateTimeValue.ToString() : null))}' справочника '{Model.ReferenceName}' (ИД {Model.ReferenceId})?")
             </div>
         </div>
         <div class="form-group"></div>

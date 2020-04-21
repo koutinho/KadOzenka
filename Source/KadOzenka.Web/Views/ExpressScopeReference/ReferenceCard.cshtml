@@ -14,6 +14,14 @@
         </div>
     </div>
     <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(m => m.ValueType)
+        </div>
+        <div class="col-sm-10">
+            @Html.KendoEnumDropDownListFor(m => m.ValueType, isReadonly: !Model.ValueTypeCanBeChanged, withoutNull: true)
+        </div>
+    </div>
+    <div class="form-group">
         <div class="col-sm-12">
             <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
         </div>
@@ -24,9 +32,9 @@
 @if (Model.Id != -1 && Model.ShowItems)
 {
 <div style="height: auto;">
-    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/EsReferenceItems?Transition=1&61000200=" + @Model.Id)"
+    <div id="reference-items-ajax-loader" class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/EsReferenceItems?Transition=1&61000200=" + @Model.Id)"
          data-param-ReferenceId="@Model.Id" data-param-Pageable="true" data-param-Scrollable="true"
-         data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid610" style="height: 100%;"></div>
+         data-param-partialview="true" data-loader="true"  style="height: 100%;"></div>
 </div>
 }
 
@@ -41,7 +49,26 @@
 
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
+    var grid;
     $(document).ready(function () {
+        var observer = new MutationObserver(function (mutationsList, observer) {
+            for (let mutation of mutationsList) {
+                for (let node of mutation.addedNodes) {
+                    if (!(node instanceof HTMLElement)) continue;
+
+                    if (node.matches('div[class="contentPanel"]')) {
+                        grid = $("#Grid-610").data("kendoGrid");
+                        grid.bind("dataBound", dataBound);
+                    }
+                    for (let elem of node.querySelectorAll('div[class="contentPanel"]')) {
+                        grid = $("#Grid-610").data("kendoGrid");
+                        grid.bind("dataBound", dataBound);
+                    }
+                }
+            }
+        });
+        observer.observe(document.getElementsByTagName('body')[0], { childList: true, subtree: true });
+
         $('#save').on('click',
             function () {
                 kendo.ui.progress($('body'), true);
@@ -66,4 +93,13 @@
                 });
             });
     });
+
+    function dataBound(e) {
+        var itemCount = e.sender.dataSource.total();
+        if (itemCount == 0) {
+            $('#@(nameof(Model.ValueType))').data('kendoDropDownList').enable(true);
+        } else {
+            $('#@(nameof(Model.ValueType))').data('kendoDropDownList').readonly();
+        }
+    }
 </script>
