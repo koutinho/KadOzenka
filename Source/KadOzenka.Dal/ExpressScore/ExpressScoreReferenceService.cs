@@ -6,8 +6,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using Core.Main.FileStorages;
+using Core.Messages;
 using Core.Shared.Extensions;
+using Core.SRD;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore.Dto;
 using ObjectModel.Directory.ES;
 using ObjectModel.ES;
@@ -16,6 +20,8 @@ namespace KadOzenka.Dal.ExpressScore
 {
     public class ExpressScoreReferenceService
     {
+        public const string DateCreatedStringFormat = "yyyyMMddHHmmss";
+
         public long CreateReference(string name, ReferenceItemCodeType valueType)
         {
             var isExistsReferencesWithTheSameName = OMEsReference.Where(x => x.Name == name).ExecuteExists();
@@ -182,7 +188,7 @@ namespace KadOzenka.Dal.ExpressScore
                     reference.ValueType_Code = fileImportInfo.ValueType;
                     reference.Save();
                 }
-                ImportReferenceItemsFromExcel(fileStream, reference.Id, fileImportInfo);
+                ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
 
                 ts.Complete();
             }
@@ -194,7 +200,8 @@ namespace KadOzenka.Dal.ExpressScore
             using (var ts = new TransactionScope())
             {
                 referenceId = CreateReference(referenceName, fileImportInfo.ValueType);
-                ImportReferenceItemsFromExcel(fileStream, referenceId, fileImportInfo);
+                var reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
+                ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
 
                 ts.Complete();
             }
@@ -202,17 +209,25 @@ namespace KadOzenka.Dal.ExpressScore
             return referenceId;
         }
 
-        private void ImportReferenceItemsFromExcel(Stream fileStream, long referenceId,
+        private void ImportReferenceItemsFromExcel(Stream fileStream, OMEsReference reference,
             ImportReferenceFileInfoDto fileImportInfo)
         {
+            var currentTime = DateTime.Now;
+            var fileSavedName = $"{fileImportInfo.FileName} ({currentTime.GetString().Replace(":","_")})";
+            var fileResultSavedName = $"{fileSavedName}_Result";
+
             var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
             var mainWorkSheet = excelFile.Worksheets[0];
+
+            SaveFileToStorage(excelFile, currentTime, fileSavedName);
+
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
                 CancellationToken = cancelTokenSource.Token,
                 MaxDegreeOfParallelism = 10
             };
+            object locked = new object();
 
             var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
             var columnNames = new List<string>();
@@ -220,60 +235,118 @@ namespace KadOzenka.Dal.ExpressScore
             {
                 columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
             }
-
-            var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0);
             
+            var errorCount = 0;
+            mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
+            var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0);
+
             Parallel.ForEach(dataRows, options, row =>
             {
-                var cellValue = mainWorkSheet.Rows[row.Index].Cells[columnNames.IndexOf(fileImportInfo.ValueColumnName)];
-                var cellCalcValue = mainWorkSheet.Rows[row.Index].Cells[columnNames.IndexOf(fileImportInfo.CalcValueColumnName)];
-                
-                if (!cellCalcValue.Value.TryParseToDecimal(out var calcValue))
+                try
                 {
-                    throw new Exception(
-                        $"Значение '{cellValue.Value.ToString()}' (столбец '{fileImportInfo.CalcValueColumnName}' строка {row.Index}) не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
-                }
+                    var cellValue = mainWorkSheet.Rows[row.Index]
+                        .Cells[columnNames.IndexOf(fileImportInfo.ValueColumnName)];
+                    var cellCalcValue = mainWorkSheet.Rows[row.Index]
+                        .Cells[columnNames.IndexOf(fileImportInfo.CalcValueColumnName)];
 
-                string valueString = null;
-                switch (fileImportInfo.ValueType)
-                {
-                    case ReferenceItemCodeType.Number:
-                        if (!cellValue.Value.TryParseToDecimal(out var number))
-                        {
-                            throw new Exception(
-                                $"Значение '{cellValue.Value.ToString()}' (столбец '{fileImportInfo.ValueColumnName}' строка {row.Index}) не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
-                        }
-                        valueString = number.ToString();
-                        break;
-                    case ReferenceItemCodeType.String:
-                        valueString = cellValue.Value.ToString();
-                        break;
-                    case ReferenceItemCodeType.Date:
-                        if (!cellValue.Value.TryParseToDateTime(out var date))
-                        {
-                            throw new Exception(
-                                $"Значение '{cellValue.Value.ToString()}' (столбец '{fileImportInfo.ValueColumnName}' строка {row.Index}) не может быть приведено к типу '{ReferenceItemCodeType.Date.GetEnumDescription()}'");
-                        }
-                        valueString = date.ToString(CultureInfo.CurrentCulture);
-                        break;
-                }
-
-                var obj = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId && x.Value == valueString)
-                    .SelectAll().ExecuteFirstOrDefault();
-                if (obj != null)
-                {
-                    obj.CalculationValue = calcValue;
-                    obj.Save();
-                }
-                else
-                {
-                    new OMEsReferenceItem
+                    if (!cellCalcValue.Value.TryParseToDecimal(out var calcValue))
                     {
-                        ReferenceId = referenceId,
-                        Value = valueString,
-                        CalculationValue = calcValue
-                    }.Save();
+                        throw new Exception(
+                            $"Значение '{cellValue.Value.ToString()}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
+                    }
+
+                    string valueString = null;
+                    switch (fileImportInfo.ValueType)
+                    {
+                        case ReferenceItemCodeType.Number:
+                            if (!cellValue.Value.TryParseToDecimal(out var number))
+                            {
+                                throw new Exception(
+                                    $"Значение '{cellValue.Value.ToString()}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
+                            }
+
+                            valueString = number.ToString();
+                            break;
+                        case ReferenceItemCodeType.String:
+                            valueString = cellValue.Value.ToString();
+                            break;
+                        case ReferenceItemCodeType.Date:
+                            if (!cellValue.Value.TryParseToDateTime(out var date))
+                            {
+                                throw new Exception(
+                                    $"Значение '{cellValue.Value.ToString()}'не может быть приведено к типу '{ReferenceItemCodeType.Date.GetEnumDescription()}'");
+                            }
+
+                            valueString = date.ToString(CultureInfo.CurrentCulture);
+                            break;
+                    }
+
+                    OMEsReferenceItem obj;
+                    lock (locked)
+                    {
+                        obj = OMEsReferenceItem.Where(x => x.ReferenceId == reference.Id && x.Value == valueString).SelectAll().ExecuteFirstOrDefault();
+                    }
+                    
+                    if (obj != null)
+                    {
+                        obj.CalculationValue = calcValue;
+                        lock (locked)
+                        {
+                            obj.Save();
+                        }
+                        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно обновлено");
+                    }
+                    else
+                    {
+                        lock (locked)
+                        {
+                            new OMEsReferenceItem
+                            {
+                                ReferenceId = reference.Id,
+                                Value = valueString,
+                                CalculationValue = calcValue
+                            }.Save();
+                        }
+                        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно создано");
+                    }
                 }
+                catch (Exception ex)
+                {
+                    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Ошибка: {ex.Message}");
+                    lock (locked)
+                    {
+                        errorCount++;
+                    }
+                }
+            });
+
+            SaveFileToStorage(excelFile, currentTime, fileResultSavedName);
+            SendImportResultNotification(reference, fileImportInfo, currentTime, errorCount, fileResultSavedName, fileSavedName);
+        }
+
+        private void SaveFileToStorage(ExcelFile excelFile, DateTime currentTime, string fileSavedName)
+        {
+            MemoryStream stream;
+            stream = new MemoryStream();
+            excelFile.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            FileStorageManager.Save(stream, DataImporterCommon.FileStorageName, currentTime, fileSavedName);
+        }
+
+        private void SendImportResultNotification(OMEsReference reference, ImportReferenceFileInfoDto fileImportInfo,
+            DateTime currentTime, int errorCount, string fileResultSavedName, string fileSavedName)
+        {
+            new MessageService().SendMessages(new MessageDto
+            {
+                Addressers =
+                    new MessageAddressersDto {UserIds = new long[] {SRDSession.GetCurrentUserId().GetValueOrDefault()}},
+                Subject = $"Результат загрузки данных в справочник: {reference.Name} от ({currentTime.GetString()})",
+                Message = $@"Загрузка файла ""{fileImportInfo.FileName}"" была завершена.
+Статус загрузки: {(errorCount > 0 ? "С ошибками" : "Успешно")}
+<a href=""/ExpressScopeReference/DownloadImportedFile?downloadResult=true&fileName={fileResultSavedName}&dateCreatedString={currentTime.ToString(DateCreatedStringFormat)}"">Скачать результат</a>
+<a href=""/ExpressScopeReference/DownloadImportedFile?downloadResult=false&fileName={fileSavedName}&dateCreatedString={currentTime.ToString(DateCreatedStringFormat)}"">Скачать исходный файл</a>",
+                IsUrgent = true,
+                IsEmail = true
             });
         }
     }

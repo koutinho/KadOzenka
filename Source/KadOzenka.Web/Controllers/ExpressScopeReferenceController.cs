@@ -3,14 +3,16 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using Core.ErrorManagment;
+using Core.Main.FileStorages;
+using Core.Register.Enums;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Web.Models.ExpressScoreReference;
-using KadOzenka.Web.Models.GbuCod;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.ES;
-using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -175,6 +177,7 @@ namespace KadOzenka.Web.Controllers
                 {
                     var importInfo = new ImportReferenceFileInfoDto
                     {
+                        FileName = Path.GetFileNameWithoutExtension(file.FileName),
                         ValueColumnName = viewModel.Value,
                         CalcValueColumnName = viewModel.CalcValue,
                         ValueType = viewModel.ValueType
@@ -200,5 +203,17 @@ namespace KadOzenka.Web.Controllers
             return Json(new { Success = true, idNewReference = viewModel.Reference.IsNewReference ? referenceId : null });
         }
 
+        [HttpGet]
+        public FileContentResult DownloadImportedFile(string fileName, string dateCreatedString, bool downloadResult)
+        {
+            var dateCreated = DateTime.ParseExact(dateCreatedString, ExpressScoreReferenceService.DateCreatedStringFormat, CultureInfo.CurrentCulture);
+            var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, dateCreated,
+                fileName);
+            var bytes = new byte[templateFile.Length];
+            templateFile.Read(bytes);
+            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
+
+            return File(bytes, contentType, $"{fileName}.{fileExtension}");
+        }
     }
 }
