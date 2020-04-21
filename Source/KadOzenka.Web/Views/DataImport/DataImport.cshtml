@@ -210,9 +210,15 @@
 
 			$("#filter").on("input", function () {
 				var query = this.value.toLowerCase();
-				const treeView = $("#treeview").data("kendoTreeView");
-				var dataSource = treeView.dataSource;
-				filter(dataSource, query);
+                const treeView = $("#treeview").data("kendoTreeView");
+
+				// Отключаем кнопку сопоставления после изменения результатов поиска и сбрасываем выделение
+                treeView.select(null);
+                treeView.dataItem(null);
+                $("#matchButton").data('kendoButton').enable(false);
+
+                var dataSource = treeView.dataSource;
+                filter(dataSource, query);
 				treeView.expand(".k-item");
             });
 
@@ -360,49 +366,27 @@
                     if (treeView) {
                         var element = e.sender.select();
                         var dataItem = e.sender.dataItem(element[0]);
-                        var name = dataItem.Name;
-						
+
                         var dataSource = treeView.dataSource;
-                        var treeData = dataSource.data()[0].items;
+                        var treeData = dataSource.data().map(i => i.items.map(j => j)).flat();
 
-                        var uid;
-                        var node = null;
-                        var filterText = "";
                         treeView.select(null);
-                        $('#filter').val(filterText).trigger('input');
+                        $('#filter').val('').trigger('input');
 
-                        var directMatch = treeData.filter(i => i.text.toLowerCase() === name.toLowerCase());
-
-                        if (directMatch.length === 1) {
-                            uid = directMatch[0].uid;
-                            node = treeView.findByUid(uid);
-                            filterText = name;
-                        }
-                        else {
-                            var firstWordMatch =
-                                treeData.filter(i => i.text.toLowerCase().includes(name.toLowerCase().split(' ')[0]));
-                            filterText = name.split(' ')[0];
-
-                            if (firstWordMatch.length === 1) {
-                                uid = firstWordMatch[0].uid;
-                                node = treeView.findByUid(uid);
-                            }
-                            if (firstWordMatch.length === 0) {
-                                filterText = "";
-                            }
-                        }
-
+                        var select = selectAssist(treeData,dataItem.Name);
+                        var node = (select.uid != null) ? treeView.findByUid(select.uid) : null;
+                        
+                        $('#filter').val(select.filterText).trigger('input');
                         treeView.select(node);
                         if (node != null)
                             treeView.trigger('select', { node: node });
-                        $('#filter').val(filterText).trigger('input');
-						
-						var selected = treeView.select();
-						var data = treeView.dataItem(selected);
-						if (data) {
-							$("#matchButton").data('kendoButton').enable(true);
-						}
-					}
+
+                        var selected = treeView.select();
+                        var data = treeView.dataItem(selected);
+                        if (data) {
+                            $("#matchButton").data('kendoButton').enable(true);
+                        }
+                    }
 				}
 			});
 
@@ -501,7 +485,54 @@
 					resetData();
 				}
 			}).data('kendoUpload');
-		});
+        });
+
+        function selectAssist(treeData,searchText) {
+            var select = { uid:null, filterText:null };
+
+            // Полное совпадение
+            var exactMatch = treeData.filter(i => i.text.toLowerCase() === searchText.toLowerCase());
+
+            if (exactMatch.length === 1) {
+                select.uid = exactMatch[0].uid;
+                select.filterText = searchText;
+                return select;
+            }
+
+            var wordArray = searchText.toLowerCase().split(' ');
+
+            // Поиск по первым двум словам
+            if (wordArray.length > 1) {
+                var twoWordFilter = wordArray[0] + ' ' + wordArray[1];
+
+                var twoWordMatch = treeData.filter(i => i.text.toLowerCase().includes(twoWordFilter));
+                if (twoWordMatch.length === 1) {
+                    select.uid = twoWordMatch[0].uid;
+                    select.filterText = twoWordFilter;
+                    return select;
+                }
+                if (twoWordMatch.length > 1) {
+                    select.filterText = twoWordFilter;
+                    return select;
+                }
+            }
+
+            // Поиск по первому слову
+            var firstWordFilter = wordArray[0];
+            var firstWordMatch =
+                treeData.filter(i => i.text.toLowerCase().includes(firstWordFilter));
+
+            if (firstWordMatch.length === 1) {
+                select.uid = firstWordMatch[0].uid;
+                select.filterText = firstWordFilter;
+                return select;
+            }
+            if (firstWordMatch.length > 1) {
+                select.filterText = firstWordFilter;
+                return select;
+            }
+            return select;
+        }
 
 		function getAttributesDataSource(data) {
 			var source = [];
