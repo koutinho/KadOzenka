@@ -1868,6 +1868,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+	/// <summary>
+	/// 257 Соответствие атрибутов KO и GBU
+	/// </summary>
+	public partial class OMTransferAttributes
+	{
+
+		public OMTransferAttributes()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMTransferAttributes(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

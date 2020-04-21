@@ -10944,6 +10944,118 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+	/// <summary>
+	/// 257 Соответствие атрибутов KO и GBU (KO_TRANSFER_ATTRIBUTES)
+	/// </summary>
+	[RegisterInfo(RegisterID = 257)]
+	[Serializable]
+	public partial class OMTransferAttributes : OMBaseClass<OMTransferAttributes>
+	{
+
+		private long _id;
+		/// <summary>
+		/// 25700100 Идентификатор (ID)
+		/// </summary>
+		[PrimaryKey(AttributeID = 25700100)]
+		public long Id
+		{
+			get
+			{
+				CheckPropertyInited("Id");
+				return _id;
+			}
+			set
+			{
+				_id = value;
+				NotifyPropertyChanged("Id");
+			}
+		}
+
+
+		private long _tourid;
+		/// <summary>
+		/// 25700200 Идентификатор тура (TOUR_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25700200)]
+		public long TourId
+		{
+			get
+			{
+				CheckPropertyInited("TourId");
+				return _tourid;
+			}
+			set
+			{
+				_tourid = value;
+				NotifyPropertyChanged("TourId");
+			}
+		}
+
+
+		private bool _isoks;
+		/// <summary>
+		/// 25700300 ОКС или ЗУ (IS_OKS)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25700300)]
+		public bool IsOks
+		{
+			get
+			{
+				CheckPropertyInited("IsOks");
+				return _isoks;
+			}
+			set
+			{
+				_isoks = value;
+				NotifyPropertyChanged("IsOks");
+			}
+		}
+
+
+		private long _koid;
+		/// <summary>
+		/// 25700400 Идентификатор в таблице KO (KO_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25700400)]
+		public long KoId
+		{
+			get
+			{
+				CheckPropertyInited("KoId");
+				return _koid;
+			}
+			set
+			{
+				_koid = value;
+				NotifyPropertyChanged("KoId");
+			}
+		}
+
+
+		private long _gbuid;
+		/// <summary>
+		/// 25700500 Идентификатор в таблице GBU (GBU_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25700500)]
+		public long GbuId
+		{
+			get
+			{
+				CheckPropertyInited("GbuId");
+				return _gbuid;
+			}
+			set
+			{
+				_gbuid = value;
+				NotifyPropertyChanged("GbuId");
+			}
+		}
+
+	}
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
