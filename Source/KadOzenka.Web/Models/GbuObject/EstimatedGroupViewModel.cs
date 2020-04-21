@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.KoObject;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace KadOzenka.Web.Models.Task
+namespace KadOzenka.Web.Models.GbuObject
 {
 	public class EstimatedGroupViewModel
 	{

@@ -10,6 +10,7 @@ using Core.Register;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using Kendo.Mvc.UI;
@@ -23,7 +24,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class GbuObjectController : KoBaseController
+    public class GbuObjectController : KoBaseController
 	{
 		#region initialization
 		private readonly GbuObjectService _service;
@@ -219,8 +220,15 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
 		}
 
+	    public List<SelectListItem> GetTemplatesEstimated()
+	    {
+	        return OMDataFormStorage.Where(x =>
+	                x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.EstimatedGroup)
+	            .SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
+	    }
 
-		public JsonResult GetTemplatesOneGroup(int id)
+
+        public JsonResult GetTemplatesOneGroup(int id)
 		{
 			if (id == 0)
 			{
@@ -258,7 +266,13 @@ namespace KadOzenka.Web.Controllers
 					return Json(new {data = JsonConvert.SerializeObject(unObj) });
 				}
 
-			}
+			    if (storage != null && storage.FormType_Code == DataFormStorege.EstimatedGroup)
+			    {
+			        var unObj = storage.Data.DeserializeFromXml<EstimatedGroupViewModel>();
+			        return Json(new { data = JsonConvert.SerializeObject(unObj) });
+			    }
+
+            }
 
 			catch (Exception e)
 			{
@@ -296,11 +310,17 @@ namespace KadOzenka.Web.Controllers
 			return SaveTemplate(nameTemplate, DataFormStorege.UnloadingFromDict, viewModel.SerializeToXml());
 		}
 
-		#endregion
+	    [HttpPost]
+	    public JsonResult SaveTemplateEstimatedGroupObject(string nameTemplate, [FromForm]EstimatedGroupViewModel model)
+	    {
+	        return SaveTemplate(nameTemplate, DataFormStorege.EstimatedGroup, model.SerializeToXml());
+	    }
 
-		#region Harmonization
+        #endregion
 
-		[HttpGet]
+        #region Harmonization
+
+        [HttpGet]
 		public ActionResult Harmonization()
 		{
 			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
@@ -586,8 +606,43 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Success = "Выполнено успешно!"});
 		}
 
-		#endregion
-		public List<SelectListItem> GetTasksData()
+        #endregion
+
+	    #region Присвоение оценочной группы
+
+	    [HttpGet]
+	    public ActionResult SetEstimatedGroup()
+	    {
+	        ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
+	            .Select(x => new DropDownTreeItemModel
+	            {
+	                Value = Guid.NewGuid().ToString(),
+	                Text = x.Text,
+	                Items = x.Items.Select(y => new DropDownTreeItemModel
+	                {
+	                    Value = y.Value,
+	                    Text = y.Text
+	                }).ToList()
+	            }).AsEnumerable();
+
+	        return View();
+	    }
+
+	    [HttpPost]
+	    public JsonResult SetEstimatedGroup(EstimatedGroupViewModel viewModel)
+	    {
+	        if (!ModelState.IsValid)
+	        {
+	            return GenerateMessageNonValidModel();
+	        }
+	        //KoObjectSetEstimatedGroup.Run(viewModel.ToGroupModel());
+	        TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value, viewModel.ToGroupModel());
+
+	        return Json(new { });
+	    }
+	    #endregion
+
+        public List<SelectListItem> GetTasksData()
 		{
 			var documentInfoList = _taskService.GetTaskDocumentInfoList().OrderByDescending(x => x.DocumentCreateDate);
 			return documentInfoList

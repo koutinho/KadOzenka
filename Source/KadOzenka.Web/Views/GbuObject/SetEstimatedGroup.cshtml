@@ -1,0 +1,124 @@
+﻿@using System.Collections
+@using KadOzenka.Web.Helpers
+@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Directory.Common
+@model EstimatedGroupViewModel
+
+<style>
+	.footer {
+		position: fixed;
+		width: 100%;
+		bottom: 0;
+	}
+</style>
+@using (Html.BeginForm("SetEstimatedGroup", "GbuObject", FormMethod.Post))
+{
+	<div class="form-horizontal col-sm-12">
+	    <div class="form-group"></div>
+	    <div class="form-group">
+	        <div class="col-sm-2">
+	            @Html.CustomLabelFor(m => m.IdTask)
+	        </div>
+	        <div class="col-sm-10">
+	            @(Html.Kendo().DropDownListFor(m => m.IdTask)
+                      .DataTextField("Text")
+                      .DataValueField("Value")
+                      .Filter("contains")
+                      .OptionLabel(new SelectListItem { Value = null, Text = " " })
+	                  .DataSource(source =>
+                       {
+                           source.Read(read =>
+                           {
+                               read.Action("GetTasksData", "GbuObject");
+                           })
+                               .ServerFiltering(false);
+                       }))
+	        </div>
+	    </div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabel("Атрибут кода группы")
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoDropDownListTreeWithButton(m => m.IdCodeGroup, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabel("Атрибут кадастрового квартала")
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoDropDownListTreeWithButton(m => m.IdCodeQuarter, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabel("Атрибут типа помещения")
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoDropDownListTreeWithButton(m => m.IdTypeRoom, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabel("Атрибут для проставления оценочной группы")
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoDropDownListTreeWithButton(m => m.IdEstimatedSubGroup, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+			</div>
+		</div>
+
+		<div class="form-group footer">
+			<div class="col-sm-7">
+				@( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+			{
+				ControllerName = "GbuObject",
+				ActionName = "GetTemplatesEstimated"
+			}))
+			</div>
+
+			<div class="col-sm-2 col-sm-offset-3">
+				<button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
+			</div>
+		</div>
+	</div>
+}
+
+<script src="/js/custom-validation.js"></script>
+<script type="text/javascript">
+	function fillForm(data) {
+		data.forEach(function (val) {
+			if ($('#' + Object.keys(val)[0]).data('kendoDropDownTree')) {
+				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
+				$('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
+            }
+            if (Object.keys(val)[0].includes('IdTask')) {
+                $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+            }
+
+		});
+	}
+
+	$(document).ready(function() {
+        templateStorage.init(@((int) DataFormStorege.EstimatedGroup), "SaveTemplateEstimatedGroupObject", "GbuObject", "GetTemplatesOneGroup", "GbuObject", fillForm);
+
+		$('#execute').on('click', function() {
+			kendo.ui.progress($('body'), true);
+			var form = $('form');
+			var formObject = Common.Functions.FormToObject(form);
+			$.post(form.attr('action'), formObject)
+				.done(function (response) {
+					if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+						Common.ShowError(errors);
+						return;
+					}
+					Common.ShowMessage("Операция успешно добавлена в очередь");
+				}).fail(function (response, textStatus, errorThrown) {
+			        Common.ShowError(response.responseText);
+			    }).always(function () {
+				kendo.ui.progress($('body'), false);
+			});
+		});
+	});
+</script>

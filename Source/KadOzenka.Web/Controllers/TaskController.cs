@@ -11,11 +11,9 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
-using Core.SRD;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess;
-using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
@@ -26,9 +24,6 @@ using ObjectModel.Core.Register;
 using ObjectModel.Gbu.ExportAttribute;
 using KadOzenka.Dal.Models.Task;
 using KadOzenka.Dal.Tours;
-using Newtonsoft.Json;
-using ObjectModel.Common;
-using ObjectModel.Directory.Common;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -592,40 +587,6 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-		#region Присвоение оценочной группы
-
-		[HttpGet]
-		public ActionResult SetEstimatedGroup()
-		{
-			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
-
-			return View();
-		}
-
-		[HttpPost]
-		public JsonResult SetEstimatedGroup(EstimatedGroupViewModel viewModel)
-		{
-			if (!ModelState.IsValid)
-			{
-				return GenerateMessageNonValidModel();
-			}
-			//KoObjectSetEstimatedGroup.Run(viewModel.ToGroupModel());
-			TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value, viewModel.ToGroupModel());
-
-			return Json(new { });
-		}
-        #endregion
-
         #region Расчет кадастровой стоимости
 
         [HttpGet]
@@ -693,52 +654,5 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(list);
 		}
-
-		#region Tempalates
-
-		[HttpPost]
-		public JsonResult SaveTemplateEstimatedGroupObject(string nameTemplate, [FromForm]EstimatedGroupViewModel model)
-		{
-			return SaveTemplate(nameTemplate, DataFormStorege.EstimatedGroup, model.SerializeToXml());
-		}
-
-		public JsonResult GetTemplatesOneGroup(int id)
-		{
-			if (id == 0)
-			{
-				return Json(new { error = "Ид равен 0" });
-
-			}
-
-			try
-			{
-				var storage = OMDataFormStorage.Where(x =>
-						x.Id == id)
-					.SelectAll().ExecuteFirstOrDefault();
-
-				if (storage != null && storage.FormType_Code == DataFormStorege.EstimatedGroup)
-				{
-					var nObj = storage.Data.DeserializeFromXml<EstimatedGroupViewModel>();
-					return Json(new { data = JsonConvert.SerializeObject(nObj) });
-				}
-
-			}
-
-			catch (Exception e)
-			{
-				return Json(new { error = $"Ошибка: {e.Message}" });
-			}
-
-			return Json(new { error = "Не найдено соответсвующего типа формы" });
-		}
-
-
-		public List<SelectListItem> GetTemplatesEstimated()
-		{
-			return OMDataFormStorage.Where(x =>
-					x.UserId == SRDSession.GetCurrentUserId().Value && x.FormType_Code == DataFormStorege.EstimatedGroup)
-				.SelectAll().Execute().Select(x => new SelectListItem(x.TemplateName ?? "", x.Id.ToString())).ToList();
-		}
-		#endregion
 	}	
 }
