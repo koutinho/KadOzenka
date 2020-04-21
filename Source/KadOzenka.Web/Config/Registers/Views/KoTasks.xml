@@ -17,11 +17,6 @@
         <Parameter Key="ObjectId" Value="[ObjectID]" />        
       </Parameters>
     </Button>
-		<Button Caption="Присвоить оценочную группу" NavigateURL="/Task/SetEstimatedGroup" Icon="fas fa-donate" WindowHeight="400" WindowWidth="1150">
-			<Parameters>
-				<Parameter Key="taskId" Value="[ObjectID]" />
-			</Parameters>
-		</Button>
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
 	</Buttons>
 	<Tabs>

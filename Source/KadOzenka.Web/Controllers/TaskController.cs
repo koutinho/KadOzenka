@@ -595,7 +595,7 @@ namespace KadOzenka.Web.Controllers
 		#region Присвоение оценочной группы
 
 		[HttpGet]
-		public ActionResult SetEstimatedGroup(int taskId)
+		public ActionResult SetEstimatedGroup()
 		{
 			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
 				.Select(x => new DropDownTreeItemModel
@@ -609,24 +609,18 @@ namespace KadOzenka.Web.Controllers
 					}).ToList()
 				}).AsEnumerable();
 
-			ViewBag.TaskId = taskId;
 			return View();
 		}
 
 		[HttpPost]
 		public JsonResult SetEstimatedGroup(EstimatedGroupViewModel viewModel)
 		{
-			if (viewModel.IdTask == 0)
-			{
-				return SendErrorMessage("Идентификатор задания на оценку равен 0");
-			}
-
 			if (!ModelState.IsValid)
 			{
 				return GenerateMessageNonValidModel();
 			}
 			//KoObjectSetEstimatedGroup.Run(viewModel.ToGroupModel());
-			TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask, viewModel.ToGroupModel());
+			TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value, viewModel.ToGroupModel());
 
 			return Json(new { });
 		}

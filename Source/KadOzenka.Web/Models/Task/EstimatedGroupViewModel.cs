@@ -6,7 +6,9 @@ namespace KadOzenka.Web.Models.Task
 {
 	public class EstimatedGroupViewModel
 	{
-		public long IdTask { get; set; }
+        [Display(Name = "Задание на оценку")]
+	    [Required(ErrorMessage = "Параметр Задание на оценку обязательный")]
+        public long? IdTask { get; set; }
 
 		[Required(ErrorMessage = "Атрибут для кода группы обязательный")]
 		public long? IdCodeGroup { get; set; }
@@ -28,7 +30,7 @@ namespace KadOzenka.Web.Models.Task
 		{
 			return new EstimatedGroupModel
 			{
-				IdTask = IdTask,
+				IdTask = IdTask.Value,
 				IdCodeQuarter = IdCodeQuarter.GetValueOrDefault(),
 				IdCodeGroup = IdCodeGroup.GetValueOrDefault(),
 				IdTypeRoom = IdTypeRoom.GetValueOrDefault(),
