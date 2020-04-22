@@ -960,6 +960,30 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 117 Таблица, содержащая настройки для коэффициентов корректировок
+    /// </summary>
+    public partial class OMCorrectionSettings
+    {
+
+        public OMCorrectionSettings()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMCorrectionSettings(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -1870,26 +1894,26 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
-	/// <summary>
-	/// 257 Соответствие атрибутов KO и GBU
-	/// </summary>
-	public partial class OMTransferAttributes
-	{
+    /// <summary>
+    /// 257 Соответствие атрибутов KO и GBU
+    /// </summary>
+    public partial class OMTransferAttributes
+    {
 
-		public OMTransferAttributes()
-		{
+        public OMTransferAttributes()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMTransferAttributes(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMTransferAttributes(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
 
 namespace ObjectModel.Sud

@@ -5094,6 +5094,113 @@ namespace ObjectModel.Market
     }
 }
 
+namespace ObjectModel.Market
+{
+    /// <summary>
+    /// 117 Таблица, содержащая настройки для коэффициентов корректировок (MARKET_CORRECTION_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 117)]
+    [Serializable]
+    public partial class OMCorrectionSettings : OMBaseClass<OMCorrectionSettings>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 11700100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 11700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _correctiontype;
+        /// <summary>
+        /// 11700200 Тип корректировки (CORRECTION_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11700200)]
+        public string CorrectionType
+        {
+            get
+            {
+                CheckPropertyInited("CorrectionType");
+                return _correctiontype;
+            }
+            set
+            {
+                _correctiontype = value;
+                NotifyPropertyChanged("CorrectionType");
+            }
+        }
+
+
+        private Districts _correctiontype_Code;
+        /// <summary>
+        /// 11700200 Тип корректировки (справочный код) (CORRECTION_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11700200)]
+        public Districts CorrectionType_Code
+        {
+            get
+            {
+                CheckPropertyInited("CorrectionType_Code");
+                return this._correctiontype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_correctiontype))
+                    {
+                         _correctiontype = descr;
+                    }
+                }
+                else
+                {
+                     _correctiontype = descr;
+                }
+
+                this._correctiontype_Code = value;
+                NotifyPropertyChanged("CorrectionType");
+                NotifyPropertyChanged("CorrectionType_Code");
+            }
+        }
+
+
+        private string _settings;
+        /// <summary>
+        /// 11700300 Настройки корректировки (SETTINGS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 11700300)]
+        public string Settings
+        {
+            get
+            {
+                CheckPropertyInited("Settings");
+                return _settings;
+            }
+            set
+            {
+                _settings = value;
+                NotifyPropertyChanged("Settings");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -10946,114 +11053,114 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
-	/// <summary>
-	/// 257 Соответствие атрибутов KO и GBU (KO_TRANSFER_ATTRIBUTES)
-	/// </summary>
-	[RegisterInfo(RegisterID = 257)]
-	[Serializable]
-	public partial class OMTransferAttributes : OMBaseClass<OMTransferAttributes>
-	{
+    /// <summary>
+    /// 257 Соответствие атрибутов KO и GBU (KO_TRANSFER_ATTRIBUTES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 257)]
+    [Serializable]
+    public partial class OMTransferAttributes : OMBaseClass<OMTransferAttributes>
+    {
 
-		private long _id;
-		/// <summary>
-		/// 25700100 Идентификатор (ID)
-		/// </summary>
-		[PrimaryKey(AttributeID = 25700100)]
-		public long Id
-		{
-			get
-			{
-				CheckPropertyInited("Id");
-				return _id;
-			}
-			set
-			{
-				_id = value;
-				NotifyPropertyChanged("Id");
-			}
-		}
-
-
-		private long _tourid;
-		/// <summary>
-		/// 25700200 Идентификатор тура (TOUR_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 25700200)]
-		public long TourId
-		{
-			get
-			{
-				CheckPropertyInited("TourId");
-				return _tourid;
-			}
-			set
-			{
-				_tourid = value;
-				NotifyPropertyChanged("TourId");
-			}
-		}
+        private long _id;
+        /// <summary>
+        /// 25700100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 25700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
 
 
-		private bool _isoks;
-		/// <summary>
-		/// 25700300 ОКС или ЗУ (IS_OKS)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 25700300)]
-		public bool IsOks
-		{
-			get
-			{
-				CheckPropertyInited("IsOks");
-				return _isoks;
-			}
-			set
-			{
-				_isoks = value;
-				NotifyPropertyChanged("IsOks");
-			}
-		}
+        private long _tourid;
+        /// <summary>
+        /// 25700200 Идентификатор тура (TOUR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25700200)]
+        public long TourId
+        {
+            get
+            {
+                CheckPropertyInited("TourId");
+                return _tourid;
+            }
+            set
+            {
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
+            }
+        }
 
 
-		private long _koid;
-		/// <summary>
-		/// 25700400 Идентификатор в таблице KO (KO_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 25700400)]
-		public long KoId
-		{
-			get
-			{
-				CheckPropertyInited("KoId");
-				return _koid;
-			}
-			set
-			{
-				_koid = value;
-				NotifyPropertyChanged("KoId");
-			}
-		}
+        private bool _isoks;
+        /// <summary>
+        /// 25700300 ОКС или ЗУ (IS_OKS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25700300)]
+        public bool IsOks
+        {
+            get
+            {
+                CheckPropertyInited("IsOks");
+                return _isoks;
+            }
+            set
+            {
+                _isoks = value;
+                NotifyPropertyChanged("IsOks");
+            }
+        }
 
 
-		private long _gbuid;
-		/// <summary>
-		/// 25700500 Идентификатор в таблице GBU (GBU_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 25700500)]
-		public long GbuId
-		{
-			get
-			{
-				CheckPropertyInited("GbuId");
-				return _gbuid;
-			}
-			set
-			{
-				_gbuid = value;
-				NotifyPropertyChanged("GbuId");
-			}
-		}
+        private long _koid;
+        /// <summary>
+        /// 25700400 Идентификатор в таблице KO (KO_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25700400)]
+        public long KoId
+        {
+            get
+            {
+                CheckPropertyInited("KoId");
+                return _koid;
+            }
+            set
+            {
+                _koid = value;
+                NotifyPropertyChanged("KoId");
+            }
+        }
 
-	}
+
+        private long _gbuid;
+        /// <summary>
+        /// 25700500 Идентификатор в таблице GBU (GBU_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25700500)]
+        public long GbuId
+        {
+            get
+            {
+                CheckPropertyInited("GbuId");
+                return _gbuid;
+            }
+            set
+            {
+                _gbuid = value;
+                NotifyPropertyChanged("GbuId");
+            }
+        }
+
+    }
 }
 
 namespace ObjectModel.Sud
@@ -21288,6 +21395,101 @@ namespace ObjectModel.ES
             {
                 _namefactor = value;
                 NotifyPropertyChanged("NameFactor");
+            }
+        }
+
+
+        private string _segmenttype;
+        /// <summary>
+        /// 60700400 Тип сегмента ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60700400)]
+        public string SegmentType
+        {
+            get
+            {
+                CheckPropertyInited("SegmentType");
+                return _segmenttype;
+            }
+            set
+            {
+                _segmenttype = value;
+                NotifyPropertyChanged("SegmentType");
+            }
+        }
+
+
+        private MarketSegment _segmenttype_Code;
+        /// <summary>
+        /// 60700400 Тип сегмента (справочный код) (SEGMENT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60700400)]
+        public MarketSegment SegmentType_Code
+        {
+            get
+            {
+                CheckPropertyInited("SegmentType_Code");
+                return this._segmenttype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_segmenttype))
+                    {
+                         _segmenttype = descr;
+                    }
+                }
+                else
+                {
+                     _segmenttype = descr;
+                }
+
+                this._segmenttype_Code = value;
+                NotifyPropertyChanged("SegmentType");
+                NotifyPropertyChanged("SegmentType_Code");
+            }
+        }
+
+
+        private long _attributeid;
+        /// <summary>
+        /// 60700500 Идентификатор атрибута (ID_ATTRIBUTE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60700500)]
+        public long AttributeId
+        {
+            get
+            {
+                CheckPropertyInited("AttributeId");
+                return _attributeid;
+            }
+            set
+            {
+                _attributeid = value;
+                NotifyPropertyChanged("AttributeId");
+            }
+        }
+
+
+        private long _dictionaryid;
+        /// <summary>
+        /// 60700600 Идентификатор реестра (ID_DICTIONARY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60700600)]
+        public long DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
             }
         }
 

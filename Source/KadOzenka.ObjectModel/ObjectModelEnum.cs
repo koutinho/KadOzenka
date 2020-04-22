@@ -1786,6 +1786,45 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory.MarketObjects
+{
+    /// <summary>
+    /// Типы корректировок (121)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 121)]
+    public enum CorrectionTypes : long
+    {
+		/// <summary>
+		/// Корректировка на дату (1)
+		/// </summary>
+		[Description("Корректировка на дату")]
+        [EnumCode("1")]
+        [ShortTitle("Корректировка на дату")]
+        CorrectionByDate = 1,
+		/// <summary>
+		/// Корректировка на торг (2)
+		/// </summary>
+		[Description("Корректировка на торг")]
+        [EnumCode("2")]
+        [ShortTitle("Корректировка на торг")]
+        CorrectionByBargain = 2,
+		/// <summary>
+		/// Корректировка на комнатность (3)
+		/// </summary>
+		[Description("Корректировка на комнатность")]
+        [EnumCode("3")]
+        [ShortTitle("Корректировка на комнатность")]
+        CorrectionByRoom = 3,
+		/// <summary>
+		/// Корректировка на этажность (4)
+		/// </summary>
+		[Description("Корректировка на этажность")]
+        [EnumCode("4")]
+        [ShortTitle("Корректировка на этажность")]
+        CorrectionByStage = 4,
+    }
+}
+
 namespace ObjectModel.Directory
 {
     /// <summary>
