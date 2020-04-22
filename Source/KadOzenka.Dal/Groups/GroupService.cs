@@ -147,13 +147,15 @@ namespace KadOzenka.Dal.Groups
 				        Id = group.Id,
 				        GroupName = group.GroupName,
 				        GroupType = group.GroupType,
-				        Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id).Select(subGroup =>
+						TourId = tourId,
+						Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id).Select(subGroup =>
 					        new GroupTreeDto
 							{
 						        Id = subGroup.Id,
 						        GroupName = subGroup.GroupName,
-						        GroupType = subGroup.GroupType
-					        }).ToList()
+						        GroupType = subGroup.GroupType,
+						        TourId = tourId
+							}).ToList()
 			        }).ToList();
 
 		        if (groups.Count > 0)
@@ -163,7 +165,8 @@ namespace KadOzenka.Dal.Groups
 				        Id = mainGroup.Id,
 				        GroupName = mainGroup.GroupName,
 				        GroupType = mainGroup.GroupType,
-				        Items = groups
+				        TourId = tourId,
+						Items = groups
 			        });
 		        }
 	        });
@@ -172,22 +175,44 @@ namespace KadOzenka.Dal.Groups
         }
 
 
-		public int AddGroup(GroupDto groupDto)
+        public int AddGroup(GroupDto groupDto)
         {
-			var tour = TourService.GetTourById(groupDto.RatingTourId);
+	        var tour = TourService.GetTourById(groupDto.RatingTourId);
 
+	        var group = new OMGroup();
+	        var tourGroup = new OMTourGroup();
+
+	        return SetGroupFields(groupDto, group, tourGroup);
+        }
+
+        public int UpdateGroup(GroupDto groupDto)
+        {
+	        var tour = TourService.GetTourById(groupDto.RatingTourId);
+
+	        var group = OMGroup.Where(x => x.Id == groupDto.Id)
+		        .SelectAll().ExecuteFirstOrDefault();
+
+	        var tourGroup = OMTourGroup.Where(x => x.GroupId == groupDto.Id)
+		        .SelectAll().ExecuteFirstOrDefault();
+
+	        return SetGroupFields(groupDto, group, tourGroup);
+        }
+
+
+		#region Support Methods
+
+		private int SetGroupFields(GroupDto groupDto, OMGroup group, OMTourGroup tourGroup)
+		{
 			int groupId;
-			var group = new OMGroup();
-			var tourGroup = new OMTourGroup();
 			using (var ts = new TransactionScope())
 			{
-				group.GroupName = groupDto.Name;//GenerateName(tour.Id, groupDto.Name, groupDto.ParentGroupId);
+				group.GroupName = groupDto.Name;
 				group.ParentId = groupDto.ParentGroupId ?? -1;
 				group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingAlgorithmId;
 				groupId = group.Save();
 
 				tourGroup.GroupId = group.Id;
-				tourGroup.TourId = tour.Id;
+				tourGroup.TourId = groupDto.RatingTourId.Value;
 				tourGroup.Save();
 
 				ts.Complete();
@@ -196,29 +221,7 @@ namespace KadOzenka.Dal.Groups
 			return groupId;
 		}
 
-        //todo вeрнуть обновление тура
-        public int UpdateGroup(GroupDto groupDto)
-        {
-	        var group = GetGroupByIdInternal(groupDto.Id);
-
-			int groupId;
-			using (var ts = new TransactionScope())
-			{
-				group.GroupName = groupDto.Name;//GenerateName(tour.Id, groupDto.Name, groupDto.ParentGroupId);
-				group.ParentId = groupDto.ParentGroupId ?? -1;
-				group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingAlgorithmId;
-				groupId = group.Save();
-
-				ts.Complete();
-			}
-
-			return groupId;
-        }
-
-
-        #region Support Methods
-		
-        private OMGroup GetGroupByIdInternal(long? groupId)
+		private OMGroup GetGroupByIdInternal(long? groupId)
         {
             if (groupId == null)
                 throw new Exception("Не передан идентификатор Группы для поиска");

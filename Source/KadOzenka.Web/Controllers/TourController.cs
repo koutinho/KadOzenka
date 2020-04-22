@@ -459,9 +459,9 @@ namespace KadOzenka.Web.Controllers
 	        var allGroups = GroupService.GetGroupsTreeForTour(tourId);
 
 	        var mainGroupId = isParcel ? (long)KoGroupAlgoritm.MainParcel : (long)KoGroupAlgoritm.MainOKS;
-	        var groups = allGroups.Where(x => x.Id == mainGroupId);
-	        var subGroups = groups.SelectMany(x => x.Items);
-			var models = subGroups.Select(x => GroupTreeModel.ToModel(x, Url)).ToList();
+	        var mainGroups = allGroups.Where(x => x.Id == mainGroupId);
+	        var groups = mainGroups.SelectMany(x => x.Items);
+			var models = groups.Select(x => GroupTreeModel.ToModel(x, Url)).ToList();
 
 			return Json(models);
         }
