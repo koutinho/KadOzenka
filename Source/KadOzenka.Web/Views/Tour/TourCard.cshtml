@@ -273,7 +273,7 @@
 			if (tour.Id == tourId) {
 				var mainGroups = tour.children._data;
 				var isParentWasFound = false;
-				//нужно раскрыть списки до группы
+				//раскрыть списки до группы
 			    mainGroups.forEach(function(mainGroup) {
 					if (mainGroup.Id == parentGroupId) {
 						isParentWasFound = true;
@@ -282,7 +282,7 @@
 						ExpandNode(groups, groupId, true);
 					}
 				});
-				//нужно раскрыть списки до подгруппы
+				//раскрыть списки до подгруппы
 				if (!isParentWasFound) {
 					mainGroups.forEach(function(mainGroup) {
 						var groups = mainGroup.children._data;
@@ -453,7 +453,7 @@
 			success: function (response) {
 				Common.ShowMessage('Сохранение выполнено');
 				$("#groupAdditionModal").data("kendoWindow").close();
-				var parentId = isSubGroup ? dto.ParentGroupId : dto.GroupingMechanismId;
+				var parentId = isSubGroup ? dto.ParentGroupId : dto.GroupingAlgorithmId;
 				ReloadTourCartTab(dto.RatingTourId, parentId, response.Id);
             },
             error: function (response) {
