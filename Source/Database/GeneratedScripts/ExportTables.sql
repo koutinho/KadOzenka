@@ -9087,6 +9087,33 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'segment_type')) then
+        execute 'alter table ES_COST_FACTOR add "segment_type" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'id_attribute')) then
+        execute 'alter table ES_COST_FACTOR add "id_attribute" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'id_dictionary')) then
+        execute 'alter table ES_COST_FACTOR add "id_dictionary" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('es_cost_factor_pkey')) then
     execute 'alter table ES_COST_FACTOR add constraint es_cost_factor_pkey primary key (id)';
   end if;
@@ -44300,6 +44327,110 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_110_q_pk')) then
     execute 'alter table MARKET_CORE_OBJECT_TEST add constraint reg_110_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_correction_settings')) then
+		execute 'create table market_correction_settings ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_correction_settings', 'id')) then
+        execute 'alter table market_correction_settings add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_correction_settings', 'correction_type')) then
+        execute 'alter table market_correction_settings add "correction_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_correction_settings', 'correction_type_code')) then
+        execute 'alter table market_correction_settings add "correction_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_correction_settings', 'settings')) then
+        execute 'alter table market_correction_settings add "settings" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_117_q_pk')) then
+    execute 'alter table market_correction_settings add constraint reg_117_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_CORRECTION_SETTINGS')) then
+		execute 'create table MARKET_CORRECTION_SETTINGS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORRECTION_SETTINGS', 'id')) then
+        execute 'alter table MARKET_CORRECTION_SETTINGS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORRECTION_SETTINGS', 'correction_type')) then
+        execute 'alter table MARKET_CORRECTION_SETTINGS add "correction_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORRECTION_SETTINGS', 'correction_type_code')) then
+        execute 'alter table MARKET_CORRECTION_SETTINGS add "correction_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORRECTION_SETTINGS', 'settings')) then
+        execute 'alter table MARKET_CORRECTION_SETTINGS add "settings" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_117_q_pk')) then
+    execute 'alter table MARKET_CORRECTION_SETTINGS add constraint reg_117_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
