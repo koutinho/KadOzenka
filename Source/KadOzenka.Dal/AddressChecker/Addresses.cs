@@ -26,6 +26,7 @@ namespace KadOzenka.Dal.AddressChecker
         {
             int YCur = 0, YCor = 0, YErr = 0, ICtr = AllObjects.Count;
             int PCur = 0, PCor = 0, PErr = 0;
+
             /*Процедура получения формализованного адреса из яндекса*/
             AllObjects.ForEach(x =>
             {

@@ -69,7 +69,7 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
 
             /*Вспомогательные функции*/
-            consoleHelper.AddCommand("1108", "Присвоение кадастровых номеров", () => { new Cian().SetCadastralNumbers(); });
+            consoleHelper.AddCommand("1108", "Присвоение кадастровых кварталов, районов и зон", () => { new Cian().SetCadastralNumbers(); });
 
             consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseXMLMapGeoData(); });
             consoleHelper.AddCommand("21", "Парсинг excele файла", () => { FormRegionTable.parseExcelRegionsData(); });
