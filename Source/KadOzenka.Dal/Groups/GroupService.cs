@@ -30,8 +30,9 @@ namespace KadOzenka.Dal.Groups
                 Id = group.Id,
                 Name = group.GroupName,
 				ParentGroupId = group.ParentId,
-				GroupAlgoritmCode = group.GroupAlgoritm_Code
-            };
+				GroupAlgorithmCode = group.GroupAlgoritm_Code,
+				GroupingAlgorithmId = (long)group.GroupAlgoritm_Code
+			};
         }
 
         public List<GroupTreeDto> GetGroups(long? mainParentId = null)
@@ -121,47 +122,47 @@ namespace KadOzenka.Dal.Groups
         {
             var tour = TourService.GetTourById(groupDto.RatingTourId);
 
-            var group = new OMGroup();
+            int groupId;
+			var group = new OMGroup();
             var tourGroup = new OMTourGroup();
+            using (var ts = new TransactionScope())
+			{
+				group.GroupName = groupDto.Name;
+				group.ParentId = groupDto.ParentGroupId ?? -1;
+				group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingAlgorithmId;
+				groupId = group.Save();
 
-            return SetGroupFields(groupDto, group, tourGroup);
-        }
+				tourGroup.GroupId = group.Id;
+				tourGroup.TourId = tour.Id;
+				tourGroup.Save();
+
+				ts.Complete();
+			}
+
+			return groupId;
+		}
 
         public int UpdateGroup(GroupDto groupDto)
         {
-            var tour = TourService.GetTourById(groupDto.RatingTourId);
+	        var group = GetGroupByIdInternal(groupDto.Id);
 
-            var group = OMGroup.Where(x => x.Id == groupDto.Id)
-                .SelectAll().ExecuteFirstOrDefault();
+            int groupId;
+			using (var ts = new TransactionScope())
+			{
+				group.GroupName = groupDto.Name;
+				group.ParentId = groupDto.ParentGroupId ?? -1;
+				group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingAlgorithmId;
+				groupId = group.Save();
 
-            var tourGroup = OMTourGroup.Where(x => x.GroupId == groupDto.Id)
-                .SelectAll().ExecuteFirstOrDefault();
+				ts.Complete();
+			}
 
-            return SetGroupFields(groupDto, group, tourGroup);
-        }
+			return groupId;
+		}
 
 
         #region Support Methods
 
-        private int SetGroupFields(GroupDto groupDto, OMGroup group, OMTourGroup tourGroup)
-        {
-            int groupId;
-            using (var ts = new TransactionScope())
-            {
-                group.GroupName = groupDto.Name;
-                group.ParentId = groupDto.ParentGroupId ?? -1;
-                group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingMechanismId;
-                groupId = group.Save();
-
-                tourGroup.GroupId = group.Id;
-                tourGroup.TourId = groupDto.RatingTourId.Value;
-                tourGroup.Save();
-
-                ts.Complete();
-            }
-
-            return groupId;
-        }
 
         private OMGroup GetGroupByIdInternal(long? groupId)
         {

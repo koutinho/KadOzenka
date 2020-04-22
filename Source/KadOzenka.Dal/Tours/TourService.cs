@@ -23,18 +23,6 @@ namespace KadOzenka.Dal.Tours
             return OMTour.Where(x => true).SelectAll().Execute();
         }
 
-        public TourDto GetTourByYear(long? year)
-        {
-            var tour = OMTour.Where(x => x.Year == year).Select(x => x.Id).ExecuteFirstOrDefault();
-            if (tour == null)
-                throw new Exception($"Не найден Тур с годом '{year}'");
-
-            return new TourDto
-            {
-                Id = tour.Id
-            };
-        }
-
         public int AddTour(TourDto tourDto)
         {
             ValidateTourYear(tourDto);

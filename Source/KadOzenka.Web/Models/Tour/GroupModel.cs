@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Groups.Dto;
-using KadOzenka.Dal.Groups.Dto.Consts;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Tour
@@ -11,11 +11,12 @@ namespace KadOzenka.Web.Models.Tour
 		public long? RatingTourId { get; set; }
 
 		public string ObjType { get; set; }
+
+		public long? GroupingAlgorithmId { get; set; }
+
 		public long? ParentGroupId { get; set; }
 
-		public long? GroupingMechanismId { get; set; }
-
-        [Display(Name = "Наименование")]
+		[Display(Name = "Наименование")]
 		public string Name { get; set; }
 
         public bool IsReadOnly { get; set; }
@@ -26,11 +27,11 @@ namespace KadOzenka.Web.Models.Tour
 	        var parentId = group.ParentGroupId;
 	        if (parentId == -1)
 	        {
-		        if (group.GroupAlgoritmCode == KoGroupAlgoritm.MainOKS)
+		        if (group.GroupAlgorithmCode == KoGroupAlgoritm.MainOKS)
 		        {
 			        parentId = (long?)KoGroupAlgoritm.MainOKS;
 		        }
-		        else if (group.GroupAlgoritmCode == KoGroupAlgoritm.MainParcel)
+		        else if (group.GroupAlgorithmCode == KoGroupAlgoritm.MainParcel)
 		        {
 			        parentId = (long?)KoGroupAlgoritm.MainParcel;
 		        }
@@ -41,7 +42,9 @@ namespace KadOzenka.Web.Models.Tour
                 Id = group.Id,
 				RatingTourId = group.RatingTourId,
                 Name = group.Name,
-				ParentGroupId = parentId
+				ParentGroupId = parentId,
+				GroupingAlgorithmId = group.GroupingAlgorithmId,
+				ObjType = group.GroupAlgorithmCode.GetEnumDescription()
 			};
         }
 
@@ -51,7 +54,7 @@ namespace KadOzenka.Web.Models.Tour
             {
                 Id = group.Id,
                 Name = group.Name,
-                GroupingMechanismId = group.GroupingMechanismId,
+                GroupingAlgorithmId = group.GroupingAlgorithmId,
                 ParentGroupId = group.ParentGroupId,
                 RatingTourId = group.RatingTourId
             };

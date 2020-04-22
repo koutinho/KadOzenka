@@ -215,7 +215,7 @@ namespace KadOzenka.Web.Controllers
 				dto.Id = id;
 				dto.Name = group.GroupName;
 				dto.ParentGroupId = group.ParentId;
-				dto.GroupingMechanismId = (long)group.GroupAlgoritm_Code;
+				dto.GroupingAlgorithmId = (long)group.GroupAlgoritm_Code;
 				dto.RatingTourId = tourGroup.TourId;
 
 				KoGroupAlgoritm objType = KoGroupAlgoritm.MainOKS;
@@ -261,7 +261,7 @@ namespace KadOzenka.Web.Controllers
 
             var groupDto = GroupModel.FromModel(model);
 
-            var id = 0;
+            int id;
             if (model.Id.HasValue)
                 id = GroupService.UpdateGroup(groupDto);
             else
@@ -270,29 +270,7 @@ namespace KadOzenka.Web.Controllers
             return Json(new {Id = id});
 		}
 
-        [HttpPatch]
-        public ActionResult PatchGroup(GroupModel model)
-        {
-            //пока реализовано только имя
-            if (string.IsNullOrWhiteSpace(model.Name))
-                throw new Exception("Не заполнено имя группы");
-
-            //TODO перенести в сервис
-            var group = OMGroup.Where(x => x.Id == model.Id).ExecuteFirstOrDefault();
-            if (group == null)
-                throw new Exception($"Группа с id='{model.Id}' не найдена");
-
-            using (var ts = new TransactionScope())
-            {
-                group.GroupName = model.Name;
-                group.Save();
-                ts.Complete();
-            }
-
-            return Ok();
-        }
-
-        [HttpPost]
+		[HttpPost]
 		public IActionResult DeleteGroup(long id)
 		{
 			OMGroup group = OMGroup.Where(x => x.Id == id)

@@ -92,10 +92,9 @@
                 RatingTourId: $('[name="RatingTour"]').data("kendoDropDownList").value(),
                 ObjType: $('input[name="ObjType"]:checked')[0].id,
                 ParentGroupId: $('[name="ParentGroup"]').data("kendoDropDownList").value(),
-                GroupingMechanismId: $('[name="GroupingMechanism"]').data("kendoDropDownList").value(),
+				GroupingAlgorithmId: $('[name="GroupingMechanism"]').data("kendoDropDownList").value(),
                 Name: $('#Name').val()
             };
-
             $.ajax({
                 url: '@Url.Action("EditGroup", "Tour")',
                 type: 'POST',
@@ -210,7 +209,7 @@
             $('[name="GroupingMechanism"]').data("kendoDropDownList").bind("dataBound", function () {
             
                 $('[name="GroupingMechanism"]').data("kendoDropDownList").select(function (dataItem) {                
-                    return dataItem.Value == '@Model.GroupingMechanismId';
+                    return dataItem.Value == '@Model.GroupingAlgorithmId';
                 });
             });
         });
