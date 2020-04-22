@@ -254,19 +254,20 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult EditGroup(GroupModel model)
+		public JsonResult EditGroup(GroupModel model)
         {
             if (string.IsNullOrWhiteSpace(model.Name))
                 throw new Exception("Не заполнено имя группы");
 
             var groupDto = GroupModel.FromModel(model);
 
+            var id = 0;
             if (model.Id.HasValue)
-                GroupService.UpdateGroup(groupDto);
+                id = GroupService.UpdateGroup(groupDto);
             else
-                GroupService.AddGroup(groupDto);
+                id = GroupService.AddGroup(groupDto);
 
-            return Ok();
+            return Json(new {Id = id});
 		}
 
         [HttpPatch]

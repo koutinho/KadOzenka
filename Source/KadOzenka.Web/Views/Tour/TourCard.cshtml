@@ -223,7 +223,7 @@
 		if (row.length > 0) {
 			var data = GetDataFromRowInTree(row);
 			$('#mainContent').load(data.UrlForEdit);
-        }
+		}
     }
 
 
@@ -253,7 +253,8 @@
 			return;
 		var treeView = $("#treeList").data("kendoTreeView");
 		var allData = treeView.dataSource._data;
-		ExpandNode(allData, tourId);
+		ExpandNode(allData, tourId, true);
+		ScrollToSelectedNode();
 	}
 
 
@@ -277,8 +278,8 @@
 					if (mainGroup.Id == parentGroupId) {
 						isParentWasFound = true;
 						var groups = mainGroup.children._data;
-						ExpandNode(mainGroups, parentGroupId);
-						ExpandNode(groups, groupId);
+						ExpandNode(mainGroups, parentGroupId, false);
+						ExpandNode(groups, groupId, true);
 					}
 				});
 				//нужно раскрыть списки до подгруппы
@@ -290,9 +291,9 @@
 								var subGroups = group.children._data;
 								subGroups.forEach(function (subGroup) {
 									if (subGroup.Id == groupId) {
-										ExpandNode(mainGroups, mainGroup.Id);
-										ExpandNode(groups, parentGroupId);
-										ExpandNode(subGroups, groupId);
+										ExpandNode(mainGroups, mainGroup.Id, false);
+										ExpandNode(groups, parentGroupId, false);
+										ExpandNode(subGroups, groupId, true);
 									}
 								});
 							}
@@ -301,21 +302,39 @@
 				}
 		    }
 		});
+		ScrollToSelectedNode();
 		shouldFocus = false;
-    }
+	}
 
 
-    function ExpandNode(allData, nodeId) {
+    function ExpandNode(allData, nodeId, shouldSelect) {
 	    var treeView = $("#treeList").data("kendoTreeView");
 	    allData.forEach(function (e) {
 		    var node = treeView.findByUid(e.uid);
 			if (e.Id == nodeId) {
-			    treeView.select(node);
-			    treeView.expand(node);
+				if (shouldSelect) {
+					treeView.select(node);
+				}
+				treeView.expand(node);
 			} else {
 			    treeView.collapse(node);
 		    }
 	    });
+	}
+
+
+	function ScrollToSelectedNode() {
+		var treeView = $("#treeList").data("kendoTreeView");
+		var selectedNode = treeView.select()[0];
+		if (selectedNode) {
+			var itemScrollTop = GetElementTopPosition(selectedNode);
+			$("#treeList").animate({ scrollTop: itemScrollTop });
+		}
+	}
+    function GetElementTopPosition(el) {
+	    var rect = el.getBoundingClientRect(),
+		    scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+	    return rect.top + scrollTop;
     }
 
 
@@ -431,10 +450,11 @@
             url: '@Url.Action("EditGroup", "Tour")',
             type: 'POST',
             data: dto,
-            success: function () {
-                Common.ShowMessage('Сохранение выполнено');
-                $("#groupAdditionModal").data("kendoWindow").close();
-                ReloadTourCartTab();
+			success: function (response) {
+				Common.ShowMessage('Сохранение выполнено');
+				$("#groupAdditionModal").data("kendoWindow").close();
+				var parentId = isSubGroup ? dto.ParentGroupId : dto.GroupingMechanismId;
+				ReloadTourCartTab(dto.RatingTourId, parentId, response.Id);
             },
             error: function (response) {
                 Common.ShowError(response.responseText);
@@ -460,8 +480,8 @@
         }
 
         .height-constraint {
-            max-height: 90%;
-            max-height: 90vh;
+            max-height: 95%;
+            max-height: 95vh;
         } 
 
         .flex-content {
