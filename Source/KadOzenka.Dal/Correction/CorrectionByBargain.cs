@@ -152,7 +152,7 @@ namespace KadOzenka.Dal.Correction
 
                     var coefficientByBuildingQuarter = dealObjectsPricePerArea /
                                               suggestionObjectsPricePerArea;
-                    if (coefficientByBuildingQuarter.HasValue && coefficientByBuildingQuarter <= 1)
+                    if (coefficientByBuildingQuarter.HasValue && coefficientByBuildingQuarter >= Consts.LowerLimitForBargainCorrectionCoefficients && coefficientByBuildingQuarter <= Consts.UpperLimitForBargainCorrectionCoefficients)
                     {
                         coefficientsByBuildingQuarterList.Add(coefficientByBuildingQuarter.Value);
                     }
@@ -160,7 +160,7 @@ namespace KadOzenka.Dal.Correction
 
                 var coefficientBySegment = coefficientsByBuildingQuarterList.Count > 0
                     ? Math.Round(
-                        coefficientsByBuildingQuarterList.Sum(x => x) / coefficientsByBuildingQuarterList.Count, 4)
+                        coefficientsByBuildingQuarterList.Sum(x => x) / coefficientsByBuildingQuarterList.Count, Consts.PrecisionForCoefficients)
                     : (decimal?) null;
                 coefficientsBySegments.Add(objectsGroupBySegment.Key, coefficientBySegment);
             }
@@ -172,7 +172,7 @@ namespace KadOzenka.Dal.Correction
         {
             if (price.HasValue && bargainCoefficient.HasValue)
             {
-                return Math.Round(price.Value * bargainCoefficient.Value, 2);
+                return Math.Round(price.Value * bargainCoefficient.Value, Consts.PrecisionForPrice);
             }
 
             return (decimal?) null;

@@ -77,7 +77,7 @@ namespace KadOzenka.Dal.LongProcess
                             var coefficient = averagePriceForObjectsFromPreviousPeriod == 0
                                 ? 0
                                 : Math.Round(averagePriceForObjectsFromCurrentPeriod / averagePriceForObjectsFromPreviousPeriod,
-                                    CorrectionByDateService.PrecisionForCoefficients);
+                                    Correction.Consts.PrecisionForCoefficients);
 
                             service.SaveCoefficients(coefficients, currentPeriod, groupByBuilding.Key, groupBySegment.Key, coefficient);
                         }

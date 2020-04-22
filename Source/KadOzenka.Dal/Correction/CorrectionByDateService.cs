@@ -10,10 +10,6 @@ namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByDateService
     {
-        public static readonly int PrecisionForPrice = 2;
-        public static readonly int PrecisionForCoefficients = 4;
-
-
         public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
         {
             return GetAverageCoefficientsBySegments().Where(x => x.MarketSegment == (MarketSegment)marketSegmentCode).ToList();
@@ -69,6 +65,7 @@ namespace KadOzenka.Dal.Correction
         public void SaveCoefficients(List<OMIndexesForDateCorrection> coefficients, DateTime date, string buildingCadastralNumber,
             MarketSegment segment, decimal coefficient)
         {
+            var isExcluded = coefficient < Consts.LowerLimitForDateCorrectionCoefficients || coefficient > Consts.UpperLimitForDateCorrectionCoefficients;
             var existedRecord = coefficients.FirstOrDefault(x =>
                 x.BuildingCadastralNumber == buildingCadastralNumber && x.MarketSegment_Code == segment &&
                 x.Date == date);
@@ -79,12 +76,14 @@ namespace KadOzenka.Dal.Correction
                     BuildingCadastralNumber = buildingCadastralNumber,
                     MarketSegment_Code = segment,
                     Date = date,
-                    Coefficient = coefficient
+                    Coefficient = coefficient,
+                    IsExcluded = isExcluded
                 }.Save();
             }
             else
             {
                 existedRecord.Coefficient = coefficient;
+                existedRecord.IsExcluded = isExcluded;
                 existedRecord.Save();
             }
         }
@@ -107,7 +106,7 @@ namespace KadOzenka.Dal.Correction
                     return;
 
                 var newPrice = Math.Round(obj.Price.GetValueOrDefault() * coefficientByMarketSegment.Coefficient,
-                    PrecisionForPrice);
+                    Consts.PrecisionForPrice);
                 using (var ts = new TransactionScope())
                 {
                     SavePriceChangingHistory(priceChangingHistory, obj, newPrice);
@@ -143,7 +142,7 @@ namespace KadOzenka.Dal.Correction
                         Date = group.Key.Date,
                         MarketSegment = group.Key.MarketSegment_Code,
                         Coefficient = Math.Round(group.ToList().DefaultIfEmpty().Average(x => x.Coefficient),
-                            PrecisionForCoefficients)
+                            Consts.PrecisionForCoefficients)
                     }).ToList();
         }
 
