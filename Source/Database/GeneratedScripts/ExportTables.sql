@@ -3048,6 +3048,58 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('CORE_REFERENCE_ITEM_ORG')) then
+		execute 'create table CORE_REFERENCE_ITEM_ORG ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_REFERENCE_ITEM_ORG', 'id')) then
+        execute 'alter table CORE_REFERENCE_ITEM_ORG add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_REFERENCE_ITEM_ORG', 'ref_item_id')) then
+        execute 'alter table CORE_REFERENCE_ITEM_ORG add "ref_item_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_REFERENCE_ITEM_ORG', 'org_id')) then
+        execute 'alter table CORE_REFERENCE_ITEM_ORG add "org_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_REFERENCE_ITEM_ORG', 'up_id')) then
+        execute 'alter table CORE_REFERENCE_ITEM_ORG add "up_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('core_reference_item_org_pkey')) then
+    execute 'alter table CORE_REFERENCE_ITEM_ORG add constraint core_reference_item_org_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('CORE_REFERENCE_RELATION')) then
 		execute 'create table CORE_REFERENCE_RELATION ("relid" BIGINT NOT NULL)';
 	end if;
@@ -6671,6 +6723,120 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('declarations_book_a')) then
+		execute 'create table declarations_book_a ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'id')) then
+        execute 'alter table declarations_book_a add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'object_id')) then
+        execute 'alter table declarations_book_a add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'attribute_id')) then
+        execute 'alter table declarations_book_a add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 's')) then
+        execute 'alter table declarations_book_a add "s" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'po')) then
+        execute 'alter table declarations_book_a add "po" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'ref_item_id')) then
+        execute 'alter table declarations_book_a add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'text_value')) then
+        execute 'alter table declarations_book_a add "text_value" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'number_value')) then
+        execute 'alter table declarations_book_a add "number_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'date_value')) then
+        execute 'alter table declarations_book_a add "date_value" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_book_a', 'change_user_id')) then
+        execute 'alter table declarations_book_a add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('declarations_book_a_pkey')) then
+    execute 'alter table declarations_book_a add constraint declarations_book_a_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('declarations_book_a_obj_attr_idx')) then
+	execute 'CREATE  INDEX declarations_book_a_obj_attr_idx on declarations_book_a (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('DECLARATIONS_DECLARATION')) then
 		execute 'create table DECLARATIONS_DECLARATION ("id" BIGINT NOT NULL)';
 	end if;
@@ -6996,6 +7162,120 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_501_q_pk')) then
     execute 'alter table DECLARATIONS_DECLARATION add constraint reg_501_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('declarations_declaration_a')) then
+		execute 'create table declarations_declaration_a ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'id')) then
+        execute 'alter table declarations_declaration_a add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'object_id')) then
+        execute 'alter table declarations_declaration_a add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'attribute_id')) then
+        execute 'alter table declarations_declaration_a add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 's')) then
+        execute 'alter table declarations_declaration_a add "s" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'po')) then
+        execute 'alter table declarations_declaration_a add "po" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'ref_item_id')) then
+        execute 'alter table declarations_declaration_a add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'text_value')) then
+        execute 'alter table declarations_declaration_a add "text_value" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'number_value')) then
+        execute 'alter table declarations_declaration_a add "number_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'date_value')) then
+        execute 'alter table declarations_declaration_a add "date_value" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_declaration_a', 'change_user_id')) then
+        execute 'alter table declarations_declaration_a add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('declarations_declaration_a_pkey')) then
+    execute 'alter table declarations_declaration_a add constraint declarations_declaration_a_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('declarations_declaration_a_obj_attr_idx')) then
+	execute 'CREATE  INDEX declarations_declaration_a_obj_attr_idx on declarations_declaration_a (object_id, attribute_id)';
   end if;
 end $$;
 --<DO>--
@@ -7345,6 +7625,120 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_502_q_pk')) then
     execute 'alter table DECLARATIONS_HAR_OKS add constraint reg_502_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('declarations_har_oks_a')) then
+		execute 'create table declarations_har_oks_a ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'id')) then
+        execute 'alter table declarations_har_oks_a add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'object_id')) then
+        execute 'alter table declarations_har_oks_a add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'attribute_id')) then
+        execute 'alter table declarations_har_oks_a add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 's')) then
+        execute 'alter table declarations_har_oks_a add "s" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'po')) then
+        execute 'alter table declarations_har_oks_a add "po" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'ref_item_id')) then
+        execute 'alter table declarations_har_oks_a add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'text_value')) then
+        execute 'alter table declarations_har_oks_a add "text_value" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'number_value')) then
+        execute 'alter table declarations_har_oks_a add "number_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'date_value')) then
+        execute 'alter table declarations_har_oks_a add "date_value" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_oks_a', 'change_user_id')) then
+        execute 'alter table declarations_har_oks_a add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('declarations_har_oks_a_pkey')) then
+    execute 'alter table declarations_har_oks_a add constraint declarations_har_oks_a_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('declarations_har_oks_a_obj_attr_idx')) then
+	execute 'CREATE  INDEX declarations_har_oks_a_obj_attr_idx on declarations_har_oks_a (object_id, attribute_id)';
   end if;
 end $$;
 --<DO>--
@@ -7785,6 +8179,120 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('declarations_har_parcel_a')) then
+		execute 'create table declarations_har_parcel_a ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'id')) then
+        execute 'alter table declarations_har_parcel_a add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'object_id')) then
+        execute 'alter table declarations_har_parcel_a add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'attribute_id')) then
+        execute 'alter table declarations_har_parcel_a add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 's')) then
+        execute 'alter table declarations_har_parcel_a add "s" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'po')) then
+        execute 'alter table declarations_har_parcel_a add "po" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'ref_item_id')) then
+        execute 'alter table declarations_har_parcel_a add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'text_value')) then
+        execute 'alter table declarations_har_parcel_a add "text_value" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'number_value')) then
+        execute 'alter table declarations_har_parcel_a add "number_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'date_value')) then
+        execute 'alter table declarations_har_parcel_a add "date_value" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_har_parcel_a', 'change_user_id')) then
+        execute 'alter table declarations_har_parcel_a add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('declarations_har_parcel_a_pkey')) then
+    execute 'alter table declarations_har_parcel_a add constraint declarations_har_parcel_a_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('declarations_har_parcel_a_obj_attr_idx')) then
+	execute 'CREATE  INDEX declarations_har_parcel_a_obj_attr_idx on declarations_har_parcel_a (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('DECLARATIONS_HAR_PARCEL_ADDITIONAL_INFO')) then
 		execute 'create table DECLARATIONS_HAR_PARCEL_ADDITIONAL_INFO ("id" BIGINT NOT NULL)';
 	end if;
@@ -8116,6 +8624,120 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('declarations_subject_a')) then
+		execute 'create table declarations_subject_a ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'id')) then
+        execute 'alter table declarations_subject_a add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'object_id')) then
+        execute 'alter table declarations_subject_a add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'attribute_id')) then
+        execute 'alter table declarations_subject_a add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 's')) then
+        execute 'alter table declarations_subject_a add "s" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'po')) then
+        execute 'alter table declarations_subject_a add "po" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'ref_item_id')) then
+        execute 'alter table declarations_subject_a add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'text_value')) then
+        execute 'alter table declarations_subject_a add "text_value" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'number_value')) then
+        execute 'alter table declarations_subject_a add "number_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'date_value')) then
+        execute 'alter table declarations_subject_a add "date_value" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_subject_a', 'change_user_id')) then
+        execute 'alter table declarations_subject_a add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('declarations_subject_a_pkey')) then
+    execute 'alter table declarations_subject_a add constraint declarations_subject_a_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('declarations_subject_a_obj_attr_idx')) then
+	execute 'CREATE  INDEX declarations_subject_a_obj_attr_idx on declarations_subject_a (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('DECLARATIONS_UVED')) then
 		execute 'create table DECLARATIONS_UVED ("id" BIGINT NOT NULL)';
 	end if;
@@ -8249,6 +8871,120 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('declarations_uved_a')) then
+		execute 'create table declarations_uved_a ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'id')) then
+        execute 'alter table declarations_uved_a add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'object_id')) then
+        execute 'alter table declarations_uved_a add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'attribute_id')) then
+        execute 'alter table declarations_uved_a add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 's')) then
+        execute 'alter table declarations_uved_a add "s" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'po')) then
+        execute 'alter table declarations_uved_a add "po" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'ref_item_id')) then
+        execute 'alter table declarations_uved_a add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'text_value')) then
+        execute 'alter table declarations_uved_a add "text_value" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'number_value')) then
+        execute 'alter table declarations_uved_a add "number_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'date_value')) then
+        execute 'alter table declarations_uved_a add "date_value" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('declarations_uved_a', 'change_user_id')) then
+        execute 'alter table declarations_uved_a add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('declarations_uved_a_pkey')) then
+    execute 'alter table declarations_uved_a add constraint declarations_uved_a_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('declarations_uved_a_obj_attr_idx')) then
+	execute 'CREATE  INDEX declarations_uved_a_obj_attr_idx on declarations_uved_a (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('DECLARATIONS_UVED_REJECTION_REASON_TYPE')) then
 		execute 'create table DECLARATIONS_UVED_REJECTION_REASON_TYPE ("id" BIGINT NOT NULL)';
 	end if;
@@ -8310,6 +9046,578 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('reg_507_q_unique')) then
 	execute 'CREATE UNIQUE INDEX reg_507_q_unique on DECLARATIONS_UVED_REJECTION_REASON_TYPE (uved_id, rejection_reason_type)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_COST_FACTOR')) then
+		execute 'create table ES_COST_FACTOR ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'id')) then
+        execute 'alter table ES_COST_FACTOR add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'factor')) then
+        execute 'alter table ES_COST_FACTOR add "factor" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'name')) then
+        execute 'alter table ES_COST_FACTOR add "name" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('es_cost_factor_pkey')) then
+    execute 'alter table ES_COST_FACTOR add constraint es_cost_factor_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_EXPRESS_SCORE')) then
+		execute 'create table ES_EXPRESS_SCORE ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'id')) then
+        execute 'alter table ES_EXPRESS_SCORE add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'kn')) then
+        execute 'alter table ES_EXPRESS_SCORE add "kn" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'date_cost')) then
+        execute 'alter table ES_EXPRESS_SCORE add "date_cost" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'summary_cost')) then
+        execute 'alter table ES_EXPRESS_SCORE add "summary_cost" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'cost_square_meter')) then
+        execute 'alter table ES_EXPRESS_SCORE add "cost_square_meter" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'square')) then
+        execute 'alter table ES_EXPRESS_SCORE add "square" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'floor')) then
+        execute 'alter table ES_EXPRESS_SCORE add "floor" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'object_id')) then
+        execute 'alter table ES_EXPRESS_SCORE add "object_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('es_exspress_score_pkey')) then
+    execute 'alter table ES_EXPRESS_SCORE add constraint es_exspress_score_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_FLOOR')) then
+		execute 'create table ES_FLOOR ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_FLOOR', 'id')) then
+        execute 'alter table ES_FLOOR add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_FLOOR', 'floor_name')) then
+        execute 'alter table ES_FLOOR add "floor_name" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_FLOOR', 'factor')) then
+        execute 'alter table ES_FLOOR add "factor" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_FLOOR', 'floor')) then
+        execute 'alter table ES_FLOOR add "floor" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('es_floor_pkey')) then
+    execute 'alter table ES_FLOOR add constraint es_floor_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_INDEX_DATE')) then
+		execute 'create table ES_INDEX_DATE ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_INDEX_DATE', 'id')) then
+        execute 'alter table ES_INDEX_DATE add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_INDEX_DATE', 'date')) then
+        execute 'alter table ES_INDEX_DATE add "date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_INDEX_DATE', 'index')) then
+        execute 'alter table ES_INDEX_DATE add "index" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ES_INDEX_DATE_pkey')) then
+    execute 'alter table ES_INDEX_DATE add constraint ES_INDEX_DATE_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_LAND_SHARE')) then
+		execute 'create table ES_LAND_SHARE ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_LAND_SHARE', 'id')) then
+        execute 'alter table ES_LAND_SHARE add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_LAND_SHARE', 'floor')) then
+        execute 'alter table ES_LAND_SHARE add "floor" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_LAND_SHARE', 'factor')) then
+        execute 'alter table ES_LAND_SHARE add "factor" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_LAND_SHARE', 'segment_type')) then
+        execute 'alter table ES_LAND_SHARE add "segment_type" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('es_land_share_pkey')) then
+    execute 'alter table ES_LAND_SHARE add constraint es_land_share_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_REFERENCE')) then
+		execute 'create table ES_REFERENCE ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'id')) then
+        execute 'alter table ES_REFERENCE add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'name')) then
+        execute 'alter table ES_REFERENCE add "name" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'value_type')) then
+        execute 'alter table ES_REFERENCE add "value_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'value_type_code')) then
+        execute 'alter table ES_REFERENCE add "value_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_609_q_pk')) then
+    execute 'alter table ES_REFERENCE add constraint reg_609_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_REFERENCE_ITEM')) then
+		execute 'create table ES_REFERENCE_ITEM ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'id')) then
+        execute 'alter table ES_REFERENCE_ITEM add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'es_reference_id')) then
+        execute 'alter table ES_REFERENCE_ITEM add "es_reference_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'value')) then
+        execute 'alter table ES_REFERENCE_ITEM add "value" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'calculation_value')) then
+        execute 'alter table ES_REFERENCE_ITEM add "calculation_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_610_q_pk')) then
+    execute 'alter table ES_REFERENCE_ITEM add constraint reg_610_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_SQUARE')) then
+		execute 'create table ES_SQUARE ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SQUARE', 'id')) then
+        execute 'alter table ES_SQUARE add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SQUARE', 'number')) then
+        execute 'alter table ES_SQUARE add "number" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SQUARE', 'square_from')) then
+        execute 'alter table ES_SQUARE add "square_from" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SQUARE', 'square_to')) then
+        execute 'alter table ES_SQUARE add "square_to" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('es_square_pkey')) then
+    execute 'alter table ES_SQUARE add constraint es_square_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_TO_MARKET_CORE_OBJECT')) then
+		execute 'create table ES_TO_MARKET_CORE_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_TO_MARKET_CORE_OBJECT', 'id')) then
+        execute 'alter table ES_TO_MARKET_CORE_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_TO_MARKET_CORE_OBJECT', 'es_id')) then
+        execute 'alter table ES_TO_MARKET_CORE_OBJECT add "es_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_TO_MARKET_CORE_OBJECT', 'market_object_id')) then
+        execute 'alter table ES_TO_MARKET_CORE_OBJECT add "market_object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('es_to_market_core_object_pkey')) then
+    execute 'alter table ES_TO_MARKET_CORE_OBJECT add constraint es_to_market_core_object_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_WALL_MATERIAL')) then
+		execute 'create table ES_WALL_MATERIAL ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_WALL_MATERIAL', 'id')) then
+        execute 'alter table ES_WALL_MATERIAL add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_WALL_MATERIAL', 'wall_material')) then
+        execute 'alter table ES_WALL_MATERIAL add "wall_material" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_WALL_MATERIAL', 'mark')) then
+        execute 'alter table ES_WALL_MATERIAL add "mark" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_603_q_pk')) then
+    execute 'alter table ES_WALL_MATERIAL add constraint reg_603_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_YEAR_CONSTRUCTION')) then
+		execute 'create table ES_YEAR_CONSTRUCTION ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_YEAR_CONSTRUCTION', 'id')) then
+        execute 'alter table ES_YEAR_CONSTRUCTION add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_YEAR_CONSTRUCTION', 'number')) then
+        execute 'alter table ES_YEAR_CONSTRUCTION add "number" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_YEAR_CONSTRUCTION', 'year_from')) then
+        execute 'alter table ES_YEAR_CONSTRUCTION add "year_from" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_YEAR_CONSTRUCTION', 'year_to')) then
+        execute 'alter table ES_YEAR_CONSTRUCTION add "year_to" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('es_year_construction_pkey')) then
+    execute 'alter table ES_YEAR_CONSTRUCTION add constraint es_year_construction_pkey primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -8485,6 +9793,2031 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_22_dt')) then
+		execute 'create table gbu_custom_source_22_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'id')) then
+        execute 'alter table gbu_custom_source_22_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'object_id')) then
+        execute 'alter table gbu_custom_source_22_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_22_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'ot')) then
+        execute 'alter table gbu_custom_source_22_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 's')) then
+        execute 'alter table gbu_custom_source_22_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'actual')) then
+        execute 'alter table gbu_custom_source_22_dt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'value')) then
+        execute 'alter table gbu_custom_source_22_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'change_id')) then
+        execute 'alter table gbu_custom_source_22_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'change_date')) then
+        execute 'alter table gbu_custom_source_22_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_22_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_dt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_22_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41937379_a_dt_pk')) then
+    execute 'alter table gbu_custom_source_22_dt add constraint reg_41937379_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41937379_a_dt_fk_o')) then
+	execute 'alter table gbu_custom_source_22_dt add constraint reg_41937379_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_41937379_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_41937379_a_dt_inx_obj_attr_id on gbu_custom_source_22_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_22_num')) then
+		execute 'create table gbu_custom_source_22_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'id')) then
+        execute 'alter table gbu_custom_source_22_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'object_id')) then
+        execute 'alter table gbu_custom_source_22_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_22_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'ot')) then
+        execute 'alter table gbu_custom_source_22_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 's')) then
+        execute 'alter table gbu_custom_source_22_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'actual')) then
+        execute 'alter table gbu_custom_source_22_num add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'value')) then
+        execute 'alter table gbu_custom_source_22_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'change_id')) then
+        execute 'alter table gbu_custom_source_22_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'change_date')) then
+        execute 'alter table gbu_custom_source_22_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_22_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_num', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_22_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41937379_a_num_pk')) then
+    execute 'alter table gbu_custom_source_22_num add constraint reg_41937379_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41937379_a_num_fk_o')) then
+	execute 'alter table gbu_custom_source_22_num add constraint reg_41937379_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_41937379_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_41937379_a_num_inx_obj_attr_id on gbu_custom_source_22_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_22_txt')) then
+		execute 'create table gbu_custom_source_22_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'id')) then
+        execute 'alter table gbu_custom_source_22_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'object_id')) then
+        execute 'alter table gbu_custom_source_22_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_22_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'ot')) then
+        execute 'alter table gbu_custom_source_22_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 's')) then
+        execute 'alter table gbu_custom_source_22_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'actual')) then
+        execute 'alter table gbu_custom_source_22_txt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'ref_item_id')) then
+        execute 'alter table gbu_custom_source_22_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'value')) then
+        execute 'alter table gbu_custom_source_22_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'change_id')) then
+        execute 'alter table gbu_custom_source_22_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'change_date')) then
+        execute 'alter table gbu_custom_source_22_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_22_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_22_txt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_22_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41937379_a_txt_pk')) then
+    execute 'alter table gbu_custom_source_22_txt add constraint reg_41937379_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41937379_a_txt_fk_o')) then
+	execute 'alter table gbu_custom_source_22_txt add constraint reg_41937379_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_41937379_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_41937379_a_txt_inx_obj_attr_id on gbu_custom_source_22_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_23_dt')) then
+		execute 'create table gbu_custom_source_23_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'id')) then
+        execute 'alter table gbu_custom_source_23_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'object_id')) then
+        execute 'alter table gbu_custom_source_23_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_23_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'ot')) then
+        execute 'alter table gbu_custom_source_23_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 's')) then
+        execute 'alter table gbu_custom_source_23_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'actual')) then
+        execute 'alter table gbu_custom_source_23_dt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'value')) then
+        execute 'alter table gbu_custom_source_23_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'change_id')) then
+        execute 'alter table gbu_custom_source_23_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'change_date')) then
+        execute 'alter table gbu_custom_source_23_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_23_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_dt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_23_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41983898_a_dt_pk')) then
+    execute 'alter table gbu_custom_source_23_dt add constraint reg_41983898_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41983898_a_dt_fk_o')) then
+	execute 'alter table gbu_custom_source_23_dt add constraint reg_41983898_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_41983898_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_41983898_a_dt_inx_obj_attr_id on gbu_custom_source_23_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_23_num')) then
+		execute 'create table gbu_custom_source_23_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'id')) then
+        execute 'alter table gbu_custom_source_23_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'object_id')) then
+        execute 'alter table gbu_custom_source_23_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_23_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'ot')) then
+        execute 'alter table gbu_custom_source_23_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 's')) then
+        execute 'alter table gbu_custom_source_23_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'actual')) then
+        execute 'alter table gbu_custom_source_23_num add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'value')) then
+        execute 'alter table gbu_custom_source_23_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'change_id')) then
+        execute 'alter table gbu_custom_source_23_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'change_date')) then
+        execute 'alter table gbu_custom_source_23_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_23_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_num', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_23_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41983898_a_num_pk')) then
+    execute 'alter table gbu_custom_source_23_num add constraint reg_41983898_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41983898_a_num_fk_o')) then
+	execute 'alter table gbu_custom_source_23_num add constraint reg_41983898_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_41983898_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_41983898_a_num_inx_obj_attr_id on gbu_custom_source_23_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_23_txt')) then
+		execute 'create table gbu_custom_source_23_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'id')) then
+        execute 'alter table gbu_custom_source_23_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'object_id')) then
+        execute 'alter table gbu_custom_source_23_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_23_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'ot')) then
+        execute 'alter table gbu_custom_source_23_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 's')) then
+        execute 'alter table gbu_custom_source_23_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'actual')) then
+        execute 'alter table gbu_custom_source_23_txt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'ref_item_id')) then
+        execute 'alter table gbu_custom_source_23_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'value')) then
+        execute 'alter table gbu_custom_source_23_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'change_id')) then
+        execute 'alter table gbu_custom_source_23_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'change_date')) then
+        execute 'alter table gbu_custom_source_23_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_23_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_23_txt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_23_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41983898_a_txt_pk')) then
+    execute 'alter table gbu_custom_source_23_txt add constraint reg_41983898_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_41983898_a_txt_fk_o')) then
+	execute 'alter table gbu_custom_source_23_txt add constraint reg_41983898_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_41983898_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_41983898_a_txt_inx_obj_attr_id on gbu_custom_source_23_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_24_dt')) then
+		execute 'create table gbu_custom_source_24_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'id')) then
+        execute 'alter table gbu_custom_source_24_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'object_id')) then
+        execute 'alter table gbu_custom_source_24_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_24_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'ot')) then
+        execute 'alter table gbu_custom_source_24_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 's')) then
+        execute 'alter table gbu_custom_source_24_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'actual')) then
+        execute 'alter table gbu_custom_source_24_dt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'value')) then
+        execute 'alter table gbu_custom_source_24_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'change_id')) then
+        execute 'alter table gbu_custom_source_24_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'change_date')) then
+        execute 'alter table gbu_custom_source_24_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_24_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_dt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_24_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42430534_a_dt_pk')) then
+    execute 'alter table gbu_custom_source_24_dt add constraint reg_42430534_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42430534_a_dt_fk_o')) then
+	execute 'alter table gbu_custom_source_24_dt add constraint reg_42430534_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42430534_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42430534_a_dt_inx_obj_attr_id on gbu_custom_source_24_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_24_num')) then
+		execute 'create table gbu_custom_source_24_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'id')) then
+        execute 'alter table gbu_custom_source_24_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'object_id')) then
+        execute 'alter table gbu_custom_source_24_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_24_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'ot')) then
+        execute 'alter table gbu_custom_source_24_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 's')) then
+        execute 'alter table gbu_custom_source_24_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'actual')) then
+        execute 'alter table gbu_custom_source_24_num add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'value')) then
+        execute 'alter table gbu_custom_source_24_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'change_id')) then
+        execute 'alter table gbu_custom_source_24_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'change_date')) then
+        execute 'alter table gbu_custom_source_24_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_24_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_num', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_24_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42430534_a_num_pk')) then
+    execute 'alter table gbu_custom_source_24_num add constraint reg_42430534_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42430534_a_num_fk_o')) then
+	execute 'alter table gbu_custom_source_24_num add constraint reg_42430534_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42430534_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42430534_a_num_inx_obj_attr_id on gbu_custom_source_24_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_24_txt')) then
+		execute 'create table gbu_custom_source_24_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'id')) then
+        execute 'alter table gbu_custom_source_24_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'object_id')) then
+        execute 'alter table gbu_custom_source_24_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_24_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'ot')) then
+        execute 'alter table gbu_custom_source_24_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 's')) then
+        execute 'alter table gbu_custom_source_24_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'actual')) then
+        execute 'alter table gbu_custom_source_24_txt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'ref_item_id')) then
+        execute 'alter table gbu_custom_source_24_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'value')) then
+        execute 'alter table gbu_custom_source_24_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'change_id')) then
+        execute 'alter table gbu_custom_source_24_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'change_date')) then
+        execute 'alter table gbu_custom_source_24_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_24_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_24_txt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_24_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42430534_a_txt_pk')) then
+    execute 'alter table gbu_custom_source_24_txt add constraint reg_42430534_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42430534_a_txt_fk_o')) then
+	execute 'alter table gbu_custom_source_24_txt add constraint reg_42430534_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42430534_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42430534_a_txt_inx_obj_attr_id on gbu_custom_source_24_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_25_dt')) then
+		execute 'create table gbu_custom_source_25_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'id')) then
+        execute 'alter table gbu_custom_source_25_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'object_id')) then
+        execute 'alter table gbu_custom_source_25_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_25_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'ot')) then
+        execute 'alter table gbu_custom_source_25_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 's')) then
+        execute 'alter table gbu_custom_source_25_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'actual')) then
+        execute 'alter table gbu_custom_source_25_dt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'value')) then
+        execute 'alter table gbu_custom_source_25_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'change_id')) then
+        execute 'alter table gbu_custom_source_25_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'change_date')) then
+        execute 'alter table gbu_custom_source_25_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_25_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_dt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_25_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42436643_a_dt_pk')) then
+    execute 'alter table gbu_custom_source_25_dt add constraint reg_42436643_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42436643_a_dt_fk_o')) then
+	execute 'alter table gbu_custom_source_25_dt add constraint reg_42436643_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42436643_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42436643_a_dt_inx_obj_attr_id on gbu_custom_source_25_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_25_num')) then
+		execute 'create table gbu_custom_source_25_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'id')) then
+        execute 'alter table gbu_custom_source_25_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'object_id')) then
+        execute 'alter table gbu_custom_source_25_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_25_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'ot')) then
+        execute 'alter table gbu_custom_source_25_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 's')) then
+        execute 'alter table gbu_custom_source_25_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'actual')) then
+        execute 'alter table gbu_custom_source_25_num add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'value')) then
+        execute 'alter table gbu_custom_source_25_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'change_id')) then
+        execute 'alter table gbu_custom_source_25_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'change_date')) then
+        execute 'alter table gbu_custom_source_25_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_25_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_num', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_25_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42436643_a_num_pk')) then
+    execute 'alter table gbu_custom_source_25_num add constraint reg_42436643_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42436643_a_num_fk_o')) then
+	execute 'alter table gbu_custom_source_25_num add constraint reg_42436643_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42436643_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42436643_a_num_inx_obj_attr_id on gbu_custom_source_25_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_25_txt')) then
+		execute 'create table gbu_custom_source_25_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'id')) then
+        execute 'alter table gbu_custom_source_25_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'object_id')) then
+        execute 'alter table gbu_custom_source_25_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_25_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'ot')) then
+        execute 'alter table gbu_custom_source_25_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 's')) then
+        execute 'alter table gbu_custom_source_25_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'actual')) then
+        execute 'alter table gbu_custom_source_25_txt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'ref_item_id')) then
+        execute 'alter table gbu_custom_source_25_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'value')) then
+        execute 'alter table gbu_custom_source_25_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'change_id')) then
+        execute 'alter table gbu_custom_source_25_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'change_date')) then
+        execute 'alter table gbu_custom_source_25_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_25_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_25_txt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_25_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42436643_a_txt_pk')) then
+    execute 'alter table gbu_custom_source_25_txt add constraint reg_42436643_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42436643_a_txt_fk_o')) then
+	execute 'alter table gbu_custom_source_25_txt add constraint reg_42436643_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42436643_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42436643_a_txt_inx_obj_attr_id on gbu_custom_source_25_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_26_dt')) then
+		execute 'create table gbu_custom_source_26_dt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'id')) then
+        execute 'alter table gbu_custom_source_26_dt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'object_id')) then
+        execute 'alter table gbu_custom_source_26_dt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_26_dt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'ot')) then
+        execute 'alter table gbu_custom_source_26_dt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 's')) then
+        execute 'alter table gbu_custom_source_26_dt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'actual')) then
+        execute 'alter table gbu_custom_source_26_dt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'value')) then
+        execute 'alter table gbu_custom_source_26_dt add "value" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'change_id')) then
+        execute 'alter table gbu_custom_source_26_dt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'change_date')) then
+        execute 'alter table gbu_custom_source_26_dt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_26_dt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_dt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_26_dt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42726724_a_dt_pk')) then
+    execute 'alter table gbu_custom_source_26_dt add constraint reg_42726724_a_dt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42726724_a_dt_fk_o')) then
+	execute 'alter table gbu_custom_source_26_dt add constraint reg_42726724_a_dt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42726724_a_dt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42726724_a_dt_inx_obj_attr_id on gbu_custom_source_26_dt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_26_num')) then
+		execute 'create table gbu_custom_source_26_num ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'id')) then
+        execute 'alter table gbu_custom_source_26_num add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'object_id')) then
+        execute 'alter table gbu_custom_source_26_num add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_26_num add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'ot')) then
+        execute 'alter table gbu_custom_source_26_num add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 's')) then
+        execute 'alter table gbu_custom_source_26_num add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'actual')) then
+        execute 'alter table gbu_custom_source_26_num add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'value')) then
+        execute 'alter table gbu_custom_source_26_num add "value" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'change_id')) then
+        execute 'alter table gbu_custom_source_26_num add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'change_date')) then
+        execute 'alter table gbu_custom_source_26_num add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_26_num add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_num', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_26_num add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42726724_a_num_pk')) then
+    execute 'alter table gbu_custom_source_26_num add constraint reg_42726724_a_num_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42726724_a_num_fk_o')) then
+	execute 'alter table gbu_custom_source_26_num add constraint reg_42726724_a_num_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42726724_a_num_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42726724_a_num_inx_obj_attr_id on gbu_custom_source_26_num (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_custom_source_26_txt')) then
+		execute 'create table gbu_custom_source_26_txt ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'id')) then
+        execute 'alter table gbu_custom_source_26_txt add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'object_id')) then
+        execute 'alter table gbu_custom_source_26_txt add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'attribute_id')) then
+        execute 'alter table gbu_custom_source_26_txt add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'ot')) then
+        execute 'alter table gbu_custom_source_26_txt add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 's')) then
+        execute 'alter table gbu_custom_source_26_txt add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'actual')) then
+        execute 'alter table gbu_custom_source_26_txt add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'ref_item_id')) then
+        execute 'alter table gbu_custom_source_26_txt add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'value')) then
+        execute 'alter table gbu_custom_source_26_txt add "value" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'change_id')) then
+        execute 'alter table gbu_custom_source_26_txt add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'change_date')) then
+        execute 'alter table gbu_custom_source_26_txt add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'change_user_id')) then
+        execute 'alter table gbu_custom_source_26_txt add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_custom_source_26_txt', 'change_doc_id')) then
+        execute 'alter table gbu_custom_source_26_txt add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42726724_a_txt_pk')) then
+    execute 'alter table gbu_custom_source_26_txt add constraint reg_42726724_a_txt_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_42726724_a_txt_fk_o')) then
+	execute 'alter table gbu_custom_source_26_txt add constraint reg_42726724_a_txt_fk_o foreign key (object_id) references gbu_main_object (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_42726724_a_txt_inx_obj_attr_id')) then
+	execute 'CREATE  INDEX reg_42726724_a_txt_inx_obj_attr_id on gbu_custom_source_26_txt (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('GBU_KADASTR_KVARTAL')) then
 		execute 'create table GBU_KADASTR_KVARTAL ("id" BIGINT NOT NULL)';
 	end if;
@@ -8633,48 +11966,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
     end if;
 end $$;
 
@@ -8682,8 +11975,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8691,8 +11984,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
     end if;
 end $$;
 
@@ -8700,8 +11993,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
     end if;
 end $$;
 
@@ -8709,8 +12002,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
     end if;
 end $$;
 
@@ -8718,8 +12011,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8727,8 +12020,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8736,48 +12029,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8785,8 +12038,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8794,8 +12047,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8803,8 +12056,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8812,8 +12065,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8821,8 +12074,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8830,8 +12083,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8839,48 +12092,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8888,8 +12101,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8897,8 +12110,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8906,8 +12119,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8915,8 +12128,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8924,8 +12137,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8933,8 +12146,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8942,48 +12155,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
     end if;
 end $$;
 
@@ -8991,8 +12164,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9000,8 +12173,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9009,8 +12182,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9018,8 +12191,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9027,8 +12200,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9036,8 +12209,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9045,48 +12218,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9094,8 +12227,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
     end if;
 end $$;
 
@@ -9103,8 +12236,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9112,8 +12245,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9121,8 +12254,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
     end if;
 end $$;
 
@@ -9130,8 +12263,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9139,8 +12272,107 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
     end if;
 end $$;
 
@@ -9251,48 +12483,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
     end if;
 end $$;
 
@@ -9300,8 +12492,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9309,8 +12501,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
     end if;
 end $$;
 
@@ -9318,8 +12510,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
     end if;
 end $$;
 
@@ -9327,8 +12519,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
     end if;
 end $$;
 
@@ -9336,8 +12528,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9345,8 +12537,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9354,48 +12546,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9403,8 +12555,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9412,8 +12564,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9421,8 +12573,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9430,8 +12582,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9439,8 +12591,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9448,8 +12600,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9457,48 +12609,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9506,8 +12618,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9515,8 +12627,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9524,8 +12636,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9533,8 +12645,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9542,8 +12654,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9551,8 +12663,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9560,48 +12672,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9609,8 +12681,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9618,8 +12690,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9627,8 +12699,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9636,8 +12708,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9645,8 +12717,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9654,8 +12726,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9663,48 +12735,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9712,8 +12744,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
     end if;
 end $$;
 
@@ -9721,8 +12753,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9730,8 +12762,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9739,8 +12771,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
     end if;
 end $$;
 
@@ -9748,8 +12780,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9757,8 +12789,107 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
     end if;
 end $$;
 
@@ -9869,48 +13000,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
     end if;
 end $$;
 
@@ -9918,8 +13009,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9927,8 +13018,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
     end if;
 end $$;
 
@@ -9936,8 +13027,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
     end if;
 end $$;
 
@@ -9945,8 +13036,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
     end if;
 end $$;
 
@@ -9954,8 +13045,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9963,8 +13054,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
     end if;
 end $$;
 
@@ -9972,48 +13063,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10021,8 +13072,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10030,8 +13081,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10039,8 +13090,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10048,8 +13099,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10057,8 +13108,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10066,8 +13117,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10075,48 +13126,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10124,8 +13135,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10133,8 +13144,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10142,8 +13153,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10151,8 +13162,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10160,8 +13171,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10169,8 +13180,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10178,48 +13189,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10227,8 +13198,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10236,8 +13207,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10245,8 +13216,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10254,8 +13225,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10263,8 +13234,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10272,8 +13243,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10281,48 +13252,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
-    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
-	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
-	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
-	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
-		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
-        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10330,8 +13261,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
-        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
     end if;
 end $$;
 
@@ -10339,8 +13270,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10348,8 +13279,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
-        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10357,8 +13288,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
-        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
     end if;
 end $$;
 
@@ -10366,8 +13297,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
-        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
     end if;
 end $$;
 
@@ -10375,8 +13306,107 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
-        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
     end if;
 end $$;
 
@@ -10487,6 +13517,420 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -10590,6 +14034,420 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -10693,6 +14551,420 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -10796,6 +15068,420 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -10899,6 +15585,420 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
     execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
   end if;
@@ -10995,6 +16095,10760 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
         execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_200_q_pk')) then
+    execute 'alter table GBU_MAIN_OBJECT add constraint reg_200_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"CadastralNumberMainIndex"')) then
+	execute 'CREATE  INDEX "CadastralNumberMainIndex" on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_kad_num_text_inx')) then
+	execute 'CREATE  INDEX gbu_main_object_kad_num_text_inx on GBU_MAIN_OBJECT (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_main_object_type_idx')) then
+	execute 'CREATE  INDEX gbu_main_object_type_idx on GBU_MAIN_OBJECT (object_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('GBU_MAIN_OBJECT')) then
+		execute 'create table GBU_MAIN_OBJECT ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'id')) then
+        execute 'alter table GBU_MAIN_OBJECT add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'cadastral_number')) then
+        execute 'alter table GBU_MAIN_OBJECT add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'object_type_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "object_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'is_active')) then
+        execute 'alter table GBU_MAIN_OBJECT add "is_active" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'kadastr_kvartal')) then
+        execute 'alter table GBU_MAIN_OBJECT add "kadastr_kvartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935247')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935247" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41935280')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41935280" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41937381')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41937381" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field41983900')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field41983900" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430225')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430225" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430564')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430564" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430582')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430582" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430595')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430595" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430613')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430613" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42430715')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42430715" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42431334')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42431334" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433177')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433177" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42433569')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42433569" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434109')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434109" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42434697')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42434697" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42435643')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42435643" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437173')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437173" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437294')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437294" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437434')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437434" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437585')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437585" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437717')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437717" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42437874')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42437874" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438085')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438085" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438315')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438315" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438432')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438432" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438788')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438788" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42438947')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42438947" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42439094')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42439094" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516021')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516021" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516025_code')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516025_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516026')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516026" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516027')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516027" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516030')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516030" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516036')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516036" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516037')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516037" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516038')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516038" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516039')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516039" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516040')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516040" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516041')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516041" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516042')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516042" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516043')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516043" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516057')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516057" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516058')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516058" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42516059')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42516059" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583510')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583510" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_MAIN_OBJECT', 'field42583511')) then
+        execute 'alter table GBU_MAIN_OBJECT add "field42583511" SMALLINT';
     end if;
 end $$;
 
@@ -20392,6 +36246,49 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_CALC_GROUP')) then
+		execute 'create table KO_CALC_GROUP ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_CALC_GROUP', 'id')) then
+        execute 'alter table KO_CALC_GROUP add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_CALC_GROUP', 'group_id')) then
+        execute 'alter table KO_CALC_GROUP add "group_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_CALC_GROUP', 'parent_calc_group_id')) then
+        execute 'alter table KO_CALC_GROUP add "parent_calc_group_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_calc_group_pkey')) then
+    execute 'alter table KO_CALC_GROUP add constraint ko_calc_group_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_COD_DICTIONARY')) then
 		execute 'create table KO_COD_DICTIONARY ("id" BIGINT NOT NULL)';
 	end if;
@@ -22144,6 +38041,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_TourZuFactors18099454', 'field44137155')) then
+        execute 'alter table KO_TourZuFactors18099454 add "field44137155" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_39959492_q_pk')) then
     execute 'alter table KO_TourZuFactors18099454 add constraint reg_39959492_q_pk primary key (id)';
   end if;
@@ -22762,6 +38668,67 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TRANSFER_ATTRIBUTES')) then
+		execute 'create table KO_TRANSFER_ATTRIBUTES ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'Id')) then
+        execute 'alter table KO_TRANSFER_ATTRIBUTES add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'Tour_Id')) then
+        execute 'alter table KO_TRANSFER_ATTRIBUTES add "tour_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'Is_Oks')) then
+        execute 'alter table KO_TRANSFER_ATTRIBUTES add "is_oks" SMALLINT DEFAULT 0 NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'KO_id')) then
+        execute 'alter table KO_TRANSFER_ATTRIBUTES add "ko_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'GBU_id')) then
+        execute 'alter table KO_TRANSFER_ATTRIBUTES add "gbu_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_transfer_atributes_pkey')) then
+    execute 'alter table KO_TRANSFER_ATTRIBUTES add constraint ko_transfer_atributes_pkey primary key (Id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_UNIT')) then
 		execute 'create table KO_UNIT ("id" BIGINT NOT NULL)';
 	end if;
@@ -23071,6 +39038,76 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('groupidindex')) then
 	execute 'CREATE  INDEX groupidindex on KO_UNIT (group_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_UNIT_CHANGE')) then
+		execute 'create table KO_UNIT_CHANGE ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_CHANGE', 'id')) then
+        execute 'alter table KO_UNIT_CHANGE add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_CHANGE', 'id_unit')) then
+        execute 'alter table KO_UNIT_CHANGE add "id_unit" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_CHANGE', 'old_value')) then
+        execute 'alter table KO_UNIT_CHANGE add "old_value" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_CHANGE', 'new_value')) then
+        execute 'alter table KO_UNIT_CHANGE add "new_value" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_CHANGE', 'status_change')) then
+        execute 'alter table KO_UNIT_CHANGE add "status_change" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT_CHANGE', 'status_change_code')) then
+        execute 'alter table KO_UNIT_CHANGE add "status_change_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_256_q_pk')) then
+    execute 'alter table KO_UNIT_CHANGE add constraint reg_256_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -25454,6 +41491,237 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_address_yandex')) then
+		execute 'create table market_address_yandex ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'id')) then
+        execute 'alter table market_address_yandex add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'formalized_address')) then
+        execute 'alter table market_address_yandex add "formalized_address" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'cadastral_number')) then
+        execute 'alter table market_address_yandex add "cadastral_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'lat')) then
+        execute 'alter table market_address_yandex add "lat" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'lng')) then
+        execute 'alter table market_address_yandex add "lng" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'country')) then
+        execute 'alter table market_address_yandex add "country" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'province')) then
+        execute 'alter table market_address_yandex add "province" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'province_2')) then
+        execute 'alter table market_address_yandex add "province_2" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'area')) then
+        execute 'alter table market_address_yandex add "area" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'locality')) then
+        execute 'alter table market_address_yandex add "locality" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'area_2')) then
+        execute 'alter table market_address_yandex add "area_2" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'locality_2')) then
+        execute 'alter table market_address_yandex add "locality_2" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'district')) then
+        execute 'alter table market_address_yandex add "district" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'district_3')) then
+        execute 'alter table market_address_yandex add "district_3" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'district_2')) then
+        execute 'alter table market_address_yandex add "district_2" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'airport')) then
+        execute 'alter table market_address_yandex add "airport" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'vegetation')) then
+        execute 'alter table market_address_yandex add "vegetation" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'route')) then
+        execute 'alter table market_address_yandex add "route" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'railway_station')) then
+        execute 'alter table market_address_yandex add "railway_station" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'street')) then
+        execute 'alter table market_address_yandex add "street" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'house')) then
+        execute 'alter table market_address_yandex add "house" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'other')) then
+        execute 'alter table market_address_yandex add "other" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_address_yandex', 'initial_id')) then
+        execute 'alter table market_address_yandex add "initial_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_101_q_pk')) then
+    execute 'alter table market_address_yandex add constraint reg_101_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('formalized_address_index')) then
+	execute 'CREATE  INDEX formalized_address_index on market_address_yandex (formalized_address)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('MARKET_ADDRESS_YANDEX')) then
 		execute 'create table MARKET_ADDRESS_YANDEX ("id" BIGINT NOT NULL)';
 	end if;
@@ -25679,6 +41947,1191 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('formalized_address_index')) then
 	execute 'CREATE  INDEX formalized_address_index on MARKET_ADDRESS_YANDEX (formalized_address)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_avito_object_old')) then
+		execute 'create table market_avito_object_old ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_avito_object_old', 'id')) then
+        execute 'alter table market_avito_object_old add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_avito_object_old', 'title')) then
+        execute 'alter table market_avito_object_old add "title" VARCHAR(2000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_avito_object_old', 'district')) then
+        execute 'alter table market_avito_object_old add "district" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('pk_outer_avito_object_id')) then
+    execute 'alter table market_avito_object_old add constraint pk_outer_avito_object_id primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('fk_outer_avito_object_outer_core_object')) then
+	execute 'alter table market_avito_object_old add constraint fk_outer_avito_object_outer_core_object foreign key (id) references market_core_object_old (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_cian_object_old')) then
+		execute 'create table market_cian_object_old ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'id')) then
+        execute 'alter table market_cian_object_old add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'rooms_count')) then
+        execute 'alter table market_cian_object_old add "rooms_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'floor_number')) then
+        execute 'alter table market_cian_object_old add "floor_number" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'floors_count')) then
+        execute 'alter table market_cian_object_old add "floors_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'area')) then
+        execute 'alter table market_cian_object_old add "area" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'area_kitchen')) then
+        execute 'alter table market_cian_object_old add "area_kitchen" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'area_living')) then
+        execute 'alter table market_cian_object_old add "area_living" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'area_land')) then
+        execute 'alter table market_cian_object_old add "area_land" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'building_year')) then
+        execute 'alter table market_cian_object_old add "building_year" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'deal_type')) then
+        execute 'alter table market_cian_object_old add "deal_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'category')) then
+        execute 'alter table market_cian_object_old add "category" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'subcategory')) then
+        execute 'alter table market_cian_object_old add "subcategory" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'category_id')) then
+        execute 'alter table market_cian_object_old add "category_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'region_id')) then
+        execute 'alter table market_cian_object_old add "region_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_cian_object_old', 'city_id')) then
+        execute 'alter table market_cian_object_old add "city_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('pk_outer_cian_object_id')) then
+    execute 'alter table market_cian_object_old add constraint pk_outer_cian_object_id primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('fk_outer_cian_object_outer_core_object')) then
+	execute 'alter table market_cian_object_old add constraint fk_outer_cian_object_outer_core_object foreign key (id) references market_core_object_old (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_coefficient_for_rooms_correction')) then
+		execute 'create table market_coefficient_for_rooms_correction ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'id')) then
+        execute 'alter table market_coefficient_for_rooms_correction add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'building_cadastral_number')) then
+        execute 'alter table market_coefficient_for_rooms_correction add "building_cadastral_number" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'changing_date')) then
+        execute 'alter table market_coefficient_for_rooms_correction add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'one_room_coefficient')) then
+        execute 'alter table market_coefficient_for_rooms_correction add "one_room_coefficient" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'three_rooms_coefficient')) then
+        execute 'alter table market_coefficient_for_rooms_correction add "three_rooms_coefficient" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'market_segment')) then
+        execute 'alter table market_coefficient_for_rooms_correction add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'market_segment_code')) then
+        execute 'alter table market_coefficient_for_rooms_correction add "market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'is_excluded')) then
+        execute 'alter table market_coefficient_for_rooms_correction add "is_excluded" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_111_q_pk')) then
+    execute 'alter table market_coefficient_for_rooms_correction add constraint reg_111_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('correction_by_rooms_history_index')) then
+	execute 'CREATE UNIQUE INDEX correction_by_rooms_history_index on market_coefficient_for_rooms_correction (building_cadastral_number, changing_date, market_segment_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION')) then
+		execute 'create table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'id')) then
+        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'building_cadastral_number')) then
+        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "building_cadastral_number" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'changing_date')) then
+        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'one_room_coefficient')) then
+        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "one_room_coefficient" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'three_rooms_coefficient')) then
+        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "three_rooms_coefficient" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'market_segment')) then
+        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'market_segment_code')) then
+        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'is_excluded')) then
+        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "is_excluded" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_111_q_pk')) then
+    execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add constraint reg_111_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('correction_by_rooms_history_index')) then
+	execute 'CREATE UNIQUE INDEX correction_by_rooms_history_index on MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION (building_cadastral_number, changing_date, market_segment_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_coefficients_for_first_floor_corr')) then
+		execute 'create table market_coefficients_for_first_floor_corr ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'id')) then
+        execute 'alter table market_coefficients_for_first_floor_corr add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'stats_date')) then
+        execute 'alter table market_coefficients_for_first_floor_corr add "stats_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'building_cadastral_number')) then
+        execute 'alter table market_coefficients_for_first_floor_corr add "building_cadastral_number" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'market_segment')) then
+        execute 'alter table market_coefficients_for_first_floor_corr add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'market_segment_code')) then
+        execute 'alter table market_coefficients_for_first_floor_corr add "market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'first_to_upper_floor_rate')) then
+        execute 'alter table market_coefficients_for_first_floor_corr add "first_to_upper_floor_rate" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'is_excluded_from_calculation')) then
+        execute 'alter table market_coefficients_for_first_floor_corr add "is_excluded_from_calculation" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_114_q_pk')) then
+    execute 'alter table market_coefficients_for_first_floor_corr add constraint reg_114_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('coefficient_for_first_floor_correction_index')) then
+	execute 'CREATE UNIQUE INDEX coefficient_for_first_floor_correction_index on market_coefficients_for_first_floor_corr (building_cadastral_number, stats_date, market_segment_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR')) then
+		execute 'create table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'id')) then
+        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'stats_date')) then
+        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "stats_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'building_cadastral_number')) then
+        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "building_cadastral_number" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'market_segment')) then
+        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'market_segment_code')) then
+        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'first_to_upper_floor_rate')) then
+        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "first_to_upper_floor_rate" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'is_excluded_from_calculation')) then
+        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "is_excluded_from_calculation" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_114_q_pk')) then
+    execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add constraint reg_114_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('coefficient_for_first_floor_correction_index')) then
+	execute 'CREATE UNIQUE INDEX coefficient_for_first_floor_correction_index on MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR (building_cadastral_number, stats_date, market_segment_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_core_object')) then
+		execute 'create table market_core_object ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'id')) then
+        execute 'alter table market_core_object add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'url')) then
+        execute 'alter table market_core_object add "url" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'market_code')) then
+        execute 'alter table market_core_object add "market_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'market')) then
+        execute 'alter table market_core_object add "market" VARCHAR(50) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'market_id')) then
+        execute 'alter table market_core_object add "market_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'price')) then
+        execute 'alter table market_core_object add "price" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parser_time')) then
+        execute 'alter table market_core_object add "parser_time" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'region')) then
+        execute 'alter table market_core_object add "region" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'city')) then
+        execute 'alter table market_core_object add "city" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'address')) then
+        execute 'alter table market_core_object add "address" VARCHAR(2000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'metro')) then
+        execute 'alter table market_core_object add "metro" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'images')) then
+        execute 'alter table market_core_object add "images" VARCHAR(10000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'description')) then
+        execute 'alter table market_core_object add "description" VARCHAR(10000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'lat')) then
+        execute 'alter table market_core_object add "lat" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'lng')) then
+        execute 'alter table market_core_object add "lng" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'deal_type')) then
+        execute 'alter table market_core_object add "deal_type" VARCHAR(50) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'deal_type_code')) then
+        execute 'alter table market_core_object add "deal_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'rooms_count')) then
+        execute 'alter table market_core_object add "rooms_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'floor_number')) then
+        execute 'alter table market_core_object add "floor_number" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'floors_count')) then
+        execute 'alter table market_core_object add "floors_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'area')) then
+        execute 'alter table market_core_object add "area" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'area_kitchen')) then
+        execute 'alter table market_core_object add "area_kitchen" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'area_living')) then
+        execute 'alter table market_core_object add "area_living" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'area_land')) then
+        execute 'alter table market_core_object add "area_land" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'building_year')) then
+        execute 'alter table market_core_object add "building_year" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'region_id')) then
+        execute 'alter table market_core_object add "region_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'city_id')) then
+        execute 'alter table market_core_object add "city_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'cadastral_number')) then
+        execute 'alter table market_core_object add "cadastral_number" VARCHAR(50)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'building_cadastral_number')) then
+        execute 'alter table market_core_object add "building_cadastral_number" VARCHAR(50)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'cadastral_quartal')) then
+        execute 'alter table market_core_object add "cadastral_quartal" VARCHAR(50)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'ko_group')) then
+        execute 'alter table market_core_object add "ko_group" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'ko_group_code')) then
+        execute 'alter table market_core_object add "ko_group_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'zone')) then
+        execute 'alter table market_core_object add "zone" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'district')) then
+        execute 'alter table market_core_object add "district" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'district_code')) then
+        execute 'alter table market_core_object add "district_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'ko_subgroup')) then
+        execute 'alter table market_core_object add "ko_subgroup" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'ko_subgroup_code')) then
+        execute 'alter table market_core_object add "ko_subgroup_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'price_per_meter')) then
+        execute 'alter table market_core_object add "price_per_meter" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'process_type')) then
+        execute 'alter table market_core_object add "process_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'process_type_code')) then
+        execute 'alter table market_core_object add "process_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'property_market_segment')) then
+        execute 'alter table market_core_object add "property_market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'property_market_segment_code')) then
+        execute 'alter table market_core_object add "property_market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'wall_material')) then
+        execute 'alter table market_core_object add "wall_material" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'wall_material_code')) then
+        execute 'alter table market_core_object add "wall_material_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'quality_class')) then
+        execute 'alter table market_core_object add "quality_class" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'quality_class_code')) then
+        execute 'alter table market_core_object add "quality_class_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'subway_space')) then
+        execute 'alter table market_core_object add "subway_space" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'exclusion_status')) then
+        execute 'alter table market_core_object add "exclusion_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'exclusion_status_code')) then
+        execute 'alter table market_core_object add "exclusion_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'formalized_address_id')) then
+        execute 'alter table market_core_object add "formalized_address_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'last_date_update')) then
+        execute 'alter table market_core_object add "last_date_update" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'property_typets_cipjs')) then
+        execute 'alter table market_core_object add "property_typets_cipjs" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'property_typets_cipjs_code')) then
+        execute 'alter table market_core_object add "property_typets_cipjs_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'property_law_type')) then
+        execute 'alter table market_core_object add "property_law_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'property_part_size')) then
+        execute 'alter table market_core_object add "property_part_size" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_by_date')) then
+        execute 'alter table market_core_object add "price_after_correction_by_date" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_by_bargain')) then
+        execute 'alter table market_core_object add "price_after_correction_by_bargain" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'neighborhood')) then
+        execute 'alter table market_core_object add "neighborhood" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'neighborhood_code')) then
+        execute 'alter table market_core_object add "neighborhood_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'zone_region')) then
+        execute 'alter table market_core_object add "zone_region" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_by_rooms')) then
+        execute 'alter table market_core_object add "price_after_correction_by_rooms" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_by_stage')) then
+        execute 'alter table market_core_object add "price_after_correction_by_stage" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_for_first_floor')) then
+        execute 'alter table market_core_object add "price_after_correction_for_first_floor" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
+    execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('cadastral_number_index')) then
+	execute 'CREATE  INDEX cadastral_number_index on market_core_object (cadastral_number)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('deal_type_code_index')) then
+	execute 'CREATE  INDEX deal_type_code_index on market_core_object (deal_type_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('url_index')) then
+	execute 'CREATE  INDEX url_index on market_core_object (url)';
   end if;
 end $$;
 --<DO>--
@@ -26233,6 +43686,33 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price_after_correction_by_rooms')) then
+        execute 'alter table MARKET_CORE_OBJECT add "price_after_correction_by_rooms" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price_after_correction_by_stage')) then
+        execute 'alter table MARKET_CORE_OBJECT add "price_after_correction_by_stage" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price_after_correction_for_first_floor')) then
+        execute 'alter table MARKET_CORE_OBJECT add "price_after_correction_for_first_floor" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table MARKET_CORE_OBJECT add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -26259,6 +43739,389 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('url_index')) then
 	execute 'CREATE  INDEX url_index on MARKET_CORE_OBJECT (url)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_core_object_old')) then
+		execute 'create table market_core_object_old ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'id')) then
+        execute 'alter table market_core_object_old add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'url')) then
+        execute 'alter table market_core_object_old add "url" VARCHAR(1000) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'market_code')) then
+        execute 'alter table market_core_object_old add "market_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'market')) then
+        execute 'alter table market_core_object_old add "market" VARCHAR(50) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'property_type_code')) then
+        execute 'alter table market_core_object_old add "property_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'property_type')) then
+        execute 'alter table market_core_object_old add "property_type" VARCHAR(50) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'market_id')) then
+        execute 'alter table market_core_object_old add "market_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'price')) then
+        execute 'alter table market_core_object_old add "price" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'parser_time')) then
+        execute 'alter table market_core_object_old add "parser_time" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'region')) then
+        execute 'alter table market_core_object_old add "region" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'city')) then
+        execute 'alter table market_core_object_old add "city" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'address')) then
+        execute 'alter table market_core_object_old add "address" VARCHAR(2000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'metro')) then
+        execute 'alter table market_core_object_old add "metro" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'images')) then
+        execute 'alter table market_core_object_old add "images" VARCHAR(10000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'description')) then
+        execute 'alter table market_core_object_old add "description" VARCHAR(10000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'lat')) then
+        execute 'alter table market_core_object_old add "lat" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'lng')) then
+        execute 'alter table market_core_object_old add "lng" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'deal_type')) then
+        execute 'alter table market_core_object_old add "deal_type" VARCHAR(50) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'deal_type_code')) then
+        execute 'alter table market_core_object_old add "deal_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'deal_view')) then
+        execute 'alter table market_core_object_old add "deal_view" VARCHAR(50) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_old', 'deal_view_code')) then
+        execute 'alter table market_core_object_old add "deal_view_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('pk_outer_core_object_uid')) then
+    execute 'alter table market_core_object_old add constraint pk_outer_core_object_uid primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_core_object_test')) then
+		execute 'create table market_core_object_test ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'id')) then
+        execute 'alter table market_core_object_test add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'cadastral_number')) then
+        execute 'alter table market_core_object_test add "cadastral_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'address')) then
+        execute 'alter table market_core_object_test add "address" VARCHAR(20000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'parser_time')) then
+        execute 'alter table market_core_object_test add "parser_time" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'description')) then
+        execute 'alter table market_core_object_test add "description" VARCHAR(10000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'area')) then
+        execute 'alter table market_core_object_test add "area" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'price')) then
+        execute 'alter table market_core_object_test add "price" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'price_per_meter')) then
+        execute 'alter table market_core_object_test add "price_per_meter" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'process_type')) then
+        execute 'alter table market_core_object_test add "process_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'process_type_code')) then
+        execute 'alter table market_core_object_test add "process_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'exclusion_status')) then
+        execute 'alter table market_core_object_test add "exclusion_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'exclusion_status_code')) then
+        execute 'alter table market_core_object_test add "exclusion_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'deal_type')) then
+        execute 'alter table market_core_object_test add "deal_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'deal_type_code')) then
+        execute 'alter table market_core_object_test add "deal_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'property_type')) then
+        execute 'alter table market_core_object_test add "property_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'property_type_code')) then
+        execute 'alter table market_core_object_test add "property_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'subcategory')) then
+        execute 'alter table market_core_object_test add "subcategory" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object_test', 'result_from_source_file')) then
+        execute 'alter table market_core_object_test add "result_from_source_file" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_110_q_pk')) then
+    execute 'alter table market_core_object_test add constraint reg_110_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -26443,6 +44306,94 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_duplicates_history')) then
+		execute 'create table market_duplicates_history ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_duplicates_history', 'id')) then
+        execute 'alter table market_duplicates_history add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_duplicates_history', 'check_date')) then
+        execute 'alter table market_duplicates_history add "check_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_duplicates_history', 'market_segment')) then
+        execute 'alter table market_duplicates_history add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_duplicates_history', 'area_delta')) then
+        execute 'alter table market_duplicates_history add "area_delta" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_duplicates_history', 'price_delta')) then
+        execute 'alter table market_duplicates_history add "price_delta" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_duplicates_history', 'common_count')) then
+        execute 'alter table market_duplicates_history add "common_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_duplicates_history', 'in_progress_count')) then
+        execute 'alter table market_duplicates_history add "in_progress_count" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_duplicates_history', 'duplicate_objects')) then
+        execute 'alter table market_duplicates_history add "duplicate_objects" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_106_q_pk')) then
+    execute 'alter table market_duplicates_history add constraint reg_106_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('MARKET_DUPLICATES_HISTORY')) then
 		execute 'create table MARKET_DUPLICATES_HISTORY ("id" BIGINT NOT NULL)';
 	end if;
@@ -26531,6 +44482,101 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_indexes_for_date_correction')) then
+		execute 'create table market_indexes_for_date_correction ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'id')) then
+        execute 'alter table market_indexes_for_date_correction add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'date')) then
+        execute 'alter table market_indexes_for_date_correction add "date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'building_cadastral_number')) then
+        execute 'alter table market_indexes_for_date_correction add "building_cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'coefficient')) then
+        execute 'alter table market_indexes_for_date_correction add "coefficient" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'market_segment')) then
+        execute 'alter table market_indexes_for_date_correction add "market_segment" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'market_segment_code')) then
+        execute 'alter table market_indexes_for_date_correction add "market_segment_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'is_excluded')) then
+        execute 'alter table market_indexes_for_date_correction add "is_excluded" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('market_indexes_for_date_correction_date_key')) then
+    execute 'alter table market_indexes_for_date_correction add constraint market_indexes_for_date_correction_date_key unique (date, building_cadastral_number, market_segment_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_108_q_pk')) then
+    execute 'alter table market_indexes_for_date_correction add constraint reg_108_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('market_indexes_for_date_correction_date_key')) then
+	execute 'CREATE UNIQUE INDEX market_indexes_for_date_correction_date_key on market_indexes_for_date_correction (date, building_cadastral_number, market_segment_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('MARKET_INDEXES_FOR_DATE_CORRECTION')) then
 		execute 'create table MARKET_INDEXES_FOR_DATE_CORRECTION ("id" BIGINT NOT NULL)';
 	end if;
@@ -26557,8 +44603,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'consumer_price_change')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "consumer_price_change" NUMERIC';
+    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'building_cadastral_number')) then
+        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "building_cadastral_number" VARCHAR(255) NOT NULL';
     end if;
 end $$;
 
@@ -26566,8 +44612,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'consumer_price_index')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "consumer_price_index" NUMERIC';
+    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'coefficient')) then
+        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "coefficient" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -26575,8 +44621,26 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'consumer_price_index_rosstat')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "consumer_price_index_rosstat" NUMERIC';
+    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'market_segment')) then
+        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "market_segment" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'market_segment_code')) then
+        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "market_segment_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'is_excluded')) then
+        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "is_excluded" SMALLINT';
     end if;
 end $$;
 
@@ -26585,7 +44649,7 @@ end $$;
 DO $$
 begin
   if (not core_updstru_checkexistconstraint('market_indexes_for_date_correction_date_key')) then
-    execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add constraint market_indexes_for_date_correction_date_key unique (date)';
+    execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add constraint market_indexes_for_date_correction_date_key unique (date, building_cadastral_number, market_segment_code)';
   end if;
 end $$;
 --<DO>--
@@ -26601,7 +44665,582 @@ end $$;
 DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('market_indexes_for_date_correction_date_key')) then
-	execute 'CREATE UNIQUE INDEX market_indexes_for_date_correction_date_key on MARKET_INDEXES_FOR_DATE_CORRECTION (date)';
+	execute 'CREATE UNIQUE INDEX market_indexes_for_date_correction_date_key on MARKET_INDEXES_FOR_DATE_CORRECTION (date, building_cadastral_number, market_segment_code)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_price_after_correction_by_date_h')) then
+		execute 'create table market_price_after_correction_by_date_h ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'id')) then
+        execute 'alter table market_price_after_correction_by_date_h add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'price_value_to')) then
+        execute 'alter table market_price_after_correction_by_date_h add "price_value_to" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'initial_id')) then
+        execute 'alter table market_price_after_correction_by_date_h add "initial_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'changing_date')) then
+        execute 'alter table market_price_after_correction_by_date_h add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'price_value_from')) then
+        execute 'alter table market_price_after_correction_by_date_h add "price_value_from" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_116_q_pk')) then
+    execute 'alter table market_price_after_correction_by_date_h add constraint reg_116_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H')) then
+		execute 'create table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'id')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'price_value_to')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "price_value_to" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'initial_id')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "initial_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'changing_date')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'price_value_from')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "price_value_from" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_116_q_pk')) then
+    execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add constraint reg_116_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_price_after_correction_by_rooms_h')) then
+		execute 'create table market_price_after_correction_by_rooms_h ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'id')) then
+        execute 'alter table market_price_after_correction_by_rooms_h add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'initial_id')) then
+        execute 'alter table market_price_after_correction_by_rooms_h add "initial_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'changing_date')) then
+        execute 'alter table market_price_after_correction_by_rooms_h add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'price_value_from')) then
+        execute 'alter table market_price_after_correction_by_rooms_h add "price_value_from" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'price_value_to')) then
+        execute 'alter table market_price_after_correction_by_rooms_h add "price_value_to" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_113_q_pk')) then
+    execute 'alter table market_price_after_correction_by_rooms_h add constraint reg_113_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H')) then
+		execute 'create table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'id')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'initial_id')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "initial_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'changing_date')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'price_value_from')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "price_value_from" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'price_value_to')) then
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "price_value_to" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_113_q_pk')) then
+    execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add constraint reg_113_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_price_correction_by_stage_history')) then
+		execute 'create table market_price_correction_by_stage_history ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'id')) then
+        execute 'alter table market_price_correction_by_stage_history add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'building_cadastral_number')) then
+        execute 'alter table market_price_correction_by_stage_history add "building_cadastral_number" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'changing_date')) then
+        execute 'alter table market_price_correction_by_stage_history add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'stage_coefficient')) then
+        execute 'alter table market_price_correction_by_stage_history add "stage_coefficient" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'market_segment')) then
+        execute 'alter table market_price_correction_by_stage_history add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'market_segment_code')) then
+        execute 'alter table market_price_correction_by_stage_history add "market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'is_excluded')) then
+        execute 'alter table market_price_correction_by_stage_history add "is_excluded" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_112_q_pk')) then
+    execute 'alter table market_price_correction_by_stage_history add constraint reg_112_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY')) then
+		execute 'create table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'id')) then
+        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'building_cadastral_number')) then
+        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "building_cadastral_number" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'changing_date')) then
+        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'stage_coefficient')) then
+        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "stage_coefficient" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'market_segment')) then
+        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "market_segment" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'market_segment_code')) then
+        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "market_segment_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'is_excluded')) then
+        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "is_excluded" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_112_q_pk')) then
+    execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add constraint reg_112_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_price_for_first_floor_history')) then
+		execute 'create table market_price_for_first_floor_history ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_for_first_floor_history', 'id')) then
+        execute 'alter table market_price_for_first_floor_history add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_for_first_floor_history', 'stats_date')) then
+        execute 'alter table market_price_for_first_floor_history add "stats_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_for_first_floor_history', 'price_with_correction_for_first_floor')) then
+        execute 'alter table market_price_for_first_floor_history add "price_with_correction_for_first_floor" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_for_first_floor_history', 'object_id')) then
+        execute 'alter table market_price_for_first_floor_history add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_115_q_pk')) then
+    execute 'alter table market_price_for_first_floor_history add constraint reg_115_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY')) then
+		execute 'create table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY', 'id')) then
+        execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY', 'stats_date')) then
+        execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add "stats_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY', 'price_with_correction_for_first_floor')) then
+        execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add "price_with_correction_for_first_floor" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY', 'object_id')) then
+        execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_115_q_pk')) then
+    execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add constraint reg_115_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_price_history')) then
+		execute 'create table market_price_history ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_history', 'id')) then
+        execute 'alter table market_price_history add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_history', 'initial_id')) then
+        execute 'alter table market_price_history add "initial_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_history', 'changing_date')) then
+        execute 'alter table market_price_history add "changing_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_history', 'price_value_to')) then
+        execute 'alter table market_price_history add "price_value_to" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_price_history', 'price_value_from')) then
+        execute 'alter table market_price_history add "price_value_from" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_105_q_pk')) then
+    execute 'alter table market_price_history add constraint reg_105_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('market_price_history_obj_id_idx')) then
+	execute 'CREATE  INDEX market_price_history_obj_id_idx on market_price_history (initial_id)';
   end if;
 end $$;
 --<DO>--
@@ -26671,6 +45310,155 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('market_price_history_obj_id_idx')) then
 	execute 'CREATE  INDEX market_price_history_obj_id_idx on MARKET_PRICE_HISTORY (initial_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_properties')) then
+		execute 'create table market_properties ("uid" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_properties', 'uid')) then
+        execute 'alter table market_properties add "uid" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_properties', 'id')) then
+        execute 'alter table market_properties add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_properties', 'name')) then
+        execute 'alter table market_properties add "name" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_properties', 'value')) then
+        execute 'alter table market_properties add "value" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('pk_outer_properties_uid')) then
+    execute 'alter table market_properties add constraint pk_outer_properties_uid primary key (uid)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('fk_outer_properties_outer_core_object')) then
+	execute 'alter table market_properties add constraint fk_outer_properties_outer_core_object foreign key (id) references market_core_object_old (id)';
+  end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_region_dictionaty')) then
+		execute 'create table market_region_dictionaty ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'id')) then
+        execute 'alter table market_region_dictionaty add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'district')) then
+        execute 'alter table market_region_dictionaty add "district" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'district_code')) then
+        execute 'alter table market_region_dictionaty add "district_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'region')) then
+        execute 'alter table market_region_dictionaty add "region" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'region_code')) then
+        execute 'alter table market_region_dictionaty add "region_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'zone')) then
+        execute 'alter table market_region_dictionaty add "zone" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'zone_region')) then
+        execute 'alter table market_region_dictionaty add "zone_region" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_region_dictionaty', 'cadastral_quartal')) then
+        execute 'alter table market_region_dictionaty add "cadastral_quartal" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_107_q_pk')) then
+    execute 'alter table market_region_dictionaty add constraint reg_107_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -26765,6 +45553,66 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_screenshots')) then
+		execute 'create table market_screenshots ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_screenshots', 'id')) then
+        execute 'alter table market_screenshots add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_screenshots', 'initial_id')) then
+        execute 'alter table market_screenshots add "initial_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_screenshots', 'creation_date')) then
+        execute 'alter table market_screenshots add "creation_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_screenshots', 'type')) then
+        execute 'alter table market_screenshots add "type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_104_q_pk')) then
+    execute 'alter table market_screenshots add constraint reg_104_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('market_screenshots_initial_id_idx')) then
+	execute 'CREATE  INDEX market_screenshots_initial_id_idx on market_screenshots (initial_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('MARKET_SCREENSHOTS')) then
 		execute 'create table MARKET_SCREENSHOTS ("id" BIGINT NOT NULL)';
 	end if;
@@ -26825,6 +45673,40 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('market_settings')) then
+		execute 'create table market_settings ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_settings', 'id')) then
+        execute 'alter table market_settings add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_settings', 'setting_value')) then
+        execute 'alter table market_settings add "setting_value" VARCHAR(1000) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('pk_market_settings_id')) then
+    execute 'alter table market_settings add constraint pk_market_settings_id primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('MARKET_SETTINGS')) then
 		execute 'create table MARKET_SETTINGS ("id" BIGINT NOT NULL)';
 	end if;
@@ -26853,693 +45735,6 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('pk_market_settings_id')) then
     execute 'alter table MARKET_SETTINGS add constraint pk_market_settings_id primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_23_q')) then
-		execute 'create table source_23_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'id')) then
-        execute 'alter table source_23_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116941')) then
-        execute 'alter table source_23_q add "field40116941" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116944')) then
-        execute 'alter table source_23_q add "field40116944" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116945')) then
-        execute 'alter table source_23_q add "field40116945" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116946')) then
-        execute 'alter table source_23_q add "field40116946" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field40116950')) then
-        execute 'alter table source_23_q add "field40116950" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field41618984')) then
-        execute 'alter table source_23_q add "field41618984" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field41618984_code')) then
-        execute 'alter table source_23_q add "field41618984_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field41619161')) then
-        execute 'alter table source_23_q add "field41619161" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field41619174')) then
-        execute 'alter table source_23_q add "field41619174" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field41619179')) then
-        execute 'alter table source_23_q add "field41619179" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field41619183')) then
-        execute 'alter table source_23_q add "field41619183" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field41619186')) then
-        execute 'alter table source_23_q add "field41619186" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_23_q', 'field41619186_code')) then
-        execute 'alter table source_23_q add "field41619186_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_39959475_q_pk')) then
-    execute 'alter table source_23_q add constraint reg_39959475_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_24_q')) then
-		execute 'create table source_24_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_24_q', 'id')) then
-        execute 'alter table source_24_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_39964619_q_pk')) then
-    execute 'alter table source_24_q add constraint reg_39964619_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_25_q')) then
-		execute 'create table source_25_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_25_q', 'id')) then
-        execute 'alter table source_25_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_39964641_q_pk')) then
-    execute 'alter table source_25_q add constraint reg_39964641_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_26_q')) then
-		execute 'create table source_26_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_26_q', 'id')) then
-        execute 'alter table source_26_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_39964643_q_pk')) then
-    execute 'alter table source_26_q add constraint reg_39964643_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_27_q')) then
-		execute 'create table source_27_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_27_q', 'id')) then
-        execute 'alter table source_27_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_40116955_q_pk')) then
-    execute 'alter table source_27_q add constraint reg_40116955_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_28_q')) then
-		execute 'create table source_28_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_28_q', 'id')) then
-        execute 'alter table source_28_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_40116957_q_pk')) then
-    execute 'alter table source_28_q add constraint reg_40116957_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_29_q')) then
-		execute 'create table source_29_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_29_q', 'id')) then
-        execute 'alter table source_29_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_29_q', 'field41619126')) then
-        execute 'alter table source_29_q add "field41619126" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_41619124_q_pk')) then
-    execute 'alter table source_29_q add constraint reg_41619124_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_30_q')) then
-		execute 'create table source_30_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_30_q', 'id')) then
-        execute 'alter table source_30_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_30_q', 'field41619159')) then
-        execute 'alter table source_30_q add "field41619159" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_41619157_q_pk')) then
-    execute 'alter table source_30_q add constraint reg_41619157_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_31_q')) then
-		execute 'create table source_31_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_31_q', 'id')) then
-        execute 'alter table source_31_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_31_q', 'field41619189')) then
-        execute 'alter table source_31_q add "field41619189" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_31_q', 'field41619190')) then
-        execute 'alter table source_31_q add "field41619190" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_31_q', 'field41619190_code')) then
-        execute 'alter table source_31_q add "field41619190_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_41619187_q_pk')) then
-    execute 'alter table source_31_q add constraint reg_41619187_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_32_q')) then
-		execute 'create table source_32_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_32_q', 'id')) then
-        execute 'alter table source_32_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_32_q', 'field41891429')) then
-        execute 'alter table source_32_q add "field41891429" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_41891427_q_pk')) then
-    execute 'alter table source_32_q add constraint reg_41891427_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_33_q')) then
-		execute 'create table source_33_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'id')) then
-        execute 'alter table source_33_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935244')) then
-        execute 'alter table source_33_q add "field41935244" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935248')) then
-        execute 'alter table source_33_q add "field41935248" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935249')) then
-        execute 'alter table source_33_q add "field41935249" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935250')) then
-        execute 'alter table source_33_q add "field41935250" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935250_code')) then
-        execute 'alter table source_33_q add "field41935250_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935251')) then
-        execute 'alter table source_33_q add "field41935251" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935251_code')) then
-        execute 'alter table source_33_q add "field41935251_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935252')) then
-        execute 'alter table source_33_q add "field41935252" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935253')) then
-        execute 'alter table source_33_q add "field41935253" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935254')) then
-        execute 'alter table source_33_q add "field41935254" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935255')) then
-        execute 'alter table source_33_q add "field41935255" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935256')) then
-        execute 'alter table source_33_q add "field41935256" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935257')) then
-        execute 'alter table source_33_q add "field41935257" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935258')) then
-        execute 'alter table source_33_q add "field41935258" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935259')) then
-        execute 'alter table source_33_q add "field41935259" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935260')) then
-        execute 'alter table source_33_q add "field41935260" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_33_q', 'field41935261')) then
-        execute 'alter table source_33_q add "field41935261" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_41935242_q_pk')) then
-    execute 'alter table source_33_q add constraint reg_41935242_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('source_34_q')) then
-		execute 'create table source_34_q ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_34_q', 'id')) then
-        execute 'alter table source_34_q add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_34_q', 'field41935262')) then
-        execute 'alter table source_34_q add "field41935262" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_34_q', 'field41935263')) then
-        execute 'alter table source_34_q add "field41935263" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_34_q', 'field41935264')) then
-        execute 'alter table source_34_q add "field41935264" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_34_q', 'field41935265')) then
-        execute 'alter table source_34_q add "field41935265" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_34_q', 'field41935266')) then
-        execute 'alter table source_34_q add "field41935266" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_34_q', 'field41935267')) then
-        execute 'alter table source_34_q add "field41935267" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('source_34_q', 'field41935268')) then
-        execute 'alter table source_34_q add "field41935268" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_41935245_q_pk')) then
-    execute 'alter table source_34_q add constraint reg_41935245_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -28142,6 +46337,112 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_315_q_pk')) then
     execute 'alter table SUD_OBJECT add constraint reg_315_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('sud_object_a')) then
+		execute 'create table sud_object_a ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'id')) then
+        execute 'alter table sud_object_a add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'object_id')) then
+        execute 'alter table sud_object_a add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'attribute_id')) then
+        execute 'alter table sud_object_a add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 's')) then
+        execute 'alter table sud_object_a add "s" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'po')) then
+        execute 'alter table sud_object_a add "po" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'ref_item_id')) then
+        execute 'alter table sud_object_a add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'text_value')) then
+        execute 'alter table sud_object_a add "text_value" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'number_value')) then
+        execute 'alter table sud_object_a add "number_value" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'date_value')) then
+        execute 'alter table sud_object_a add "date_value" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('sud_object_a', 'change_user_id')) then
+        execute 'alter table sud_object_a add "change_user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg315_a_pkey')) then
+    execute 'alter table sud_object_a add constraint reg315_a_pkey primary key (id)';
   end if;
 end $$;
 --<DO>--
