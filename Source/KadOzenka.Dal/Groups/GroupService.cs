@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Groups.Dto;
@@ -118,16 +119,69 @@ namespace KadOzenka.Dal.Groups
             return groups;
         }
 
-        public int AddGroup(GroupDto groupDto)
+        public List<GroupTreeDto> GetGroupsTreeForTour(long tourId)
         {
-            var tour = TourService.GetTourById(groupDto.RatingTourId);
+	        var allGroups = GetGroups();
+	        var allGroupsInTour = allGroups.Where(x => x.TourId == tourId).ToList();
+	        if (allGroupsInTour.Count == 0)
+		        return new List<GroupTreeDto>();
 
-            int groupId;
+	        var subgroups = GetSubgroups(allGroupsInTour);
+	        var groupsWithSubGroups = GetGroupsWithSubgroups(subgroups, allGroups);
+	        var groupsWithSubGroupsIds = groupsWithSubGroups.Select(x => x.Id).Distinct().ToList();
+	        var groupsWithoutSubGroups = allGroupsInTour.Where(x =>
+		        (x.ParentId == (long)KoGroupAlgoritm.MainOKS || x.ParentId == (long)KoGroupAlgoritm.MainParcel) &&
+		        !groupsWithSubGroupsIds.Contains(x.Id)).ToList();
+
+	        var allTourGroups = new List<GroupTreeDto>();
+	        allTourGroups.AddRange(groupsWithoutSubGroups);
+	        allTourGroups.AddRange(groupsWithSubGroups);
+
+	        var models = new List<GroupTreeDto>();
+	        var mainGroups = GetMainGroups();
+	        mainGroups.ForEach(mainGroup =>
+	        {
+		        var groups = allTourGroups.Where(group => group.ParentId == mainGroup.Id).Select(group =>
+			        new GroupTreeDto
+					{
+				        Id = group.Id,
+				        GroupName = group.GroupName,
+				        GroupType = group.GroupType,
+				        Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id).Select(subGroup =>
+					        new GroupTreeDto
+							{
+						        Id = subGroup.Id,
+						        GroupName = subGroup.GroupName,
+						        GroupType = subGroup.GroupType
+					        }).ToList()
+			        }).ToList();
+
+		        if (groups.Count > 0)
+		        {
+			        models.Add(new GroupTreeDto
+					{
+				        Id = mainGroup.Id,
+				        GroupName = mainGroup.GroupName,
+				        GroupType = mainGroup.GroupType,
+				        Items = groups
+			        });
+		        }
+	        });
+
+	        return models;
+        }
+
+
+		public int AddGroup(GroupDto groupDto)
+        {
+			var tour = TourService.GetTourById(groupDto.RatingTourId);
+
+			int groupId;
 			var group = new OMGroup();
-            var tourGroup = new OMTourGroup();
-            using (var ts = new TransactionScope())
+			var tourGroup = new OMTourGroup();
+			using (var ts = new TransactionScope())
 			{
-				group.GroupName = groupDto.Name;
+				group.GroupName = groupDto.Name;//GenerateName(tour.Id, groupDto.Name, groupDto.ParentGroupId);
 				group.ParentId = groupDto.ParentGroupId ?? -1;
 				group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingAlgorithmId;
 				groupId = group.Save();
@@ -142,14 +196,15 @@ namespace KadOzenka.Dal.Groups
 			return groupId;
 		}
 
+        //todo вeрнуть обновление тура
         public int UpdateGroup(GroupDto groupDto)
         {
 	        var group = GetGroupByIdInternal(groupDto.Id);
 
-            int groupId;
+			int groupId;
 			using (var ts = new TransactionScope())
 			{
-				group.GroupName = groupDto.Name;
+				group.GroupName = groupDto.Name;//GenerateName(tour.Id, groupDto.Name, groupDto.ParentGroupId);
 				group.ParentId = groupDto.ParentGroupId ?? -1;
 				group.GroupAlgoritm_Code = (KoGroupAlgoritm)groupDto.GroupingAlgorithmId;
 				groupId = group.Save();
@@ -158,12 +213,11 @@ namespace KadOzenka.Dal.Groups
 			}
 
 			return groupId;
-		}
+        }
 
 
         #region Support Methods
-
-
+		
         private OMGroup GetGroupByIdInternal(long? groupId)
         {
             if (groupId == null)
@@ -175,6 +229,58 @@ namespace KadOzenka.Dal.Groups
 
             return group;
         }
+
+        private List<GroupTreeDto> GetSubgroups(List<GroupTreeDto> allGroupsInTour)
+        {
+	        return allGroupsInTour.Where(x => x.ParentId != (long)KoGroupAlgoritm.MainOKS && x.ParentId != (long)KoGroupAlgoritm.MainParcel).ToList();
+        }
+
+        private static List<GroupTreeDto> GetGroupsWithSubgroups(List<GroupTreeDto> subgroups, List<GroupTreeDto> allGroups)
+        {
+	        var groupsIds = subgroups.Select(x => x.ParentId).Distinct().ToList();
+	        var groups = allGroups.Where(x => groupsIds.Contains(x.Id)).ToList();
+	        return groups;
+        }
+
+        private static List<GroupTreeDto> GetMainGroups()
+        {
+	        var mainGroups = new List<GroupTreeDto>();
+
+	        var oks = new GroupTreeDto
+	        {
+		        Id = (long)KoGroupAlgoritm.MainOKS,
+		        GroupName = "Основная группа ОКС",
+		        GroupType = GroupType.Main
+	        };
+	        mainGroups.Add(oks);
+
+	        var parcel = new GroupTreeDto
+	        {
+		        Id = (long)KoGroupAlgoritm.MainParcel,
+		        GroupName = "Основная группа Участки",
+		        GroupType = GroupType.Main
+	        };
+	        mainGroups.Add(parcel);
+
+	        return mainGroups;
+        }
+
+		//private string GenerateName(long tourId, string name, long? parentId)
+  //      {
+	 //       if (string.IsNullOrWhiteSpace(name))
+		//        throw new Exception("Не заполнено имя");
+
+	 //       var numberOfGroups = OMTourGroup.Where(x => x.TourId == tourId).ExecuteCount();
+		//	if (parentId == null)
+	 //       {
+		//        return $"{numberOfGroups}. {name}";
+	 //       }
+	 //       else
+	 //       {
+		//        var numberOfSubGroups = OMTourGroup.Where(x => x.TourId == tourId && x.GroupId == parentId).ExecuteCount();
+		//        return $"{numberOfGroups}.{numberOfSubGroups}. {name}";
+		//	}
+  //      }
 
         #endregion
     }

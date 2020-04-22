@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Groups.Dto.Consts;
+﻿using System.Collections.Generic;
+using KadOzenka.Dal.Groups.Dto.Consts;
 
 namespace KadOzenka.Dal.Groups.Dto
 {
@@ -9,5 +10,6 @@ namespace KadOzenka.Dal.Groups.Dto
 		public string GroupName { get; set; }
 		public long? TourId { get; set; }
         public GroupType GroupType { get; set; }
+        public List<GroupTreeDto> Items { get; set; }
 	}
 }

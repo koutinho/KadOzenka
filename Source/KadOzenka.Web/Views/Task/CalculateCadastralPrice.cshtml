@@ -205,12 +205,12 @@
             success: function(response) {
                 var data = response.map(function(item) {
                     return {
-                        Text: item.Text,
-                        Value: item.Value,
+                        Text: item.GroupName,
+                        Value: item.Id,
                         items: item.Items.map(function(i) {
                             return {
-                                Text: i.Text,
-                                Value: i.Value
+                                Text: i.GroupName,
+                                Value: i.Id
                             }
 
                         })

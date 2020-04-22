@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KadOzenka.Web.Models.Tour
 {
@@ -16,16 +18,18 @@ namespace KadOzenka.Web.Models.Tour
 		public List<GroupTreeModel> Items { get; set; }
 
 
-        public static GroupTreeModel ToModel(GroupTreeDto tree)
+        public static GroupTreeModel ToModel(GroupTreeDto tree, IUrlHelper urlHelper)
         {
-            return new GroupTreeModel
+	        return new GroupTreeModel
             {
                 Id = tree.Id,
                 ParentId = tree.ParentId,
                 GroupName = tree.GroupName,
                 TourId = tree.TourId,
-                GroupType = tree.GroupType
+                GroupType = tree.GroupType,
+				UrlForEdit = urlHelper.Action("GroupSubCard", "Tour", new {groupId = tree.Id, tourId = tree.TourId}),
+				Items = tree.Items?.Select(x => ToModel(x, urlHelper)).ToList()
             };
         }
-    }
+	}
 }

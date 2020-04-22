@@ -194,7 +194,7 @@ namespace KadOzenka.Web.Controllers
             var groupModels = new List<GroupTreeModel>();
             groups.ForEach(x =>
             {
-                groupModels.Add(GroupTreeModel.ToModel(x));
+                groupModels.Add(GroupTreeModel.ToModel(x, Url));
             });
 
             return Json(groupModels);
@@ -447,129 +447,24 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetGroupsForTour(long tourId)
 		{
-			var allGroups = new GroupService().GetGroups();
-			var allGroupsInTour = allGroups.Where(x => x.TourId == tourId).ToList();
-			if(allGroupsInTour.Count == 0)
-				return Json(string.Empty);
+			var groups = GroupService.GetGroupsTreeForTour(tourId);
 
-			var subgroups = GetSubgroups(allGroupsInTour);
-			var groupsWithSubGroups = GetGroupsWithSubgroups(subgroups, allGroups);
-			var groupsWithSubGroupsIds = groupsWithSubGroups.Select(x => x.Id).Distinct().ToList();
-			var groupsWithoutSubGroups = allGroupsInTour.Where(x =>
-				(x.ParentId == (long) KoGroupAlgoritm.MainOKS || x.ParentId == (long) KoGroupAlgoritm.MainParcel) &&
-				!groupsWithSubGroupsIds.Contains(x.Id)).ToList();
-			
-			var allTourGroups = new List<GroupTreeDto>();
-			allTourGroups.AddRange(groupsWithoutSubGroups);
-			allTourGroups.AddRange(groupsWithSubGroups);
-
-			var models = new List<GroupTreeModel>();
-			var mainGroups = GetMainGroups();
-			mainGroups.ForEach(mainGroup =>
-			{
-				var groups = allTourGroups.Where(group => group.ParentId == mainGroup.Id).Select(group =>
-					new GroupTreeModel
-					{
-						Id = group.Id,
-						GroupName = group.GroupName,
-						UrlForEdit = Url.Action("GroupSubCard", "Tour", new {groupId = group.Id, tourId = tourId}),
-						GroupType = group.GroupType,
-						Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id).Select(subGroup =>
-							new GroupTreeModel
-							{
-								Id = subGroup.Id,
-								GroupName = subGroup.GroupName,
-								UrlForEdit = Url.Action("GroupSubCard", "Tour",
-									new {groupId = subGroup.Id, tourId = tourId}),
-								GroupType = subGroup.GroupType
-							}).ToList()
-					}).ToList();
-
-				if (groups.Count > 0)
-				{
-					models.Add(new GroupTreeModel
-					{
-						Id = mainGroup.Id,
-						GroupName = mainGroup.GroupName,
-						UrlForEdit = Url.Action("GroupSubCard", "Tour", new { groupId = mainGroup.Id, tourId = tourId }),
-						GroupType = mainGroup.GroupType,
-						Items = groups
-					});
-				}
-			});
+			var models = groups.Select(x => GroupTreeModel.ToModel(x, Url)).ToList();
 
 			return Json(models);
 		}
 
 		public JsonResult GetGroupsByTourAndMainGroup(long tourId, bool isParcel)
         {
-            var allGroups = new GroupService().GetGroups();
-            var allGroupsInTour = allGroups.Where(x => x.TourId == tourId).ToList();
+	        var allGroups = GroupService.GetGroupsTreeForTour(tourId);
 
-            var subgroups = GetSubgroups(allGroupsInTour);
-            var groupsWithSubgroups = GetGroupsWithSubgroups(subgroups, allGroups);
+	        var mainGroupId = isParcel ? (long)KoGroupAlgoritm.MainParcel : (long)KoGroupAlgoritm.MainOKS;
+	        var groups = allGroups.Where(x => x.Id == mainGroupId);
+	        var subGroups = groups.SelectMany(x => x.Items);
+			var models = subGroups.Select(x => GroupTreeModel.ToModel(x, Url)).ToList();
 
-            var mainGroupId = isParcel ? (long)KoGroupAlgoritm.MainParcel : (long)KoGroupAlgoritm.MainOKS;
-
-            var models = groupsWithSubgroups.Where(group => group.ParentId == mainGroupId)
-                .Select(group =>
-                {
-                    return new DropDownTreeItemModel
-                    {
-                        Id = group.Id.ToString(),
-                        Value = group.Id.ToString(),
-                        Text = group.GroupName,
-                        Items = subgroups.Where(subgroup => subgroup.ParentId == group.Id).Select(subgroup =>
-                            new DropDownTreeItemModel
-                            {
-                                Id = subgroup.Id.ToString(),
-                                Value = subgroup.Id.ToString(),
-                                Text = subgroup.GroupName
-                            }).ToList()
-                    };
-                }).AsEnumerable();
-
-            return Json(models);
+			return Json(models);
         }
-
-		#region Support Methods
-
-		private List<GroupTreeDto> GetSubgroups(List<GroupTreeDto> allGroupsInTour)
-		{
-			return allGroupsInTour.Where(x => x.ParentId != (long)KoGroupAlgoritm.MainOKS && x.ParentId != (long)KoGroupAlgoritm.MainParcel).ToList();
-		}
-
-		private static List<GroupTreeDto> GetGroupsWithSubgroups(List<GroupTreeDto> subgroups, List<GroupTreeDto> allGroups)
-		{
-			var groupsIds = subgroups.Select(x => x.ParentId).Distinct().ToList();
-			var groups = allGroups.Where(x => groupsIds.Contains(x.Id)).ToList();
-			return groups;
-		}
-
-		private static List<GroupTreeDto> GetMainGroups()
-		{
-			var mainGroups = new List<GroupTreeDto>();
-
-			var oks = new GroupTreeDto
-			{
-				Id = (long)KoGroupAlgoritm.MainOKS,
-				GroupName = "Основная группа ОКС",
-				GroupType = GroupType.Main
-			};
-			mainGroups.Add(oks);
-
-			var parcel = new GroupTreeDto
-			{
-				Id = (long)KoGroupAlgoritm.MainParcel,
-				GroupName = "Основная группа Участки",
-				GroupType = GroupType.Main
-			};
-			mainGroups.Add(parcel);
-
-			return mainGroups;
-		}
-
-		#endregion
 
 		#endregion
 
