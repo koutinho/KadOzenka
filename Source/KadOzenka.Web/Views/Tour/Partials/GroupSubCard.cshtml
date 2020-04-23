@@ -199,7 +199,7 @@
             }
         }
 
-        kendo.ui.progress($('body'), true);
+		kendo.ui.progress($('#modelContent'), true);
         $.ajax({
             type: 'GET',
             url: '@Url.Action("PartialModel", "Task")',
@@ -207,11 +207,11 @@
             success: function (response) {
                 console.log("success");
                 $('#modelContent').html(response);
-                kendo.ui.progress($('body'), false);
+				kendo.ui.progress($('#modelContent'), false);
             },
             error: function () {
 				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
-                kendo.ui.progress($('body'), false);
+				kendo.ui.progress($('#modelContent'), false);
             }
         });
 

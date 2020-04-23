@@ -327,7 +327,11 @@
                 var data = grid.dataItem(row);
                 var groupId = '@Model.GroupId';
                 var factorId = data.FactorId;
-                window.open('@Url.Action("MarksGrid", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId);
+                Common.UI.ShowWindow('Метки',
+	                '@Url.Action("MarksGrid", "Tour")' + '?groupId=' + groupId + '&factorId=' + factorId,
+	                'editFactorWindow',
+	                function (e) {},
+	                800, 400);
             }
         });
 
