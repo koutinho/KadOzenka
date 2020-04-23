@@ -76,9 +76,9 @@ namespace KadOzenka.Dal.DataImport
 			import.DateFinished = DateTime.Now;
 			import.Save();
 			FileStorageManager.Save(resultFile, FileStorageName, import.DateFinished.Value, GetResultFileName(import.Id));
-
             WorkerCommon.SetProgress(processQueue, 100);
-        }
+		    SendResultNotification(import);
+		}
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
