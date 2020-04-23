@@ -120,14 +120,14 @@ namespace ObjectModel.Gbu
 
 namespace ObjectModel.Gbu
 {
-    /// <summary>
-    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 9)]
-    [Serializable]
-    public partial class OMSource9 : OMBaseClass<OMSource9>
-    {
-    }
+	/// <summary>
+	/// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
+	/// </summary>
+	[RegisterInfo(RegisterID = 9)]
+	[Serializable]
+	public partial class OMSource9 : OMBaseClass<OMSource9>
+	{
+	}
 }
 
 namespace ObjectModel.Gbu
@@ -1822,27 +1822,27 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _priceaftercorrectionbystage;
-        /// <summary>
-        /// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10008500)]
-        public decimal? PriceAfterCorrectionByStage
-        {
-            get
-            {
-                CheckPropertyInited("PriceAfterCorrectionByStage");
-                return _priceaftercorrectionbystage;
-            }
-            set
-            {
-                _priceaftercorrectionbystage = value;
-                NotifyPropertyChanged("PriceAfterCorrectionByStage");
-            }
-        }
+		private decimal? _priceaftercorrectionbystage;
+		/// <summary>
+		/// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 10008500)]
+		public decimal? PriceAfterCorrectionByStage
+		{
+			get
+			{
+				CheckPropertyInited("PriceAfterCorrectionByStage");
+				return _priceaftercorrectionbystage;
+			}
+			set
+			{
+				_priceaftercorrectionbystage = value;
+				NotifyPropertyChanged("PriceAfterCorrectionByStage");
+			}
+		}
 
 
-        private decimal? _priceaftercorrectionforfirstfloor;
+		private decimal? _priceaftercorrectionforfirstfloor;
         /// <summary>
         /// 10008800 Цена после корректировки на первый этаж (PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR)
         /// </summary>
@@ -6548,7 +6548,7 @@ namespace ObjectModel.KO
 
         private string _algoritmtype;
         /// <summary>
-        /// 20600600 Метод рассчёта ()
+        /// 20600600 Алгоритм расчета ()
         /// </summary>
         [RegisterAttribute(AttributeID = 20600600)]
         public string AlgoritmType
@@ -6568,7 +6568,7 @@ namespace ObjectModel.KO
 
         private KoAlgoritmType _algoritmtype_Code;
         /// <summary>
-        /// 20600600 Метод рассчёта (справочный код) (ALGORITM_TYPE)
+        /// 20600600 Алгоритм расчета (справочный код) (ALGORITM_TYPE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20600600)]
         public KoAlgoritmType AlgoritmType_Code
@@ -6617,6 +6617,116 @@ namespace ObjectModel.KO
             {
                 _a0 = value;
                 NotifyPropertyChanged("A0");
+            }
+        }
+
+
+        private string _calculationtype;
+        /// <summary>
+        /// 20600800 Тип расчета ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20600800)]
+        public string CalculationType
+        {
+            get
+            {
+                CheckPropertyInited("CalculationType");
+                return _calculationtype;
+            }
+            set
+            {
+                _calculationtype = value;
+                NotifyPropertyChanged("CalculationType");
+            }
+        }
+
+
+        private KoCalculationType _calculationtype_Code;
+        /// <summary>
+        /// 20600800 Тип расчета (справочный код) (CALCULATION_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20600800)]
+        public KoCalculationType CalculationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("CalculationType_Code");
+                return this._calculationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_calculationtype))
+                    {
+                         _calculationtype = descr;
+                    }
+                }
+                else
+                {
+                     _calculationtype = descr;
+                }
+
+                this._calculationtype_Code = value;
+                NotifyPropertyChanged("CalculationType");
+                NotifyPropertyChanged("CalculationType_Code");
+            }
+        }
+
+
+        private string _calculationmethod;
+        /// <summary>
+        /// 20600900 Метод расчета ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20600900)]
+        public string CalculationMethod
+        {
+            get
+            {
+                CheckPropertyInited("CalculationMethod");
+                return _calculationmethod;
+            }
+            set
+            {
+                _calculationmethod = value;
+                NotifyPropertyChanged("CalculationMethod");
+            }
+        }
+
+
+        private KoCalculationMethod _calculationmethod_Code;
+        /// <summary>
+        /// 20600900 Метод расчета (справочный код) (CALCULATION_METHOD)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20600900)]
+        public KoCalculationMethod CalculationMethod_Code
+        {
+            get
+            {
+                CheckPropertyInited("CalculationMethod_Code");
+                return this._calculationmethod_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_calculationmethod))
+                    {
+                         _calculationmethod = descr;
+                    }
+                }
+                else
+                {
+                     _calculationmethod = descr;
+                }
+
+                this._calculationmethod_Code = value;
+                NotifyPropertyChanged("CalculationMethod");
+                NotifyPropertyChanged("CalculationMethod_Code");
             }
         }
 

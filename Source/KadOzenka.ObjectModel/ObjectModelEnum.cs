@@ -2490,6 +2490,53 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Метод расчета (214)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 214)]
+    public enum KoCalculationMethod : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("")]
+        None = 0,
+
+		/// <summary>
+		/// Метод статистического (регрессионного) моделирования (1064)
+		/// </summary>
+		[Description("Метод статистического (регрессионного) моделирования")]
+        [EnumCode("1064")]
+        [ShortTitle("")]
+        StatisticalModeling = 1064,
+		/// <summary>
+		/// Метод типового (эталонного) объекта оценки (1065)
+		/// </summary>
+		[Description("Метод типового (эталонного) объекта оценки")]
+        [EnumCode("1065")]
+        [ShortTitle("")]
+        TypicalObjectOfAssessment = 1065,
+		/// <summary>
+		/// Метод моделирования на основе УПКС (1066)
+		/// </summary>
+		[Description("Метод моделирования на основе УПКС")]
+        [EnumCode("1066")]
+        [ShortTitle("")]
+        SimulationBasedOnUPKS = 1066,
+		/// <summary>
+		/// Метод индексации прошлых результатов (1067)
+		/// </summary>
+		[Description("Метод индексации прошлых результатов")]
+        [EnumCode("1067")]
+        [ShortTitle("")]
+        PastResultsIndexing = 1067,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>
