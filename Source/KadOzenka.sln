@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.902
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal", "KadOzenka.Dal\KadOzenka.Dal.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
 EndProject
@@ -18,13 +18,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenerateDbScripts", "Utils\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.BlFrontEnd", "Utils\KadOzenka.BlFrontEnd\KadOzenka.BlFrontEnd.csproj", "{620E8F25-59FD-4854-A112-E34658EBDFD0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GISStandProject", "GISStandProject\GISStandProject.csproj", "{F0346EBC-9237-4802-BF75-710E00671189}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.ObjectModel", "KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj", "{1570E94C-497B-4581-80B7-F32BA3A9EFE7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProccessor", "ImageProccessor\ImageProccessor.csproj", "{E885A580-E156-4906-8978-41B59991EF01}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP.Sdk.Core", "Utils\EP.SdkCore\EP.Sdk.Core.csproj", "{F9CC1690-F519-4C76-A52B-78625BF288AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartProject", "StartProject\StartProject.csproj", "{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -74,14 +74,6 @@ Global
 		{620E8F25-59FD-4854-A112-E34658EBDFD0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{620E8F25-59FD-4854-A112-E34658EBDFD0}.Release|x86.ActiveCfg = Release|Any CPU
 		{620E8F25-59FD-4854-A112-E34658EBDFD0}.Release|x86.Build.0 = Release|Any CPU
-		{F0346EBC-9237-4802-BF75-710E00671189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F0346EBC-9237-4802-BF75-710E00671189}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F0346EBC-9237-4802-BF75-710E00671189}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F0346EBC-9237-4802-BF75-710E00671189}.Debug|x86.Build.0 = Debug|Any CPU
-		{F0346EBC-9237-4802-BF75-710E00671189}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F0346EBC-9237-4802-BF75-710E00671189}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F0346EBC-9237-4802-BF75-710E00671189}.Release|x86.ActiveCfg = Release|Any CPU
-		{F0346EBC-9237-4802-BF75-710E00671189}.Release|x86.Build.0 = Release|Any CPU
 		{1570E94C-497B-4581-80B7-F32BA3A9EFE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1570E94C-497B-4581-80B7-F32BA3A9EFE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1570E94C-497B-4581-80B7-F32BA3A9EFE7}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -106,6 +98,14 @@ Global
 		{F9CC1690-F519-4C76-A52B-78625BF288AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F9CC1690-F519-4C76-A52B-78625BF288AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{F9CC1690-F519-4C76-A52B-78625BF288AC}.Release|x86.Build.0 = Release|Any CPU
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Debug|x86.Build.0 = Debug|Any CPU
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|x86.ActiveCfg = Release|Any CPU
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,6 +116,7 @@ Global
 		{620E8F25-59FD-4854-A112-E34658EBDFD0} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{E885A580-E156-4906-8978-41B59991EF01} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{F9CC1690-F519-4C76-A52B-78625BF288AC} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
+		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
@@ -139,23 +140,24 @@ Global
 		SccProjectTopLevelParentUniqueName4 = KadOzenka.sln
 		SccProjectName4 = Utils/GenerateDbScripts
 		SccLocalPath4 = Utils\\GenerateDbScripts
-		SccProjectUniqueName5 = GISStandProject\\GISStandProject.csproj
-		SccProjectName5 = GISStandProject
-		SccLocalPath5 = GISStandProject
-		SccProjectUniqueName6 = Utils\\KadOzenka.BlFrontEnd\\KadOzenka.BlFrontEnd.csproj
-		SccProjectTopLevelParentUniqueName6 = KadOzenka.sln
-		SccProjectName6 = Utils/KadOzenka.BlFrontEnd
-		SccLocalPath6 = Utils\\KadOzenka.BlFrontEnd
-		SccProjectUniqueName7 = KadOzenka.ObjectModel\\KadOzenka.ObjectModel.csproj
-		SccProjectName7 = KadOzenka.ObjectModel
-		SccLocalPath7 = KadOzenka.ObjectModel
-		SccProjectUniqueName8 = ImageProccessor\\ImageProccessor.csproj
+		SccProjectUniqueName5 = Utils\\KadOzenka.BlFrontEnd\\KadOzenka.BlFrontEnd.csproj
+		SccProjectTopLevelParentUniqueName5 = KadOzenka.sln
+		SccProjectName5 = Utils/KadOzenka.BlFrontEnd
+		SccLocalPath5 = Utils\\KadOzenka.BlFrontEnd
+		SccProjectUniqueName6 = KadOzenka.ObjectModel\\KadOzenka.ObjectModel.csproj
+		SccProjectName6 = KadOzenka.ObjectModel
+		SccLocalPath6 = KadOzenka.ObjectModel
+		SccProjectUniqueName7 = ImageProccessor\\ImageProccessor.csproj
+		SccProjectTopLevelParentUniqueName7 = KadOzenka.sln
+		SccProjectName7 = ImageProccessor
+		SccLocalPath7 = ImageProccessor
+		SccProjectUniqueName8 = Utils\\EP.SdkCore\\EP.Sdk.Core.csproj
 		SccProjectTopLevelParentUniqueName8 = KadOzenka.sln
-		SccProjectName8 = ImageProccessor
-		SccLocalPath8 = ImageProccessor
-		SccProjectUniqueName9 = Utils\\EP.SdkCore\\EP.Sdk.Core.csproj
+		SccProjectName8 = Utils/EP.SdkCore
+		SccLocalPath8 = Utils\\EP.SdkCore
+		SccProjectUniqueName9 = StartProject\\StartProject.csproj
 		SccProjectTopLevelParentUniqueName9 = KadOzenka.sln
-		SccProjectName9 = Utils/EP.SdkCore
-		SccLocalPath9 = Utils\\EP.SdkCore
+		SccProjectName9 = StartProject
+		SccLocalPath9 = StartProject
 	EndGlobalSection
 EndGlobal
