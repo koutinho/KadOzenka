@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using CIPJS.Models.ExpressScore;
+using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
@@ -11,6 +13,7 @@ using KadOzenka.Web.Models.ExpressScore;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Directory;
 using ObjectModel.ES;
+using ObjectModel.KO;
 using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
@@ -135,7 +138,7 @@ namespace KadOzenka.Web.Controllers
 		#endregion
 
 		[HttpPost]
-		public JsonResult CalculateCostTargetObject(CalculateCostTargetObjectViewModel viewModel)
+		public ActionResult CalculateCostTargetObject(CalculateCostTargetObjectViewModel viewModel)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -144,14 +147,16 @@ namespace KadOzenka.Web.Controllers
 
 			string resMsg = _service.CalculateExpressScore(_service.GetAnalogsByIds(viewModel.SelectedPoints),
 				viewModel.TargetObjectId.GetValueOrDefault(), viewModel.Floor.GetValueOrDefault(), viewModel.Square.GetValueOrDefault(),
-				out decimal costSquareMeter, out decimal summaryCost);
+				out ResultCalculateDto resultCalculate);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{
 				return SendErrorMessage(resMsg);
 			}
 
-			return Json(new {response = new { costSquareMeter, summaryCost } });
+			ViewBag.Filter = $"10002000={string.Join(',', resultCalculate.Analogs.Select(x => x.Id).ToList())}";
+			ViewBag.EsId = resultCalculate.Id;
+			return PartialView("Partials/PartialGridResultExpressScore", resultCalculate);
 		}
 
 		public ActionResult AnalogObjectsCard(int objectId)
@@ -166,37 +171,78 @@ namespace KadOzenka.Web.Controllers
 
 		#region Delete Analog
 		[HttpGet]
-		public ActionResult DeleteAnalog(int objectId, int esId)
+		public ActionResult RecalculateAnalog(int esId)
 		{
-			ViewBag.DeleteAnalogId = objectId;
+			var analogIds = RegistersVariables.CurrentList?.ToList() ?? new List<long>();
+			ViewBag.DeleteAnalogIds = analogIds;
 			ViewBag.EsId = esId;
 			return View();
 		}
 
 		[HttpPost]
-		public JsonResult PostDeleteAnalog([FromForm]int removeAnalogId, [FromForm]int expressScoreId)
+		public JsonResult RecalculateAnalog([FromForm]List<int> deleteAnalogIds, [FromForm]int expressScoreId)
 		{
-			var removeDependency = OMEsToMarketCoreObject.Where(x => x.EsId == expressScoreId && x.MarketObjectId == removeAnalogId)
-				.SelectAll().ExecuteFirstOrDefault();
-
-			if (removeDependency == null)
+			if (deleteAnalogIds.Count == 0)
 			{
-				return SendErrorMessage("Объект из результатов оценки был исключен ранее. Закройте окно.");
+				return SendErrorMessage("Выберите аналоги");
 			}
-
 			var obj = OMExpressScore.Where(x => x.Id == expressScoreId).SelectAll().ExecuteFirstOrDefault();
 			var analogIds = OMEsToMarketCoreObject.Where(x => x.EsId == expressScoreId).SelectAll().Execute()
 				.Select(x => (int)x.MarketObjectId).ToList();
 
-			string resMsg = _service.RemoveAnalogAndRecalculateExpressScore(_service.GetAnalogsByIds(analogIds), removeAnalogId,
-				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, out List<long> successAnalogIds);
+			string resMsg = _service.RemoveAnalogAndRecalculateExpressScore(_service.GetAnalogsByIds(analogIds), deleteAnalogIds,
+				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, out decimal cost, out decimal squareCost);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{
 				return SendErrorMessage(resMsg);
 			}
 
-			return Json( new {success = new { successAnalogIds } });
+			return Json( new {success = new { cost, squareCost } });
+		}
+
+		#endregion
+
+		#region Setting ExpressScore
+
+		public JsonResult GetDictionaries()
+		{
+			var dictionaries = OMEsReference.Where(x => x).SelectAll().Execute().Select(x => new
+			{
+				Text = x.Name,
+				Value = (int)x.Id
+			}).ToList();
+
+			dictionaries.Insert(0, new { Text = "",  Value = 0});
+
+			return Json(dictionaries);
+		}
+
+		public JsonResult GetAttributes(int registerId)
+		{
+			var attributes =	RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == registerId).Select(x => new
+			{
+				Text = x.Description,
+				Value = x.Id
+			}).ToList();
+
+			return Json(attributes);
+		}
+
+		public JsonResult GetFactorRegisters(int tourId)
+		{
+			var registerFactors = OMTourFactorRegister.Where(x => x.TourId == tourId).SelectAll().Execute().Select(x => new
+			{
+				Text = RegisterCache.Registers.Values.FirstOrDefault(y => y.Id == x.RegisterId)?.Description,
+				Value = x.RegisterId
+			}).ToList();
+			return Json(registerFactors);
+		}
+
+		public ActionResult SettingsExpressScore()
+		{
+			var model = new SettingsExpressScoreViewModel {CostFactors = new List<CostFactor>()};
+			return View(model);
 		}
 
 		#endregion

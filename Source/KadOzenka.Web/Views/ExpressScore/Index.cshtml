@@ -1,6 +1,8 @@
 ﻿@using KadOzenka.Dal.Enum
 @using ObjectModel.Directory
 
+
+
 <link rel="stylesheet" href="~/css/jquery.fias.min.css" />
 <style>
 	.wrap-map {
@@ -15,10 +17,12 @@
 		border-radius: 10px;
 		flex-direction: column;
 	}
+
 	#map {
 		width: 100%;
 		height: 100%;
 	}
+
 	.wrap-form {
 		margin-top: 5px;
 		padding-top: 20px;
@@ -27,24 +31,30 @@
 		border-radius: 10px;
 		padding-right: 10px;
 	}
+
 	.separator {
 		height: 3px;
 		background-color: bisque;
 	}
+
 	label {
 		font-weight: normal !important;
 	}
+
 	.btn-count {
 		width: 100%;
 	}
+
 	#select-count {
 		width: 100%;
 	}
+
 	input::-webkit-outer-spin-button,
 	input::-webkit-inner-spin-button {
 		-webkit-appearance: none;
 		margin: 0;
 	}
+
 	.wrapper-scenario {
 		margin: 10px
 	}
@@ -53,33 +63,33 @@
 		margin: 10px
 	}
 
-	.wrapper-success-dialog label {
-		font-weight: bold !important;
-		display: block;
-		padding: 2px;
-	}
+		.wrapper-success-dialog label {
+			font-weight: bold !important;
+			display: block;
+			padding: 2px;
+		}
 </style>
 
 <div class="form-horizontal col-sm-12">
 	<div class="form-group">
-		<div class="col-sm-4">
+		<div class="col-sm-3">
 			<div class="wrap-form">
 				<div>
 					<h3 style="margin-top: 0">Параметры объекта</h3>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
+					<div class="col-sm-5">
 						@Html.CustomLabelFor("Адрес")
 					</div>
-					<div class="col-sm-9">
+					<div class="col-sm-12">
 						@Html.Kendo().TextBox().Name("address").HtmlAttributes(new { style = "width: 100%", spellcheck = false })
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
+					<div class="col-sm-10">
 						@Html.CustomLabelFor("Кадастровый № объекта", htmlAttributes: new { style = "padding-top: 0" })
 					</div>
-					<div class="col-sm-9">
+					<div class="col-sm-12">
 						@Html.Kendo().MaskedTextBox().Name("Kn").HtmlAttributes(new { style = "width: 100%" }).Mask("00:00:0000000:000##")
 					</div>
 				</div>
@@ -148,13 +158,13 @@
 					<div class="separator col-sm-12"></div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-4">
-						<button id="" class="k-button calculate" type="button">Пересчитать стоимость</button>
+					<div class="col-sm-10">
+						<button id="" class="k-button calculate" type="button">Расчитать стоимость</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="col-sm-8">
+		<div class="col-sm-9">
 			<div class="wrap-map">
 				<div>
 					<h3>Местоположение</h3>
@@ -256,7 +266,7 @@
 			if (data.Errors) {
 				reject(data);
 			}
-			
+
 		}).fail(function(data) {
 			reject(data);
 		}).always(function() {
@@ -274,7 +284,7 @@
 			if (data.Errors) {
 				reject(data.Errors);
 			}
-			
+
 		}).fail(function(data) {
 			reject(data);
 		}).always(function() {
@@ -404,7 +414,7 @@
 			}
 		});
 
-	
+
 		$('.analogs').on('click',
 			function () {
 				removeFindPoints();
@@ -414,7 +424,7 @@
 				var square = $('#square').val();
 				var segment = $('#segment').val();
 				var quality = $(this).text();
-			
+
 				if (!segment || segment === "0") {
 					Common.ShowError('Заполните сегмент');
 					return;
@@ -533,7 +543,7 @@
 		ymaps.geocode(coords).then(function(res) {
 			var firstGeoObject = res.geoObjects.get(0);
 
-	
+
 			if (firstGeoObject.getAdministrativeAreas().length === 0 || firstGeoObject.getAdministrativeAreas().length > 1 ||
 			(firstGeoObject.getAdministrativeAreas() === 1 &&
 				firstGeoObject.getAdministrativeAreas()[0] !== "Москва")) {
@@ -547,7 +557,7 @@
 				setKadNumber(firstGeoObject.getAddressLine());
 				setCurrentAddress(firstGeoObject.getAddressLine());
 			}
-			
+
 			myPlacemark.properties.set({
 				// Формируем строку с данными об объекте.
 				iconCaption: [
@@ -576,6 +586,14 @@
 
 <!--Пересчет стоимости-->
 <script type="text/javascript">
+
+	function updateCost(cost, squareCost) {
+		if (cost && squareCost) {
+			$('#cost').text(cost.toLocaleString());
+			$('#squareCost').text(squareCost.toLocaleString());
+		}
+	}
+
 	$(document).ready(function () {
 		initDialog();
 		$('.calculate').on('click', function () {
@@ -602,28 +620,25 @@
 			floor: $('#floor').val(),
 			square: $('#square').val()
 		}
-		kendo.ui.progress($('body'), true);
+
+		var topBody = window.top.document.body;
+		kendo.ui.progress($(topBody), true);
 		var url = "@Url.Action("CalculateCostTargetObject", "ExpressScore")";
-		$.post(url, data).done(function(data) {
+		$.post(url, data).done(function (data) {
+
+
 			if (data.Errors) {
 				var errors = getErrors(data.Errors);
 				Common.ShowError(errors);
 				return;
 			}
-
-			if (!!data.response.costSquareMeter && !!data.response.summaryCost) {
-				var cost = data.response.summaryCost.toLocaleString();
-				var squareCost = data.response.costSquareMeter.toLocaleString();
-				$('#cost').text(cost.toString());
-				$('#squareCost').text(squareCost.toString());
-
-				$('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
-
-			} else {
-				Common.ShowError("Расчет произведен. Нет параметров стоимости Обратитесь к администратору");
-			}
+			$('.wrapper-success-dialog').html(data);
+			$('.ajax-data-loading').ajaxDataLoader();
+			$('#successDialog').data('kendoDialog') && $('#successDialog').data('kendoDialog').open();
+		}).fail(function() {
+			Common.ShowError("Расчет не произведен. Обратитесь к администратору");
 		}).always(function() {
-			kendo.ui.progress($('body'), false);
+			kendo.ui.progress($(topBody), false);
 		});
 		return;
 	}
@@ -634,44 +649,44 @@
 
 
 	function initDialog() {
-			$('#dialog').kendoDialog({
-				width: "450px",
-				title: "Выберите сценарий расчета",
-				closable: false,
-				modal: true,
-				content: '<div class="wrapper-scenario">'+
-					'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioCalculateEnum))).NoDataTemplate("Ничего не найдено!").Value("2").Enable(false).ToClientTemplate()'
-					+ '</div>',
-				visible: false,
-				buttonLayout: "normal",
-				actions: [
-					{ text: 'Отмена' },
-					{
-						text: 'Выбрать', primary: true,
-						action: function (e) {
-							if (e.sender.element.find('#scenario')) {
-								var value = e.sender.element.find('#scenario').data('kendoDropDownList') &&
-									e.sender.element.find('#scenario').data('kendoDropDownList').value() || null;
-								executeCalculate(value);
-							}
-							return true;
+		$('#dialog').kendoDialog({
+			width: "450px",
+			title: "Выберите сценарий расчета",
+			closable: false,
+			modal: true,
+			content: '<div class="wrapper-scenario">'+
+				'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioCalculateEnum))).NoDataTemplate("Ничего не найдено!").Value("2").Enable(false).ToClientTemplate()'
+				+ '</div>',
+			visible: false,
+			buttonLayout: "normal",
+			actions: [
+				{ text: 'Отмена' },
+				{
+					text: 'Выбрать', primary: true,
+					action: function (e) {
+						if (e.sender.element.find('#scenario')) {
+							var value = e.sender.element.find('#scenario').data('kendoDropDownList') &&
+								e.sender.element.find('#scenario').data('kendoDropDownList').value() || null;
+							executeCalculate(value);
 						}
+						return true;
 					}
-				]
-			});
+				}
+			]
+		});
 
-			$('#successDialog').kendoDialog({
-				width: "450px",
-				title: "Расчет успешно выполнен",
-				closable: false,
-				modal: true,
-				content: '<div class="wrapper-success-dialog">'
-					+ '<label for="cost">Цена: </label><text id="cost"></text><label for="squareCost">Цена за кв.м: </label><text id="squareCost"></text>' + '</div>',
-				visible: false,
-				buttonLayout: "normal",
-				actions: [
-					{ text: 'Ок' }
-				]
-			});
-		}
+		$('#successDialog').kendoDialog({
+			width: 1300,
+			height: 600,
+			title: "Расчет успешно выполнен",
+			closable: false,
+			modal: true,
+			content: '<div class="wrapper-success-dialog"></div>',
+			visible: false,
+			buttonLayout: "normal",
+			actions: [
+				{ text: 'Ок' }
+			]
+		});
+	}
 </script>

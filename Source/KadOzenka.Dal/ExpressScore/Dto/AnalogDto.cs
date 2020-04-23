@@ -5,9 +5,13 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 	public class AnalogDto
 	{
 		public long Id { get; set; }
-		public string Kn { get; set; }
+
 		/// <summary>
 		/// Кадастровый номер
+		/// </summary>
+		public string Kn { get; set; }
+		/// <summary>
+		/// Цена
 		/// </summary>
 		public decimal Price { get; set; }
 		/// <summary>

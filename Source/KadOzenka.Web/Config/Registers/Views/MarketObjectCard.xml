@@ -1,13 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="100" DefaultLayoutId="62" LinkedRegistersList="100" 
-              IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left" 
-              ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="false" ShowFilterMenu="false"
-              UseMasterPage="false">
+<RegisterView RegisterId="100" DefaultLayoutId="1001002" LinkedRegistersList="100"
+             IsBasic="false" ShowActualDate="false" ShowFilterMenu="false" ShowObjectCards="false"
+             ShowSettingsPanel="false" UseMasterPage="false" SRDFunctionTag="">
 
 	<Buttons>
-		<Button Caption="Удалить аналог" NavigateURL="/ExpressScore/DeleteAnalog" WindowHight="200" NeedRefresh="true" WindowWidth="400" Icon="fas fa-trash-alt">
+		<Button Caption="Пересчитать стоимость" NavigateURL="/ExpressScore/RecalculateAnalog" WindowHight="200" WindowWidth="400" Icon="fas fa-trash-alt">
 			<Parameters>
-				<Parameter Key="objectId" Value="[ObjectID]" />
 				<Parameter Key="esId" Value="{Get:EsId}" />
 			</Parameters>
 		</Button>

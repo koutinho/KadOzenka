@@ -1,0 +1,30 @@
+﻿@using KadOzenka.Dal.ExpressScore.Dto
+@model ResultCalculateDto
+
+<div class="form-horizontal col-sm-12">
+	<div class="form-group"></div>
+	<div class="form-group">
+		<div class="col-sm-12">
+			<text>Цена: </text><text id="cost">@Model.SummaryCost</text>
+		</div>
+		<div class="col-sm-12">
+			<text>Цена за кв.м: </text><text id="squareCost">@Model.SquareCost</text>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-12">
+			<p>Аналоги (@Model.Analogs.Count)</p>
+		</div>
+		<div class="col-sm-12" style="padding: 0">
+			<div style="height: auto">
+				<div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content($"~/RegistersView/MarketObjectCard?Transition=1&{ViewBag.Filter}")"
+				     data-param-Pageable="true" data-param-Scrollable="true" data-param-EsId="@ViewBag.EsId"
+				     data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid100"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+	<script type="text/javascript">
+	</script>
+

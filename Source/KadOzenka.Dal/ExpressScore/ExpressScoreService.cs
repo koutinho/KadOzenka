@@ -77,10 +77,10 @@ namespace KadOzenka.Dal.ExpressScore
 			var year = years[0].Year;
 			targetObjectId = years[0].Id;
 
-			yearRange = OMYearConstruction.Where(x => x.YearFrom < year.Value && year.Value < x.YearTo)
+			yearRange = OMYearConstruction.Where(x => x.YearFrom <= year.Value && year.Value <= x.YearTo)
 				.SelectAll().ExecuteFirstOrDefault();
 
-			squareRange = OMSquare.Where(x => x.SquareFrom <= square && square < x.SquareTo).SelectAll()
+			squareRange = OMSquare.Where(x => x.SquareFrom <= square && square <= x.SquareTo).SelectAll()
 				.ExecuteFirstOrDefault();
 
 			return "";
@@ -216,13 +216,12 @@ namespace KadOzenka.Dal.ExpressScore
 				}).ToList();
 		}
 
-		public string CalculateExpressScore(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, decimal targetObjectSquare, out decimal squareCost, out decimal summaryCost)
+		public string CalculateExpressScore(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, decimal targetObjectSquare, out ResultCalculateDto resultCalculate)
 		{
-			squareCost = 0;
-			summaryCost = 0;
-			squareCost = CalculateSquareCost(analogs, targetObjectId, targetObjectFloor, out string msg, out List<long> successAnalogIds);
+			resultCalculate = new ResultCalculateDto();
+			var squareCost = CalculateSquareCost(analogs, targetObjectId, targetObjectFloor, out string msg, out List<long> successAnalogIds);
 
-			summaryCost = squareCost * targetObjectSquare;
+			var summaryCost = Math.Round(squareCost * targetObjectSquare, 2);
 			if (squareCost == 0)
 			{
 				return string.IsNullOrEmpty(msg) ? "При расчете что то пошло не так" : msg;
@@ -233,28 +232,40 @@ namespace KadOzenka.Dal.ExpressScore
 
 			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
 
+			resultCalculate.SquareCost = Math.Round(squareCost, 2);
+			resultCalculate.SummaryCost = summaryCost;
+			resultCalculate.Id = id;
+
+			var resultAnalogs = OMCoreObject.Where(x => successAnalogIds.Contains(x.Id)).SelectAll().Execute().Select(x => new AnalogResultDto
+			{
+				Id = x.Id,
+				Address = x.Address,
+				Floor = x.FloorNumber.GetValueOrDefault(),
+				Source = x.Market,
+				Square = x.Area.GetValueOrDefault(),
+				Price = x.Price.GetValueOrDefault(),
+			}).ToList();
+
+			resultCalculate.Analogs = resultAnalogs;
+
 			return msg;
 		}
 
-		public string RemoveAnalogAndRecalculateExpressScore(List<AnalogDto> analogs, int removeAnalogId,
-			int targetObjectId, int targetObjectFloor, decimal square, int expressScoreId, out List<long> successAnalogIds)
+		public string RemoveAnalogAndRecalculateExpressScore(List<AnalogDto> analogs, List<int> removeAnalogIds,
+			int targetObjectId, int targetObjectFloor, decimal square, int expressScoreId, out decimal cost, out decimal squareCost)
 		{
-			successAnalogIds = new List<long>();
-			if (analogs.Count <= 1)
-			{
-				return "Нельзя удалять последний анлог";
-			}
-			var squareCost = CalculateSquareCost(analogs.Where(x => (int)x.Id != removeAnalogId).ToList(),
-				targetObjectId, targetObjectFloor, out string msg, out successAnalogIds);
+			cost = 0;
+			squareCost = 0;
+
+			squareCost = CalculateSquareCost(analogs.Where(x => removeAnalogIds.Contains((int)x.Id)).ToList(),
+				targetObjectId, targetObjectFloor, out string msg, out var successAnalogIds);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
-			msg = SaveSuccessExpressScore(targetObjectId, squareCost * square, squareCost, out int id, expressScoreId);
-			if (!string.IsNullOrEmpty(msg)) return msg;
+			cost = Math.Round(squareCost * square, 2);
+			squareCost = Math.Round(squareCost, 2);
 
-			msg = RemoveDependenceEsFromMarketCoreObject(id, analogs.Select(x => x.Id).ToList());
+			msg = SaveSuccessExpressScore(targetObjectId, cost, squareCost, out int id, expressScoreId);
 			if (!string.IsNullOrEmpty(msg)) return msg;
-
-			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
 
 			return msg;
 		}
@@ -338,6 +349,10 @@ namespace KadOzenka.Dal.ExpressScore
 
 
 				var estimatedParameters = GetEstimateParametersByKn(analog.Kn);
+				if (estimatedParameters == null)
+				{
+					continue;
+				}
 
 				// Начинаются оценочные факторы
 				var wallMaterial = OMWallMaterial.Where(x => x.WallMaterial.Contains(estimatedParameters.WallMaterial)).SelectAll()
