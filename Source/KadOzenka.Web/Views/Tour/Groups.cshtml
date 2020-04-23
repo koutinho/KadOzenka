@@ -11,10 +11,8 @@
     </div>
 </div>
 
-
 <div class="flex-content">
-    
-    <div class="k-content wide flex-tree-list">
+	<div class="k-content wide flex-tree-list">
         <div id="treeList"></div>
     </div>
     <div class="flex-list-buttons">
@@ -33,43 +31,12 @@
     </div>
 </div>
 
+
+<script src="~/js/groups.js"></script>
 <script type="text/javascript">
+	$(document).ready(function () {
 
-	$(document).ready(function() {
-
-		var dataSource = new kendo.data.TreeListDataSource({
-			transport: {
-				read: {
-					url: "@Url.Action("GetGroups", "Tour")",
-					dataType: "json"
-				}
-			},
-			schema: {
-				model: {
-					id: "Id",
-					parentId: "ParentId",
-					fields: {
-                        ParentId: { field: "ParentId", nullable: true },
-                        Id: { field: "Id", type: "number" }
-					},
-					expanded: true
-				}
-			}
-		});
-
-		$("#treeList").kendoTreeList({
-            dataSource: dataSource,
-            selectable: true,
-            columns: [
-                {
-                    field: "GroupName", title: "Имя группы", headerAttributes: {
-                        style: "display: none"
-                    }
-                }
-			]
-        });
-
-        $('[name="RatingTour"]')
+		$('[name="RatingTour"]')
             .kendoDropDownList({
                 dataTextField: 'Text',
                 dataValueField: 'Value',
@@ -85,58 +52,26 @@
                 }
             });
 
-        $('[name="RatingTour"]').data("kendoDropDownList").bind('change', RatingTourChanged);
+		$('[name="RatingTour"]').data("kendoDropDownList").bind('change', DownloadGroups);
 
-        function RatingTourChanged(e) {
-            var value = this.value();
-            if (value != '') {
-                $("#treeList").data("kendoTreeList").dataSource.filter({ field: "TourId", operator: "equals", value: value });
-            }
-            else {
-                $("#treeList").data("kendoTreeList").dataSource.filter({});
-            }
-        }
-
-        $("#treeList").data("kendoTreeList").bind('change', TreeListChanged);
-
-        function TreeListChanged() {
-            var row = this.select();
-            var data = this.dataItem(row);
-            if (data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainOKS)'
-                || data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainParcel)') {
-                $('.edit-group').addClass('k-state-disabled');
-                $('.remove-group').addClass('k-state-disabled');
-                $('.model').addClass('k-state-disabled');
-            }
-            else {
-                $('.edit-group').removeClass('k-state-disabled');
-                $('.remove-group').removeClass('k-state-disabled');
-                $('.model').removeClass('k-state-disabled');
-            }
-        }
-
-        $('.add-group').on('click', function () {
-            Common.UI.ShowWindow('Оценочная группа', '@Url.Action("EditGroup", "Tour")', 'editGroupWindow');
+		$('.add-group').on('click', function () {
+			Common.UI.ShowWindow('Оценочная группа', '@Url.Action("EditGroup", "Tour")', 'editGroupWindow', DownloadGroups);
         });
 
         $('.edit-group').on('click', function () {
-            var treeList = $("#treeList").data("kendoTreeList");
+            var treeList = $("#treeList").data("kendoTreeView");
             var row = treeList.select();
             if (row.length > 0) {
                 var data = treeList.dataItem(row);
                 Common.UI.ShowWindow('Оценочная группа',
                     '@Url.Action("EditGroup", "Tour")' + '?id=' + data.Id,
                     'editGroupWindow',
-                    function (e, param) {
-                        if (param == true) {
-                            $("#treeList").data("kendoTreeList").dataSource.read();
-                        }
-                    });
+					DownloadGroups);
             }
         });
 
         $('.model').on('click', function () {
-            var treeList = $("#treeList").data("kendoTreeList");
+			var treeList = $("#treeList").data("kendoTreeView");
             var row = treeList.select();
             if (row.length > 0) {
                 var data = treeList.dataItem(row);                
@@ -145,12 +80,10 @@
         });
 
         $('.remove-group').on('click', function () {
-
-            var treeList = $("#treeList").data("kendoTreeList");
+			var treeList = $("#treeList").data("kendoTreeView");
             var row = treeList.select();
             if (row.length > 0) {
                 var data = treeList.dataItem(row);
-
                 Common.UI.ShowConfirm({
                     title: '',
                     content: 'Удалить группу ' + data.GroupName+'?',
@@ -163,7 +96,7 @@
                             success: function (response) {
                                 kendo.ui.progress($('body'), false);
                                 if (response.Success) {
-                                    $("#treeList").data("kendoTreeList").dataSource.read();
+	                                DownloadGroups();
                                     Common.ShowMessage(response.Success);
                                 }
                             },
@@ -178,11 +111,63 @@
         });
 
 	});
+
+
+	function DownloadGroups() {
+		var tourId = $('input[name="RatingTour"]').data("kendoDropDownList").value();
+		if (tourId != '') {
+	            kendo.ui.progress($('body'), true);
+	                $.ajax({
+		                type: 'GET',
+		                url: "@Url.Action("GetGroupsForTour", "Tour")",
+						data: { tourId: tourId },
+						success: function (response) {
+							var result = MapTourGroups(response);
+							var treeList = $("#treeList").data("kendoTreeView");
+							if (treeList) {
+								treeList.setDataSource(new kendo.data.HierarchicalDataSource({ data: result }));
+							} else {
+								$("#treeList").kendoTreeView({
+									dataSource: result,
+									dataTextField: 'GroupName',
+									dataValueField: 'Id',
+									change: TreeListChanged,
+								});
+								treeList = $("#treeList").data("kendoTreeView");
+							}
+							treeList.expand(".k-item");
+						},
+		                error: function(response) {
+			                Common.ShowError(response.responseText);
+		                },
+		                complete: function() {
+			                kendo.ui.progress($('body'), false);
+		                }
+	                });
+                }
+	}
+
+
+	function TreeListChanged() {
+		var row = this.select();
+		var data = this.dataItem(row);
+		if (data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainOKS)'
+			|| data.Id == '@((long)ObjectModel.Directory.KoGroupAlgoritm.MainParcel)') {
+			$('.edit-group').addClass('k-state-disabled');
+			$('.remove-group').addClass('k-state-disabled');
+			$('.model').addClass('k-state-disabled');
+		}
+		else {
+			$('.edit-group').removeClass('k-state-disabled');
+			$('.remove-group').removeClass('k-state-disabled');
+			$('.model').removeClass('k-state-disabled');
+		}
+	}
+
 </script>
 
 @section styles {
 	<style>
-
 		.flex-content {
 			display: flex;
 			height: 100%;
@@ -214,7 +199,9 @@
 
 		#treeList {
 			height: 100%;
-			/*overflow: auto;*/
+			max-height: 430px;
+			max-width: 600px;
+			margin: 0px !important;
 		}
 
 		.selected {

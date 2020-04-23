@@ -107,7 +107,10 @@ namespace KadOzenka.Dal.Groups
                 else
                 {
                     str.ParentId = parent;
-                    str.GroupType = GroupType.SubGroup;
+					if(parent == (long)KoGroupAlgoritm.MainOKS || parent == (long)KoGroupAlgoritm.MainParcel)
+						str.GroupType = GroupType.Group;
+					else
+						str.GroupType = GroupType.SubGroup;
                 }
 
                 str.GroupName = row["GroupName"].ToString();
@@ -141,24 +144,32 @@ namespace KadOzenka.Dal.Groups
 	        var mainGroups = GetMainGroups();
 	        mainGroups.ForEach(mainGroup =>
 	        {
-		        var groups = allTourGroups.Where(group => group.ParentId == mainGroup.Id).Select(group =>
-			        new GroupTreeDto
-					{
+		        var groupCounter = 0;
+				var groups = allTourGroups.Where(group => group.ParentId == mainGroup.Id).Select(group =>
+		        {
+			        groupCounter++;
+			        var subGroupCounter = 0;
+					return new GroupTreeDto
+			        {
 				        Id = group.Id,
-				        GroupName = group.GroupName,
+				        GroupName = $"{groupCounter}. {group.GroupName}",
 				        GroupType = group.GroupType,
-						TourId = tourId,
-						Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id).Select(subGroup =>
-					        new GroupTreeDto
-							{
+				        TourId = tourId,
+				        Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id).Select(subGroup =>
+				        {
+					        subGroupCounter++;
+					        return new GroupTreeDto
+					        {
 						        Id = subGroup.Id,
-						        GroupName = subGroup.GroupName,
+						        GroupName = $"{groupCounter}.{subGroupCounter}. {subGroup.GroupName}",
 						        GroupType = subGroup.GroupType,
 						        TourId = tourId
-							}).ToList()
-			        }).ToList();
-
-		        if (groups.Count > 0)
+					        };
+				        }).ToList()
+			        };
+		        }).ToList();
+				
+				if (groups.Count > 0)
 		        {
 			        models.Add(new GroupTreeDto
 					{
@@ -177,26 +188,26 @@ namespace KadOzenka.Dal.Groups
 
         public int AddGroup(GroupDto groupDto)
         {
-	        var tour = TourService.GetTourById(groupDto.RatingTourId);
+			var tour = TourService.GetTourById(groupDto.RatingTourId);
 
-	        var group = new OMGroup();
-	        var tourGroup = new OMTourGroup();
+			var group = new OMGroup();
+			var tourGroup = new OMTourGroup();
 
-	        return SetGroupFields(groupDto, group, tourGroup);
-        }
+			return SetGroupFields(groupDto, group, tourGroup);
+		}
 
         public int UpdateGroup(GroupDto groupDto)
         {
-	        var tour = TourService.GetTourById(groupDto.RatingTourId);
+			var tour = TourService.GetTourById(groupDto.RatingTourId);
 
-	        var group = OMGroup.Where(x => x.Id == groupDto.Id)
-		        .SelectAll().ExecuteFirstOrDefault();
+			var group = OMGroup.Where(x => x.Id == groupDto.Id)
+			 .SelectAll().ExecuteFirstOrDefault();
 
-	        var tourGroup = OMTourGroup.Where(x => x.GroupId == groupDto.Id)
-		        .SelectAll().ExecuteFirstOrDefault();
+			var tourGroup = OMTourGroup.Where(x => x.GroupId == groupDto.Id)
+			 .SelectAll().ExecuteFirstOrDefault();
 
-	        return SetGroupFields(groupDto, group, tourGroup);
-        }
+			return SetGroupFields(groupDto, group, tourGroup);
+		}
 
 
 		#region Support Methods
@@ -268,23 +279,6 @@ namespace KadOzenka.Dal.Groups
 	        return mainGroups;
         }
 
-		//private string GenerateName(long tourId, string name, long? parentId)
-  //      {
-	 //       if (string.IsNullOrWhiteSpace(name))
-		//        throw new Exception("Не заполнено имя");
-
-	 //       var numberOfGroups = OMTourGroup.Where(x => x.TourId == tourId).ExecuteCount();
-		//	if (parentId == null)
-	 //       {
-		//        return $"{numberOfGroups}. {name}";
-	 //       }
-	 //       else
-	 //       {
-		//        var numberOfSubGroups = OMTourGroup.Where(x => x.TourId == tourId && x.GroupId == parentId).ExecuteCount();
-		//        return $"{numberOfGroups}.{numberOfSubGroups}. {name}";
-		//	}
-  //      }
-
         #endregion
-    }
+	}
 }

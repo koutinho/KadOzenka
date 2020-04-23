@@ -84,7 +84,7 @@
     </div>
 </div>
 
-
+<script src="~/js/groups.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#additionToolbar').removeClass("k-widget");
@@ -176,30 +176,7 @@
 			success: function (response) {
 				if (!response)
 					return;
-				var result = response.map(function(mainGroup) {
-					return {
-						Id: mainGroup.Id,
-						GroupName: mainGroup.GroupName,
-						UrlForEdit: mainGroup.UrlForEdit,
-						GroupType: mainGroup.GroupType,
-						items: mainGroup.Items.map(function(group) {
-							return {
-								Id: group.Id,
-								GroupName: group.GroupName,
-								UrlForEdit: group.UrlForEdit,
-								GroupType: group.GroupType,
-								items: group.Items.map(function(subgroup) {
-									return {
-										Id: subgroup.Id,
-										GroupName: subgroup.GroupName,
-										UrlForEdit: subgroup.UrlForEdit,
-										GroupType: subgroup.GroupType
-									}
-								})
-							}
-						})
-					}
-				});
+				var result = MapTourGroups(response);
 				node.items.length = 0;
 				result.forEach(function(e) {
 					node.items.push(e);
