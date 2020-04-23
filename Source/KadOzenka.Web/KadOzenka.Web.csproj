@@ -137,8 +137,10 @@
     <None Remove="Config\Registers\Views\DeclarationsSubject.xml" />
     <None Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <None Remove="Config\Registers\Views\DeclarationsUved.xml" />
+    <None Remove="Config\Registers\Views\EsEstimates.xml" />
     <None Remove="Config\Registers\Views\EsReferenceItems.xml" />
     <None Remove="Config\Registers\Views\EsReferences.xml" />
+    <None Remove="Config\Registers\Views\EsWallMaterials.xml" />
     <None Remove="Config\Registers\Views\GbuCodDictionary.xml" />
     <None Remove="Config\Registers\Views\GbuCodJob.xml" />
     <None Remove="Config\Registers\Views\GbuObjects.xml" />
@@ -287,13 +289,19 @@
     <Content Include="Config\Registers\Views\DeclarationsUved.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\Registers\Views\EsEstimates.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\Registers\Views\EsReferenceItems.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\GbuCodDictionary.xml">
+    <Content Include="Config\Registers\Views\EsReferences.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\EsReferences.xml">
+    <Content Include="Config\Registers\Views\EsWallMaterials.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\GbuCodDictionary.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\GbuCodJob.xml">
@@ -326,7 +334,9 @@
     <Content Include="Config\Registers\Views\KoToursFactorsList.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\MarketObjectCard.xml" />
+    <Content Include="Config\Registers\Views\MarketObjectCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\Registers\Views\MarketObjects.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -401,11 +411,11 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.2" PrivateAssets="all">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.3" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.391" />
+    <PackageReference Include="Platform.Web" Version="1.0.394" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
@@ -621,6 +631,9 @@
     <None Update="Config\Ehd\EhdObjectsImportConditions.Prod.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\LeftPanel\Dashboard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Mfc\Upload\nach\ConfigA.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -642,13 +655,16 @@
     <None Update="Config\Param\InsurObjectMapFlat.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\Registers\SearchPanels\EsReferenceItems.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Config\Registers\SearchPanels\DeclarationsBookSelect.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\EsReferenceItems.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\GbuCodDictionary.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\InsurMfcPackages.xml">
@@ -702,6 +718,12 @@
     <None Update="Config\Reports\CCC_OUReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\CorrectionByBargainReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CorrectionByDateReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\InformationCardReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -738,6 +760,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Config\LeftPanel\" />
     <Folder Include="wwwroot\images\Icons\Panels\" />
   </ItemGroup>
 
@@ -799,17 +822,8 @@
     <Content Update="Views\ExpressScore\Index.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Update="Views\ExpressScore\WallMaterial.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Views\GbuObject\GbuObjectCardNew.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Update="Views\GbuObject\GroupingObject.cshtml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Views\GbuObject\_gbuObjectCardPanelBar.cshtml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="Views\Report\List.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
@@ -967,7 +981,6 @@
   <ItemGroup>
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
-    <ConfigPath Remove="Config\Registers\SearchPanels\EsReferenceItems.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
@@ -976,15 +989,11 @@
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubject.xml" />
     <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
-    <ConfigPath Remove="Config\Registers\Views\EsReferenceItems.xml" />
-    <ConfigPath Remove="Config\Registers\Views\EsReferences.xml" />
-    <ConfigPath Remove="Config\Registers\Views\EsWallMaterials.xml" />
     <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoObjectsCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
-    <ConfigPath Remove="Config\Registers\Views\MarketObjectCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
