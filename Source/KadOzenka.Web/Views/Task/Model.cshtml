@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Task.ModelModel
+﻿@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Task.ModelModel
 
 <!-- Модальное окно для загрузки справочника меток -->
 @using (Html.BeginForm("UploadMarksCatalog", "Tour", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
@@ -25,64 +26,85 @@
     </div>
 }
 
-<div id="toolbar"></div>
-<div class="form-horizontal col-sm-12" style="margin-top: 10px">
-	<div style="margin: 1%;">
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(x => x.Name)
+<!--Основное окно с информацией о модели -->
+@using (Html.BeginForm("Model", "Task", FormMethod.Post, new {id = "saveModelForm", enctype = "multipart/form-data"}))
+{
+	@Html.HiddenFor(x => x.Id)
+	@Html.HiddenFor(x => x.GroupId)
+	<div id="toolbar"></div>
+	<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+		<div style="margin: 1%;">
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.Name)
+				</div>
+				<div class="col-sm-10">
+					@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+				</div>
 			</div>
-			<div class="col-sm-10">
-				@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.Description)
+				</div>
+				<div class="col-sm-10">
+					@Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.AlgorithmTypeCode)
+				</div>
+				<div class="col-sm-10">
+					@Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false)
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.CalculationTypeCode, true)
+				</div>
+				<div class="col-sm-10">
+					@Html.KendoEnumDropDownListFor(x => x.CalculationTypeCode, isReadonly: false)
+				</div>
+			</div>
+			<div class="form-group" id="modelCalculationMethod" style="display: none;">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.CalculationMethodCode, true)
+				</div>
+				<div class="col-sm-10">
+					@Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: false)
+				</div>
 			</div>
 		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(x => x.Description)
+
+		<div style="border: 1px solid #cccdcf; padding: 1%;">
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.Formula)
+				</div>
+				<div class="col-sm-10">
+					@Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
+				</div>
 			</div>
-			<div class="col-sm-10">
-				@Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.A0)
+				</div>
+				<div class="col-sm-10">
+					@Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
+				</div>
 			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(x => x.AlgorithmTypeCode)
+
+			<div style="padding-top: 2%;">
+				<div id="factorToolbar"></div>
 			</div>
-			<div class="col-sm-10">
-				@Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false)
+			<div style="display: flex;">
+				<div style="align-items: stretch">
+					<div id="grid"></div>
+				</div>
 			</div>
 		</div>
 	</div>
-
-	<div style="border: 1px solid #cccdcf; padding: 1%;">
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(x => x.Formula)
-			</div>
-			<div class="col-sm-10">
-				@Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(x => x.A0)
-			</div>
-			<div class="col-sm-10">
-				@Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
-			</div>
-		</div>
-
-		<div style="padding-top: 2%;">
-			<div id="factorToolbar"></div>
-		</div>
-		<div style="display: flex;">
-			<div style="align-items: stretch">
-				<div id="grid"></div>
-			</div>
-		</div>
-	</div>
-
-</div>
+}
 
 <script>
     $(document).ready(function () {
@@ -101,33 +123,7 @@
                     text: '',
                     attributes: { title: "Сохранить" },
                     icon: 'save',
-                    click: function () {
-                        var dto = {
-                            Id: '@Model.Id',
-                            GroupId: '@Model.GroupId',
-                            Name: $('#Name').val(),
-                            Description: $('#Description').val(),
-                            AlgoritmType_Code: $('#AlgorithmTypeCode').val(),
-                            Formula: $('#Formula').val(),
-                            A0: $('#A0').val()
-                        };
-
-                        kendo.ui.progress($('body'), true);
-
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Action("Model", "Task")',
-                            data: dto,
-                            success: function (e) {
-                                kendo.ui.progress($('body'), false);
-                                Common.ShowMessage('Сохранено');
-                            },
-                            error: function (e) {
-                                kendo.ui.progress($('body'), false);
-                                Common.ShowError(e.responseText);
-                            }
-                        });
-                    }
+                    click: UpdateModel
                 }
             ]
         });
@@ -229,7 +225,10 @@
                     Common.ShowError(e.responseText);
                 }
             });
-        }
+		}
+
+        CalculationTypeChanged();
+        $('#CalculationTypeCode').data('kendoDropDownList').bind('change', CalculationTypeChanged);
 
         $("#grid").data("kendoGrid").bind('change', GridChanged);
         function GridChanged() {
@@ -427,6 +426,21 @@
         });
     });
 
+
+
+	function CalculationTypeChanged() {
+		var dropdownList = $('#CalculationTypeCode').data('kendoDropDownList');
+		if (!dropdownList)
+			return;
+		var calculationType = dropdownList.value();
+		if (calculationType == '@KoCalculationType.Comparative.GetEnumCode()') {
+			$("#modelCalculationMethod").show();
+		} else {
+			$("#modelCalculationMethod").hide();
+		}
+    }
+
+
     function UpdateView() {
         @{
             if (!Model.IsPartial)
@@ -441,9 +455,30 @@
                 </text>
             }
         }
-    }
+	}
 
+
+	function UpdateModel() {
+		var form = $('#saveModelForm');
+		var formObject = Common.Functions.FormToObject(form);
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: form.attr('method'),
+			url: form.attr('action'),
+			data: formObject,
+			success: function (e) {
+				kendo.ui.progress($('body'), false);
+				Common.ShowMessage('Сохранено');
+				UpdateView();
+			},
+			error: function (e) {
+				kendo.ui.progress($('body'), false);
+				Common.ShowError(e.responseText);
+			}
+		});
+	}
 </script>
+
 
 <style>
     .factor-buttons button {

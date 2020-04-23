@@ -209,7 +209,8 @@
                 $('#modelContent').html(response);
 				kendo.ui.progress($('#modelContent'), false);
             },
-            error: function () {
+			error: function (response) {
+				Common.ShowError(response.responseText);
 				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
 				kendo.ui.progress($('#modelContent'), false);
             }

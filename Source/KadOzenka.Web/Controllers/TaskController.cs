@@ -221,10 +221,22 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult Model(OMModel model)
+		public ActionResult Model(ModelModel model)
 		{
-			model.Formula = model.GetFormulaFull(true);
-			model.Save();
+			var omModel = ModelService.GetModelById(model.Id);
+
+			omModel.Name = model.Name;
+			omModel.Description = model.Description;
+			omModel.AlgoritmType_Code = model.AlgorithmTypeCode;
+			omModel.A0 = model.A0;
+
+			omModel.CalculationMethod_Code = model.CalculationTypeCode == KoCalculationType.Comparative
+				? model.CalculationMethodCode
+				: KoCalculationMethod.None;
+
+			omModel.CalculationType_Code = model.CalculationTypeCode;
+			omModel.Formula = omModel.GetFormulaFull(true);
+			omModel.Save();
 			return Ok();
 		}
 
