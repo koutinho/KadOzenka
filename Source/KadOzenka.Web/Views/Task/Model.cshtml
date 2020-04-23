@@ -27,56 +27,61 @@
 
 <div id="toolbar"></div>
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(x => x.Name)
-        </div>
-        <div class="col-sm-10">
-            @Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(x => x.Description)
-        </div>
-        <div class="col-sm-10">
-            @Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(x => x.AlgorithmTypeCode)
-        </div>
-        <div class="col-sm-10">
-            @Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false)
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(x => x.Formula)
-        </div>
-        <div class="col-sm-10">
-            @Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabelFor(x => x.A0)
-        </div>
-        <div class="col-sm-10">
-            @Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
-        </div>
-    </div>
+	<div style="margin: 1%;">
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(x => x.Name)
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(x => x.Description)
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoTextBoxFor(x => x.Description, isReadonly: false)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(x => x.AlgorithmTypeCode)
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoEnumDropDownListFor(x => x.AlgorithmTypeCode, isReadonly: false)
+			</div>
+		</div>
+	</div>
 
-    <div style="padding-top: 2%;">
-        <div id="factorToolbar"></div>
-    </div>
+	<div style="border: 1px solid #cccdcf; padding: 1%;">
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(x => x.Formula)
+			</div>
+			<div class="col-sm-10">
+				@Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(x => x.A0)
+			</div>
+			<div class="col-sm-10">
+				@Html.KendoTextBoxFor(x => x.A0, isReadonly: false)
+			</div>
+		</div>
 
-    <div style="display: flex;">
-        <div style="align-items: stretch">
-            <div id="grid"></div>
-        </div>
-    </div>
+		<div style="padding-top: 2%;">
+			<div id="factorToolbar"></div>
+		</div>
+		<div style="display: flex;">
+			<div style="align-items: stretch">
+				<div id="grid"></div>
+			</div>
+		</div>
+	</div>
+
 </div>
 
 <script>
@@ -206,16 +211,9 @@
                 }
             ],
             width: '100%',
-            pageable: true,
             scrollable: true,
             selectable: true
         });
-
-        var grid = $("#grid").data("kendoGrid");
-        var numberOfPages = 5;
-        if ('@Model.IsPartial' == "True")
-            numberOfPages = 2;
-        grid.dataSource.pageSize(numberOfPages);
 
 
         $('#AlgorithmTypeCode').data('kendoDropDownList').bind('change', AlgTypeChanged);
