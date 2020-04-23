@@ -11,11 +11,14 @@ using ObjectModel.Market;
 using Platform.Reports;
 using Core.Shared.Extensions;
 using DevExpress.DataProcessing;
+using ObjectModel.Directory.MarketObjects;
 
 namespace KadOzenka.Dal.FastReports
 {
     public class CorrectionByBargainReport : FastReportBase
     {
+        private readonly CorrectionSettingsService _correctionSettingsService = new CorrectionSettingsService();
+
         protected override string TemplateName(NameValueCollection query)
         {
             return nameof(CorrectionByBargainReport);
@@ -60,7 +63,8 @@ namespace KadOzenka.Dal.FastReports
             dataTable.Columns.Add("PriceAfterCorrectionByBargain");
 
             var request = GetCorrectionByBargainExportRequest(query);
-            var correctionByBargainExport = new CorrectionByBargainExport();
+            var settings = _correctionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByBargain);
+            var correctionByBargainExport = new CorrectionByBargainExport(settings);
             var data = correctionByBargainExport.GetBargainCorrectionData(request);
 
             foreach (var bargainDto in data.Where(x => x.PriceAfterCorrectionByBargain.HasValue))

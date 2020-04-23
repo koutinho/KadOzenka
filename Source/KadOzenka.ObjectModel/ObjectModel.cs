@@ -5144,12 +5144,12 @@ namespace ObjectModel.Market
         }
 
 
-        private Districts _correctiontype_Code;
+        private ObjectModel.Directory.MarketObjects.CorrectionTypes _correctiontype_Code;
         /// <summary>
         /// 11700200 Тип корректировки (справочный код) (CORRECTION_TYPE_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 11700200)]
-        public Districts CorrectionType_Code
+        public ObjectModel.Directory.MarketObjects.CorrectionTypes CorrectionType_Code
         {
             get
             {

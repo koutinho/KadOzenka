@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using KadOzenka.Dal.Correction.Dto;
+using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -63,9 +64,9 @@ namespace KadOzenka.Dal.Correction
         }
 
         public void SaveCoefficients(List<OMIndexesForDateCorrection> coefficients, DateTime date, string buildingCadastralNumber,
-            MarketSegment segment, decimal coefficient)
+            MarketSegment segment, decimal coefficient, CorrectionSettings settings)
         {
-            var isExcluded = coefficient < Consts.LowerLimitForDateCorrectionCoefficients || coefficient > Consts.UpperLimitForDateCorrectionCoefficients;
+            var isExcluded = !IsCoefIncludedInCalculationLimit(coefficient, settings);
             var existedRecord = coefficients.FirstOrDefault(x =>
                 x.BuildingCadastralNumber == buildingCadastralNumber && x.MarketSegment_Code == segment &&
                 x.Date == date);
@@ -86,6 +87,14 @@ namespace KadOzenka.Dal.Correction
                 existedRecord.IsExcluded = isExcluded;
                 existedRecord.Save();
             }
+        }
+
+        public bool IsCoefIncludedInCalculationLimit(decimal? coefficientByBuildingQuarter, CorrectionSettings settings)
+        {
+            var value = (!settings.LowerLimitForCoefficient.HasValue || coefficientByBuildingQuarter >= settings.LowerLimitForCoefficient.Value)
+                   && (!settings.UpperLimitForCoefficient.HasValue || coefficientByBuildingQuarter <= settings.UpperLimitForCoefficient.Value);
+
+            return value;
         }
 
         public void CalculatePriceAfterCorrectionByDate()

@@ -16,6 +16,7 @@ using KadOzenka.Dal.LongProcess.InputParameters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Directory;
+using ObjectModel.Directory.MarketObjects;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -25,6 +26,7 @@ namespace KadOzenka.Web.Controllers
         public CorrectionByRoomService CorrectionByRoomService { get; set; }
 		public CorrectionByStageService CorrectionByStageService { get; set; }
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
+        public CorrectionSettingsService CorrectionSettingsService { get; set; }
 
 		public MarketObjectsController()
         {
@@ -32,6 +34,7 @@ namespace KadOzenka.Web.Controllers
             CorrectionByRoomService = new CorrectionByRoomService();
 			CorrectionByStageService = new CorrectionByStageService();
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
+            CorrectionSettingsService = new CorrectionSettingsService();
         }
 
         [HttpGet]
@@ -116,8 +119,8 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetCorrectionByDateGeneralCoefficients(long marketSegmentCode)
         {
             var history = CorrectionByDateService.GetAverageCoefficientsBySegments(marketSegmentCode);
-
-            return Json(history.Select(CorrectionByDateModel.Map).ToList());
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
+            return Json(history.Select(x => CorrectionByDateModel.Map(x, settings, CorrectionByDateService.IsCoefIncludedInCalculationLimit)).ToList());
         }
 
         [HttpGet]
@@ -128,6 +131,15 @@ namespace KadOzenka.Web.Controllers
             ViewBag.Date = date;
             ViewBag.MarketSegmentCode = marketSegmentCode;
             ViewBag.MarketSegment = marketSegment.GetEnumDescription();
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
+            if (settings.LowerLimitForCoefficient.HasValue)
+            {
+                ViewBag.LowerLimitForCoefficient = settings.LowerLimitForCoefficient;
+            }
+            if (settings.UpperLimitForCoefficient.HasValue)
+            {
+                ViewBag.UpperLimitForCoefficient = settings.UpperLimitForCoefficient;
+            }
 
             return View();
         }
@@ -135,7 +147,8 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetCorrectionByDateDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             var historyRecords = CorrectionByDateService.GetDetailedCoefficients(marketSegmentCode, date);
-            var models = historyRecords.Select(CorrectionByDateModel.Map).ToList();
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
+            var models = historyRecords.Select(x => CorrectionByDateModel.Map(x, settings, CorrectionByDateService.IsCoefIncludedInCalculationLimit)).ToList();
 
             return Json(models);
         }
@@ -188,7 +201,8 @@ namespace KadOzenka.Web.Controllers
 	        }
 
 	        var request = model.ToCorrectionByBargainRequest();
-	        var correctionByBargainProc = new CorrectionByBargainProc();
+	        var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByBargain);
+            var correctionByBargainProc = new CorrectionByBargainProc(settings);
 	        correctionByBargainProc.PerformBargainCorrectionProc(request);
 
             return Json(new { Success = "Процедура Корректировки на торг успешно выполнена" });
@@ -386,5 +400,48 @@ namespace KadOzenka.Web.Controllers
             return Json(new { Message = message });
         }
         #endregion
+
+        #region Correction Settings
+
+	    [HttpGet]
+        public IActionResult CorrectionSettings()
+	    {
+	        var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
+	        var model = new CorrectionSettingsModel(settings, CorrectionTypes.CorrectionByDate);
+
+            return View(model);
+	    }
+
+	    [HttpGet]
+	    public IActionResult GetCorrectionSettingsInfo(CorrectionTypes correctionType)
+	    {
+	        var settings = CorrectionSettingsService.GetCorrectionSettings(correctionType);
+	        return Content(JsonConvert.SerializeObject(new CorrectionSettingsModel(settings, correctionType)), "application/json");
+        }
+
+        [HttpPost]
+	    public IActionResult CorrectionSettings(CorrectionSettingsModel model)
+	    {
+	        if (!ModelState.IsValid)
+	        {
+	            return GenerateMessageNonValidModel();
+	        }
+
+	        try
+	        {
+	            CorrectionSettingsService.SaveCorrectionSettings(model.ToModel(), model.CorrectionType.GetValueOrDefault());
+	        }
+	        catch (Exception e)
+	        {
+	            return SendErrorMessage(e.Message);
+	        }
+
+	        return Json(new
+	        {
+	            success = true
+	        });
+        }
+
+        #endregion Correction Settings
     }
 }

@@ -5,11 +5,16 @@ using System.Linq;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Correction.Requests;
 using KadOzenka.Dal.Correction.Dto;
+using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
 
 namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByBargainExport : CorrectionByBargain<CorrectionByBargainExportRequest>
     {
+        public CorrectionByBargainExport(CorrectionSettings correctionSettings) : base(correctionSettings)
+        {
+        }
+
         public List<CorrectionByBargainDto> GetBargainCorrectionData(CorrectionByBargainExportRequest request)
         {
             ValidateRequest(request);

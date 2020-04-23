@@ -7,11 +7,19 @@ using Core.Register.QuerySubsystem;
 using DealType = ObjectModel.Directory.DealType;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Requests;
+using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
 
 namespace KadOzenka.Dal.Correction
 {
     public abstract class CorrectionByBargain<T> where T : CorrectionByBargainRequest
     {
+        protected CorrectionSettings CorrectionSettings { get; set; }
+
+        protected CorrectionByBargain(CorrectionSettings correctionSettings)
+        {
+            CorrectionSettings = correctionSettings;
+        }
+
         protected virtual void ValidateRequest(T request)
         {
             if (request == null)
@@ -152,7 +160,7 @@ namespace KadOzenka.Dal.Correction
 
                     var coefficientByBuildingQuarter = dealObjectsPricePerArea /
                                               suggestionObjectsPricePerArea;
-                    if (coefficientByBuildingQuarter.HasValue && coefficientByBuildingQuarter >= Consts.LowerLimitForBargainCorrectionCoefficients && coefficientByBuildingQuarter <= Consts.UpperLimitForBargainCorrectionCoefficients)
+                    if (IsCoefficientIncludedInCalculation(coefficientByBuildingQuarter))
                     {
                         coefficientsByBuildingQuarterList.Add(coefficientByBuildingQuarter.Value);
                     }
@@ -166,6 +174,12 @@ namespace KadOzenka.Dal.Correction
             }
 
             return coefficientsBySegments;
+        }
+
+        private bool IsCoefficientIncludedInCalculation(decimal? coefficientByBuildingQuarter)
+        {
+            return coefficientByBuildingQuarter.HasValue && (!CorrectionSettings.LowerLimitForCoefficient.HasValue || coefficientByBuildingQuarter >= CorrectionSettings.LowerLimitForCoefficient.Value) 
+                                                         && (!CorrectionSettings.UpperLimitForCoefficient.HasValue || coefficientByBuildingQuarter <= CorrectionSettings.UpperLimitForCoefficient.Value);
         }
 
         protected decimal? GetPriceAfterCorrectionByBargain(decimal? price, decimal? bargainCoefficient)

@@ -1,10 +1,14 @@
-﻿using System;
+﻿using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
 using KadOzenka.Dal.Correction.Requests;
 
 namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByBargainProc : CorrectionByBargain<CorrectionByBargainRequest>
     {
+        public CorrectionByBargainProc(CorrectionSettings correctionSettings) : base(correctionSettings)
+        {
+        }
+
         public void PerformBargainCorrectionProc(CorrectionByBargainRequest request)
         {
             ValidateRequest(request);

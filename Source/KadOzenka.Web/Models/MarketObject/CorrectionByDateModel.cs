@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Correction.Dto;
+using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
 
 namespace KadOzenka.Web.Models.MarketObject
 {
@@ -20,18 +21,22 @@ namespace KadOzenka.Web.Models.MarketObject
 
         [Display(Name = "Исключить из расчета")]
         public bool IsExcludeFromCalculation { get; set; }
+        public bool IsExclusionEnabled { get; set; }
 
 
-        public static CorrectionByDateModel Map(CorrectionByDateDto coefficient)
+        public static CorrectionByDateModel Map(CorrectionByDateDto coefficient, CorrectionSettings settings, Func<decimal?, CorrectionSettings, bool> isCoefIncludedInCalculationLimit)
         {
-            return new CorrectionByDateModel
+            var model =  new CorrectionByDateModel
             {
                 Id = coefficient.Id,
                 BuildingCadastralNumber = coefficient.BuildingCadastralNumber,
                 Date = coefficient.Date,
                 Coefficient = coefficient.Coefficient,
-                IsExcludeFromCalculation = coefficient.IsExcludeFromCalculation
+                IsExcludeFromCalculation = coefficient.IsExcludeFromCalculation,
+                IsExclusionEnabled = isCoefIncludedInCalculationLimit(coefficient.Coefficient, settings)
             };
+
+            return model;
         }
 
         public static CorrectionByDateDto UnMap(CorrectionByDateModel model)

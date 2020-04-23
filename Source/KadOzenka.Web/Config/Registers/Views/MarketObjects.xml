@@ -68,6 +68,9 @@
         <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionForFirstFloorGeneral" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-eye" />
       </DropDownButtons>
     </Button>
+
+      <Button Caption="Настройка корректировок" NavigateURL="~/MarketObjects/CorrectionSettings" WindowHeight="400" WindowWidth="1000" Icon="fas fa-wrench" OpenInRadWindow="true">
+      </Button>
   </Buttons>
   
   <Tabs>

@@ -7,6 +7,12 @@
             <div class="col-sm-2">
                 <label>@ViewBag.Date.ToString("MMMM yyyy")</label>
             </div>
+            @if (ViewBag.LowerLimitForCoefficient != null || ViewBag.UpperLimitForCoefficient != null)
+            {
+                <div class="col-sm-4">
+                    <label>Текущие настройки фильтра на вылеты: @(ViewBag.LowerLimitForCoefficient != null ? $"от {@ViewBag.LowerLimitForCoefficient}" : "") @(ViewBag.UpperLimitForCoefficient != null ? $"до {@ViewBag.UpperLimitForCoefficient}" : "")</label>
+                </div>
+            }
         </div>
     </div>
     <div id="grid"></div>
@@ -59,7 +65,8 @@
                         Id: {editable: false, nullable: true},
                         BuildingCadastralNumber: { editable: false },
                         Coefficient: { editable: false },
-                        IsExcludeFromCalculation: { type: "boolean" }
+                        IsExcludeFromCalculation: { type: "boolean", editable: true },
+                        IsExclusionEnabled: { type: "boolean" }
                     }
                 }
             },
@@ -82,7 +89,7 @@
                 {
                     title: "Исключен из расчета",
                     field: "IsExcludeFromCalculation",
-                    template: '<input type="checkbox" #= IsExcludeFromCalculation ? \'checked="checked"\' : "" # class="chkbx" />'
+                    template: '<input type="checkbox" #= IsExcludeFromCalculation ? \'checked="checked"\' : "" # #= IsExclusionEnabled ? "" : \'onclick="return false;"\' # class="chkbx" />'
                 }
             ]
         });
@@ -90,9 +97,6 @@
         $("#grid .k-grid-content").on("change", "input.chkbx", UpdateGridDataSource);
         $('#excludeBtn').on('click', ExcludeBuildingsFromCalculation);
     });
-
-
-
 
     function UpdateGridDataSource(e) {
         var grid = $("#grid").data("kendoGrid");

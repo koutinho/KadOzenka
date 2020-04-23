@@ -5,6 +5,7 @@ using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
 using ObjectModel.Directory;
+using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.LongProcess
@@ -23,6 +24,8 @@ namespace KadOzenka.Dal.LongProcess
             WorkerCommon.SetProgress(processQueue, 0);
 
             var service = new CorrectionByDateService();
+            var settingsService = new CorrectionSettingsService();
+            var settings = settingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
 
             var startDate = new DateTime(2017, 01, 01);
             var endDate = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
@@ -79,7 +82,7 @@ namespace KadOzenka.Dal.LongProcess
                                 : Math.Round(averagePriceForObjectsFromCurrentPeriod / averagePriceForObjectsFromPreviousPeriod,
                                     Correction.Consts.PrecisionForCoefficients);
 
-                            service.SaveCoefficients(coefficients, currentPeriod, groupByBuilding.Key, groupBySegment.Key, coefficient);
+                            service.SaveCoefficients(coefficients, currentPeriod, groupByBuilding.Key, groupBySegment.Key, coefficient, settings);
                         }
                     }
                 });
