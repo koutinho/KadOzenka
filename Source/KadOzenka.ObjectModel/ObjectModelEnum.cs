@@ -2450,6 +2450,46 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип расчета (213)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 213)]
+    public enum KoCalculationType : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("")]
+        None = 0,
+
+		/// <summary>
+		/// Доходный (1061)
+		/// </summary>
+		[Description("Доходный")]
+        [EnumCode("1061")]
+        [ShortTitle("")]
+        Profitable = 1061,
+		/// <summary>
+		/// Затратный (1062)
+		/// </summary>
+		[Description("Затратный")]
+        [EnumCode("1062")]
+        [ShortTitle("")]
+        Costly = 1062,
+		/// <summary>
+		/// Сравнительный (1063)
+		/// </summary>
+		[Description("Сравнительный")]
+        [EnumCode("1063")]
+        [ShortTitle("")]
+        Comparative = 1063,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>
