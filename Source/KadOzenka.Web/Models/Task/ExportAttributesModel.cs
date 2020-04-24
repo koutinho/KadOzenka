@@ -3,7 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.ObjectsCharacteristics;
+using KadOzenka.Dal.ObjectsCharacteristics.Dto;
+using KadOzenka.Dal.Oks;
+using ObjectModel.Core.Register;
+using ObjectModel.Directory;
 using ObjectModel.Gbu.ExportAttribute;
+using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
@@ -11,7 +17,10 @@ namespace KadOzenka.Web.Models.Task
     {
         [Display(Name = "Задания на оценку")]
         public List<long> TaskFilter { get; set; }
-        public string ObjType { get; set; }
+        public long ObjType { get; set; }
+		public long RatingTour { get; set; }
+
+		public bool CreateAttributes { get; set; }
 
 		[Control("KO", 1)]
         public long? IdAttributeKO1 { get; set; }
@@ -84,6 +93,15 @@ namespace KadOzenka.Web.Models.Task
 			};
 		}
 
+		public GbuExportAttributeSettings ToGbuExportAndCreateAttributeSettings()
+		{
+			return new GbuExportAttributeSettings
+			{
+				TaskFilter = TaskFilter,
+				Attributes = CreateAttributeItems()
+			};
+		}
+
 		#region Методы для получения атрибутов
 
 		private List<ExportAttributeItem> GetAttributeItems()
@@ -129,6 +147,102 @@ namespace KadOzenka.Web.Models.Task
 			}
 
 			return res;
+		}
+
+		private List<ExportAttributeItem> CreateAttributeItems()
+		{
+			var res = new List<ExportAttributeItem>();
+			ObjectType objectType = ObjType == 1 ? ObjectType.ZU : ObjectType.Oks;
+
+			foreach (var prop in GetType().GetProperties())
+			{
+				Control attr = GetAttribute(prop);
+				if (attr != null && attr.Name == "GBU")
+				{
+					if (!GetPropertyByNameAttribute("GBU", attr.NumberControl).GetValue(this, null).TryParseToDecimal(out var idGbu))
+					continue;
+
+				long idKo = CreateKoAttribute((long)idGbu, RatingTour, objectType);
+
+				res.Add(new ExportAttributeItem
+					{
+						IdAttributeKO = (long)idKo,
+						IdAttributeGBU = (long)idGbu
+					});
+
+				}
+
+			}
+
+			if (ExportAttribute != null && ExportAttribute.Count > 0)
+			{
+				foreach (var attribute in ExportAttribute)
+				{
+					if (!attribute.IdAttributeGbu.TryParseToDecimal(out var idGbu)) continue;									
+
+					long idKo = CreateKoAttribute((long)idGbu, RatingTour, objectType);
+
+					res.Add(new ExportAttributeItem
+					{
+						IdAttributeGBU = (long)idGbu,
+						IdAttributeKO = (long)idKo
+
+					});
+				}
+			}
+
+			return res;
+		}
+
+		private static long CreateKoAttribute(long idGbu, long tourId, ObjectType objectType)
+		{
+			bool isOks = objectType == ObjectType.Oks;			
+
+			OMTransferAttributes transferAttribute = OMTransferAttributes
+				.Where(x => x.TourId == tourId && x.IsOks == isOks && x.GbuId == idGbu)
+				.Select(x => x.KoId)
+				.ExecuteFirstOrDefault();
+
+			if (transferAttribute != null)
+			{
+				return transferAttribute.KoId;
+			}
+
+			OMTourFactorRegister existedTourFactorRegister = objectType == ObjectType.ZU
+				? OMTourFactorRegister
+					.Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
+					.SelectAll().ExecuteFirstOrDefault()
+				: OMTourFactorRegister
+					.Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
+					.SelectAll().ExecuteFirstOrDefault();
+
+			if (existedTourFactorRegister == null)
+				return 0;
+
+			long registerId = existedTourFactorRegister.RegisterId.GetValueOrDefault();
+
+			OMAttribute attributeGbu = OMAttribute.Where(x => x.Id == idGbu).SelectAll().ExecuteFirstOrDefault();
+			CharacteristicDto characteristicDto = new CharacteristicDto
+			{
+				Name = attributeGbu.Name,
+				RegisterId = registerId,
+				Type = (Core.Register.RegisterAttributeType)attributeGbu.Type,
+				ReferenceId = attributeGbu.ReferenceId
+			};
+
+			long idKo = new ObjectsCharacteristicsService().AddCharacteristic(characteristicDto);
+
+			//запомнить соответствие
+			OMTransferAttributes newTransferAttribute = new OMTransferAttributes
+			{
+				TourId = tourId,
+				IsOks = isOks,
+				KoId = idKo,
+				GbuId = idGbu
+			};
+			newTransferAttribute.Save();		
+
+			return idKo;
 		}
 
 		private static Control GetAttribute(PropertyInfo prop)

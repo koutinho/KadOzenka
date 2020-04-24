@@ -5,6 +5,7 @@
 @using (Html.BeginForm("TransferAttributes", "Task", FormMethod.Post))
 {
     <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+        @Html.HiddenFor(x => x.CreateAttributes)
 
         <div class="form-group">
             <div class="col-sm-2">
@@ -212,13 +213,13 @@
 		var idTour = $('#RatingTour').data('kendoDropDownList').value();
 		var objectType = $('input[name="ObjType"]:checked').val();
 
-		var url = "@Url.Action("GetRowExport", "Task")";
-		$(classWrapper).load(url, { rowNumber: rowNumber, tourId: idTour, objectType: objectType }, function(response) {
+        var url = "@Url.Action("GetRowExport", "Task")";
+        $(classWrapper).load(url, { rowNumber: rowNumber, tourId: idTour, objectType: objectType, create: '@Model.CreateAttributes' }, function (response) {
 			$(classWrapper).show(500);
 			rowNumber++;
 			kendo.ui.progress($('body'), false);
-		});
-	}
+        });
+    }   
 
 	$(document).ready(function () {
 		$('#addRow').on('click', addNewRow);
@@ -244,11 +245,19 @@
 		$('[name="RatingTour"]').data('kendoDropDownList').bind('change', initKoAttributes);
 		$('[name="ObjType"]').on('change', initKoAttributes);
 
-		$('#execute').on('click', transferAttributes);
-	});
+        $('#execute').on('click', transferAttributes);
 
+        @if (Model.CreateAttributes)
+        {<Text>
+        beforeLoad();
+        </Text>}
+        });
 
-
+    function beforeLoad() {
+        $('[id^="IdAttributeKO"]').parents(".col-sm-5").hide();
+        var gbuCells = $('[id^="IdAttributeGBU"]').parents(".col-sm-5");
+        gbuCells.removeClass("col-sm-5").addClass("col-sm-10 col-sm-offset-2");
+    }
 
 	function initTasksList() {
 		var tourId = $('#RatingTour').val();

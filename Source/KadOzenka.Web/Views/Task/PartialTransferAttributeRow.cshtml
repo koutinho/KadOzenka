@@ -2,6 +2,18 @@
 @using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.Task.PartialExportAttributesRowModel;
 
+@if ((bool)ViewData["CreateAttributes"])
+{
+<div class="form-group attributes-list">
+    <div class="col-sm-10 col-sm-offset-2">
+        <div>
+            @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + (string)ViewData["RowNumber"])
+        </div>
+    </div>
+</div>
+}
+else
+{
 <div class="form-group attributes-list">
 	<div class="col-sm-5 col-sm-offset-2">
 		<div>
@@ -14,3 +26,4 @@
 		</div>
 	</div>
 </div>
+}

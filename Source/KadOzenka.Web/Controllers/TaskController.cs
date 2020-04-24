@@ -85,7 +85,7 @@ namespace KadOzenka.Web.Controllers
 		#region Перенос атрибутов
 
 		[HttpGet]
-		public ActionResult TransferAttributes()
+		public ActionResult TransferAttributes(bool create = false)
 		{
 			var model = new ExportAttributesModel();
 
@@ -102,6 +102,8 @@ namespace KadOzenka.Web.Controllers
 				}).AsEnumerable();
 
 			ViewData["KoAttributes"] = new List<string>();
+
+			model.CreateAttributes = create;
 
 			return View(model);
 		}
@@ -138,14 +140,21 @@ namespace KadOzenka.Web.Controllers
 			if (model.TaskFilter == null || model.TaskFilter.Count == 0)
 				throw new ArgumentException("Не выбрано задание на оценку, операция прервана");
 
+			GbuExportAttributeSettings settings;
+			if (model.CreateAttributes)
+			{
+				settings = model.ToGbuExportAndCreateAttributeSettings();
+			}
+			else
+			{
+				settings = model.ToGbuExportAttributeSettings();
+				ValidateExportAttributeItems(settings.Attributes);
+			}
 
-			var settings = model.ToGbuExportAttributeSettings();
-
-			ValidateExportAttributeItems(settings.Attributes);
             ExportAttributeToKoProcess.AddProcessToQueue(settings);
-        }
+        }		
 
-		public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] int objectType)
+		public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId, [FromForm] int objectType, [FromForm] bool create)
 		{
 
 			ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
@@ -169,6 +178,8 @@ namespace KadOzenka.Web.Controllers
 			}).AsEnumerable();
 
 			ViewData["RowNumber"] = rowNumber.ToString();
+			ViewData["CreateAttributes"] = create;
+
 			return PartialView("/Views/Task/PartialTransferAttributeRow.cshtml", new PartialExportAttributesRowModel());
 		}
 
