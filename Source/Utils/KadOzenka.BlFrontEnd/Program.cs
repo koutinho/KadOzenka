@@ -138,17 +138,8 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("306", "Статистика по положительным судебным решениям в Excel", SudExporter.ExportStatCheckExcel);
 			consoleHelper.AddCommand("350", "Импорт данных решений комиссий (БД)", CommissionExporter.DoLoadBd);
 			consoleHelper.AddCommand("351", "Импорт данных решений комиссий (Excel)", CommissionExporter.DoLoadExcel);
-            consoleHelper.AddCommand("360", "Экспорт в Xml - КНомер, УПКСЗ, КСтоимость.", ExporterKO.ExportXmlUnit);
-            consoleHelper.AddCommand("361", "Экспорт в Xml - КОценка по группам.", ExporterKO.ExportXmlGroup);
             consoleHelper.AddCommand("362", "Экспорт в Xml - КОценка по исходящим документам.", ExporterKO.ExportXmlRD);
             consoleHelper.AddCommand("363", "Экспорт в Xml - КОценка для ВУОН.", ExporterKO.ExportXmlVUON);
-            consoleHelper.AddCommand("364-4",  "Экспорт в Excel - Таблица 4. Группировка объектов недвижимости", ExporterKO.ExportXlsTable4);
-            consoleHelper.AddCommand("364-5",  "Экспорт в Excel - Таблица 5. Результаты моделирования", ExporterKO.ExportXlsTable5);
-            consoleHelper.AddCommand("364-7",  "Экспорт в Excel - Таблица 7. Обобщенные показатели по кадастровым районам", ExporterKO.ExportXlsTable7);
-            consoleHelper.AddCommand("364-8",  "Экспорт в Excel - Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам", ExporterKO.ExportXlsTable8);
-            consoleHelper.AddCommand("364-9",  "Экспорт в Excel - Таблица 9. Результаты определения кадастровой стоимости", ExporterKO.ExportXlsTable9);
-            consoleHelper.AddCommand("364-10", "Экспорт в Excel - Таблица 10. Результаты государственной кадастровой оценки", ExporterKO.ExportXlsTable10);
-            consoleHelper.AddCommand("364-11", "Экспорт в Excel - Таблица 11. Сводные результаты по кадастровому району", ExporterKO.ExportXlsTable11);
             consoleHelper.AddCommand("390", "Тест API судебной подсистемы", SudTestApi.TestAll);
             consoleHelper.AddCommand("401", "Импорт данных ЦОД из Xml", () =>
 			{

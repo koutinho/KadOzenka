@@ -2334,7 +2334,10 @@ namespace ObjectModel.KO
         /// Объекты выгрузки: true-Земельный участок, false-ОКС
         /// </summary>
         public bool UnloadParcel;
-
+        /// <summary>
+        /// Путь сохранения отчетов
+        /// </summary>
+        public string DirectoryName;
         /// <summary>
         /// Выгрузка изменений
         /// </summary>
@@ -2372,11 +2375,11 @@ namespace ObjectModel.KO
         /// </summary>
         public bool UnloadTable11;
         /// <summary>
-        /// Выгрузка XML 1
+        /// Выгрузка XML 1: КНомер, УПКСЗ, КСтоимость
         /// </summary>
         public bool UnloadXML1;
         /// <summary>
-        /// Выгрузка XML 2
+        /// Выгрузка XML 2 результатов Кадастровой оценки по группам.
         /// </summary>
         public bool UnloadXML2;
     }

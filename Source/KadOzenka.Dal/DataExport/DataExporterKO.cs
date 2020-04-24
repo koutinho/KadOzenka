@@ -240,13 +240,63 @@ namespace KadOzenka.Dal.DataExport
         }
     }
 
-
     /// <summary>
     /// Класс выгрузки в XML результатов Кадастровой оценки по объектам.
     /// </summary>
     public class DEKOUnit
     {
-        public static Stream ExportToXml(List<OMUnit> units)
+        /// <summary>
+        /// Экспорт в Xml - КНомер, УПКСЗ, КСтоимость. По 5000 записей. 
+        /// </summary>
+        public static void ExportToXml(KOUnloadSettings setting)
+        {
+            string file_name = "";
+            string path_name = "";
+            foreach (long taskId in setting.TaskFilter)
+            {
+                List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
+                int count_curr = 0;
+                int count_all = units_all.Count();
+
+                List<OMUnit> units_curr = new List<OMUnit>();
+                int count_write = 5000;
+                int count_file = 1;
+                foreach (OMUnit unit in units_all)
+                {
+                    units_curr.Add(unit);
+                    count_curr++;
+                    if (count_curr == count_write)
+                    {
+                        path_name = setting.DirectoryName + "\\XMLCost\\Task_" + taskId.ToString();
+                        if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
+
+                        file_name = path_name + "\\COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0') + ".xml";
+                        Stream resultFile = SaveXmlDocument(units_curr);
+                        using (FileStream output = new FileStream(file_name, FileMode.Create))
+                        {
+                            resultFile.CopyTo(output);
+                        }
+                        units_curr.Clear();
+                        count_curr = 0;
+                        count_file++;
+                    }
+                    count_curr++;
+                    Console.WriteLine("Выгружено " + count_curr.ToString() + " из " + count_all.ToString());
+                }
+
+                path_name = setting.DirectoryName + "\\XMLCost\\Task_" + taskId.ToString();
+                if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
+
+                file_name = path_name + "\\COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0') + ".xml";
+                Stream resultFile1 = SaveXmlDocument(units_curr);
+                using (FileStream output = new FileStream(file_name, FileMode.Create))
+                {
+                    resultFile1.CopyTo(output);
+                }
+            }
+        }
+
+        public static Stream SaveXmlDocument(List<OMUnit> units)
         {
             XmlDocument xmlFile = new XmlDocument();
             XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
@@ -415,7 +465,57 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKOGroup
     {
-        public static Stream ExportToXml(OMGroup _subgroup, string _message)
+        /// <summary>
+        /// Выгрузка в XML из ObjectModel.KO.OMGroup
+        /// </summary>
+        public static void ExportToXml(KOUnloadSettings setting)
+        {
+            // Выбираем все подгруппы
+            List<OMGroup> koGroups = OMGroup.Where(x => x.ParentId != -1).SelectAll().Execute();
+            int countCurr = 0;
+            int countAll = koGroups.Count();
+            foreach (OMGroup subgroup in koGroups)
+            {
+                countCurr++;
+                string str_message = "Выгружается группа " + countCurr.ToString() + " (Id=" + subgroup.Id.ToString() + ") из " + countAll.ToString();
+                Console.WriteLine(str_message);
+
+                foreach (long taskId in setting.TaskFilter)
+                {
+                    subgroup.Unit = OMUnit.Where(x => x.GroupId == subgroup.Id && x.TaskId == taskId).SelectAll().Execute();
+
+                    if (subgroup.Unit.Count > 0)
+                    {
+                        Stream resultFile = SaveXmlDocument(subgroup, str_message);
+
+                        OMGroup parent_group = OMGroup.Where(x => x.Id == subgroup.ParentId).SelectAll().ExecuteFirstOrDefault();
+                        string full_group_num = ((parent_group.Number == null ? parent_group.Id.ToString() : parent_group.Number)) + "." +
+                                                ((subgroup.Number == null ? subgroup.Id.ToString() : subgroup.Number));
+                        full_group_num = full_group_num.Replace("\n", "");
+
+
+                        string path_name = setting.DirectoryName
+                                           + "\\XMLGroups\\Task_" + taskId.ToString()
+                                           + "\\" + full_group_num;
+                        if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
+
+                        string file_name = path_name
+                                           + "\\FD_State_Cadastral_Valuation_"
+                                           + subgroup.Id.ToString().PadLeft(5, '0')
+                                           + countCurr.ToString().PadLeft(5, '0') + ".xml";
+                        using (FileStream output = new FileStream(file_name, FileMode.Create))
+                        {
+                            resultFile.CopyTo(output);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Экспорт в Xml - КОценка по группам.
+        /// </summary>
+        public static Stream SaveXmlDocument(OMGroup _subgroup, string _message)
         {
 
             XmlDocument xmlFile = new XmlDocument();
@@ -682,7 +782,7 @@ namespace KadOzenka.Dal.DataExport
             if (_subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model)
             {
                 #region Statistical_Modelling
-                ObjectModel.KO.OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id).SelectAll().ExecuteFirstOrDefault();
+                OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id).SelectAll().ExecuteFirstOrDefault();
 
                 XmlNode xnStatistical_Modelling = _xmlFile.CreateElement("Statistical_Modelling");
                 XmlNode xnGroup_Real_Estate_Modelling = _xmlFile.CreateElement("Group_Real_Estate_Modelling");
@@ -1086,6 +1186,9 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKOResponseDoc
     {
+        /// <summary>
+        /// Экспорт в Xml - КОценка по исходящим документам.
+        /// </summary>
         public static void ExportToXml(OMInstance _doc, string _dir_name)
         {
             List<OMUnit> units = OMUnit.Where(x => x.ResponseDocId == _doc.Id).SelectAll().Execute();
@@ -1613,6 +1716,9 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKOVuon
     {
+        /// <summary>
+        /// Экспорт в Xml - КОценка для ВУОН.
+        /// </summary>
         public static void ExportToXml(OMInstance _doc, string _dir_name)
         {
             List<OMUnit> units = OMUnit.Where(x => x.ResponseDocId == _doc.Id).SelectAll().Execute();
@@ -1746,45 +1852,53 @@ namespace KadOzenka.Dal.DataExport
     /// </summary>
     public class DEKODifferent
     {
-        public static void ExportToXls4(long? _task_id, string _dir_name)
+        /// <summary>
+        /// Выгрузка Таблица 4. Группировка объектов недвижимости
+        /// </summary>
+        /// <param name="setting"></param>
+        public static void ExportToXls4(KOUnloadSettings setting)
         {
-            List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == _task_id).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
-            if (units_all.Count == 0) return;
-
-            List<OMUnit> units_curr = new List<OMUnit>();
-            int num_pp = 0;
-            int count_curr = 0;
-            int count_file = 0;
-            string message = "";
-            int count_all = units_all.Count();
-            string cad_num_curr = "";
-            string cad_num = units_all[0].CadastralNumber.Substring(0, 5); // Номер кадастрового района первого объекта
-
-            foreach (OMUnit unit in units_all)
+            foreach (long taskId in setting.TaskFilter)
             {
-                cad_num_curr = unit.CadastralNumber.Substring(0, 5);
-                if (cad_num_curr != cad_num)
-                {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+                List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
+                if (units_all.Count == 0) return;
 
-                    count_file++;
-                    SaveExcel4(units_curr, ref num_pp, count_file, cad_num, _dir_name, message);
-                    units_curr.Clear();
-                    cad_num = cad_num_curr;
+                List<OMUnit> units_curr = new List<OMUnit>();
+                int num_pp = 0;
+                int count_curr = 0;
+                int count_file = 0;
+                string message = "";
+                int count_all = units_all.Count();
+                string cad_num_curr = "";
+                string cad_num = units_all[0].CadastralNumber.Substring(0, 5); // Номер кадастрового района первого объекта
+
+                foreach (OMUnit unit in units_all)
+                {
+                    cad_num_curr = unit.CadastralNumber.Substring(0, 5);
+                    if (cad_num_curr != cad_num)
+                    {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+
+                        count_file++;
+                        SaveExcel4(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName, taskId, message);
+                        units_curr.Clear();
+                        cad_num = cad_num_curr;
+                    }
+                    units_curr.Add(unit);
+
+                    count_curr++;
+                    message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
+                    Console.WriteLine(message);
                 }
-                units_curr.Add(unit);
-
-                count_curr++;
-                message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
-                Console.WriteLine(message);
-            }
-            if (units_curr.Count > 0)
-            {
-                count_file++;
-                SaveExcel4(units_curr, ref num_pp, count_file, cad_num_curr, _dir_name, message);
+                if (units_curr.Count > 0)
+                {
+                    count_file++;
+                    SaveExcel4(units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName, taskId, message);
+                }
             }
         }
 
-        private static void SaveExcel4(List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num, string _dir_name, string _mess)
+        private static void SaveExcel4(List<OMUnit> _units_curr, ref int _num_pp, int _count_file,
+                                       string _cad_num, string _dir_name, long _taskid, string _mess)
         {
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");
@@ -1831,10 +1945,11 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            string file_name = _dir_name + "\\Таблица 4.Группировка объектов недвижимости"
+            string path_name = _dir_name + "\\Table4\\Task_" + _taskid.ToString();
+            if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
+            string file_name = path_name + "\\Таблица 4.Группировка объектов недвижимости"
                                          + " " + _cad_num.Replace(":", "_")
                                          + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
-
             excel_edit.Save(file_name);
         }
 
@@ -1876,7 +1991,10 @@ namespace KadOzenka.Dal.DataExport
             _sheet.Rows[1].Height = 4 * 256;
         }
 
-        public static void ExportToXls5(long? _task_id, string _dir_name)
+        /// <summary>
+        /// Выгрузка  Таблица 5. Модельная стоимость и Таблица 5. Метод УПКС
+        /// </summary>
+        public static void ExportToXls5(KOUnloadSettings setting)
         {
             // Выбираем все группы
             List<OMGroup> groups = OMGroup.Where(x => x.ParentId == -1).SelectAll().Execute();
@@ -1897,26 +2015,26 @@ namespace KadOzenka.Dal.DataExport
                               + " - подгруппа (" + num_subgroup.ToString() + "-" + subgroups.Count().ToString() + ")";
                     Console.WriteLine(message);
 
-                    //Выбираем объекты данной подгруппы и ID задачи на оценку
-                    List<OMUnit> units = OMUnit.Where(x => x.GroupId == subgroup.Id && x.TaskId == _task_id).SelectAll().Execute();
-                    if (units.Count == 0) return;
-
-                    if ((subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model) || (subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon))
+                    foreach (long taskId in setting.TaskFilter)
                     {
-                        SaveExcel5Model(units, subgroup, _dir_name, message);
-                    }
-                    else
-                    {  
-                        SaveExcel5Upksz(units, subgroup, _dir_name, message);
+                        //Выбираем объекты данной подгруппы и ID задачи на оценку
+                        List<OMUnit> units = OMUnit.Where(x => x.GroupId == subgroup.Id && x.TaskId == taskId).SelectAll().Execute();
+                        if (units.Count == 0) return;
+
+                        if ((subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model) || (subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon))
+                        {
+                            SaveExcel5Model(units, subgroup, setting.DirectoryName, taskId, message);
+                        }
+                        else
+                        {
+                            SaveExcel5Upksz(units, subgroup, setting.DirectoryName, taskId, message);
+                        }
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Выгрузка в Excel "Таблица 5. Модельная стоимость".
-        /// </summary>
-        public static void SaveExcel5Model(List<OMUnit> _units, OMGroup _subgroup, string _dir_name, string _message)
+        private static void SaveExcel5Model(List<OMUnit> _units, OMGroup _subgroup, string _dir_name, long _taskid, string _message)
         {
             OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id).SelectAll().ExecuteFirstOrDefault();
             if (model == null) return;
@@ -1999,9 +2117,10 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
+            string path_name = _dir_name + "\\Table5\\Task_" + _taskid.ToString();
+            if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = _dir_name + "\\Таблица 5. Модельная стоимость"
-                             + " " + DataExportCommon.GetFullNumberGroup(_subgroup) + ".xlsx";
-
+                                         + " " + DataExportCommon.GetFullNumberGroup(_subgroup) + ".xlsx";
             excel_edit.Save(file_name);
 
         }
@@ -2010,7 +2129,7 @@ namespace KadOzenka.Dal.DataExport
         /// Сохранение в Excel "Таблица 5. Метод УПКС".
         /// </summary>
         /// <param name="_subgroup"></param>
-        public static void SaveExcel5Upksz(List<OMUnit> _units, OMGroup _subgroup, string _dir_name, string _message)
+        private static void SaveExcel5Upksz(List<OMUnit> _units, OMGroup _subgroup, string _dir_name, long _taskid, string _message)
         {
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");
@@ -2058,9 +2177,10 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
+            string path_name = _dir_name + "\\Table5\\Task_" + _taskid.ToString();
+            if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = _dir_name + "\\Таблица 5. Метод УПКС"
-                             + " " + DataExportCommon.GetFullNumberGroup(_subgroup) + ".xlsx";
-
+                                         + " " + DataExportCommon.GetFullNumberGroup(_subgroup) + ".xlsx";
             excel_edit.Save(file_name);
         }
 
@@ -2166,34 +2286,34 @@ namespace KadOzenka.Dal.DataExport
         }
 
         /// <summary>
-        /// Выгрузка файлов Excel "Таблица 7."
+        /// Выгрузка файлов Excel "Таблица 7. Обобщенные показатели по кадастровым районам"
         /// </summary>
-        /// <param name="_task_id">Идентификатор задания на оценку</param>
-        /// <param name="_obj_type">Тип объектов. Stead - выгрузка ЗУ, Building - выгрузка ОКС</param>
-        /// <param name="_dir_name">Путь сохранения файлов</param>
-        public static void ExportToXls7(long? _task_id, PropertyTypes _obj_type, string _dir_name)
+        public static void ExportToXls7(KOUnloadSettings setting)
         {
             int num_unit = 0;
             int num_save = 0;
-            int count_group = (_obj_type == PropertyTypes.Stead) ?13:16;
+            int count_group = (setting.UnloadParcel) ?13:16;
             List<GeneralizedValuesUPKSZ> list_statistics = new List<GeneralizedValuesUPKSZ>(count_group);
 
             #region Собираем статистику
-            if (_obj_type == PropertyTypes.Stead)
+            if (setting.UnloadParcel)
             {   //Выгружаем Земельные участки 
-                List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == PropertyTypes.Stead).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
-                foreach (OMUnit unit in units_zu)
+                foreach (long taskId in setting.TaskFilter)
                 {
-                    OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                    if (!group.Number.IsNullOrEmpty())
+                    List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
+                    foreach (OMUnit unit in units_zu)
                     {
-                        int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                        CalculationStat7(ref list_statistics, unit, num_group, count_group);
-                        num_save++;
+                        OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                        if (!group.Number.IsNullOrEmpty())
+                        {
+                            int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                            CalculationStat7(ref list_statistics, unit, num_group, count_group);
+                            num_save++;
+                        }
+                        num_unit++;
+                        string message = "Объект (" + num_unit.ToString() + "-" + units_zu.Count.ToString() + ")  --  обработан  " + num_save.ToString();
+                        Console.WriteLine(message);
                     }
-                    num_unit++;
-                    string message = "Объект (" + num_unit.ToString() + "-" + units_zu.Count.ToString() + ")  --  обработан  " + num_save.ToString();
-                    Console.WriteLine(message);
                 }
             }
             else
@@ -2211,23 +2331,26 @@ namespace KadOzenka.Dal.DataExport
                 foreach (PropertyTypes prop_type in prop_types)
                 {
                     num_prop++;
-                    List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
-                    foreach(OMUnit unit in units_oks)
+                    foreach (long taskId in setting.TaskFilter)
                     {
-                        OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                        if (group != null)
+                        List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
+                        foreach (OMUnit unit in units_oks)
                         {
-                            if (!group.Number.IsNullOrEmpty())
+                            OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                            if (group != null)
                             {
-                                int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                                CalculationStat7(ref list_statistics, unit, num_group, count_group);
-                                num_save++;
+                                if (!group.Number.IsNullOrEmpty())
+                                {
+                                    int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                                    CalculationStat7(ref list_statistics, unit, num_group, count_group);
+                                    num_save++;
+                                }
                             }
+                            num_unit++;
+                            string message = "Тип (" + num_prop.ToString() + "-" + prop_types.Count.ToString() + ")" +
+                                " - объект (" + num_unit.ToString() + "-" + units_oks.Count.ToString() + ")  --  обработан  " + num_save.ToString();
+                            Console.WriteLine(message);
                         }
-                        num_unit++;
-                        string message = "Тип (" + num_prop.ToString() + "-" + prop_types.Count.ToString() + ")" +
-                            " - объект (" + num_unit.ToString() + "-" + units_oks.Count.ToString() + ")  --  обработан  " + num_save.ToString();
-                        Console.WriteLine(message);
                     }
                 }
             }
@@ -2262,13 +2385,12 @@ namespace KadOzenka.Dal.DataExport
 
             #region Формирование отчета
             Console.WriteLine("Формирование отчета ...");
-            SaveExcel7(list_statistics, _obj_type, count_group, _dir_name);
+            SaveExcel7(list_statistics, setting.UnloadParcel, count_group, setting.DirectoryName);
             #endregion
         }
 
-        public static void CalculationStat7(ref List<GeneralizedValuesUPKSZ> _list_statistics, OMUnit _unit, int _num, int _count_group)
+        private static void CalculationStat7(ref List<GeneralizedValuesUPKSZ> _list_statistics, OMUnit _unit, int _num, int _count_group)
         {
-            int my_i = 1;
             bool is_find = false;
             string cad_area = _unit.CadastralBlock.Substring(0, 5);
 
@@ -2300,9 +2422,9 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
-        private static void SaveExcel7(List<GeneralizedValuesUPKSZ> _statistics, PropertyTypes _obj_type, int _count_group, string _dir_name)
+        private static void SaveExcel7(List<GeneralizedValuesUPKSZ> _statistics, bool _is_parsel, int _count_group, string _dir_name)
         {
-            FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_obj_type == PropertyTypes.Stead) ?"Table7_zu": "Table7_oks", ".xlsx", "ExcelTemplates");
+            FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_is_parsel) ?"Table7_zu": "Table7_oks", ".xlsx", "ExcelTemplates");
             ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
             var sheet_edit = excel_edit.Worksheets[0];
 
@@ -2328,40 +2450,42 @@ namespace KadOzenka.Dal.DataExport
                 start_rows += 3;
             }
 
+            string path_name = _dir_name + "\\Table7";
+            if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = _dir_name + "\\Таблица 7. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым районам города Москвы"
-                                         + "." + ((_obj_type == PropertyTypes.Stead) ? "ЗУ" : "ОКС") + ".xlsx";
+                                         + "." + ((_is_parsel) ? "ЗУ" : "ОКС") + ".xlsx";
             excel_edit.Save(file_name);
         }
 
         /// <summary>
-        /// Выгрузка файлов Excel "Таблица 8."
+        /// Выгрузка файлов Excel "Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам"
         /// </summary>
-        /// <param name="_task_id">Идентификатор задания на оценку</param>
-        /// <param name="_obj_type">Тип объектов. Stead - выгрузка ЗУ, Building - выгрузка ОКС</param>
-        /// <param name="_dir_name">Путь сохранения файлов</param>
-        public static void ExportToXls8(long? _task_id, PropertyTypes _obj_type, string _dir_name)
+        public static void ExportToXls8(KOUnloadSettings setting)
         {
             int num_unit = 0;
             int num_save = 0;
-            int count_group = (_obj_type == PropertyTypes.Stead) ? 13 : 16;
+            int count_group = (setting.UnloadParcel) ? 13 : 16;
             List<GeneralizedValuesUPKSZ> list_statistics = new List<GeneralizedValuesUPKSZ>(count_group);
 
             #region Собираем статистику
-            if (_obj_type == PropertyTypes.Stead)
+            if (setting.UnloadParcel)
             {   //Выгружаем Земельные участки 
-                List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == PropertyTypes.Stead).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
-                foreach (OMUnit unit in units_zu)
+                foreach (long taskId in setting.TaskFilter)
                 {
-                    OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                    if (!group.Number.IsNullOrEmpty())
+                    List<OMUnit> units_zu = OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
+                    foreach (OMUnit unit in units_zu)
                     {
-                        int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                        CalculationStat8(ref list_statistics, unit, num_group, count_group);
-                        num_save++;
+                        OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                        if (!group.Number.IsNullOrEmpty())
+                        {
+                            int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                            CalculationStat8(ref list_statistics, unit, num_group, count_group);
+                            num_save++;
+                        }
+                        num_unit++;
+                        string message = "Объект (" + num_unit.ToString() + "-" + units_zu.Count.ToString() + ")  --  обработан  " + num_save.ToString();
+                        Console.WriteLine(message);
                     }
-                    num_unit++;
-                    string message = "Объект (" + num_unit.ToString() + "-" + units_zu.Count.ToString() + ")  --  обработан  " + num_save.ToString();
-                    Console.WriteLine(message);
                 }
             }
             else
@@ -2379,23 +2503,27 @@ namespace KadOzenka.Dal.DataExport
                 foreach (PropertyTypes prop_type in prop_types)
                 {
                     num_prop++;
-                    List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == _task_id && x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
-                    foreach (OMUnit unit in units_oks)
+                    foreach (long taskId in setting.TaskFilter)
                     {
-                        OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
-                        if (group != null)
+                        List<OMUnit> units_oks = OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralBlock).SelectAll().Execute();
+                        foreach (OMUnit unit in units_oks)
                         {
-                            if (!group.Number.IsNullOrEmpty())
+                            OMGroup group = OMGroup.Where(x => x.Id == unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+                            if (group != null)
                             {
-                                int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
-                                CalculationStat8(ref list_statistics, unit, num_group, count_group);
-                                num_save++;
+                                if (!group.Number.IsNullOrEmpty())
+                                {
+                                    int num_group = Convert.ToInt32(group.Number.Substring(0, 1));
+                                    CalculationStat8(ref list_statistics, unit, num_group, count_group);
+                                    num_save++;
+                                }
                             }
+                            num_unit++;
+                            string message = "Тип (" + num_prop.ToString() + "-" + prop_types.Count.ToString() + ")"
+                                             + " - объект (" + num_unit.ToString() + "-" + units_oks.Count.ToString()
+                                             + ")  --  обработан  " + num_save.ToString();
+                            Console.WriteLine(message);
                         }
-                        num_unit++;
-                        string message = "Тип (" + num_prop.ToString() + "-" + prop_types.Count.ToString() + ")" +
-                            " - объект (" + num_unit.ToString() + "-" + units_oks.Count.ToString() + ")  --  обработан  " + num_save.ToString();
-                        Console.WriteLine(message);
                     }
                 }
             }
@@ -2417,11 +2545,11 @@ namespace KadOzenka.Dal.DataExport
 
             #region Формирование отчета
             Console.WriteLine("Формирование отчета ...");
-            SaveExcel8(list_statistics, _obj_type, count_group, _dir_name);
+            SaveExcel8(list_statistics, setting.UnloadParcel, count_group, setting.DirectoryName);
             #endregion
         }
 
-        public static void CalculationStat8(ref List<GeneralizedValuesUPKSZ> _list_statistics, OMUnit _unit, int _num, int _count_group)
+        private static void CalculationStat8(ref List<GeneralizedValuesUPKSZ> _list_statistics, OMUnit _unit, int _num, int _count_group)
         {
             bool is_find = false;
             string cad_area = _unit.CadastralBlock.Substring(0, 5);
@@ -2455,9 +2583,9 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
-        private static void SaveExcel8(List<GeneralizedValuesUPKSZ> _statistics, PropertyTypes _obj_type, int _count_group, string _dir_name)
+        private static void SaveExcel8(List<GeneralizedValuesUPKSZ> _statistics, bool _is_parsel, int _count_group, string _dir_name)
         {
-            FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_obj_type == PropertyTypes.Stead) ? "Table8_zu" : "Table8_oks", ".xlsx", "ExcelTemplates");
+            FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_is_parsel) ? "Table8_zu" : "Table8_oks", ".xlsx", "ExcelTemplates");
             ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
             var sheet_edit = excel_edit.Worksheets[0];
 
@@ -2484,49 +2612,57 @@ namespace KadOzenka.Dal.DataExport
                 start_rows += 3;
             }
 
+            string path_name = _dir_name + "\\Table8";
+            if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = _dir_name + "\\Таблица 8. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым кварталам города Москвы"
-                                         + "." + ((_obj_type == PropertyTypes.Stead) ? "ЗУ" : "ОКС") + ".xlsx";
+                                         + "." + ((_is_parsel) ? "ЗУ" : "ОКС") + ".xlsx";
             excel_edit.Save(file_name);
         }
 
-        public static void ExportToXls9(long? _task_id, string _dir_name)
+        /// <summary>
+        /// Выгрузка файлов Excel "Таблица 9. Результаты определения КС"
+        /// </summary>
+        public static void ExportToXls9(KOUnloadSettings setting)
         {
-            List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == _task_id).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
-            if (units_all.Count == 0) return;
-
-            List<OMUnit> units_curr = new List<OMUnit>();
-            int num_pp = 0;
-            int count_curr = 0;
-            int count_file = 0;
-            string message = "";
-            int count_all = units_all.Count();
-            string cad_num_curr = "";
-            string cad_num = units_all[0].CadastralNumber.Substring(0, 5); // Номер кадастрового района первого объекта
-
-            foreach (OMUnit unit in units_all)
+            foreach (long taskId in setting.TaskFilter)
             {
-                cad_num_curr = unit.CadastralNumber.Substring(0, 5);
-                if (cad_num_curr != cad_num)
-                {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
-                    count_file++;
-                    SaveExcel9(units_curr, ref num_pp, count_file, cad_num, _dir_name, message);
-                    units_curr.Clear();
-                    cad_num = cad_num_curr;
+                List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
+                if (units_all.Count == 0) return;
+
+                List<OMUnit> units_curr = new List<OMUnit>();
+                int num_pp = 0;
+                int count_curr = 0;
+                int count_file = 0;
+                string message = "";
+                int count_all = units_all.Count();
+                string cad_num_curr = "";
+                string cad_num = units_all[0].CadastralNumber.Substring(0, 5); // Номер кадастрового района первого объекта
+
+                foreach (OMUnit unit in units_all)
+                {
+                    cad_num_curr = unit.CadastralNumber.Substring(0, 5);
+                    if (cad_num_curr != cad_num)
+                    {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+                        count_file++;
+                        SaveExcel9(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName, taskId, message);
+                        units_curr.Clear();
+                        cad_num = cad_num_curr;
+                    }
+                    units_curr.Add(unit);
+
+                    count_curr++;
+                    message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
+                    Console.WriteLine(message);
                 }
-                units_curr.Add(unit);
-
-                count_curr++;
-                message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
-                Console.WriteLine(message);
-            }
-            if (units_curr.Count > 0)
-            {
-                count_file++;
-                SaveExcel9(units_curr, ref num_pp, count_file, cad_num_curr, _dir_name, message);
+                if (units_curr.Count > 0)
+                {
+                    count_file++;
+                    SaveExcel9(units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName, taskId, message);
+                }
             }
         }
 
-        private static void SaveExcel9(List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num, string _dir_name, string _mess)
+        private static void SaveExcel9(List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num, string _dir_name, long _taskid, string _mess)
         {
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");
@@ -2566,10 +2702,10 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
+            string path_name = _dir_name + "\\Table9\\Task_" + _taskid.ToString();
+            if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = _dir_name + "\\Таблица 9. Результаты определения КС"
-                                         + " " + _cad_num.Replace(":", "_")
-                                         + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
-
+                                         + " " + _cad_num.Replace(":", "_") + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
             excel_edit.Save(file_name);
         }
 
@@ -2603,45 +2739,52 @@ namespace KadOzenka.Dal.DataExport
             _sheet.Rows[1].Height = 4 * 256;
         }
 
-        public static void ExportToXls10(long? _task_id, string _dir_name)
+        /// <summary>
+        /// Выгрузка файлов Excel "Таблица 10. Результаты ГКО"
+        /// </summary>
+        public static void ExportToXls10(KOUnloadSettings setting)
         {
-            List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == _task_id).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
-            if (units_all.Count == 0) return;
-
-            List<OMUnit> units_curr = new List<OMUnit>();
-            int num_pp = 0;
-            int count_curr = 0;
-            int count_file = 0;
-            string message = "";
-            int count_all = units_all.Count();
-            string cad_num_curr = "";
-            string cad_num = units_all[0].CadastralNumber.Substring(0, 5); // Номер кадастрового района первого объекта
-
-            foreach (OMUnit unit in units_all)
+            foreach (long taskId in setting.TaskFilter)
             {
-                cad_num_curr = unit.CadastralNumber.Substring(0, 5);
-                if (cad_num_curr != cad_num)
-                {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+                List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
+                if (units_all.Count == 0) return;
 
-                    count_file++;
-                    SaveExcel10(units_curr, ref num_pp, count_file, cad_num, _dir_name, message);
-                    units_curr.Clear();
-                    cad_num = cad_num_curr;
+                List<OMUnit> units_curr = new List<OMUnit>();
+                int num_pp = 0;
+                int count_curr = 0;
+                int count_file = 0;
+                string message = "";
+                int count_all = units_all.Count();
+                string cad_num_curr = "";
+                string cad_num = units_all[0].CadastralNumber.Substring(0, 5); // Номер кадастрового района первого объекта
+
+                foreach (OMUnit unit in units_all)
+                {
+                    cad_num_curr = unit.CadastralNumber.Substring(0, 5);
+                    if (cad_num_curr != cad_num)
+                    {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+
+                        count_file++;
+                        SaveExcel10(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName, taskId, message);
+                        units_curr.Clear();
+                        cad_num = cad_num_curr;
+                    }
+                    units_curr.Add(unit);
+
+                    count_curr++;
+                    message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
+                    Console.WriteLine(message);
                 }
-                units_curr.Add(unit);
-
-                count_curr++;
-                message = "Выгружено " + count_curr.ToString() + " из " + count_all.ToString();
-                Console.WriteLine(message);
-            }
-            if (units_curr.Count > 0)
-            {
-                count_file++;
-                SaveExcel10(units_curr, ref num_pp, count_file, cad_num_curr, _dir_name, message);
+                if (units_curr.Count > 0)
+                {
+                    count_file++;
+                    SaveExcel10(units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName, taskId, message);
+                }
             }
         }
 
-        private static void SaveExcel10(List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num, string _dir_name, string _mess)
+        private static void SaveExcel10(List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num,
+                                        string _dir_name, long _taskid, string _mess)
         {
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");
@@ -2686,10 +2829,10 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
+            string path_name = _dir_name + "\\Table10\\Task_" + _taskid.ToString();
+            if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = _dir_name + "\\Таблица 10. Результаты ГКО"
-                                         + " " + _cad_num.Replace(":", "_")
-                                         + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
-
+                                         + " " + _cad_num.Replace(":", "_") + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
             excel_edit.Save(file_name);
         }
 
@@ -2738,16 +2881,16 @@ namespace KadOzenka.Dal.DataExport
         }
 
         /// <summary>
-        /// Выгрузка в Excel Таблица11
+        /// Выгрузка в Excel "Таблица 11. Сводные результаты по КР"
         /// </summary>
-        /// <param name="_TourId">Идентификатор тура</param>
-        /// <param name="_dir_name">Путь сохранения файлов Excek</param>
-        public static void ExportToXls11(long? _task_id, string _dir_name)
+        public static void ExportToXls11(KOUnloadSettings setting)
         {
-            List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == _task_id).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
-            if (units_all.Count == 0) return;
+            foreach (long taskId in setting.TaskFilter)
+            {
+                List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId).OrderBy(x => x.CadastralNumber).SelectAll().Execute();
+                if (units_all.Count == 0) return;
 
-            List<PropertyTypes> prop_types = new List<PropertyTypes>()
+                List<PropertyTypes> prop_types = new List<PropertyTypes>()
             {
                 PropertyTypes.Building,
                 PropertyTypes.Company,
@@ -2761,50 +2904,52 @@ namespace KadOzenka.Dal.DataExport
                 PropertyTypes.UnitedPropertyComplex
             };
 
-            string message = "";
-            int ind_type = 0;
-            foreach(PropertyTypes prop_type in prop_types)
-            {
-                ind_type++;
-                message = prop_type.GetEnumDescription() + " (" + ind_type.ToString() + "-" + prop_types.Count().ToString() + ")";
-                List<OMUnit> units_types = units_all.Where(x => x.PropertyType_Code  == prop_type).OrderBy(x => x.CadastralNumber).ToList();
-                if (units_types.Count == 0) continue;
-
-                List<OMUnit> units_curr  = new List<OMUnit>();
-                int    num_pp     = 0;
-                int    count_curr = 0;
-                int    count_file = 0;
-                int    count_all  = units_types.Count();
-                string message1 = "";
-                string cad_num_curr = "";
-                string cad_num    = units_types[0].CadastralNumber.Substring(0, 5); // Номер кадастрового района первого объекта
-
-                foreach (OMUnit unit in units_types)
+                string message = "";
+                int ind_type = 0;
+                foreach (PropertyTypes prop_type in prop_types)
                 {
-                    cad_num_curr = unit.CadastralNumber.Substring(0, 5);
-                    if (cad_num_curr != cad_num)
-                    {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+                    ind_type++;
+                    message = prop_type.GetEnumDescription() + " (" + ind_type.ToString() + "-" + prop_types.Count().ToString() + ")";
+                    List<OMUnit> units_types = units_all.Where(x => x.PropertyType_Code == prop_type).OrderBy(x => x.CadastralNumber).ToList();
+                    if (units_types.Count == 0) continue;
 
-                        count_file++;
-                        SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num, _dir_name, message1);
-                        units_curr.Clear();
-                        cad_num = cad_num_curr;
+                    List<OMUnit> units_curr = new List<OMUnit>();
+                    int num_pp = 0;
+                    int count_curr = 0;
+                    int count_file = 0;
+                    int count_all = units_types.Count();
+                    string message1 = "";
+                    string cad_num_curr = "";
+                    string cad_num = units_types[0].CadastralNumber.Substring(0, 5); // Номер кадастрового района первого объекта
+
+                    foreach (OMUnit unit in units_types)
+                    {
+                        cad_num_curr = unit.CadastralNumber.Substring(0, 5);
+                        if (cad_num_curr != cad_num)
+                        {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
+
+                            count_file++;
+                            SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName, taskId, message1);
+                            units_curr.Clear();
+                            cad_num = cad_num_curr;
+                        }
+                        units_curr.Add(unit);
+
+                        count_curr++;
+                        message1 = message + "-" + count_curr.ToString() + " из " + count_all.ToString();
+                        Console.WriteLine(message);
                     }
-                    units_curr.Add(unit);
-
-                    count_curr++;
-                    message1 = message + "-" + count_curr.ToString() + " из " + count_all.ToString();
-                    Console.WriteLine(message);
-                }
-                if (units_curr.Count > 0)
-                {
-                    count_file++;
-                    SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num_curr, _dir_name, message1);
+                    if (units_curr.Count > 0)
+                    {
+                        count_file++;
+                        SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName, taskId, message1);
+                    }
                 }
             }
         }
 
-        private static void SaveExcel11(PropertyTypes _prop_type, List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num, string _dir_name, string _mess)
+        private static void SaveExcel11(PropertyTypes _prop_type, List<OMUnit> _units_curr, ref int _num_pp,
+                                        int _count_file, string _cad_num, string _dir_name, long _taskid, string _mess)
         {
             int start_rows = 3;
             int count_cells = 0;
@@ -2920,11 +3065,12 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(mainWorkSheet, start_rows - curindval, objvals, curindval);
             }
 
+            string path_name = _dir_name + "\\Table11\\Task_" + _taskid.ToString();
+            if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = _dir_name + "\\Таблица 11. Сводные результаты по КР"
                                          + " " + _cad_num.Replace(":", "_")
                                          + "." + _prop_type.GetEnumDescription()
                                          + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
-
             excelTemplate.Save(file_name);
         }
 
@@ -3063,8 +3209,28 @@ namespace KadOzenka.Dal.DataExport
         /// </summary>
         public static void Unload(KOUnloadSettings setting)
         {
+            setting.DirectoryName = "C:\\WORK\\TMP";
+
             if (setting.UnloadChange)
                 DEKOChange.ExportUnitChangeToExcel(setting);
+            if (setting.UnloadTable04)
+                DEKODifferent.ExportToXls4(setting);
+            if (setting.UnloadTable05)
+                DEKODifferent.ExportToXls5(setting);
+            if (setting.UnloadTable07)
+                DEKODifferent.ExportToXls7(setting);
+            if (setting.UnloadTable08)
+                DEKODifferent.ExportToXls8(setting);
+            if (setting.UnloadTable09)
+                DEKODifferent.ExportToXls9(setting);
+            if (setting.UnloadTable10)
+                DEKODifferent.ExportToXls10(setting);
+            if (setting.UnloadTable11)
+                DEKODifferent.ExportToXls11(setting);
+            if (setting.UnloadXML1)
+                DEKOUnit.ExportToXml(setting);
+            if (setting.UnloadXML2)
+                DEKOGroup.ExportToXml(setting);
         }
     }
 }
