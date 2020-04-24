@@ -10001,6 +10001,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'scenario_type')) then
+        execute 'alter table ES_EXPRESS_SCORE add "scenario_type" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('es_exspress_score_pkey')) then
     execute 'alter table ES_EXPRESS_SCORE add constraint es_exspress_score_pkey primary key (id)';
   end if;
@@ -29989,6 +29998,154 @@ end $$;
 
 DO $$
 begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_source2_a_txt_attr_id_idx')) then
+	execute 'CREATE  INDEX gbu_source2_a_txt_attr_id_idx on gbu_source2_a_txt (attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('gbu_source2_a_txt_bkp')) then
+		execute 'create table gbu_source2_a_txt_bkp ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'id')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'object_id')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "object_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'attribute_id')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'ot')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "ot" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 's')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "s" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'actual')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "actual" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'ref_item_id')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "ref_item_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'value')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "value" VARCHAR(8000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'change_id')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "change_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'change_date')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "change_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'change_user_id')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "change_user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('gbu_source2_a_txt_bkp', 'change_doc_id')) then
+        execute 'alter table gbu_source2_a_txt_bkp add "change_doc_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('gbu_source2_a_txt_bkp_pkey')) then
+    execute 'alter table gbu_source2_a_txt_bkp add constraint gbu_source2_a_txt_bkp_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_source2_a_txt_bkp_object_id_attribute_id_idx')) then
+	execute 'CREATE  INDEX gbu_source2_a_txt_bkp_object_id_attribute_id_idx on gbu_source2_a_txt_bkp (object_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('gbu_source2_a_txt_bkp_attribute_id_idx')) then
+	execute 'CREATE  INDEX gbu_source2_a_txt_bkp_attribute_id_idx on gbu_source2_a_txt_bkp (attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('gbu_source20_a_dt')) then
 		execute 'create table gbu_source20_a_dt ("id" BIGINT NOT NULL)';
 	end if;
@@ -35264,6 +35421,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'calculation_type')) then
+        execute 'alter table KO_MODEL add "calculation_type" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL', 'calculation_method')) then
+        execute 'alter table KO_MODEL add "calculation_method" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_206_q_pk')) then
     execute 'alter table KO_MODEL add constraint reg_206_q_pk primary key (id)';
   end if;
@@ -35671,7 +35846,7 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'Id')) then
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'id')) then
         execute 'alter table KO_TRANSFER_ATTRIBUTES add "id" BIGINT NOT NULL';
     end if;
 end $$;
@@ -35680,7 +35855,7 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'Tour_Id')) then
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'tour_id')) then
         execute 'alter table KO_TRANSFER_ATTRIBUTES add "tour_id" BIGINT NOT NULL';
     end if;
 end $$;
@@ -35689,7 +35864,7 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'Is_Oks')) then
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'is_oks')) then
         execute 'alter table KO_TRANSFER_ATTRIBUTES add "is_oks" SMALLINT DEFAULT 0 NOT NULL';
     end if;
 end $$;
@@ -35698,7 +35873,7 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'KO_id')) then
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'ko_id')) then
         execute 'alter table KO_TRANSFER_ATTRIBUTES add "ko_id" BIGINT NOT NULL';
     end if;
 end $$;
@@ -35707,7 +35882,7 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'GBU_id')) then
+    if (not core_updstru_CheckExistColumn('KO_TRANSFER_ATTRIBUTES', 'gbu_id')) then
         execute 'alter table KO_TRANSFER_ATTRIBUTES add "gbu_id" BIGINT NOT NULL';
     end if;
 end $$;
@@ -35716,8 +35891,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('ko_transfer_atributes_pkey')) then
-    execute 'alter table KO_TRANSFER_ATTRIBUTES add constraint ko_transfer_atributes_pkey primary key (Id)';
+  if (not core_updstru_checkexistconstraint('ko_transfer_attributes_pkey')) then
+    execute 'alter table KO_TRANSFER_ATTRIBUTES add constraint ko_transfer_attributes_pkey primary key (id)';
   end if;
 end $$;
 --<DO>--
