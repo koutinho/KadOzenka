@@ -461,7 +461,7 @@ namespace KadOzenka.Web.Controllers
 	        var mainGroupId = isParcel ? (long)KoGroupAlgoritm.MainParcel : (long)KoGroupAlgoritm.MainOKS;
 	        var mainGroups = allGroups.Where(x => x.Id == mainGroupId);
 	        var groups = mainGroups.SelectMany(x => x.Items);
-			var models = groups.Select(x => GroupTreeModel.ToModel(x, Url)).ToList();
+			var models = groups.Where(x => x.Items?.Count > 0).Select(x => GroupTreeModel.ToModel(x, Url)).ToList();
 
 			return Json(models);
         }

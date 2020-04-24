@@ -75,7 +75,7 @@
             var row = treeList.select();
             if (row.length > 0) {
                 var data = treeList.dataItem(row);                
-                window.open('@Url.Action("Model", "Task")' + '?groupId=' + data.Id);
+				window.open('@Url.Action("Model", "Task")' + '?groupId=' + data.Id + "&isPartial=false");
             }
         });
 

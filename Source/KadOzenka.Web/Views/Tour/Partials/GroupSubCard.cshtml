@@ -1,7 +1,7 @@
 ﻿@model KadOzenka.Web.Models.Tour.GroupModel
 
 <div class="container">
-@using (Html.BeginForm("EditGroup", "Tour", FormMethod.Post))
+@using (Html.BeginForm("EditGroup", "Tour", FormMethod.Post, new { id = "updateGroupForm", enctype = "multipart/form-data" }))
 {
 	<div class="row" style="padding-top: 2%;">
 			<b>Настройка группы</b>
@@ -202,23 +202,23 @@
 		kendo.ui.progress($('#modelContent'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("PartialModel", "Task")',
-            data: { 'groupId': '@Model.Id' },
+            url: '@Url.Action("Model", "Task")',
+			data: { 'groupId': '@Model.Id', isPartial : true },
             success: function (response) {
                 console.log("success");
                 $('#modelContent').html(response);
 				kendo.ui.progress($('#modelContent'), false);
             },
 			error: function (response) {
-				Common.ShowError(response.responseText);
 				$('#modelContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
 				kendo.ui.progress($('#modelContent'), false);
             }
         });
 
-        $("#updateGroupBtn").click(function() {
+		$("#updateGroupBtn").click(function (e) {
+			e.preventDefault();
             kendo.ui.progress($('body'), true);
-			var form = $('form');
+			var form = $('#updateGroupForm');
 			var formObject = Common.Functions.FormToObject(form);
             $.ajax({
                 type: 'POST',

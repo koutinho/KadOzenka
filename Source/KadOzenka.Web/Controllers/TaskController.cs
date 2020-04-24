@@ -202,22 +202,18 @@ namespace KadOzenka.Web.Controllers
 
 		#region Модель
 
-		public ActionResult Model(long groupId)
+		public ActionResult Model(long groupId, bool isPartial)
 		{
 			var modelDto = ModelService.GetModelByGroupId(groupId);
 			var model = ModelModel.ToModel(modelDto);
 
+			if (isPartial)
+			{
+				model.IsPartial = true;
+				return PartialView(model);
+			}
+			
 			return View(model);
-		}
-
-		[HttpGet]
-		public ActionResult PartialModel(long groupId)
-		{
-			var modelDto = ModelService.GetModelByGroupId(groupId);
-			var model = ModelModel.ToModel(modelDto);
-			model.IsPartial = true;
-
-			return PartialView("~/Views/Task/Model.cshtml", model);
 		}
 
 		[HttpPost]
