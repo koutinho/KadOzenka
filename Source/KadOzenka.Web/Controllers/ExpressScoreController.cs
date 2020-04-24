@@ -76,7 +76,7 @@ namespace KadOzenka.Web.Controllers
 
 			var objects = OMCoreObject.Where(x => x.ProcessType_Code != ProcessStep.Excluded && x.PropertyMarketSegment_Code == param.Segment
 				&& x.BuildingYear!= null && x.BuildingYear < yearRange.YearTo && yearRange.YearFrom < x.BuildingYear
-				&& x.Area != null && x.Area < squareRange.SquareTo && squareRange.SquareFrom < x.Area)
+				&& x.Area != null && x.Area < squareRange.SquareTo && squareRange.SquareFrom < x.Area && x.DealType_Code == param.DealType)
 				.Select(x => new {
 				x.Id,
 				x.Lat,
@@ -147,7 +147,7 @@ namespace KadOzenka.Web.Controllers
 
 			string resMsg = _service.CalculateExpressScore(_service.GetAnalogsByIds(viewModel.SelectedPoints),
 				viewModel.TargetObjectId.GetValueOrDefault(), viewModel.Floor.GetValueOrDefault(), viewModel.Square.GetValueOrDefault(),
-				out ResultCalculateDto resultCalculate);
+				out ResultCalculateDto resultCalculate, viewModel.ScenarioType);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{

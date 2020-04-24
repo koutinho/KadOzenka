@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory;
 
 namespace CIPJS.Models.ExpressScore
@@ -41,6 +42,18 @@ namespace CIPJS.Models.ExpressScore
 		/// </summary>
 		[Required(ErrorMessage = "Не указан адрес")]
 		public string Address { get; set; }
+
+		/// <summary>
+		/// Тип сделаки
+		/// </summary>
+		[Required(ErrorMessage = "Не указан тип сделки")]
+		public DealType DealType { get; set; }
+
+		/// <summary>
+		/// Дата актуальности
+		/// </summary>
+		[Required(ErrorMessage = "Не указана дата актуальности")]
+		public DateTime? ActualDate { get; set; }
 
 	}
 }

@@ -120,14 +120,22 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-3">
-						@Html.CustomLabelFor("Вход")
+						@Html.CustomLabelFor("Тип сделки")
 					</div>
 					<div class="col-sm-5">
-						@Html.Kendo().RadioButton().Name("entrance").Label("Отдельный").Value("separate").Enable(false)
-						@Html.Kendo().RadioButton().Name("entrance").Label("Общий").Value("common").Enable(false)
+						@Html.Kendo().RadioButton().Name("DealType").Label("Покупка").Value(DealType.SaleDeal).Checked(true)
+						@Html.Kendo().RadioButton().Name("DealType").Label("Аренда").Value(DealType.RentDeal)
 					</div>
 				</div>
 				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor("Дата актуальности")
+					</div>
+					<div class="col-sm-9">
+						@Html.Kendo().DatePicker().Name("ActualDate").Max(DateTime.Now).Value(DateTime.Now.Date)
+					</div>
+				</div>
+				@*<div class="form-group">
 					<div class="col-sm-3">
 						@Html.CustomLabelFor("Линия застройки")
 					</div>
@@ -144,7 +152,7 @@
 					<div class="col-sm-9">
 						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" }).Enable(false)
 					</div>
-				</div>
+				</div>*@
 				<div class="form-group">
 					<div class="col-sm-3">
 						@Html.CustomLabelFor("Количество аналогов", htmlAttributes: new { style = "padding-top: 0" })
@@ -424,6 +432,8 @@
 				var square = $('#square').val();
 				var segment = $('#segment').val();
 				var quality = $(this).text();
+				var dealType = $("input[name='DealType']:checked").val();
+				var actualDate = kendo.toString($("#ActualDate").data('kendoDatePicker').value(), "MM/dd/yyyy");
 
 				if (!segment || segment === "0") {
 					Common.ShowError('Заполните сегмент');
@@ -436,7 +446,8 @@
 
 				kendo.ui.progress($('body'), true);
 				var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}
-														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Address=${currentAddress}`;
+														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Address=${currentAddress}
+															&DealType=${dealType}&ActualDate=${actualDate}`;
 				$.get(url).done(function (data) {
 					if (data.Errors) {
 						var errors = getErrors(data.Errors);
@@ -655,7 +666,7 @@
 			closable: false,
 			modal: true,
 			content: '<div class="wrapper-scenario">'+
-				'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioCalculateEnum))).NoDataTemplate("Ничего не найдено!").Value("2").Enable(false).ToClientTemplate()'
+				'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioCalculateEnum))).NoDataTemplate("Ничего не найдено!").Value("1").ToClientTemplate()'
 				+ '</div>',
 			visible: false,
 			buttonLayout: "normal",

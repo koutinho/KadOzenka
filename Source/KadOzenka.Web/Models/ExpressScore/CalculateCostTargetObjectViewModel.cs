@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Dal.Enum;
 
 namespace KadOzenka.Web.Models.ExpressScore
 {
@@ -28,5 +29,10 @@ namespace KadOzenka.Web.Models.ExpressScore
 		/// </summary>
 		[Required(ErrorMessage = "Не найден целевой объект")]
 		public int? TargetObjectId { get; set; }
+
+		/// <summary>
+		/// Сценарий расчета
+		/// </summary>
+		public ScenarioCalculateEnum ScenarioType { get; set; }
 	}
 }

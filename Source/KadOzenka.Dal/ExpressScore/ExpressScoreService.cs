@@ -216,10 +216,11 @@ namespace KadOzenka.Dal.ExpressScore
 				}).ToList();
 		}
 
-		public string CalculateExpressScore(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, decimal targetObjectSquare, out ResultCalculateDto resultCalculate)
+		public string CalculateExpressScore(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, decimal targetObjectSquare, 
+			out ResultCalculateDto resultCalculate, ScenarioCalculateEnum scenarioType)
 		{
 			resultCalculate = new ResultCalculateDto();
-			var squareCost = CalculateSquareCost(analogs, targetObjectId, targetObjectFloor, out string msg, out List<long> successAnalogIds);
+			var squareCost = CalculateSquareCost(analogs, targetObjectId, targetObjectFloor, out string msg, out List<long> successAnalogIds, scenarioType);
 
 			var summaryCost = Math.Round(squareCost * targetObjectSquare, 2);
 			if (squareCost == 0)
@@ -271,7 +272,8 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 
 
-		private decimal CalculateSquareCost(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, out string msg, out List<long> successAnalogIds)
+		private decimal CalculateSquareCost(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, out string msg, out List<long> successAnalogIds,
+			ScenarioCalculateEnum? scenarioType = null)
 		{
 			msg = "";
 
@@ -323,8 +325,11 @@ namespace KadOzenka.Dal.ExpressScore
 				decimal kDate = indexAnalogDate.Index / indexDateEstimate.Index; // Корректировка на дату
 
 				var cost = kDate * yPrice;
-				cost = cost * (decimal)cTorg;
 
+				cost = cost * (decimal)cTorg; // Корректировка на торг
+
+
+				//Корректировка на долю ЗУ
 				OMLandShare landShare = null;
 				if (analog.FloorsCount != 0)
 				{
@@ -342,11 +347,11 @@ namespace KadOzenka.Dal.ExpressScore
 					}
 				}
 
-				if (landShare != null)
+				if (landShare != null && scenarioType == null && scenarioType == ScenarioCalculateEnum.Oks)
 				{
-					cost = cost * landShare.Factor;
+					cost = cost * landShare.Factor; 
 				}
-
+				//end Корректировка на долю ЗУ
 
 				var estimatedParameters = GetEstimateParametersByKn(analog.Kn);
 				if (estimatedParameters == null)
