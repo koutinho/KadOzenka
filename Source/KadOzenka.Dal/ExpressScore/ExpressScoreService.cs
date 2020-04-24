@@ -251,13 +251,13 @@ namespace KadOzenka.Dal.ExpressScore
 			return msg;
 		}
 
-		public string RemoveAnalogAndRecalculateExpressScore(List<AnalogDto> analogs, List<int> removeAnalogIds,
+		public string RecalculateExpressScore(List<AnalogDto> analogs, List<int> analogIds,
 			int targetObjectId, int targetObjectFloor, decimal square, int expressScoreId, out decimal cost, out decimal squareCost)
 		{
 			cost = 0;
 			squareCost = 0;
 
-			squareCost = CalculateSquareCost(analogs.Where(x => removeAnalogIds.Contains((int)x.Id)).ToList(),
+			squareCost = CalculateSquareCost(analogs.Where(x => analogIds.Contains((int)x.Id)).ToList(),
 				targetObjectId, targetObjectFloor, out string msg, out var successAnalogIds);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 

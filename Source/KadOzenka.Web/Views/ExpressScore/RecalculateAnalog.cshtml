@@ -28,7 +28,7 @@
 	}
 
 	$(document).ready(function () {
-		var deleteAnalogIds = @Html.Raw(Json.Serialize(ViewBag.DeleteAnalogIds)) || [];
+		var analogIds = @Html.Raw(Json.Serialize(ViewBag.DeleteAnalogIds)) || [];
 		var expressScoreId = "@ViewBag.EsId";
 
 		var $bodyTop = $(window.top.document.body);
@@ -38,7 +38,7 @@
 		$('.re-calculate').on('click',
 			function () {
 				var data = {
-					deleteAnalogIds,
+					analogIds,
 					expressScoreId
 				}
 				kendo.ui.progress($bodyTop, true);

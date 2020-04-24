@@ -180,17 +180,15 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public JsonResult RecalculateAnalog([FromForm]List<int> deleteAnalogIds, [FromForm]int expressScoreId)
+		public JsonResult RecalculateAnalog([FromForm]List<int> analogIds, [FromForm]int expressScoreId)
 		{
-			if (deleteAnalogIds.Count == 0)
+			if (analogIds.Count == 0)
 			{
 				return SendErrorMessage("Выберите аналоги");
 			}
 			var obj = OMExpressScore.Where(x => x.Id == expressScoreId).SelectAll().ExecuteFirstOrDefault();
-			var analogIds = OMEsToMarketCoreObject.Where(x => x.EsId == expressScoreId).SelectAll().Execute()
-				.Select(x => (int)x.MarketObjectId).ToList();
 
-			string resMsg = _service.RemoveAnalogAndRecalculateExpressScore(_service.GetAnalogsByIds(analogIds), deleteAnalogIds,
+			string resMsg = _service.RecalculateExpressScore(_service.GetAnalogsByIds(analogIds), analogIds,
 				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, out decimal cost, out decimal squareCost);
 
 			if (!string.IsNullOrEmpty(resMsg))
