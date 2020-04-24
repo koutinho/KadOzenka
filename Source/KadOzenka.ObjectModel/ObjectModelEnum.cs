@@ -3402,6 +3402,38 @@ namespace ObjectModel.Directory.ES
     }
 }
 
+namespace ObjectModel.Directory.ES
+{
+    /// <summary>
+    /// Сценарий расчета (601)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 601)]
+    public enum ScenarioType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Расчет ЕОН (ОКС + ЗУ) (1)
+		/// </summary>
+		[Description("Расчет ЕОН (ОКС + ЗУ)")]
+        [EnumCode("1")]
+        [ShortTitle("Расчет ЕОН (ОКС + ЗУ)")]
+        Eon = 1,
+		/// <summary>
+		/// Расчет ОКС без доли ЗУ (2)
+		/// </summary>
+		[Description("Расчет ОКС без доли ЗУ")]
+        [EnumCode("2")]
+        [ShortTitle("Расчет ОКС без доли ЗУ")]
+        Oks = 2,
+    }
+}
+
 namespace ObjectModel.Directory.Common
 {
     /// <summary>

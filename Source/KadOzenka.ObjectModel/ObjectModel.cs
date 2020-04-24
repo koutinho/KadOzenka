@@ -20889,6 +20889,114 @@ namespace ObjectModel.ES
             }
         }
 
+        private string _scenariotype;
+        /// <summary>
+        /// 60000900 Тип сценария расчета ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000900)]
+        public string ScenarioType
+        {
+            get
+            {
+                CheckPropertyInited("ScenarioType");
+                return _scenariotype;
+            }
+            set
+            {
+                _scenariotype = value;
+                NotifyPropertyChanged("ScenarioType");
+            }
+        }
+
+
+        private ObjectModel.Directory.ES.ScenarioType _scenariotype_Code;
+        /// <summary>
+        /// 60000900 Тип сценария расчета (справочный код) (SCENARIO_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60000900)]
+        public ObjectModel.Directory.ES.ScenarioType ScenarioType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ScenarioType_Code");
+                return this._scenariotype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_scenariotype))
+                    {
+                        _scenariotype = descr;
+                    }
+                }
+                else
+                {
+                    _scenariotype = descr;
+                }
+
+                this._scenariotype_Code = value;
+                NotifyPropertyChanged("ScenarioType");
+                NotifyPropertyChanged("ScenarioType_Code");
+            }
+        }
+
+
+        private string _dealtype;
+        /// <summary>
+        /// 60001000 Тип сделки ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60001000)]
+        public string DealType
+        {
+            get
+            {
+                CheckPropertyInited("DealType");
+                return _dealtype;
+            }
+            set
+            {
+                _dealtype = value;
+                NotifyPropertyChanged("DealType");
+            }
+        }
+
+
+        private DealType _dealtype_Code;
+        /// <summary>
+        /// 60001000 Тип сделки (справочный код) (DEAL_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60001000)]
+        public DealType DealType_Code
+        {
+            get
+            {
+                CheckPropertyInited("DealType_Code");
+                return this._dealtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_dealtype))
+                    {
+                        _dealtype = descr;
+                    }
+                }
+                else
+                {
+                    _dealtype = descr;
+                }
+
+                this._dealtype_Code = value;
+                NotifyPropertyChanged("DealType");
+                NotifyPropertyChanged("DealType_Code");
+            }
+        }
     }
 }
 
