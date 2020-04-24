@@ -2119,7 +2119,7 @@ namespace KadOzenka.Dal.DataExport
 
             string path_name = _dir_name + "\\Table5\\Task_" + _taskid.ToString();
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-            string file_name = _dir_name + "\\Таблица 5. Модельная стоимость"
+            string file_name = path_name + "\\Таблица 5. Модельная стоимость"
                                          + " " + DataExportCommon.GetFullNumberGroup(_subgroup) + ".xlsx";
             excel_edit.Save(file_name);
 
@@ -2179,7 +2179,7 @@ namespace KadOzenka.Dal.DataExport
 
             string path_name = _dir_name + "\\Table5\\Task_" + _taskid.ToString();
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-            string file_name = _dir_name + "\\Таблица 5. Метод УПКС"
+            string file_name = path_name + "\\Таблица 5. Метод УПКС"
                                          + " " + DataExportCommon.GetFullNumberGroup(_subgroup) + ".xlsx";
             excel_edit.Save(file_name);
         }
@@ -2452,7 +2452,7 @@ namespace KadOzenka.Dal.DataExport
 
             string path_name = _dir_name + "\\Table7";
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-            string file_name = _dir_name + "\\Таблица 7. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым районам города Москвы"
+            string file_name = path_name + "\\Таблица 7. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым районам города Москвы"
                                          + "." + ((_is_parsel) ? "ЗУ" : "ОКС") + ".xlsx";
             excel_edit.Save(file_name);
         }
@@ -2614,7 +2614,7 @@ namespace KadOzenka.Dal.DataExport
 
             string path_name = _dir_name + "\\Table8";
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-            string file_name = _dir_name + "\\Таблица 8. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым кварталам города Москвы"
+            string file_name = path_name + "\\Таблица 8. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым кварталам города Москвы"
                                          + "." + ((_is_parsel) ? "ЗУ" : "ОКС") + ".xlsx";
             excel_edit.Save(file_name);
         }
@@ -2704,7 +2704,7 @@ namespace KadOzenka.Dal.DataExport
 
             string path_name = _dir_name + "\\Table9\\Task_" + _taskid.ToString();
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-            string file_name = _dir_name + "\\Таблица 9. Результаты определения КС"
+            string file_name = path_name + "\\Таблица 9. Результаты определения КС"
                                          + " " + _cad_num.Replace(":", "_") + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
             excel_edit.Save(file_name);
         }
@@ -2831,7 +2831,7 @@ namespace KadOzenka.Dal.DataExport
 
             string path_name = _dir_name + "\\Table10\\Task_" + _taskid.ToString();
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-            string file_name = _dir_name + "\\Таблица 10. Результаты ГКО"
+            string file_name = path_name + "\\Таблица 10. Результаты ГКО"
                                          + " " + _cad_num.Replace(":", "_") + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
             excel_edit.Save(file_name);
         }
@@ -3067,7 +3067,7 @@ namespace KadOzenka.Dal.DataExport
 
             string path_name = _dir_name + "\\Table11\\Task_" + _taskid.ToString();
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
-            string file_name = _dir_name + "\\Таблица 11. Сводные результаты по КР"
+            string file_name = path_name + "\\Таблица 11. Сводные результаты по КР"
                                          + " " + _cad_num.Replace(":", "_")
                                          + "." + _prop_type.GetEnumDescription()
                                          + "." + _count_file.ToString().PadLeft(5, '0') + ".xlsx";
