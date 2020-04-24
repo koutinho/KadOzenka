@@ -21,10 +21,10 @@ namespace KadOzenka.Web.Models.MarketObject
 
         [Display(Name = "Исключить из расчета")]
         public bool IsExcludeFromCalculation { get; set; }
-        public bool IsExclusionEnabled { get; set; }
+        public bool IsCoefIncludedInCalculationLimit { get; set; }
 
 
-        public static CorrectionByDateModel Map(CorrectionByDateDto coefficient, CorrectionSettings settings, Func<decimal?, CorrectionSettings, bool> isCoefIncludedInCalculationLimit)
+        public static CorrectionByDateModel Map(CorrectionByDateDto coefficient, Func<decimal?, bool> isCoefIncludedInCalculationLimit)
         {
             var model =  new CorrectionByDateModel
             {
@@ -33,7 +33,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 Date = coefficient.Date,
                 Coefficient = coefficient.Coefficient,
                 IsExcludeFromCalculation = coefficient.IsExcludeFromCalculation,
-                IsExclusionEnabled = isCoefIncludedInCalculationLimit(coefficient.Coefficient, settings)
+                IsCoefIncludedInCalculationLimit = isCoefIncludedInCalculationLimit(coefficient.Coefficient)
             };
 
             return model;

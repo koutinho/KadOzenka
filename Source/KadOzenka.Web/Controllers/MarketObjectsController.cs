@@ -119,8 +119,7 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetCorrectionByDateGeneralCoefficients(long marketSegmentCode)
         {
             var history = CorrectionByDateService.GetAverageCoefficientsBySegments(marketSegmentCode);
-            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
-            return Json(history.Select(x => CorrectionByDateModel.Map(x, settings, CorrectionByDateService.IsCoefIncludedInCalculationLimit)).ToList());
+            return Json(history.Select(x => CorrectionByDateModel.Map(x, CorrectionByDateService.IsCoefIncludedInCalculationLimit)).ToList());
         }
 
         [HttpGet]
@@ -147,8 +146,7 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetCorrectionByDateDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             var historyRecords = CorrectionByDateService.GetDetailedCoefficients(marketSegmentCode, date);
-            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
-            var models = historyRecords.Select(x => CorrectionByDateModel.Map(x, settings, CorrectionByDateService.IsCoefIncludedInCalculationLimit)).ToList();
+            var models = historyRecords.Select(x => CorrectionByDateModel.Map(x, CorrectionByDateService.IsCoefIncludedInCalculationLimit)).ToList();
 
             return Json(models);
         }
@@ -217,8 +215,8 @@ namespace KadOzenka.Web.Controllers
         public ActionResult CorrectionByRoomGeneralCoefficients()
         {
             var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
-
-            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), exceptions: exceptions);
+            var filters = CorrectionByRoomService.CalculatedMarketSegments.Select(x => (long) x).ToArray();
+            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), filterValues: filters);
 
             ViewBag.Segments = segments;
 
@@ -228,8 +226,12 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetCorrectionByRoomGeneralCoefficients(long marketSegmentCode)
         {
             var history = CorrectionByRoomService.GetAverageCoefficients(marketSegmentCode);
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByRoom);
+            var models = history.Select(x => CorrectionByRoomModel.Map(x,
+                CorrectionByRoomService.IsOneRoomCoefIncludedInCalculationLimit,
+                CorrectionByRoomService.IsThreeRoomsCoefIncludedInCalculationLimit)).ToList();
 
-            return Json(history.Select(CorrectionByRoomModel.Map).ToList());
+            return Json(models);
         }
 
         [HttpGet]
@@ -241,13 +243,35 @@ namespace KadOzenka.Web.Controllers
             ViewBag.MarketSegmentCode = marketSegmentCode;
             ViewBag.MarketSegment = marketSegment.GetEnumDescription();
 
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByRoom);
+            if (settings.LowerLimitForCoefficient.HasValue)
+            {
+                ViewBag.LowerLimitForCoefficient = settings.LowerLimitForCoefficient;
+            }
+            if (settings.UpperLimitForCoefficient.HasValue)
+            {
+                ViewBag.UpperLimitForCoefficient = settings.UpperLimitForCoefficient;
+            }
+            if (settings.LowerLimitForTheSecondCoefficient.HasValue)
+            {
+                ViewBag.LowerLimitForTheSecondCoefficient = settings.LowerLimitForTheSecondCoefficient;
+            }
+            if (settings.UpperLimitForTheSecondCoefficient.HasValue)
+            {
+                ViewBag.UpperLimitForTheSecondCoefficient = settings.UpperLimitForTheSecondCoefficient;
+            }
+
+
             return View();
         }
 
         public JsonResult GetCorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             var historyRecords = CorrectionByRoomService.GetDetailedCoefficients(marketSegmentCode, date);
-            var models = historyRecords.Select(CorrectionByRoomModel.Map).ToList();
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByRoom);
+            var models = historyRecords.Select(x => CorrectionByRoomModel.Map(x,
+                CorrectionByRoomService.IsOneRoomCoefIncludedInCalculationLimit,
+                CorrectionByRoomService.IsThreeRoomsCoefIncludedInCalculationLimit)).ToList();
 
             return Json(models);
         }

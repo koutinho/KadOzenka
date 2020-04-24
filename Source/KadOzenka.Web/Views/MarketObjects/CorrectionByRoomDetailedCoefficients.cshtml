@@ -7,6 +7,18 @@
             <div class="col-sm-2">
                 <label>@ViewBag.Date.ToString("MMMM yyyy")</label>
             </div>
+            @if (ViewBag.LowerLimitForCoefficient != null || ViewBag.UpperLimitForCoefficient != null)
+            {
+                <div class="col-sm-4">
+                    <label>Текущие настройки фильтра на вылеты для 1-но комнатных квартир: @(ViewBag.LowerLimitForCoefficient != null ? $"от {@ViewBag.LowerLimitForCoefficient}" : "") @(ViewBag.UpperLimitForCoefficient != null ? $"до {@ViewBag.UpperLimitForCoefficient}" : "")</label>
+                </div>
+            }
+            @if (ViewBag.LowerLimitForTheSecondCoefficient != null || ViewBag.UpperLimitForTheSecondCoefficient != null)
+            {
+                <div class="col-sm-4">
+                    <label>Текущие настройки фильтра на вылеты для 3-х комнатных квартир: @(ViewBag.LowerLimitForTheSecondCoefficient != null ? $"от {@ViewBag.LowerLimitForTheSecondCoefficient}" : "") @(ViewBag.UpperLimitForTheSecondCoefficient != null ? $"до {@ViewBag.UpperLimitForTheSecondCoefficient}" : "")</label>
+                </div>
+            }
         </div>
     </div>
     <div id="grid"></div>
@@ -38,6 +50,10 @@
         #grid {
             text-align: center;
         }
+
+        .notIncludedInLimit {
+            color: rgb(255, 152, 153);
+        }
     </style>
 }
 
@@ -60,7 +76,9 @@
                         BuildingCadastralNumber: { editable: false },
                         OneRoomCoefficient: { editable: false },
                         ThreeRoomsCoefficient: { editable: false },
-                        IsExcludeFromCalculation: { type: "boolean" }
+                        IsExcludeFromCalculation: { type: "boolean" },
+                        IsOneRoomCoefIncludedInCalculationLimit: { type: "boolean", editable: false },
+                        IsThreeRoomsCoefIncludedInCalculationLimit: { type: "boolean", editable: false }
                     }
                 }
             },
@@ -78,11 +96,13 @@
                 },
                 {
                     title: "Коэффициент на 1-но комнатную квартиру",
-                    field: "OneRoomCoefficient"
+                    field: "OneRoomCoefficient",
+                    template: '<span  #= IsOneRoomCoefIncludedInCalculationLimit ? "" : \'class="notIncludedInLimit"\' # > #= kendo.toString(OneRoomCoefficient, "n4") #</span>'
                 },
                 {
                     title: "Коэффициент на 3-х комнатную квартиру",
-                    field: "ThreeRoomsCoefficient"
+                    field: "ThreeRoomsCoefficient",
+                    template: '<span  #= IsThreeRoomsCoefIncludedInCalculationLimit ? "" : \'class="notIncludedInLimit"\' # > #= kendo.toString(ThreeRoomsCoefficient, "n4") #</span>'
                 },
                 {
                     title: "Исключен из расчета",

@@ -44,6 +44,10 @@
         #grid {
             text-align: center;
         }
+
+        .notIncludedInLimit {
+            color: rgb(255, 152, 153);
+        }
     </style>
 }
 
@@ -66,7 +70,7 @@
                         BuildingCadastralNumber: { editable: false },
                         Coefficient: { editable: false },
                         IsExcludeFromCalculation: { type: "boolean", editable: true },
-                        IsExclusionEnabled: { type: "boolean" }
+                        IsCoefIncludedInCalculationLimit: { type: "boolean", editable: false }
                     }
                 }
             },
@@ -84,12 +88,13 @@
                 },
                 {
                     title: "Коэффициент",
-                    field: "Coefficient"
+                    field: "Coefficient",
+                    template: '<span  #= IsCoefIncludedInCalculationLimit ? "" : \'class="notIncludedInLimit"\' # > #= kendo.toString(Coefficient, "n4") #</span>'
                 },
                 {
                     title: "Исключен из расчета",
                     field: "IsExcludeFromCalculation",
-                    template: '<input type="checkbox" #= IsExcludeFromCalculation ? \'checked="checked"\' : "" # #= IsExclusionEnabled ? "" : \'onclick="return false;"\' # class="chkbx" />'
+                    template: '<input type="checkbox" #= IsExcludeFromCalculation ? \'checked="checked"\' : "" # class="chkbx" />'
                 }
             ]
         });

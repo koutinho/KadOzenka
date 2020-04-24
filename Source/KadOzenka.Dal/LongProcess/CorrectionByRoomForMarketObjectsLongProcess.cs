@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.LongProcess
             var excludedBuildings = coefficients.Where(x => x.IsExcluded.GetValueOrDefault()).Select(x => x.BuildingCadastralNumber).ToList();
 
             var objectsGroupedBySegment = OMCoreObject.Where(x =>
-                    x.PropertyMarketSegment != null && x.BuildingCadastralNumber != null &&
+                    correctionByRoomService.CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code) && x.BuildingCadastralNumber != null &&
                     x.RoomsCount != null && numberOfRooms.Contains(x.RoomsCount) &&
                     x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
                 .SelectAll(false)

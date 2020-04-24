@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using KadOzenka.Dal.Correction.Dto;
-using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
 using ObjectModel.Directory;
+using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByDateService
     {
+        public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
+        public CorrectionByDateService()
+        {
+            CorrectionSettingsService = new CorrectionSettingsService();
+        }
+
         public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
         {
             return GetAverageCoefficientsBySegments().Where(x => x.MarketSegment == (MarketSegment)marketSegmentCode).ToList();
@@ -64,9 +70,8 @@ namespace KadOzenka.Dal.Correction
         }
 
         public void SaveCoefficients(List<OMIndexesForDateCorrection> coefficients, DateTime date, string buildingCadastralNumber,
-            MarketSegment segment, decimal coefficient, CorrectionSettings settings)
+            MarketSegment segment, decimal coefficient)
         {
-            var isExcluded = !IsCoefIncludedInCalculationLimit(coefficient, settings);
             var existedRecord = coefficients.FirstOrDefault(x =>
                 x.BuildingCadastralNumber == buildingCadastralNumber && x.MarketSegment_Code == segment &&
                 x.Date == date);
@@ -77,24 +82,23 @@ namespace KadOzenka.Dal.Correction
                     BuildingCadastralNumber = buildingCadastralNumber,
                     MarketSegment_Code = segment,
                     Date = date,
-                    Coefficient = coefficient,
-                    IsExcluded = isExcluded
+                    Coefficient = coefficient
                 }.Save();
             }
             else
             {
                 existedRecord.Coefficient = coefficient;
-                existedRecord.IsExcluded = isExcluded;
                 existedRecord.Save();
             }
         }
 
-        public bool IsCoefIncludedInCalculationLimit(decimal? coefficientByBuildingQuarter, CorrectionSettings settings)
+        public bool IsCoefIncludedInCalculationLimit(decimal? coefficientByBuildingQuarter)
         {
-            var value = (!settings.LowerLimitForCoefficient.HasValue || coefficientByBuildingQuarter >= settings.LowerLimitForCoefficient.Value)
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
+            var result = (!settings.LowerLimitForCoefficient.HasValue || coefficientByBuildingQuarter >= settings.LowerLimitForCoefficient.Value)
                    && (!settings.UpperLimitForCoefficient.HasValue || coefficientByBuildingQuarter <= settings.UpperLimitForCoefficient.Value);
 
-            return value;
+            return result;
         }
 
         public void CalculatePriceAfterCorrectionByDate()
@@ -142,7 +146,11 @@ namespace KadOzenka.Dal.Correction
 
         private List<CorrectionByDateDto> GetAverageCoefficientsBySegments()
         {
-            return OMIndexesForDateCorrection.Where(x => x.IsExcluded == false || x.IsExcluded == null)
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
+
+            var result = OMIndexesForDateCorrection.Where(x => (x.IsExcluded == false || x.IsExcluded == null) && (
+                                                             (!settings.LowerLimitForCoefficient.HasValue || x.Coefficient >= settings.LowerLimitForCoefficient.Value)
+                                                             && (!settings.UpperLimitForCoefficient.HasValue || x.Coefficient <= settings.UpperLimitForCoefficient.Value)))
                 .OrderByDescending(x => x.Date)
                 .SelectAll().Execute()
                 .GroupBy(x => new {x.MarketSegment_Code, x.Date}).Select(
@@ -153,6 +161,8 @@ namespace KadOzenka.Dal.Correction
                         Coefficient = Math.Round(group.ToList().DefaultIfEmpty().Average(x => x.Coefficient),
                             Consts.PrecisionForCoefficients)
                     }).ToList();
+
+            return result;
         }
 
         private void SavePriceChangingHistory(List<OMPriceAfterCorrectionByDateHistory> history, OMCoreObject obj, decimal newPrice)
