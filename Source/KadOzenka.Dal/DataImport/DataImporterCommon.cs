@@ -15,16 +15,18 @@ using Core.Main.FileStorages;
 using ObjectModel.Common;
 using Newtonsoft.Json;
 using System.IO;
+using System.Transactions;
 using Core.SRD;
 using Core.ErrorManagment;
 using ObjectModel.Core.Shared;
 using Core.Messages;
+using Core.Shared.Misc;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.DataImport
 {
-	public class DataImporterCommon : ILongProcess
+    public class DataImporterCommon : ILongProcess
 	{
 		public const string LongProcessName = "DataImporterFromTemplate";
 		public const string FileStorageName = "DataImporterFromTemplate";
@@ -67,18 +69,27 @@ namespace KadOzenka.Dal.DataImport
             WorkerCommon.SetProgress(processQueue, 25);
 
             List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
-			Stream resultFile = ImportDataFromExcel((int)import.MainRegisterId, excelTemplate, columns);
+		    Stream resultFile = ImportDataFromExcel((int)import.MainRegisterId, excelTemplate, columns, out var success);
 
             WorkerCommon.SetProgress(processQueue, 75);
 
             // Сохранение файла
-            import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
-			import.DateFinished = DateTime.Now;
-			import.Save();
-			FileStorageManager.Save(resultFile, FileStorageName, import.DateFinished.Value, GetResultFileName(import.Id));
-            WorkerCommon.SetProgress(processQueue, 100);
+		    import.DateFinished = DateTime.Now;
+            FileStorageManager.Save(resultFile, FileStorageName, import.DateFinished.Value, GetResultFileName(import.Id));
+
+		    if (!success)
+		    {
+		        import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Faulted;
+		        SendResultNotification(import);
+                throw new Exception("Файл содержит некорректные данные");
+            }
+
+		    import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
+            import.Save();
+		    
 		    SendResultNotification(import);
-		}
+		    WorkerCommon.SetProgress(processQueue, 100);
+        }
 
 		public void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
@@ -88,7 +99,7 @@ namespace KadOzenka.Dal.DataImport
 			import.DateFinished = DateTime.Now;
 			import.ResultMessage = $"{ex.Message}{(errorId != null ? $" (журнал № {errorId})" : String.Empty)}";
 			import.Save();
-		}
+        }
 		
 		public bool Test() => true;
 
@@ -126,7 +137,7 @@ namespace KadOzenka.Dal.DataImport
 			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
 		}
 
-		public static Stream ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile, List<DataExportColumn> columns)
+		public static Stream ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile, List<DataExportColumn> columns, out bool success)
 		{
 			var mainWorkSheet = excelFile.Worksheets[0];
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -136,7 +147,7 @@ namespace KadOzenka.Dal.DataImport
 				MaxDegreeOfParallelism = 100
 			};
 			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
-			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
+			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат обработки");
 			List<string> columnNames = new List<string>();
 			for (int i = 0; i < maxColumns; i++) columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 
@@ -144,9 +155,9 @@ namespace KadOzenka.Dal.DataImport
 			bool isAllpri = !string.IsNullOrEmpty(register.AllpriTable);
 
 			if (isAllpri)
-				ProcessAllpri(columns, mainWorkSheet, options, maxColumns, columnNames);
+			    success = ProcessAllpri(columns, mainWorkSheet, options, maxColumns, columnNames);
 			else
-				ProcessNotAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, mainRegisterId);
+			    success = ProcessNotAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, mainRegisterId);
 					   			 		  
 			MemoryStream stream = new MemoryStream();
 			excelFile.Save(stream, SaveOptions.XlsxDefault);
@@ -154,10 +165,10 @@ namespace KadOzenka.Dal.DataImport
 			return stream;
 		}
 
-		private static void ProcessAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
+		private static bool ProcessAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
 			ParallelOptions options, int maxColumns, List<string> columnNames)
 		{
-			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+		    Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				try
 				{
@@ -206,7 +217,7 @@ namespace KadOzenka.Dal.DataImport
 
 								var attributeData = RegisterCache.GetAttributeData((int)column.AttributrId);
 
-								switch (attributeData.Type)
+							    switch (attributeData.Type)
 								{
 									case RegisterAttributeType.INTEGER:
 										value = value.ParseToLongNullable();
@@ -228,8 +239,8 @@ namespace KadOzenka.Dal.DataImport
 								registerObject.SetAttributeValue((int)column.AttributrId, value);
 							}
 
-							RegisterStorage.Save(registerObject);
-							mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
+						    RegisterStorage.Save(registerObject);
+						    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
 						}
 					}
 				}
@@ -239,12 +250,18 @@ namespace KadOzenka.Dal.DataImport
 					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
 				}
 			});
+
+            return true;
 		}
 
-		private static void ProcessNotAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
+		private static bool ProcessNotAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
 			ParallelOptions options, int maxColumns, List<string> columnNames, int mainRegisterId)
 		{
-			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+		    var success = true;
+		    var errorCount = 0;
+		    var handledObjects = new Dictionary<int, RegisterObject>();
+		    object locked = new object();
+            Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				try
 				{
@@ -288,39 +305,131 @@ namespace KadOzenka.Dal.DataImport
 							int referenceItemId = -1;
 							if (attributeData.CodeField.IsNotEmpty() && attributeData.ReferenceId > 0)
 							{
-								OMReferenceItem item = OMReferenceItem.Where(x => x.ReferenceId == attributeData.ReferenceId && x.Value == (string)value).ExecuteFirstOrDefault();
-								if (item != null) referenceItemId = (int)item.ItemId;
+                                OMReference reference = OMReference.Where(x => x.ReferenceId == attributeData.ReferenceId).ExecuteFirstOrDefault();
+                                OMReferenceItem item = OMReferenceItem.Where(x => x.ReferenceId == attributeData.ReferenceId && x.Value == (string)value).ExecuteFirstOrDefault();
+							    var valueStr = value != null ? value.ToString().Trim() : string.Empty;
+                                if (item == null && !string.IsNullOrEmpty(valueStr))
+                                {
+                                    throw new Exception($"Некорректное значение в ячейке {cell} для справочника {reference.Name}");
+                                }
+                                if (item != null) referenceItemId = (int)item.ItemId;
 							}
-							switch (attributeData.Type)
-							{
-								case RegisterAttributeType.INTEGER:
-									value = value.ParseToLongNullable();
-									break;
-								case RegisterAttributeType.DECIMAL:
-									value = value.ParseToDecimalNullable();
-									break;
-								case RegisterAttributeType.BOOLEAN:
-									value = value.ParseToBooleanNullable();
-									break;
-								case RegisterAttributeType.STRING:
-									value = value == null ? "" : value.ToString();
-									break;
-								case RegisterAttributeType.DATE:
-									value = value.ParseToDateTimeNullable();
-									break;
-							}
-							registerObject.SetAttributeValue((int)column.AttributrId, value, referenceItemId);
+                            switch (attributeData.Type)
+                            {
+                                case RegisterAttributeType.INTEGER:
+                                    value = value.ParseToLongNullable();
+                                    break;
+                                case RegisterAttributeType.DECIMAL:
+                                    value = value.ParseToDecimalNullable();
+                                    break;
+                                case RegisterAttributeType.BOOLEAN:
+                                    value = value.ParseToBooleanNullable();
+                                    break;
+                                case RegisterAttributeType.STRING:
+                                    value = value == null ? "" : value.ToString();
+                                    break;
+                                case RegisterAttributeType.DATE:
+                                    value = value.ParseToDateTimeNullable();
+                                    break;
+                            }
+                            registerObject.SetAttributeValue((int)column.AttributrId, value, referenceItemId);
+
+						    if (registerObject.AttributesValues[(int) column.AttributrId].Value == null &&
+						        !attributeData.IsNullable)
+						    {
+						        throw new Exception(
+						            $"Значение атрибута {attributeData.Name} (ячейка {cell}) не может быть пустым");
+						    }
 						}
-						RegisterStorage.Save(registerObject);
-						mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
-					}
+
+					    if (objectId == -1)
+					    {
+					        var allRegisterAttributes = RegisterCache.RegisterAttributes.Values.Where(p => p.RegisterId == (int)mainRegisterId && !p.IsPrimaryKey);
+					        var missedRequiredAttributeNames = new List<string>();
+                            foreach (var registerAttribute in allRegisterAttributes)
+					        {
+					            
+					            if (!registerAttribute.IsNullable && !registerObject.AttributesValues.ContainsKey(registerAttribute.Id))
+					            {
+					                missedRequiredAttributeNames.Add(registerAttribute.Name);
+					            }
+					        }
+
+					        if (missedRequiredAttributeNames.Count > 0)
+					        {
+					            throw new Exception(
+					                $"Не переданы значения для ненулевых атрибутов: {string.Join(", ", missedRequiredAttributeNames)}");
+                            }
+					    }
+
+                        lock (locked)
+					    {
+					        handledObjects.Add(row.Index, registerObject);
+                        }
+                        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
+					    for (int i = 0; i < maxColumns; i++)
+					    {
+					        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(200, 255, 200));
+					    }
+                    }
 				}
 				catch (Exception ex)
 				{
 					long errorId = ErrorManager.LogError(ex);
 					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-				}
+				    for (int i = 0; i < maxColumns; i++) { 
+				        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+				    }
+
+                    lock (locked)
+				    {
+				        errorCount++;
+				    }
+                }
 			});
-		}		
+
+		    if (errorCount > 0)
+		    {
+		        success = false;
+		    }
+		    else
+		    {
+		        try
+		        {
+		            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
+		            {
+		                for (var i = 1; i < mainWorkSheet.Rows.Count; i++)
+		                {
+		                    try
+		                    {
+		                        var registerObject = handledObjects[i];
+		                        RegisterStorage.Save(registerObject);
+		                    }
+		                    catch (Exception ex)
+		                    {
+		                        long errorId = ErrorManager.LogError(ex);
+		                        mainWorkSheet.Rows[i].Cells[maxColumns]
+		                            .SetValue($"{ex.Message} (подробно в журнале №{errorId})");
+		                        for (int j = 0; j < maxColumns; j++)
+		                        {
+		                            mainWorkSheet.Rows[i].Cells[j].Style.FillPattern
+		                                .SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+		                        }
+
+		                        throw;
+		                    }
+		                }
+
+		                ts.Complete();
+		            }
+		        }
+		        catch (Exception ex)
+		        {
+		            success = false;
+                }
+		    }
+
+		    return success;
+        }		
 	}
 }

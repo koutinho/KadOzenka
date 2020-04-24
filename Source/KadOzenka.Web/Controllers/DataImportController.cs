@@ -23,6 +23,8 @@ using Core.Register.RegisterEntities;
 using ObjectModel.Core.Shared;
 using static Core.UI.Registers.CoreUI.Registers.RegistersCommon;
 using System.Globalization;
+using System.IO;
+using Core.Register.Enums;
 using KadOzenka.Dal.Tasks;
 
 namespace KadOzenka.Web.Controllers
@@ -179,20 +181,37 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public IActionResult ImportDataFromExcel(int mainRegisterId, IFormFile file, List<DataColumnDto> columns)
 		{
-
 			ExcelFile excelFile;
 			using (var stream = file.OpenReadStream())
 			{
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
 
-			DataImporterCommon.ImportDataFromExcel(mainRegisterId, excelFile, columns.Select(x => new DataExportColumn
-				{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
+		    var resultFile = (MemoryStream)DataImporterCommon.ImportDataFromExcel(mainRegisterId, excelFile, columns.Select(x => new DataExportColumn
+				{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList(), out var success);
+		    var resultFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_Result{Path.GetExtension(file.FileName)}";
+            HttpContext.Session.Set(resultFileName, resultFile.ToArray());
 
-			return NoContent();
+		    return Content(JsonConvert.SerializeObject(new { success, resultFileName }), "application/json");
 		}
 
-		[HttpPost]
+        [HttpGet]
+        public ActionResult DownloadExcelResultFile(string resultFileName)
+        {
+            var fileContent = HttpContext.Session.Get(resultFileName);
+            if (fileContent == null)
+            {
+                return new EmptyResult();
+            }
+
+            HttpContext.Session.Remove(resultFileName);
+            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
+
+            return File(fileContent, contentType, resultFileName);
+        }
+
+
+        [HttpPost]
 		public IActionResult AddImportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
 		{
 

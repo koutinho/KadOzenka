@@ -303,15 +303,15 @@
 							processData: false,
 							dataType: 'xml',
 							success: function(data) {
-								kendo.ui.progress($('#importForm'), false);
-								$("#loadButton").data('kendoButton').enable(true);
 								Common.ShowMessage('Фоновая загрузка начата.');
 							},
 							error: function(response) {
-								kendo.ui.progress($('#importForm'), false);
-								$("#loadButton").data('kendoButton').enable(true);
 								Common.ShowError(response.responseText);
-							}
+                            },
+                            complete: function (data) {
+                                kendo.ui.progress($('#importForm'), false);
+                                $("#loadButton").data('kendoButton').enable(true);
+                            }
 						});
 					} else {
 						$.ajax({
@@ -320,16 +320,25 @@
 							data: formData,
 							contentType: false,
 							processData: false,
-							dataType: 'xml',
-							success: function (data) {
-								kendo.ui.progress($('#importForm'), false);
-								$("#loadButton").data('kendoButton').enable(true);
-								Common.ShowMessage('Загрузка завершена.');
+                            success: function (data) {
+                                if (data.success) {
+                                    Common.ShowMessage("Загрузка завершена.");
+							        window.location = '@Url.Action("DownloadExcelResultFile", "DataImport")' +
+							            "?resultFileName=" +
+                                        data.resultFileName;
+							    } else {
+                                    Common.ShowError("Не удалось выполнить загрузку. Файл содержит некорректные данные");
+                                    window.location = '@Url.Action("DownloadExcelResultFile", "DataImport")' +
+                                        "?resultFileName=" +
+                                        data.resultFileName;
+							    }
 							},
-							error: function (response) {
-								kendo.ui.progress($('#importForm'), false);
-								$("#loadButton").data('kendoButton').enable(true);
+                            error: function (response) {
 								Common.ShowError(response.responseText);
+                            },
+							complete: function (data) {
+							    kendo.ui.progress($('#importForm'), false);
+							    $("#loadButton").data('kendoButton').enable(true);
 							}
 						});
 					}
