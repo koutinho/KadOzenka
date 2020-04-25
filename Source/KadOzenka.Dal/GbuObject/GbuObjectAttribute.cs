@@ -11,6 +11,7 @@ using Core.Numerator;
 using Core.Shared.Misc;
 using Core.Shared.Extensions;
 using Core.Register.RegisterEntities;
+using Core.SRD;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -38,11 +39,6 @@ namespace KadOzenka.Dal.GbuObject
 		public string DocType { get; set; }
 		public DateTime DocDate { get; set; }
 		
-		public long ChangeId { get; set; }
-		public long ChangeSetId { get; set; }
-
-		public bool IsActual { get; set; }
-
 		private RegisterAttribute _attributeData;
 		public RegisterAttribute AttributeData
 		{
@@ -103,28 +99,38 @@ namespace KadOzenka.Dal.GbuObject
 
 			int allpriId = Sequence.GetNextValue("REG_ALLPRI_SEQ");
 			
-			string postfix;
+			string postfix = String.Empty;
 
-			switch (AttributeData.Type)
+			if(RegisterData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
 			{
-				case RegisterAttributeType.INTEGER:
-				case RegisterAttributeType.DECIMAL:
-				case RegisterAttributeType.BOOLEAN:
-					postfix = "NUM";
-					break;
-				case RegisterAttributeType.DATE:
-					postfix = "DT";
-					break;
-				case RegisterAttributeType.STRING:
-					postfix = "TXT";
-					break;
-				default:
-					throw new Exception($"Не поддерживаемый тип {AttributeData.Type}");
+				switch (AttributeData.Type)
+				{
+					case RegisterAttributeType.INTEGER:
+					case RegisterAttributeType.DECIMAL:
+					case RegisterAttributeType.BOOLEAN:
+						postfix = "_NUM";
+						break;
+					case RegisterAttributeType.DATE:
+						postfix = "_DT";
+						break;
+					case RegisterAttributeType.STRING:
+						postfix = "_TXT";
+						break;
+					default:
+						throw new Exception($"Не поддерживаемый тип {AttributeData.Type}");
+				}
 			}
+			else if(RegisterData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
+			{
+				postfix = $"_{AttributeId}";
+			}
+
+			string attributeIdColumn = RegisterData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId ? String.Empty : ",ATTRIBUTE_ID";
+			string attributeIdValue = RegisterData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId ? String.Empty : $",{AttributeId}";
 
 			var d = CrossDBSQL.DefaultParameterDelimiter;
 
-			string sSQLInsert = $"insert into {RegisterData.AllpriTable}_{postfix} (ID,OBJECT_ID,ATTRIBUTE_ID,OT,S,{(AttributeData.Type == RegisterAttributeType.STRING ? "REF_ITEM_ID," : String.Empty)} VALUE, CHANGE_ID, ACTUAL, CHANGE_DATE, CHANGE_USER_ID, CHANGE_DOC_ID) values ({allpriId},{ObjectId},{AttributeId},{d}OT,{d}S, {(AttributeData.Type == RegisterAttributeType.STRING ? (RefItemId != -1 ? RefItemId.ToString(CultureInfo.InvariantCulture) : "NULL") + "," : String.Empty)} {d}VALUE, {d}CHANGE_ID, {d}ACTUAL, {d}CHANGE_DATE, {d}CHANGE_USER_ID, {d}CHANGE_DOC_ID)";
+			string sSQLInsert = $"insert into {RegisterData.AllpriTable}{postfix} (ID,OBJECT_ID{attributeIdColumn},OT,S,{(AttributeData.Type == RegisterAttributeType.STRING ? "REF_ITEM_ID," : String.Empty)} VALUE, CHANGE_DATE, CHANGE_USER_ID, CHANGE_DOC_ID) values ({allpriId},{ObjectId}{attributeIdValue},{d}OT,{d}S, {(AttributeData.Type == RegisterAttributeType.STRING ? (RefItemId != -1 ? RefItemId.ToString(CultureInfo.InvariantCulture) : "NULL") + "," : String.Empty)} {d}VALUE, {d}CHANGE_DATE, {d}CHANGE_USER_ID, {d}CHANGE_DOC_ID)";
 
 			CrossDBSQL.AddParameter(insertCommand, "OT", DbType.DateTime, Ot);
 			CrossDBSQL.AddParameter(insertCommand, "S", DbType.DateTime, S);
@@ -160,11 +166,9 @@ namespace KadOzenka.Dal.GbuObject
 				}
 			}
 
-			CrossDBSQL.AddParameter(insertCommand, "ACTUAL", DbType.Decimal, IsActual ? 1 : 0);
-			CrossDBSQL.AddParameter(insertCommand, "CHANGE_DATE", DbType.DateTime, ChangeDate);
-			CrossDBSQL.AddParameter(insertCommand, "CHANGE_USER_ID", DbType.Decimal, ChangeUserId);
+			CrossDBSQL.AddParameter(insertCommand, "CHANGE_DATE", DbType.DateTime, ChangeDate > DateTime.MinValue ? ChangeDate : DateTime.Now);
+			CrossDBSQL.AddParameter(insertCommand, "CHANGE_USER_ID", DbType.Decimal, ChangeUserId > 0 ? ChangeUserId : SRDSession.Current.UserID);
 			CrossDBSQL.AddParameter(insertCommand, "CHANGE_DOC_ID", DbType.Decimal, ChangeDocId);
-			CrossDBSQL.AddParameter(insertCommand, "CHANGE_ID", DbType.Decimal, ChangeId);
 
 			insertCommand.CommandText = sSQLInsert;
 			DBMngr.Main.ExecuteNonQuery(insertCommand);
