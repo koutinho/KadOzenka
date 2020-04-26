@@ -31,6 +31,7 @@
 
 @section scripts {
     <script src="~/MapScripts/commonFunctions.js" charset="utf-8"></script>
+    <script src="~/MapScripts/colorsGraduator.js" charset="utf-8"></script>
     <script src="~/MapScripts/eventListeners.js" charset="utf-8"></script>
     <script src="~/MapScripts/HTMLEditor.js" charset="utf-8"></script>
     <script src="~/MapScripts/requests.js" charset="utf-8"></script>
@@ -39,6 +40,9 @@
     <script src="~/MapScripts/widgets.js" charset="utf-8"></script>
     <script src="~/MapScripts/clustering.js" charset="utf-8"></script>
     <script src="~/MapScripts/wms.js" charset="utf-8"></script>
+    <script src="~/MapPlugins/Colorjoe/js/scale.fix.js" charset="utf-8"></script>
+    <script src="~/MapPlugins/Colorjoe/dist/colorjoe.js" charset="utf-8"></script>
+    <script src="~/MapPlugins/Colorjoe/js/init.js" charset="utf-8"></script>
 
     <script type="text/javascript">
         var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
@@ -68,4 +72,8 @@
     <link rel="stylesheet" href="~/MapStyles/style.css" />
     <link rel="stylesheet" href="~/MapStyles/elemens.css" />
     <link rel="stylesheet" href="~/MapStyles/custom.css" />
+    <link rel="stylesheet" href="~/MapPlugins/Colorjoe/css/pygment_trac.css" />
+    <link rel="stylesheet" href="~/MapPlugins/Colorjoe/css/iehacks.css" />
+    <link rel="stylesheet" href="~/MapPlugins/Colorjoe/css/colorjoe.css" />
+    <link rel="stylesheet" href="~/MapPlugins/Slider/CustomSlider.css" />
 }

@@ -323,7 +323,6 @@ select.EditDataSelect:focus {
 }
 
 .filterControl .filterImage {
-    background: #fff;
     height: 36px;
     width: 36px;
     border-radius: 22px;
@@ -357,6 +356,10 @@ select.EditDataSelect:focus {
     display: none;
 }
 
+.filterControl .allFiltersContainer .filterPanelContainer {
+    margin-top: 17.5px;
+}
+
 .filterControl .allFiltersContainer .filterPanel {
     margin-top: 5px;
     display: flex;
@@ -377,11 +380,142 @@ select.EditDataSelect:focus {
     cursor: default;
 }
 
+.filterControl .allFiltersContainer .filterPanel.filterAdditional {
+    max-width: 800px;
+    width: fit-content;
+    display: block;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .extendButton.inactive {
+    background: #fff;
+    background-image: url("/MapIcons/palette-filled.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .extendButton.inactive:hover {
+    background: #edf5ff;
+    background-image: url("/MapIcons/palette-filled.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .extendButton {
+    padding: 0px;
+    height: 36px;
+    width: 36px;
+    background: #4590ff;
+    border-radius: 22px;
+    border: solid 1px #5c9eff;
+    cursor: pointer;
+    background-image: url("/MapIcons/palette.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .extendButton:hover {
+    background: #4590ff;
+    background-image: url("/MapIcons/palette.svg");
+    background-size: 18px 18px;
+    background-repeat: no-repeat;
+    background-position: 9px 9px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer.inactive {
+    display:none;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer {
+    /*width:500px;
+    height: 200px;*/
+    width: 0px;
+    height: 0px;
+    background: #fff;
+    /*border: solid 1px #5c9eff;*/
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .paletteContainer {
+    display: flex;
+    align-items: center;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .paletteContainer .innerContainer {
+    height: fit-content;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .paletteContainer .innerContainer .paletteHeader {
+    color: #5c9eff;
+    background-color: #fff;
+    width: fit-content;
+    border: solid 1px #5c9eff;
+    padding: 2.5px 5px;
+    border-radius: 13px;
+    font-size: 14px;
+    background: #e0eeff;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .paletteContainer .innerContainer .splicedDataContainer {
+    color: #5c9eff;
+    background-color: #fff;
+    border: solid 1px #5c9eff;
+    border-radius: 18px;
+    width: 34px;
+    height: 34px;
+    font-size: 20px;
+    background: #e0eeff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .colorPickerContainer {
+    width: 136px;
+    display: flex;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .colorPickerContainer section {
+    height: 90px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .colorPickerContainer .colorShowPanel {
+    height: 80px;
+    width: 15px;
+    margin: 5px 0px 5px 0px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .slidecontainer {
+    width: 498px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .legendContainer {
+    margin-top: 5px;
+    display:flex;
+    width: fit-content;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .legendContainer .coloredSegment {
+    width:20px;
+    height:20px;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .legendContainer .coloredSegment:first-child {
+    border: solid 1px #5c9eff;
+}
+
+.filterControl .allFiltersContainer .filterPanel.filterAdditional .allPaletteContainer .legendContainer .coloredSegment:not(:first-child) {
+    border-top: solid 1px #5c9eff;
+    border-right: solid 1px #5c9eff; 
+    border-bottom: solid 1px #5c9eff;
+}
+
 .filterControl .allFiltersContainer .filterPanel .filterButton {
     display: inline-flex;
     height: 26px;
     line-height: 26px;
-    padding: 0px 15px;
+    padding: 0px 12px;
     background: #5c9eff;
     border-radius: 13px;
     vertical-align:central;
@@ -395,6 +529,11 @@ select.EditDataSelect:focus {
     -webkit-user-select: none;
     -o-user-select: none;
     opacity: 0.75;
+    align-items: center;
+}
+
+.filterControl .allFiltersContainer .filterPanel .filterButton.refresh {
+    opacity: 1;
 }
 
 .filterControl .allFiltersContainer .filterPanel .filterButton.inactive {
@@ -414,6 +553,15 @@ select.EditDataSelect:focus {
 .filterControl .allFiltersContainer .filterPanel .filterButton:not(:first-child) {
     margin-left: 10px;
 }
+
+.filterControl .allFiltersContainer .filterPanel .filterButton .preloaderImage {
+    background: url(/MapIcons/preloaderWhite.svg);
+    background-size: 19px;
+    width: 19px;
+    height: 19px;
+    margin-left: 7px;
+}
+
 
 .sliderGalleryContainer {
     width: 324px;

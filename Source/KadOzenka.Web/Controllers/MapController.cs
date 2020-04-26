@@ -19,6 +19,19 @@ using System.Reflection;
 
 namespace KadOzenka.Web.Controllers
 {
+    class AvarageData
+    {
+        public string name;
+        public decimal avg;
+        public int count;
+    }
+
+    class ColoredData
+    {
+        public string name;
+        public string color;
+    }
+
     public class MapController : BaseController
     {
         private readonly CoreUiService _coreUiService;
@@ -42,13 +55,20 @@ namespace KadOzenka.Web.Controllers
             return View(new MapObjectDto());
         }
 
-        public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude, 
-            int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, int maxObjectsCount, string token, long? objectId)
+        public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude,
+            int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, int maxObjectsCount, string token, long? objectId, 
+            string districts, string marketSource)
         {
+            Console.WriteLine($"=============>{marketSource}");
             var query = OMCoreObject
-                .Where(x => (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) && x.Lng != null && x.Lat != null && (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
+                .Where(x =>
+                    (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
+                    x.Lng != null && x.Lat != null &&
+                    (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
             if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
             else PrepareQueryByUserFilter(query);
+            if (!districts.IsEmpty()) query.And(x => x.District == districts);
+            if (!marketSource.IsEmpty()) query.And(x => x.Market == marketSource);
             if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
             if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
             if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
@@ -57,10 +77,86 @@ namespace KadOzenka.Web.Controllers
             if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
             var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.PropertyMarketSegment, x.DealType, x.PropertyTypesCIPJS }).Execute().ToList();
-            analogItem.ForEach(x => point.Add(new { 
+            analogItem.ForEach(x => point.Add(new {
                 points = new[] { x.Lat, x.Lng }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment), dealType = FormDealType(x.DealType), propertyType = x.PropertyTypesCIPJS
             }));
             return Json(new { token = token, arr = point, allCount = size });
+        }
+
+        public JsonResult HeatMapData(string colors)
+        {
+            string[] colorsArray = colors.Split(",");
+            var query = OMCoreObject
+                .Where(x => (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
+                             x.Lng != null &&
+                             x.Lat != null &&
+                             (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
+
+            List<OMReferenceItem> allDistricts = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.District).ReferenceId).Select(x => x.Value).Execute().ToList();
+            List<OMReferenceItem> allRegions = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.Neighborhood).ReferenceId).Select(x => x.Value).Execute().ToList();
+            List<OMReferenceItem> allZones = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.ZoneRegion).ReferenceId).Select(x => x.Value).Execute().ToList();
+
+            PrepareQueryByUserFilter(query);
+
+            List<OMCoreObject> DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion }).Execute().ToList();
+
+            List<IGrouping<string, OMCoreObject>> districtList = DistrictsData.GroupBy(x => x.District).ToList();
+            List<IGrouping<string, OMCoreObject>> regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
+            List<IGrouping<string, OMCoreObject>> zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
+
+            List<AvarageData> DistrictsRes = new List<AvarageData>();
+            List<AvarageData> RegionsRes = new List<AvarageData>();
+            List<AvarageData> ZoneRes = new List<AvarageData>();
+
+            foreach (IGrouping<string, OMCoreObject> district in districtList)
+                DistrictsRes.Add(new AvarageData { name = district.Key, avg = Math.Round((decimal)district.Average(x => x.PricePerMeter), 2), count = district.Count() });
+            foreach (IGrouping<string, OMCoreObject> region in regionList)
+                RegionsRes.Add(new AvarageData { name = region.Key, avg = Math.Round((decimal)region.Average(x => x.PricePerMeter), 2), count = region.Count() });
+            foreach (IGrouping<string, OMCoreObject> zone in zoneList)
+                ZoneRes.Add(new AvarageData { name = zone.Key, avg = Math.Round((decimal)zone.Average(x => x.PricePerMeter), 2), count = zone.Count() });
+
+            allDistricts.ForEach(x =>  { if (DistrictsRes.Where(y => y.name == x.Value).Count() == 0) DistrictsRes.Add(new AvarageData { name = x.Value, avg = 0, count = 0 }); });
+            allRegions.ForEach(x => { if (RegionsRes.Where(y => y.name == x.Value).Count() == 0) RegionsRes.Add(new AvarageData { name = x.Value, avg = 0, count = 0 }); });
+            allZones.ForEach(x => { if (ZoneRes.Where(y => y.name == x.Value).Count() == 0) ZoneRes.Add(new AvarageData { name = x.Value, avg = 0, count = 0 }); });
+
+            Console.WriteLine(string.Join("\n", DistrictsRes.OrderByDescending(x => x.avg).ToList().Select(x => $"{x.name}\t{x.avg}\t{x.count}")) + "\n\n");
+            Console.WriteLine(string.Join("\n", RegionsRes.OrderByDescending(x => x.avg).ToList().Select(x => $"{x.name}\t{x.avg}\t{x.count}")));
+            Console.WriteLine(string.Join("\n", ZoneRes.OrderByDescending(x => x.avg).ToList().Select(x => $"{x.name}\t{x.avg}\t{x.count}")));
+
+            return Json(new 
+            { 
+                districts = SetColors(DistrictsRes, colorsArray).Where(x => !x.name.IsEmpty()),
+                regions = SetColors(RegionsRes, colorsArray).Where(x => !x.name.IsEmpty()),
+                zones = SetColors(ZoneRes, colorsArray).Where(x => !x.name.IsEmpty())
+            });
+        }
+
+        private List<ColoredData> SetColors(List<AvarageData> initials, string[] colorsArray)
+        {
+            decimal min = initials.Min(x => x.avg), max = initials.Max(x => x.avg), step = (max - min) / colorsArray.Length;
+            int size = colorsArray.Length;
+            decimal? next = null;
+            List<Tuple<decimal, decimal, string>> deltas = new List<Tuple<decimal, decimal, string>>();
+            List<ColoredData> result = new List<ColoredData>();
+            for (int i = 0, j = 1; i < size; i++, j++)
+            {
+                decimal start = next != null ? (decimal)next : Math.Floor(min + step * i);
+                decimal end = Math.Ceiling(min + step * j);
+                deltas.Add(new Tuple<decimal, decimal, string>(start, end, colorsArray[i]));
+                next = end + 1;
+            }
+            foreach(AvarageData pnt in initials)
+            {
+                foreach (Tuple<decimal, decimal, string> col in deltas)
+                {
+                    if (pnt.avg < col.Item2 && pnt.avg > col.Item1)
+                    {
+                        result.Add(new ColoredData { name = pnt.name, color = col.Item3});
+                        break;
+                    }
+                }
+            }
+            return result;
         }
 
         public JsonResult RequiredInfo()

@@ -55,19 +55,93 @@ function creatFilterWidget() {
                  <div id="filterControl" class="filterControl">
                     <div id="filterImage" class="filterImage inactive"></div>
                     <div id="allFiltersContainer" class="allFiltersContainer inactive">
-                        <div class="filterPanel filterLabel">Тип сделки</div>
-                        <div id="dealTypePanel" class="filterPanel"></div>
-                        <div class="filterPanel filterLabel">Тип объекта недвижимости</div>
-                        <div id="propertyTypePanel" class="filterPanel"></div>
-                        <div class="filterPanel filterLabel">Сегмент рынка</div>
-                        <div id="propertyMarketSegmentPanel" class="filterPanel"></div>
-                        <div id="commercialMarketSegmentPanel" class="filterPanel"></div>
-                        <div class="filterPanel filterLabel">Тип деления</div>
-                        <div id="layersPanel" class="filterPanel">
-                             <div id="districtLayerFilterButton" class="layerButton filterButton inactive">Округа</div>
-                             <div id="regionLayerFilterButton" class="layerButton filterButton inactive">Районы</div>
-                             <div id="zoneLayerFilterButton" class="layerButton filterButton inactive">Зоны</div>
-                             <div id="quartalLayerFilterButton" class="layerButton filterButton inactive">Кварталы</div>
+                        <div class="filterPanelContainer">
+                            <div class="filterPanel filterLabel">Тип сделки</div>
+                            <div id="dealTypePanel" class="filterPanel"></div>
+                        </div>
+                        <div class="filterPanelContainer">
+                            <div class="filterPanel filterLabel">Тип объекта недвижимости</div>
+                            <div id="propertyTypePanel" class="filterPanel"></div>
+                        </div>
+                        <div class="filterPanelContainer">
+                            <div class="filterPanel filterLabel">Сегмент рынка</div>
+                            <div id="propertyMarketSegmentPanel" class="filterPanel"></div>
+                            <div id="commercialMarketSegmentPanel" class="filterPanel"></div>
+                        </div>
+                        <div class="filterPanelContainer">
+                            <div class="filterPanel filterLabel">Тип деления</div>
+                            <div id="layersPanel" class="filterPanel">
+                                 <div id="districtLayerFilterButton" class="layerButton filterButton inactive">Округа</div>
+                                 <div id="regionLayerFilterButton" class="layerButton filterButton inactive">Районы</div>
+                                 <div id="zoneLayerFilterButton" class="layerButton filterButton inactive">Зоны</div>
+                                 <div id="quartalLayerFilterButton" class="layerButton filterButton inactive">Кварталы</div>
+                            </div>
+                        </div>
+                        <div class="filterPanelContainer">
+                            <div class="filterPanel filterLabel">Округ</div>
+                            <div id="districtPanel" class="filterPanel">
+                                <div id="DistrictCAO" class="districtButton filterButton inactive">ЦАО</div>
+                                <div id="DistrictSAO" class="districtButton filterButton inactive">САО</div>
+                                <div id="DistrictSVAO" class="districtButton filterButton inactive">СВАО</div>
+                                <div id="DistrictVAO" class="districtButton filterButton inactive">ВАО</div>
+                                <div id="DistrictYVAO" class="districtButton filterButton inactive">ЮВАО</div>
+                                <div id="DistrictYAO" class="districtButton filterButton inactive">ЮАО</div>
+                                <div id="DistrictYZAO" class="districtButton filterButton inactive">ЮЗАО</div>
+                                <div id="DistrictZAO" class="districtButton filterButton inactive">ЗАО</div>
+                                <div id="DistrictSZAO" class="districtButton filterButton inactive">СЗАО</div>
+                                <div id="DistrictZelAO" class="districtButton filterButton inactive">ЗелАО</div>
+                                <div id="DistrictNAO" class="districtButton filterButton inactive">НАО</div>
+                                <div id="DistrictTAO" class="districtButton filterButton inactive">ТАО</div>
+                            </div>
+                        </div>
+                        <div class="filterPanelContainer">
+                            <div class="filterPanel filterLabel">Источник данных</div>
+                            <div id="districtPanel" class="filterPanel">
+                                <div id="SourceRR" class="sourceButton filterButton inactive">Росреестр</div>
+                                <div id="SourceCian" class="sourceButton filterButton inactive">ЦИАН</div>
+                                <div id="SourceYandex" class="sourceButton filterButton inactive">Яндекс недвижимость</div>
+                                <div id="SourceAvito" class="sourceButton filterButton inactive">Авито</div>
+                            </div>
+                        </div>
+                        <div class="filterPanelContainer">
+                            <div class="filterPanel filterAdditional">
+                                <div id="PaletteControl" class="extendButton inactive"></div>
+                                <div id="allPaletteContainer" class="allPaletteContainer inactive">
+                                    <div class="paletteContainer">
+                                        <div class="innerContainer">
+                                            <div id="colorPickerContainerInitial" class="colorPickerContainer">
+                                                <section>
+                                                    <div id="rgbInitialValue"></div>
+                                                    <div id="rgbInitialPicker"></div>
+                                                </section>
+                                                <div id="rgbInitialShowPanel" class="colorShowPanel"></div>
+                                            </div>
+                                        </div>
+                                        <div class="innerContainer">
+                                            <div id="colorPickerContainerResult" class="colorPickerContainer">
+                                                <section>
+                                                    <div id="rgbResultValue"></div>
+                                                    <div id="rgbResultPicker"></div>
+                                                </section>
+                                                <div id="rgbResultShowPanel" class="colorShowPanel"></div>
+                                            </div>
+                                        </div>
+                                        <div class="innerContainer">
+                                            <div class="splicedDataContainer" id="splicedDeltaContent"></div>
+                                        </div>
+                                    </div>
+                                    <div class="slidecontainer">
+                                        <input type="range" min="4" max="30" value="4" class="slider" id="splicedDeltaController">
+                                    </div>
+                                    <div class="legendContainer" id="legendPaleteContainer">
+                                    </div>
+                                    <div class="filterPanel">
+                                        <div id="refreshHeatMapButton" class="characteristicsButton filterButton refresh inactive">
+                                            Обновить
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                  </div>
@@ -79,10 +153,46 @@ function creatFilterWidget() {
                 document.getElementById("filterImage").classList.toggle("inactive");
                 document.getElementById("allFiltersContainer").classList.toggle("inactive");
             });
+            document.getElementById("PaletteControl").addEventListener("click", function (e) {
+                document.getElementById("PaletteControl").classList.toggle("inactive");
+                document.getElementById("allPaletteContainer").classList.toggle("inactive");
+            });
             document.getElementById("districtLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.district, e.target); });
             document.getElementById("regionLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.region, e.target); });
             document.getElementById("zoneLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.zone, e.target); });
             document.getElementById("quartalLayerFilterButton").addEventListener("click", function (e) { changeMapType(MapZoneType.quartal, e.target); });
+
+
+            document.getElementById("DistrictCAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictSAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictSVAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictVAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictYVAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictYAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictYZAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictZAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictSZAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictZelAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictNAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+            document.getElementById("DistrictTAO").addEventListener("click", function (e) { changeDistrictType(e.target); });
+
+            document.getElementById("SourceRR").addEventListener("click", function (e) { changeSourceType(e.target); });
+            document.getElementById("SourceCian").addEventListener("click", function (e) { changeSourceType(e.target); });
+            document.getElementById("SourceYandex").addEventListener("click", function (e) { changeSourceType(e.target); });
+            document.getElementById("SourceAvito").addEventListener("click", function (e) { changeSourceType(e.target); });
+
+            document.getElementById("splicedDeltaController").addEventListener("input", function () {
+                document.getElementById("splicedDeltaContent").innerHTML = this.value;
+                createColorLegend(document.getElementById("splicedDeltaController").value,
+                    document.getElementById('rgbInitialShowPanel').style.background,
+                    document.getElementById('rgbResultShowPanel').style.background);
+            });
+            createColorPicker('rgbInitialValue', 'rgbInitialPicker', 'rgbInitialShowPanel');
+            createColorPicker('rgbResultValue', 'rgbResultPicker', 'rgbResultShowPanel');
+            document.getElementById("splicedDeltaContent").innerHTML = document.getElementById("splicedDeltaController").value;
+            createColorLegend(document.getElementById("splicedDeltaController").value,
+                document.getElementById('rgbInitialShowPanel').style.background,
+                document.getElementById('rgbResultShowPanel').style.background);
         }
     });
 }

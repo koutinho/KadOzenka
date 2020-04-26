@@ -14,7 +14,9 @@ function GetClusterData(bounds, zoom, token, objectId) {
             maxLoadedObjectsCount: MapSettings.maxLoadedObjectsCount,
             maxObjectsCount: MapSettings.maxObjectsCount,
             token: token,
-            objectId: objectId
+            objectId: objectId,
+            districts: DISTRICTS_DATA,
+            marketSource: SOURCE_DATA
 		},
         dataType: 'json',
         success: function (result) {
@@ -24,6 +26,26 @@ function GetClusterData(bounds, zoom, token, objectId) {
                 initCluster(result.arr, zoom, result.allCount);
                 changeObjectsCount(result.allCount);
             }
+        }
+    });
+};
+
+function GetHeatMapData() {
+    $.ajax({
+        type: "GET",
+        url: "Map/HeatMapData",
+        contentType: 'application/json; charset=utf-8',
+        data: {
+            colors: generateColor(
+                document.getElementById('rgbInitialShowPanel').style.background.replace(/[^0-9,]/gi, '').split(','),
+                document.getElementById('rgbResultShowPanel').style.background.replace(/[^0-9,]/gi, '').split(','),
+                document.getElementById("splicedDeltaController").value).reverse().join(",")
+        },
+        dataType: 'json',
+        success: function (result) {
+            heatMapData = result;
+            if (currentLayer) changeLayer(currentLayer);
+            setHeatMapButtonState(false);
         }
     });
 };

@@ -65,6 +65,7 @@ function refreshFilterWidget(filterInfo) {
     listenFilter(filterInfo.propertyTypeFilter.propertyTypeList, filterInfo);
     listenFilter(filterInfo.propertyMarketFilter.propertyMarketSegmentList, filterInfo);
     listenFilter(filterInfo.commertialMarketFilter.commertialMarketSegmentList, filterInfo);
+    listenTagFilter();
 };
 
 function listenFilter(initialList, filterInfo) {
@@ -77,12 +78,37 @@ function listenFilter(initialList, filterInfo) {
     });
 };
 
+function listenTagFilter() {
+    document.getElementById("refreshHeatMapButton").addEventListener('click', function (e) {
+        if (document.getElementById("refreshHeatMapButton").classList.contains("inactive")) {
+            setHeatMapButtonState(true);
+            GetHeatMapData();
+        }
+    });
+};
+
 function toTarget() { if (clusterSelected) map.setCenter(clusterSelected.coords, clusterSelected.zoom, "map"); };
 
 function changeMapType(type, element) {
     Array.from(document.getElementsByClassName("layerButton")).forEach(x => { if (x.id != element.id) x.classList.add("inactive"); });
     element.classList.toggle("inactive");
     changeLayer(!element.classList.contains("inactive") ? type : 0);
+};
+
+function changeDistrictType(element) {
+    Array.from(document.getElementsByClassName("districtButton")).forEach(x => { if (x.id != element.id) x.classList.add("inactive"); });
+    element.classList.toggle("inactive");
+    DISTRICTS_DATA = element.classList.contains("inactive") ? null : element.innerHTML;
+    refreshCurrentToken();
+    GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
+};
+
+function changeSourceType(element) {
+    Array.from(document.getElementsByClassName("sourceButton")).forEach(x => { if (x.id != element.id) x.classList.add("inactive"); });
+    element.classList.toggle("inactive");
+    SOURCE_DATA = element.classList.contains("inactive") ? null : element.innerHTML;
+    refreshCurrentToken();
+    GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
 };
 
 function changeLayer(type) {
@@ -101,7 +127,6 @@ function changeLayer(type) {
             break;
         case MapZoneType.quartal:
             setQuartalTiles();
-            //setCurrentLayer('/MapJSONData/quartal.json');
             break;
     }
 };
@@ -125,32 +150,40 @@ function setCurrentLayer(url) {
         $.getJSON(url).done(function (geoJson) {
             var defaultColor = null;
             geoJson.features.forEach(function (obj) {
-                //if ((obj.geometry.coordinates[0][0][0] != 55.736392 && obj.geometry.coordinates[0][0][1] != 37.699307) &&
-                //    (obj.geometry.coordinates[0][0][0] != 55.758117 && obj.geometry.coordinates[0][0][1] != 37.657738))
+                var color = getCollors(obj.name);
+                var opacity = color ? 0.75 : 0;
                 SOM.add(new ymaps.GeoObject({
                     geometry: obj.geometry,
                     properties: { balloonContent: obj.name }
                 }, {
-                    fillColor: obj.options.fillColor,
+                    fillColor: color,
                     strokeColor: obj.options.strokeColor,
-                    fillOpacity: obj.options.fillOpacity,
+                    fillOpacity: opacity,
                     strokeWidth: parseInt(obj.options.strokeWidth),
                     strokeOpacity: obj.options.strokeOpacity,
                     name: obj.name,
                     id: obj.id
                 }));
             });
-            SOM.events.add("click", function (e) {
-                SOM.each(x => { if (x.options.get('fillColor') == 'FF0000') x.options.set('fillColor', defaultColor); });
-                defaultColor = `${e.get('target').options.get('fillColor')}`;
-                e.get('target').options.set('fillColor', "FF0000");
-                console.log(e.get('target').geometry.getCoordinates());
-                console.log(e.get('target').options.get('name'));
-                console.log(e.get('target').options.get('id'));
-            })
+            //SOM.events.add("click", function (e) {
+            //    SOM.each(x => { if (x.options.get('fillColor') == 'FF0000') x.options.set('fillColor', defaultColor); });
+            //    defaultColor = `${e.get('target').options.get('fillColor')}`;
+            //    e.get('target').options.set('fillColor', "FF0000");
+            //});
             map.geoObjects.add(SOM);
         });
     }
+};
+
+function getCollors(name) {
+    console.log(currentLayer);
+    if (heatMapData)
+        switch (currentLayer) {
+            case MapZoneType.district: return heatMapData.districts.find(x => x.name == name) ? heatMapData.districts.find(x => x.name == name).color : undefined;
+            case MapZoneType.region: return heatMapData.regions.find(x => x.name == name) ? heatMapData.regions.find(x => x.name == name).color : undefined;
+            case MapZoneType.zone: return heatMapData.zones.find(x => x.name == name) ? heatMapData.zones.find(x => x.name == name).color : undefined;
+        }
+    else return undefined;
 };
 
 function enableEditableMode() {
@@ -195,5 +228,23 @@ function saveDataChanges(cartData) {
             statusCode: parseInt(document.getElementById(`statusSelect_${cartData.id}`).value)
         };
         ChangeObject(result);
+    }
+};
+
+function createColorLegend(delta, initialColor, resultColor) {
+    var resultColors = generateColor(initialColor.replace(/[^0-9,]/gi, '').split(','), resultColor.replace(/[^0-9,]/gi, '').split(','), delta).reverse();
+    var content = '';
+    for (var i = 0; i < delta; i++) { content += `<div class="coloredSegment" style="background: ${resultColors[i]}"></div>`; }
+    document.getElementById('legendPaleteContainer').innerHTML = content;
+};
+
+function setHeatMapButtonState(active) {
+    if (active) {
+        document.getElementById("refreshHeatMapButton").classList.remove("inactive");
+        document.getElementById("refreshHeatMapButton").innerHTML = "Идёт обновление<div class=\"preloaderImage\"></div>";
+    }
+    else {
+        document.getElementById("refreshHeatMapButton").classList.add("inactive");
+        document.getElementById("refreshHeatMapButton").innerHTML = "Обновить";
     }
 };
