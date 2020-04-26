@@ -248,14 +248,16 @@ namespace ObjectModel.KO
                     CadastralNumber = this.CadastralNumber,
                     IsActive = true,
                     ObjectType_Code = this.PropertyType_Code,
+                    KadastrKvartal = this.CadastralBlock,
                 };
                 mainObject.Save();
             }
             else
             {
-                if (mainObject.ObjectType_Code != PropertyType_Code)
+                if (mainObject.ObjectType_Code != PropertyType_Code || mainObject.KadastrKvartal!=CadastralBlock)
                 {
                     mainObject.ObjectType_Code = PropertyType_Code;
+                    mainObject.KadastrKvartal = CadastralBlock;
                     mainObject.Save();
                 }
             }

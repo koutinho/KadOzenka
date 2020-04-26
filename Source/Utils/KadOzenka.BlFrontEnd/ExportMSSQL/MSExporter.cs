@@ -2428,7 +2428,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     foreach (string file in files)
                     {
                         count++;
-                        //Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(file, ConfigurationManager.AppSettings["Schema_Path_2016"], task);
+                        FileStream fileStream = new FileStream(file, FileMode.Open);
+                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2016"], task);
                         Console.WriteLine(count.ToString() + " из " + countAll.ToString());
                     }
                 }
@@ -2447,7 +2448,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     foreach (string file in files)
                     {
                         count++;
-                        //Dal.DataImport.DataImporterGkn.ImportDataGknFromXml(file, ConfigurationManager.AppSettings["Schema_Path_2018"], task);
+                        FileStream fileStream = new FileStream(file, FileMode.Open);
+                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2018"], task);
                         Console.WriteLine(count.ToString() + " из " + countAll.ToString());
                     }
                 }
