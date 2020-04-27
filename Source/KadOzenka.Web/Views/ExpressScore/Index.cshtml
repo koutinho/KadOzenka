@@ -1,5 +1,5 @@
-﻿@using KadOzenka.Dal.Enum
-@using ObjectModel.Directory
+﻿@using ObjectModel.Directory
+@using ObjectModel.Directory.ES
 
 
 
@@ -123,8 +123,10 @@
 						@Html.CustomLabelFor("Тип сделки", true)
 					</div>
 					<div class="col-sm-5">
-						@Html.Kendo().RadioButton().Name("DealType").Label("Покупка").Value(DealType.SaleDeal)
-						@Html.Kendo().RadioButton().Name("DealType").Label("Аренда").Value(DealType.RentDeal).Checked(true)
+						@Html.Kendo().RadioButton().Name("DealType").Label("Сделка купли-продажи").Value(DealType.SaleDeal).Checked(true)
+						@Html.Kendo().RadioButton().Name("DealType").Label("Сделка-аренда").Value(DealType.RentDeal)
+						@Html.Kendo().RadioButton().Name("DealType").Label("Предложение-аренда").Value(DealType.RentSuggestion)
+						@Html.Kendo().RadioButton().Name("DealType").Label("Предложение-Продажа").Value(DealType.SaleSuggestion)
 					</div>
 				</div>
 				<div class="form-group">
@@ -644,13 +646,14 @@
 
 
 	function executeCalculate(scenarioType = null) {
-		if (scenarioType == null) {
+		if (scenarioType == null || scenarioType === 0) {
 			Common.ShowError("Не удалось получить тип расчета. Попробуйте еще раз");
 			return;
 		}
 		var data = {
 			selectedPoints: findPointsIds,
 			targetObjectId,
+			scenarioType,
 			floor: $('#floor').val(),
 			square: $('#square').val()
 		}
@@ -687,7 +690,7 @@
 			closable: false,
 			modal: true,
 			content: '<div class="wrapper-scenario">'+
-				'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioCalculateEnum))).NoDataTemplate("Ничего не найдено!").Value("1").ToClientTemplate()'
+				'@Html.Kendo().DropDownList().Name("scenario").BindTo(ComboBoxHelper.GetSelectList(typeof(ScenarioType))).NoDataTemplate("Ничего не найдено!").Value("1").ToClientTemplate()'
 				+ '</div>',
 			visible: false,
 			buttonLayout: "normal",

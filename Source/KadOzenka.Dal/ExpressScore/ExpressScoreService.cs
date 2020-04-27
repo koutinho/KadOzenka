@@ -7,6 +7,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore.Dto;
 using ObjectModel.Directory;
+using ObjectModel.Directory.ES;
 using ObjectModel.ES;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -25,7 +26,7 @@ namespace KadOzenka.Dal.ExpressScore
 		public EstimatedDto GetEstimateParametersByKn(string kn)
 		{
 			var unitsIds = GetUnitsIdsByKn(kn);
-			return GetEstimateParameters(unitsIds);
+			return unitsIds.Count > 0 ? GetEstimateParameters(unitsIds) : null;
 		}
 
 		public EstimatedDto GetEstimateParametersById(int id)
@@ -201,6 +202,7 @@ namespace KadOzenka.Dal.ExpressScore
 					x.CadastralNumber,
 					x.Price,
 					x.Area,
+					x.ParserTime,
 					x.LastDateUpdate,
 					x.FloorsCount,
 					x.FloorNumber
@@ -210,14 +212,14 @@ namespace KadOzenka.Dal.ExpressScore
 					Kn = x.CadastralNumber,
 					Price = x.Price.GetValueOrDefault(),
 					Square = x.Area.GetValueOrDefault(),
-					LastDateUpdate = x.LastDateUpdate ?? DateTime.MinValue,
+					Date = x.LastDateUpdate ?? x.ParserTime ?? DateTime.MinValue,
 					FloorsCount = x.FloorsCount.GetValueOrDefault(),
 					Floor = x.FloorNumber.GetValueOrDefault()
 				}).ToList();
 		}
 
 		public string CalculateExpressScore(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, decimal targetObjectSquare, 
-			out ResultCalculateDto resultCalculate, ScenarioCalculateEnum scenarioType)
+			out ResultCalculateDto resultCalculate, ScenarioType scenarioType)
 		{
 			resultCalculate = new ResultCalculateDto();
 			var squareCost = CalculateSquareCost(analogs, targetObjectId, targetObjectFloor, out string msg, out List<long> successAnalogIds, scenarioType);
@@ -228,7 +230,7 @@ namespace KadOzenka.Dal.ExpressScore
 				return string.IsNullOrEmpty(msg) ? "При расчете что то пошло не так" : msg;
 			}
 
-			msg = SaveSuccessExpressScore(targetObjectId, summaryCost, squareCost, out int id, square: targetObjectSquare, floor: targetObjectFloor);
+			msg = SaveSuccessExpressScore(targetObjectId, summaryCost, squareCost, out int id, square: targetObjectSquare, floor: targetObjectFloor, scenarioType: scenarioType);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
@@ -253,13 +255,13 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 
 		public string RecalculateExpressScore(List<AnalogDto> analogs, List<int> analogIds,
-			int targetObjectId, int targetObjectFloor, decimal square, int expressScoreId, out decimal cost, out decimal squareCost)
+			int targetObjectId, int targetObjectFloor, decimal square, int expressScoreId, ScenarioType scenarioType, out decimal cost, out decimal squareCost)
 		{
 			cost = 0;
 			squareCost = 0;
 
 			squareCost = CalculateSquareCost(analogs.Where(x => analogIds.Contains((int)x.Id)).ToList(),
-				targetObjectId, targetObjectFloor, out string msg, out var successAnalogIds);
+				targetObjectId, targetObjectFloor, out string msg, out var successAnalogIds, scenarioType);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			cost = Math.Round(squareCost * square, 2);
@@ -273,7 +275,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 
 		private decimal CalculateSquareCost(List<AnalogDto> analogs, int targetObjectId, int targetObjectFloor, out string msg, out List<long> successAnalogIds,
-			ScenarioCalculateEnum? scenarioType = null)
+			ScenarioType? scenarioType = null)
 		{
 			msg = "";
 
@@ -309,9 +311,9 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				OMIdexDate indexAnalogDate = null;
-				if (analog.LastDateUpdate != DateTime.MinValue)
+				if (analog.Date != DateTime.MinValue)
 				{
-					var analogDate = new DateTime(analog.LastDateUpdate.Year, analog.LastDateUpdate.Month,
+					var analogDate = new DateTime(analog.Date.Year, analog.Date.Month,
 						1);
 
 					indexAnalogDate = OMIdexDate.Where(x => x.Date == analogDate).SelectAll().ExecuteFirstOrDefault();
@@ -319,7 +321,9 @@ namespace KadOzenka.Dal.ExpressScore
 
 				if (indexAnalogDate == null)
 				{
-					continue;
+					// TODO Временное решение на время показов
+					indexAnalogDate = OMIdexDate.Where(x => x).SelectAll().Execute().OrderByDescending(x => x.Date).First();
+					//continue;
 				}
 
 				decimal kDate = indexAnalogDate.Index / indexDateEstimate.Index; // Корректировка на дату
@@ -347,7 +351,7 @@ namespace KadOzenka.Dal.ExpressScore
 					}
 				}
 
-				if (landShare != null && scenarioType == null && scenarioType == ScenarioCalculateEnum.Oks)
+				if (landShare != null && scenarioType != null && scenarioType == ScenarioType.Oks)
 				{
 					cost = cost * landShare.Factor; 
 				}
@@ -460,7 +464,7 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 
 		public string SaveSuccessExpressScore(int targetObjectId, decimal summaryCost, decimal costSquareMeter, out int id, int? expressScoreId = null,
-			decimal? square = null, int? floor = null)
+			decimal? square = null, int? floor = null, ScenarioType? scenarioType = null)
 		{
 			id = 0;
 			try
@@ -474,7 +478,7 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				id = expressScoreId == null
-					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId)
+					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId, scenarioType.GetValueOrDefault())
 					:  UpdateCostsExpressScore(expressScoreId.Value, summaryCost, costSquareMeter);
 			}
 			catch (Exception e)
@@ -487,7 +491,7 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
-		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId)
+		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId, ScenarioType scenarioType)
 		{
 			return new OMExpressScore
 			{
@@ -497,7 +501,8 @@ namespace KadOzenka.Dal.ExpressScore
 				SummaryCost = cost,
 				Objectid = targetObjectId,
 				Floor = floor,
-				Square = square
+				Square = square,
+				ScenarioType_Code = scenarioType
 			}.Save();
 		}
 

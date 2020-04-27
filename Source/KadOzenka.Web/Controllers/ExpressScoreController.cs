@@ -202,7 +202,7 @@ namespace KadOzenka.Web.Controllers
 			return View();
 		}
 
-		#region Delete Analog
+		#region Recalculate Analog
 		[HttpGet]
 		public ActionResult RecalculateAnalog(int esId)
 		{
@@ -222,7 +222,7 @@ namespace KadOzenka.Web.Controllers
 			var obj = OMExpressScore.Where(x => x.Id == expressScoreId).SelectAll().ExecuteFirstOrDefault();
 
 			string resMsg = _service.RecalculateExpressScore(_service.GetAnalogsByIds(analogIds), analogIds,
-				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, out decimal cost, out decimal squareCost);
+				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, obj.ScenarioType_Code, out decimal cost, out decimal squareCost);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{

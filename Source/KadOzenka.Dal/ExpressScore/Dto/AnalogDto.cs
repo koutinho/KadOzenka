@@ -19,9 +19,9 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// </summary>
 		public decimal Square { get; set; }
 		/// <summary>
-		/// Дата псоледнего обновления
+		/// Дата добавления объекта или дата последнего обновления, для росреестра всегда дата добавления
 		/// </summary>
-		public DateTime LastDateUpdate { get; set; }
+		public DateTime Date { get; set; }
 		/// <summary>
 		/// Этаж помещения
 		/// </summary>
