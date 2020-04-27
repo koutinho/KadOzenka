@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MapConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://genix.pro">
+    <EntityAttributes>
+        <EntityAttribute>
+            <OmEntityAttrId>317000300</OmEntityAttrId>
+            <Description>Кадастровый номер квартиры</Description>
+            <Type>A</Type>
+            <Source1AttrId>400001400</Source1AttrId>
+            <Source2AttrId>25400200</Source2AttrId>
+            <UseSource2Sign>true</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+
+        <EntityAttribute>
+            <OmEntityAttrId>317002500</OmEntityAttrId>
+            <Description>Дата постановки на кадастровый учет</Description>
+            <Type>A</Type>
+            <Source1AttrId>401000700</Source1AttrId>
+            <Source2AttrId></Source2AttrId>
+            <UseSource2Sign>false</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+
+        <EntityAttribute>
+            <OmEntityAttrId>317003100</OmEntityAttrId>
+            <Description>Дата снятия с кадастрового учета</Description>
+            <Type>A</Type>
+            <Source1AttrId>401000800</Source1AttrId>
+            <Source2AttrId></Source2AttrId>
+            <UseSource2Sign>false</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+
+        <EntityAttribute>
+            <OmEntityAttrId>317000600</OmEntityAttrId>
+            <Description>УНОМ  МКД</Description>
+            <Type>A</Type>
+            <Source1AttrId>316000900</Source1AttrId>
+            <Source2AttrId></Source2AttrId>
+            <UseSource2Sign>false</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+
+        <EntityAttribute>
+            <OmEntityAttrId>317000700</OmEntityAttrId>
+            <Description>Номер квартиры</Description>
+            <Type>A</Type>
+            <Source1AttrId>402002400</Source1AttrId>
+            <Source2AttrId>405004100</Source2AttrId>
+            <Source3AttrId>25401700</Source3AttrId>
+            <UseSource2Sign>true</UseSource2Sign>
+            <UseSource3Sign>true</UseSource3Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+
+        <!-- Object of type 'System.String' cannot be converted to type 'System.Nullable`1[System.Int64]'.
+        <EntityAttribute>
+            <OmEntityAttrId>317001000</OmEntityAttrId>
+            <Description>Статус жилого помещения на основании справочника «Статус объекта в ЕГРН»</Description>
+            <Type>A</Type>
+            <Source1AttrId>401000900</Source1AttrId>
+            <Source2AttrId></Source2AttrId>
+            <UseSource2Sign>false</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>   
+        -->
+
+        <EntityAttribute>
+            <OmEntityAttrId>317001200</OmEntityAttrId>
+            <Description>Кол-во комнат в квартире</Description>
+            <Type>A</Type>
+            <Source1AttrId>25403400</Source1AttrId>
+            <Source2AttrId></Source2AttrId>
+            <UseSource2Sign>false</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+
+        <EntityAttribute>
+            <OmEntityAttrId>317001300</OmEntityAttrId>
+            <Description>Площадь общая без летних</Description>
+            <Type>A</Type>
+            <Source1AttrId>400000600</Source1AttrId>
+            <Source2AttrId>25401000</Source2AttrId>
+            <UseSource2Sign>true</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+
+        <EntityAttribute>
+            <OmEntityAttrId>317001400</OmEntityAttrId>
+            <Description>Площадь с летними</Description>
+            <Type>A</Type>
+            <Source1AttrId>25401002</Source1AttrId>
+            <Source2AttrId></Source2AttrId>
+            <UseSource2Sign>false</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+
+        <EntityAttribute>
+            <OmEntityAttrId>317001500</OmEntityAttrId>
+            <Description>Площадь жилая</Description>
+            <Type>A</Type>
+            <Source1AttrId>25401001</Source1AttrId>
+            <Source2AttrId></Source2AttrId>
+            <UseSource2Sign>false</UseSource2Sign>
+            <EnableUpdateSign>true</EnableUpdateSign>
+        </EntityAttribute>
+      
+      <!--Справочные показатели заполняются константами на основе справочника ЕГРН, так как другие варианты не грузятся-->
+      
+      <EntityAttribute>
+        <OmEntityAttrId>317000800</OmEntityAttrId> <!--Справочник: 12162-->
+        <Description>Класс помещения</Description>
+        <Type>C</Type>
+        <Const>Жилое помещение</Const>
+        <ConstCode>1216201</ConstCode>
+        <EnableUpdateSign>true</EnableUpdateSign>
+      </EntityAttribute>
+
+      <EntityAttribute>
+        <OmEntityAttrId>317000900</OmEntityAttrId> <!--Справочник: 12161-->
+        <Description>Тип помещения</Description>
+        <Type>C</Type>
+        <Const>Квартира</Const>
+        <ConstCode>1216101</ConstCode>
+        <EnableUpdateSign>true</EnableUpdateSign>
+      </EntityAttribute>
+      
+    </EntityAttributes>
+</MapConfiguration>

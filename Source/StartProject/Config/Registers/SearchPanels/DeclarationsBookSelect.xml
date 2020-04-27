@@ -1,0 +1,28 @@
+﻿<RootElement>
+  <ControlElement Caption="Основные данные" OwnType="RadPanel" Width="0" AttributeNumber="0">
+    <children>
+
+      <ControlElement Caption="Номер" ID="book_prefix" OwnType="Text" AttributeNumber="50000200" QueryOperation="Like" />
+
+        <ControlElement Caption="Дата начала" ID="date_begin_panel" OwnType="Panel">
+            <children>
+                <ControlElement Caption="с " ID="date_begin_from" OwnType="Calendar" AttributeNumber="50000300" QueryOperation="MoreThan" />
+                <ControlElement Caption="по" ID="date_begin_to" OwnType="Calendar" AttributeNumber="50000300" QueryOperation="LessThan" />
+            </children>
+        </ControlElement>
+
+        <ControlElement Caption="Дата начала" ID="date_begin" OwnType="Calendar" AttributeNumber="50000300" QueryOperation="WithinDate" />
+
+        <ControlElement Caption="Дата окончания" ID="date_end_panel" OwnType="Panel">
+            <children>
+                <ControlElement Caption="с " ID="date_end_from" OwnType="Calendar" AttributeNumber="50000400" QueryOperation="MoreThan" />
+                <ControlElement Caption="по" ID="date_end_to" OwnType="Calendar" AttributeNumber="50000400" QueryOperation="LessThan" />
+            </children>
+        </ControlElement>
+
+        <ControlElement Caption="Дата окончания" ID="date_end" OwnType="Calendar" AttributeNumber="50000400" QueryOperation="WithinDate" />
+
+    </children>
+  </ControlElement>
+
+</RootElement>

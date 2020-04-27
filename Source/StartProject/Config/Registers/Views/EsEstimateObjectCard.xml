@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="600" DefaultLayoutId="1006002" LinkedRegistersList="600" AllowSearchPanelResize="false"
+              Description="Экспресс оценка" IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left"
+              ShowListsMenu="false" ShowActualDate="false" ObjectCardTitleTemplate="Экспресс оценка"
+              ShowObjectCards="false">
+
+	<ObjectCardButtons>
+		<Button Caption="Настройки экспресс оценки" NavigateURL="/ExpressScore/SettingsExpressScore"  WindowHeight="500" WindowWidth="800" Icon="fas fa-cogs"/>
+	</ObjectCardButtons>
+
+	<Tabs>
+		<Tab Caption="Экспресс оценка" NavigateURL="/ExpressScore">
+			<Parameters>
+			</Parameters>
+		</Tab>
+	</Tabs>
+</RegisterView>

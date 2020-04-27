@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="false" RegisterId="801" DefaultLayoutId="1008012" LinkedRegistersList="801,950,930,203" SRDFunctionTag="ADMIN.IMPORT"
+              ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="false" ShowFilterMenu="false"
+              UseMasterPage="false">
+  <Buttons>
+      <Button Caption="Скачать исходные данные" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-arrow-down">
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+              <Parameter Key="downloadResult" Value="false" />
+          </Parameters>
+      </Button>
+    
+      <Button Caption="Скачать результат" NavigateURL="~/DataImporterLayout/Download" OpenInNewWindow="true" Icon="fas fa-file-download">
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+              <Parameter Key="downloadResult" Value="true" />
+          </Parameters>
+          <!--<ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                  <Conditions>
+                      <Condition Key="[80100300]" Operation="NotEqual" Value="2" />
+                  </Conditions>
+              </ConditionGroup>
+          </ConditionGroups>-->
+      </Button>
+
+      <Button Caption="Перезапустить" NavigateURL="~/DataImport/RestartGknImports" OpenInNewWindow="false" NeedRefresh="true" WindowHeight="150" WindowWidth="450">
+          <ConditionGroups>
+              <ConditionGroup HideOrDisable="Disable">
+                  <Conditions>
+                      <Condition Key="NeedSelectedRow" Operation="" Value="true"/>
+                  </Conditions>
+              </ConditionGroup>
+          </ConditionGroups>
+          <Parameters>
+              <Parameter Key="importId" Value="[ObjectID]" />
+          </Parameters>
+      </Button>
+
+     <Button Caption="Выгрузить в Excel" Icon="" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="" />
+
+    <Button Caption="Детали" NavigateURL="/ObjectCard?isVertical=false&amp;useMasterPage=false" >
+      <Parameters>
+        <Parameter Key="ObjId" Value="[ObjectId]" />
+        <Parameter Key="RegisterViewId" Value="DataImporter" />
+      </Parameters>
+    </Button>
+    
+    
+    <Button Caption="Перейти в Журнал" NavigateURL="/RegistersView/DataImporter" OpenInRadWindow="false" OpenInNewWindow="true">
+      <Parameters>
+        <Parameter Key="Transition" Value="1" />
+        <Parameter Key="80101400" Value="{Get:80101400}" />
+      </Parameters>
+    </Button>
+    
+  </Buttons>
+</RegisterView>

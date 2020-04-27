@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="200" DefaultLayoutId="1002001" LinkedRegistersList="1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,200" AllowSearchPanelResize="false" IsBasic="false"
+              OpenEmpty="false" UseSubMap="true" JoinType="Left" ShowListsMenu="false" ShowSearchPanelInRadWindow="true" ShowObjectCards="false" ShowSettingsPanel="true"
+              ShowActualDate="false" SearchPanel="" SearchPanelWindowHeight="654" ShowRowMenu="true">
+
+	<DefaultSearchControls>
+		<ControlElement AttributeNumber="20000500" CustomSearchUrl="/CustomSearch/CadastralQuarterFilter" AllowDelete="false" DefaultValue="77:10:0003004"/>
+	</DefaultSearchControls>
+
+	<Buttons>
+        <Button Caption="Все данные" NavigateURL="~/GbuObject/AllDataTree" Icon="icon-contract">
+            <Parameters>
+                <Parameter Key="ObjectId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+
+	    <Button Caption="Нормализация данных" NavigateURL="~/GbuObject/GroupingObject" WindowHeight="800" WindowWidth="1100" Icon="fas fa-screwdriver">
+		    <Parameters>
+		    </Parameters>
+	    </Button>
+
+	    <Button Caption="Выборка из справочника ЦОД" NavigateURL="~/GbuObject/UnloadingFromDict" WindowHeight="400" WindowWidth="1000" Icon="fas fa-book">
+		    <Parameters>
+		    </Parameters>
+	    </Button>
+
+	    <Button Caption="Наследование" NavigateURL="~/GbuObject/Inheritance" WindowHeight="750" WindowWidth="1000" Icon="fas fa-clone">
+		    <Parameters>
+		    </Parameters>
+	    </Button>
+
+	    <Button Caption="Присвоить оценочную группу" NavigateURL="/GbuObject/SetEstimatedGroup" Icon="fas fa-donate" WindowHeight="400" WindowWidth="1150">
+	    </Button>
+
+		<Button Caption="Загрузка данных по списку" NavigateURL="~/DataImport/DataImport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-down">
+            <Parameters>
+                <Parameter Key="registerViewId" Value="GbuObjects" />
+                <Parameter Key="mainRegisterId" Value="200" />
+            </Parameters>
+        </Button>
+
+        <Button Caption="Выгрузка данных по списку" NavigateURL="~/DataExport/DataExport" WindowHeight="800" WindowWidth="1000" Icon="fas fa-arrow-circle-up">
+            <Parameters>
+                <Parameter Key="registerViewId" Value="GbuObjects" />
+                <Parameter Key="mainRegisterId" Value="200" />
+            </Parameters>
+        </Button>
+
+        <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
+
+        <Button Caption="Гармонизация" NavigateURL="/GbuObject/Harmonization" WindowHeight="800" WindowWidth="1000"  Icon="fas fa-wrench"/>
+        <Button Caption="Гармонизация по классификатору ЦОД" NavigateURL="/GbuObject/HarmonizationCOD" WindowHeight="800" WindowWidth="1000"  Icon="fas fa-wrench"/>
+
+    </Buttons>
+
+    <Tabs>
+        <Tab Caption="Основные данные" NavigateURL="/GbuObject/GbuObjectCard">
+            <Parameters>
+                <Parameter Key="objectId" Value="[ObjectId]" />
+            </Parameters>
+        </Tab>
+    </Tabs>
+
+    <RowMenuButtons>
+        <Button Caption="Объект недвижимости" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+    </RowMenuButtons>
+</RegisterView>

@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="800" DefaultLayoutId="1008001" Description="Менеджер загрузки" LinkedRegistersList="800,950"
+              ShowActualDate="false" UseMasterPage="true" DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT">
+  <Buttons>
+    <Button Caption="Скачать исходный шаблон" NavigateURL="/DataExport/DownloadExcelTemplate" OpenInNewWindow="true" Icon="fas fa-arrow-down"
+            SRDFunctionTag="CORE.REGISTER.EXPORT">
+      <Parameters>
+        <Parameter Key="objectId" Value="[ObjectID]" />
+        <Parameter Key="fileType" Value="Template" />
+      </Parameters>      
+    </Button>
+    
+    <Button Caption="Скачать результат" NavigateURL="/DataExport/DownloadExcelTemplate" OpenInNewWindow="true" Icon="fas fa-file-download"
+            SRDFunctionTag="CORE.REGISTER.EXPORT">
+      <Parameters>
+        <Parameter Key="objectId" Value="[ObjectID]" />
+        <Parameter Key="fileType" Value="Result" />
+      </Parameters>
+      <ConditionGroups>
+        <ConditionGroup HideOrDisable="Disable">
+          <Conditions>
+            <Condition Key="[80000300]" Operation="NotEqual" Value="2" />
+          </Conditions>
+        </ConditionGroup>
+      </ConditionGroups>
+    </Button>
+    
+    <Button Caption="Повторить формирование" NavigateURL="/DataExport/RepeatFormation" OpenInNewWindow="false" Icon="fas fa-undo-alt"
+            NeedRefresh="true" WindowHeight="200" WindowWidth="400" ShowRowMenu="true" SRDFunctionTag="CORE.REGISTER.EXPORT">
+      <Parameters>
+        <Parameter Key="objectId" Value="[ObjectID]" />
+      </Parameters>
+    </Button>    
+  </Buttons>
+  <Tabs>
+    <Tab Caption="Основные данные" NavigateURL="~/DataExport/Details?Transition=1">
+      <Parameters>
+        <Parameter Key="objectId" Value="[ObjectID]" />
+      </Parameters>
+    </Tab>
+    <Tab Caption="Фоновые процессы" NavigateURL="~/RegistersView/CoreLongProcessQueueCard?Transition=1">
+      <Parameters>
+        <Parameter Key="97500500" Value="[ObjectID]" />
+        <Parameter Key="97500400" Value="[RegisterID]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
+
+  <RowMenuButtons>
+    <Button Caption="Открыть карточку" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+  </RowMenuButtons>
+</RegisterView>
