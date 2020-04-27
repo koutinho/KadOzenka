@@ -463,7 +463,6 @@
 							var coord = [data.Lat, data.Lng];
 							ymaps.geocode(coord).then(function(res) {
 								var firstGeoObject = res.geoObjects.get(0);
-
 								if (firstGeoObject) {
 									// Создание макета содержимого балуна.
 									var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
@@ -487,14 +486,14 @@
 
 									var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
 										{
-											preset: 'islands#orangeDotIconWithCaption', 
 											pointId: data.Id
 										},
 										{
 											balloonContentLayout: balloonContentLayout,
 											// Запретим замену обычного балуна на балун-панель.
 											// Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
-											balloonPanelMaxMapArea: 0
+											balloonPanelMaxMapArea: 0,
+											preset: 'islands#orangeDotIconWithCaption'
 										}
 									);
 
