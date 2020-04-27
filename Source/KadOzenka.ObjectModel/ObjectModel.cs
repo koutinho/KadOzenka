@@ -43,6 +43,7 @@ namespace ObjectModel.Gbu
                 NotifyPropertyChanged("Id");
             }
         }
+
     }
 }
 
@@ -120,14 +121,14 @@ namespace ObjectModel.Gbu
 
 namespace ObjectModel.Gbu
 {
-	/// <summary>
-	/// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
-	/// </summary>
-	[RegisterInfo(RegisterID = 9)]
-	[Serializable]
-	public partial class OMSource9 : OMBaseClass<OMSource9>
-	{
-	}
+    /// <summary>
+    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 9)]
+    [Serializable]
+    public partial class OMSource9 : OMBaseClass<OMSource9>
+    {
+    }
 }
 
 namespace ObjectModel.Gbu
@@ -1822,27 +1823,28 @@ namespace ObjectModel.Market
         }
 
 
-		private decimal? _priceaftercorrectionbystage;
-		/// <summary>
-		/// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 10008500)]
-		public decimal? PriceAfterCorrectionByStage
-		{
-			get
-			{
-				CheckPropertyInited("PriceAfterCorrectionByStage");
-				return _priceaftercorrectionbystage;
-			}
-			set
-			{
-				_priceaftercorrectionbystage = value;
-				NotifyPropertyChanged("PriceAfterCorrectionByStage");
-			}
-		}
+        private decimal? _priceaftercorrectionbystage;
+        /// <summary>
+        /// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008500)]
+        public decimal? PriceAfterCorrectionByStage
+        {
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionByStage");
+                return _priceaftercorrectionbystage;
+            }
+            set
+            {
+                _priceaftercorrectionbystage = value;
+                NotifyPropertyChanged("PriceAfterCorrectionByStage");
+            }
+        }
 
 
-		private decimal? _priceaftercorrectionforfirstfloor;
+
+        private decimal? _priceaftercorrectionforfirstfloor;
         /// <summary>
         /// 10008800 Цена после корректировки на первый этаж (PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR)
         /// </summary>
@@ -11267,6 +11269,153 @@ namespace ObjectModel.KO
             {
                 _gbuid = value;
                 NotifyPropertyChanged("GbuId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 258 Реестр настройками использования заданных атрибутов для тура (KO_TOUR_ATTRIBUTE_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 258)]
+    [Serializable]
+    public partial class OMTourAttributeSettings : OMBaseClass<OMTourAttributeSettings>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 25800100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 25800100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _tourid;
+        /// <summary>
+        /// 25800200 Идентификатор тура (TOUR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25800200)]
+        public long TourId
+        {
+            get
+            {
+                CheckPropertyInited("TourId");
+                return _tourid;
+            }
+            set
+            {
+                _tourid = value;
+                NotifyPropertyChanged("TourId");
+            }
+        }
+
+
+        private bool _isoks;
+        /// <summary>
+        /// 25800300 ОКС или ЗУ (IS_OKS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25800300)]
+        public bool IsOks
+        {
+            get
+            {
+                CheckPropertyInited("IsOks");
+                return _isoks;
+            }
+            set
+            {
+                _isoks = value;
+                NotifyPropertyChanged("IsOks");
+            }
+        }
+
+
+        private string _attributeusingtype;
+        /// <summary>
+        /// 25800400 Тип использования атрибута (ATTRIBUTE_USING_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25800400)]
+        public string AttributeUsingType
+        {
+            get
+            {
+                CheckPropertyInited("AttributeUsingType");
+                return _attributeusingtype;
+            }
+            set
+            {
+                _attributeusingtype = value;
+                NotifyPropertyChanged("AttributeUsingType");
+            }
+        }
+
+
+        private KoAttributeUsingType _attributeusingtype_Code;
+        /// <summary>
+        /// 25800400 Тип использования атрибута (справочный код) (ATTRIBUTE_USING_TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25800400)]
+        public KoAttributeUsingType AttributeUsingType_Code
+        {
+            get
+            {
+                CheckPropertyInited("AttributeUsingType_Code");
+                return this._attributeusingtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_attributeusingtype))
+                    {
+                         _attributeusingtype = descr;
+                    }
+                }
+                else
+                {
+                     _attributeusingtype = descr;
+                }
+
+                this._attributeusingtype_Code = value;
+                NotifyPropertyChanged("AttributeUsingType");
+                NotifyPropertyChanged("AttributeUsingType_Code");
+            }
+        }
+
+
+        private long _attributeid;
+        /// <summary>
+        /// 25800500 Идентификатор атрибута (ATTRIBUTE_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 25800500)]
+        public long AttributeId
+        {
+            get
+            {
+                CheckPropertyInited("AttributeId");
+                return _attributeid;
+            }
+            set
+            {
+                _attributeid = value;
+                NotifyPropertyChanged("AttributeId");
             }
         }
 
@@ -20889,6 +21038,7 @@ namespace ObjectModel.ES
             }
         }
 
+
         private string _scenariotype;
         /// <summary>
         /// 60000900 Тип сценария расчета ()
@@ -20929,12 +21079,12 @@ namespace ObjectModel.ES
                 {
                     if (string.IsNullOrEmpty(_scenariotype))
                     {
-                        _scenariotype = descr;
+                         _scenariotype = descr;
                     }
                 }
                 else
                 {
-                    _scenariotype = descr;
+                     _scenariotype = descr;
                 }
 
                 this._scenariotype_Code = value;
@@ -20984,12 +21134,12 @@ namespace ObjectModel.ES
                 {
                     if (string.IsNullOrEmpty(_dealtype))
                     {
-                        _dealtype = descr;
+                         _dealtype = descr;
                     }
                 }
                 else
                 {
-                    _dealtype = descr;
+                     _dealtype = descr;
                 }
 
                 this._dealtype_Code = value;
@@ -20997,6 +21147,7 @@ namespace ObjectModel.ES
                 NotifyPropertyChanged("DealType_Code");
             }
         }
+
     }
 }
 

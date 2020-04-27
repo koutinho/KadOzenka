@@ -2537,6 +2537,38 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип использования атрибута (215)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 215)]
+    public enum KoAttributeUsingType : long
+    {
+		/// <summary>
+		/// Атрибут кадастрового квартала (1)
+		/// </summary>
+		[Description("Атрибут кадастрового квартала")]
+        [EnumCode("1")]
+        [ShortTitle("Атрибут кадастрового квартала")]
+        CodeQuarterAttribute = 1,
+		/// <summary>
+		/// Атрибут кода группы (2)
+		/// </summary>
+		[Description("Атрибут кода группы")]
+        [EnumCode("2")]
+        [ShortTitle("Атрибут кода группы")]
+        CodeGroupAttribute = 2,
+		/// <summary>
+		/// Атрибут типа помещения (3)
+		/// </summary>
+		[Description("Атрибут типа помещения")]
+        [EnumCode("3")]
+        [ShortTitle("Атрибут типа помещения")]
+        TypeRoomAttribute = 3,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>
