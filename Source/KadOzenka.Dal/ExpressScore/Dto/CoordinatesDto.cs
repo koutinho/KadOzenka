@@ -7,10 +7,10 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public long? Id { get; set; }
 		public decimal Lat { get; set; }
 		public decimal Lng { get; set; }
+		public string ObjectMiniCard { get; set; }
 
 		public bool Equals(CoordinatesDto other)
 		{
-
 			if (ReferenceEquals(other, null)) return false;
 
 			if (ReferenceEquals(this, other)) return true;

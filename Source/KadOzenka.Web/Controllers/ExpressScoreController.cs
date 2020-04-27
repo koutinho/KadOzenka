@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using CIPJS.Models.ExpressScore;
 using Core.Register;
-using Core.Register.QuerySubsystem;
-using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
-using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ExpressScore;
+using KadOzenka.Web.Models.MarketObject;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Directory;
 using ObjectModel.ES;
@@ -20,13 +19,15 @@ namespace KadOzenka.Web.Controllers
 {
 	public class ExpressScoreController : KoBaseController
 	{
+		#region Init
 
-
-		#region init
 		private ExpressScoreService _service;
-		public ExpressScoreController(ExpressScoreService service)
+		private ViewRenderService _viewRenderService;
+
+		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService)
 		{
 			_service = service;
+			_viewRenderService = viewRenderService;
 		}
 		#endregion
 
@@ -56,7 +57,6 @@ namespace KadOzenka.Web.Controllers
 			}
 			return Json(new { response = new { address = yandexAddress.FormalizedAddress } });
 		}
-
 
 		public JsonResult GetNearestObjects([FromQuery] NearestObjectViewModel param)
 		{
@@ -124,8 +124,6 @@ namespace KadOzenka.Web.Controllers
 				Lng = y.Lng
 			});
 
-
-
 			var coordinates = _service.GetCoordinatesPointAtSelectedDistance(coordinatesInput, param.SelectedLat.GetValueOrDefault(), param.SelectedLng.GetValueOrDefault(), param.Quality.GetValueOrDefault());
 
 			if (coordinates.Count == 0)
@@ -133,7 +131,32 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage("Объекты аналоги не найдены");
 			}
 
-			return Json(new {response = new { coordinates, targetObjectId } });
+			//собираем данные для карточки
+			var resultObjectIds = coordinates.Select(x => x.Id).ToList();
+			var resultObjects = OMCoreObject.Where(x => resultObjectIds.Contains(x.Id))
+				.Select(x => new
+				{
+					x.Id,
+					x.Images,
+					x.Price,
+					x.PricePerMeter,
+					x.Area,
+					x.Address,
+					x.CadastralNumber,
+					x.PropertyMarketSegment,
+					x.DealType,
+					x.Market_Code,
+					x.PropertyTypesCIPJS_Code
+				}).Execute();
+
+			coordinates.ForEach(x =>
+			{
+				var resultObject = resultObjects.FirstOrDefault(y => y.Id == x.Id);
+				x.ObjectMiniCard = _viewRenderService.ToString("MarketObjects/ObjectMiniCard",
+					CoreObjectDto.MapToMiniCard(resultObject));
+			});
+
+			return Json(new { response = new { coordinates, targetObjectId } });
 		}
 
 		#region WallMaterial
@@ -230,6 +253,12 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json( new {success = new { cost, squareCost } });
+		}
+
+		[HttpPost]
+		public JsonResult ExcludeFromCalculation(long objId)
+		{
+			return Json(new { Message = "Объект исключен"});
 		}
 
 		#endregion

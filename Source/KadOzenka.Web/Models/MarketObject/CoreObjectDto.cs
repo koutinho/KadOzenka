@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using Core.Shared.Extensions;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -17,16 +19,24 @@ namespace KadOzenka.Web.Models.MarketObject
 		}
 
 		public long Id { get; set; }
+		[DisplayName("Источник")]
 		public string Market { get; set; }
+		[DisplayName("Тип сделки")]
 		public string DealType { get; set; }
         public DealType DealTypeCode { get; set; }
 		public DateTime? ParserTime { get; set; }
         public DateTime? LastDateUpdate { get; set; }
-        public string Address { get; set; }
+        [DisplayName("Адрес")]
+		public string Address { get; set; }
 		public string Metro { get; set; }
+		[DisplayName("Площадь")]
 		public decimal? Area { get; set; }
+		[DisplayName("Площадь")]
+		public string AreaStr { get; set; }
 		public string Description { get; set; }
+		[DisplayName("Цена")]
 		public decimal? Price { get; set; }
+		[DisplayName("Кадастровый номер")]
 		public string CadastralNumber { get; set; }
 		public string CadastralQuartal { get; set; }
 		public string District { get; set; }
@@ -50,9 +60,12 @@ namespace KadOzenka.Web.Models.MarketObject
 		public MarketTypes MarketType { get; set; }
         public string CIPJSType { get; set; }
         public PropertyTypesCIPJS CIPJSTypeCode { get; set; }
-        public string MarketSegment { get; set; }
+        [DisplayName("Сегмент")]
+		public string MarketSegment { get; set; }
         public MarketSegment MarketSegmentCode { get; set; }
         public decimal? PricePerSquareMeter { get; set; }
+		public string ImageUrl { get; set; }
+		public string MarketLogoUrl { get; set; }
 
 		public static CoreObjectDto OMMap(OMCoreObject entity)
 		{
@@ -130,6 +143,46 @@ namespace KadOzenka.Web.Models.MarketObject
 				//}
 			}
 			return dto;
+		}
+
+		public static CoreObjectDto MapToMiniCard(OMCoreObject entity)
+		{
+			string marketLogoUrl = null;
+			switch (entity.Market_Code)
+			{
+				case MarketTypes.Cian:
+					marketLogoUrl = "/MapIcons/CIANLogoTransparent.png";
+					break;
+				case MarketTypes.Avito:
+					marketLogoUrl = "/MapIcons/AvitoLogoOnly.png";
+					break;
+				case MarketTypes.YandexProterty:
+					marketLogoUrl = "/MapIcons/YandexLogoOnly.png";
+					break;
+				case MarketTypes.Rosreestr:
+					marketLogoUrl = "/MapIcons/rosreestrTransparent.png";
+					break;
+			}
+
+			var pricePerMeter = GetPricePerSquareMeter(entity);
+			return new CoreObjectDto
+			{
+				Id = entity.Id,
+				ImageUrl = entity.Images?.Split(',').ElementAtOrDefault(0),
+				Price = entity.Price,
+				PricePerSquareMeter = pricePerMeter == null 
+					? (decimal?) null 
+					: Math.Round(pricePerMeter.Value, 2),
+				AreaStr = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea 
+					? entity.AreaLand?.ToString("n") + " сот."
+					: entity.Area?.ToString("n") + " м²",
+				Address = entity.Address,
+				CadastralNumber = entity.CadastralNumber,
+				MarketSegment = entity.PropertyMarketSegment,
+				DealType = entity.DealType,
+				Market = entity.Market_Code.GetEnumDescription(),
+				MarketLogoUrl = marketLogoUrl
+			};
 		}
 
 		private static decimal? GetPricePerSquareMeter(OMCoreObject entity)

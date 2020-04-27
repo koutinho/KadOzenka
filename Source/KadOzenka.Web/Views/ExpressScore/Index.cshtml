@@ -443,7 +443,6 @@
 					Common.ShowError('Выберите или заполните целевой объект');
 					return;
 				}
-
 				kendo.ui.progress($('body'), true);
 				var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}
 														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Address=${currentAddress}
@@ -466,13 +465,38 @@
 								var firstGeoObject = res.geoObjects.get(0);
 
 								if (firstGeoObject) {
-									var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
+									// Создание макета содержимого балуна.
+									var balloonContentLayout = ymaps.templateLayoutFactory.createClass(
+										data.ObjectMiniCard,
 										{
-											iconCaption: 'поиск...'
-										},
+											// Переопределяем функцию build, чтобы при создании макета начинать
+											// слушать событие click на кнопке.
+											build: function() {
+												balloonContentLayout.superclass.build.call(this);
+												$("#excludeFromCalculation_" + data.Id).kendoButton({
+													enable: false,
+													click: excludeFromCalculation
+												});
+											},
+											// Переопределяем функцию clear, чтобы снять
+											// прослушивание клика при удалении макета с карты.
+											clear: function() {
+												$("#excludeFromCalculation_" + data.Id).unbind('click', excludeFromCalculation);
+												balloonContentLayout.superclass.clear.call(this);
+											}
+										});
+
+									var newPoint = new ymaps.Placemark([55.755814, 37.617635],
 										{
 											preset: 'islands#orangeDotIconWithCaption'
-										});
+										},
+										{
+											balloonContentLayout: balloonContentLayout,
+											// Запретим замену обычного балуна на балун-панель.
+											// Если не указывать эту опцию, на картах маленького размера откроется балун-панель.
+											balloonPanelMaxMapArea: 0
+										}
+									);
 
 									newPoint.properties.set({
 										// Формируем строку с данными об объекте.
@@ -481,13 +505,13 @@
 											? firstGeoObject.getLocalities()
 											: firstGeoObject.getAdministrativeAreas(),
 											firstGeoObject.getThoroughfare() || firstGeoObject.getPremise()
-										].filter(Boolean).join(', '),
-										balloonContent: firstGeoObject.getAddressLine()
+										].filter(Boolean).join(', ')
 									});
 
 									findPoints.push(newPoint);
 
 									map.geoObjects.add(newPoint);
+
 								}
 							});
 						});
@@ -498,6 +522,29 @@
 				});
 			});
 	});
+
+
+
+	function excludeFromCalculation() {
+		var initElement = $(this);
+		var buttonId = initElement[0].element[0].id;
+		var objId = buttonId.split('_')[1];
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: 'POST',
+			url: '@Url.Action("ExcludeFromCalculation", "ExpressScore")',
+			data: { objId: objId },
+			success: function (response) {
+				Common.ShowMessage(response.Message);
+			},
+			error: function(response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function() {
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
 
 
 	// инициализация карты и евенты
