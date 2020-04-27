@@ -474,7 +474,6 @@
 											build: function() {
 												balloonContentLayout.superclass.build.call(this);
 												$("#excludeFromCalculation_" + data.Id).kendoButton({
-													enable: false,
 													click: excludeFromCalculation
 												});
 											},
@@ -488,7 +487,8 @@
 
 									var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
 										{
-											preset: 'islands#orangeDotIconWithCaption'
+											preset: 'islands#orangeDotIconWithCaption', 
+											pointId: data.Id
 										},
 										{
 											balloonContentLayout: balloonContentLayout,
@@ -511,7 +511,6 @@
 									findPoints.push(newPoint);
 
 									map.geoObjects.add(newPoint);
-
 								}
 							});
 						});
@@ -726,6 +725,16 @@
 
 
 	function excludeFromCalculation() {
-		
+		var initElement = $(this);
+		var buttonId = initElement[0].element[0].id;
+		var objId = parseInt(buttonId.split('_')[1]);
+		findPointsIds.remove(objId);
+		findPoints.forEach(function (item) {
+			if (!!map) {
+				if (item.properties._data.pointId === objId)
+					map.geoObjects.remove(item);
+			}
+		});
+		Common.ShowMessage("Объект исключен из расчета");
 	}
 </script>
