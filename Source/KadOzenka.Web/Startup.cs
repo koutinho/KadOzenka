@@ -26,7 +26,7 @@ using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.Tasks;
-using KadOzenka.Web.Controllers;
+using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
 
 namespace CIPJS
@@ -63,7 +63,8 @@ namespace CIPJS
 	        services.AddTransient<GbuLongProcessesService>();
 	        services.AddTransient<ExpressScoreService>();
 	        services.AddTransient<ExpressScoreReferenceService>();
-            
+	        services.AddTransient<ViewRenderService>();
+
 			services.AddHttpContextAccessor();
             services.AddSession(options =>
             {
@@ -88,7 +89,7 @@ namespace CIPJS
             services.AddAutoMapper();
 	        services.AddSignalR();
 	        services.AddMemoryCache();
-		}
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
