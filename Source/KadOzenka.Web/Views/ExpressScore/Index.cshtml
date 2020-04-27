@@ -120,16 +120,16 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-3">
-						@Html.CustomLabelFor("Тип сделки")
+						@Html.CustomLabelFor("Тип сделки", true)
 					</div>
 					<div class="col-sm-5">
-						@Html.Kendo().RadioButton().Name("DealType").Label("Покупка").Value(DealType.SaleDeal).Checked(true)
-						@Html.Kendo().RadioButton().Name("DealType").Label("Аренда").Value(DealType.RentDeal)
+						@Html.Kendo().RadioButton().Name("DealType").Label("Покупка").Value(DealType.SaleDeal)
+						@Html.Kendo().RadioButton().Name("DealType").Label("Аренда").Value(DealType.RentDeal).Checked(true)
 					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-sm-3">
-						@Html.CustomLabelFor("Дата актуальности")
+						@Html.CustomLabelFor("Дата актуальности", true)
 					</div>
 					<div class="col-sm-9">
 						@Html.Kendo().DatePicker().Name("ActualDate").Max(DateTime.Now).Value(DateTime.Now.Date)

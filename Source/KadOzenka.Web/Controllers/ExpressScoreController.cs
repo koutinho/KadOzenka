@@ -74,26 +74,59 @@ namespace KadOzenka.Web.Controllers
 			}
 
 
-			var objects = OMCoreObject.Where(x => x.ProcessType_Code != ProcessStep.Excluded && x.PropertyMarketSegment_Code == param.Segment
-				&& x.BuildingYear!= null && x.BuildingYear < yearRange.YearTo && yearRange.YearFrom < x.BuildingYear
-				&& x.Area != null && x.Area < squareRange.SquareTo && squareRange.SquareFrom < x.Area && x.DealType_Code == param.DealType)
-				.Select(x => new {
-				x.Id,
-				x.Lat,
-				x.Lng
+			var objects = OMCoreObject.Where(x =>
+					x.ProcessType_Code != ProcessStep.Excluded && x.PropertyMarketSegment_Code == param.Segment
+					                                           && x.BuildingYear != null &&
+					                                           x.BuildingYear < yearRange.YearTo &&
+					                                           yearRange.YearFrom < x.BuildingYear
+					                                           && x.Area != null && x.Area < squareRange.SquareTo &&
+					                                           squareRange.SquareFrom <
+					                                           x.Area && x.DealType_Code == param.DealType)
+				.Select(x => new
+				{
+					x.Id,
+					x.Lat,
+					x.Lng
 				}).Execute().Select(x => new CoordinatesDto
-				 {
+				{
 					Id = x.Id,
 					Lat = x.Lat.GetValueOrDefault(),
 					Lng = x.Lng.GetValueOrDefault(),
-				 }).Distinct().ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto
-				 {
-					 Id = y.Id,
-					 Lat = y.Lat,
-					 Lng = y.Lng
-				 });
+				}).Distinct().ToList();
+				
 
-			var coordinates = _service.GetCoordinatesPointAtSelectedDistance(objects, param.SelectedLat.GetValueOrDefault(), param.SelectedLng.GetValueOrDefault(), param.Quality.GetValueOrDefault());
+			//Проверяем дату актуальности
+			List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
+
+			var actualDate = new DateTime(param.ActualDate.Value.Year, param.ActualDate.Value.Month, param.ActualDate.Value.Day) + new TimeSpan(23, 59, 59);
+			foreach (var obj in objects)
+			{
+				var historyPrices = OMPriceHistory.Where(x => x.InitialId == obj.Id && x.ChangingDate <= actualDate).SelectAll().Execute();
+
+				if (historyPrices.Count > 0)
+				{
+					searchedAnalogs.Add(obj);
+					continue;
+				}
+
+				var analog = OMCoreObject.Where(x => x.Id == obj.Id && x.ParserTime <= actualDate)
+					.ExecuteFirstOrDefault();
+				if (analog != null)
+				{
+					searchedAnalogs.Add(obj);
+				}
+			}
+
+			var coordinatesInput = searchedAnalogs.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto
+			{
+				Id = y.Id,
+				Lat = y.Lat,
+				Lng = y.Lng
+			});
+
+
+
+			var coordinates = _service.GetCoordinatesPointAtSelectedDistance(coordinatesInput, param.SelectedLat.GetValueOrDefault(), param.SelectedLng.GetValueOrDefault(), param.Quality.GetValueOrDefault());
 
 			if (coordinates.Count == 0)
 			{
