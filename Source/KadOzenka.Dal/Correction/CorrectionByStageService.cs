@@ -10,21 +10,26 @@ using KadOzenka.Dal.Correction.Dto;
 using System.Transactions;
 using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.MarketObjects;
 
 namespace KadOzenka.Dal.Correction
 {
 	public class CorrectionByStageService
 	{
 		readonly OMQueue processQueue;
+	    public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
+        public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() { MarketSegment.Office, MarketSegment.Trading, MarketSegment.MZHS };
 
-		public CorrectionByStageService(OMQueue queue)
+        public CorrectionByStageService(OMQueue queue)
 		{
 			processQueue = queue;
-		}
+		    CorrectionSettingsService = new CorrectionSettingsService();
+        }
 
 		public CorrectionByStageService()
 		{
-		}
+		    CorrectionSettingsService = new CorrectionSettingsService();
+        }
 
 		public void MakeCorrection(DateTime date)
 		{
@@ -35,7 +40,8 @@ namespace KadOzenka.Dal.Correction
 			//средняя цена подвальных помещений
 			var objsBasement = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
 				&& x.CadastralNumber != null
-				&& x.FloorNumber < 0)
+				&& x.FloorNumber < 0
+			    && CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code))
 				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
 				.ExecuteSelect(x => new
 				{
@@ -47,7 +53,8 @@ namespace KadOzenka.Dal.Correction
 			//средняя цена надземных помещений
 			var objsStage = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
 				&& x.CadastralNumber != null
-				&& x.FloorNumber >= 0)
+				&& x.FloorNumber >= 0
+			    && CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code))
 				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
 				.ExecuteSelect(x => new
 				{
@@ -73,7 +80,7 @@ namespace KadOzenka.Dal.Correction
 			WorkerCommon.SetProgress(processQueue, 20);
 
 			//проверка, что данный период обрабатывался ранее
-			bool thisPeriodExists = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date)
+			bool thisPeriodExists = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && CalculatedMarketSegments.Contains(x.MarketSegment_Code))
 				.Select(x => x.Id).ExecuteExists();
 
 			List<CadSegment> excludedList;
@@ -81,7 +88,7 @@ namespace KadOzenka.Dal.Correction
 			if (thisPeriodExists)
 			{
 				//сохраним исключенные элементы на заданную дату
-				excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded == true)
+				excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded == true && CalculatedMarketSegments.Contains(x.MarketSegment_Code))
 					.SelectAll(false).Execute()
 					.Select(x => new CadSegment
 					{
@@ -96,7 +103,7 @@ namespace KadOzenka.Dal.Correction
 			{
 				//берем данные предыдущего периода
 				DateTime prevDate = date.AddMonths(-1);
-				excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == prevDate && x.IsExcluded == true)
+				excludedList = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == prevDate && x.IsExcluded == true && CalculatedMarketSegments.Contains(x.MarketSegment_Code))
 					.SelectAll(false).Execute()
 					.Select(x => new CadSegment
 					{
@@ -113,19 +120,26 @@ namespace KadOzenka.Dal.Correction
 			
 			WorkerCommon.SetProgress(processQueue, 60);
 
-			//здания, по которым производится расчет на заданную дату
-			var ratioPriceNotExcluded = OMPriceCorrectionByStageHistory.Where(x => x.ChangingDate == date && x.IsExcluded != true)
-				.SelectAll(false).Execute();
+            //здания, по которым производится расчет на заданную дату
+		    var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
+		    var ratioPriceNotExcluded = OMPriceCorrectionByStageHistory.Where(x =>
+		            x.ChangingDate == date
+		            && (x.IsExcluded == false || x.IsExcluded == null)
+		            && CalculatedMarketSegments.Contains(x.MarketSegment_Code)
+		            && ((!settings.LowerLimitForCoefficient.HasValue || x.StageCoefficient >= settings.LowerLimitForCoefficient.Value)
+		                && (!settings.UpperLimitForCoefficient.HasValue || x.StageCoefficient <= settings.UpperLimitForCoefficient.Value)))
+		        .SelectAll(false).Execute();
 
-			//среднее по сегменту
-			Dictionary<MarketSegment, decimal> avgCoeff = ratioPriceNotExcluded.GroupBy(x => x.MarketSegment_Code)
+            //среднее по сегменту
+            Dictionary<MarketSegment, decimal> avgCoeff = ratioPriceNotExcluded.GroupBy(x => x.MarketSegment_Code)
 				.ToDictionary(g => g.Key, g => g.Average(x => x.StageCoefficient));
 
 			//все подвальные помещения
 			var basements = OMCoreObject
 				.Where(x => x.DealType_Code == DealType.SaleSuggestion
 					&& x.CadastralNumber != null
-					&& x.FloorNumber < 0)
+					&& x.FloorNumber < 0
+				    && CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code))
 				.Select(x => x.CadastralNumber)
 				.Select(x => x.PropertyMarketSegment_Code)
 				.Select(x => x.Price)
@@ -170,7 +184,16 @@ namespace KadOzenka.Dal.Correction
 			WorkerCommon.SetProgress(processQueue, 100);
 		}
 
-		private void SaveHistory(DateTime date, string buildingCadastralNumber, MarketSegment segment, decimal coefficient, bool isExcluded)
+	    public bool IsCoefIncludedInCalculationLimit(decimal? coefficient)
+	    {
+	        var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
+	        var result = (!settings.LowerLimitForCoefficient.HasValue || coefficient >= settings.LowerLimitForCoefficient.Value)
+	                     && (!settings.UpperLimitForCoefficient.HasValue || coefficient <= settings.UpperLimitForCoefficient.Value);
+
+	        return result;
+	    }
+
+        private void SaveHistory(DateTime date, string buildingCadastralNumber, MarketSegment segment, decimal coefficient, bool isExcluded)
 		{
 			OMPriceCorrectionByStageHistory history = new OMPriceCorrectionByStageHistory
 			{
@@ -196,7 +219,16 @@ namespace KadOzenka.Dal.Correction
 
 		public List<CorrectionByStageHistoryDto> GetGeneralHistory(long marketSegmentCode)
 		{
-			return OMPriceCorrectionByStageHistory.Where(x => x.MarketSegment_Code == (MarketSegment)marketSegmentCode)
+		    if (!CalculatedMarketSegments.Contains((MarketSegment)marketSegmentCode))
+		    {
+		        throw new Exception($"Данная корректировка определяется только для сегментов: {string.Join(", ", CalculatedMarketSegments.Select(x => x.GetEnumDescription()).ToList())}");
+		    }
+		    var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
+
+            return OMPriceCorrectionByStageHistory.Where(x => x.MarketSegment_Code == (MarketSegment)marketSegmentCode
+                                                              && (x.IsExcluded == false || x.IsExcluded == null) 
+                                                              && ((!settings.LowerLimitForCoefficient.HasValue || x.StageCoefficient >= settings.LowerLimitForCoefficient.Value)
+                                                                  && (!settings.UpperLimitForCoefficient.HasValue || x.StageCoefficient <= settings.UpperLimitForCoefficient.Value)))
 				.OrderByDescending(x => x.ChangingDate)
 				.SelectAll().Execute().GroupBy(x => x.ChangingDate).Select(
 					group => new CorrectionByStageHistoryDto
@@ -208,7 +240,12 @@ namespace KadOzenka.Dal.Correction
 
 		public List<CorrectionByStageHistoryDto> GetDetailedHistory(long marketSegmentCode, DateTime date)
 		{
-			return OMPriceCorrectionByStageHistory.Where(x =>
+		    if (!CalculatedMarketSegments.Contains((MarketSegment)marketSegmentCode))
+		    {
+		        throw new Exception($"Данная корректировка определяется только для сегментов: {string.Join(", ", CalculatedMarketSegments.Select(x => x.GetEnumDescription()).ToList())}");
+		    }
+
+            return OMPriceCorrectionByStageHistory.Where(x =>
 					x.MarketSegment_Code == (MarketSegment)marketSegmentCode && x.ChangingDate == date)
 				.OrderBy(x => x.BuildingCadastralNumber)
 				.SelectAll().Execute().Select(

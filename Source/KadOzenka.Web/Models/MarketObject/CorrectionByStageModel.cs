@@ -19,6 +19,22 @@ namespace KadOzenka.Web.Models.MarketObject
 
         [Display(Name = "Исключить из расчета")]
         public bool IsExcludedFromCalculation { get; set; }
+        public bool IsCoefIncludedInCalculationLimit { get; set; }
+
+        public static CorrectionByStageModel Map(CorrectionByStageHistoryDto coefficient, Func<decimal?, bool> isCoefIncludedInCalculationLimit)
+        {
+            var model = new CorrectionByStageModel
+            {
+                Id = coefficient.Id,
+                BuildingCadastralNumber = coefficient.BuildingCadastralNumber,
+                Date = coefficient.Date,
+                StageCoefficient = coefficient.StageCoefficient,
+                IsExcludedFromCalculation = coefficient.IsExcludedFromCalculation,
+                IsCoefIncludedInCalculationLimit = isCoefIncludedInCalculationLimit(coefficient.StageCoefficient)
+            };
+
+            return model;
+        }
 
         public static CorrectionByStageHistoryDto UnMap(CorrectionByStageModel model)
         {

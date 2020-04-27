@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
 using ObjectModel.Directory;
+using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
@@ -17,9 +19,24 @@ namespace KadOzenka.Dal.Correction
         // TODO: убрать флаг и оставить только расчет с учетом комнат
         private const bool IncludeCorrectionByRooms = true;
 
+        public static List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() { MarketSegment.Office, MarketSegment.Trading, MarketSegment.MZHS };
+        public CorrectionByRoomService CorrectionByRoomService { get; protected set; }
+        public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
+
+        public CorrectionForFirstFloorService()
+        {
+            CorrectionSettingsService = new CorrectionSettingsService();
+            CorrectionByRoomService = new CorrectionByRoomService();
+        }
+
         //TODO добавь логирование прогресса в LongProcess, когда закончишь задачу
         public void MakeCorrections(DateTime date, MarketSegment? segment = null)
         {
+            if(segment != null && !CalculatedMarketSegments.Contains(segment.Value))
+            {
+                throw new Exception($"Данная корректировка определяется только для сегментов: {string.Join(", ", CalculatedMarketSegments.Select(x => x.GetEnumDescription()).ToList())}");
+            }
+
             var dateMonth = DateToMonth(date);
 
             // Если это новый месяц, по которому статистика не собрана
@@ -54,7 +71,13 @@ namespace KadOzenka.Dal.Correction
             List<RoomRates> roomRatesList;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (IncludeCorrectionByRooms)
-                roomRatesList = GetRoomRates(dateMonth);
+                roomRatesList = CorrectionByRoomService.GetAverageCoefficients(dateMonth)
+                    .Select(x => new RoomRates
+                    {
+                        Segment = x.MarketSegment,
+                        OneRoomRate = x.OneRoomCoefficient,
+                        ThreeRoomRate = x.ThreeRoomsCoefficient
+                    }).ToList();
 
             foreach (var rate in rates)
             {
@@ -81,15 +104,29 @@ namespace KadOzenka.Dal.Correction
 
         public List<Rates> GetRatesBySegment(long marketSegmentCode)
         {
+            if (!CalculatedMarketSegments.Contains((MarketSegment)marketSegmentCode))
+            {
+                throw new Exception($"Данная корректировка определяется только для сегментов: {string.Join(", ", CalculatedMarketSegments.Select(x => x.GetEnumDescription()).ToList())}");
+            }
+
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
             var query = OMCoefficientsForFirstFloorCorr
                 .Where(w =>
                     w.MarketSegment_Code == (MarketSegment) marketSegmentCode
-                    && !w.IsExcludedFromCalculation);
+                    && !w.IsExcludedFromCalculation && (
+                        (!settings.LowerLimitForCoefficient.HasValue || w.FirstToUpperFloorRate >= settings.LowerLimitForCoefficient.Value)
+                        && (!settings.UpperLimitForCoefficient.HasValue ||w.FirstToUpperFloorRate <= settings.UpperLimitForCoefficient.Value)));
+
             return GetRates(query);
         }
 
         public List<CorrectionForFirstFloorDto> GetDetailsForSegmentAtDate(long marketSegmentCode, DateTime date)
         {
+            if (!CalculatedMarketSegments.Contains((MarketSegment)marketSegmentCode))
+            {
+                throw new Exception($"Данная корректировка определяется только для сегментов: {string.Join(", ", CalculatedMarketSegments.Select(x => x.GetEnumDescription()).ToList())}");
+            }
+
             var result =
                 OMCoefficientsForFirstFloorCorr
                     .Where(c =>
@@ -135,14 +172,27 @@ namespace KadOzenka.Dal.Correction
             return isDataUpdated;
         }
 
+        public bool IsCoefIncludedInCalculationLimit(decimal? coefficient)
+        {
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
+            var result = (!settings.LowerLimitForCoefficient.HasValue || coefficient >= settings.LowerLimitForCoefficient.Value)
+                         && (!settings.UpperLimitForCoefficient.HasValue || coefficient <= settings.UpperLimitForCoefficient.Value);
+
+            return result;
+        }
+
         #region Helper Methods
 
         private List<Rates> GetRatesByDate(DateTime date)
         {
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
             var query = OMCoefficientsForFirstFloorCorr
                 .Where(w =>
                     w.StatsDate == date
-                    && !w.IsExcludedFromCalculation);
+                    && !w.IsExcludedFromCalculation
+                    && CalculatedMarketSegments.Contains(w.MarketSegment_Code)
+                    && ((!settings.LowerLimitForCoefficient.HasValue || w.FirstToUpperFloorRate >= settings.LowerLimitForCoefficient.Value)
+                        && (!settings.UpperLimitForCoefficient.HasValue || w.FirstToUpperFloorRate <= settings.UpperLimitForCoefficient.Value)));
             return GetRates(query);
         }
 
@@ -274,8 +324,9 @@ namespace KadOzenka.Dal.Correction
                         && o.Price > 1
                         && o.DealType_Code == DealType.SaleSuggestion);
 
-            if (segment != null)
-                query = query.And(o => o.PropertyMarketSegment_Code == segment.GetValueOrDefault());
+            query = segment != null
+                ? query.And(o => o.PropertyMarketSegment_Code == segment.GetValueOrDefault())
+                : query.And(o => CalculatedMarketSegments.Contains(o.PropertyMarketSegment_Code));
 
             var firstFloors =
                 query
@@ -396,9 +447,9 @@ namespace KadOzenka.Dal.Correction
 
         private class RoomRates
         {
-            public decimal OneRoomRate;
+            public decimal? OneRoomRate;
             public MarketSegment Segment;
-            public decimal ThreeRoomRate;
+            public decimal? ThreeRoomRate;
         }
 
         #endregion

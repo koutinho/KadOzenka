@@ -214,7 +214,6 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult CorrectionByRoomGeneralCoefficients()
         {
-            var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
             var filters = CorrectionByRoomService.CalculatedMarketSegments.Select(x => (long) x).ToArray();
             var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), filterValues: filters);
 
@@ -308,7 +307,8 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult CorrectionByStageGeneralHistory()
 		{
-			var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment));
+		    var filters = CorrectionByStageService.CalculatedMarketSegments.Select(x => (long)x).ToArray();
+		    var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), filterValues: filters);
 			ViewBag.Segments = segments;
 
 			return View();
@@ -316,9 +316,9 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetCorrectionByStageGeneralHistory(long marketSegmentCode)
 		{
-			var history = CorrectionByStageService.GetGeneralHistory(marketSegmentCode);
+            var history = CorrectionByStageService.GetGeneralHistory(marketSegmentCode);
 
-			return Json(history);
+            return Json(history);
 		}
 
 		[HttpGet]
@@ -329,15 +329,25 @@ namespace KadOzenka.Web.Controllers
 			ViewBag.Date = date;
 			ViewBag.MarketSegmentCode = marketSegmentCode;
 			ViewBag.MarketSegment = marketSegment.GetEnumDescription();
+		    var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
+		    if (settings.LowerLimitForCoefficient.HasValue)
+		    {
+		        ViewBag.LowerLimitForCoefficient = settings.LowerLimitForCoefficient;
+		    }
+		    if (settings.UpperLimitForCoefficient.HasValue)
+		    {
+		        ViewBag.UpperLimitForCoefficient = settings.UpperLimitForCoefficient;
+		    }
 
-			return View();
+            return View();
 		}
 
 		public JsonResult GetCorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
 		{
 			var historyRecords = CorrectionByStageService.GetDetailedHistory(marketSegmentCode, date);
-			
-			return Json(historyRecords);
+		    var models = historyRecords.Select(x => CorrectionByStageModel.Map(x, CorrectionByStageService.IsCoefIncludedInCalculationLimit)).ToList();
+
+            return Json(models);
 		}
 
 		[HttpPost]		
@@ -374,6 +384,15 @@ namespace KadOzenka.Web.Controllers
             ViewBag.Date = date;
             ViewBag.MarketSegmentCode = marketSegmentCode;
             ViewBag.MarketSegment = marketSegment.GetEnumDescription();
+            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
+            if (settings.LowerLimitForCoefficient.HasValue)
+            {
+                ViewBag.LowerLimitForCoefficient = settings.LowerLimitForCoefficient;
+            }
+            if (settings.UpperLimitForCoefficient.HasValue)
+            {
+                ViewBag.UpperLimitForCoefficient = settings.UpperLimitForCoefficient;
+            }
 
             return View();
         }
@@ -381,14 +400,15 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetCorrectionForFirstFloorDetailed(long marketSegmentCode, DateTime date)
         {
             var details = CorrectionForFirstFloorService.GetDetailsForSegmentAtDate(marketSegmentCode, date);
-            var models = details.Select(CorrectionForFirstFloorModel.Map).ToList();
+            var models = details.Select(x => CorrectionForFirstFloorModel.Map(x, CorrectionForFirstFloorService.IsCoefIncludedInCalculationLimit)).ToList();
 
             return Json(models);
         }
 
         public IActionResult CorrectionForFirstFloorGeneral()
         {
-            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment));
+            var filters = CorrectionForFirstFloorService.CalculatedMarketSegments.Select(x => (long)x).ToArray();
+            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), filterValues: filters);
             ViewBag.Segments = segments;
 
             return View();

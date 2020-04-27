@@ -33,6 +33,11 @@ namespace KadOzenka.Dal.Correction
             return GetAverageCoefficients().Where(x => x.MarketSegment == (MarketSegment) marketSegmentCode).ToList();
         }
 
+        public List<CorrectionByRoomCoefficientsDto> GetAverageCoefficients(DateTime date)
+        {
+            return GetAverageCoefficients().Where(x => x.Date == date).ToList();
+        }
+
         public List<CorrectionByRoomCoefficientsDto> GetDetailedCoefficients(long marketSegmentCode, DateTime date)
         {
             if (!CalculatedMarketSegments.Contains((MarketSegment)marketSegmentCode))

@@ -7,6 +7,12 @@
             <div class="col-sm-2">
                 <label>@ViewBag.Date.ToString("MMMM yyyy")</label>
             </div>
+            @if (ViewBag.LowerLimitForCoefficient != null || ViewBag.UpperLimitForCoefficient != null)
+            {
+                <div class="col-sm-4">
+                    <label>Текущие настройки фильтра на вылеты: @(ViewBag.LowerLimitForCoefficient != null ? $"от {@ViewBag.LowerLimitForCoefficient}" : "") @(ViewBag.UpperLimitForCoefficient != null ? $"до {@ViewBag.UpperLimitForCoefficient}" : "")</label>
+                </div>
+            }
         </div>
     </div>
     <div id="grid"></div>
@@ -38,6 +44,10 @@
         #grid {
             text-align: center;
         }
+
+        .notIncludedInLimit {
+            color: rgb(255, 152, 153);
+        }
     </style>
 }
 
@@ -59,7 +69,8 @@
                         Id: {editable: false, nullable: true},
                         BuildingCadastralNumber: { editable: false },
                         FirstFloorCoefficient: { editable: false },
-                        IsExcludedFromCalculation: { type: "boolean" }
+                        IsExcludedFromCalculation: { type: "boolean" },
+                        IsCoefIncludedInCalculationLimit: { type: "boolean", editable: false }
                     }
                 }
             },
@@ -77,7 +88,8 @@
                 },
                 {
                     title: "Коэффициент первого этажа",
-                    field: "FirstFloorCoefficient"
+                    field: 'FirstFloorCoefficient',
+                    template: '<span  #= IsCoefIncludedInCalculationLimit ? "" : \'class="notIncludedInLimit"\' # > #= kendo.toString(FirstFloorCoefficient, "n4") #</span>'
                 },
                 {
                     title: "Исключен из расчета",

@@ -20,9 +20,10 @@ namespace KadOzenka.Web.Models.MarketObject
 
         [Display(Name = "Исключено из расчета")]
         public bool IsExcludedFromCalculation { get; set; }
+        public bool IsCoefIncludedInCalculationLimit { get; set; }
 
 
-        public static CorrectionForFirstFloorModel Map(CorrectionForFirstFloorDto coefficients)
+        public static CorrectionForFirstFloorModel Map(CorrectionForFirstFloorDto coefficients, Func<decimal?, bool> isCoefIncludedInCalculationLimit)
         {
             return new CorrectionForFirstFloorModel
             {
@@ -30,7 +31,8 @@ namespace KadOzenka.Web.Models.MarketObject
                 BuildingCadastralNumber = coefficients.BuildingCadastralNumber,
                 StatsDate = coefficients.StatsDate,
                 FirstFloorCoefficient = coefficients.FirstFloorCoefficient,
-                IsExcludedFromCalculation = coefficients.IsExcludedFromCalculation
+                IsExcludedFromCalculation = coefficients.IsExcludedFromCalculation,
+                IsCoefIncludedInCalculationLimit = isCoefIncludedInCalculationLimit(coefficients.FirstFloorCoefficient)
             };
         }
 
