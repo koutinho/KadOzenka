@@ -114,12 +114,13 @@ namespace KadOzenka.Dal.Correction
                 var date = obj.LastDateUpdate ?? obj.ParserTime.Value;
                 var dateToCompare = new DateTime(date.Year, date.Month, 1);
 
+                var isCoefExists = true;
                 var coefficientByMarketSegment = coefficients.FirstOrDefault(x => x.MarketSegment == obj.PropertyMarketSegment_Code && x.Date == dateToCompare);
                 if (coefficientByMarketSegment == null)
-                    return;
+                    isCoefExists = false;
 
-                var newPrice = Math.Round(obj.Price.GetValueOrDefault() * coefficientByMarketSegment.Coefficient,
-                    Consts.PrecisionForPrice);
+                var newPrice = isCoefExists ? Math.Round(obj.Price.GetValueOrDefault() * coefficientByMarketSegment.Coefficient,
+                    Consts.PrecisionForPrice) : (decimal?) null;
                 using (var ts = new TransactionScope())
                 {
                     SavePriceChangingHistory(priceChangingHistory, obj, newPrice);
@@ -165,7 +166,7 @@ namespace KadOzenka.Dal.Correction
             return result;
         }
 
-        private void SavePriceChangingHistory(List<OMPriceAfterCorrectionByDateHistory> history, OMCoreObject obj, decimal newPrice)
+        private void SavePriceChangingHistory(List<OMPriceAfterCorrectionByDateHistory> history, OMCoreObject obj, decimal? newPrice)
         {
             var date = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
             var existedRecord = history.FirstOrDefault(x => x.InitialId == obj.Id && x.ChangingDate == date);

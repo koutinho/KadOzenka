@@ -4681,12 +4681,12 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal _pricevaluefrom;
+        private decimal? _pricevaluefrom;
         /// <summary>
         /// 11300400 Значение стоимости от (PRICE_VALUE_FROM)
         /// </summary>
         [RegisterAttribute(AttributeID = 11300400)]
-        public decimal PriceValueFrom
+        public decimal? PriceValueFrom
         {
             get
             {
@@ -4701,12 +4701,12 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal _pricevalueto;
+        private decimal? _pricevalueto;
         /// <summary>
         /// 11300500 Значение стоимости до (PRICE_VALUE_TO)
         /// </summary>
         [RegisterAttribute(AttributeID = 11300500)]
-        public decimal PriceValueTo
+        public decimal? PriceValueTo
         {
             get
             {
@@ -5012,12 +5012,12 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal _pricevalueto;
+        private decimal? _pricevalueto;
         /// <summary>
         /// 11600200 Значение стоимости до (PRICE_VALUE_TO)
         /// </summary>
         [RegisterAttribute(AttributeID = 11600200)]
-        public decimal PriceValueTo
+        public decimal? PriceValueTo
         {
             get
             {
@@ -5072,12 +5072,12 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal _pricevaluefrom;
+        private decimal? _pricevaluefrom;
         /// <summary>
         /// 11600500 Значение стоимости от (PRICE_VALUE_FROM)
         /// </summary>
         [RegisterAttribute(AttributeID = 11600500)]
-        public decimal PriceValueFrom
+        public decimal? PriceValueFrom
         {
             get
             {

@@ -162,26 +162,37 @@ namespace KadOzenka.Dal.Correction
 
             objects.ForEach(obj =>
             {
+                var isCoefExists = true;
                 var coefficientByMarketSegment = coefficients.FirstOrDefault(x => x.MarketSegment == obj.PropertyMarketSegment_Code);
                 if (coefficientByMarketSegment == null)
-                    return;
+                    isCoefExists = false;
 
                 var coefficient = 0m;
                 switch (obj.RoomsCount)
                 {
                     case 1:
-                        if(!coefficientByMarketSegment.OneRoomCoefficient.HasValue)
-                            return;
-                        coefficient = coefficientByMarketSegment.OneRoomCoefficient.Value;
+                        if (coefficientByMarketSegment?.OneRoomCoefficient != null)
+                        {
+                            coefficient = coefficientByMarketSegment.OneRoomCoefficient.Value;
+                        }
+                        else
+                        {
+                            isCoefExists = false;
+                        }
                         break;
                     case 3:
-                        if(!coefficientByMarketSegment.ThreeRoomsCoefficient.HasValue)
-                            return;
-                        coefficient = coefficientByMarketSegment.ThreeRoomsCoefficient.Value;
+                        if (coefficientByMarketSegment?.ThreeRoomsCoefficient != null)
+                        {
+                            coefficient = coefficientByMarketSegment.ThreeRoomsCoefficient.Value;
+                        }
+                        else
+                        {
+                            isCoefExists = false;
+                        }
                         break;
                 }
 
-                var newPriceAfterCorrectionByRoom = Math.Round(obj.Price.GetValueOrDefault() * coefficient, PrecisionForPrice);
+                var newPriceAfterCorrectionByRoom = isCoefExists ? Math.Round(obj.Price.GetValueOrDefault() * coefficient, PrecisionForPrice) : (decimal?) null;
 
                 using (var ts = new TransactionScope())
                 {
@@ -241,7 +252,7 @@ namespace KadOzenka.Dal.Correction
         }
 
         private void SavePriceChangingHistory(List<OMPriceAfterCorrectionByRoomsHistory> history, OMCoreObject obj,
-            DateTime changingDate, decimal newPriceAfterCorrectionByRoom)
+            DateTime changingDate, decimal? newPriceAfterCorrectionByRoom)
         {
             var existedRecord = history.FirstOrDefault(x => x.InitialId == obj.Id && x.ChangingDate == changingDate);
             if (existedRecord == null)
