@@ -131,30 +131,7 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage("Объекты аналоги не найдены");
 			}
 
-			//собираем данные для карточки
-			var resultObjectIds = coordinates.Select(x => x.Id).ToList();
-			var resultObjects = OMCoreObject.Where(x => resultObjectIds.Contains(x.Id))
-				.Select(x => new
-				{
-					x.Id,
-					x.Images,
-					x.Price,
-					x.PricePerMeter,
-					x.Area,
-					x.Address,
-					x.CadastralNumber,
-					x.PropertyMarketSegment,
-					x.DealType,
-					x.Market_Code,
-					x.PropertyTypesCIPJS_Code
-				}).Execute();
-
-			coordinates.ForEach(x =>
-			{
-				var resultObject = resultObjects.FirstOrDefault(y => y.Id == x.Id);
-				x.ObjectMiniCard = _viewRenderService.ToString("MarketObjects/ObjectMiniCard",
-					CoreObjectDto.MapToMiniCard(resultObject));
-			});
+			BuildObjectCards(coordinates);
 
 			return Json(new { response = new { coordinates, targetObjectId } });
 		}
@@ -255,12 +232,6 @@ namespace KadOzenka.Web.Controllers
 			return Json( new {success = new { cost, squareCost } });
 		}
 
-		[HttpPost]
-		public JsonResult ExcludeFromCalculation(long objId)
-		{
-			return Json(new { Message = "Объект исключен"});
-		}
-
 		#endregion
 
 		#region Setting ExpressScore
@@ -303,6 +274,37 @@ namespace KadOzenka.Web.Controllers
 		{
 			var model = new SettingsExpressScoreViewModel {CostFactors = new List<CostFactor>()};
 			return View(model);
+		}
+
+		#endregion
+
+		#region Support Methods
+
+		private void BuildObjectCards(List<CoordinatesDto> coordinates)
+		{
+			var resultObjectIds = coordinates.Select(x => x.Id).ToList();
+			var resultObjects = OMCoreObject.Where(x => resultObjectIds.Contains(x.Id))
+				.Select(x => new
+				{
+					x.Id,
+					x.Images,
+					x.Price,
+					x.PricePerMeter,
+					x.Area,
+					x.Address,
+					x.CadastralNumber,
+					x.PropertyMarketSegment,
+					x.DealType,
+					x.Market_Code,
+					x.PropertyTypesCIPJS_Code
+				}).Execute();
+
+			coordinates.ForEach(x =>
+			{
+				var resultObject = resultObjects.FirstOrDefault(y => y.Id == x.Id);
+				x.ObjectMiniCard = _viewRenderService.ToString("MarketObjects/ObjectMiniCard",
+					CoreObjectDto.MapToMiniCard(resultObject));
+			});
 		}
 
 		#endregion

@@ -486,7 +486,7 @@
 											}
 										});
 
-									var newPoint = new ymaps.Placemark([55.755814, 37.617635],
+									var newPoint = new ymaps.Placemark(firstGeoObject.geometry.getCoordinates(),
 										{
 											preset: 'islands#orangeDotIconWithCaption'
 										},
@@ -522,29 +522,6 @@
 				});
 			});
 	});
-
-
-
-	function excludeFromCalculation() {
-		var initElement = $(this);
-		var buttonId = initElement[0].element[0].id;
-		var objId = buttonId.split('_')[1];
-		kendo.ui.progress($('body'), true);
-		$.ajax({
-			type: 'POST',
-			url: '@Url.Action("ExcludeFromCalculation", "ExpressScore")',
-			data: { objId: objId },
-			success: function (response) {
-				Common.ShowMessage(response.Message);
-			},
-			error: function(response) {
-				Common.ShowError(response.responseText);
-			},
-			complete: function() {
-				kendo.ui.progress($('body'), false);
-			}
-		});
-	}
 
 
 	// инициализация карты и евенты
@@ -600,7 +577,6 @@
 		myPlacemark.properties.set('iconCaption', 'поиск...');
 		ymaps.geocode(coords).then(function(res) {
 			var firstGeoObject = res.geoObjects.get(0);
-
 
 			if (firstGeoObject.getAdministrativeAreas().length === 0 || firstGeoObject.getAdministrativeAreas().length > 1 ||
 			(firstGeoObject.getAdministrativeAreas() === 1 &&
@@ -667,6 +643,8 @@
 			showModal();
 		});
 	});
+
+
 	function executeCalculate(scenarioType = null) {
 		if (scenarioType == null) {
 			Common.ShowError("Не удалось получить тип расчета. Попробуйте еще раз");
@@ -683,8 +661,6 @@
 		kendo.ui.progress($(topBody), true);
 		var url = "@Url.Action("CalculateCostTargetObject", "ExpressScore")";
 		$.post(url, data).done(function (data) {
-
-
 			if (data.Errors) {
 				var errors = getErrors(data.Errors);
 				Common.ShowError(errors);
@@ -746,5 +722,10 @@
 				{ text: 'Ок' }
 			]
 		});
+	}
+
+
+	function excludeFromCalculation() {
+		
 	}
 </script>
