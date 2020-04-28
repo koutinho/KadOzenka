@@ -9,6 +9,7 @@ using System.Transactions;
 using Core.Main.FileStorages;
 using Core.Messages;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
@@ -76,7 +77,7 @@ namespace KadOzenka.Dal.ExpressScore
                 throw new Exception($"Не найден справочник с ИД {id}");
             }
 
-            using (var ts = new TransactionScope())
+            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
             {
                 var referenceItems = OMEsReferenceItem.Where(x => x.ReferenceId == id).Execute();
                 foreach (var referenceItem in referenceItems)
@@ -175,9 +176,9 @@ namespace KadOzenka.Dal.ExpressScore
                 throw new Exception($"Нельзя изменить тип справочника без удаления старых значений");
             }
 
-            using (var ts = new TransactionScope())
+            if (deleteOldValues)
             {
-                if (deleteOldValues)
+                using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
                 {
                     var referenceItems = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).Execute();
                     foreach (var referenceItem in referenceItems)
@@ -187,24 +188,18 @@ namespace KadOzenka.Dal.ExpressScore
 
                     reference.ValueType_Code = fileImportInfo.ValueType;
                     reference.Save();
+                    ts.Complete();
                 }
-                ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
-
-                ts.Complete();
             }
+
+            ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
         }
 
         public long CreateReferenceFromExcel(Stream fileStream, ImportReferenceFileInfoDto fileImportInfo, string referenceName)
         {
-            long referenceId;
-            using (var ts = new TransactionScope())
-            {
-                referenceId = CreateReference(referenceName, fileImportInfo.ValueType);
-                var reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
-                ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
-
-                ts.Complete();
-            }
+            long referenceId = CreateReference(referenceName, fileImportInfo.ValueType);
+            var reference = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault();
+            ImportReferenceItemsFromExcel(fileStream, reference, fileImportInfo);
 
             return referenceId;
         }
@@ -309,10 +304,18 @@ namespace KadOzenka.Dal.ExpressScore
                         }
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно создано");
                     }
+                    for (int i = 0; i < maxColumns; i++)
+                    {
+                        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(200, 255, 200));
+                    }
                 }
                 catch (Exception ex)
                 {
                     mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Ошибка: {ex.Message}");
+                    for (int i = 0; i < maxColumns; i++)
+                    {
+                        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+                    }
                     lock (locked)
                     {
                         errorCount++;
