@@ -22136,6 +22136,153 @@ namespace ObjectModel.ES
     }
 }
 
+namespace ObjectModel.Es
+{
+	/// <summary>
+	/// 611 Экспресс оценка. Настройка параметров (ES_SETTINGS_PARAMS)
+	/// </summary>
+	[RegisterInfo(RegisterID = 611)]
+	[Serializable]
+	public partial class OMSettingsParams : OMBaseClass<OMSettingsParams>
+	{
+
+		private long _id;
+		/// <summary>
+		/// 61100100 Идентификатор (ID)
+		/// </summary>
+		[PrimaryKey(AttributeID = 61100100)]
+		public long Id
+		{
+			get
+			{
+				CheckPropertyInited("Id");
+				return _id;
+			}
+			set
+			{
+				_id = value;
+				NotifyPropertyChanged("Id");
+			}
+		}
+
+
+		private long _tourid;
+		/// <summary>
+		/// 61100200 Идентификатор тура (ID_TOUR)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 61100200)]
+		public long TourId
+		{
+			get
+			{
+				CheckPropertyInited("TourId");
+				return _tourid;
+			}
+			set
+			{
+				_tourid = value;
+				NotifyPropertyChanged("TourId");
+			}
+		}
+
+
+		private long _registerid;
+		/// <summary>
+		/// 61100300 Идентификатор реестра атрибутов КО (ID_REGISTER)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 61100300)]
+		public long Registerid
+		{
+			get
+			{
+				CheckPropertyInited("Registerid");
+				return _registerid;
+			}
+			set
+			{
+				_registerid = value;
+				NotifyPropertyChanged("Registerid");
+			}
+		}
+
+
+		private string _costfacrors;
+		/// <summary>
+		/// 61100400 Оценочные факторы  (COST_FACTORS)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 61100400)]
+		public string CostFacrors
+		{
+			get
+			{
+				CheckPropertyInited("CostFacrors");
+				return _costfacrors;
+			}
+			set
+			{
+				_costfacrors = value;
+				NotifyPropertyChanged("CostFacrors");
+			}
+		}
+
+
+		private string _segmenttype;
+		/// <summary>
+		/// 61100500 Тип сегмента ()
+		/// </summary>
+		[RegisterAttribute(AttributeID = 61100500)]
+		public string SegmentType
+		{
+			get
+			{
+				CheckPropertyInited("SegmentType");
+				return _segmenttype;
+			}
+			set
+			{
+				_segmenttype = value;
+				NotifyPropertyChanged("SegmentType");
+			}
+		}
+
+
+		private MarketSegment _segmenttype_Code;
+		/// <summary>
+		/// 61100500 Тип сегмента (справочный код) (SEGMENT_TYPE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 61100500)]
+		public MarketSegment SegmentType_Code
+		{
+			get
+			{
+				CheckPropertyInited("SegmentType_Code");
+				return this._segmenttype_Code;
+			}
+			set
+			{
+				string descr = value.GetEnumDescription();
+
+				if (string.IsNullOrEmpty(descr))
+				{
+					if (string.IsNullOrEmpty(_segmenttype))
+					{
+						_segmenttype = descr;
+					}
+				}
+				else
+				{
+					_segmenttype = descr;
+				}
+
+				this._segmenttype_Code = value;
+				NotifyPropertyChanged("SegmentType");
+				NotifyPropertyChanged("SegmentType_Code");
+			}
+		}
+
+	}
+}
+
 namespace ObjectModel.Modeling
 {
     /// <summary>

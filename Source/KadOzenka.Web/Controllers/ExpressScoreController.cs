@@ -288,7 +288,7 @@ namespace KadOzenka.Web.Controllers
 
 		public ActionResult SettingsExpressScore(int segmentId)
 		{
-			var model = new SettingsExpressScoreViewModel {CostFactors = new List<CostFactorsDto>()};
+			var model = new SettingsExpressScoreViewModel();
 			return View(model);
 		}
 

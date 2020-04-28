@@ -38,7 +38,7 @@
 		</div>
 		@{
 			int i = 0;
-			foreach (var item in Model.CostFactors)
+			foreach (var item in Model.CostFactors.ComplexCostFactor)
 			{
 				<fieldset>
 					<div class="form-group">
@@ -46,13 +46,13 @@
 							@Html.CustomLabelFor("Имя фактора", true)
 						</div>
 						<div class="col-sm-6">
-							@Html.KendoTextBoxFor(m => m.CostFactors[i].Name, false)
+							@Html.KendoTextBoxFor(m => m.CostFactors.ComplexCostFactor[i].Name, false)
 						</div>
 						<div class="col-sm-2">
 							@Html.CustomLabelFor("Коэф. влияния", true)
 						</div>
 						<div class="col-sm-4">
-							@Html.KendoNumericTextBoxFor(m => m.CostFactors[i].Coefficient, 5)
+							@Html.KendoNumericTextBoxFor(m => m.CostFactors.ComplexCostFactor[i].Coefficient, 5)
 						</div>
 					</div>
 					<div class="form-group">
@@ -60,7 +60,7 @@
 							@Html.CustomLabelFor("Имя атрибута", true)
 						</div>
 						<div class="col-sm-6">
-							@(Html.Kendo().DropDownListFor(m => m.CostFactors[i].AttributeId)
+							@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactor[i].AttributeId)
 								.DataTextField("Text")
 								.DataValueField("Value")
 								.DataSource(source =>
@@ -73,7 +73,7 @@
 							@Html.CustomLabelFor("Словарь", true)
 						</div>
 						<div class="col-sm-4">
-							@(Html.Kendo().DropDownListFor(m => m.CostFactors[i].DictionaryId)
+							@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactor[i].DictionaryId)
 								.DataTextField("Text")
 								.DataValueField("Value")
 								.DataSource(source =>

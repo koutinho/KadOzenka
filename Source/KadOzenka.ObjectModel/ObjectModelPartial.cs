@@ -3148,6 +3148,31 @@ namespace ObjectModel.ES
     }
 }
 
+namespace ObjectModel.Es
+{
+	/// <summary>
+	/// 611 Экспресс оценка. Настройка параметров
+	/// </summary>
+	public partial class OMSettingsParams
+	{
+
+		public OMSettingsParams()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMSettingsParams(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
+
 namespace ObjectModel.Modeling
 {
     /// <summary>

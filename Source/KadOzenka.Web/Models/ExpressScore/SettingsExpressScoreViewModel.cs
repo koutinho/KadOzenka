@@ -15,6 +15,6 @@ namespace KadOzenka.Web.Models.ExpressScore
 		/// <summary>
 		/// Список факторов для экспресс оценки
 		/// </summary>
-		public List<CostFactorsDto> CostFactors { get; set; }
+		public CostFactorsDto CostFactors { get; set; }
 	}
 }
