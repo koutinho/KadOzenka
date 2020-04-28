@@ -183,6 +183,7 @@
     <None Remove="Config\Reports\RegisterOfPayment.frx" />
     <None Remove="Config\Reports\SubmitDocForApproval.frx" />
     <None Remove="Config\Reports\СalculationReport.frx" />
+    <None Remove="___Create_Plugins_Folder_for_WinService.bat" />
   </ItemGroup>
 
   <ItemGroup>
@@ -404,6 +405,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\SudZakSelect.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="___Create_Plugins_Folder_for_WinService.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
