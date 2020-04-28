@@ -310,7 +310,7 @@ namespace KadOzenka.Dal.DataImport
 							    var valueStr = value != null ? value.ToString().Trim() : string.Empty;
                                 if (item == null && !string.IsNullOrEmpty(valueStr))
                                 {
-                                    throw new Exception($"Некорректное значение в ячейке {cell} для справочника {reference.Name}");
+                                    throw new Exception($"Некорректное значение в ячейке ({row}, {cell + 1}) для справочника: '{value.ToString()}'");
                                 }
                                 if (item != null) referenceItemId = (int)item.ItemId;
 							}
@@ -369,7 +369,7 @@ namespace KadOzenka.Dal.DataImport
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
 					    for (int i = 0; i < maxColumns; i++)
 					    {
-					        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(200, 255, 200));
+					        //mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(200, 255, 200));
 					    }
                     }
 				}
@@ -378,7 +378,7 @@ namespace KadOzenka.Dal.DataImport
 					long errorId = ErrorManager.LogError(ex);
 					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
 				    for (int i = 0; i < maxColumns; i++) { 
-				        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+				        //mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
 				    }
 
                     lock (locked)
