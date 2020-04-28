@@ -1,6 +1,7 @@
 ﻿using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace KadOzenka.Dal.DataImport
 {
@@ -183,12 +185,13 @@ namespace KadOzenka.Dal.DataImport
                 ChangeDocId = idDocument,
                 S = sDate,
                 ChangeUserId = idUser,
-                ChangeDate = changeDate,
+                ChangeDate = DateTime.Now,
                 Ot= otDate,
                 StringValue=value,
             };
             attributeValue.Save();
         }
+
         public static void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
@@ -199,12 +202,13 @@ namespace KadOzenka.Dal.DataImport
                 ChangeDocId = idDocument,
                 S = sDate,
                 ChangeUserId = idUser,
-                ChangeDate = changeDate,
+                ChangeDate = DateTime.Now,
                 Ot = otDate,
                 NumValue = value,
             };
             attributeValue.Save();
         }
+
         public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
             var attributeValue = new GbuObjectAttribute
@@ -215,12 +219,13 @@ namespace KadOzenka.Dal.DataImport
                 ChangeDocId = idDocument,
                 S = sDate,
                 ChangeUserId = idUser,
-                ChangeDate = changeDate,
+                ChangeDate = DateTime.Now,
                 Ot = otDate,
                 DtValue = value,
             };
             attributeValue.Save();
         }
+
         public static KoStatusRepeatCalc GetNewtatusRepeatCalc(List<ObjectModel.KO.OMUnit> units)
         {
             KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
@@ -262,84 +267,86 @@ namespace KadOzenka.Dal.DataImport
 
         public void ImportObjectBuild(xmlObjectBuild current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
-            KoUnitStatus koUnitStatus = KoUnitStatus.New;
-            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
-            switch (koNoteType)
+            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.Required))
             {
-                case KoNoteType.Day:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Petition:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Year:
-                    koUnitStatus = KoUnitStatus.Annual;
-                    break;
-                case KoNoteType.Initial:
-                    koUnitStatus = KoUnitStatus.Initial;
-                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
-                    break;
-            }
-
-
-
-            #region Получение данных о прошлой оценке данного объекта
-            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
-            #endregion
-
-            //Если данные о прошлой оценке найдены
-            if (prev.Count>0)
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
+                KoUnitStatus koUnitStatus = KoUnitStatus.New;
+                KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                switch (koNoteType)
                 {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Building,
-                    };
-                    gbuObject.Save();
+                    case KoNoteType.Day:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Petition:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Year:
+                        koUnitStatus = KoUnitStatus.Annual;
+                        break;
+                    case KoNoteType.Initial:
+                        koUnitStatus = KoUnitStatus.Initial;
+                        koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                        break;
                 }
-                else
+
+
+
+                #region Получение данных о прошлой оценке данного объекта
+                List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
+                #endregion
+
+                //Если данные о прошлой оценке найдены
+                if (prev.Count > 0)
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Building)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Building;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Building,
+                        };
                         gbuObject.Save();
                     }
-                }
-                #endregion
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Building)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.Building;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataBuilding(current, gbuObject.Id, sDate, otDate, idDocument);
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
-                #endregion
+                    //Сохранение данных ГКН
+                    SaveGknDataBuilding(current, gbuObject.Id, sDate, otDate, idDocument);
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
+                    #endregion
 
-                #region Анализ данных
-                //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
-                //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                //надо перебрать все документы и узнать это
-                List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
-                foreach (ObjectModel.KO.HistoryUnit old in olds)
-                {
-                    if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
-                        prCheckObr = true;
-                }
-                ObjectModel.KO.OMUnit lastUnit = null;
-                if (olds.Count > 0) lastUnit = olds[0].Unit;
-                if (lastUnit!=null)
-                {
-                    List<long> sourceIds = new List<long>
+                    #region Анализ данных
+                    //Признак было ли по данному объекту обращение?
+                    bool prCheckObr = false;
+                    //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
+                    //надо перебрать все документы и узнать это
+                    List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
+                    foreach (ObjectModel.KO.HistoryUnit old in olds)
+                    {
+                        if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
+                            prCheckObr = true;
+                    }
+                    ObjectModel.KO.OMUnit lastUnit = null;
+                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (lastUnit != null)
+                    {
+                        List<long> sourceIds = new List<long>
                     {
                         2
                     };
-                    List<long> attribIds = new List<long>
+                        List<long> attribIds = new List<long>
                     {
                         2,   //Площадь 
                         8,   //Местоположение 
@@ -355,189 +362,192 @@ namespace KadOzenka.Dal.DataImport
                         602  //Земельный участок 
                     };
 
-                    List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
-                    List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                    CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 14, KoChangeStatus.Assignment, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
-                }
-                #endregion
-
-                #region Старое
-                /*
-                if (!prCheckObr)
-                {
-                    //Признак не поменялся ли тип объекта?
-                    bool prTypeObjectCheck = prev.PropertyType_Code == koUnit.PropertyType_Code;
-                    //Признак не поменялось ли наименование объекта
-                    bool prNameObjectCheck = false;
-                    List<long> sourceIds = new List<long>
-                    {
-                        2
-                    };
-                    List<long> attribIds = new List<long>
-                    {
-                        19
-                    };
-
-                    List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(prev.ObjectId.Value, sourceIds, attribIds);
-                    List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds);
-                    if (prevAttrib.Count>0 && curAttrib.Count>0)
-                    {
-
+                        List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
+                        List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
+                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 14, KoChangeStatus.Assignment, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
                     }
+                    #endregion
 
-
-                    //Признак не поменялось ли назначение объекта
-                    bool prAssignationObjectCheck = false;
-                    //(prev.AssignationBuilding != null && current.AssignationBuilding != null) ? (prev.AssignationBuilding.Code == current.AssignationBuilding.Code) : false;
-
-                    //Если не было изменений типа, наименования и назначения и не было обращения
-                    if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck)
+                    #region Старое
+                    /*
+                    if (!prCheckObr)
                     {
-                        #region Наследование группы и подгруппы предыдущего объекта
-                        koUnit.GroupId = prev.GroupId;
-                        koUnit.Save();
-                        #endregion
+                        //Признак не поменялся ли тип объекта?
+                        bool prTypeObjectCheck = prev.PropertyType_Code == koUnit.PropertyType_Code;
+                        //Признак не поменялось ли наименование объекта
+                        bool prNameObjectCheck = false;
+                        List<long> sourceIds = new List<long>
+                        {
+                            2
+                        };
+                        List<long> attribIds = new List<long>
+                        {
+                            19
+                        };
+
+                        List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(prev.ObjectId.Value, sourceIds, attribIds);
+                        List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds);
+                        if (prevAttrib.Count>0 && curAttrib.Count>0)
+                        {
+
+                        }
+
+
+                        //Признак не поменялось ли назначение объекта
+                        bool prAssignationObjectCheck = false;
+                        //(prev.AssignationBuilding != null && current.AssignationBuilding != null) ? (prev.AssignationBuilding.Code == current.AssignationBuilding.Code) : false;
+
+                        //Если не было изменений типа, наименования и назначения и не было обращения
+                        if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck)
+                        {
+                            #region Наследование группы и подгруппы предыдущего объекта
+                            koUnit.GroupId = prev.GroupId;
+                            koUnit.Save();
+                            #endregion
+                        }
+
+
+                        //Признак не поменялся ли материал стен?
+                        bool prWallObjectCheck = ObjectCheckItem.Check(prev.Walls, current.Walls);
+                        //Признак не поменялся ли год ввода в эксплуатацию?
+                        bool prYearUsedObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Used, current.Years.Year_Used);
+                        //Признак не поменялся ли год завершения строительства?
+                        bool prYearBuiltObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Built, current.Years.Year_Built);
+
+
+
+                        //Если не было обращения по объекту
+                            //Если материал стен не поменялся
+                            if (prWallObjectCheck)
+                            {
+                                if (Id_Factor_Wall > 0)
+                                {
+                                    //TODO: Если в предыдущем объекте есть фактор Материал стен итоговый
+                                    //      его надо скопировать в новый объект, если нет, добавить надо.
+                                    //
+                                    //
+                                }
+                            }
+                            else
+                            {
+                                if (Id_Factor_Wall > 0)
+                                {
+                                    //TODO: добавить фактор Материал стен итоговый
+                                    //      
+                                    //
+                                    //
+                                }
+                            }
+
+                            //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
+                            if (prYearUsedObjectCheck && prYearBuiltObjectCheck)
+                            {
+                                if (Id_Factor_Wall > 0)
+                                {
+                                    //TODO: Если в предыдущем объекте есть фактор Год постройки итоговый
+                                    //      его надо скопировать в новый объект, если нет, надо добавить
+                                    //      в соответствии с приоритетом 
+                                    //      1.Год ввода в эксплуатацию
+                                    //      2.Год завершения строительства
+                                }
+                            }
+                            else
+                            {
+                                if (Id_Factor_Wall > 0)
+                                {
+                                    //TODO: добавить фактор Год постройки итоговый
+                                    //      в соответствии с приоритетом 
+                                    //      1.Год ввода в эксплуатацию
+                                    //      2.Год завершения строительства
+                                }
+                            }
                     }
-
-                    
-                    //Признак не поменялся ли материал стен?
-                    bool prWallObjectCheck = ObjectCheckItem.Check(prev.Walls, current.Walls);
-                    //Признак не поменялся ли год ввода в эксплуатацию?
-                    bool prYearUsedObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Used, current.Years.Year_Used);
-                    //Признак не поменялся ли год завершения строительства?
-                    bool prYearBuiltObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Built, current.Years.Year_Built);
-
-
-
-                    //Если не было обращения по объекту
-                        //Если материал стен не поменялся
-                        if (prWallObjectCheck)
-                        {
-                            if (Id_Factor_Wall > 0)
-                            {
-                                //TODO: Если в предыдущем объекте есть фактор Материал стен итоговый
-                                //      его надо скопировать в новый объект, если нет, добавить надо.
-                                //
-                                //
-                            }
-                        }
-                        else
-                        {
-                            if (Id_Factor_Wall > 0)
-                            {
-                                //TODO: добавить фактор Материал стен итоговый
-                                //      
-                                //
-                                //
-                            }
-                        }
-
-                        //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
-                        if (prYearUsedObjectCheck && prYearBuiltObjectCheck)
-                        {
-                            if (Id_Factor_Wall > 0)
-                            {
-                                //TODO: Если в предыдущем объекте есть фактор Год постройки итоговый
-                                //      его надо скопировать в новый объект, если нет, надо добавить
-                                //      в соответствии с приоритетом 
-                                //      1.Год ввода в эксплуатацию
-                                //      2.Год завершения строительства
-                            }
-                        }
-                        else
-                        {
-                            if (Id_Factor_Wall > 0)
-                            {
-                                //TODO: добавить фактор Год постройки итоговый
-                                //      в соответствии с приоритетом 
-                                //      1.Год ввода в эксплуатацию
-                                //      2.Год завершения строительства
-                            }
-                        }
+                    */
+                    #endregion
                 }
-                */
-                #endregion
-            }
-            //Если данные о прошлой оценке не найдены
-            else
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
-                {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Building,
-                    };
-                    gbuObject.Save();
-                }
+                //Если данные о прошлой оценке не найдены
                 else
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Building)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Building;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Building,
+                        };
                         gbuObject.Save();
                     }
-                }
-                #endregion
-
-                //Сохранение данных ГКН
-                SaveGknDataBuilding(current, gbuObject.Id, sDate, otDate, idDocument);
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
-                #endregion
-
-                #region Заполнение фактора Материал стен на основании данных ГКН
-                if (Id_Factor_Wall > 0)
-                {
-                    if (current.Walls.Count > 0)
+                    else
                     {
-                        //TODO: Добавить фактор Материал стен на основании данных ГКН
-                        //
-                        //
-                        //
-                    }
-                }
-                #endregion
-
-                #region Заполнение фактора Год постройки
-                if (Id_Factor_Year > 0)
-                {
-                    if (current.Years != null)
-                    {
-                        if (current.Years.Year_Used != null && current.Years.Year_Used != string.Empty)
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Building)
                         {
-                            //TODO: Добавить фактор Год постройки на основании данных года ввода в эксплуатацию
-                            //
-                            //
-                            //
+                            gbuObject.ObjectType_Code = PropertyTypes.Building;
+                            gbuObject.Save();
                         }
-                        else
-                        if (current.Years.Year_Built != null && current.Years.Year_Built != string.Empty)
+                    }
+                    #endregion
+
+                    //Сохранение данных ГКН
+                    SaveGknDataBuilding(current, gbuObject.Id, sDate, otDate, idDocument);
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitBuilding(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    #endregion
+
+                    #region Заполнение фактора Материал стен на основании данных ГКН
+                    if (Id_Factor_Wall > 0)
+                    {
+                        if (current.Walls.Count > 0)
                         {
-                            //TODO: Добавить фактор Год постройки на основании данных года завершения строительства
+                            //TODO: Добавить фактор Материал стен на основании данных ГКН
                             //
                             //
                             //
                         }
                     }
+                    #endregion
+
+                    #region Заполнение фактора Год постройки
+                    if (Id_Factor_Year > 0)
+                    {
+                        if (current.Years != null)
+                        {
+                            if (current.Years.Year_Used != null && current.Years.Year_Used != string.Empty)
+                            {
+                                //TODO: Добавить фактор Год постройки на основании данных года ввода в эксплуатацию
+                                //
+                                //
+                                //
+                            }
+                            else
+                            if (current.Years.Year_Built != null && current.Years.Year_Built != string.Empty)
+                            {
+                                //TODO: Добавить фактор Год постройки на основании данных года завершения строительства
+                                //
+                                //
+                                //
+                            }
+                        }
+                    }
+                    #endregion
                 }
-                #endregion
+
+                ts.Complete();
             }
 
             lock(locked)
@@ -647,82 +657,84 @@ namespace KadOzenka.Dal.DataImport
 
         public void ImportObjectParcel(xmlObjectParcel current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
-            KoUnitStatus koUnitStatus = KoUnitStatus.New;
-            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
-            switch (koNoteType)
+            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.Required))
             {
-                case KoNoteType.Day:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Petition:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Year:
-                    koUnitStatus = KoUnitStatus.Annual;
-                    break;
-                case KoNoteType.Initial:
-                    koUnitStatus = KoUnitStatus.Initial;
-                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
-                    break;
-            }
-
-            #region Получение данных о прошлой оценке данного объекта
-            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
-            #endregion
-
-            //Если данные о прошлой оценке найдены
-            if (prev.Count > 0)
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
+                KoUnitStatus koUnitStatus = KoUnitStatus.New;
+                KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                switch (koNoteType)
                 {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Stead,
-                    };
-                    gbuObject.Save();
+                    case KoNoteType.Day:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Petition:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Year:
+                        koUnitStatus = KoUnitStatus.Annual;
+                        break;
+                    case KoNoteType.Initial:
+                        koUnitStatus = KoUnitStatus.Initial;
+                        koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                        break;
                 }
-                else
+
+                #region Получение данных о прошлой оценке данного объекта
+                List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
+                #endregion
+
+                //Если данные о прошлой оценке найдены
+                if (prev.Count > 0)
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Stead)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Stead;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Stead,
+                        };
                         gbuObject.Save();
                     }
-                }
-                #endregion
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Stead)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.Stead;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
-                #endregion
+                    //Сохранение данных ГКН
+                    SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
+                    #endregion
 
-                #region Анализ данных
-                //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
-                //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                //надо перебрать все документы и узнать это
-                List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
-                foreach (ObjectModel.KO.HistoryUnit old in olds)
-                {
-                    if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
-                        prCheckObr = true;
-                }
-                ObjectModel.KO.OMUnit lastUnit = null;
-                if (olds.Count > 0) lastUnit = olds[0].Unit;
-                if (lastUnit != null)
-                {
-                    List<long> sourceIds = new List<long>
+                    #region Анализ данных
+                    //Признак было ли по данному объекту обращение?
+                    bool prCheckObr = false;
+                    //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
+                    //надо перебрать все документы и узнать это
+                    List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
+                    foreach (ObjectModel.KO.HistoryUnit old in olds)
+                    {
+                        if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
+                            prCheckObr = true;
+                    }
+                    ObjectModel.KO.OMUnit lastUnit = null;
+                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (lastUnit != null)
+                    {
+                        List<long> sourceIds = new List<long>
                     {
                         2
                     };
-                    List<long> attribIds = new List<long>
+                        List<long> attribIds = new List<long>
                     {
                         1,   //Наименование участка
                         2,   //Площадь 
@@ -734,84 +746,88 @@ namespace KadOzenka.Dal.DataImport
                         601  //Кадастровый квартал 
                     };
 
-                    List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
-                    List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                    CheckChange(koUnit, 1, KoChangeStatus.Name, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 3, KoChangeStatus.Category, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 4, KoChangeStatus.Use, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                }
-                #endregion
+                        List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
+                        List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
+                        CheckChange(koUnit, 1, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 3, KoChangeStatus.Category, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 4, KoChangeStatus.Use, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                    }
+                    #endregion
 
-                #region Старое
-                /*
-                //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
-                //TODO: получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                //надо перебрать все документы и узнать это
-                // CheckObr = ????
-                //
-                //
-                //
-
-                //Признак не поменялся ли тип объекта?
-                bool prTypeObjectCheck = prev.PropertyType_Code == koUnit.PropertyType_Code;
-                //Признак не поменялось ли наименование объекта
-                bool prNameObjectCheck = prev.Name == current.Name;
-                //Признак не поменялось ли назначение объекта
-                bool prAssignationObjectCheck = (prev.Utilization != null) ? (prev.Utilization.ByDoc == current.Utilization.ByDoc && prev.Utilization.Utilization.Code == current.Utilization.Utilization.Code) : false;
-
-                //Если не было изменений типа, наименования и назначения и не было обращения
-                if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck && !prCheckObr)
-                {
-                    #region Наследование группы и подгруппы предыдущего объекта
-                    // TODO: Пронаследовать группу и подгруппу предыдущего объекта
-                    // если статус предыдущего расчета не ошибочный
+                    #region Старое
+                    /*
+                    //Признак было ли по данному объекту обращение?
+                    bool prCheckObr = false;
+                    //TODO: получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
+                    //надо перебрать все документы и узнать это
+                    // CheckObr = ????
                     //
                     //
                     //
+
+                    //Признак не поменялся ли тип объекта?
+                    bool prTypeObjectCheck = prev.PropertyType_Code == koUnit.PropertyType_Code;
+                    //Признак не поменялось ли наименование объекта
+                    bool prNameObjectCheck = prev.Name == current.Name;
+                    //Признак не поменялось ли назначение объекта
+                    bool prAssignationObjectCheck = (prev.Utilization != null) ? (prev.Utilization.ByDoc == current.Utilization.ByDoc && prev.Utilization.Utilization.Code == current.Utilization.Utilization.Code) : false;
+
+                    //Если не было изменений типа, наименования и назначения и не было обращения
+                    if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck && !prCheckObr)
+                    {
+                        #region Наследование группы и подгруппы предыдущего объекта
+                        // TODO: Пронаследовать группу и подгруппу предыдущего объекта
+                        // если статус предыдущего расчета не ошибочный
+                        //
+                        //
+                        //
+                        #endregion
+                    }
+                    */
                     #endregion
                 }
-                */
-                #endregion
-            }
-            //Если данные о прошлой оценке не найдены
-            else
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
-
-                #region Сохранение объекта
-                if (gbuObject == null)
-                {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Stead,
-                    };
-                    gbuObject.Save();
-                }
+                //Если данные о прошлой оценке не найдены
                 else
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Stead)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Stead;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Stead,
+                        };
                         gbuObject.Save();
                     }
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Stead)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.Stead;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
+
+                    //Сохранение данных ГКН
+                    SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    #endregion
+
                 }
-                #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataParcel(current, gbuObject.Id, sDate, otDate, idDocument);
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitParcel(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
-                #endregion
 
+                ts.Complete();
             }
 
             lock (locked)
@@ -908,83 +924,85 @@ namespace KadOzenka.Dal.DataImport
 
         public void ImportObjectConstruction(xmlObjectConstruction current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
-            KoUnitStatus koUnitStatus = KoUnitStatus.New;
-            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
-            switch (koNoteType)
+            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.Required))
             {
-                case KoNoteType.Day:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Petition:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Year:
-                    koUnitStatus = KoUnitStatus.Annual;
-                    break;
-                case KoNoteType.Initial:
-                    koUnitStatus = KoUnitStatus.Initial;
-                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
-                    break;
-            }
-
-
-            #region Получение данных о прошлой оценке данного объекта
-            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
-            #endregion
-
-            //Если данные о прошлой оценке найдены
-            if (prev.Count > 0)
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
+                KoUnitStatus koUnitStatus = KoUnitStatus.New;
+                KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                switch (koNoteType)
                 {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Construction,
-                    };
-                    gbuObject.Save();
+                    case KoNoteType.Day:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Petition:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Year:
+                        koUnitStatus = KoUnitStatus.Annual;
+                        break;
+                    case KoNoteType.Initial:
+                        koUnitStatus = KoUnitStatus.Initial;
+                        koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                        break;
                 }
-                else
+
+
+                #region Получение данных о прошлой оценке данного объекта
+                List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
+                #endregion
+
+                //Если данные о прошлой оценке найдены
+                if (prev.Count > 0)
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Construction)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Construction;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Construction,
+                        };
                         gbuObject.Save();
                     }
-                }
-                #endregion
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Construction)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.Construction;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataConstruction(current, gbuObject.Id, sDate, otDate, idDocument);
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
-                #endregion
+                    //Сохранение данных ГКН
+                    SaveGknDataConstruction(current, gbuObject.Id, sDate, otDate, idDocument);
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
+                    #endregion
 
-                #region Анализ данных
-                //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
-                //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                //надо перебрать все документы и узнать это
-                List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
-                foreach (ObjectModel.KO.HistoryUnit old in olds)
-                {
-                    if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
-                        prCheckObr = true;
-                }
-                ObjectModel.KO.OMUnit lastUnit = null;
-                if (olds.Count > 0) lastUnit = olds[0].Unit;
-                if (lastUnit != null)
-                {
-                    List<long> sourceIds = new List<long>
+                    #region Анализ данных
+                    //Признак было ли по данному объекту обращение?
+                    bool prCheckObr = false;
+                    //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
+                    //надо перебрать все документы и узнать это
+                    List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
+                    foreach (ObjectModel.KO.HistoryUnit old in olds)
+                    {
+                        if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
+                            prCheckObr = true;
+                    }
+                    ObjectModel.KO.OMUnit lastUnit = null;
+                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (lastUnit != null)
+                    {
+                        List<long> sourceIds = new List<long>
                     {
                         2
                     };
-                    List<long> attribIds = new List<long>
+                        List<long> attribIds = new List<long>
                     {
                         44,  //Площадь 
                         22,  //Назначение
@@ -999,146 +1017,149 @@ namespace KadOzenka.Dal.DataImport
                         602  //Земельный участок 
                     };
 
-                    List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
-                    List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                    CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 22, KoChangeStatus.Assignment, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
-                }
-                #endregion
+                        List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
+                        List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
+                        CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 22, KoChangeStatus.Assignment, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                    }
+                    #endregion
 
-                #region Старое
-                /*
-                //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
-                //TODO: получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                //надо перебрать все документы и узнать это
-                // CheckObr = ????
-                //
-                //
-                //
-
-                //Признак не поменялся ли тип объекта?
-                bool prTypeObjectCheck = prev.TypeObject == current.TypeObject;
-                //Признак не поменялось ли наименование объекта
-                bool prNameObjectCheck = prev.Name == current.Name;
-                //Признак не поменялось ли назначение объекта
-                bool prAssignationObjectCheck = (prev.AssignationName != null && current.AssignationName != null) ? (prev.AssignationName == current.AssignationName) : false;
-
-                //Если не было изменений типа, наименования и назначения и не было обращения
-                if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck && !prCheckObr)
-                {
-                    #region Наследование группы и подгруппы предыдущего объекта
-                    // TODO: Пронаследовать группу и подгруппу предыдущего объекта
-                    // если статус предыдущего расчета не ошибочный
+                    #region Старое
+                    /*
+                    //Признак было ли по данному объекту обращение?
+                    bool prCheckObr = false;
+                    //TODO: получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
+                    //надо перебрать все документы и узнать это
+                    // CheckObr = ????
                     //
                     //
                     //
+
+                    //Признак не поменялся ли тип объекта?
+                    bool prTypeObjectCheck = prev.TypeObject == current.TypeObject;
+                    //Признак не поменялось ли наименование объекта
+                    bool prNameObjectCheck = prev.Name == current.Name;
+                    //Признак не поменялось ли назначение объекта
+                    bool prAssignationObjectCheck = (prev.AssignationName != null && current.AssignationName != null) ? (prev.AssignationName == current.AssignationName) : false;
+
+                    //Если не было изменений типа, наименования и назначения и не было обращения
+                    if (prTypeObjectCheck && prNameObjectCheck && prAssignationObjectCheck && !prCheckObr)
+                    {
+                        #region Наследование группы и подгруппы предыдущего объекта
+                        // TODO: Пронаследовать группу и подгруппу предыдущего объекта
+                        // если статус предыдущего расчета не ошибочный
+                        //
+                        //
+                        //
+                        #endregion
+                    }
+
+                    //Признак не поменялся ли год ввода в эксплуатацию?
+                    bool prYearUsedObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Used, current.Years.Year_Used);
+                    //Признак не поменялся ли год завершения строительства?
+                    bool prYearBuiltObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Built, current.Years.Year_Built);
+
+
+
+                    //Если не было обращения по объекту
+                    if (!prCheckObr)
+                    {
+                        //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
+                        if (prYearUsedObjectCheck && prYearBuiltObjectCheck)
+                        {
+                            if (Id_Factor_Year > 0)
+                            {
+                                //TODO: Если в предыдущем объекте есть фактор Год постройки итоговый
+                                //      его надо скопировать в новый объект, если нет, надо добавить
+                                //      в соответствии с приоритетом 
+                                //      1.Год ввода в эксплуатацию
+                                //      2.Год завершения строительства
+                            }
+                        }
+                        else
+                        {
+                            if (Id_Factor_Year > 0)
+                            {
+                                //TODO: добавить фактор Год постройки итоговый
+                                //      в соответствии с приоритетом 
+                                //      1.Год ввода в эксплуатацию
+                                //      2.Год завершения строительства
+                            }
+                        }
+                    }
+                    */
                     #endregion
                 }
-
-                //Признак не поменялся ли год ввода в эксплуатацию?
-                bool prYearUsedObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Used, current.Years.Year_Used);
-                //Признак не поменялся ли год завершения строительства?
-                bool prYearBuiltObjectCheck = ObjectCheckItem.Check(prev.Years.Year_Built, current.Years.Year_Built);
-
-
-
-                //Если не было обращения по объекту
-                if (!prCheckObr)
+                //Если данные о прошлой оценке не найдены
+                else
                 {
-                    //Если год ввода в эксплуатацию и год завершения строительства  не поменялся
-                    if (prYearUsedObjectCheck && prYearBuiltObjectCheck)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        if (Id_Factor_Year > 0)
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
                         {
-                            //TODO: Если в предыдущем объекте есть фактор Год постройки итоговый
-                            //      его надо скопировать в новый объект, если нет, надо добавить
-                            //      в соответствии с приоритетом 
-                            //      1.Год ввода в эксплуатацию
-                            //      2.Год завершения строительства
-                        }
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Construction,
+                        };
+                        gbuObject.Save();
                     }
                     else
                     {
-                        if (Id_Factor_Year > 0)
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Construction)
                         {
-                            //TODO: добавить фактор Год постройки итоговый
-                            //      в соответствии с приоритетом 
-                            //      1.Год ввода в эксплуатацию
-                            //      2.Год завершения строительства
+                            gbuObject.ObjectType_Code = PropertyTypes.Construction;
+                            gbuObject.Save();
                         }
                     }
-                }
-                */
-                #endregion
-            }
-            //Если данные о прошлой оценке не найдены
-            else
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+                    #endregion
 
-                #region Сохранение объекта
-                if (gbuObject == null)
-                {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
+                    //Сохранение данных ГКН
+                    SaveGknDataConstruction(current, gbuObject.Id, sDate, otDate, idDocument);
+
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    #endregion
+
+                    #region Заполнение фактора Год постройки
+                    if (Id_Factor_Year > 0)
                     {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Construction,
-                    };
-                    gbuObject.Save();
-                }
-                else
-                {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Construction)
-                    {
-                        gbuObject.ObjectType_Code = PropertyTypes.Construction;
-                        gbuObject.Save();
-                    }
-                }
-                #endregion
-
-                //Сохранение данных ГКН
-                SaveGknDataConstruction(current, gbuObject.Id, sDate, otDate, idDocument);
-
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitConstruction(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
-                #endregion
-
-                #region Заполнение фактора Год постройки
-                if (Id_Factor_Year > 0)
-                {
-                    if (current.Years != null)
-                    {
-                        if (current.Years.Year_Used != null && current.Years.Year_Used != string.Empty)
+                        if (current.Years != null)
                         {
-                            //TODO: Добавить фактор Год постройки на основании данных года ввода в эксплуатацию
-                            //
-                            //
-                            //
-                        }
-                        else
-                        if (current.Years.Year_Built != null && current.Years.Year_Built != string.Empty)
-                        {
-                            //TODO: Добавить фактор Год постройки на основании данных года завершения строительства
-                            //
-                            //
-                            //
+                            if (current.Years.Year_Used != null && current.Years.Year_Used != string.Empty)
+                            {
+                                //TODO: Добавить фактор Год постройки на основании данных года ввода в эксплуатацию
+                                //
+                                //
+                                //
+                            }
+                            else
+                            if (current.Years.Year_Built != null && current.Years.Year_Built != string.Empty)
+                            {
+                                //TODO: Добавить фактор Год постройки на основании данных года завершения строительства
+                                //
+                                //
+                                //
+                            }
                         }
                     }
+                    #endregion
                 }
-                #endregion
+
+                ts.Complete();
             }
 
             lock (locked)
@@ -1247,83 +1268,85 @@ namespace KadOzenka.Dal.DataImport
 
         public void ImportObjectUncomplited(xmlObjectUncomplited current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
-            KoUnitStatus koUnitStatus = KoUnitStatus.New;
-            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
-            switch (koNoteType)
+            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.Required))
             {
-                case KoNoteType.Day:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Petition:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Year:
-                    koUnitStatus = KoUnitStatus.Annual;
-                    break;
-                case KoNoteType.Initial:
-                    koUnitStatus = KoUnitStatus.Initial;
-                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
-                    break;
-            }
-
-
-            #region Получение данных о прошлой оценке данного объекта
-            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
-            #endregion
-
-            //Если данные о прошлой оценке найдены
-            if (prev.Count > 0)
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
+                KoUnitStatus koUnitStatus = KoUnitStatus.New;
+                KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                switch (koNoteType)
                 {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.UncompletedBuilding,
-                    };
-                    gbuObject.Save();
+                    case KoNoteType.Day:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Petition:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Year:
+                        koUnitStatus = KoUnitStatus.Annual;
+                        break;
+                    case KoNoteType.Initial:
+                        koUnitStatus = KoUnitStatus.Initial;
+                        koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                        break;
                 }
-                else
+
+
+                #region Получение данных о прошлой оценке данного объекта
+                List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
+                #endregion
+
+                //Если данные о прошлой оценке найдены
+                if (prev.Count > 0)
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.UncompletedBuilding)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.UncompletedBuilding;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.UncompletedBuilding,
+                        };
                         gbuObject.Save();
                     }
-                }
-                #endregion
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.UncompletedBuilding)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.UncompletedBuilding;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataUncomplited(current, gbuObject.Id, sDate, otDate, idDocument);
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
-                #endregion
+                    //Сохранение данных ГКН
+                    SaveGknDataUncomplited(current, gbuObject.Id, sDate, otDate, idDocument);
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
+                    #endregion
 
-                #region Анализ данных
-                //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
-                //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                //надо перебрать все документы и узнать это
-                List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
-                foreach (ObjectModel.KO.HistoryUnit old in olds)
-                {
-                    if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
-                        prCheckObr = true;
-                }
-                ObjectModel.KO.OMUnit lastUnit = null;
-                if (olds.Count > 0) lastUnit = olds[0].Unit;
-                if (lastUnit != null)
-                {
-                    List<long> sourceIds = new List<long>
+                    #region Анализ данных
+                    //Признак было ли по данному объекту обращение?
+                    bool prCheckObr = false;
+                    //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
+                    //надо перебрать все документы и узнать это
+                    List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
+                    foreach (ObjectModel.KO.HistoryUnit old in olds)
+                    {
+                        if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
+                            prCheckObr = true;
+                    }
+                    ObjectModel.KO.OMUnit lastUnit = null;
+                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (lastUnit != null)
+                    {
+                        List<long> sourceIds = new List<long>
                     {
                         2
                     };
-                    List<long> attribIds = new List<long>
+                        List<long> attribIds = new List<long>
                     {
                         46,  //Процент готовности 
                         44,  //Площадь 
@@ -1334,52 +1357,55 @@ namespace KadOzenka.Dal.DataImport
                         602  //Земельный участок 
                     };
 
-                    List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
-                    List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                    CheckChange(koUnit, 46, KoChangeStatus.Procent, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                        List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
+                        List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
+                        CheckChange(koUnit, 46, KoChangeStatus.Procent, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 44, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 602, KoChangeStatus.NumberParcel, prevAttrib, curAttrib);
+                    }
+                    #endregion
                 }
-                #endregion
-            }
-            //Если данные о прошлой оценке не найдены
-            else
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
-                {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.UncompletedBuilding,
-                    };
-                    gbuObject.Save();
-                }
+                //Если данные о прошлой оценке не найдены
                 else
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.UncompletedBuilding)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.UncompletedBuilding;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.UncompletedBuilding,
+                        };
                         gbuObject.Save();
                     }
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.UncompletedBuilding)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.UncompletedBuilding;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
+
+                    //Сохранение данных ГКН
+                    SaveGknDataUncomplited(current, gbuObject.Id, sDate, otDate, idDocument);
+
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+
+                    #endregion
                 }
-                #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataUncomplited(current, gbuObject.Id, sDate, otDate, idDocument);
-                
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitUncomplited(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
-
-                #endregion
+                ts.Complete();
             }
 
             lock (locked)
@@ -1388,6 +1414,7 @@ namespace KadOzenka.Dal.DataImport
             }
 
         }
+        
         private static void SaveGknDataUncomplited(xmlObjectUncomplited current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
             #region Сохранение данных ГКН
@@ -1414,6 +1441,7 @@ namespace KadOzenka.Dal.DataImport
             SetAttributeValue_String(602, xmlCodeName.GetNames(current.ParentCadastralNumbers), gbuObjectId, idDocument, sDate, otDate, SRDSession.Current.UserID, otDate);
             #endregion
         }
+
         private static ObjectModel.KO.OMUnit SaveUnitUncomplited(xmlObjectUncomplited current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
             #region Задание на оценку
@@ -1475,82 +1503,84 @@ namespace KadOzenka.Dal.DataImport
 
         public void ImportObjectFlat(xmlObjectFlat current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
-            KoUnitStatus koUnitStatus = KoUnitStatus.New;
-            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
-            switch (koNoteType)
+            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.Required))
             {
-                case KoNoteType.Day:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Petition:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Year:
-                    koUnitStatus = KoUnitStatus.Annual;
-                    break;
-                case KoNoteType.Initial:
-                    koUnitStatus = KoUnitStatus.Initial;
-                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
-                    break;
-            }
-
-            #region Получение данных о прошлой оценке данного объекта
-            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
-            #endregion
-
-            //Если данные о прошлой оценке найдены
-            if (prev.Count > 0)
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
+                KoUnitStatus koUnitStatus = KoUnitStatus.New;
+                KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                switch (koNoteType)
                 {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Pllacement,
-                    };
-                    gbuObject.Save();
+                    case KoNoteType.Day:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Petition:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Year:
+                        koUnitStatus = KoUnitStatus.Annual;
+                        break;
+                    case KoNoteType.Initial:
+                        koUnitStatus = KoUnitStatus.Initial;
+                        koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                        break;
                 }
-                else
+
+                #region Получение данных о прошлой оценке данного объекта
+                List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
+                #endregion
+
+                //Если данные о прошлой оценке найдены
+                if (prev.Count > 0)
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Pllacement)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Pllacement;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Pllacement,
+                        };
                         gbuObject.Save();
                     }
-                }
-                #endregion
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Pllacement)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.Pllacement;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataFlat(current, gbuObject.Id, sDate, otDate, idDocument);
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
-                #endregion
+                    //Сохранение данных ГКН
+                    SaveGknDataFlat(current, gbuObject.Id, sDate, otDate, idDocument);
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
+                    #endregion
 
-                #region Анализ данных
-                //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
-                //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                //надо перебрать все документы и узнать это
-                List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
-                foreach (ObjectModel.KO.HistoryUnit old in olds)
-                {
-                    if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
-                        prCheckObr = true;
-                }
-                ObjectModel.KO.OMUnit lastUnit = null;
-                if (olds.Count > 0) lastUnit = olds[0].Unit;
-                if (lastUnit != null)
-                {
-                    List<long> sourceIds = new List<long>
+                    #region Анализ данных
+                    //Признак было ли по данному объекту обращение?
+                    bool prCheckObr = false;
+                    //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
+                    //надо перебрать все документы и узнать это
+                    List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
+                    foreach (ObjectModel.KO.HistoryUnit old in olds)
+                    {
+                        if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
+                            prCheckObr = true;
+                    }
+                    ObjectModel.KO.OMUnit lastUnit = null;
+                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (lastUnit != null)
+                    {
+                        List<long> sourceIds = new List<long>
                     {
                         2
                     };
-                    List<long> attribIds = new List<long>
+                        List<long> attribIds = new List<long>
                     {
                         2,   //Площадь 
                         23,  //Назначение помещения 
@@ -1568,60 +1598,64 @@ namespace KadOzenka.Dal.DataImport
                         604  //Кадастровый номер здания 
                     };
 
-                    List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
-                    List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                    CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 23, KoChangeStatus.Assignment, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
-                }
-                #endregion
+                        List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
+                        List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
+                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 23, KoChangeStatus.Assignment, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
+                    }
+                    #endregion
 
-            }
-            //Если данные о прошлой оценке не найдены
-            else
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
-                {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Pllacement,
-                    };
-                    gbuObject.Save();
                 }
+                //Если данные о прошлой оценке не найдены
                 else
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Pllacement)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Pllacement;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Pllacement,
+                        };
                         gbuObject.Save();
                     }
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Pllacement)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.Pllacement;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
+
+                    //Сохранение данных ГКН
+                    SaveGknDataFlat(current, gbuObject.Id, sDate, otDate, idDocument);
+
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    #endregion
                 }
-                #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataFlat(current, gbuObject.Id, sDate, otDate, idDocument);
-
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitFlat(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
-                #endregion
+                ts.Complete();
             }
+
 
             lock (locked)
             {
@@ -1698,6 +1732,7 @@ namespace KadOzenka.Dal.DataImport
 
             #endregion
         }
+        
         private static ObjectModel.KO.OMUnit SaveUnitFlat(xmlObjectFlat current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
             #region Задание на оценку
@@ -1759,82 +1794,84 @@ namespace KadOzenka.Dal.DataImport
 
         public void ImportObjectCarPlace(xmlObjectCarPlace current, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument)
         {
-            KoUnitStatus koUnitStatus = KoUnitStatus.New;
-            KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
-            switch (koNoteType)
+            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.Required))
             {
-                case KoNoteType.Day:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Petition:
-                    koUnitStatus = KoUnitStatus.New;
-                    break;
-                case KoNoteType.Year:
-                    koUnitStatus = KoUnitStatus.Annual;
-                    break;
-                case KoNoteType.Initial:
-                    koUnitStatus = KoUnitStatus.Initial;
-                    koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
-                    break;
-            }
-
-            #region Получение данных о прошлой оценке данного объекта
-            List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
-            #endregion
-
-            //Если данные о прошлой оценке найдены
-            if (prev.Count > 0)
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
+                KoUnitStatus koUnitStatus = KoUnitStatus.New;
+                KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
+                switch (koNoteType)
                 {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Parking,
-                    };
-                    gbuObject.Save();
+                    case KoNoteType.Day:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Petition:
+                        koUnitStatus = KoUnitStatus.New;
+                        break;
+                    case KoNoteType.Year:
+                        koUnitStatus = KoUnitStatus.Annual;
+                        break;
+                    case KoNoteType.Initial:
+                        koUnitStatus = KoUnitStatus.Initial;
+                        koStatusRepeatCalc = KoStatusRepeatCalc.Initial;
+                        break;
                 }
-                else
+
+                #region Получение данных о прошлой оценке данного объекта
+                List<ObjectModel.KO.OMUnit> prev = ObjectModel.KO.OMUnit.Where(x => x.CadastralNumber == current.CadastralNumber && x.TourId == idTour).SelectAll().Execute();
+                #endregion
+
+                //Если данные о прошлой оценке найдены
+                if (prev.Count > 0)
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Parking)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.Id == prev[0].ObjectId).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Parking;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Parking,
+                        };
                         gbuObject.Save();
                     }
-                }
-                #endregion
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Parking)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.Parking;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataCarPlace(current, gbuObject.Id, sDate, otDate, idDocument);
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
-                #endregion
+                    //Сохранение данных ГКН
+                    SaveGknDataCarPlace(current, gbuObject.Id, sDate, otDate, idDocument);
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, GetNewtatusRepeatCalc(prev));
+                    #endregion
 
-                #region Анализ данных
-                //Признак было ли по данному объекту обращение?
-                bool prCheckObr = false;
-                //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
-                //надо перебрать все документы и узнать это
-                List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
-                foreach (ObjectModel.KO.HistoryUnit old in olds)
-                {
-                    if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
-                        prCheckObr = true;
-                }
-                ObjectModel.KO.OMUnit lastUnit = null;
-                if (olds.Count > 0) lastUnit = olds[0].Unit;
-                if (lastUnit != null)
-                {
-                    List<long> sourceIds = new List<long>
+                    #region Анализ данных
+                    //Признак было ли по данному объекту обращение?
+                    bool prCheckObr = false;
+                    //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
+                    //надо перебрать все документы и узнать это
+                    List<ObjectModel.KO.HistoryUnit> olds = ObjectModel.KO.HistoryUnit.GetPrevHistoryTour(koUnit);
+                    foreach (ObjectModel.KO.HistoryUnit old in olds)
+                    {
+                        if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
+                            prCheckObr = true;
+                    }
+                    ObjectModel.KO.OMUnit lastUnit = null;
+                    if (olds.Count > 0) lastUnit = olds[0].Unit;
+                    if (lastUnit != null)
+                    {
+                        List<long> sourceIds = new List<long>
                     {
                         2
                     };
-                    List<long> attribIds = new List<long>
+                        List<long> attribIds = new List<long>
                     {
                         2,   //Площадь 
                         19,  //Наименование объекта 
@@ -1851,65 +1888,70 @@ namespace KadOzenka.Dal.DataImport
                         604  //Кадастровый номер здания 
                     };
 
-                    List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
-                    List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
-                    CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
-                    CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
-                }
-                #endregion
+                        List<GbuObjectAttribute> prevAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, lastUnit.CreationDate);
+                        List<GbuObjectAttribute> curAttrib = new GbuObjectService().GetAllAttributes(koUnit.ObjectId.Value, sourceIds, attribIds, koUnit.CreationDate);
+                        CheckChange(koUnit, 2, KoChangeStatus.Square, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 19, KoChangeStatus.Name, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 14, KoChangeStatus.Use, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 15, KoChangeStatus.YearBuild, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 16, KoChangeStatus.YearUse, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 17, KoChangeStatus.Floors, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 18, KoChangeStatus.DownFloors, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 21, KoChangeStatus.Walls, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 8, KoChangeStatus.Place, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 600, KoChangeStatus.Adress, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 601, KoChangeStatus.CadastralBlock, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 604, KoChangeStatus.CadastralBuilding, prevAttrib, curAttrib);
+                        CheckChange(koUnit, 24, KoChangeStatus.NumberFloor, prevAttrib, curAttrib);
+                    }
+                    #endregion
 
-            }
-            //Если данные о прошлой оценке не найдены
-            else
-            {
-                #region Импорт нового объекта
-                ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
-                #region Сохранение объекта
-                if (gbuObject == null)
-                {
-                    gbuObject = new ObjectModel.Gbu.OMMainObject
-                    {
-                        Id = -1,
-                        CadastralNumber = current.CadastralNumber,
-                        IsActive = true,
-                        ObjectType_Code = PropertyTypes.Parking,
-                    };
-                    gbuObject.Save();
                 }
+                //Если данные о прошлой оценке не найдены
                 else
                 {
-                    if (gbuObject.ObjectType_Code != PropertyTypes.Parking)
+                    #region Импорт нового объекта
+                    ObjectModel.Gbu.OMMainObject gbuObject = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == current.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+                    #region Сохранение объекта
+                    if (gbuObject == null)
                     {
-                        gbuObject.ObjectType_Code = PropertyTypes.Parking;
+                        gbuObject = new ObjectModel.Gbu.OMMainObject
+                        {
+                            Id = -1,
+                            CadastralNumber = current.CadastralNumber,
+                            IsActive = true,
+                            ObjectType_Code = PropertyTypes.Parking,
+                        };
                         gbuObject.Save();
                     }
+                    else
+                    {
+                        if (gbuObject.ObjectType_Code != PropertyTypes.Parking)
+                        {
+                            gbuObject.ObjectType_Code = PropertyTypes.Parking;
+                            gbuObject.Save();
+                        }
+                    }
+                    #endregion
+
+                    //Сохранение данных ГКН
+                    SaveGknDataCarPlace(current, gbuObject.Id, sDate, otDate, idDocument);
+
+                    //Задание на оценку
+                    ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
+                    #endregion
                 }
-                #endregion
 
-                //Сохранение данных ГКН
-                SaveGknDataCarPlace(current, gbuObject.Id, sDate, otDate, idDocument);
-
-                //Задание на оценку
-                ObjectModel.KO.OMUnit koUnit = SaveUnitCarPlace(current, gbuObject.Id, unitDate, idTour, idTask, koUnitStatus, koStatusRepeatCalc);
-                #endregion
+                ts.Complete();
             }
+
 
             lock (locked)
             {
                 CountImportCarPlaces++;
             }
         }
+
         private static void SaveGknDataCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
             #region Сохранение данных ГКН
@@ -1979,6 +2021,7 @@ namespace KadOzenka.Dal.DataImport
 
             #endregion
         }
+
         private static ObjectModel.KO.OMUnit SaveUnitCarPlace(xmlObjectCarPlace current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
             #region Задание на оценку
@@ -2036,7 +2079,5 @@ namespace KadOzenka.Dal.DataImport
             return koUnit;
             #endregion
         }
-
-
     }
 }
