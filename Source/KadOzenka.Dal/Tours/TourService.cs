@@ -1,13 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Transactions;
+using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours.Dto;
+using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tours
 {
     public class TourService
     {
+        private TourFactorService TourFactorService { get; set; }
+
+        public TourService(TourFactorService tourFactorService)
+        {
+            TourFactorService = tourFactorService;
+        }
+
         public TourDto GetTourById(long? tourId)
         {
             var tour = GetTourByIdInternal(tourId);
@@ -60,6 +69,54 @@ namespace KadOzenka.Dal.Tours
             return id;
         }
 
+        public void UpdateTourAttributeSettings(TourAttributeSettingsDto tourDto)
+        {
+            var tour = GetTourByIdInternal(tourDto.TourId);
+
+            if (tourDto.AttributeId.HasValue)
+            {
+                var register = TourFactorService.GetTourRegister(tour.Id, tourDto.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU);
+                if (register == null)
+                {
+                    throw new Exception($"Для тура {tour.Year} не найден реестр параметров {(tourDto.IsOksObjectType ? "ОКС" : "ЗУ")}");
+                }
+
+                var attribute = OMAttribute.Where(x => x.Id == tourDto.AttributeId).SelectAll().ExecuteFirstOrDefault();
+                if (attribute == null)
+                {
+                    throw new Exception($"Не найден атрибут с ИД {tourDto.AttributeId}");
+                }
+
+                if (attribute.RegisterId != register.RegisterId)
+                {
+                    throw new Exception(
+                        $"Указанный атрибут не принадлежит реестру параметров {(tourDto.IsOksObjectType ? "ОКС" : "ЗУ")} данного тура");
+                }
+            }
+
+            var tourAttributeSettings = OMTourAttributeSettings
+                .Where(x => x.TourId == tourDto.TourId && 
+                            x.IsOks == tourDto.IsOksObjectType &&
+                            x.AttributeUsingType_Code == tourDto.KoAttributeUsingType)
+                .SelectAll()
+                .ExecuteFirstOrDefault();
+            if (tourAttributeSettings == null)
+            {
+                tourAttributeSettings = new OMTourAttributeSettings
+                {
+                    TourId = tourDto.TourId,
+                    IsOks = tourDto.IsOksObjectType,
+                    AttributeUsingType_Code = tourDto.KoAttributeUsingType,
+                    AttributeId = tourDto.AttributeId
+                };
+            }
+            else
+            {
+                tourAttributeSettings.AttributeId = tourDto.AttributeId;
+            }
+
+            tourAttributeSettings.Save();
+        }
 
         #region Support Methods
 

@@ -11,7 +11,9 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
+using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.GbuObject.ObjectAttributes;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -29,11 +31,14 @@ namespace KadOzenka.Web.Controllers
 		#region initialization
 		private readonly GbuObjectService _service;
 		private readonly TaskService _taskService;
+	    private TourFactorService _tourFactorService;
 
-		public GbuObjectController(GbuObjectService service, TaskService taskService)
+        public GbuObjectController(GbuObjectService service, TaskService taskService, TourFactorService tourFactorService)
 		{
 			_service = service;
 			_taskService = taskService;
+		    _tourFactorService = tourFactorService;
+
 		}
 		#endregion
 
@@ -635,11 +640,23 @@ namespace KadOzenka.Web.Controllers
 	        {
 	            return GenerateMessageNonValidModel();
 	        }
-	        //KoObjectSetEstimatedGroup.Run(viewModel.ToGroupModel());
-	        TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value, viewModel.ToGroupModel());
 
-	        return Json(new { });
+	        try
+	        {
+	            var estimatedGroupModelParamsDto =
+	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value,
+	                    viewModel.IsOksObjType ? ObjectType.Oks : ObjectType.ZU);
+	            TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
+	                viewModel.ToGroupModel(estimatedGroupModelParamsDto));
+	        }
+	        catch (Exception ex)
+	        {
+	            return SendErrorMessage(ex.Message);
+	        }
+
+	        return Json(new {Success = true});
 	    }
+
 	    #endregion
 
         public List<SelectListItem> GetTasksData()

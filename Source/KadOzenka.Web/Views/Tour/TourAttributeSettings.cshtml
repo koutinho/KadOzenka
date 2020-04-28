@@ -1,0 +1,164 @@
+﻿@using System.Collections
+@using KadOzenka.Web.Helpers
+@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Tour.TourAttributeSettingsModel
+
+@using (Html.BeginForm("TourAttributeSettings", "Tour", FormMethod.Post))
+{
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group"></div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.TourId)
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().DropDownListFor(m => m.TourId)
+                                      .DataTextField("Text")
+                                      .DataValueField("Value")
+                                      .Filter("contains")
+                                      .OptionLabel(new SelectListItem { Value = null, Text = " " })
+                                      .Events(x =>
+                                          x.DataBound("initKoAttributes")
+                                              .Change("initKoAttributes")
+                                      )
+                                      .DataSource(source =>
+                                      {
+                                          source.Read(read =>
+                                          {
+                                              read.Action("GetRatingTours", "Tour");
+                                          })
+                                          .ServerFiltering(false);
+                                      }))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-9 col-sm-offset-2">
+                <div class="radio-inline">
+                    <label for="Parcel" style="font-weight: normal">Земельный участок</label>
+                    <input type="radio" id="Parcel" name="ObjType" value="1" checked>
+                </div>
+                <div class="radio-inline">
+                    <label for="OKS" style="font-weight: normal">Объект капитального строительства</label>
+                    <input type="radio" id="OKS" name="ObjType" value="0">
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.CodeGroupAttributeId)
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListWithAutocompleteFor(m => m.CodeGroupAttributeId, (IEnumerable)ViewData["KoAttributes"])
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.CodeQuarterAttributeId)
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListWithAutocompleteFor(m => m.CodeQuarterAttributeId, (IEnumerable)ViewData["KoAttributes"])
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.TypeRoomAttributeId)
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListWithAutocompleteFor(m => m.TypeRoomAttributeId, (IEnumerable)ViewData["KoAttributes"])
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('[name="ObjType"]').on('change', initKoAttributes);
+
+        $('#save').on('click',
+            function () {
+                kendo.ui.progress($('body'), true);
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+
+                $.post(form.attr('action'), formObject).done(function (response) {
+                    if (response.Errors) {
+                        var errors = getErrors(response.Errors);
+                        Common.ShowError(errors);
+                        return;
+                    }
+
+                    if (response.Success) {
+                        Common.ShowMessage(response.Success);
+                    }
+                }).fail(function (response, textStatus, errorThrown) {
+                    Common.ShowError(response.responseText);
+                }).always(function () {
+                    kendo.ui.progress($('body'), false);
+                });
+            });
+
+    });
+
+    function initKoAttributes() {
+        var tourId = $('#@(nameof(Model.TourId))').val();
+        var objectType = $('input[name="ObjType"]:checked').val();
+
+        var koAttributesSource = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("GetKoAttributesWithSettings", "Tour")',
+                    data: { tourId: tourId, objectType: objectType },
+                    dataType: 'json'
+                }
+            }
+        });
+
+        $('#CodeGroupAttributeId').kendoDropDownList({
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            optionLabel: " ",
+            dataSource: koAttributesSource,
+            dataBound: function (e) {
+                var data = koAttributesSource.data();
+                var codeGroupAttr =
+                    data.find(item => item.UsingTypes.indexOf(@KoAttributeUsingType.CodeGroupAttribute.GetEnumCode()) !== -1);
+                var codeGroupAttrId = codeGroupAttr ? codeGroupAttr.Id : null;
+                this.value(codeGroupAttrId);
+            }
+        });
+        $('#CodeQuarterAttributeId').kendoDropDownList({
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            optionLabel: " ",
+            dataSource: koAttributesSource,
+            dataBound: function (e) {
+                var data = koAttributesSource.data();
+                var codeQuarterAttr =
+                    data.find(item => item.UsingTypes.indexOf(@KoAttributeUsingType.CodeQuarterAttribute.GetEnumCode()) !== -1);
+                var codeQuarterAttrId = codeQuarterAttr ? codeQuarterAttr.Id : null;
+                this.value(codeQuarterAttrId);
+            }
+        });
+
+        $('#TypeRoomAttributeId').kendoDropDownList({
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            optionLabel: " ",
+            dataSource: koAttributesSource,
+            dataBound: function (e) {
+                var data = koAttributesSource.data();
+                var typeRoomAttr =
+                    data.find(item => item.UsingTypes.indexOf(@KoAttributeUsingType.TypeRoomAttribute.GetEnumCode()) !== -1);
+                var typeRoomAttrId = typeRoomAttr ? typeRoomAttr.Id : null;
+                this.value(typeRoomAttrId);
+            }
+        });
+    }
+</script>
+

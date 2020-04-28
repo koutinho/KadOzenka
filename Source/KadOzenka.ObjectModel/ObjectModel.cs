@@ -11400,12 +11400,12 @@ namespace ObjectModel.KO
         }
 
 
-        private long _attributeid;
+        private long? _attributeid;
         /// <summary>
         /// 25800500 Идентификатор атрибута (ATTRIBUTE_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 25800500)]
-        public long AttributeId
+        public long? AttributeId
         {
             get
             {

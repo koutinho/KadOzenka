@@ -12,7 +12,9 @@ using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
+using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Models.Tour;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
@@ -33,9 +35,9 @@ namespace KadOzenka.Web.Controllers
 
         public TourController()
         {
-            TourService = new TourService();
-            GroupService = new GroupService();
             TourFactorService = new TourFactorService();
+            TourService = new TourService(TourFactorService);
+            GroupService = new GroupService(TourService);
         }
 
         #region Карточка тура
@@ -120,6 +122,75 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion
+
+        #region Настройки атрибутов тура
+
+        [HttpGet]
+        public ActionResult TourAttributeSettings()
+        {
+            ViewData["KoAttributes"] = new List<string>();
+
+            return View(new TourAttributeSettingsModel());
+        }
+
+        [HttpGet]
+        public JsonResult GetKoAttributesWithSettings(long tourId, int objectType)
+        {
+            var koAttributes = TourFactorService.GetTourAttributesWithSettings(tourId, (ObjectType)objectType);
+
+            var models = koAttributes.Select(x => new
+            {
+                Id = x.Id,
+                Name = x.Name,
+                UsingTypes = x.UsingTypes
+            }).AsEnumerable();
+
+            return Json(models);
+        }
+
+        [HttpPost]
+        public ActionResult TourAttributeSettings(TourAttributeSettingsModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return GenerateMessageNonValidModel();
+            }
+
+            try
+            {
+                TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
+                {
+                    TourId = model.TourId.Value,
+                    IsOksObjectType = model.ObjType == (long) ObjectType.Oks,
+                    AttributeId = model.CodeGroupAttributeId,
+                    KoAttributeUsingType = KoAttributeUsingType.CodeGroupAttribute
+                });
+
+                TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
+                {
+                    TourId = model.TourId.Value,
+                    IsOksObjectType = model.ObjType == (long)ObjectType.Oks,
+                    AttributeId = model.CodeQuarterAttributeId,
+                    KoAttributeUsingType = KoAttributeUsingType.CodeQuarterAttribute
+                });
+
+                TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
+                {
+                    TourId = model.TourId.Value,
+                    IsOksObjectType = model.ObjType == (long)ObjectType.Oks,
+                    AttributeId = model.TypeRoomAttributeId,
+                    KoAttributeUsingType = KoAttributeUsingType.TypeRoomAttribute
+                });
+            }
+            catch (Exception e)
+            {
+                return SendErrorMessage(e.Message);
+            }
+
+            return Json(new { Success = "Сохранено успешно" });
+        }
+
+        #endregion Настройки атрибутов тура
 
         #region Туры
 

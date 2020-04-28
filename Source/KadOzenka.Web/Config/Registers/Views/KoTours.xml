@@ -16,6 +16,9 @@
     </Button>
 
     <Button Caption="Импорт группы из Excel" NavigateURL="/Tour/ImportGroupDataFromExcel" WindowHeight="400" WindowWidth="800"  Icon="fas fa-wrench"/>
+
+    <Button Caption="Настройки атрибутов туров" NavigateURL="/Tour/TourAttributeSettings" WindowHeight="400" WindowWidth="800"  Icon="fas fa-wrench">
+    </Button>
   </ObjectCardButtons>
 
 

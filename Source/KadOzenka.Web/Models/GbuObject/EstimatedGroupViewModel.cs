@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.KoObject;
+using KadOzenka.Dal.Tours.Dto;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
@@ -9,14 +10,7 @@ namespace KadOzenka.Web.Models.GbuObject
 	    [Required(ErrorMessage = "Параметр Задание на оценку обязательный")]
         public long? IdTask { get; set; }
 
-		[Required(ErrorMessage = "Атрибут для кода группы обязательный")]
-		public long? IdCodeGroup { get; set; }
-
-		[Required(ErrorMessage = "Атрибут для кадастрового квартала обязательный")]
-		public long? IdCodeQuarter { get; set; }
-
-		[Required(ErrorMessage = "Атрибут для типа помещения обязательный")]
-		public long? IdTypeRoom { get; set; }
+	    public bool IsOksObjType { get; set; } = false;
 
 		/// <summary>
 		/// Result parameter.
@@ -24,17 +18,16 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Required(ErrorMessage = "Атрибут для проставления оценочной группы обязательный")]
 		public long? IdEstimatedSubGroup { get; set; }
 
-
-		public EstimatedGroupModel ToGroupModel()
-		{
-			return new EstimatedGroupModel
-			{
-				IdTask = IdTask.Value,
-				IdCodeQuarter = IdCodeQuarter.GetValueOrDefault(),
-				IdCodeGroup = IdCodeGroup.GetValueOrDefault(),
-				IdTypeRoom = IdTypeRoom.GetValueOrDefault(),
-				IdEstimatedSubGroup = IdEstimatedSubGroup.GetValueOrDefault()
-			};
-		}
-	}
+        public EstimatedGroupModel ToGroupModel(TourEstimatedGroupAttributeParamsDto paramsDto)
+        {
+            return new EstimatedGroupModel
+            {
+                IdTask = IdTask.Value,
+                IdCodeQuarter = paramsDto.IdCodeQuarter,
+                IdCodeGroup = paramsDto.IdCodeGroup,
+                IdTypeRoom = paramsDto.IdTypeRoom,
+                IdEstimatedSubGroup = IdEstimatedSubGroup.GetValueOrDefault()
+            };
+        }
+    }
 }

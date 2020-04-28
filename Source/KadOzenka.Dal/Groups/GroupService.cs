@@ -16,9 +16,9 @@ namespace KadOzenka.Dal.Groups
     {
         private TourService TourService { get; set; }
 
-        public GroupService()
+        public GroupService(TourService tourService)
         {
-            TourService = new TourService();
+            TourService = tourService;
         }
 
 
