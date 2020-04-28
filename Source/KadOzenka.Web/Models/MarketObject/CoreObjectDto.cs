@@ -28,6 +28,7 @@ namespace KadOzenka.Web.Models.MarketObject
         public DateTime? LastDateUpdate { get; set; }
         [DisplayName("Адрес")]
 		public string Address { get; set; }
+		public string AddressShort { get; set; }
 		public string Metro { get; set; }
 		[DisplayName("Площадь")]
 		public decimal? Area { get; set; }
@@ -176,6 +177,9 @@ namespace KadOzenka.Web.Models.MarketObject
 				AreaStr = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea 
 					? entity.AreaLand?.ToString("n") + " сот."
 					: entity.Area?.ToString("n") + " м²",
+				AddressShort = !string.IsNullOrWhiteSpace(entity.Address) && entity.Address.Length > 31 
+					? $"{entity.Address.Substring(0, 28)}..."
+					: entity.Address,
 				Address = entity.Address,
 				CadastralNumber = entity.CadastralNumber,
 				MarketSegment = entity.PropertyMarketSegment,

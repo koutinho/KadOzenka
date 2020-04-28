@@ -508,6 +508,10 @@
 										].filter(Boolean).join(', ')
 									});
 
+									newPoint.options.set('balloonMinWidth', 500);
+									newPoint.options.set('balloonMaxWidth', 800);
+									newPoint.options.set('balloonMinHeight', 420);
+
 									findPoints.push(newPoint);
 
 									map.geoObjects.add(newPoint);
