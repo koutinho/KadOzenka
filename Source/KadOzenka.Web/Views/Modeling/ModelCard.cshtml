@@ -1,0 +1,38 @@
+﻿@model KadOzenka.Web.Models.Modeling.ModelingModel
+
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+	<div class="form-group">
+		<div class="col-sm-3">
+			@Html.CustomLabel("Тур")
+		</div>
+		<div class="col-sm-9">
+			@(Html.Kendo().DropDownList()
+						.Name("RatingTour")
+						.DataTextField("Text")
+						.DataValueField("Value")
+			)
+		</div>
+	</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+	    $('[name="RatingTour"]').kendoDropDownList({
+		    dataTextField: 'Text',
+		    dataValueField: 'Value',
+		    dataSource:
+		    {
+			    transport: {
+				    read: {
+					    url: '@Url.Action("GetRatingTours", "Tour")',
+					    dataType: 'json'
+				    }
+			    }
+		    }
+	    });
+
+    });
+
+</script>
+

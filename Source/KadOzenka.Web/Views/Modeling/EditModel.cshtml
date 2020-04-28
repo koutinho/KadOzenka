@@ -1,0 +1,67 @@
+﻿@model KadOzenka.Web.Models.Modeling.ModelingModel
+
+@using (Html.BeginForm("EditModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
+{
+	<div class="form-horizontal" style="padding: 5% 5% 0 5%;">
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(x => x.Name)
+			</div>
+			<div class="col-sm-8 col-sm-offset-1">
+				@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
+				@Html.KendoButton("SaveModel", "Сохранить")
+			</div>
+		</div>
+	</div>
+}
+
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+	$(document).ready(function () {
+		$("#SaveModel").on('click', SaveModel);
+	});
+
+
+
+	function SaveModel() {
+		kendo.ui.progress($('body'), true);
+		var form = $('#saveModelForm');
+		var formObject = Common.Functions.FormToObject(form);
+		$.ajax({
+			type: 'POST',
+			url: form.attr('action'),
+			data: formObject,
+			success: function (response) {
+				if (response.Errors) {
+					var errors = getErrors(response.Errors);
+					Common.ShowError(errors);
+					return;
+				} else {
+					Common.ShowMessage(response.Message);
+					CloseMainWindow();
+				}
+			},
+			error: function (response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function () {
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
+
+
+	function CloseMainWindow() {
+		setTimeout(function () {
+			//Common.UI.CloseWindow('registerModalWindow', window.parent);
+			window.parent.parent.location.reload();
+		}, 1000);
+	}
+
+</script>
+
