@@ -24,7 +24,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageProccessor", "ImagePro
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP.Sdk.Core", "Utils\EP.SdkCore\EP.Sdk.Core.csproj", "{F9CC1690-F519-4C76-A52B-78625BF288AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartProject", "StartProject\StartProject.csproj", "{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StartProject", "StartProject\StartProject.csproj", "{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
