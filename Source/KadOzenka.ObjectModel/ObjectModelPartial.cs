@@ -3148,6 +3148,30 @@ namespace ObjectModel.ES
     }
 }
 
+namespace ObjectModel.Modeling
+{
+    /// <summary>
+    /// 700 Моделирование
+    /// </summary>
+    public partial class OMModelingModel
+    {
+
+        public OMModelingModel()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMModelingModel(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

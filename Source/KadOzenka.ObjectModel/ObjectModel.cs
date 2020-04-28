@@ -1823,24 +1823,24 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _priceaftercorrectionbystage;
-        /// <summary>
-        /// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10008500)]
-        public decimal? PriceAfterCorrectionByStage
-        {
-            get
-            {
-                CheckPropertyInited("PriceAfterCorrectionByStage");
-                return _priceaftercorrectionbystage;
-            }
-            set
-            {
-                _priceaftercorrectionbystage = value;
-                NotifyPropertyChanged("PriceAfterCorrectionByStage");
-            }
-        }
+		private decimal? _priceaftercorrectionbystage;
+		/// <summary>
+		/// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 10008500)]
+		public decimal? PriceAfterCorrectionByStage
+		{
+			get
+			{
+				CheckPropertyInited("PriceAfterCorrectionByStage");
+				return _priceaftercorrectionbystage;
+			}
+			set
+			{
+				_priceaftercorrectionbystage = value;
+				NotifyPropertyChanged("PriceAfterCorrectionByStage");
+			}
+		}
 
 
 
@@ -22130,6 +22130,58 @@ namespace ObjectModel.ES
             {
                 _calculationvalue = value;
                 NotifyPropertyChanged("CalculationValue");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Modeling
+{
+    /// <summary>
+    /// 700 Моделирование (MODELING_MODEL)
+    /// </summary>
+    [RegisterInfo(RegisterID = 700)]
+    [Serializable]
+    public partial class OMModelingModel : OMBaseClass<OMModelingModel>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 70000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 70000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 70000200 Имя (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70000200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
             }
         }
 
