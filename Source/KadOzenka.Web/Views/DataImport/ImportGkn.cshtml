@@ -108,6 +108,9 @@
                         if ($('[name="IncomingDocumentDate"]').data().kendoDatePicker.value() == null) {
                             message += 'Необходимо заполнить дату документа<br>';
                         }
+                        if ($('[name="EstimationDate"]').data().kendoDatePicker.value() == null) {
+                            message += 'Необходимо заполнить дату изменения сведения (дату оценки)<br>';
+                        }
                         if ($('[name="NoteType"]').val() == 0) {
                             message += 'Необходимо заполнить тип статьи<br>';
                         }
