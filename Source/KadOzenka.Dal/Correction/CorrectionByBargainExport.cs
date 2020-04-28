@@ -75,6 +75,7 @@ namespace KadOzenka.Dal.Correction
                 .Select(x => x.CadastralQuartal)
                 .Select(x => x.Price)
                 .Select(x => x.Area)
+                .Select(x => x.PricePerMeter)
                 .Select(x => x.PriceAfterCorrectionByBargain)
                 .Select(x => x.LastDateUpdate)
                 .Select(x => x.ParserTime)

@@ -67,6 +67,7 @@ namespace KadOzenka.Dal.Correction
                 .Select(x => x.CadastralQuartal)
                 .Select(x => x.Price)
                 .Select(x => x.Area)
+                .Select(x => x.PricePerMeter)
                 .Select(x => x.PriceAfterCorrectionByBargain)
                 .Select(x => x.LastDateUpdate)
                 .Select(x => x.ParserTime)
@@ -144,25 +145,15 @@ namespace KadOzenka.Dal.Correction
                         continue;
                     }
 
-                    var suggestionObjectsPrice =
-                        suggestionObjectsByBuildingQuarter.Sum(x => x.Price);
-                    var suggestionObjectsArea =
-                        suggestionObjectsByBuildingQuarter.Sum(x => x.Area);
-                    var suggestionObjectsPricePerArea =
-                        suggestionObjectsPrice / suggestionObjectsArea;
+                    var suggestionObjectsPricePerArea = suggestionObjectsByBuildingQuarter.Select(x => x.PricePerMeter.GetValueOrDefault()).Average();
+                    var dealObjectsPricePerArea = dealObjectsByBuildingQuarter.Select(x => x.PricePerMeter.GetValueOrDefault()).Average();
 
-                    var dealObjectsPrice =
-                        dealObjectsByBuildingQuarter.Sum(x => x.Price);
-                    var dealObjectsArea =
-                        dealObjectsByBuildingQuarter.Sum(x => x.Area);
-                    var dealObjectsPricePerArea =
-                        dealObjectsPrice / dealObjectsArea;
-
-                    var coefficientByBuildingQuarter = dealObjectsPricePerArea /
-                                              suggestionObjectsPricePerArea;
+                    var coefficientByBuildingQuarter = suggestionObjectsPricePerArea == 0 
+                        ? 0 
+                        : dealObjectsPricePerArea / suggestionObjectsPricePerArea;
                     if (IsCoefficientIncludedInCalculation(coefficientByBuildingQuarter))
                     {
-                        coefficientsByBuildingQuarterList.Add(coefficientByBuildingQuarter.Value);
+                        coefficientsByBuildingQuarterList.Add(coefficientByBuildingQuarter);
                     }
                 }
 
