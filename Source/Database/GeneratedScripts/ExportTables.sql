@@ -9535,6 +9535,67 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('ES_SETTINGS_PARAMS')) then
+		execute 'create table ES_SETTINGS_PARAMS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'id')) then
+        execute 'alter table ES_SETTINGS_PARAMS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'id_tour')) then
+        execute 'alter table ES_SETTINGS_PARAMS add "id_tour" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'id_register')) then
+        execute 'alter table ES_SETTINGS_PARAMS add "id_register" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'cost_factors')) then
+        execute 'alter table ES_SETTINGS_PARAMS add "cost_factors" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'segment_type')) then
+        execute 'alter table ES_SETTINGS_PARAMS add "segment_type" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('es_settings_params_pkey')) then
+    execute 'alter table ES_SETTINGS_PARAMS add constraint es_settings_params_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('ES_SQUARE')) then
 		execute 'create table ES_SQUARE ("id" BIGINT NOT NULL)';
 	end if;
@@ -23964,6 +24025,76 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_TOUR_ATTRIBUTE_SETTINGS')) then
+		execute 'create table KO_TOUR_ATTRIBUTE_SETTINGS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR_ATTRIBUTE_SETTINGS', 'id')) then
+        execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR_ATTRIBUTE_SETTINGS', 'tour_id')) then
+        execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add "tour_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR_ATTRIBUTE_SETTINGS', 'is_oks')) then
+        execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add "is_oks" SMALLINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR_ATTRIBUTE_SETTINGS', 'attribute_using_type')) then
+        execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add "attribute_using_type" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR_ATTRIBUTE_SETTINGS', 'attribute_using_type_code')) then
+        execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add "attribute_using_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_TOUR_ATTRIBUTE_SETTINGS', 'attribute_id')) then
+        execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add "attribute_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_258_q_pk')) then
+    execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add constraint reg_258_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_TOUR_FACTOR_REGISTER')) then
 		execute 'create table KO_TOUR_FACTOR_REGISTER ("id" BIGINT NOT NULL)';
 	end if;
@@ -28343,7 +28474,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'price_value_to')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "price_value_to" NUMERIC NOT NULL';
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "price_value_to" NUMERIC';
     end if;
 end $$;
 
@@ -28370,7 +28501,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'price_value_from')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "price_value_from" NUMERIC NOT NULL';
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "price_value_from" NUMERIC';
     end if;
 end $$;
 
@@ -28422,7 +28553,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'price_value_from')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "price_value_from" NUMERIC NOT NULL';
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "price_value_from" NUMERIC';
     end if;
 end $$;
 
@@ -28431,7 +28562,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'price_value_to')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "price_value_to" NUMERIC NOT NULL';
+        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "price_value_to" NUMERIC';
     end if;
 end $$;
 
@@ -28823,6 +28954,40 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('pk_market_settings_id')) then
     execute 'alter table MARKET_SETTINGS add constraint pk_market_settings_id primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MODELING_MODEL')) then
+		execute 'create table MODELING_MODEL ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'id')) then
+        execute 'alter table MODELING_MODEL add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'name')) then
+        execute 'alter table MODELING_MODEL add "name" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_700_q_pk')) then
+    execute 'alter table MODELING_MODEL add constraint reg_700_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
