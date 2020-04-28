@@ -1,15 +1,8 @@
 ﻿using System.Collections.Generic;
+using KadOzenka.Dal.ExpressScore.Dto;
 
 namespace KadOzenka.Web.Models.ExpressScore
 {
-	public class CostFactor
-	{
-		public string Name { get; set; }
-		public decimal? Coefficient { get; set; }
-		public int AttributeId { get; set; }
-		public int DictionaryId { get; set; }
-
-	}
 	public class SettingsExpressScoreViewModel
 	{
 		public int TourId { get; set; }
@@ -22,6 +15,6 @@ namespace KadOzenka.Web.Models.ExpressScore
 		/// <summary>
 		/// Список факторов для экспресс оценки
 		/// </summary>
-		public List<CostFactor> CostFactors { get; set; }
+		public List<CostFactorsDto> CostFactors { get; set; }
 	}
 }

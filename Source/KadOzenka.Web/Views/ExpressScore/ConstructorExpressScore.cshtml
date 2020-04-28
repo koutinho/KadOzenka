@@ -1,0 +1,59 @@
+﻿@using ObjectModel.Directory
+
+<style>
+	#ListView {
+		width: 100%;
+		height: 100%;
+	}
+	.item:hover {
+		cursor: pointer;
+		background-color: lightblue;
+		border-radius: 5px;
+	}
+	.item {
+		padding: 5px;
+	}
+	#SegmentList {
+		height: 100%
+	}
+</style>
+<div class="form-horizontal col-sm-12">
+	@(Html.Kendo().Splitter()
+		.Name("splitter")
+		.Orientation(SplitterOrientation.Horizontal)
+		//.HtmlAttributes(new { style="height: 100%"})
+		.Panes(p =>
+		{
+			p.Add().Scrollable(false).Collapsed(false).Content("<div id='ListView'>"
+															   + Html.Kendo().ListView<SelectListItem>()
+																   .Name("SegmentList")
+																   .BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment), new long [] { 744, 745, 750, 746, 747, 748, 749, 751, 752, 753, 754, 795 }))
+																   .ClientTemplateId("templateSegment")
+																   .TagName("div")
+																   .Selectable(true)
+																   .Events(e => e.Change("handlerChangeSegment"))
+																   .ToHtmlString() +
+															   "</div>").Size("400px");
+
+			p.Add().Scrollable(false).Collapsed(false).Content("<div id='SegmentCard'></div>");
+		}))
+</div>
+
+<script type="text/x-kendo-tmpl" id="templateSegment">
+	<div class='item'>#:Text#</div>
+</script>
+
+<script type="text/javascript">
+
+	function handlerChangeSegment(e) {
+		var index = this.select().index(),
+			dataItem = this.dataSource.view()[index];
+		if (dataItem.Value) {
+			getSettingsForSegment(dataItem.Value);
+		}
+	}
+
+	function getSettingsForSegment(value) {
+		var url = "@Url.Action("SettingsExpressScore", "ExpressScore")";
+	}
+</script>

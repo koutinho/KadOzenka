@@ -65,7 +65,7 @@
 								.DataValueField("Value")
 								.DataSource(source =>
 								{
-									source.Read(a => a.Action("GetAttributes", "ExpressScore"));
+									source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("handleDataRegister"));
 								})
 								)
 						</div>
@@ -86,7 +86,6 @@
 				</fieldset>
 			}
 		}
-	
 	</div>
 }
 
@@ -101,9 +100,14 @@
 		}
 	}
 
-	function handleChangeRegister()
-	{
+	function handleChangeRegister() {
+		console.log($('[id ^= "IdAttributeKO"]'));
+	}
 
+	function handleDataRegister() {
+		return {
+			registerId: $('#FactorRegisterId').data('kendoDropDownList') && $('#FactorRegisterId').data('kendoDropDownList').value()
+		}
 	}
 
 </script>

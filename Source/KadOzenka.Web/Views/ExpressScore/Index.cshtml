@@ -123,37 +123,19 @@
 					<div class="col-sm-3">
 						@Html.CustomLabelFor("Тип сделки", true)
 					</div>
-					<div class="col-sm-5">
+					<div class="col-sm-9">
 						@Html.Kendo().RadioButton().Name("DealTypeShort").Label(DealTypeShort.Rent.GetEnumDescription()).Value(DealTypeShort.Rent).Checked(true)
 						@Html.Kendo().RadioButton().Name("DealTypeShort").Label(DealTypeShort.Sale.GetEnumDescription()).Value(DealTypeShort.Sale)
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
+					<div class="col-sm-10">
 						@Html.CustomLabelFor("Дата актуальности", true)
 					</div>
-					<div class="col-sm-9">
+					<div class="col-sm-12">
 						@Html.Kendo().DatePicker().Name("ActualDate").Max(DateTime.Now).Value(DateTime.Now.Date)
 					</div>
 				</div>
-				@*<div class="form-group">
-					<div class="col-sm-3">
-						@Html.CustomLabelFor("Линия застройки")
-					</div>
-					<div class="col-sm-9">
-						@Html.Kendo().RadioButton().Name("entrance").Label("Первая линия").Value("1").Enable(false)
-						@Html.Kendo().RadioButton().Name("entrance").Label("Первая второстепенная").Value("2").Enable(false)
-						@Html.Kendo().RadioButton().Name("entrance").Label("Внутреквартальная").Value("3").Enable(false)
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-3">
-						@Html.CustomLabelFor("Состояние отделки", htmlAttributes: new { style = "padding-top: 0" })
-					</div>
-					<div class="col-sm-9">
-						@Html.Kendo().TextBox().Name("type").HtmlAttributes(new { style = "width: 100%" }).Enable(false)
-					</div>
-				</div>*@
 				<div class="form-group">
 					<div class="col-sm-3">
 						@Html.CustomLabelFor("Количество аналогов", htmlAttributes: new { style = "padding-top: 0" })

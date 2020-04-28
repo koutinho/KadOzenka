@@ -10,6 +10,7 @@ using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ExpressScore;
 using KadOzenka.Web.Models.MarketObject;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory;
 using ObjectModel.ES;
 using ObjectModel.KO;
@@ -235,6 +236,22 @@ namespace KadOzenka.Web.Controllers
 
 		#region Setting ExpressScore
 
+		public ActionResult ConstructorExpressScore()
+		{
+			return View();
+		}
+
+		public JsonResult GetListSegments()
+		{
+			List<SelectListItem> segments = new List<SelectListItem>();
+
+			foreach (var segment in  Enum.GetNames(typeof(MarketSegment)))
+			{
+				
+			}
+			return Json(segments);
+		}
+
 		public JsonResult GetDictionaries()
 		{
 			var dictionaries = OMEsReference.Where(x => x).SelectAll().Execute().Select(x => new
@@ -269,9 +286,9 @@ namespace KadOzenka.Web.Controllers
 			return Json(registerFactors);
 		}
 
-		public ActionResult SettingsExpressScore()
+		public ActionResult SettingsExpressScore(int segmentId)
 		{
-			var model = new SettingsExpressScoreViewModel {CostFactors = new List<CostFactor>()};
+			var model = new SettingsExpressScoreViewModel {CostFactors = new List<CostFactorsDto>()};
 			return View(model);
 		}
 
