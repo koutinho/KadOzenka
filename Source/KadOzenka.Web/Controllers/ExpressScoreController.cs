@@ -73,15 +73,14 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage(resMessage);
 			}
 
-
 			var objects = OMCoreObject.Where(x =>
 					x.ProcessType_Code != ProcessStep.Excluded && x.PropertyMarketSegment_Code == param.Segment
-					                                           && x.BuildingYear != null &&
-					                                           x.BuildingYear < yearRange.YearTo &&
-					                                           yearRange.YearFrom < x.BuildingYear
-					                                           && x.Area != null && x.Area < squareRange.SquareTo &&
-					                                           squareRange.SquareFrom <
-					                                           x.Area && x.DealType_Code == param.DealType)
+															   && x.BuildingYear != null &&
+															   x.BuildingYear < yearRange.YearTo &&
+															   yearRange.YearFrom < x.BuildingYear
+															   && x.Area != null && x.Area < squareRange.SquareTo &&
+															   squareRange.SquareFrom <
+															   x.Area && param.DealType.Contains(x.DealType_Code))
 				.Select(x => new
 				{
 					x.Id,

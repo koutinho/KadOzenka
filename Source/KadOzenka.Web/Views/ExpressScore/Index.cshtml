@@ -1,4 +1,5 @@
-﻿@using ObjectModel.Directory
+﻿@using CIPJS.Models.ExpressScore
+@using ObjectModel.Directory
 @using ObjectModel.Directory.ES
 
 
@@ -123,10 +124,8 @@
 						@Html.CustomLabelFor("Тип сделки", true)
 					</div>
 					<div class="col-sm-5">
-						@Html.Kendo().RadioButton().Name("DealType").Label("Сделка купли-продажи").Value(DealType.SaleDeal).Checked(true)
-						@Html.Kendo().RadioButton().Name("DealType").Label("Сделка-аренда").Value(DealType.RentDeal)
-						@Html.Kendo().RadioButton().Name("DealType").Label("Предложение-аренда").Value(DealType.RentSuggestion)
-						@Html.Kendo().RadioButton().Name("DealType").Label("Предложение-Продажа").Value(DealType.SaleSuggestion)
+						@Html.Kendo().RadioButton().Name("DealTypeShort").Label(DealTypeShort.Rent.GetEnumDescription()).Value(DealTypeShort.Rent).Checked(true)
+						@Html.Kendo().RadioButton().Name("DealTypeShort").Label(DealTypeShort.Sale.GetEnumDescription()).Value(DealTypeShort.Sale)
 					</div>
 				</div>
 				<div class="form-group">
@@ -434,7 +433,7 @@
 				var square = $('#square').val();
 				var segment = $('#segment').val();
 				var quality = $(this).text();
-				var dealType = $("input[name='DealType']:checked").val();
+				var dealTypeShort = $("input[name='DealTypeShort']:checked").val();
 				var actualDate = kendo.toString($("#ActualDate").data('kendoDatePicker').value(), "MM/dd/yyyy");
 
 				if (!segment || segment === "0") {
@@ -448,7 +447,7 @@
 				kendo.ui.progress($('body'), true);
 				var url = "@Url.Action("GetNearestObjects", "ExpressScore")" + `?Floor=${floor}&Square=${square}
 														&Segment=${segment}&Quality=${quality}&SelectedLat=${coordinates[0]}&SelectedLng=${coordinates[1]}&Address=${currentAddress}
-															&DealType=${dealType}&ActualDate=${actualDate}`;
+															&DealTypeShort=${dealTypeShort}&ActualDate=${actualDate}`;
 				$.get(url).done(function (data) {
 					if (data.Errors) {
 						var errors = getErrors(data.Errors);

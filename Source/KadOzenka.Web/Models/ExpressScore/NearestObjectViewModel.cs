@@ -1,9 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory;
 
 namespace CIPJS.Models.ExpressScore
 {
+	public enum DealTypeShort : long
+	{
+		[Description("Аренда")]
+		Rent = 1,
+
+		[Description("Продажа")]
+		Sale = 2
+	}
+
 	public class NearestObjectViewModel
 	{
 		/// <summary>
@@ -44,10 +55,30 @@ namespace CIPJS.Models.ExpressScore
 		public string Address { get; set; }
 
 		/// <summary>
-		/// Тип сделаки
+		/// Тип сделки
 		/// </summary>
 		[Required(ErrorMessage = "Не указан тип сделки")]
-		public DealType DealType { get; set; }
+		public DealTypeShort DealTypeShort { get; set; }
+
+		public List<DealType> DealType
+		{
+			get
+			{
+				var dealTypes = new List<DealType>(2);
+				if (DealTypeShort == DealTypeShort.Rent)
+				{
+					dealTypes.Add(ObjectModel.Directory.DealType.RentDeal);
+					dealTypes.Add(ObjectModel.Directory.DealType.RentSuggestion);
+				}
+				if(DealTypeShort == DealTypeShort.Sale)
+				{
+					dealTypes.Add(ObjectModel.Directory.DealType.SaleDeal);
+					dealTypes.Add(ObjectModel.Directory.DealType.SaleSuggestion);
+				}
+
+				return dealTypes;
+			}
+		}
 
 		/// <summary>
 		/// Дата актуальности
