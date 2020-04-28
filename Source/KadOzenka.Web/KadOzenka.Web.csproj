@@ -42,6 +42,7 @@
     <None Remove="Config\Param\Core.Diagnostics.xml" />
     <None Remove="Config\Param\Core.DocNumeration.xml" />
     <None Remove="Config\Param\Core.FileStorages.Dev.xml" />
+    <None Remove="Config\Param\Core.FileStorages.Ppr.Ppr2.xml" />
     <None Remove="Config\Param\Core.FileStorages.Ppr.xml" />
     <None Remove="Config\Param\Core.FileStorages.Prod.xml" />
     <None Remove="Config\Param\Core.FileStorages.xml" />
@@ -186,6 +187,9 @@
 
   <ItemGroup>
     <Content Include="Config\Common\MainMenu.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\Core.FileStorages.Ppr.Ppr2.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Param\Core.LongProcess.Prod.Db.xml">
