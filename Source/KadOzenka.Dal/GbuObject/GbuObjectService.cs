@@ -36,22 +36,25 @@ namespace KadOzenka.Dal.GbuObject
 			{
 				var registerData = RegisterCache.GetRegisterData((int)registerId);
 
-				var postfixes = new List<string> { "TXT", "NUM", "DT" };
 
-				foreach(var postfix in postfixes)
+				if(registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
 				{
-					var propName = "StringValue";
+					var postfixes = new List<string> { "TXT", "NUM", "DT" };
 
-					if(postfix == "NUM")
+					foreach (var postfix in postfixes)
 					{
-						propName = "NumValue";
-					}
-					else if(postfix == "DT")
-					{
-						propName = "DtValue";
-					}
+						var propName = "StringValue";
 
-					var sql = $@"
+						if (postfix == "NUM")
+						{
+							propName = "NumValue";
+						}
+						else if (postfix == "DT")
+						{
+							propName = "DtValue";
+						}
+
+						var sql = $@"
 select 
 	a.id,
 	a.object_id as ObjectId,
@@ -78,21 +81,87 @@ left join core_srd_user u on u.id = a.change_user_id
 left join core_td_instance td on td.id = a.change_doc_id
 where a.object_id = {objectId}";
 
-					if(attributes != null && attributes.Count > 0)
-					{
-						sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
+						if (attributes != null && attributes.Count > 0)
+						{
+							sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
+						}
+
+						if (dateS != null || dateOt != null)
+						{
+							string dateSFilter = dateS == null ? String.Empty : $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
+							string dateOtFilter = dateOt == null ? String.Empty : $"AND A3.Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
+
+							sql = $"{sql} and A.ID = (SELECT MAX(a2.id) FROM {registerData.AllpriTable}_{postfix} a2 WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a2")} AND a2.ot = (SELECT MAX(a3.ot) FROM {registerData.AllpriTable}_{postfix} a3 WHERE a3.object_id = a.object_id AND a3.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a3")} {dateOtFilter}))";
+						}
+
+						result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 					}
-
-					if(dateS != null || dateOt != null)
-					{
-						string dateSFilter = dateS == null ? String.Empty : $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
-						string dateOtFilter = dateOt == null ? String.Empty : $"AND A3.Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
-
-						sql = $"{sql} and A.ID = (SELECT MAX(a2.id) FROM {registerData.AllpriTable}_{postfix} a2 WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a2")} AND a2.ot = (SELECT MAX(a3.ot) FROM {registerData.AllpriTable}_{postfix} a3 WHERE a3.object_id = a.object_id AND a3.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a3")} {dateOtFilter}))";
-					}
-
-					result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 				}
+				else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
+				{
+					foreach (var attributeId in attributes.Where(x => RegisterCache.GetAttributeData(x).RegisterId == registerId))
+					{
+						var attributeData = RegisterCache.GetAttributeData(attributeId);
+
+						var propName = "StringValue";
+
+						switch (attributeData.Type)
+						{
+							case RegisterAttributeType.INTEGER:
+							case RegisterAttributeType.DECIMAL:
+							case RegisterAttributeType.BOOLEAN:
+								propName = "NumValue";
+								break;
+							case RegisterAttributeType.DATE:
+								propName = "DtValue";
+								break;
+							default:
+								propName = "StringValue";
+								break;
+						}
+						
+
+						var sql = $@"
+select 
+	a.id,
+	a.object_id as ObjectId,
+	{attributeId} as AttributeId,
+	a.Ot,
+	a.S,
+	{(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : String.Empty)}
+	a.value as {propName},
+
+	a.change_user_id as ChangeUserId,
+	a.change_doc_id as ChangeDocId,
+	a.change_date as ChangeDate,
+
+	null as ChangeId,
+
+	u.fullname as UserFullname,
+
+	td.regnumber as DocNumber,
+	td.description as DocType,
+	td.create_date as DocDate
+
+from {registerData.AllpriTable}_{attributeId} a
+left join core_srd_user u on u.id = a.change_user_id
+left join core_td_instance td on td.id = a.change_doc_id
+where a.object_id = {objectId}";
+
+						if (dateS != null || dateOt != null)
+						{
+							string dateSFilter = dateS == null ? String.Empty : $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
+							string dateOtFilter = dateOt == null ? String.Empty : $"AND [A].Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
+
+							sql = $"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeId} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
+						}
+
+						result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
+					}
+				}
+
+
+
 			}
 			
 			return result;
