@@ -17,6 +17,7 @@ namespace KadOzenka.Dal.Tasks.Dto
         public string NoteTypeStr { get; set; }
 
         public string Status { get; set; }
+        public KoTaskStatus? StatusCode { get; set; }
 
         public DocumentDto ResponseDocument { get; set; }
 

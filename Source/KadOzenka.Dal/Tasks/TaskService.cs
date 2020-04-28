@@ -9,6 +9,8 @@ using ObjectModel.KO;
 using Core.Shared.Extensions;
 using System;
 using System.Linq;
+using System.Transactions;
+using Core.Shared.Misc;
 using KadOzenka.Dal.Models.Task;
 using ObjectModel.Common;
 
@@ -36,6 +38,7 @@ namespace KadOzenka.Dal.Tasks
                 Tour = tour,
                 NoteType = task.NoteType_Code,
                 Status = task.Status,
+                StatusCode = task.Status_Code,
                 ResponseDocument = responseDocument,
                 IncomingDocument = incomingDocument,
                 CommonNumberOfImportedObjects = commonNumberOfImportedObjects,
@@ -128,6 +131,46 @@ namespace KadOzenka.Dal.Tasks
             };
 
             return instance.Save();
+        }
+
+        public void UpdateTaskData(TaskDto dto)
+        {
+            var task = OMTask.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
+            if (task == null)
+            {
+                throw new Exception($"Не найдено задание на оценку с ИД {dto.Id}");
+            }
+            if (dto.Tour?.Id != null && !OMTour.Where(x => x.Id == dto.Tour.Id).ExecuteExists())
+            {
+                throw new Exception($"Не найден тур с ИД {dto.Tour.Id}");
+            }
+
+            using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
+            {
+                task.CreationDate = dto.CreationDate;
+                task.EstimationDate = dto.EstimationDate;
+                task.NoteType_Code = dto.NoteType.GetValueOrDefault();
+                task.Status_Code = dto.StatusCode.GetValueOrDefault();
+                task.TourId = dto.Tour?.Id;
+
+                var document = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
+                if (document == null)
+                {
+                    var documentId = CreateDocument(dto.IncomingDocument.RegNumber, dto.IncomingDocument.Description,
+                        dto.IncomingDocument.CreationDate);
+                    task.DocumentId = documentId;
+                }
+                else
+                {
+                    document.RegNumber = dto.IncomingDocument.RegNumber;
+                    document.Description = dto.IncomingDocument.Description;
+                    document.CreateDate = dto.IncomingDocument.CreationDate.GetValueOrDefault();
+                    document.Save();
+                }
+                task.Save();
+
+                ts.Complete();
+            }
         }
 
         #region Support Methods

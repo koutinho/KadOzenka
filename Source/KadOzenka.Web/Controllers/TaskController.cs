@@ -53,12 +53,32 @@ namespace KadOzenka.Web.Controllers
 			if (taskDto == null)
 				return NotFound();
 
-			var taskModel = TaskModel.ToModel(taskDto);
+			var taskModel = TaskEditModel.ToEditModel(taskDto);
 
 			return View(taskModel);
 		}
 
-		[HttpGet]
+	    [HttpPost]
+	    public ActionResult TaskCard(TaskEditModel model)
+	    {
+	        if (!ModelState.IsValid)
+	        {
+	            return GenerateMessageNonValidModel();
+	        }
+
+            try
+            {
+                TaskService.UpdateTaskData(model.ToDto());
+            }
+            catch (Exception e)
+            {
+                return SendErrorMessage(e.Message);
+            }
+
+            return Json(new { Success = "Сохранено успешно" });
+	    }
+
+        [HttpGet]
 		public ActionResult GetXmlDocuments([DataSourceRequest]DataSourceRequest request, long taskId)
 		{
 			var importDataLogsDto = DataImporterService.GetCommonDataLog(OMTask.GetRegisterId(), taskId);
@@ -80,11 +100,23 @@ namespace KadOzenka.Web.Controllers
 			return Json(result.ToDataSourceResult(request));
 		}
 
-		#endregion
+	    public JsonResult GetRatingTours()
+	    {
+	        var tours = OMTour.Where(x => true).SelectAll().Execute()
+	            .Select(x => new SelectListItem
+	            {
+	                Value = x.Id.ToString(),
+	                Text = x.Year.ToString()
+	            });
 
-		#region Перенос атрибутов
+	        return Json(tours);
+	    }
 
-		[HttpGet]
+        #endregion
+
+        #region Перенос атрибутов
+
+        [HttpGet]
 		public ActionResult TransferAttributes(bool create = false)
 		{
 			var model = new ExportAttributesModel();

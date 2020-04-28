@@ -1,8 +1,10 @@
 ﻿@using ObjectModel.Directory
 @using Platform.Web.Models.CoreAttachment
-@model KadOzenka.Web.Models.Task.TaskModel
+@model KadOzenka.Web.Models.Task.TaskEditModel
 
-<form>
+@using (Html.BeginForm("TaskCard", "Task", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
     <ul id="ls_panelbar" class="panelbar">
         <li id="SectionMainData" data-expand>
             <span>Основные данные</span>
@@ -12,7 +14,7 @@
                         @Html.CustomLabelFor(m => m.CreationDate)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoDatePickerFor(m => m.CreationDate, format: "dd.MM.yyyy hh:mm:ss")
+                        @Html.KendoDatePickerFor(m => m.CreationDate, format: "dd.MM.yyyy hh:mm:ss", isReadonly: false)
                     </div>
                 </div>
                 <div class="form-group">
@@ -20,7 +22,7 @@
                         @Html.CustomLabelFor(m => m.EstimationDate)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoDatePickerFor(m => m.EstimationDate, format: "dd.MM.yyyy")
+                        @Html.KendoDatePickerFor(m => m.EstimationDate, format: "dd.MM.yyyy", isReadonly: false)
                     </div>
                 </div>
                 <div class="form-group">
@@ -28,13 +30,13 @@
                         @Html.CustomLabelFor(m => m.IncomingDocumentRegNumber)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoTextBoxFor(m => m.IncomingDocumentRegNumber)
+                        @Html.KendoTextBoxFor(m => m.IncomingDocumentRegNumber, isReadonly: false)
                     </div>
                     <div class="col-sm-2">
                         @Html.CustomLabelFor(m => m.IncomingDocumentDate)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoDatePickerFor(m => m.IncomingDocumentDate)
+                        @Html.KendoDatePickerFor(m => m.IncomingDocumentDate, isReadonly: false)
                     </div>
                 </div>
                 <div class="form-group">
@@ -42,7 +44,7 @@
                         @Html.CustomLabelFor(m => m.IncomingDocumentDescription)
                     </div>
                     <div class="col-sm-10">
-                        @Html.TextAreaFor(x => x.IncomingDocumentDescription, new { @class = "k-textbox", style = "resize: none;", @readonly = true, rows = 5, cols = 30 })
+                        @Html.TextAreaFor(x => x.IncomingDocumentDescription, new { @class = "k-textbox", style = "resize: none;", rows = 5, cols = 30 })
                     </div>
                 </div>
                 <div class="form-group">
@@ -50,23 +52,27 @@
                         @Html.CustomLabelFor(m => m.NoteType)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoEnumDropDownListFor(m => m.NoteType)
+                        @Html.KendoEnumDropDownListFor(m => m.NoteType, isReadonly: false, withoutNull: true)
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-2">
-                        @Html.CustomLabelFor(m => m.TourYear)
+                        @Html.CustomLabelFor(m => m.TourId)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoTextBoxFor(m => m.TourYear)
+                        @(Html.Kendo().DropDownListFor(m => m.TourId)
+                                      .DataTextField("Text")
+                                      .DataValueField("Value")
+                                      .DataSource(data => data.Read("GetRatingTours", "Task"))
+                        )
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-2">
-                        @Html.CustomLabelFor(m => m.Status)
+                        @Html.CustomLabelFor(m => m.StatusCode)
                     </div>
                     <div class="col-sm-4">
-                        @Html.KendoTextBoxFor(m => m.Status)
+                        @Html.KendoEnumDropDownListFor(m => m.StatusCode, isReadonly: false, withoutNull: true)
                     </div>
                 </div>
                 <div class="form-group">
@@ -82,6 +88,13 @@
                               .Min(0)
                               .Max(Model.PossibleTotalCountOfObjects ?? 0)
                               .Value(Model.CommonNumberOfImportedObjects ?? 0))
+                    </div>
+                </div>
+                <div class="form-group">
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
                     </div>
                 </div>
             </div>
@@ -107,35 +120,35 @@
             <div class="form-group col-sm-12">
                 <div style="padding: 1%;">
                     @(Html.Kendo().Grid<KadOzenka.Web.Models.DataImporterLayout.DataImporterLayoutDto>()
-                        .Name("Grid")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(p => p.Id)
-                                .ClientTemplate("<div style='text-align:center'> <a href='" +
-                                                Url.Action("Download", "DataImporterLayout", new { importId = "#= Id #", downloadResult = false, fileNameWithExtension = "#= TemplateFileName #" }, null) +
-                                                "' class='k-icon k-i-download'></a> </div>")
-                                .Title("Файл").Width(80);
-                            columns.Bound(p => p.DateCreated).Format("{0:dd.MM.yyyy hh:mm:ss}");
-                            columns.Bound(p => p.UserName);
-                            columns.Bound(p => p.TemplateFileName);
-                            columns.Template("<div class='progress'></div>").Title("Загрузка объектов");
-                            columns.Bound(p => p.NumberOfImportedObjects).Hidden();
-                            columns.Bound(p => p.TotalNumberOfObjects).Hidden();
-                        })
-                        .Navigatable()
-                        .Pageable()
-                        .Sortable()
-                        .Events(ev => ev.DataBound("dataBound"))
-                        .Scrollable(s => s.Height("auto"))
-                        .DataSource(s =>
-                            s.Ajax().Read(read => read.Action("GetXmlDocuments", "Task", new { taskId = Model.Id }).Type(HttpVerbs.Get)).PageSize(5)
-                        )
-                        )
+                                                  .Name("Grid")
+                                                  .Columns(columns =>
+                                                  {
+                                                      columns.Bound(p => p.Id)
+                                                          .ClientTemplate("<div style='text-align:center'> <a href='" +
+                                                                          Url.Action("Download", "DataImporterLayout", new { importId = "#= Id #", downloadResult = false, fileNameWithExtension = "#= TemplateFileName #" }, null) +
+                                                                          "' class='k-icon k-i-download'></a> </div>")
+                                                          .Title("Файл").Width(80);
+                                                      columns.Bound(p => p.DateCreated).Format("{0:dd.MM.yyyy hh:mm:ss}");
+                                                      columns.Bound(p => p.UserName);
+                                                      columns.Bound(p => p.TemplateFileName);
+                                                      columns.Template("<div class='progress'></div>").Title("Загрузка объектов");
+                                                      columns.Bound(p => p.NumberOfImportedObjects).Hidden();
+                                                      columns.Bound(p => p.TotalNumberOfObjects).Hidden();
+                                                  })
+                                                  .Navigatable()
+                                                  .Pageable()
+                                                  .Sortable()
+                                                  .Events(ev => ev.DataBound("dataBound"))
+                                                  .Scrollable(s => s.Height("auto"))
+                                                  .DataSource(s =>
+                                                      s.Ajax().Read(read => read.Action("GetXmlDocuments", "Task", new { taskId = Model.Id }).Type(HttpVerbs.Get)).PageSize(5)
+                                                  )
+                    )
                 </div>
             </div>
         </li>
     </ul>
-</form>
+}
 
 
 
@@ -145,6 +158,7 @@
         #ls_panelbar {
             width: 99% !important;
         }
+
         .hidden {
             display: none;
         }
@@ -153,14 +167,17 @@
             width: 97%;
             margin-bottom: 0;
         }
+
         .k-progressbar .k-state-selected {
             background-color: rgb(137, 215, 215);
             border-color: rgb(82, 163, 163);
         }
+
         .k-progressbar .k-complete {
             background-color: rgb(137, 215, 215);
             border-color: rgb(82, 163, 163);
         }
+
         .k-progressbar .k-progress-status-wrap {
             text-align: center;
         }
@@ -175,16 +192,16 @@
             width: 100%;
             /*min-height: 2.5em;*/
         }
-        #totalImportObjectsProgressBar .k-progress-status {
-            /*vertical-align: sub;*/
-        }
-       
+
+            #totalImportObjectsProgressBar .k-progress-status {
+                /*vertical-align: sub;*/
+            }
     </style>
 }
 
 @section scripts {
     <script src="~/js/jquery.fancybox.min.js"></script>
-
+    <script src="~/js/custom-validation.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -221,6 +238,29 @@
                     }
                 }
             }).data('kendoUpload');
+
+            $('#save').on('click',
+                function () {
+                    kendo.ui.progress($('body'), true);
+                    var form = $('form');
+                    var formObject = Common.Functions.FormToObject(form);
+
+                    $.post(form.attr('action'), formObject).done(function (response) {
+                        if (response.Errors) {
+                            var errors = getErrors(response.Errors);
+                            Common.ShowError(errors);
+                            return;
+                        }
+
+                        if (response.Success) {
+                            Common.ShowMessage(response.Success);
+                        }
+                    }).fail(function (response, textStatus, errorThrown) {
+                        Common.ShowError(response.responseText);
+                    }).always(function () {
+                        kendo.ui.progress($('body'), false);
+                    });
+                });
 
             updateFilesBlock();
         });
