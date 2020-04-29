@@ -9,8 +9,10 @@ using Core.Shared.Misc;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using ObjectModel.Declarations;
+using ObjectModel.Directory;
 using ObjectModel.Directory.Declarations;
 using ObjectModel.Directory.Sud;
+using ObjectModel.KO;
 using ObjectModel.Sud;
 
 namespace KadOzenka.Dal.Gadgets
@@ -298,6 +300,79 @@ namespace KadOzenka.Dal.Gadgets
 
             data.Rows.Add("/RegistersView/CommissionCost", "Перейти к комиссиям", _moveToPageSymbol);
             data.Rows.Add("/Commission/EditCommission", "Перейти добавлению комиссии", _moveToPageSymbol);
+
+            return data;
+        }
+
+        /// <summary>
+        /// Единицы оценки по типам
+        /// </summary>
+        /// <returns></returns>
+        public static DataTable KoUnitTypesWidget()
+        {
+            string linkParam = "Transition=1&20101800={PropertyType}";
+
+            var objects = OMUnit.Where(GetQuery("KoObjects"))
+                .GroupBy(x => x.PropertyType_Code)
+                .ExecuteSelect(x => new
+                {
+                    x.PropertyType_Code,
+                    Count = QSExtensions.Count<OMObject>(y => 1)
+                });
+
+            var data = new DataTable();
+
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.Stead.GetEnumCode()),
+                "Земельные участки",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Stead)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.Building.GetEnumCode()),
+                "Здания",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Building)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.Pllacement.GetEnumCode()),
+                "Помещения",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Pllacement)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.Construction.GetEnumCode()),
+                "Сооружения",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Construction)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.UncompletedBuilding.GetEnumCode()),
+                "Объекты незавершенного строительства",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.UncompletedBuilding)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.Company.GetEnumCode()),
+                "Предприятия как имущественные комплексы",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Company)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.UnitedPropertyComplex.GetEnumCode()),
+                "Единые недвижимые комплексы",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.UnitedPropertyComplex)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.Parking.GetEnumCode()),
+                "Машино-места",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Parking)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.Other.GetEnumCode()),
+                "Иные объекты недвижимости",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Other)?.Count ?? 0);
+
+            data.Rows.Add(
+                linkParam.Replace("{PropertyType}", PropertyTypes.OtherMore.GetEnumCode()),
+                "Сооружения, ОНС, ЕНК, и иные ОН",
+                objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.OtherMore)?.Count ?? 0);
 
             return data;
         }
