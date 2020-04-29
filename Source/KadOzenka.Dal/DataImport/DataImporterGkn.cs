@@ -1,5 +1,6 @@
 ﻿using Core.ErrorManagment;
 using Core.Main.FileStorages;
+using Core.Shared.Exceptions;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
@@ -177,6 +178,9 @@ namespace KadOzenka.Dal.DataImport
         }
         public static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
+            // Проверяем что значение уже было загружено ранее
+            if (CheckAttributeValueExists(idObject, idAttribute, otDate, idDocument)) return;
+
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
@@ -194,6 +198,9 @@ namespace KadOzenka.Dal.DataImport
 
         public static void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
+            // Проверяем что значение уже было загружено ранее
+            if (CheckAttributeValueExists(idObject, idAttribute, otDate, idDocument)) return;
+
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
@@ -209,8 +216,12 @@ namespace KadOzenka.Dal.DataImport
             attributeValue.Save();
         }
 
+
         public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
+            // Проверяем что значение уже было загружено ранее
+            if (CheckAttributeValueExists(idObject, idAttribute, otDate, idDocument)) return;
+
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
@@ -224,6 +235,23 @@ namespace KadOzenka.Dal.DataImport
                 DtValue = value,
             };
             attributeValue.Save();
+        }
+
+        /// <summary>
+        /// Нужно при повторных загрузках файла
+        /// </summary>
+        /// <param name="idAttribute"></param>
+        /// <param name="otDate"></param>
+        /// <param name="idDocument"></param>
+        private static bool CheckAttributeValueExists(long objectId, long idAttribute, DateTime otDate, long idDocument)
+        {
+            var attributeValue = GbuObjectService.CheckExistsValueFromAttributeIdPartition(objectId, idAttribute, otDate);
+
+            if (attributeValue == null) return false;
+
+            if (attributeValue.ChangeDocId == idDocument) return true;
+
+            throw ExceptionInitializer.Create("В БД уже есть значение данного атрибута источника Росреестр, сохраненного другим документом", $"Объект: {objectId}; Атрибут: {idAttribute}; От: {otDate.ToLongDateString()}; Документ в БД: {attributeValue.ChangeDocId}; Переданный документ: {idDocument}");
         }
 
         public static KoStatusRepeatCalc GetNewtatusRepeatCalc(List<ObjectModel.KO.OMUnit> units)

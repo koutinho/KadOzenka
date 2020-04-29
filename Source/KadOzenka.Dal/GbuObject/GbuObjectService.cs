@@ -19,6 +19,19 @@ namespace KadOzenka.Dal.GbuObject
     {
 		public static List<string> Postfixes = new List<string> { "TXT", "NUM", "DT" };
 
+		public static GbuObjectAttribute CheckExistsValueFromAttributeIdPartition(long objectId, long attributeId, DateTime otDate)
+		{
+			var attributeData = RegisterCache.GetAttributeData(attributeId);
+
+			var registerData = RegisterCache.GetRegisterData(attributeData.RegisterId);
+
+			if (registerData.AllpriPartitioning != Platform.Register.AllpriPartitioningType.AttributeId) return null;
+
+			var sql = $@"select A.change_date as ChangeDate, A.change_doc_id as ChangeDocId from {registerData.AllpriTable}_{attributeData.Id} A where A.objectId = {objectId} and A.Ot = {CrossDBSQL.ToDate(otDate)}";
+
+			return QSQuery.ExecuteSql<GbuObjectAttribute>(sql).FirstOrDefault();
+		}
+
 		public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null, List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null)
 		{
 			var getSources = sources;
