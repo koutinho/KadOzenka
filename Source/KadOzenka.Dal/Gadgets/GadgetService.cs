@@ -325,47 +325,47 @@ namespace KadOzenka.Dal.Gadgets
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.Stead.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.Stead).ToString()),
                 "Земельные участки",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Stead)?.Count ?? 0);
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.Building.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.Building).ToString()),
                 "Здания",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Building)?.Count ?? 0);
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.Pllacement.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.Pllacement).ToString()),
                 "Помещения",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Pllacement)?.Count ?? 0);
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.Construction.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.Construction).ToString()),
                 "Сооружения",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Construction)?.Count ?? 0);
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.UncompletedBuilding.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.UncompletedBuilding).ToString()),
                 "Объекты незавершенного строительства",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.UncompletedBuilding)?.Count ?? 0);
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.Company.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.Company).ToString()),
                 "Предприятия как имущественные комплексы",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Company)?.Count ?? 0);
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.UnitedPropertyComplex.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.UnitedPropertyComplex).ToString()),
                 "Единые недвижимые комплексы",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.UnitedPropertyComplex)?.Count ?? 0);
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.Parking.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.Parking).ToString()),
                 "Машино-места",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Parking)?.Count ?? 0);
 
             data.Rows.Add(
-                linkParam.Replace("{PropertyType}", PropertyTypes.Other.GetEnumCode()),
+                linkParam.Replace("{PropertyType}", ((long)PropertyTypes.Other).ToString()),
                 "Иные объекты недвижимости",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.Other)?.Count ?? 0);
 
