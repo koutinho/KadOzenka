@@ -1940,6 +1940,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+	/// <summary>
+	/// 259 Выгрузка отчетов
+	/// </summary>
+	public partial class OMReportHistory
+	{
+
+		public OMReportHistory()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMReportHistory(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

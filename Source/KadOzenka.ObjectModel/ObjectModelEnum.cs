@@ -2569,6 +2569,102 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+	/// <summary>
+	/// Вид отчета (216)
+	///</summary>
+	[ReferenceInfo(ReferenceId = 216)]
+	public enum KoReportType : long
+	{
+		/// <summary>
+		/// Значение отсутствует
+		/// </summary>
+		[Description("Значение отсутствует")]
+		[EnumCode("0")]
+		[ShortTitle("")]
+		None = 0,
+
+		/// <summary>
+		/// Выгрузка изменений (1068)
+		/// </summary>
+		[Description("Выгрузка изменений")]
+		[EnumCode("1068")]
+		[ShortTitle("")]
+		UnloadChange = 1068,
+		/// <summary>
+		/// Выгрузка истории по объектам (1069)
+		/// </summary>
+		[Description("Выгрузка истории по объектам")]
+		[EnumCode("1069")]
+		[ShortTitle("")]
+		UnloadHistory = 1069,
+		/// <summary>
+		/// Таблица 4. Группировка объектов недвижимости (1070)
+		/// </summary>
+		[Description("Таблица 4. Группировка объектов недвижимости")]
+		[EnumCode("1070")]
+		[ShortTitle("")]
+		UnloadTable04 = 1070,
+		/// <summary>
+		/// Таблица 5. Результаты моделирования (1071)
+		/// </summary>
+		[Description("Таблица 5. Результаты моделирования")]
+		[EnumCode("1071")]
+		[ShortTitle("")]
+		UnloadTable05 = 1071,
+		/// <summary>
+		/// Таблица 7. Обобщенные показатели по кадастровым районам (1072)
+		/// </summary>
+		[Description("Таблица 7. Обобщенные показатели по кадастровым районам")]
+		[EnumCode("1072")]
+		[ShortTitle("")]
+		UnloadTable07 = 1072,
+		/// <summary>
+		/// Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам (1073)
+		/// </summary>
+		[Description("Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам")]
+		[EnumCode("1073")]
+		[ShortTitle("")]
+		UnloadTable08 = 1073,
+		/// <summary>
+		/// Таблица 9. Результаты определения кадастровой стоимости (1074)
+		/// </summary>
+		[Description("Таблица 9. Результаты определения кадастровой стоимости")]
+		[EnumCode("1074")]
+		[ShortTitle("")]
+		UnloadTable09 = 1074,
+		/// <summary>
+		/// Таблица 10. Результаты государственной кадастровой оценки (1075)
+		/// </summary>
+		[Description("Таблица 10. Результаты государственной кадастровой оценки")]
+		[EnumCode("1075")]
+		[ShortTitle("")]
+		UnloadTable10 = 1075,
+		/// <summary>
+		/// Таблица 11. Сводные результаты по кадастровому району (1076)
+		/// </summary>
+		[Description("Таблица 11. Сводные результаты по кадастровому району")]
+		[EnumCode("1076")]
+		[ShortTitle("")]
+		UnloadTable11 = 1076,
+		/// <summary>
+		/// Выгрузка XML 1: КНомер, УПКСЗ, КСтоимость (1077)
+		/// </summary>
+		[Description("Выгрузка XML 1: КНомер, УПКСЗ, КСтоимость")]
+		[EnumCode("1077")]
+		[ShortTitle("")]
+		UnloadXML1 = 1077,
+		/// <summary>
+		/// Выгрузка XML 2 результатов Кадастровой оценки по группам (1078)
+		/// </summary>
+		[Description("Выгрузка XML 2 результатов Кадастровой оценки по группам")]
+		[EnumCode("1078")]
+		[ShortTitle("")]
+		UnloadXML2 = 1078,
+	}
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>

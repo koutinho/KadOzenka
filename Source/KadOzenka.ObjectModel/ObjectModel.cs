@@ -11422,6 +11422,268 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+	/// <summary>
+	/// 259 Выгрузка отчетов (KO_REPORT_HISTORY)
+	/// </summary>
+	[RegisterInfo(RegisterID = 259)]
+	[Serializable]
+	public partial class OMReportHistory : OMBaseClass<OMReportHistory>
+	{
+
+		private long _id;
+		/// <summary>
+		/// 25900100 Идентификатор (ID)
+		/// </summary>
+		[PrimaryKey(AttributeID = 25900100)]
+		public long Id
+		{
+			get
+			{
+				CheckPropertyInited("Id");
+				return _id;
+			}
+			set
+			{
+				_id = value;
+				NotifyPropertyChanged("Id");
+			}
+		}
+
+
+		private string _reporttype;
+		/// <summary>
+		/// 25900200 Тип отчета (REPORT_TYPE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900200)]
+		public string ReportType
+		{
+			get
+			{
+				CheckPropertyInited("ReportType");
+				return _reporttype;
+			}
+			set
+			{
+				_reporttype = value;
+				NotifyPropertyChanged("ReportType");
+			}
+		}
+
+
+		private KoReportType _reporttype_Code;
+		/// <summary>
+		/// 25900200 Тип отчета (справочный код) (REPORT_TYPE_CODE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900200)]
+		public KoReportType ReportType_Code
+		{
+			get
+			{
+				CheckPropertyInited("ReportType_Code");
+				return this._reporttype_Code;
+			}
+			set
+			{
+				string descr = value.GetEnumDescription();
+
+				if (string.IsNullOrEmpty(descr))
+				{
+					if (string.IsNullOrEmpty(_reporttype))
+					{
+						_reporttype = descr;
+					}
+				}
+				else
+				{
+					_reporttype = descr;
+				}
+
+				this._reporttype_Code = value;
+				NotifyPropertyChanged("ReportType");
+				NotifyPropertyChanged("ReportType_Code");
+			}
+		}
+
+
+		private DateTime? _createdate;
+		/// <summary>
+		/// 25900300 Дата создания (CREATE_DATE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900300)]
+		public DateTime? CreateDate
+		{
+			get
+			{
+				CheckPropertyInited("CreateDate");
+				return _createdate;
+			}
+			set
+			{
+				_createdate = value;
+				NotifyPropertyChanged("CreateDate");
+			}
+		}
+
+
+		private DateTime? _startdate;
+		/// <summary>
+		/// 25900400 Дата начала (START_DATE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900400)]
+		public DateTime? StartDate
+		{
+			get
+			{
+				CheckPropertyInited("StartDate");
+				return _startdate;
+			}
+			set
+			{
+				_startdate = value;
+				NotifyPropertyChanged("StartDate");
+			}
+		}
+
+
+		private DateTime? _enddate;
+		/// <summary>
+		/// 25900500 Дата окончания (END_DATE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900500)]
+		public DateTime? EndDate
+		{
+			get
+			{
+				CheckPropertyInited("EndDate");
+				return _enddate;
+			}
+			set
+			{
+				_enddate = value;
+				NotifyPropertyChanged("EndDate");
+			}
+		}
+
+
+		private string _status;
+		/// <summary>
+		/// 25900600 Статус (STATUS)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900600)]
+		public string Status
+		{
+			get
+			{
+				CheckPropertyInited("Status");
+				return _status;
+			}
+			set
+			{
+				_status = value;
+				NotifyPropertyChanged("Status");
+			}
+		}
+
+
+		private ObjectModel.Directory.Common.ImportStatus _status_Code;
+		/// <summary>
+		/// 25900600 Статус (справочный код) (STATUS_CODE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900600)]
+		public ObjectModel.Directory.Common.ImportStatus Status_Code
+		{
+			get
+			{
+				CheckPropertyInited("Status_Code");
+				return this._status_Code;
+			}
+			set
+			{
+				string descr = value.GetEnumDescription();
+
+				if (string.IsNullOrEmpty(descr))
+				{
+					if (string.IsNullOrEmpty(_status))
+					{
+						_status = descr;
+					}
+				}
+				else
+				{
+					_status = descr;
+				}
+
+				this._status_Code = value;
+				NotifyPropertyChanged("Status");
+				NotifyPropertyChanged("Status_Code");
+			}
+		}
+
+
+		private long? _userid;
+		/// <summary>
+		/// 25900700 Пользователь (USER_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900700)]
+		public long? UserId
+		{
+			get
+			{
+				CheckPropertyInited("UserId");
+				return _userid;
+			}
+			set
+			{
+				_userid = value;
+				NotifyPropertyChanged("UserId");
+			}
+		}
+
+
+		private string _parameters;
+		/// <summary>
+		/// 25900800 Параметры (PARAMETERS)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900800)]
+		public string Parameters
+		{
+			get
+			{
+				CheckPropertyInited("Parameters");
+				return _parameters;
+			}
+			set
+			{
+				_parameters = value;
+				NotifyPropertyChanged("Parameters");
+			}
+		}
+
+
+		private long? _progress;
+		/// <summary>
+		/// 25900900 Прогресс выполнения (PROGRESS)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 25900900)]
+		public long? Progress
+		{
+			get
+			{
+				CheckPropertyInited("Progress");
+				return _progress;
+			}
+			set
+			{
+				_progress = value;
+				NotifyPropertyChanged("Progress");
+			}
+		}
+
+	}
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
