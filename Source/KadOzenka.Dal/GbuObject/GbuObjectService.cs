@@ -11,7 +11,7 @@ using KadOzenka.Dal.GbuObject.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
-
+using Core.Register.RegisterEntities;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -99,9 +99,17 @@ where a.object_id = {objectId}";
 				}
 				else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
 				{
-					foreach (var attributeId in attributes.Where(x => RegisterCache.GetAttributeData(x).RegisterId == registerId))
+					List<RegisterAttribute> attributesData;
+
+					if(attributes == null) attributesData = RegisterCache.RegisterAttributes.Values.ToList().Where(x => x.RegisterId == registerId).ToList();
+					else attributesData = RegisterCache.RegisterAttributes.Values.ToList().Where(x => attributes.Contains(x.Id)).ToList();
+
+					foreach (var attributeData in attributesData)
 					{
-						var attributeData = RegisterCache.GetAttributeData(attributeId);
+						if(attributeData.IsPrimaryKey)
+						{
+							continue;
+						}
 
 						var propName = "StringValue";
 
@@ -125,7 +133,7 @@ where a.object_id = {objectId}";
 select 
 	a.id,
 	a.object_id as ObjectId,
-	{attributeId} as AttributeId,
+	{attributeData.Id} as AttributeId,
 	a.Ot,
 	a.S,
 	{(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : String.Empty)}
@@ -143,7 +151,7 @@ select
 	td.description as DocType,
 	td.create_date as DocDate
 
-from {registerData.AllpriTable}_{attributeId} a
+from {registerData.AllpriTable}_{attributeData.Id} a
 left join core_srd_user u on u.id = a.change_user_id
 left join core_td_instance td on td.id = a.change_doc_id
 where a.object_id = {objectId}";
@@ -153,7 +161,7 @@ where a.object_id = {objectId}";
 							string dateSFilter = dateS == null ? String.Empty : $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
 							string dateOtFilter = dateOt == null ? String.Empty : $"AND [A].Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
 
-							sql = $"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeId} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
+							sql = $"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeData.Id} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
 						}
 
 						result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
@@ -193,14 +201,29 @@ where a.object_id = {objectId}";
 				{
 					long valuesCount = 0;
 
-					foreach (var postfix in Postfixes)
+					if(register.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
 					{
-						string sql = $"select count(1) as ValuesCount from {register.AllpriTable}_{postfix} a where a.object_id = {objectId}";
+						foreach (var attributeData in RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == register.Id && x.IsPrimaryKey != true))
+						{
+							string sql = $"select count(1) as ValuesCount from {register.AllpriTable}_{attributeData.Id} a where a.object_id = {objectId}";
 
-						valuesCount += QSQuery.ExecuteSql(sql, () => new {
-							ValuesCount = default(long)
-						}).FirstOrDefault()?.ValuesCount ?? 0;
+							valuesCount += QSQuery.ExecuteSql(sql, () => new {
+								ValuesCount = default(long)
+							}).FirstOrDefault()?.ValuesCount ?? 0;
+						}
 					}
+					else
+					{
+						foreach (var postfix in Postfixes)
+						{
+							string sql = $"select count(1) as ValuesCount from {register.AllpriTable}_{postfix} a where a.object_id = {objectId}";
+
+							valuesCount += QSQuery.ExecuteSql(sql, () => new {
+								ValuesCount = default(long)
+							}).FirstOrDefault()?.ValuesCount ?? 0;
+						}
+					}
+
 
 					if (valuesCount == 0) continue;
 
