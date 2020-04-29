@@ -24,7 +24,7 @@
                 <th data-field="NAME">Наименование показателя</th>
                 <th data-field="TEXT_VALUE">Значение</th>
                 <th data-field="S">Дата С</th>
-                <th data-field="PO">Дата От</th>
+                <th data-field="OT">Дата От</th>
                 <th data-field="PO">Дата создания</th>
                 <th data-field="USER">Пользователь</th>
                 <th data-field="DOCUMENT">Документ</th>
@@ -49,6 +49,7 @@
     <script>
         $(function () {
             $('#Grid').kendoGrid({
+                sortable: true,
                 selectable: true,
                 resizable: true,
                 scrollable: true

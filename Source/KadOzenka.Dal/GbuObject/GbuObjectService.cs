@@ -25,9 +25,15 @@ namespace KadOzenka.Dal.GbuObject
 
 			if(getSources == null)
 			{
+				List<int> registerIds = attributes != null && attributes.Count > 0? 
+					RegisterCache.RegisterAttributes.Values.Where(x => attributes.Contains(x.Id)).Select(x => x.RegisterId).ToList() :
+					null;
+
 				var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
 
-				getSources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id).Select(x => (long)x.Id).ToList();
+				getSources = RegisterCache.Registers.Values.Where(x => x.QuantTable == mainRegister.QuantTable && 
+					x.Id != mainRegister.Id && 
+					(registerIds == null || registerIds.Contains(x.Id))).Select(x => (long)x.Id).ToList();
 			}
 
 			var result = new List<GbuObjectAttribute>();
@@ -102,7 +108,7 @@ where a.object_id = {objectId}";
 					List<RegisterAttribute> attributesData;
 
 					if(attributes == null) attributesData = RegisterCache.RegisterAttributes.Values.ToList().Where(x => x.RegisterId == registerId).ToList();
-					else attributesData = RegisterCache.RegisterAttributes.Values.ToList().Where(x => attributes.Contains(x.Id)).ToList();
+					else attributesData = RegisterCache.RegisterAttributes.Values.ToList().Where(x => attributes.Contains(x.Id) && x.RegisterId == registerId).ToList();
 
 					foreach (var attributeData in attributesData)
 					{
@@ -246,12 +252,27 @@ where a.object_id = {objectId}";
 
 				var attributesValuesCount = new List<AttributeValuesCount>();
 
-				foreach (var postfix in Postfixes)
+				if (parentRegisterData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
 				{
-					string sql = $"select a.attribute_id as AttributeId, count(1) as ValuesCount from {parentRegisterData.AllpriTable}_{postfix} a where a.object_id = {objectId} group by a.attribute_id";
+					foreach (var attributeData in RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == parentRegisterData.Id && x.IsPrimaryKey != true))
+					{
+						string sql = $"select {attributeData.Id} as AttributeId, count(1) as ValuesCount from {parentRegisterData.AllpriTable}_{attributeData.Id} a where a.object_id = {objectId}";
 
-					attributesValuesCount.AddRange(QSQuery.ExecuteSql<AttributeValuesCount>(sql));
+						attributesValuesCount.AddRange(QSQuery.ExecuteSql<AttributeValuesCount>(sql));
+					}
 				}
+				else
+				{
+					foreach (var postfix in Postfixes)
+					{
+						string sql = $"select a.attribute_id as AttributeId, count(1) as ValuesCount from {parentRegisterData.AllpriTable}_{postfix} a where a.object_id = {objectId} group by a.attribute_id";
+
+						attributesValuesCount.AddRange(QSQuery.ExecuteSql<AttributeValuesCount>(sql));
+					}
+				}
+
+
+					
 				
 				foreach (var attributeValueCount in attributesValuesCount)
 				{

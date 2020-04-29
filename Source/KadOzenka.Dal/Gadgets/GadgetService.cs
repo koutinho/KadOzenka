@@ -210,7 +210,7 @@ namespace KadOzenka.Dal.Gadgets
             var data = new DataTable();
             data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            data.Rows.Add("/RegistersView/GbuObjects", "Объекты недвижимости", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/GbuObjects", "Реестр объектов недвижимости", _moveToPageSymbol);
             data.Rows.Add("/GbuObject/Harmonization", "Выполнить гармонизацию", _moveToPageSymbol);
             data.Rows.Add("/GbuObject/HarmonizationCOD", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
             data.Rows.Add("~/GbuObject/GroupingObject", "Выполнить нормализацию", _moveToPageSymbol);
