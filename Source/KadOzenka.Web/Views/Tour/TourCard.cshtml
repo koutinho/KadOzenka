@@ -84,6 +84,7 @@
     </div>
 </div>
 
+<script src="~/js/common-modals.js"></script>
 <script src="~/js/groups.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -322,20 +323,6 @@
                 Common.UI.CloseWindow('Dashboard', window.parent);
             }
         });
-    }
-
-
-    function ShowModal(modal, width, height) {
-        if (!modal.data("kendoWindow")) {
-            modal.kendoWindow({
-                visible: false,
-                resizable: true,
-                modal: true,
-                width: width,
-                height: height
-            }).data("kendoWindow").center();
-        }
-        modal.data("kendoWindow").open();
     }
 
 
