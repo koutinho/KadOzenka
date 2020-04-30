@@ -1358,6 +1358,10 @@ input#addressInput:focus {
 	background-color: #e6e63cc2;
 }
 
+.dropdown-main-menu .fa-briefcase {
+    background-color: #263248;
+}
+
 /* для старого дизайна */
 [id^=SearchWindowToolBar-] {
     border-radius: 0;
