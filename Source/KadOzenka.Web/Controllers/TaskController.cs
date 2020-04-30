@@ -153,9 +153,13 @@ namespace KadOzenka.Web.Controllers
 			return Json(models);
 		}
 
-		public JsonResult GetKoAttributes(long tourId, int objectType)
+		public JsonResult GetKoAttributes(long tourId, int objectType, List<long> exceptedAttributes)
 		{
 			var koAttributes = TourFactorService.GetTourAttributes(tourId, (ObjectType)objectType);
+			if (exceptedAttributes != null && exceptedAttributes.Count > 0)
+			{
+				koAttributes = koAttributes.Where(x => !exceptedAttributes.Contains(x.Id)).ToList();
+			}
 
 			var models = koAttributes.Select(x => new
 			{

@@ -15,6 +15,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
+		public ActionResult ModelCard(long modelId)
+		{
+			return View();
+		}
+
+		[HttpGet]
 		public ActionResult EditModel()
 		{
 			return View();
@@ -34,6 +40,12 @@ namespace KadOzenka.Web.Controllers
 			ModelingService.AddModel(modelDto);
 
 			return Json(new {Message = "Сохранение выполненно"});
+		}
+
+		[HttpPost]
+		public void Calculate(ModelingModel model)
+		{
+
 		}
 	}
 }

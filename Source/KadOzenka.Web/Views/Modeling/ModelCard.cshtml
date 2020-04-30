@@ -1,24 +1,80 @@
-﻿@model KadOzenka.Web.Models.Modeling.ModelingModel
-
-<div class="form-horizontal col-sm-12" style="margin-top: 10px">
-	<div class="form-group">
-		<div class="col-sm-3">
-			@Html.CustomLabel("Тур")
-		</div>
-		<div class="col-sm-9">
-			@(Html.Kendo().DropDownList()
-						.Name("RatingTour")
-						.DataTextField("Text")
-						.DataValueField("Value")
-			)
+﻿@using KadOzenka.Dal.Oks
+@model KadOzenka.Web.Models.Modeling.ModelingModel
+<!-- Модальное окно для добавления КО аттрибута -->
+<div id="attributeAdditionModal" style="display: none;  padding: 2%;">
+	<div class="form-horizontal col-sm-12">
+		<div class="form-group">
+			<div class="col-sm-12">
+				<div id="attribute"></div>
+			</div>
 		</div>
 	</div>
 </div>
 
-<script>
-    $(document).ready(function () {
+<!-- Модальное окно для добавления справочника -->
+<div id="dictionaryAdditionModal" style="display: none;  padding: 2%;">
+	<div class="form-horizontal col-sm-12">
+		<div class="form-group">
+			<div class="col-sm-12">
+				<div id="dictionary"></div>
+			</div>
+		</div>
+	</div>
+</div>
 
-	    $('[name="RatingTour"]').kendoDropDownList({
+@using (Html.BeginForm("Calculate", "Modeling", FormMethod.Post, new { id = "calculateModelForm" }))
+{
+	<div style="padding: 2%">
+		<div id="mainToolbar"></div>
+		<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.PropertyMarketSegment)
+				</div>
+				<div class="col-sm-9">
+					@Html.KendoEnumDropDownListFor(x => x.PropertyMarketSegment, isReadonly: false)
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.CustomLabelFor(x => x.TourId)
+				</div>
+				<div class="col-sm-9">
+					@(Html.Kendo().DropDownList()
+								.Name("tour")
+								.DataTextField("Text")
+								.DataValueField("Value"))
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2">
+					@Html.LabelFor(x => x.ObjectType)
+				</div>
+				<div class="col-sm-9">
+					@Html.Kendo().RadioButtonFor(x => x.ObjectType).Label(ObjectType.Oks.GetEnumDescription()).Value((int)ObjectType.Oks)
+					@Html.Kendo().RadioButtonFor(x => x.ObjectType).Label(ObjectType.ZU.GetEnumDescription()).Value((int)ObjectType.ZU).Checked(true).HtmlAttributes(new { style = "padding-left:1%;" })
+				</div>
+			</div>
+			<div class="form-group">
+				<div style="padding-top: 2%;">
+					<div id="attributesToolbar"></div>
+				</div>
+				<div style="display: flex;">
+					<div style="align-items: stretch">
+						<div id="grid"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+
+<script src="~/js/common-modals.js"></script>
+<script>
+	$(document).ready(function () {
+
+	    $('#tour').kendoDropDownList({
 		    dataTextField: 'Text',
 		    dataValueField: 'Value',
 		    dataSource:
@@ -32,7 +88,240 @@
 		    }
 	    });
 
-    });
+	    $('#mainToolbar').kendoToolBar({
+		    items: [
+			    {
+				    type: 'button',
+				    text: '',
+				    attributes: { title: "Сохранить" },
+				    icon: 'save',
+				    click: calculate
+			    }
+		    ]
+	    });
+	    $('#attributesToolbar').kendoToolBar({
+		    items: [
+			    {
+				    type: 'button',
+				    text: '',
+				    attributes: { title: "Добавить" },
+				    icon: 'add',
+				    click: addAttribute
+			    },
+			    {
+				    type: 'button',
+				    id: 'deleteAttributeBtn',
+				    className: "k-state-disabled",
+				    text: '',
+				    attributes: { title: "Удалить" },
+				    icon: 'delete',
+				    click: deleteAttribute
+			    }
+		    ]
+	    });
+	    $('#deleteAttributeBtn').addClass('k-state-disabled');
+	    $(".k-toolbar [title]").kendoTooltip({
+		    position: "top"
+	    });
+
+	    $('#grid').kendoGrid({
+		    dataSource: {
+			    pageSize: 10,
+			    schema: {
+				    model: {
+					    id: "AttributeId",
+					    fields: {
+						    AttributeName: { type: "string" },
+						    IsNormalization: { type: "boolean" },
+						    Dictionary: { type: "string" }
+					    }
+				    }
+			    }
+		    },
+		    columns: [
+			    {
+				    field: 'AttributeId',
+				    hidden: true
+				},
+			    {
+				    field: 'DictionaryId',
+				    hidden: true
+			    },
+			    {
+				    field: 'AttributeName',
+				    title: 'Аттрибут'
+			    },
+			    {
+				    field: 'IsNormalization',
+				    title: 'Нормализация',
+				    template:
+					    '<input type="checkbox" #= IsNormalization ? \'checked="checked"\' : "" # class="chkbx" />'
+			    },
+			    {
+				    field: 'Dictionary',
+				    title: 'Справочник'
+			    }
+		    ],
+		    change: onRowSelect,
+		    width: '100%',
+		    scrollable: true,
+		    selectable: true
+	    });
+
+	    //todo remove
+	    $('#grid').data("kendoGrid").dataSource.add({ AttributeId: 0, AttributeName: "test", IsNormalization: false });
+
+	    $("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
+	});
+
+
+
+	function calculate() {
+		var attributeIds = getAttributeIdsFromGrid();
+		var form = $('#calculateModelForm');
+		var formObject = Common.Functions.FormToObject(form);
+		formObject['TourId'] = $('#tour').val();
+		formObject['Attributes'] = attributeIds;
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: 'POST',
+			url: form.attr('action'),
+			data: formObject,
+			success: function(response) {
+				//Common.ShowMessage(response.Message);
+			},
+			error: function(response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function() {
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
+
+
+	function getAttributeIdsFromGrid() {
+		var rows = $("#grid").data("kendoGrid").dataSource.data();
+		var attributeIds = [];
+		rows.forEach(function (row) {
+			attributeIds.push({ AttributeId: row.AttributeId, DictionaryId: row.DictionaryId });
+		});
+		return attributeIds;
+	}
+
+
+	function addAttribute() {
+		var modal = $("#attributeAdditionModal");
+		ShowModal(modal, '50%', '25%');
+		initAttributes();
+	}
+
+
+	function deleteAttribute() {
+		var grid = $("#grid").data("kendoGrid");
+		var row = grid.select();
+		if (row.length > 0) {
+			grid.removeRow(row);
+		}
+	}
+
+
+	function initAttributes() {
+		var tourId = $('#tour').val();
+		var objectType = $('input[name="ObjectType"]:checked').val();
+		var alreadySelectedAttributeIds = getAttributeIdsFromGrid().map(function(x) {
+			return x.AttributeId;
+		});
+		var dataSource = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: '@Url.Action("GetKoAttributes", "Task")',
+					data: { tourId: tourId, objectType: objectType, exceptedAttributes: alreadySelectedAttributeIds},
+					dataType: 'json',
+					traditional: true
+				}
+			}
+		});
+		var attribute = $('#attribute').data("kendoDropDownList");
+		if (attribute) {
+			attribute.setDataSource(dataSource);
+			attribute.value(-1);
+		}
+		else {
+			$("#attribute").kendoDropDownList({
+				dataTextField: 'Text',
+				dataValueField: 'Value',
+				optionLabel: " ",
+				dataSource: dataSource,
+				change: addAttributeToGrid
+			});
+		}
+	}
+
+
+	function addAttributeToGrid() {
+		var modal = $('#attributeAdditionModal');
+		modal.data("kendoWindow").close();
+		var list = $('#attribute').data("kendoDropDownList");
+		var attributeId = list.value();
+		var attributeName = list.text();
+		$('#grid').data("kendoGrid").dataSource.add({ AttributeId: attributeId, AttributeName: attributeName, IsNormalization: false });
+		onRowSelect();
+	}
+
+
+	function onNormalizationChecked(e) {
+		var grid = $("#grid").data("kendoGrid");
+		var dataItem = grid.dataItem($(e.target).closest("tr"));
+		dataItem.IsNormalization = this.checked;
+		if (dataItem.IsNormalization) {
+			var modal = $("#dictionaryAdditionModal");
+			ShowModal(modal, '50%', '25%');
+			initDictionaries();
+		}
+	}
+
+
+	function initDictionaries() {
+		var dataSource = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: '@Url.Action("GetDictionaries", "ExpressScore")',
+					dataType: 'json'
+				}
+			}
+		});
+		var dictionary = $('#dictionary').data("kendoDropDownList");
+		if (dictionary) {
+			dictionary.setDataSource(dataSource);
+			dictionary.value(-1);
+		}
+		else {
+			$("#dictionary").kendoDropDownList({
+				dataTextField: 'Text',
+				dataValueField: 'Value',
+				optionLabel: " ",
+				dataSource: dataSource,
+				//change: addDictionaryToGrid
+			});
+		}
+	}
+
+
+	function onRowSelect() {
+		var row = getSelectedRowInGrid();
+		if (row.length === 0) {
+			$('#deleteAttributeBtn').addClass('k-state-disabled');
+		}
+		else {
+			$('#deleteAttributeBtn').removeClass('k-state-disabled');
+		}
+	}
+
+
+	function getSelectedRowInGrid() {
+		var grid = $("#grid").data("kendoGrid");
+		return grid.select();
+	}
 
 </script>
-
