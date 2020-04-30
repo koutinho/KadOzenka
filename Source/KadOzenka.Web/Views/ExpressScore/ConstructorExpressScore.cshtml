@@ -16,12 +16,14 @@
 	#SegmentList {
 		height: 100%
 	}
+	#SegmentCard {
+		width: 100%
+	}
 </style>
-<div class="form-horizontal col-sm-12">
-	@(Html.Kendo().Splitter()
+@(Html.Kendo().Splitter()
 		.Name("splitter")
 		.Orientation(SplitterOrientation.Horizontal)
-		//.HtmlAttributes(new { style="height: 100%"})
+		.HtmlAttributes(new { style="height: 98%"})
 		.Panes(p =>
 		{
 			p.Add().Scrollable(false).Collapsed(false).Content("<div id='ListView'>"
@@ -35,9 +37,10 @@
 																   .ToHtmlString() +
 															   "</div>").Size("400px");
 
-			p.Add().Scrollable(false).Collapsed(false).Content("<div id='SegmentCard'></div>");
+			p.Add().Scrollable(false).Collapsed(false).Content("<div id='SegmentCard'>"
+															   + 
+															   "</div>");
 		}))
-</div>
 
 <script type="text/x-kendo-tmpl" id="templateSegment">
 	<div class='item'>#:Text#</div>
@@ -45,15 +48,41 @@
 
 <script type="text/javascript">
 
+	function handlerChangeTour() {
+		$('#FactorRegisterId').data('kendoDropDownList') && $('#FactorRegisterId').data('kendoDropDownList').dataSource.read();
+	}
+
+	function getDataRegister() {
+		return {
+			tourId: $('#TourId').data('kendoDropDownList') && $('#TourId').data('kendoDropDownList').value()
+		}
+	}
+
+	function handlerChangeRegister() {
+		$('[id ^= "AttributeId"]').each(function() {
+			$(this).data('kendoDropDownList') && $(this).data('kendoDropDownList').dataSource.read();
+		});
+	}
+
+	function getDataAttribute() {
+		return {
+			registerId: $('#FactorRegisterId').data('kendoDropDownList') && $('#FactorRegisterId').data('kendoDropDownList').value()
+		}
+	}
+
 	function handlerChangeSegment(e) {
 		var index = this.select().index(),
 			dataItem = this.dataSource.view()[index];
 		if (dataItem.Value) {
+			kendo.ui.progress($('body'), true);
 			getSettingsForSegment(dataItem.Value);
 		}
 	}
 
 	function getSettingsForSegment(value) {
-		var url = "@Url.Action("SettingsExpressScore", "ExpressScore")";
+		var url = "@Url.Action("SettingsExpressScore", "ExpressScore")" + `?segmentId=${value}`;
+		$('#SegmentCard').load(url, null, function() {
+			kendo.ui.progress($('body'), false);
+		});
 	}
 </script>

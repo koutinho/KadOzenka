@@ -1,0 +1,56 @@
+﻿@model KadOzenka.Dal.ExpressScore.Dto.ComplexCostFactor
+
+<div class="form-group"></div>
+<fieldset class="complex-factor">
+	<div class="form-group">
+		<div class="col-sm-12">
+			<span class="k-icon k-i-close remove" style="float: right; margin-top: 5px;"></span>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Имя фактора", true)
+		</div>
+		<div class="col-sm-4">
+			@Html.Kendo().TextBox().Name($"Name-{ViewBag.Count}")
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Коэф. влияния", true)
+		</div>
+		<div class="col-sm-4">
+			@Html.Kendo().NumericTextBox().Name($"Coefficient-{ViewBag.Count}").Decimals(5).Round(false).Spinners(false)
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Имя атрибута", true)
+		</div>
+		<div class="col-sm-4">
+			@(Html.Kendo().DropDownListFor(m => m.AttributeId)
+						.DataTextField("Text")
+						.DataValueField("Value")
+						.Filter(FilterType.Contains)
+						.DataSource(source =>
+						{
+							source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
+						})
+						.HtmlAttributes(new { name = $"AttributeId-{ViewBag.Count}", id = $"AttributeId-{ViewBag.Count}" })
+			)
+		</div>
+		<div class="col-sm-2">
+			@Html.CustomLabelFor("Словарь")
+		</div>
+		<div class="col-sm-4">
+			@(Html.Kendo().DropDownListFor(m => m.DictionaryId)
+						.DataTextField("Text")
+						.DataValueField("Value")
+						.Filter(FilterType.Contains)
+						.DataSource(source =>
+						{
+							source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+						})
+						.HtmlAttributes(new { name = $"DictionaryId-{ViewBag.Count}", id = $"DictionaryId-{ViewBag.Count}" })
+			)
+		</div>
+	</div>
+</fieldset>

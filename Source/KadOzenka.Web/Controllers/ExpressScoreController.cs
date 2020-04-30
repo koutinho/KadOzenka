@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CIPJS.Models.ExpressScore;
 using Core.Register;
+using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
@@ -12,6 +13,7 @@ using KadOzenka.Web.Models.MarketObject;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory;
+using ObjectModel.Es;
 using ObjectModel.ES;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -241,15 +243,59 @@ namespace KadOzenka.Web.Controllers
 			return View();
 		}
 
-		public JsonResult GetListSegments()
+		public ActionResult SettingsExpressScore(int segmentId)
 		{
-			List<SelectListItem> segments = new List<SelectListItem>();
+			var model = new SettingsExpressScoreViewModel();
+			var esSetting = OMSettingsParams.Where(x => x.SegmentType_Code == (MarketSegment)segmentId).SelectAll()
+				.ExecuteFirstOrDefault();
 
-			foreach (var segment in  Enum.GetNames(typeof(MarketSegment)))
+			if (esSetting == null)
 			{
-				
+				esSetting = new OMSettingsParams();
 			}
-			return Json(segments);
+			model.TourId = esSetting.TourId;
+			model.FactorRegisterId = esSetting.Registerid;
+			model.CostFactors = esSetting.CostFacrors?.DeserializeFromXml<CostFactorsDto>() ?? new CostFactorsDto
+			{
+				ComplexCostFactors = new List<ComplexCostFactor>(),
+				SimpleCostFactors = new List<SimpleCostFactor>()
+			};
+			model.SegmentType = (MarketSegment) segmentId;
+			return PartialView("Partials/SettingsExpressScore", model);
+		}
+
+		[HttpPost]
+		public JsonResult SettingsExpressScore(SettingsExpressScoreViewModel viewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+			var setting = OMSettingsParams.Where(x => x.SegmentType_Code == viewModel.SegmentType.GetValueOrDefault()).SelectAll()
+				.ExecuteFirstOrDefault();
+
+			if (setting == null)
+			{
+				setting = new OMSettingsParams
+				{
+					SegmentType_Code = viewModel.SegmentType.GetValueOrDefault(),
+					CostFacrors = viewModel.CostFactors.SerializeToXml(),
+					Registerid = viewModel.FactorRegisterId.GetValueOrDefault(),
+					TourId = viewModel.TourId.GetValueOrDefault()
+				};
+			}
+			else
+			{
+				setting.CostFacrors = viewModel.CostFactors.SerializeToXml();
+				setting.Registerid = viewModel.FactorRegisterId.GetValueOrDefault();
+				setting.TourId = viewModel.TourId.GetValueOrDefault();
+			}
+
+			
+
+			setting.Save();
+
+			return Json(new {});
 		}
 
 		public JsonResult GetDictionaries()
@@ -269,7 +315,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var attributes =	RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == registerId).Select(x => new
 			{
-				Text = x.Description,
+				Text = x.Name,
 				Value = x.Id
 			}).ToList();
 
@@ -278,19 +324,32 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetFactorRegisters(int tourId)
 		{
-			var registerFactors = OMTourFactorRegister.Where(x => x.TourId == tourId).SelectAll().Execute().Select(x => new
+			var registerFactors = OMTourFactorRegister.Where(x => x.TourId == tourId).SelectAll().Execute().Select(x => new SelectListItem
 			{
 				Text = RegisterCache.Registers.Values.FirstOrDefault(y => y.Id == x.RegisterId)?.Description,
-				Value = x.RegisterId
+				Value = x.RegisterId.ToString()
+			}).GroupBy(x => x.Value).Select(x => new SelectListItem
+			{
+				Value = x.Key,
+				Text = x.Select(y => y.Text).FirstOrDefault()
 			}).ToList();
 			return Json(registerFactors);
 		}
 
-		public ActionResult SettingsExpressScore(int segmentId)
+		public ActionResult AddNewComplexCard(int count)
 		{
-			var model = new SettingsExpressScoreViewModel();
-			return View(model);
+			ViewBag.Count = count;
+			return PartialView("Partials/PartialComplexFactorCard", new ComplexCostFactor());
 		}
+
+		public ActionResult AddNewSimpleCard(int count)
+		{
+			ViewBag.Count = count;
+			return PartialView("Partials/PartialSimpleFactorCard", new ComplexCostFactor());
+		}
+
+
+
 
 		#endregion
 

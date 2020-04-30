@@ -1,0 +1,369 @@
+﻿@model KadOzenka.Web.Models.ExpressScore.SettingsExpressScoreViewModel
+
+
+<style>
+	.form-horizontal {
+		padding-left: 0;
+	}
+	.static-nav {
+		position: absolute !important;
+		margin-left: 84% !important;
+		width: 16% !important;
+	}
+
+	#toolbar {
+		position: absolute;
+		bottom: 20px;
+		width: 100%;
+	}
+	fieldset.complex-factor, fieldset.required-param{
+		margin-left: 5px;
+		margin-right: 5px;
+	}
+	.hidden {
+		display: none
+	}
+	#ls_panelbar {
+		 height: 99vh;
+		overflow-y:scroll;
+	}
+	.remove:hover {
+		cursor: pointer;
+	}
+	/*#RequiredParam span.k-header {
+		display: none;
+	}*/
+</style>
+@using (Html.BeginForm("SettingsExpressScore", "ExpressScore", FormMethod.Post, htmlAttributes: new { @id = "settingsForm" }))
+{
+<div class="form-horizontal col-sm-12">
+	<ul id="ls_panelbar" class="panelbar">
+		<li id="SectionRegister" data-expand>
+			<div class="form-group" style="margin-top: 10px"></div>
+			<div class="form-group">
+				<div class="col-sm-3">
+					@Html.CustomLabelFor("Тур оценки", true)
+				</div>
+				<div class="col-sm-9">
+					@(Html.Kendo().DropDownListFor(m => m.TourId)
+										.DataTextField("Text")
+										.DataValueField("Value")
+										.Filter(FilterType.Contains)
+										.DataSource(source =>
+										{
+											source.Read("GetRatingTours", "Tour");
+										}).Events(
+											e =>
+											{
+												e.Cascade("handlerChangeTour");
+											}))
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-3">
+					@Html.CustomLabelFor("Реестр данных", true)
+				</div>
+				<div class="col-sm-9">
+					@(Html.Kendo().DropDownListFor(m => m.FactorRegisterId)
+										.DataTextField("Text")
+										.DataValueField("Value")
+										.DataSource(source =>
+										{
+											source.Read(a => a.Action("GetFactorRegisters", "ExpressScore").Data("getDataRegister"));
+										}).Events(
+											e =>
+											{
+												e.Cascade("handlerChangeRegister");
+											})
+					)
+				</div>
+			</div>
+		</li>
+		@*<li id="RequiredParam" data-expand>
+				<fieldset class="required-param">
+					<legend>Обязательные параметры</legend>
+				</fieldset>
+
+			</li>*@
+		<li id="StaticFactor" data-expand>
+			<fieldset class="required-param">
+				<legend>Статичные коэффициенты</legend>
+				@{
+					int i = 0;
+					foreach (var factor in Model.CostFactors.SimpleCostFactors)
+					{
+						<div class="for-remove" id="simple-factor-@i">
+							<div class="form-group">
+								<div class="col-sm-2">
+									@Html.CustomLabelFor("Имя коэф.", true)
+								</div>
+								<div class="col-sm-4">
+									@Html.Kendo().TextBox().Name($"Name-simple-{ViewBag.Count}").Value(Model.CostFactors.SimpleCostFactors[i].Name)
+								</div>
+								<div class="col-sm-2">
+									@Html.CustomLabelFor("Коэф.", true)
+								</div>
+								<div class="col-sm-2">
+									@Html.Kendo().NumericTextBox().Name($"Coefficient-simple-{ViewBag.Count}").Spinners(false).Decimals(5).Value((double)Model.CostFactors.SimpleCostFactors[i].Coefficient.GetValueOrDefault())
+								</div>
+								<div class="col-sm-2">
+									<a class="k-button-icon k-button remove-simple" style="float: right">
+										<span class="k-i-close k-icon"></span>
+									</a>
+								</div>
+							</div>
+						</div>
+					}
+				}
+				<div class="wrapper-simple"></div>
+				<div class="form-group">
+					<div class="col-sm-2">
+						<a class="k-button-icon k-button" id="addSimpleFactor">
+							<span class="k-icon k-i-plus"></span>
+						</a>
+					</div>
+				</div>
+			</fieldset>
+		</li>
+
+		@{
+			i = 0;
+			foreach (var item in Model.CostFactors.ComplexCostFactors)
+			{
+		<li id="factor-@i">
+			<fieldset class="complex-factor">
+					<div class="form-group">
+						<div class="col-sm-12">
+							<span class="k-icon k-i-close remove" style="float: right; margin-top: 5px;"></span>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-2">
+							@Html.CustomLabelFor("Имя фактора", true)
+						</div>
+						<div class="col-sm-4">
+							@Html.Kendo().TextBox().Name($"Name-{i}").Value(Model.CostFactors.ComplexCostFactors[i].Name)
+						</div>
+						<div class="col-sm-2">
+							@Html.CustomLabelFor("Коэф. влияния", true)
+						</div>
+						<div class="col-sm-4">
+							@Html.Kendo().NumericTextBox().Name($"Coefficient-{i}").Decimals(5).Round(true).Spinners(false).Value((double)Model.CostFactors.ComplexCostFactors[i].Coefficient.GetValueOrDefault())
+						</div>
+					</div>
+				<div class="form-group">
+					<div class="col-sm-2">
+						@Html.CustomLabelFor("Имя атрибута", true)
+					</div>
+					<div class="col-sm-4">
+						@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactors[i].AttributeId)
+							.DataTextField("Text")
+							.DataValueField("Value")
+							.Filter(FilterType.Contains)
+							.DataSource(source =>
+							{
+								source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
+							})
+							.HtmlAttributes(new { name = $"AttributeId-{i}", id = $"AttributeId-{i}" })
+							)
+					</div>
+					<div class="col-sm-2">
+						@Html.CustomLabelFor("Словарь")
+					</div>
+					<div class="col-sm-4">
+						@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactors[i].DictionaryId)
+							.DataTextField("Text")
+							.DataValueField("Value")
+							.Filter(FilterType.Contains)
+							.DataSource(source =>
+							{
+								source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+							})
+							.HtmlAttributes(new { name = $"DictionaryId-{i}", id = $"DictionaryId-{i}" })
+							)
+					</div>
+				</div>
+				</fieldset>
+			<div class="form-group"></div>
+		</li>
+				i++;
+			}
+		}
+	</ul>
+</div>
+	<div class="static-nav">
+		<nav id="navigation-menu">
+			<a href="#SectionRegister">Тур и реестр</a>
+			@*<a href="#RequiredParam">Обязательные параметры</a>*@
+			<a href="#StaticFactor">Статичные коэффициенты</a>
+			@{
+				int j = 0;
+				foreach (var factor in Model.CostFactors.ComplexCostFactors)
+				{
+					<a href="#factor-@j">@factor.Name</a>
+
+				}
+		 }
+			<div id="toolbar"></div>
+		</nav>
+	</div>
+	<div style="display: none" id="wrapper"></div>
+
+}
+
+<script src="~/js/custom-validation.js"></script>
+
+<script type="text/javascript">
+	var complexFactorsCount  = @Model.CostFactors.ComplexCostFactors.Count;
+	var simpleFactorsCount = @Model.CostFactors.SimpleCostFactors.Count;
+
+	$("#toolbar").kendoToolBar({
+		items: [{
+			type: 'button',
+			id: 'addComplexFactor',
+			text: '',
+			click: function () {
+				handlerComplexFactor();
+			},
+			icon: 'add',
+			hidden: false
+		},
+			{
+				type: 'button',
+				id: 'save',
+				text: '',
+				click: function () {
+					saveParams();
+				},
+				icon: 'save',
+				hidden: false
+			}]
+	});
+	var panelBar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
+	panelBar.expand('li[data-expand]');
+
+	$('span.k-header').removeClass('k-header k-link');
+
+	function saveParams() {
+		var form = $('form');
+		var formObject = Common.Functions.FormToObject(form);
+
+		var complexCostFactors = [];
+		var simpleCostFactors = [];
+
+		try {
+			for (var i = 0; i < complexFactorsCount; i++) {
+				var obj = {};
+				if (!!$(`li#factor-${i}`)[0]) {
+					obj['Name'] = validateParams(formObject[`Name-${i}`]);
+					obj['Coefficient'] = validateParams(formObject[`Coefficient-${i}`]);
+					obj['AttributeId'] = validateParams(formObject[`AttributeId-${i}`]);
+					obj['DictionaryId'] = formObject[`DictionaryId-${i}`];
+					complexCostFactors.push(obj);
+				}
+			}
+
+			for (var i = 0; i < simpleFactorsCount; i++) {
+				var objs = {};
+				if (!!$(`div#simple-factor-${i}`)[0]) {
+					objs['Name'] = validateParams(formObject[`Name-simple-${i}`]);
+					objs['Coefficient'] = validateParams(formObject[`Coefficient-simple-${i}`]);
+					simpleCostFactors.push(objs);
+				}
+			}
+		} catch (e) {
+			Common.ShowError(e);
+			return;
+		} 
+	
+		
+
+
+		var data = {
+			TourId: formObject['TourId'],
+			FactorRegisterId: formObject['FactorRegisterId'],
+			CostFactors: {
+				complexCostFactors,
+				simpleCostFactors
+			},
+			SegmentType: "@Model.SegmentType"
+		}
+
+		Object.keys(formObject).forEach(function() {
+
+		});
+
+		$.post(form.attr('action'), data).done(function(data) {
+			if (data.Errors) {
+				var errors = getErrors(data.Errors);
+				Common.ShowError(errors);
+				return;
+			}
+		});
+	}
+
+	function validateParams(parameter) {
+		if (parameter === "" || parameter === null || parameter === 0) {
+			throw "Заполните обязательные параметры";
+		}
+		return parameter;
+	}
+
+	function handlerComplexFactor() {
+		kendo.ui.progress($('body'), true);
+		var url = "@Url.Action("AddNewComplexCard","ExpressScore")" + `?count=${complexFactorsCount}`;
+
+		var li$ = $('<li id="factor-'+ complexFactorsCount +'" style= "display: none"></li>');
+		$(li$).load(url, null, function (data, status, jqXGR) {
+			if (status === 'success') {
+				$('ul#ls_panelbar').append(li$);
+				li$.show();
+				complexFactorsCount++;
+				removeHandlers();
+				li$.get(0).scrollIntoView();
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
+
+	function removeHandlers() {
+		$('.remove').off('click', removeComplexFactors);
+		$('.remove').on('click', removeComplexFactors);
+	}
+
+	function removeComplexFactors() {
+		$(this).closest('li').remove();
+	}
+
+	function removeSimpleHandlers() {
+		$('.remove-simple').off('click', removeSimpleFactors);
+		$('.remove-simple').on('click', removeSimpleFactors);
+	}
+
+	function removeSimpleFactors() {
+		$(this).closest('div.for-remove').remove();
+	}
+
+	$(document).ready(function () {
+		removeHandlers();
+		removeSimpleHandlers();
+		$('#addSimpleFactor').on('click',
+			function () {
+				kendo.ui.progress($('body'), true);
+				var div$ = $('<div id="simple-factor-' + simpleFactorsCount + '" class="for-remove" style="display: none"></div>');
+				var url = "@Url.Action("AddNewSimpleCard","ExpressScore")" + `?count=${simpleFactorsCount}`;
+				div$.load(url, null, function(data, status, jqXGR)
+				{
+					if (status === 'success') {
+						$('.wrapper-simple').append(div$);
+						div$.show();
+						simpleFactorsCount++;
+						removeSimpleHandlers();
+						kendo.ui.progress($('body'), false);
+					}
+				});
+			});
+	});
+
+</script>
+
