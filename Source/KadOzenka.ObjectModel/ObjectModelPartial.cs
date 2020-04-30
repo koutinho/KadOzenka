@@ -1942,26 +1942,26 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
-	/// <summary>
-	/// 259 Выгрузка отчетов
-	/// </summary>
-	public partial class OMReportHistory
-	{
+    /// <summary>
+    /// 259 Выгрузка отчетов
+    /// </summary>
+    public partial class OMReportHistory
+    {
 
-		public OMReportHistory()
-		{
+        public OMReportHistory()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMReportHistory(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMReportHistory(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
 
 namespace ObjectModel.Sud
@@ -3174,28 +3174,27 @@ namespace ObjectModel.ES
 
 namespace ObjectModel.Es
 {
-	/// <summary>
-	/// 611 Экспресс оценка. Настройка параметров
-	/// </summary>
-	public partial class OMSettingsParams
-	{
+    /// <summary>
+    /// 611 Экспресс оценка. Настройка параметров
+    /// </summary>
+    public partial class OMSettingsParams
+    {
 
-		public OMSettingsParams()
-		{
+        public OMSettingsParams()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMSettingsParams(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMSettingsParams(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
-
 
 namespace ObjectModel.Modeling
 {
@@ -3215,6 +3214,30 @@ namespace ObjectModel.Modeling
 
         }
         public OMModelingModel(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Modeling
+{
+    /// <summary>
+    /// 701 Связь модели с атрибутами
+    /// </summary>
+    public partial class OMModelAttributesRelation
+    {
+
+        public OMModelAttributesRelation()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMModelAttributesRelation(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
