@@ -17,7 +17,16 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult ModelCard(long modelId)
 		{
-			return View();
+			var modelDto = ModelingService.GetModelById(modelId);
+			var model = ModelingModel.ToModel(modelDto);
+			return View(model);
+		}
+
+		[HttpGet]
+		public JsonResult GetModelAttributes(long modelId)
+		{
+			var attributes = ModelingService.GetModelAttributes(modelId);
+			return Json(attributes);
 		}
 
 		[HttpGet]

@@ -6,12 +6,6 @@ using KadOzenka.Dal.Oks;
 
 namespace KadOzenka.Web.Models.Modeling
 {
-	public class AttributeAndDictionary
-	{
-		public long AttributeId { get; set; }
-		public long DictionaryId { get; set; }
-	}
-
 	public class ModelingModel
 	{
 		public long? Id { get; set; }
@@ -29,8 +23,20 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Тип")]
 		public ObjectType ObjectType { get; set; }
 
-		public List<AttributeAndDictionary> Attributes { get; set; }
+		public List<Attributes> Attributes { get; set; }
 
+
+		public static ModelingModel ToModel(ModelingModelDto entity)
+		{
+			return new ModelingModel
+			{
+				Id = entity.ModelId,
+				PropertyMarketSegment = entity.MarketSegment,
+				TourId = entity.TourId,
+				Name = entity.Name,
+				Attributes = entity.Attributes
+			};
+		}
 
 		public static ModelingModelDto FromModel(ModelingModel model)
 		{

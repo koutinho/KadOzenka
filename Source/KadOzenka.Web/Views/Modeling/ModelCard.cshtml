@@ -40,10 +40,14 @@
 					@Html.CustomLabelFor(x => x.TourId)
 				</div>
 				<div class="col-sm-9">
-					@(Html.Kendo().DropDownList()
-								.Name("tour")
-								.DataTextField("Text")
-								.DataValueField("Value"))
+					@(Html.Kendo().DropDownListFor(m => m.TourId)
+						.DataTextField("Text")
+						.DataValueField("Value")
+						.Filter(FilterType.Contains)
+						.DataSource(source =>
+						{
+							source.Read("GetRatingTours", "Tour");
+						}))
 				</div>
 			</div>
 			<div class="form-group">
@@ -74,21 +78,7 @@
 <script>
 	$(document).ready(function () {
 
-		$('#tour').kendoDropDownList({
-		    dataTextField: 'Text',
-		    dataValueField: 'Value',
-		    dataSource:
-		    {
-			    transport: {
-				    read: {
-					    url: '@Url.Action("GetRatingTours", "Tour")',
-					    dataType: 'json'
-				    }
-			    }
-		    }
-	    });
-
-	    $('#mainToolbar').kendoToolBar({
+		$('#mainToolbar').kendoToolBar({
 		    items: [
 			    {
 				    type: 'button',
@@ -125,19 +115,26 @@
 	    });
 
 	    $('#grid').kendoGrid({
-		    dataSource: {
-			    pageSize: 10,
-			    schema: {
+			dataSource: {
+				transport: {
+					read: {
+						url: '@Url.Action("GetModelAttributes", "Modeling", new { modelId = Model.Id })',
+						contentType: 'application/json; charset=utf-8',
+						dataType: 'json'
+					}
+				},
+				schema: {
 				    model: {
 					    id: "AttributeId",
 					    fields: {
 						    AttributeName: { type: "string" },
-						    IsNormalization: { type: "boolean" },
+						    IsNormalized: { type: "boolean" },
 						    DictionaryName: { type: "string" }
 					    }
 				    }
-			    }
-		    },
+				},
+				pageSize: 10,
+			},
 		    columns: [
 			    {
 				    field: 'AttributeId',
@@ -152,10 +149,10 @@
 				    title: 'Аттрибут'
 			    },
 			    {
-				    field: 'IsNormalization',
+					field: 'IsNormalized',
 				    title: 'Нормализация',
 				    template:
-					    '<input type="checkbox" #= IsNormalization ? \'checked="checked"\' : "" # class="chkbx" />'
+					    '<input type="checkbox" #= IsNormalized ? \'checked="checked"\' : "" # class="chkbx" />'
 			    },
 			    {
 				    field: 'DictionaryName',
@@ -168,10 +165,7 @@
 		    selectable: true
 	    });
 
-	    //todo remove
-	    $('#grid').data("kendoGrid").dataSource.add({ AttributeId: 0, AttributeName: "test", IsNormalization: false });
-
-	    $("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
+		$("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
 	});
 
 
@@ -181,7 +175,6 @@
 		var attributes = getAttributesFromGrid();
 		var form = $('#calculateModelForm');
 		var formObject = Common.Functions.FormToObject(form);
-		formObject['TourId'] = $('#tour').val();
 		formObject['Attributes'] = attributes;
 		kendo.ui.progress($('body'), true);
 		$.ajax({
@@ -206,12 +199,12 @@
 		var segment = $("#PropertyMarketSegment").data("kendoDropDownList").value();
 		if (!segment || segment == 0)
 			messages.push("Не выбран Сегмент");
-		var tour = $("#tour").data("kendoDropDownList").value();
+		var tour = $("#TourId").data("kendoDropDownList").value();
 		if (!tour || tour == 0)
 			messages.push("Не выбран Тур");
 		var rows = $("#grid").data("kendoGrid").dataSource.data();
 		for (var i = 0; i < rows.length; i++) {
-			if (rows[i].IsNormalization) {
+			if (rows[i].IsNormalized) {
 				if (rows[i].DictionaryId == undefined || rows[i].DictionaryId === 0) {
 					messages.push("Не выбран словарь для аттрибута в стороке №" + (i + 1));
 				}
@@ -250,7 +243,7 @@
 
 
 	function initAttributes() {
-		var tourId = $('#tour').val();
+		var tourId = $('#TourId').val();
 		var objectType = $('input[name="ObjectType"]:checked').val();
 		var alreadySelectedAttributeIds = getAttributesFromGrid().map(function(x) {
 			return x.AttributeId;
@@ -288,7 +281,7 @@
 		var list = $('#attribute').data("kendoDropDownList");
 		var attributeId = list.value();
 		var attributeName = list.text();
-		$('#grid').data("kendoGrid").dataSource.add({ AttributeId: attributeId, AttributeName: attributeName, IsNormalization: false });
+		$('#grid').data("kendoGrid").dataSource.add({ AttributeId: attributeId, AttributeName: attributeName, IsNormalized: false });
 		changeToolBarButtonsClass();
 	}
 
@@ -297,9 +290,9 @@
 	function onNormalizationChecked(e) {
 		var grid = $("#grid").data("kendoGrid");
 		var dataItem = grid.dataItem($(e.target).closest("tr"));
-		dataItem.IsNormalization = this.checked;
+		dataItem.IsNormalized = this.checked;
 		currentAttributeId = dataItem.AttributeId;
-		if (dataItem.IsNormalization) {
+		if (dataItem.IsNormalized) {
 			var modal = $("#dictionaryAdditionModal");
 			ShowModal(modal, '50%', '20%', "Добавление справочника");
 			initDictionaries();
