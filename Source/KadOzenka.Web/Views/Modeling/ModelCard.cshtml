@@ -1,7 +1,7 @@
 ﻿@using KadOzenka.Dal.Oks
 @model KadOzenka.Web.Models.Modeling.ModelingModel
 <!-- Модальное окно для добавления КО аттрибута -->
-<div id="attributeAdditionModal" style="display: none;  padding: 2%;">
+<div id="attributeAdditionModal" style="display: none; padding: 2%;">
 	<div class="form-horizontal col-sm-12">
 		<div class="form-group">
 			<div class="col-sm-12">
@@ -74,7 +74,7 @@
 <script>
 	$(document).ready(function () {
 
-	    $('#tour').kendoDropDownList({
+		$('#tour').kendoDropDownList({
 		    dataTextField: 'Text',
 		    dataValueField: 'Value',
 		    dataSource:
@@ -133,7 +133,7 @@
 					    fields: {
 						    AttributeName: { type: "string" },
 						    IsNormalization: { type: "boolean" },
-						    Dictionary: { type: "string" }
+						    DictionaryName: { type: "string" }
 					    }
 				    }
 			    }
@@ -158,11 +158,11 @@
 					    '<input type="checkbox" #= IsNormalization ? \'checked="checked"\' : "" # class="chkbx" />'
 			    },
 			    {
-				    field: 'Dictionary',
+				    field: 'DictionaryName',
 				    title: 'Справочник'
 			    }
 		    ],
-		    change: onRowSelect,
+		    change: changeToolBarButtonsClass,
 		    width: '100%',
 		    scrollable: true,
 		    selectable: true
@@ -177,11 +177,12 @@
 
 
 	function calculate() {
-		var attributeIds = getAttributeIdsFromGrid();
+		validateForm();
+		var attributes = getAttributesFromGrid();
 		var form = $('#calculateModelForm');
 		var formObject = Common.Functions.FormToObject(form);
 		formObject['TourId'] = $('#tour').val();
-		formObject['Attributes'] = attributeIds;
+		formObject['Attributes'] = attributes;
 		kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'POST',
@@ -200,7 +201,29 @@
 	}
 
 
-	function getAttributeIdsFromGrid() {
+	function validateForm() {
+		var messages = [];
+		var segment = $("#PropertyMarketSegment").data("kendoDropDownList").value();
+		if (!segment || segment == 0)
+			messages.push("Не выбран Сегмент");
+		var tour = $("#tour").data("kendoDropDownList").value();
+		if (!tour || tour == 0)
+			messages.push("Не выбран Тур");
+		var rows = $("#grid").data("kendoGrid").dataSource.data();
+		for (var i = 0; i < rows.length; i++) {
+			if (rows[i].IsNormalization) {
+				if (rows[i].DictionaryId == undefined || rows[i].DictionaryId === 0) {
+					messages.push("Не выбран словарь для аттрибута в стороке №" + (i + 1));
+				}
+			}
+		}
+		if (messages.length) {
+			Common.ShowError(messages.join("<br/>"));
+		}
+	}
+
+
+	function getAttributesFromGrid() {
 		var rows = $("#grid").data("kendoGrid").dataSource.data();
 		var attributeIds = [];
 		rows.forEach(function (row) {
@@ -212,7 +235,7 @@
 
 	function addAttribute() {
 		var modal = $("#attributeAdditionModal");
-		ShowModal(modal, '50%', '25%');
+		ShowModal(modal, '50%', '20%', "Добавление аттрибута");
 		initAttributes();
 	}
 
@@ -229,7 +252,7 @@
 	function initAttributes() {
 		var tourId = $('#tour').val();
 		var objectType = $('input[name="ObjectType"]:checked').val();
-		var alreadySelectedAttributeIds = getAttributeIdsFromGrid().map(function(x) {
+		var alreadySelectedAttributeIds = getAttributesFromGrid().map(function(x) {
 			return x.AttributeId;
 		});
 		var dataSource = new kendo.data.DataSource({
@@ -253,11 +276,11 @@
 				dataValueField: 'Value',
 				optionLabel: " ",
 				dataSource: dataSource,
-				change: addAttributeToGrid
+				change: addAttributeToGrid,
+				filter: "contains"
 			});
 		}
 	}
-
 
 	function addAttributeToGrid() {
 		var modal = $('#attributeAdditionModal');
@@ -266,18 +289,22 @@
 		var attributeId = list.value();
 		var attributeName = list.text();
 		$('#grid').data("kendoGrid").dataSource.add({ AttributeId: attributeId, AttributeName: attributeName, IsNormalization: false });
-		onRowSelect();
+		changeToolBarButtonsClass();
 	}
 
 
+	var currentAttributeId;
 	function onNormalizationChecked(e) {
 		var grid = $("#grid").data("kendoGrid");
 		var dataItem = grid.dataItem($(e.target).closest("tr"));
 		dataItem.IsNormalization = this.checked;
+		currentAttributeId = dataItem.AttributeId;
 		if (dataItem.IsNormalization) {
 			var modal = $("#dictionaryAdditionModal");
-			ShowModal(modal, '50%', '25%');
+			ShowModal(modal, '50%', '20%', "Добавление справочника");
 			initDictionaries();
+		} else {
+			UpdateDictionaryInfoInGridRow(null, null);
 		}
 	}
 
@@ -302,13 +329,32 @@
 				dataValueField: 'Value',
 				optionLabel: " ",
 				dataSource: dataSource,
-				//change: addDictionaryToGrid
+				change: addDictionaryToGrid,
+				filter: "contains"
 			});
 		}
 	}
 
+	function addDictionaryToGrid() {
+		var modal = $('#dictionaryAdditionModal');
+		modal.data("kendoWindow").close();
+		var list = $('#dictionary').data("kendoDropDownList");
+		UpdateDictionaryInfoInGridRow(list.value(), list.text());
+		changeToolBarButtonsClass();
+	}
 
-	function onRowSelect() {
+	function UpdateDictionaryInfoInGridRow(dictionaryId, dictionaryName)
+	{
+		var grid = $("#grid").data("kendoGrid");
+		var dataItem = grid.dataSource.get(currentAttributeId);
+		dataItem.DictionaryId = dictionaryId;
+		dataItem.DictionaryName = dictionaryName;
+		dataItem.dirty = true;
+		grid.dataSource.sync();
+	}
+
+
+	function changeToolBarButtonsClass() {
 		var row = getSelectedRowInGrid();
 		if (row.length === 0) {
 			$('#deleteAttributeBtn').addClass('k-state-disabled');
