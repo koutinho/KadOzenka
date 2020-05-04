@@ -190,9 +190,9 @@ namespace KadOzenka.Dal.GbuObject
                 if (attrib != null)
                 {
                     string resValue = string.Empty;
-                    if (attrib.StringValue != string.Empty && attrib.StringValue != null)
+                    if (attrib.GetValueInString() != string.Empty && attrib.GetValueInString() != null)
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = dictionaryItem.Find(x => x.Value == attrib.StringValue);
+                        ObjectModel.KO.OMCodDictionary dictionaryRecord = dictionaryItem.Find(x => x.Value == attrib.GetValueInString());
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -232,9 +232,9 @@ namespace KadOzenka.Dal.GbuObject
                 if (attrib != null)
                 {
                     string resValue = string.Empty;
-                    if (attrib.StringValue != string.Empty && attrib.StringValue != null)
+                    if (attrib.GetValueInString() != string.Empty && attrib.GetValueInString() != null)
                     {
-                        ObjectModel.KO.OMCodDictionary dictionaryRecord = dictionaryItem.Find(x => x.Value == attrib.StringValue);
+                        ObjectModel.KO.OMCodDictionary dictionaryRecord = dictionaryItem.Find(x => x.Value == attrib.GetValueInString());
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");

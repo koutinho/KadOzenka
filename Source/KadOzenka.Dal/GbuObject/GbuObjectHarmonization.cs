@@ -87,7 +87,7 @@ namespace KadOzenka.Dal.GbuObject
                 GbuObjectAttribute attrib = attribs.Find(x => x.AttributeId == idSourceAttrib.Value);
                 if (attrib != null)
                 {
-                    if (attrib.StringValue != string.Empty && attrib.StringValue != null)
+                    if (attrib.GetValueInString() != string.Empty && attrib.GetValueInString() != null)
                     {
                         res = true;
                         var attributeValue = new GbuObjectAttribute
@@ -100,7 +100,7 @@ namespace KadOzenka.Dal.GbuObject
                             ChangeUserId = SRDSession.Current.UserID,
                             ChangeDate = DateTime.Now,
                             Ot = attrib.Ot,
-                            StringValue = attrib.StringValue,
+                            StringValue = attrib.GetValueInString(),
                         };
                         attributeValue.Save();
                     }
@@ -116,7 +116,7 @@ namespace KadOzenka.Dal.GbuObject
                 GbuObjectAttribute attrib = attribs.Find(x => x.AttributeId == idSourceAttrib.Value);
                 if (attrib != null)
                 {
-                    if (attrib.StringValue != string.Empty && attrib.StringValue != null)
+                    if (attrib.GetValueInString() != string.Empty && attrib.GetValueInString() != null)
                     {
                         res = true;
                         var attributeValue = new GbuObjectAttribute
@@ -129,7 +129,7 @@ namespace KadOzenka.Dal.GbuObject
                             ChangeUserId = SRDSession.Current.UserID,
                             ChangeDate = DateTime.Now,
                             Ot = attrib.Ot,
-                            StringValue = attrib.StringValue,
+                            StringValue = attrib.GetValueInString(),
                         };
                         attributeValue.Save();
                     }

@@ -2653,8 +2653,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_inputDoc + 100000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
                             };
                             inputDoc.Save();
@@ -2669,8 +2669,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_outputDoc + 100000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
                             };
                             outputDoc.Save();
@@ -2692,6 +2692,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                 TourId = id_tour,
                                 CreationDate = inputDoc.CreateDate,
                                 DocumentId = inputDoc.Id,
+                                EstimationDate=inputDoc.ApproveDate
                             };
                             task.Save();
                         }
@@ -2717,7 +2718,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             TaskId = task.Id,
                             Status_Code = koUnitStatus,
                             ObjectId = -1,
-                            CreationDate = task.CreationDate,
+                            CreationDate = task.EstimationDate,
                             CadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]),
                             CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
                             Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
@@ -2858,8 +2859,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_inputDoc + 200000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
                             };
                             inputDoc.Save();
@@ -2874,8 +2875,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_outputDoc + 200000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
                             };
                             outputDoc.Save();
@@ -2897,7 +2898,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                 TourId = id_tour,
                                 CreationDate = inputDoc.CreateDate,
                                 DocumentId = inputDoc.Id,
-                                
+                                EstimationDate=inputDoc.ApproveDate
                             };
                             task.Save();
                         }
@@ -2924,7 +2925,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             TaskId = task.Id,
                             Status_Code = koUnitStatus,
                             ObjectId = -1,
-                            CreationDate = task.CreationDate,
+                            CreationDate = task.EstimationDate,
                             CadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]),
                             CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
                             Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
@@ -3064,8 +3065,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_inputDoc + 200000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
                             };
                             inputDoc.Save();
@@ -3080,8 +3081,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_outputDoc + 200000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
                             };
                             outputDoc.Save();
@@ -3103,7 +3104,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                 TourId = id_tour,
                                 CreationDate = inputDoc.CreateDate,
                                 DocumentId = inputDoc.Id,
-
+                                EstimationDate=inputDoc.ApproveDate
                             };
                             task.Save();
                         }
@@ -3130,7 +3131,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             TaskId = task.Id,
                             Status_Code = koUnitStatus,
                             ObjectId = -1,
-                            CreationDate = task.CreationDate,
+                            CreationDate = task.EstimationDate,
                             CadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]),
                             CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
                             Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
@@ -3270,8 +3271,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_inputDoc + 200000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
                             };
                             inputDoc.Save();
@@ -3286,8 +3287,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_outputDoc + 200000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
                             };
                             outputDoc.Save();
@@ -3309,6 +3310,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                 TourId = id_tour,
                                 CreationDate = inputDoc.CreateDate,
                                 DocumentId = inputDoc.Id,
+                                EstimationDate=inputDoc.ApproveDate
 
                             };
                             task.Save();
@@ -3336,7 +3338,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             TaskId = task.Id,
                             Status_Code = koUnitStatus,
                             ObjectId = -1,
-                            CreationDate = task.CreationDate,
+                            CreationDate = task.EstimationDate,
                             CadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]),
                             CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
                             Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),
@@ -3476,8 +3478,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_inputDoc + 200000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
                             };
                             inputDoc.Save();
@@ -3492,8 +3494,8 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             {
                                 Id = id_outputDoc + 200000000,
                                 RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
+                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
                                 Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
                             };
                             outputDoc.Save();
@@ -3515,6 +3517,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                 TourId = id_tour,
                                 CreationDate = inputDoc.CreateDate,
                                 DocumentId = inputDoc.Id,
+                                EstimationDate=inputDoc.ApproveDate
 
                             };
                             task.Save();
@@ -3542,7 +3545,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             TaskId = task.Id,
                             Status_Code = koUnitStatus,
                             ObjectId = -1,
-                            CreationDate = task.CreationDate,
+                            CreationDate = task.EstimationDate,
                             CadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]),
                             CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]),
                             Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]),

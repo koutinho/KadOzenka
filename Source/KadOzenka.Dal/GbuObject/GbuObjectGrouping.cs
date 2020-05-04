@@ -427,9 +427,9 @@ namespace KadOzenka.Dal.GbuObject
             List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(obj.Id, null, lstIds, date);
             if (attribs.Count > 0)
             {
-                if (attribs[0].StringValue != string.Empty && attribs[0].StringValue != null)
+                if (attribs[0].GetValueInString() != string.Empty && attribs[0].GetValueInString() != null)
                 {
-                    res.Value = attribs[0].StringValue;
+                    res.Value = attribs[0].GetValueInString();
                     res.AttributeName = attribs[0].AttributeData.Name;
                     res.IdDocument = attribs[0].ChangeDocId;
                 }
@@ -452,9 +452,9 @@ namespace KadOzenka.Dal.GbuObject
             List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId.Value, null, lstIds, date);
             if (attribs.Count > 0)
             {
-                if (attribs[0].StringValue != string.Empty && attribs[0].StringValue != null)
+                if (attribs[0].GetValueInString() != string.Empty && attribs[0].GetValueInString() != null)
                 {
-                    res.Value = attribs[0].StringValue;
+                    res.Value = attribs[0].GetValueInString();
                     res.AttributeName = attribs[0].AttributeData.Name;
                     res.IdDocument = attribs[0].ChangeDocId;
                 }
@@ -479,7 +479,6 @@ namespace KadOzenka.Dal.GbuObject
                 StringValue = value,
             };
             attributeValue.Save();
-
         }
 	    private void AddValueFactor(ObjectModel.KO.OMUnit unit, long? idFactor, long? idDoc, DateTime date, string value)
         {
