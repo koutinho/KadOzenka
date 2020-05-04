@@ -30,7 +30,6 @@
             function () {
                 var btn = this;
                 kendo.ui.progress($('body'), true);
-                debugger;
                 $.post($('form').attr('action'), {id: @Model.Id}).done(function (response) {
                     if (response.Errors) {
                         var errors = getErrors(response.Errors);
