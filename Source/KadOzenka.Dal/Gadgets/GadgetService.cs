@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Core.Register;
@@ -373,6 +374,61 @@ namespace KadOzenka.Dal.Gadgets
                 linkParam.Replace("{PropertyType}", PropertyTypes.OtherMore.GetEnumCode()),
                 "Сооружения, ОНС, ЕНК, и иные ОН",
                 objects.FirstOrDefault(x => x.PropertyType_Code == PropertyTypes.OtherMore)?.Count ?? 0);
+
+            return data;
+        }
+
+        /// <summary>
+        /// "Статистика по работе с объектами"
+        /// Единицы оценки по статусу для заданий на оценку на заданную дату актуализации
+        /// </summary>
+        /// <returns></returns>
+        //public static DataTable KoUnitTaskStatusWidgetForActualDate(DateTime? actualDate)
+        public static DataTable KoUnitTaskStatusWidgetForActualDate()
+        {
+            //TODO: дата актуализации должна будет передаваться в виджет
+            //DateTime? actualDate = new DateTime(2018, 1, 1);
+            DateTime? actualDate = DateTime.Now.Date;
+	        var dateFrom = actualDate.HasValue ? actualDate.Value.Date
+		        : DateTime.Now.Date;
+            var dateTo = actualDate.HasValue ? actualDate.Value.GetEndOfTheDay()
+		        : DateTime.Now.GetEndOfTheDay();
+
+            string linkParam = "Transition=1&20100700={Status}&20300200={actualDate}"
+                .Replace("{actualDate}", dateFrom.ToString("dd.MM.yyyy"));
+
+            var objects = OMUnit
+	            .Where(x => x.ParentTask.CreationDate >= dateFrom && x.ParentTask.CreationDate <= dateTo)
+	            .GroupBy(x => x.Status_Code)
+                .ExecuteSelect(x => new
+                {
+                    x.Status_Code,
+                    Count = QSExtensions.Count<OMObject>(y => 1)
+                });
+
+            var data = new DataTable();
+
+            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+
+            data.Rows.Add(
+                linkParam.Replace("{Status}", ((long)KoUnitStatus.Initial).ToString()),
+                "Исходный",
+                objects.FirstOrDefault(x => x.Status_Code == KoUnitStatus.Initial)?.Count ?? 0);
+
+            data.Rows.Add(
+	            linkParam.Replace("{Status}", ((long)KoUnitStatus.New).ToString()),
+                "Новый",
+	            objects.FirstOrDefault(x => x.Status_Code == KoUnitStatus.New)?.Count ?? 0);
+
+            data.Rows.Add(
+	            linkParam.Replace("{Status}", ((long)KoUnitStatus.Recalculated).ToString()),
+                "Пересчитанный",
+	            objects.FirstOrDefault(x => x.Status_Code == KoUnitStatus.Recalculated)?.Count ?? 0);
+
+            data.Rows.Add(
+	            linkParam.Replace("{Status}", ((long)KoUnitStatus.Annual).ToString()),
+                "Годовой",
+	            objects.FirstOrDefault(x => x.Status_Code == KoUnitStatus.Annual)?.Count ?? 0);
 
             return data;
         }
