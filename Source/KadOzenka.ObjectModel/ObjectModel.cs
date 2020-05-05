@@ -22834,6 +22834,26 @@ namespace ObjectModel.Modeling
         }
 
 
+        private bool? _isexcluded;
+        /// <summary>
+        /// 70200400 Исключение объекта из расчета (IS_EXCLUDED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200400)]
+        public bool? IsExcluded
+        {
+            get
+            {
+                CheckPropertyInited("IsExcluded");
+                return _isexcluded;
+            }
+            set
+            {
+                _isexcluded = value;
+                NotifyPropertyChanged("IsExcluded");
+            }
+        }
+
+
         private long _modelid;
         /// <summary>
         /// 70200500 Идентификатор модели (MODEL_ID)
