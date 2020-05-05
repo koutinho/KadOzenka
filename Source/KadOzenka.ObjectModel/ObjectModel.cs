@@ -1844,7 +1844,7 @@ namespace ObjectModel.Market
 
 
 
-		private decimal? _priceaftercorrectionforfirstfloor;
+        private decimal? _priceaftercorrectionforfirstfloor;
         /// <summary>
         /// 10008800 Цена после корректировки на первый этаж (PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR)
         /// </summary>
@@ -22830,6 +22830,26 @@ namespace ObjectModel.Modeling
             {
                 _price = value;
                 NotifyPropertyChanged("Price");
+            }
+        }
+
+
+        private long _modelid;
+        /// <summary>
+        /// 70200500 Идентификатор модели (MODEL_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200500)]
+        public long ModelId
+        {
+            get
+            {
+                CheckPropertyInited("ModelId");
+                return _modelid;
+            }
+            set
+            {
+                _modelid = value;
+                NotifyPropertyChanged("ModelId");
             }
         }
 
