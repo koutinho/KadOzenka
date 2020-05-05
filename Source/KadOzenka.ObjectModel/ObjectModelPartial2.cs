@@ -1108,6 +1108,24 @@ namespace ObjectModel.ES
 namespace ObjectModel.Modeling
 {
     /// <summary>
+    /// 700 Моделирование
+    /// </summary>
+    public partial class OMModelingModel
+    {
+        /// <summary>
+        /// Ссылка на (202 Тур оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMTour ParentTour { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Modeling
+{
+    /// <summary>
     /// 701 Связь модели с атрибутами
     /// </summary>
     public partial class OMModelAttributesRelation

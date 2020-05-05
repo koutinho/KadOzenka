@@ -1282,6 +1282,12 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMModel> Model { get; set; }
+
+        /// <summary>
+        /// Ссылка на (700 Моделирование)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Modeling.OMModelingModel> ModelingModel { get; set; }
         public OMTour()
         {
 
@@ -1295,6 +1301,8 @@ namespace ObjectModel.KO
             Task = new List<ObjectModel.KO.OMTask>();
 
             Model = new List<ObjectModel.KO.OMModel>();
+
+            ModelingModel = new List<ObjectModel.Modeling.OMModelingModel>();
 
         }
         public OMTour(bool trackPropertyChanging) : this()
