@@ -4,10 +4,6 @@
               ShowListsMenu="false" ShowActualDate="false" ObjectCardTitleTemplate="Экспресс оценка"
               ShowObjectCards="false">
 
-	<ObjectCardButtons>
-		<Button Caption="Настройки экспресс оценки" NavigateURL="/ExpressScore/SettingsExpressScore"  WindowHeight="500" WindowWidth="800" Icon="fas fa-cogs"/>
-	</ObjectCardButtons>
-
 	<Tabs>
 		<Tab Caption="Экспресс оценка" NavigateURL="/ExpressScore">
 			<Parameters>

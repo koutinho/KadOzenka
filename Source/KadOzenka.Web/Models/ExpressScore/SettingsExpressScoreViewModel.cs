@@ -63,6 +63,12 @@ namespace KadOzenka.Web.Models.ExpressScore
 
 			}
 
+			if (CostFactors != null && CostFactors.YearBuildId == 0 || CostFactors.YearBuildId == null)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Заполните атрибут года постройки");
+			}
+
 		}
 	}
 }

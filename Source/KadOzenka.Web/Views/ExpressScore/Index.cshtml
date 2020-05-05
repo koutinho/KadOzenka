@@ -102,7 +102,7 @@
 						@Html.CustomLabelFor("Сегмент", true)
 					</div>
 					<div class="col-sm-9">
-						@Html.Kendo().DropDownList().Name("segment").BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment))).NoDataTemplate("Ничего не найдено!").Value("750").Enable(false)
+						@Html.Kendo().DropDownList().Name("segment").BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment), new long []{ 744, 745, 750, 746, 747, 748, 749, 751, 752, 753, 754, 795 })).NoDataTemplate("Ничего не найдено!")
 					</div>
 				</div>
 				<div class="form-group">
@@ -640,7 +640,8 @@
 			targetObjectId,
 			scenarioType,
 			floor: $('#floor').val(),
-			square: $('#square').val()
+			square: $('#square').val(),
+			segment: $('#segment').val()
 		}
 
 		var topBody = window.top.document.body;

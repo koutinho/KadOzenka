@@ -18,7 +18,7 @@
 			@Html.CustomLabelFor("Коэф. влияния", true)
 		</div>
 		<div class="col-sm-4">
-			@Html.Kendo().NumericTextBox().Name($"Coefficient-{ViewBag.Count}").Decimals(5).Round(false).Spinners(false)
+			@Html.Kendo().NumericTextBox().Name($"Coefficient-{ViewBag.Count}").Decimals(6).Format("n6").Spinners(false)
 		</div>
 	</div>
 	<div class="form-group">

@@ -69,7 +69,7 @@ namespace CIPJS
 	        services.AddTransient<ViewRenderService>();
 	        services.AddTransient<ModelingService>();
 
-			services.AddHttpContextAccessor();
+	        services.AddHttpContextAccessor();
             services.AddSession(options =>
             {
                 options.Cookie.Name = "CIPJS.Session";

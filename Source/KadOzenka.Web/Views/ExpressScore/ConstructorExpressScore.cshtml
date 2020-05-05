@@ -62,6 +62,10 @@
 		$('[id ^= "AttributeId"]').each(function() {
 			$(this).data('kendoDropDownList') && $(this).data('kendoDropDownList').dataSource.read();
 		});
+
+		$('[id ^= "CostFactors_YearBuildId"]').each(function () {
+			$(this).data('kendoDropDownList') && $(this).data('kendoDropDownList').dataSource.read();
+		});
 	}
 
 	function getDataAttribute() {

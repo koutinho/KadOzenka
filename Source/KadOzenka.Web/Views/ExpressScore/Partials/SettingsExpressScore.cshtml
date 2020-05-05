@@ -65,17 +65,35 @@
 				</div>
 				<div class="col-sm-9">
 					@(Html.Kendo().DropDownListFor(m => m.FactorRegisterId)
-										.DataTextField("Text")
-										.DataValueField("Value")
-										.DataSource(source =>
-										{
-											source.Read(a => a.Action("GetFactorRegisters", "ExpressScore").Data("getDataRegister"));
-										}).Events(
-											e =>
-											{
-												e.Cascade("handlerChangeRegister");
-											})
-					)
+						.DataTextField("Text")
+						.DataValueField("Value")
+						.DataSource(source =>
+						{
+							source.Read(a => a.Action("GetFactorRegisters", "ExpressScore").Data("getDataRegister"));
+						}).Events(
+							e =>
+							{
+								e.Cascade("handlerChangeRegister");
+							})
+						)
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-3">
+					@Html.CustomLabelFor("Атрибут года постройки", true)
+				</div>
+				<div class="col-sm-9">
+					@(Html.Kendo().DropDownListFor(m => m.CostFactors.YearBuildId)
+						.DataTextField("Text")
+						.DataValueField("Value")
+						.Filter(FilterType.Contains)
+						.DataSource(source =>
+						{
+							source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
+						}).HtmlAttributes(new
+						{
+							name = "YearBuildId"
+						}))
 				</div>
 			</div>
 		</li>
@@ -98,21 +116,22 @@
 									@Html.CustomLabelFor("Имя коэф.", true)
 								</div>
 								<div class="col-sm-4">
-									@Html.Kendo().TextBox().Name($"Name-simple-{ViewBag.Count}").Value(Model.CostFactors.SimpleCostFactors[i].Name)
+									@Html.Kendo().TextBox().Name($"Name-simple-{i}").Value(Model.CostFactors.SimpleCostFactors[i].Name)
 								</div>
 								<div class="col-sm-2">
 									@Html.CustomLabelFor("Коэф.", true)
 								</div>
-								<div class="col-sm-2">
-									@Html.Kendo().NumericTextBox().Name($"Coefficient-simple-{ViewBag.Count}").Spinners(false).Decimals(5).Value((double)Model.CostFactors.SimpleCostFactors[i].Coefficient.GetValueOrDefault())
+								<div class="col-sm-3">
+									@Html.Kendo().NumericTextBox().Name($"Coefficient-simple-{i}").Spinners(false).Decimals(6).Format("n6").Value((double)Model.CostFactors.SimpleCostFactors[i].Coefficient.GetValueOrDefault())
 								</div>
-								<div class="col-sm-2">
-									<a class="k-button-icon k-button remove-simple" style="float: right">
+								<div class="col-sm-1">
+									<a class="k-button-icon k-button remove-simple">
 										<span class="k-i-close k-icon"></span>
 									</a>
 								</div>
 							</div>
 						</div>
+						i++;
 					}
 				}
 				<div class="wrapper-simple"></div>
@@ -148,7 +167,7 @@
 							@Html.CustomLabelFor("Коэф. влияния", true)
 						</div>
 						<div class="col-sm-4">
-							@Html.Kendo().NumericTextBox().Name($"Coefficient-{i}").Decimals(5).Round(true).Spinners(false).Value((double)Model.CostFactors.ComplexCostFactors[i].Coefficient.GetValueOrDefault())
+							@Html.Kendo().NumericTextBox().Name($"Coefficient-{i}").Decimals(6).Format("n6").Spinners(false).Value((double)Model.CostFactors.ComplexCostFactors[i].Coefficient.GetValueOrDefault())
 						</div>
 					</div>
 				<div class="form-group">
@@ -263,11 +282,11 @@
 				}
 			}
 
-			for (var i = 0; i < simpleFactorsCount; i++) {
+			for (var j = 0; j < simpleFactorsCount; j++) {
 				var objs = {};
-				if (!!$(`div#simple-factor-${i}`)[0]) {
-					objs['Name'] = validateParams(formObject[`Name-simple-${i}`]);
-					objs['Coefficient'] = validateParams(formObject[`Coefficient-simple-${i}`]);
+				if (!!$(`div#simple-factor-${j}`)[0]) {
+					objs['Name'] = validateParams(formObject[`Name-simple-${j}`]);
+					objs['Coefficient'] = validateParams(formObject[`Coefficient-simple-${j}`]);
 					simpleCostFactors.push(objs);
 				}
 			}
@@ -283,22 +302,26 @@
 			TourId: formObject['TourId'],
 			FactorRegisterId: formObject['FactorRegisterId'],
 			CostFactors: {
+				YearBuildId: formObject['YearBuildId'],
 				complexCostFactors,
 				simpleCostFactors
 			},
 			SegmentType: "@Model.SegmentType"
 		}
 
-		Object.keys(formObject).forEach(function() {
-
-		});
-
+		kendo.ui.progress($('body'), true);
 		$.post(form.attr('action'), data).done(function(data) {
 			if (data.Errors) {
 				var errors = getErrors(data.Errors);
 				Common.ShowError(errors);
 				return;
 			}
+			if (data.success) {
+				Common.ShowMessage("Сохранено успешно");
+			}
+
+		}).always(function() {
+			kendo.ui.progress($('body'), false);
 		});
 	}
 

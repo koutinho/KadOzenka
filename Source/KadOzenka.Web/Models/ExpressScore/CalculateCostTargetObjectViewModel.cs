@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.Enum;
+using ObjectModel.Directory;
 using ObjectModel.Directory.ES;
 
 namespace KadOzenka.Web.Models.ExpressScore
@@ -35,5 +36,11 @@ namespace KadOzenka.Web.Models.ExpressScore
 		/// Сценарий расчета
 		/// </summary>
 		public ScenarioType ScenarioType { get; set; }
+
+		/// <summary>
+		/// Сегмент рынка
+		/// </summary>
+		[Required(ErrorMessage = "Выберите сегмент")]
+		public MarketSegment Segment { get; set; }
 	}
 }

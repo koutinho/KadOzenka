@@ -68,12 +68,17 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 			}
 
-			string resMessage = _service.GetSearchParamForNearestObject(param.Address, param.Square.GetValueOrDefault(),
+			string resMessage = _service.GetSearchParamForNearestObject(param.Address, param.Square.GetValueOrDefault(), param.Segment.GetValueOrDefault(),
 				out var yearRange, out var squareRange, out int targetObjectId);
 
 			if (!string.IsNullOrEmpty(resMessage))
 			{
 				return SendErrorMessage(resMessage);
+			}
+
+			if (squareRange == null || yearRange == null)
+			{
+				return SendErrorMessage("Не найден дипозон даты постройки или площади.");
 			}
 
 			var objects = OMCoreObject.Where(x =>
@@ -182,7 +187,7 @@ namespace KadOzenka.Web.Controllers
 
 			string resMsg = _service.CalculateExpressScore(_service.GetAnalogsByIds(viewModel.SelectedPoints),
 				viewModel.TargetObjectId.GetValueOrDefault(), viewModel.Floor.GetValueOrDefault(), viewModel.Square.GetValueOrDefault(),
-				out ResultCalculateDto resultCalculate, viewModel.ScenarioType);
+				out ResultCalculateDto resultCalculate, viewModel.ScenarioType, viewModel.Segment);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{
@@ -223,8 +228,14 @@ namespace KadOzenka.Web.Controllers
 			}
 			var obj = OMExpressScore.Where(x => x.Id == expressScoreId).SelectAll().ExecuteFirstOrDefault();
 
+			if (obj == null)
+			{
+				return SendErrorMessage("Не найдена оценка");
+
+			}
+
 			string resMsg = _service.RecalculateExpressScore(_service.GetAnalogsByIds(analogIds), analogIds,
-				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, obj.ScenarioType_Code, out decimal cost, out decimal squareCost);
+				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, obj.ScenarioType_Code, MarketSegment.Office, out decimal cost, out decimal squareCost);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{
@@ -295,7 +306,7 @@ namespace KadOzenka.Web.Controllers
 
 			setting.Save();
 
-			return Json(new {});
+			return Json(new {success = true});
 		}
 
 		public JsonResult GetDictionaries()
