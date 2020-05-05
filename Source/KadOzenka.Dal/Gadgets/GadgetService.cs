@@ -313,7 +313,7 @@ namespace KadOzenka.Dal.Gadgets
         {
             string linkParam = "Transition=1&20101800={PropertyType}";
 
-            var objects = OMUnit.Where(GetQuery("KoObjects"))
+            var objects = OMUnit.Where(GetQuery("KoObjectsWithoutDefaultSearchControls"))
                 .GroupBy(x => x.PropertyType_Code)
                 .ExecuteSelect(x => new
                 {
