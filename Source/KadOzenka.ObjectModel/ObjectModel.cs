@@ -22764,6 +22764,78 @@ namespace ObjectModel.Modeling
     }
 }
 
+namespace ObjectModel.Modeling
+{
+    /// <summary>
+    /// 702 Связь модели и объектов аналогов (MODELING_MODEL_TO_MARKET_OBJECTS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 702)]
+    [Serializable]
+    public partial class OMModelToMarketObjects : OMBaseClass<OMModelToMarketObjects>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 70200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 70200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _cadastralnumber;
+        /// <summary>
+        /// 70200200 Кадастровый номер объекта (CADASTRAL_NUMBER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200200)]
+        public string CadastralNumber
+        {
+            get
+            {
+                CheckPropertyInited("CadastralNumber");
+                return _cadastralnumber;
+            }
+            set
+            {
+                _cadastralnumber = value;
+                NotifyPropertyChanged("CadastralNumber");
+            }
+        }
+
+
+        private decimal _price;
+        /// <summary>
+        /// 70200300 Цена объекта (PRICE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200300)]
+        public decimal Price
+        {
+            get
+            {
+                CheckPropertyInited("Price");
+                return _price;
+            }
+            set
+            {
+                _price = value;
+                NotifyPropertyChanged("Price");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Common
 {
     /// <summary>

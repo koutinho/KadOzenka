@@ -3130,6 +3130,12 @@ namespace ObjectModel.ES
         /// </summary>
         [Reference]
         public List<ObjectModel.ES.OMEsReferenceItem> EsReferenceItem { get; set; }
+
+        /// <summary>
+        /// Ссылка на (701 Связь модели с атрибутами)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Modeling.OMModelAttributesRelation> ModelAttributesRelation { get; set; }
         public OMEsReference()
         {
 
@@ -3139,6 +3145,8 @@ namespace ObjectModel.ES
             PropertyChangedList = new HashSet<String>();
 
             EsReferenceItem = new List<ObjectModel.ES.OMEsReferenceItem>();
+
+            ModelAttributesRelation = new List<ObjectModel.Modeling.OMModelAttributesRelation>();
 
         }
         public OMEsReference(bool trackPropertyChanging) : this()
@@ -3204,6 +3212,12 @@ namespace ObjectModel.Modeling
     public partial class OMModelingModel
     {
 
+
+        /// <summary>
+        /// Ссылка на (701 Связь модели с атрибутами)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Modeling.OMModelAttributesRelation> ModelAttributesRelation { get; set; }
         public OMModelingModel()
         {
 
@@ -3211,6 +3225,8 @@ namespace ObjectModel.Modeling
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            ModelAttributesRelation = new List<ObjectModel.Modeling.OMModelAttributesRelation>();
 
         }
         public OMModelingModel(bool trackPropertyChanging) : this()
@@ -3238,6 +3254,30 @@ namespace ObjectModel.Modeling
 
         }
         public OMModelAttributesRelation(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Modeling
+{
+    /// <summary>
+    /// 702 Связь модели и объектов аналогов
+    /// </summary>
+    public partial class OMModelToMarketObjects
+    {
+
+        public OMModelToMarketObjects()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMModelToMarketObjects(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

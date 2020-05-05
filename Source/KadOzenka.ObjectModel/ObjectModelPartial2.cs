@@ -152,19 +152,19 @@ namespace ObjectModel.Gbu
 
 namespace ObjectModel
 {
-    /// <summary>
-    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
-    /// </summary>
-    public partial class OMStarage
-    {
-        /// <summary>
-        /// Ссылка на (200 Объекты недвижимости)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+	/// <summary>
+	/// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
+	/// </summary>
+	public partial class OMStarage
+	{
+		/// <summary>
+		/// Ссылка на (200 Объекты недвижимости)
+		/// </summary>
+		[ParentRegister]
+		[XmlIgnore]
+		public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
 
-    }
+	}
 }
 
 
@@ -1100,6 +1100,38 @@ namespace ObjectModel.ES
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.ES.OMEsReference ParentEsReference { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Modeling
+{
+    /// <summary>
+    /// 701 Связь модели с атрибутами
+    /// </summary>
+    public partial class OMModelAttributesRelation
+    {
+        /// <summary>
+        /// Ссылка на (609 Экспресс оценка. Справочники)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.ES.OMEsReference ParentEsReference { get; set; }
+
+        /// <summary>
+        /// Ссылка на (700 Моделирование)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Modeling.OMModelingModel ParentModelingModel { get; set; }
+
+        /// <summary>
+        /// Ссылка на (931 Список показателей реестра)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
 
     }
 }
