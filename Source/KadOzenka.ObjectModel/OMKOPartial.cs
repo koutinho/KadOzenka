@@ -232,35 +232,47 @@ namespace ObjectModel.KO
     }
     public partial class OMUnit
     {
+        private static readonly object LockObject = new Object();
+
         public long OldId { get; set; }
         public bool isExplication { get; set; }
         public void SaveAndCreate()
         {
-            ObjectModel.Gbu.OMMainObject mainObject = ObjectModel.Gbu.OMMainObject
-            .Where(x => x.CadastralNumber == this.CadastralNumber)
-            .SelectAll()
-            .ExecuteFirstOrDefault();
-            if (mainObject == null)
+            ObjectModel.Gbu.OMMainObject mainObject;
+
+            lock (LockObject)
             {
-                mainObject = new ObjectModel.Gbu.OMMainObject
+                mainObject = ObjectModel.Gbu.OMMainObject
+                    .Where(x => x.CadastralNumber == this.CadastralNumber)
+                    .SelectAll()
+                    .ExecuteFirstOrDefault();
+
+
+                if (mainObject == null)
                 {
-                    Id = -1,
-                    CadastralNumber = this.CadastralNumber,
-                    IsActive = true,
-                    ObjectType_Code = this.PropertyType_Code,
-                    KadastrKvartal = this.CadastralBlock,
-                };
-                mainObject.Save();
-            }
-            else
-            {
-                if (mainObject.ObjectType_Code != PropertyType_Code || mainObject.KadastrKvartal!=CadastralBlock)
-                {
-                    mainObject.ObjectType_Code = PropertyType_Code;
-                    mainObject.KadastrKvartal = CadastralBlock;
+                    mainObject = new ObjectModel.Gbu.OMMainObject
+                    {
+                        Id = -1,
+                        CadastralNumber = this.CadastralNumber,
+                        IsActive = true,
+                        ObjectType_Code = this.PropertyType_Code,
+                        KadastrKvartal = this.CadastralBlock,
+                    };
+
                     mainObject.Save();
                 }
+                else
+                {
+                    if (mainObject.ObjectType_Code != PropertyType_Code || mainObject.KadastrKvartal != CadastralBlock)
+                    {
+                        mainObject.ObjectType_Code = PropertyType_Code;
+                        mainObject.KadastrKvartal = CadastralBlock;
+                        mainObject.Save();
+                    }
+                }
             }
+
+
             this.ObjectId = mainObject.Id;
             this.Save();
         }
