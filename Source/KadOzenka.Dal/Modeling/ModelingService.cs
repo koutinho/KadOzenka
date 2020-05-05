@@ -189,7 +189,32 @@ namespace KadOzenka.Dal.Modeling
 			}
 		}
 
-		
+
+		public List<ModelMarketObjectRelationDto> GetMarketObjectsForModel(long modelId)
+		{
+			var models = OMModelToMarketObjects.Where(x => x.ModelId == modelId)
+				.OrderBy(x => x.CadastralNumber)
+				.SelectAll()
+				.Execute();
+
+			return models.Select(ToDto).ToList();
+		}
+
+		public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
+		{
+			var ids = objects.Select(x => x.Id);
+			var objectsFromDb = OMModelToMarketObjects.Where(x => ids.Contains(x.Id)).SelectAll().Execute();
+			objects.ForEach(obj =>
+			{
+				var objFromDb = objectsFromDb.FirstOrDefault(x => x.Id == obj.Id);
+				if (objFromDb == null)
+					return;
+
+				objFromDb.IsExcluded = obj.IsExcluded;
+				objFromDb.Save();
+			});
+		}
+
 
 		#region Support Methods
 
@@ -202,6 +227,17 @@ namespace KadOzenka.Dal.Modeling
 				TourId = entity.TourId,
 				TourYear = entity.ParentTour.Year ?? 0,
 				MarketSegment = entity.MarketSegment_Code
+			};
+		}
+
+		public ModelMarketObjectRelationDto ToDto(OMModelToMarketObjects entity)
+		{
+			return new ModelMarketObjectRelationDto
+			{
+				Id = entity.Id,
+				CadastralNumber = entity.CadastralNumber,
+				Price = entity.Price,
+				IsExcluded = entity.IsExcluded.GetValueOrDefault()
 			};
 		}
 

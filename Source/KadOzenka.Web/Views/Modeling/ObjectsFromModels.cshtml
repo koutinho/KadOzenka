@@ -84,6 +84,8 @@
 			]
 		});
 
+		$("#grid .k-grid-content").on("change", "input.chkbx", updateGridDataSource);
+		$('#excludeBtn').on('click', excludeBuildingsFromCalculation);
 	});
 
 
@@ -149,6 +151,35 @@
 	function updateModelInfo() {
 		updateModelMainInfo();
 		updateGrid();
+	}
+
+
+	function updateGridDataSource(e) {
+		var grid = $("#grid").data("kendoGrid");
+		var dataItem = grid.dataItem($(e.target).closest("tr"));
+		dataItem.IsExcluded = this.checked;
+		dataItem.IsDirty = true;
+	}
+
+
+	function excludeBuildingsFromCalculation() {
+		var modelId = $("#ModelId").data("kendoDropDownList").value();
+		var objects = $("#grid").data("kendoGrid").dataSource.data();
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: 'POST',
+			url: '@Url.Action("ChangeObjectsStatusInCalculation", "Modeling")',
+			data: { objects: JSON.stringify({ objects }), modelId: modelId },
+			success: function (response) {
+				Common.ShowMessage(response.Message);
+			},
+			error: function(response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function() {
+				kendo.ui.progress($('body'), false);
+			}
+		});
 	}
 
 </script>

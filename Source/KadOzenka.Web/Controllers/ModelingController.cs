@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Modeling;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -64,7 +67,7 @@ namespace KadOzenka.Web.Controllers
 			var modelDto = ModelingModel.FromModel(modelingModel);
 			ModelingService.UpdateModel(modelDto);
 
-			//TODO удалить код для отладки
+			//TODO удалить код для отладки и добавить процесс
 			var process = new ModelingProcess();
 			process.StartProcess(new OMProcessType(), new OMQueue{ObjectId = modelDto.ModelId}, new CancellationToken());
 
@@ -91,7 +94,6 @@ namespace KadOzenka.Web.Controllers
 					Value = x.Id.ToString(),
 					Text = x.Name.ToString()
 				});
-
 			return Json(models);
 		}
 
@@ -106,9 +108,26 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public JsonResult GetObjectsForModel(long modelId)
 		{
-			var models = OMModelToMarketObjects.Where(x => x.ModelId == modelId).SelectAll().Execute();
-
+			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
+			var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel);
 			return new JsonResult(models);
+		}
+
+		[HttpPost]
+		public JsonResult ChangeObjectsStatusInCalculation(string objects, long modelId)
+		{
+			var objectsJson = JObject.Parse(objects).SelectToken("objects").ToString();
+
+			var allModels = JsonConvert.DeserializeObject<List<ModelMarketObjectRelationModel>>(objectsJson);
+			var changedModels = allModels.Where(x => x.IsDirty).ToList();
+			var objectsDtos = changedModels.Select(ModelMarketObjectRelationModel.FromModel).ToList();
+			
+			ModelingService.ChangeObjectsStatusInCalculation(objectsDtos);
+			//TODO добавить процесс
+
+			var message = "Данные успешно обновлены, процедура перерасчета модели добавлена в очередь.";
+
+			return Json(new { Message = message });
 		}
 
 		#endregion
