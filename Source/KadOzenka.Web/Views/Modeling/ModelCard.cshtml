@@ -89,6 +89,7 @@
 
 
 <script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js"></script>
 <script>
 	$(document).ready(function () {
 
@@ -96,8 +97,7 @@
 			items: [
 				{
 					type: 'button',
-					enable: false,
-				    text: '',
+					text: '',
 				    attributes: { title: "Сохранить" },
 				    icon: 'save',
 				    click: calculate
@@ -189,16 +189,16 @@
 
 	function onTourChange() {
 		var selectedTour = $("#TourId").data("kendoDropDownList").value();
-		var initialValue = '@Model.TourId';
-		if (selectedTour !== initialValue) {
+		var initialTourId = '@Model.TourId';
+		if (selectedTour !== initialTourId) {
 			Common.UI.ShowConfirm({
 				title: 'Изменение тура',
-				content: 'При изменении тура факторы будут сброшены. Вы уверены, что хотите сменить тур?',
+				content: 'При изменении тура атрибуты будут сброшены. Вы уверены, что хотите сменить тур?',
 				onSuccess: function () {
 					$("#grid").data("kendoGrid").dataSource.data([]);
 				},
 				onFail: function() {
-					$("#TourId").data("kendoDropDownList").value(initialValue);
+					$("#TourId").data("kendoDropDownList").value(initialTourId);
 					var window = $(this).closest('[data-role=window]').data('kendoWindow');
 					window.close();
 					window.destroy();
@@ -208,9 +208,9 @@
 	}
 
 
-	//TODO
 	function calculate() {
-		validateForm();
+		if (!validateForm())
+			return;
 		var attributes = getAttributesFromGrid();
 		var form = $('#calculateModelForm');
 		var formObject = Common.Functions.FormToObject(form);
@@ -221,7 +221,13 @@
 			url: form.attr('action'),
 			data: formObject,
 			success: function(response) {
-				//Common.ShowMessage(response.Message);
+				if (response.Errors) {
+					var errors = getErrors(response.Errors);
+					Common.ShowError(errors);
+					return;
+				} else {
+					Common.ShowMessage(response.Message);
+				}
 			},
 			error: function(response) {
 				Common.ShowError(response.responseText);
@@ -251,7 +257,10 @@
 		}
 		if (messages.length) {
 			Common.ShowError(messages.join("<br/>"));
+			return false;
 		}
+
+		return true;
 	}
 
 
@@ -367,6 +376,7 @@
 		}
 	}
 
+
 	function addDictionaryToGrid() {
 		var modal = $('#dictionaryAdditionModal');
 		modal.data("kendoWindow").close();
@@ -375,8 +385,8 @@
 		changeToolBarButtonsClass();
 	}
 
-	function UpdateDictionaryInfoInGridRow(dictionaryId, dictionaryName)
-	{
+
+	function UpdateDictionaryInfoInGridRow(dictionaryId, dictionaryName) {
 		var grid = $("#grid").data("kendoGrid");
 		var dataItem = grid.dataSource.get(currentAttributeId);
 		dataItem.DictionaryId = dictionaryId;

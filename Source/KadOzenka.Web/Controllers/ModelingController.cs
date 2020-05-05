@@ -46,7 +46,6 @@ namespace KadOzenka.Web.Controllers
 			return Json(new {Message = "Сохранение выполнено"});
 		}
 
-		//TODO add attributes
 		[HttpPost]
 		public JsonResult Calculate(ModelingModel modelingModel)
 		{
@@ -55,6 +54,8 @@ namespace KadOzenka.Web.Controllers
 
 			var modelDto = ModelingModel.FromModel(modelingModel);
 			ModelingService.UpdateModel(modelDto);
+
+			//TODO расчет модели
 
 			return Json(new { Message = "Обновление выполнено" });
 		}

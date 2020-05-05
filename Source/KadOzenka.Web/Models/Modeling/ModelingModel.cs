@@ -25,7 +25,7 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Тип")]
 		public ObjectType ObjectType { get; set; }
 
-		public List<Attributes> Attributes { get; set; }
+		public List<AttributeDto> Attributes { get; set; }
 
 
 		public static ModelingModel ToModel(ModelingModelDto entity)

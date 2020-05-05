@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
@@ -24,7 +26,7 @@ namespace KadOzenka.Dal.Modeling
 		}
 
 
-		public List<Attributes> GetModelAttributes(long modelId)
+		public List<AttributeDto> GetModelAttributes(long modelId)
 		{
 			var query = new QSQuery
 			{
@@ -56,25 +58,25 @@ namespace KadOzenka.Dal.Modeling
 					}
 				}
 			};
-			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(Attributes.AttributeId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(Attributes.AttributeName)));
-			query.AddColumn(OMEsReference.GetColumn(x => x.Id, nameof(Attributes.DictionaryId)));
-			query.AddColumn(OMEsReference.GetColumn(x => x.Name, nameof(Attributes.DictionaryName)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(AttributeDto.AttributeId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(AttributeDto.AttributeName)));
+			query.AddColumn(OMEsReference.GetColumn(x => x.Id, nameof(AttributeDto.DictionaryId)));
+			query.AddColumn(OMEsReference.GetColumn(x => x.Name, nameof(AttributeDto.DictionaryName)));
 
-			var attributes = new List<Attributes>();
+			var attributes = new List<AttributeDto>();
 			var table = query.ExecuteQuery();
 			for (var i = 0; i < table.Rows.Count; i++)
 			{
 				var row = table.Rows[i];
-				
-				var attributeId = row[nameof(Attributes.AttributeId)].ParseToLongNullable();
-				var attributeName = row[nameof(Attributes.AttributeName)].ParseToString();
 
-				var dictionaryId = row[nameof(Attributes.DictionaryId)].ParseToLongNullable();
-				var dictionaryName = row[nameof(Attributes.DictionaryName)].ParseToString();
+				var attributeId = row[nameof(AttributeDto.AttributeId)].ParseToLongNullable();
+				var attributeName = row[nameof(AttributeDto.AttributeName)].ParseToString();
+
+				var dictionaryId = row[nameof(AttributeDto.DictionaryId)].ParseToLongNullable();
+				var dictionaryName = row[nameof(AttributeDto.DictionaryName)].ParseToString();
 
 				if (attributeId != null || dictionaryId != null)
-					attributes.Add(new Attributes
+					attributes.Add(new AttributeDto
 					{
 						AttributeId = attributeId,
 						AttributeName = attributeName,
@@ -105,11 +107,43 @@ namespace KadOzenka.Dal.Modeling
 			if (existedModel == null)
 				throw new Exception($"Не найдена модель с Id='{modelDto.ModelId}'");
 
-			//todo add attributes
-			existedModel.Name = modelDto.Name;
-			existedModel.TourId = modelDto.TourId;
-			existedModel.MarketSegment_Code = modelDto.MarketSegment;
-			existedModel.Save();
+			var newAttributes = modelDto.Attributes;
+			var existedModelAttributes = OMModelAttributesRelation.Where(x => x.ModelId == modelDto.ModelId).SelectAll().Execute();
+			using (var ts = new TransactionScope())
+			{
+				existedModel.Name = modelDto.Name;
+				existedModel.TourId = modelDto.TourId;
+				existedModel.MarketSegment_Code = modelDto.MarketSegment;
+				existedModel.Save();
+
+				if (newAttributes == null || newAttributes.Count == 0)
+				{
+					existedModelAttributes.ForEach(x => x.Destroy());
+				}
+				else
+				{
+					newAttributes.ForEach(newAttribute =>
+					{
+						var existedAttribute = existedModelAttributes.FirstOrDefault(x => x.AttributeId == newAttribute.AttributeId);
+						if (existedAttribute == null)
+						{
+							new OMModelAttributesRelation
+							{
+								ModelId = modelDto.ModelId,
+								AttributeId = newAttribute.AttributeId.Value,
+								DictionaryId = newAttribute.DictionaryId
+							}.Save();
+						}
+						else
+						{
+							existedAttribute.DictionaryId = newAttribute.DictionaryId;
+							existedAttribute.Save();
+						}
+					});
+				}
+
+				ts.Complete();
+			}
 		}
 
 
@@ -138,7 +172,7 @@ namespace KadOzenka.Dal.Modeling
 				message.AppendLine($"Не найден Тур с Id='{modelDto.TourId}'");
 
 			if(modelDto.MarketSegment == MarketSegment.None)
-				message.AppendLine($"Для модели не выбран сегмент");
+				message.AppendLine("Для модели не выбран сегмент");
 
 			if (message.Length != 0)
 				throw new Exception(message.ToString());
