@@ -8,6 +8,7 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public long ModelId { get; set; }
 		public string Name { get; set; }
 		public long TourId { get; set; }
+		public long TourYear { get; set; }
 		public MarketSegment MarketSegment { get; set; }
 		public List<AttributeDto> Attributes { get; set; }
 

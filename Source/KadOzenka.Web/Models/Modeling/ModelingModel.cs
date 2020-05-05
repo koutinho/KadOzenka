@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ObjectModel.Directory;
 using System.ComponentModel.DataAnnotations;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Oks;
 
@@ -18,9 +19,15 @@ namespace KadOzenka.Web.Models.Modeling
 		[Required(ErrorMessage = "Не выбран Тур")]
 		public long TourId { get; set; }
 
+		[Display(Name = "Тур")]
+		public long TourYear { get; set; }
+
 		[Display(Name = "Сегмент")]
 		[Required(ErrorMessage = "Не выбран Сегмент")]
-		public MarketSegment PropertyMarketSegment { get; set; }
+		public MarketSegment MarketSegmentCode { get; set; }
+
+		[Display(Name = "Сегмент")]
+		public string MarketSegment => MarketSegmentCode.GetEnumDescription();
 
 		[Display(Name = "Тип")]
 		public ObjectType ObjectType { get; set; }
@@ -33,8 +40,9 @@ namespace KadOzenka.Web.Models.Modeling
 			return new ModelingModel
 			{
 				Id = entity.ModelId,
-				PropertyMarketSegment = entity.MarketSegment,
+				MarketSegmentCode = entity.MarketSegment,
 				TourId = entity.TourId,
+				TourYear = entity.TourYear,
 				Name = entity.Name,
 				Attributes = entity.Attributes
 			};
@@ -47,7 +55,7 @@ namespace KadOzenka.Web.Models.Modeling
 				ModelId =  model.Id,
 				Name = model.Name,
 				TourId = model.TourId,
-				MarketSegment = model.PropertyMarketSegment,
+				MarketSegment = model.MarketSegmentCode,
 				Attributes = model.Attributes
 			};
 		}

@@ -18,13 +18,56 @@ namespace KadOzenka.Dal.Modeling
 	{
 		public ModelingModelDto GetModelById(long modelId)
 		{
-			var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+			var query = new QSQuery
+			{
+				MainRegisterID = OMModelingModel.GetRegisterId(),
+				Condition = new QSConditionSimple(OMModelingModel.GetColumn(x => x.Id), QSConditionType.Equal, modelId),
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMTour.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMModelingModel.GetColumn(x => x.TourId),
+							RightOperand = OMTour.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Inner
+					}
+				}
+			};
+			query.AddColumn(OMModelingModel.GetColumn(x => x.Name, nameof(ModelingModelDto.Name)));
+			query.AddColumn(OMModelingModel.GetColumn(x => x.TourId, nameof(ModelingModelDto.TourId)));
+			query.AddColumn(OMTour.GetColumn(x => x.Year, nameof(ModelingModelDto.TourYear)));
+			query.AddColumn(OMModelingModel.GetColumn(x => x.MarketSegment_Code, nameof(ModelingModelDto.MarketSegment)));
+
+			var table = query.ExecuteQuery();
+			ModelingModelDto model = null;
+			if (table.Rows.Count != 0)
+			{
+				var row = table.Rows[0];
+
+				var modelName = row[nameof(ModelingModelDto.Name)].ParseToString();
+				var tourId = row[nameof(ModelingModelDto.TourId)].ParseToLong();
+				var tourYear = row[nameof(ModelingModelDto.TourYear)].ParseToLong();
+				var segment = (MarketSegment)row[nameof(ModelingModelDto.MarketSegment)];
+
+				model = new ModelingModelDto
+				{
+					ModelId = modelId,
+					Name = modelName,
+					TourId = tourId,
+					TourYear = tourYear,
+					MarketSegment = segment
+				};
+			}
+
 			if (model == null)
 				throw new Exception($"Не найдена модель с Id='{modelId}'");
 
-			return ToDto(model);
+			return model;
 		}
-
 
 		public List<AttributeDto> GetModelAttributes(long modelId)
 		{
@@ -146,6 +189,7 @@ namespace KadOzenka.Dal.Modeling
 			}
 		}
 
+		
 
 		#region Support Methods
 
@@ -156,6 +200,7 @@ namespace KadOzenka.Dal.Modeling
 				ModelId = entity.Id,
 				Name = entity.Name,
 				TourId = entity.TourId,
+				TourYear = entity.ParentTour.Year ?? 0,
 				MarketSegment = entity.MarketSegment_Code
 			};
 		}

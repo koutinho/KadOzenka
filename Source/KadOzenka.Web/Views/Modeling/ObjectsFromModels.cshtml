@@ -1,0 +1,155 @@
+﻿@using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new { id = "saveModelForm" }))
+{
+	<div class="form-horizontal" style="padding: 2%;">
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabel("Модель")
+			</div>
+			<div class="col-sm-9">
+				@(Html.Kendo().DropDownList()
+							.Name("ModelId")
+							.DataTextField("Text")
+							.DataValueField("Value")
+							.Filter(FilterType.Contains)
+							.DataSource(x =>
+							{
+								x.Read("GetModels", "Modeling");
+							})
+							.Events(x =>
+							{
+								x.DataBound("updateModelInfo");
+								x.Change("updateModelInfo");
+							}))
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.Label("", "Сегмент")
+			</div>
+			<div class="col-sm-9">
+				<div id="segment"></div>
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.Label("", "Тур")
+			</div>
+			<div class="col-sm-9">
+				<div id="tour"></div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<div style="display: flex;">
+				<div style="align-items: stretch">
+					<div id="grid"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+
+<script id="GridToolbarTemplate" type="text/x-kendo-template">
+	<div style="float: left">
+		<a class="k-button k-button-icon" id="excludeBtn" style="width:120px;">
+			<span class="k-icon k-i-save" style="padding-right: 30%"></span>
+			Сохранить
+		</a>
+	</div>
+
+</script>
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+	$(document).ready(function () {
+
+		$("#grid").kendoGrid({
+			toolbar: kendo.template($("#GridToolbarTemplate").html()),
+			pageable: true,
+			columns: [
+				{
+					title: "Кадастровый номер",
+					field: "CadastralNumber"
+				},
+				{
+					title: "Цена",
+					field: "Price"
+				},
+				{
+					title: "Исключен из расчета",
+					field: "IsExcluded",
+					template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx" />'
+				}
+			]
+		});
+
+	});
+
+
+
+	function updateModelMainInfo() {
+		var modelId = $("#ModelId").data("kendoDropDownList").value();
+		kendo.ui.progress($('body'), true);
+		$.ajax({
+			type: 'GET',
+			url: '@Url.Action("GetModelById", "Modeling")',
+			data: { modelId: modelId},
+			success: function (response) {
+				$("#segment").kendoDropDownList({
+					dataTextField: 'SegmentName',
+					dataValueField: 'SegmentCode',
+					dataSource: [{ SegmentCode: response.MarketSegmentCode, SegmentName: response.MarketSegment }],
+					enable: false
+				});
+				$("#tour").kendoDropDownList({
+					dataTextField: 'TourYear',
+					dataValueField: 'TourId',
+					dataSource: [{ TourId: response.TourId, TourYear: response.TourYear }],
+					enable: false
+				});
+			},
+			error: function (response) {
+				Common.ShowError(response.responseText);
+			},
+			complete: function () {
+				kendo.ui.progress($('body'), false);
+			}
+		});
+	}
+
+
+	function updateGrid() {
+		var modelId = $("#ModelId").data("kendoDropDownList").value();
+		var dataSource = new kendo.data.DataSource({
+			transport: {
+				read: {
+					url: '@Url.Action("GetObjectsForModel", "Modeling")' + "?modelId=" + modelId,
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json'
+				}
+			},
+			schema: {
+				model: {
+					id: "Id",
+					fields: {
+						Id: {editable: false, nullable: true},
+						CadastralNumber: { editable: false },
+						Price: { editable: false },
+						IsExcluded: { type: "boolean", editable: true }
+					}
+				}
+			},
+			pageSize: 15
+		});
+		$("#grid").data("kendoGrid").setDataSource(dataSource);
+	}
+
+
+	function updateModelInfo() {
+		updateModelMainInfo();
+		updateGrid();
+	}
+
+</script>
+
