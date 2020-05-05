@@ -8,17 +8,19 @@ namespace KadOzenka.Web.Models.Modeling
 {
 	public class ModelingModel
 	{
-		public long? Id { get; set; }
+		public long Id { get; set; }
 
 		[Display(Name = "Имя")]
 		[Required(ErrorMessage = "Не заполнено Имя")]
 		public string Name { get; set; }
 
 		[Display(Name = "Тур")]
-		public long? TourId { get; set; }
+		[Required(ErrorMessage = "Не выбран Тур")]
+		public long TourId { get; set; }
 
 		[Display(Name = "Сегмент")]
-		public MarketSegment? PropertyMarketSegment { get; set; }
+		[Required(ErrorMessage = "Не выбран Сегмент")]
+		public MarketSegment PropertyMarketSegment { get; set; }
 
 		[Display(Name = "Тип")]
 		public ObjectType ObjectType { get; set; }
@@ -42,7 +44,11 @@ namespace KadOzenka.Web.Models.Modeling
 		{
 			return new ModelingModelDto
 			{
-				Name = model.Name
+				ModelId =  model.Id,
+				Name = model.Name,
+				TourId = model.TourId,
+				MarketSegment = model.PropertyMarketSegment,
+				Attributes = model.Attributes
 			};
 		}
 	}

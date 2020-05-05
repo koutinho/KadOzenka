@@ -6,7 +6,7 @@
               ShowObjectCards="true" RightSplitterOrientation="Horizontal" SplitterSize="40%" ShowRowMenu="true">
   
   <Buttons>
-    <Button Caption="Модель" NavigateURL="/Modeling/EditModel" WindowHeight="200" WindowWidth="800" Icon="fas fa-plus"/>
+    <Button Caption="Модель" NavigateURL="/Modeling/AddModel" WindowHeight="400" WindowWidth="800" Icon="fas fa-plus"/>
   </Buttons>
 
 

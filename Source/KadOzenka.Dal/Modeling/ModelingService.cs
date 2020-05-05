@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Core.Register;
+using ObjectModel.Directory;
 using ObjectModel.ES;
+using ObjectModel.KO;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling
@@ -83,16 +86,33 @@ namespace KadOzenka.Dal.Modeling
 			return attributes;
 		}
 
-		//todo
 		public int AddModel(ModelingModelDto modelDto)
 		{
+			ValidateModel(modelDto);
+
 			return new OMModelingModel
 			{
-				Name = modelDto.Name
+				Name = modelDto.Name,
+				TourId = modelDto.TourId,
+				MarketSegment_Code = modelDto.MarketSegment
 			}.Save();
 		}
 
-		
+		public void UpdateModel(ModelingModelDto modelDto)
+		{
+			ValidateModel(modelDto);
+			var existedModel = OMModelingModel.Where(x => x.Id == modelDto.ModelId).SelectAll().ExecuteFirstOrDefault();
+			if (existedModel == null)
+				throw new Exception($"Не найдена модель с Id='{modelDto.ModelId}'");
+
+			//todo add attributes
+			existedModel.Name = modelDto.Name;
+			existedModel.TourId = modelDto.TourId;
+			existedModel.MarketSegment_Code = modelDto.MarketSegment;
+			existedModel.Save();
+		}
+
+
 		#region Support Methods
 
 		public ModelingModelDto ToDto(OMModelingModel entity)
@@ -104,6 +124,24 @@ namespace KadOzenka.Dal.Modeling
 				TourId = entity.TourId,
 				MarketSegment = entity.MarketSegment_Code
 			};
+		}
+
+		private void ValidateModel(ModelingModelDto modelDto)
+		{
+			var message = new StringBuilder();
+
+			if (string.IsNullOrWhiteSpace(modelDto.Name))
+				message.AppendLine("У модели не заполнено имя");
+
+			var isTourExists = OMTour.Where(x => x.Id == modelDto.TourId).ExecuteExists();
+			if(!isTourExists)
+				message.AppendLine($"Не найден Тур с Id='{modelDto.TourId}'");
+
+			if(modelDto.MarketSegment == MarketSegment.None)
+				message.AppendLine($"Для модели не выбран сегмент");
+
+			if (message.Length != 0)
+				throw new Exception(message.ToString());
 		}
 
 		#endregion

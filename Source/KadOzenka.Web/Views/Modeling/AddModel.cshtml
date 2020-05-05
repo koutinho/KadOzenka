@@ -1,14 +1,37 @@
 ﻿@model KadOzenka.Web.Models.Modeling.ModelingModel
 
-@using (Html.BeginForm("EditModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
+@using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
 {
 	<div class="form-horizontal" style="padding: 5% 5% 0 5%;">
 		<div class="form-group">
 			<div class="col-sm-2">
 				@Html.CustomLabelFor(x => x.Name)
 			</div>
-			<div class="col-sm-8 col-sm-offset-1">
+			<div class="col-sm-9">
 				@Html.KendoTextBoxFor(x => x.Name, isReadonly: false)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(x => x.PropertyMarketSegment)
+			</div>
+			<div class="col-sm-9">
+				@Html.KendoEnumDropDownListFor(x => x.PropertyMarketSegment, isReadonly: false, withoutNull: true)
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-2">
+				@Html.CustomLabelFor(x => x.TourId)
+			</div>
+			<div class="col-sm-9">
+				@(Html.Kendo().DropDownListFor(m => m.TourId)
+					.DataTextField("Text")
+					.DataValueField("Value")
+					.Filter(FilterType.Contains)
+					.DataSource(source =>
+					{
+						source.Read("GetRatingTours", "Tour");
+					}))
 			</div>
 		</div>
 		<div class="form-group">

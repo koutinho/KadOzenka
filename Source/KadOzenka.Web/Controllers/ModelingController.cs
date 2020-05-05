@@ -1,5 +1,4 @@
-﻿using System;
-using KadOzenka.Dal.Modeling;
+﻿using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,31 +29,34 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpGet]
-		public ActionResult EditModel()
+		public ActionResult AddModel()
 		{
 			return View();
 		}
 
 		[HttpPost]
-		public JsonResult EditModel(ModelingModel modelingModel)
+		public JsonResult AddModel(ModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
 
-			if (modelingModel == null)
-				throw new Exception("Не передана модель для сохранения");
-
 			var modelDto = ModelingModel.FromModel(modelingModel);
-
 			ModelingService.AddModel(modelDto);
 
-			return Json(new {Message = "Сохранение выполненно"});
+			return Json(new {Message = "Сохранение выполнено"});
 		}
 
+		//TODO add attributes
 		[HttpPost]
-		public void Calculate(ModelingModel model)
+		public JsonResult Calculate(ModelingModel modelingModel)
 		{
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
 
+			var modelDto = ModelingModel.FromModel(modelingModel);
+			ModelingService.UpdateModel(modelDto);
+
+			return Json(new { Message = "Обновление выполнено" });
 		}
 	}
 }
