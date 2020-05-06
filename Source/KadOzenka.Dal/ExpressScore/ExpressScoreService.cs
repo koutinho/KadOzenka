@@ -32,17 +32,17 @@ namespace KadOzenka.Dal.ExpressScore
 			return OMSettingsParams.Where(x => x.SegmentType_Code == segmentType).SelectAll().ExecuteFirstOrDefault();
 		}
 
-		public ParameterDto GetEstimateParametersByKn(string kn, int tourId, int attributeId, MarketSegment segmentType, int registerId)
+		public AttributeDto GetEstimateParametersByKn(string kn, int tourId, int attributeId, MarketSegment segmentType, int registerId)
 		{
-			var unitsIds = ScoreCommonService.GetUnitsIdsByKn(kn, tourId);
+			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
 			var qsGroup = GetQsConditionForCostFactors(segmentType);
-			return unitsIds.Count > 0 ? ScoreCommonService.GetEstimateParameters(unitsIds, attributeId, registerId, qsGroup) : null;
+			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId, qsGroup) : null;
 		}
 
-		public ParameterDto GetEstimateParametersById(int id, int attributeId, MarketSegment segmentType, int registerId)
+		public AttributeDto GetEstimateParametersById(int id, int attributeId, MarketSegment segmentType, int registerId)
 		{
 			var qsGroup = GetQsConditionForCostFactors(segmentType);
-			return ScoreCommonService.GetEstimateParameters(new List<long> { id }, attributeId, registerId, qsGroup);
+			return ScoreCommonService.GetParameters(new List<long> { id }, attributeId, registerId, qsGroup);
 		}
 
 
@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.ExpressScore
 				return "Не найдены настройки для выбрвного сегмента";
 			}
 
-			var unitsIds = ScoreCommonService.GetUnitsIdsByKn(yandexAddress.CadastralNumber, (int)setting.TourId);
+			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(yandexAddress.CadastralNumber, (int)setting.TourId);
 			if (unitsIds.Count == 0)
 			{
 				return "Для выбранного тура и объекта в Ко части нет данных";
@@ -415,7 +415,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 					switch (analogFactor.GeTypeEstimatedParameter())
 					{
-						case ParameterType.String:
+						case AttributeType.String:
 						{
 							if (complex.DictionaryId != null && complex.DictionaryId != 0)
 							{
@@ -433,7 +433,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 							break;
 						}
-						case ParameterType.Date:
+						case AttributeType.Date:
 						{
 							if (complex.DictionaryId != null && complex.DictionaryId != 0)
 							{
@@ -450,7 +450,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 							break;
 						}
-						case ParameterType.Number:
+						case AttributeType.Number:
 						{
 							decimal analogC = ScoreCommonService.GetCoefficientFromNumberFactor(analogFactor,
 								complex.DictionaryId.GetValueOrDefault());
