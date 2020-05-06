@@ -367,21 +367,30 @@ namespace KadOzenka.Dal.DataImport
 					        handledObjects.Add(row.Index, registerObject);
                         }
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
-					    for (int i = 0; i < maxColumns; i++)
-					    {
-					        //mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(200, 255, 200));
-					    }
-                    }
+                        lock (locked)
+                        {
+	                        for (int i = 0; i < maxColumns; i++)
+	                        {
+		                        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern
+			                        .SetSolid(SpreadsheetColor.FromArgb(200, 255, 200));
+	                        }
+                        }
+					}
 				}
 				catch (Exception ex)
 				{
 					long errorId = ErrorManager.LogError(ex);
 					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
-				    for (int i = 0; i < maxColumns; i++) { 
-				        //mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
-				    }
+					lock (locked)
+					{
+						for (int i = 0; i < maxColumns; i++)
+						{
+							mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern
+								.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+						}
+					}
 
-                    lock (locked)
+					lock (locked)
 				    {
 				        errorCount++;
 				    }
