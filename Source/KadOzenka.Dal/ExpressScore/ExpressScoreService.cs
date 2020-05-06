@@ -5,8 +5,9 @@ using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Dal.ScoreCommon;
+using KadOzenka.Dal.ScoreCommon.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Directory.ES;
 using ObjectModel.Es;
@@ -18,21 +19,30 @@ namespace KadOzenka.Dal.ExpressScore
 {
 	public class ExpressScoreService
 	{
+		public ScoreCommonService ScoreCommonService { get; set; }
+
+		public ExpressScoreService(ScoreCommonService scoreCommonService)
+		{
+			ScoreCommonService = scoreCommonService;
+		}
+
 
 		public OMSettingsParams GetSetting(MarketSegment segmentType)
 		{
 			return OMSettingsParams.Where(x => x.SegmentType_Code == segmentType).SelectAll().ExecuteFirstOrDefault();
 		}
 
-		public EstimatedDto GetEstimateParametersByKn(string kn, int tourId, int attributeId, MarketSegment segmentType, int registerId)
+		public ParameterDto GetEstimateParametersByKn(string kn, int tourId, int attributeId, MarketSegment segmentType, int registerId)
 		{
-			var unitsIds = GetUnitsIdsByKn(kn, tourId);
-			return unitsIds.Count > 0 ? GetEstimateParameters(unitsIds, attributeId, segmentType, registerId) : null;
+			var unitsIds = ScoreCommonService.GetUnitsIdsByKn(kn, tourId);
+			var qsGroup = GetQsConditionForCostFactors(segmentType);
+			return unitsIds.Count > 0 ? ScoreCommonService.GetEstimateParameters(unitsIds, attributeId, registerId, qsGroup) : null;
 		}
 
-		public EstimatedDto GetEstimateParametersById(int id, int attributeId, MarketSegment segmentType, int registerId)
+		public ParameterDto GetEstimateParametersById(int id, int attributeId, MarketSegment segmentType, int registerId)
 		{
-			return GetEstimateParameters(new List<long>{id}, attributeId, segmentType, registerId);
+			var qsGroup = GetQsConditionForCostFactors(segmentType);
+			return ScoreCommonService.GetEstimateParameters(new List<long> { id }, attributeId, registerId, qsGroup);
 		}
 
 
@@ -56,7 +66,7 @@ namespace KadOzenka.Dal.ExpressScore
 				return "Не найдены настройки для выбрвного сегмента";
 			}
 
-			var unitsIds = GetUnitsIdsByKn(yandexAddress.CadastralNumber, (int)setting.TourId);
+			var unitsIds = ScoreCommonService.GetUnitsIdsByKn(yandexAddress.CadastralNumber, (int)setting.TourId);
 			if (unitsIds.Count == 0)
 			{
 				return "Для выбранного тура и объекта в Ко части нет данных";
@@ -74,7 +84,7 @@ namespace KadOzenka.Dal.ExpressScore
 			QSQuery query;
 			try
 			{
-				query = GetQsQuery((int)setting.Registerid, (int)idAttribute.GetValueOrDefault(), unitsIds, GetQsConditionForCostFactors(segmentType));
+				query = ScoreCommonService.GetQsQuery((int)setting.Registerid, (int)idAttribute.GetValueOrDefault(), unitsIds, GetQsConditionForCostFactors(segmentType));
 			}
 			catch (Exception e)
 			{
@@ -294,7 +304,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 				//Корректировка на дату 
 				var dateDict = OMEsReferenceItem.Where(x => x.ReferenceId == 44138946).SelectAll().Execute()
-					.Select(ReferenceToDate).ToList();
+					.Select(ScoreCommonService.ReferenceToDate).ToList();
 
 				var dateEstimate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
 
@@ -329,7 +339,7 @@ namespace KadOzenka.Dal.ExpressScore
 				if (scenarioType != null && scenarioType == ScenarioType.Oks)
 				{
 					var dateNumb = OMEsReferenceItem.Where(x => x.ReferenceId == 44205104).SelectAll().Execute()
-						.Select(ReferenceToNumber).ToList();
+						.Select(ScoreCommonService.ReferenceToNumber).ToList();
 
 					if (analog.FloorsCount != 0)
 					{
@@ -349,7 +359,7 @@ namespace KadOzenka.Dal.ExpressScore
 				{
 					var floor = (int) analog.Floor;
 					var floors = OMEsReferenceItem.Where(x => x.ReferenceId == 44205175).SelectAll().Execute()
-						.Select(ReferenceToNumber).OrderByDescending(x => x.Value).ToList().ToList();
+						.Select(ScoreCommonService.ReferenceToNumber).OrderByDescending(x => x.Value).ToList().ToList();
 
 					var floorFactor = floor != 0
 						? floor > floors[0].Key ? floors[0].Value :
@@ -405,13 +415,13 @@ namespace KadOzenka.Dal.ExpressScore
 
 					switch (analogFactor.GeTypeEstimatedParameter())
 					{
-						case TypeEstimatedParameter.String:
+						case ParameterType.String:
 						{
 							if (complex.DictionaryId != null && complex.DictionaryId != 0)
 							{
-								decimal analogC = GetCoefficientFromStringFactor(analogFactor,
+								decimal analogC = ScoreCommonService.GetCoefficientFromStringFactor(analogFactor,
 									complex.DictionaryId.GetValueOrDefault());
-								decimal targetObjectC = GetCoefficientFromStringFactor(targetObjectFactor,
+								decimal targetObjectC = ScoreCommonService.GetCoefficientFromStringFactor(targetObjectFactor,
 									complex.DictionaryId.GetValueOrDefault());
 
 								if (analogC == 0 || targetObjectC == 0) break;
@@ -423,13 +433,13 @@ namespace KadOzenka.Dal.ExpressScore
 
 							break;
 						}
-						case TypeEstimatedParameter.Date:
+						case ParameterType.Date:
 						{
 							if (complex.DictionaryId != null && complex.DictionaryId != 0)
 							{
-								decimal analogC = GetCoefficientFromDateFactor(analogFactor,
+								decimal analogC = ScoreCommonService.GetCoefficientFromDateFactor(analogFactor,
 									complex.DictionaryId.GetValueOrDefault());
-								decimal targetObjectC = GetCoefficientFromDateFactor(targetObjectFactor,
+								decimal targetObjectC = ScoreCommonService.GetCoefficientFromDateFactor(targetObjectFactor,
 									complex.DictionaryId.GetValueOrDefault());
 
 								if (analogC == 0 || targetObjectC == 0) break;
@@ -440,11 +450,11 @@ namespace KadOzenka.Dal.ExpressScore
 
 							break;
 						}
-						case TypeEstimatedParameter.Number:
+						case ParameterType.Number:
 						{
-							decimal analogC = GetCoefficientFromNumberFactor(analogFactor,
+							decimal analogC = ScoreCommonService.GetCoefficientFromNumberFactor(analogFactor,
 								complex.DictionaryId.GetValueOrDefault());
-							decimal targetObjectC = GetCoefficientFromNumberFactor(targetObjectFactor,
+							decimal targetObjectC = ScoreCommonService.GetCoefficientFromNumberFactor(targetObjectFactor,
 								complex.DictionaryId.GetValueOrDefault());
 
 							if (analogC == 0 || targetObjectC == 0) break;
@@ -508,50 +518,6 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
-		private decimal GetCoefficientFromStringFactor(EstimatedDto factor, int referenceId)
-		{
-			var dict = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
-				.ToList();
-			var type = OMEsReference.Where(x => x.Id == dict.FirstOrDefault().ReferenceId).SelectAll().ExecuteFirstOrDefault().ValueType_Code;
-
-			if (type == ReferenceItemCodeType.String)
-			{
-				return dict.Select(ReferenceToString).FirstOrDefault(x => x.Key == factor.StringValue)?.Value ?? 1;
-			}
-			return 0;
-		}
-
-		private decimal GetCoefficientFromNumberFactor(EstimatedDto factor, int referenceId)
-		{
-			if (referenceId == 0)
-			{
-				return factor.NumberValue;
-			}
-
-			var dict = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
-				.ToList();
-			var type = OMEsReference.Where(x => x.Id == dict.FirstOrDefault().ReferenceId).SelectAll().ExecuteFirstOrDefault().ValueType_Code;
-
-			if (type == ReferenceItemCodeType.Number)
-			{
-				return dict.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == factor.NumberValue)?.Value ?? 1;
-			}
-			return 0;
-		}
-
-		private decimal GetCoefficientFromDateFactor(EstimatedDto factor, int referenceId)
-		{
-			var dict = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
-				.ToList();
-			var type = OMEsReference.Where(x => x.Id == dict.FirstOrDefault().ReferenceId).SelectAll().ExecuteFirstOrDefault().ValueType_Code;
-
-			if (type == ReferenceItemCodeType.Date)
-			{
-				return dict.Select(ReferenceToDate).FirstOrDefault(x => x.Key == factor.DateValue)?.Value ?? 1;
-			}
-			return 0;
-		}
-
 		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId, ScenarioType scenarioType, MarketSegment segmentType)
 		{
 			return new OMExpressScore
@@ -606,6 +572,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 
 		#region Wall material
+
 		public long AddWallMaterial(string wallMaterial, long mark)
 		{
 			return new OMWallMaterial { WallMaterial = wallMaterial, Mark = mark }.Save();
@@ -629,27 +596,6 @@ namespace KadOzenka.Dal.ExpressScore
 
 		#endregion
 
-		private QSQuery GetQsQuery(int registerId, int filterId, List<long> filterValues, QSConditionGroup qsGroup = null)
-		{
-			var requiredCondition = new QSConditionSimple
-			{
-				ConditionType = QSConditionType.In,
-				LeftOperand = new QSColumnSimple(filterId),
-				RightOperand = new QSColumnConstant(filterValues)
-			};
-
-			var resQsCGroup = new QSConditionGroup(QSConditionGroupType.And);
-			resQsCGroup.Add(qsGroup);
-			resQsCGroup.Add(requiredCondition);
-
-			var query = new QSQuery
-			{
-				MainRegisterID = registerId,
-				Condition = resQsCGroup
-			};
-
-			return query;
-		}
 
 		private CostFactorsDto GetCostFactorsBySegmentType(MarketSegment segmentType)
 		{
@@ -691,48 +637,5 @@ namespace KadOzenka.Dal.ExpressScore
 
 			return new QSConditionGroup();
 		}
-
-		private EstimatedDto GetEstimateParameters(List<long> ids, int attributeId, MarketSegment segmentType, int registerId)
-		{
-			var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == registerId && x.IsPrimaryKey)?.Id;
-
-			QSQuery query = GetQsQuery(registerId, (int)idAttribute.GetValueOrDefault(), ids, GetQsConditionForCostFactors(segmentType));
-			query.AddColumn(new QSColumnSimple(attributeId, nameof(PureEstimatedDto.Value)));
-			return query.ExecuteQuery<PureEstimatedDto>().Select(x => new EstimatedDto(x)).OrderByDescending(x => x.Id).FirstOrDefault();
-		}
-
-		private List<long> GetUnitsIdsByKn(string kn, int tourId)
-		{
-			return OMUnit.Where(x => x.CadastralNumber == kn && x.TourId == tourId)
-				.Select(x => x.Id).Execute().Select(x => x.Id).ToList();
-		}
-
-		private DateReference ReferenceToDate(OMEsReferenceItem item)
-		{
-			return new DateReference
-			{
-				Key = DateTime.Parse(item.Value),
-				Value = item.CalculationValue.GetValueOrDefault()
-			};
-		}
-
-		private NumberReference ReferenceToNumber(OMEsReferenceItem item)
-		{
-			return new NumberReference
-			{
-				Key = decimal.TryParse(item.Value, out var res) ? res : decimal.Zero,
-				Value = item.CalculationValue.GetValueOrDefault()
-			};
-		}
-
-		private StringReference ReferenceToString(OMEsReferenceItem item)
-		{
-			return new StringReference
-			{
-				Key = item.Value,
-				Value = item.CalculationValue.GetValueOrDefault()
-			};
-		}
-
 	}
 }

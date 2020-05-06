@@ -26,6 +26,7 @@ using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Helpers;
@@ -64,7 +65,8 @@ namespace CIPJS
 			services.AddTransient<TaskService>();
             services.AddTransient<TourFactorService>();
 	        services.AddTransient<GbuLongProcessesService>();
-	        services.AddTransient<ExpressScoreService>();
+	        services.AddTransient<ScoreCommonService>();
+			services.AddTransient<ExpressScoreService>();
 	        services.AddTransient<ExpressScoreReferenceService>();
 	        services.AddTransient<ViewRenderService>();
 	        services.AddTransient<ModelingService>();

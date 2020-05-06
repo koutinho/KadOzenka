@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace KadOzenka.Dal.ExpressScore.Dto
+namespace KadOzenka.Dal.ScoreCommon.Dto
 {
-	public enum TypeEstimatedParameter
+	public enum ParameterType
 	{
 		None = 0,
 		String = 1,
@@ -10,13 +10,13 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		Date = 3
 	}
 
-	public class EstimatedDto
+	public class ParameterDto
 	{
 		public long Id { get; set; }
 
 		public dynamic Value { get; set; }
 
-		public EstimatedDto(PureEstimatedDto es)
+		public ParameterDto(PureParameterDto es)
 		{
 			Id = es.Id;
 			Value = es.Value;
@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		{
 			get
 			{
-				if (GeTypeEstimatedParameter() == TypeEstimatedParameter.Date &&
+				if (GeTypeEstimatedParameter() == ParameterType.Date &&
 				    DateTime.TryParse(Value.ToString(), out _date))
 				{
 					return _date;
@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		{
 			get
 			{
-				if (GeTypeEstimatedParameter() == TypeEstimatedParameter.Number &&
+				if (GeTypeEstimatedParameter() == ParameterType.Number &&
 				    decimal.TryParse(Value.ToString(), out _numberValue))
 				{
 					return _numberValue;
@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		{
 			get
 			{
-				if (GeTypeEstimatedParameter() == TypeEstimatedParameter.String &&
+				if (GeTypeEstimatedParameter() == ParameterType.String &&
 				    Value is string)
 				{
 					return Value;
@@ -67,20 +67,20 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 			}
 		}
 
-		public TypeEstimatedParameter GeTypeEstimatedParameter()
+		public ParameterType GeTypeEstimatedParameter()
 		{
 			if (Value is string)
-				return TypeEstimatedParameter.String;
+				return ParameterType.String;
 			if (Value is decimal)
-				return TypeEstimatedParameter.Number;
+				return ParameterType.Number;
 			if (Value is DateTime)
-				return TypeEstimatedParameter.Date;
+				return ParameterType.Date;
 
-			return TypeEstimatedParameter.None;
+			return ParameterType.None;
 		}
 	}
 
-	public class PureEstimatedDto
+	public class PureParameterDto
 	{
 		public long Id { get; set; }
 
