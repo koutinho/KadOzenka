@@ -21410,7 +21410,62 @@ namespace ObjectModel.ES
             }
         }
 
-    }
+        private string _segmenttype;
+        /// <summary>
+        /// 60001100 Тип сегмента ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60001100)]
+        public string SegmentType
+        {
+	        get
+	        {
+		        CheckPropertyInited("SegmentType");
+		        return _segmenttype;
+	        }
+	        set
+	        {
+		        _segmenttype = value;
+		        NotifyPropertyChanged("SegmentType");
+	        }
+        }
+
+
+        private MarketSegment _segmenttype_Code;
+        /// <summary>
+        /// 60001100 Тип сегмента (справочный код) (SEGMENT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60001100)]
+        public MarketSegment SegmentType_Code
+        {
+	        get
+	        {
+		        CheckPropertyInited("SegmentType_Code");
+		        return this._segmenttype_Code;
+	        }
+	        set
+	        {
+		        string descr = value.GetEnumDescription();
+
+		        if (string.IsNullOrEmpty(descr))
+		        {
+			        if (string.IsNullOrEmpty(_segmenttype))
+			        {
+				        _segmenttype = descr;
+			        }
+		        }
+		        else
+		        {
+			        _segmenttype = descr;
+		        }
+
+		        this._segmenttype_Code = value;
+		        NotifyPropertyChanged("SegmentType");
+		        NotifyPropertyChanged("SegmentType_Code");
+	        }
+        }
+
+
+	}
 }
 
 namespace ObjectModel.ES

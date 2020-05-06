@@ -235,7 +235,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			string resMsg = _service.RecalculateExpressScore(_service.GetAnalogsByIds(analogIds), analogIds,
-				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, obj.ScenarioType_Code, MarketSegment.Office, out decimal cost, out decimal squareCost);
+				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, obj.ScenarioType_Code, obj.SegmentType_Code, out decimal cost, out decimal squareCost);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{

@@ -203,7 +203,7 @@ namespace KadOzenka.Dal.ExpressScore
 				return string.IsNullOrEmpty(msg) ? "При расчете что то пошло не так" : msg;
 			}
 
-			msg = SaveSuccessExpressScore(targetObjectId, summaryCost, squareCost, out int id, square: targetObjectSquare, floor: targetObjectFloor, scenarioType: scenarioType);
+			msg = SaveSuccessExpressScore(targetObjectId, summaryCost, squareCost, out int id, square: targetObjectSquare, floor: targetObjectFloor, scenarioType: scenarioType, segmentType: marketSegment);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
@@ -481,7 +481,7 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 
 		public string SaveSuccessExpressScore(int targetObjectId, decimal summaryCost, decimal costSquareMeter, out int id, int? expressScoreId = null,
-			decimal? square = null, int? floor = null, ScenarioType? scenarioType = null)
+			decimal? square = null, int? floor = null, ScenarioType? scenarioType = null, MarketSegment? segmentType = null)
 		{
 			id = 0;
 			try
@@ -495,7 +495,7 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				id = expressScoreId == null
-					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId, scenarioType.GetValueOrDefault())
+					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId, scenarioType.GetValueOrDefault(), segmentType.GetValueOrDefault())
 					:  UpdateCostsExpressScore(expressScoreId.Value, summaryCost, costSquareMeter);
 			}
 			catch (Exception e)
@@ -552,7 +552,7 @@ namespace KadOzenka.Dal.ExpressScore
 			return 0;
 		}
 
-		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId, ScenarioType scenarioType)
+		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId, ScenarioType scenarioType, MarketSegment segmentType)
 		{
 			return new OMExpressScore
 			{
@@ -563,7 +563,8 @@ namespace KadOzenka.Dal.ExpressScore
 				Objectid = targetObjectId,
 				Floor = floor,
 				Square = square,
-				ScenarioType_Code = scenarioType
+				ScenarioType_Code = scenarioType,
+				SegmentType_Code = segmentType
 			}.Save();
 		}
 
