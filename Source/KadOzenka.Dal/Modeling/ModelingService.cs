@@ -6,16 +6,29 @@ using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.ScoreCommon;
+using KadOzenka.Dal.ScoreCommon.Dto;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.ES;
 using ObjectModel.KO;
+using ObjectModel.Market;
 using ObjectModel.Modeling;
+using AttributeDto = KadOzenka.Dal.Modeling.Dto.AttributeDto;
 
 namespace KadOzenka.Dal.Modeling
 {
 	public class ModelingService
 	{
+		//public ScoreCommonService ScoreCommonService { get; set; }
+
+		//public ModelingService(ScoreCommonService scoreCommonService)
+		//{
+		//	ScoreCommonService = scoreCommonService;
+		//}
+
+		#region CRUD Model
+
 		public ModelingModelDto GetModelById(long modelId)
 		{
 			var query = new QSQuery
@@ -174,6 +187,60 @@ namespace KadOzenka.Dal.Modeling
 			}
 		}
 
+		#endregion
+
+		#region Calculation
+
+		//public void CalculateCoefficientsForObjects(List<string> cadastralNumbers, long modelId)
+		//{
+		//	var model = GetModelById(modelId);
+		//	var attributes = GetModelAttributes(modelId);
+
+		//	cadastralNumbers.ForEach(cadastralNumber =>
+		//	{
+		//		attributes.ForEach(modelAttribute =>
+		//		{
+		//			var register = OMAttribute.Where(x => x.Id == modelAttribute.AttributeId).Select(x => x.RegisterId)
+		//				.ExecuteFirstOrDefault();
+		//			if (register == null)
+		//				throw new Exception($"Не найден аттрибут с Id='{modelAttribute.AttributeId}'");
+
+		//			var attributeData = GetAttributeDataByCadastralNumber(cadastralNumber, (int)model.TourId, (int)modelAttribute.AttributeId.Value, (int)register.Id);
+		//			switch (attributeData.Type)
+		//			{
+		//				case AttributeType.String:
+		//				{
+		//					break;
+		//				}
+		//				case AttributeType.Date:
+		//				{
+		//					break;
+		//				}
+		//				case AttributeType.Number:
+		//				{
+		//					break;
+		//				}
+		//				default:
+		//				{
+		//					break;
+		//				}
+		//			}
+		//		});
+
+				
+		//	});
+		//}
+
+		//public ScoreCommon.Dto.AttributeDataDto GetAttributeDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
+		//{
+		//	var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
+		//	return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;
+		//}
+
+		#endregion
+
+
+		#region Cofficeints
 
 		public List<ModelMarketObjectRelationDto> GetMarketObjectsForModel(long modelId)
 		{
@@ -199,6 +266,8 @@ namespace KadOzenka.Dal.Modeling
 				objFromDb.Save();
 			});
 		}
+
+		#endregion
 
 
 		#region Support Methods

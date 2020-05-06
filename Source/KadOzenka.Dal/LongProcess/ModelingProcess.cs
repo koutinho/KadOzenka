@@ -66,6 +66,9 @@ namespace KadOzenka.Dal.LongProcess
 			var objectsForCalculation = OMModelToMarketObjects.Where(x =>
 				x.ModelId == model.ModelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
 
+			var attributes = service.GetModelAttributes(model.ModelId);
+
+
 
 			//TODO send objectsForCalculation {CN + Price} to API-service
 

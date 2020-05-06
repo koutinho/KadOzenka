@@ -32,14 +32,14 @@ namespace KadOzenka.Dal.ExpressScore
 			return OMSettingsParams.Where(x => x.SegmentType_Code == segmentType).SelectAll().ExecuteFirstOrDefault();
 		}
 
-		public AttributeDto GetEstimateParametersByKn(string kn, int tourId, int attributeId, MarketSegment segmentType, int registerId)
+		public AttributeDataDto GetEstimateParametersByKn(string kn, int tourId, int attributeId, MarketSegment segmentType, int registerId)
 		{
 			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
 			var qsGroup = GetQsConditionForCostFactors(segmentType);
 			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId, qsGroup) : null;
 		}
 
-		public AttributeDto GetEstimateParametersById(int id, int attributeId, MarketSegment segmentType, int registerId)
+		public AttributeDataDto GetEstimateParametersById(int id, int attributeId, MarketSegment segmentType, int registerId)
 		{
 			var qsGroup = GetQsConditionForCostFactors(segmentType);
 			return ScoreCommonService.GetParameters(new List<long> { id }, attributeId, registerId, qsGroup);
@@ -413,7 +413,7 @@ namespace KadOzenka.Dal.ExpressScore
 						break;
 					}
 
-					switch (analogFactor.GeTypeEstimatedParameter())
+					switch (analogFactor.Type)
 					{
 						case AttributeType.String:
 						{

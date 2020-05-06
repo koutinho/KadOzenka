@@ -10,13 +10,13 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 		Date = 3
 	}
 
-	public class AttributeDto
+	public class AttributeDataDto
 	{
 		public long Id { get; set; }
 
 		public dynamic Value { get; set; }
 
-		public AttributeDto(PureAttributeDto es)
+		public AttributeDataDto(PureAttributeDataDto es)
 		{
 			Id = es.Id;
 			Value = es.Value;
@@ -27,8 +27,7 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 		{
 			get
 			{
-				if (GeTypeEstimatedParameter() == AttributeType.Date &&
-				    DateTime.TryParse(Value.ToString(), out _date))
+				if (Type == AttributeType.Date && DateTime.TryParse(Value.ToString(), out _date))
 				{
 					return _date;
 				}
@@ -42,8 +41,7 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 		{
 			get
 			{
-				if (GeTypeEstimatedParameter() == AttributeType.Number &&
-				    decimal.TryParse(Value.ToString(), out _numberValue))
+				if (Type == AttributeType.Number && decimal.TryParse(Value.ToString(), out _numberValue))
 				{
 					return _numberValue;
 				}
@@ -57,8 +55,7 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 		{
 			get
 			{
-				if (GeTypeEstimatedParameter() == AttributeType.String &&
-				    Value is string)
+				if (Type == AttributeType.String && Value is string)
 				{
 					return Value;
 				}
@@ -67,20 +64,23 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 			}
 		}
 
-		public AttributeType GeTypeEstimatedParameter()
+		public AttributeType Type
 		{
-			if (Value is string)
-				return AttributeType.String;
-			if (Value is decimal)
-				return AttributeType.Number;
-			if (Value is DateTime)
-				return AttributeType.Date;
+			get
+			{
+				if (Value is string)
+					return AttributeType.String;
+				if (Value is decimal)
+					return AttributeType.Number;
+				if (Value is DateTime)
+					return AttributeType.Date;
 
-			return AttributeType.None;
+				return AttributeType.None;
+			}
 		}
 	}
 
-	public class PureAttributeDto
+	public class PureAttributeDataDto
 	{
 		public long Id { get; set; }
 
