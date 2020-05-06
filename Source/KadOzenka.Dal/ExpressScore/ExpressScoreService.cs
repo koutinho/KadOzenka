@@ -57,6 +57,10 @@ namespace KadOzenka.Dal.ExpressScore
 			}
 
 			var unitsIds = GetUnitsIdsByKn(yandexAddress.CadastralNumber, (int)setting.TourId);
+			if (unitsIds.Count == 0)
+			{
+				return "Для выбранного тура и объекта в Ко части нет данных";
+			}
 
 			var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;
 

@@ -3007,30 +3007,6 @@ namespace ObjectModel.ES
 namespace ObjectModel.ES
 {
     /// <summary>
-    /// 604 Экспресс оценка. Индекс дата
-    /// </summary>
-    public partial class OMIdexDate
-    {
-
-        public OMIdexDate()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMIdexDate(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.ES
-{
-    /// <summary>
     /// 605 Экспресс оценка. Доля ЗУ
     /// </summary>
     public partial class OMLandShare
