@@ -31,42 +31,42 @@ namespace KadOzenka.Dal.LongProcess
 			//	return;
 			//}
 
-			var service = new ModelingService();
-			var model = service.GetModelById(processQueue.ObjectId.Value);
+			//var service = new ModelingService();
+			//var model = service.GetModelById(processQueue.ObjectId.Value);
 
-			var groupedObjects = OMCoreObject.Where(x =>
-					x.PropertyMarketSegment_Code == model.MarketSegment &&
-					x.CadastralNumber != null && x.CadastralNumber != string.Empty)
-				.Select(x => x.CadastralNumber)
-				.Select(x => x.Price)
-				.Execute()
-				.GroupBy(x => new
-				{
-					x.CadastralNumber,
-					x.Price
-				}).ToList();
+			//var groupedObjects = OMCoreObject.Where(x =>
+			//		x.PropertyMarketSegment_Code == model.MarketSegment &&
+			//		x.CadastralNumber != null && x.CadastralNumber != string.Empty)
+			//	.Select(x => x.CadastralNumber)
+			//	.Select(x => x.Price)
+			//	.Execute()
+			//	.GroupBy(x => new
+			//	{
+			//		x.CadastralNumber,
+			//		x.Price
+			//	}).ToList();
 
-			var objectsFromPreviousCalculation = OMModelToMarketObjects.Where(x => x.ModelId == model.ModelId).SelectAll().Execute();
-			groupedObjects.ForEach(groupedObj =>
-			{
-				var existedObject = objectsFromPreviousCalculation.FirstOrDefault(x =>
-					x.CadastralNumber == groupedObj.Key.CadastralNumber && x.Price == groupedObj.Key.Price);
-				if (existedObject == null)
-				{
-					new OMModelToMarketObjects
-					{
-						ModelId = model.ModelId,
-						CadastralNumber = groupedObj.Key.CadastralNumber,
-						Price = groupedObj.Key.Price ?? 0
-					}.Save();
-				}
-			});
+			//var objectsFromPreviousCalculation = OMModelToMarketObjects.Where(x => x.ModelId == model.ModelId).SelectAll().Execute();
+			//groupedObjects.ForEach(groupedObj =>
+			//{
+			//	var existedObject = objectsFromPreviousCalculation.FirstOrDefault(x =>
+			//		x.CadastralNumber == groupedObj.Key.CadastralNumber && x.Price == groupedObj.Key.Price);
+			//	if (existedObject == null)
+			//	{
+			//		new OMModelToMarketObjects
+			//		{
+			//			ModelId = model.ModelId,
+			//			CadastralNumber = groupedObj.Key.CadastralNumber,
+			//			Price = groupedObj.Key.Price ?? 0
+			//		}.Save();
+			//	}
+			//});
 
-			//загружаем второй раз, т.к. некоторые объекты могут быть исключены вручную
-			var objectsForCalculation = OMModelToMarketObjects.Where(x =>
-				x.ModelId == model.ModelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
+			////загружаем второй раз, т.к. некоторые объекты могут быть исключены вручную
+			//var objectsForCalculation = OMModelToMarketObjects.Where(x =>
+			//	x.ModelId == model.ModelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
 
-			var attributes = service.GetModelAttributes(model.ModelId);
+			//var attributes = service.GetModelAttributes(model.ModelId);
 
 
 

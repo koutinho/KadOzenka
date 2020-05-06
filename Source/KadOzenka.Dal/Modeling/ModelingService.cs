@@ -20,12 +20,12 @@ namespace KadOzenka.Dal.Modeling
 {
 	public class ModelingService
 	{
-		//public ScoreCommonService ScoreCommonService { get; set; }
+		public ScoreCommonService ScoreCommonService { get; set; }
 
-		//public ModelingService(ScoreCommonService scoreCommonService)
-		//{
-		//	ScoreCommonService = scoreCommonService;
-		//}
+		public ModelingService(ScoreCommonService scoreCommonService)
+		{
+			ScoreCommonService = scoreCommonService;
+		}
 
 		#region CRUD Model
 
@@ -191,51 +191,81 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Calculation
 
-		//public void CalculateCoefficientsForObjects(List<string> cadastralNumbers, long modelId)
-		//{
-		//	var model = GetModelById(modelId);
-		//	var attributes = GetModelAttributes(modelId);
+		public void CalculateCoefficientsForObjects(List<string> cadastralNumbers, long modelId)
+		{
+			var model = GetModelById(modelId);
+			var objectsForCalculation = OMModelToMarketObjects.Where(x =>
+				x.ModelId == model.ModelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
 
-		//	cadastralNumbers.ForEach(cadastralNumber =>
-		//	{
-		//		attributes.ForEach(modelAttribute =>
-		//		{
-		//			var register = OMAttribute.Where(x => x.Id == modelAttribute.AttributeId).Select(x => x.RegisterId)
-		//				.ExecuteFirstOrDefault();
-		//			if (register == null)
-		//				throw new Exception($"Не найден аттрибут с Id='{modelAttribute.AttributeId}'");
+			var attributes = GetModelAttributes(modelId);
 
-		//			var attributeData = GetAttributeDataByCadastralNumber(cadastralNumber, (int)model.TourId, (int)modelAttribute.AttributeId.Value, (int)register.Id);
-		//			switch (attributeData.Type)
-		//			{
-		//				case AttributeType.String:
-		//				{
-		//					break;
-		//				}
-		//				case AttributeType.Date:
-		//				{
-		//					break;
-		//				}
-		//				case AttributeType.Number:
-		//				{
-		//					break;
-		//				}
-		//				default:
-		//				{
-		//					break;
-		//				}
-		//			}
-		//		});
+			objectsForCalculation.ForEach(obj =>
+			{
+				attributes.ForEach(modelAttribute =>
+				{
+					var register = OMAttribute.Where(x => x.Id == modelAttribute.AttributeId).Select(x => x.RegisterId)
+						.ExecuteFirstOrDefault();
+					if (register == null)
+						throw new Exception($"Не найден аттрибут с Id='{modelAttribute.AttributeId}'");
 
-				
-		//	});
-		//}
+					var attributeData = GetAttributeDataByCadastralNumber(obj.CadastralNumber, (int) model.TourId,
+						(int) modelAttribute.AttributeId.Value, (int) register.Id);
 
-		//public ScoreCommon.Dto.AttributeDataDto GetAttributeDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
-		//{
-		//	var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
-		//	return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;
-		//}
+					switch (attributeData.Type)
+					{
+						case ParameterType.String:
+						{
+							if (modelAttribute.DictionaryId == null)
+							{
+								//log error
+							}
+							else
+							{
+								modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromStringFactor(attributeData,
+									(int)modelAttribute.DictionaryId.GetValueOrDefault());
+							}
+
+							break;
+						}
+						case ParameterType.Date:
+						{
+							if (modelAttribute.DictionaryId == null)
+							{
+								//log error
+							}
+							else
+							{
+								modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromDateFactor(attributeData,
+									(int)modelAttribute.DictionaryId.GetValueOrDefault());
+							}
+
+							break;
+						}
+						case ParameterType.Number:
+						{
+							modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromNumberFactor(attributeData,
+								(int)modelAttribute.DictionaryId.GetValueOrDefault());
+
+								break;
+						}
+						default:
+						{
+							//log error
+							break;
+						}
+					}
+				});
+
+
+			});
+		}
+
+		private ScoreCommon.Dto.ParameterDataDto GetAttributeDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
+		{
+			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
+			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;
+		}
+
 
 		#endregion
 

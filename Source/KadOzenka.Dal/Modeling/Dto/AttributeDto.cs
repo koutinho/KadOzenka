@@ -7,5 +7,6 @@
 		public long? DictionaryId { get; set; }
 		public string DictionaryName { get; set; }
 		public bool IsNormalized => DictionaryId != null;
+		public decimal? Coefficient { get; set; }
 	}
 }
