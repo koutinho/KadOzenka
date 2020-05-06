@@ -241,7 +241,7 @@
 
 	function validateForm() {
 		var messages = [];
-		var segment = $("#PropertyMarketSegment").data("kendoDropDownList").value();
+		var segment = $("#MarketSegmentCode").data("kendoDropDownList").value();
 		if (!segment || segment == 0)
 			messages.push("Не выбран Сегмент");
 		var tour = $("#TourId").data("kendoDropDownList").value();

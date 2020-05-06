@@ -50,6 +50,18 @@
 }
 
 
+
+<style>
+	#grid .k-grid-header .k-header {
+		text-align: center;
+	}
+
+	#grid {
+		text-align: center;
+	}
+</style>
+
+
 <script id="GridToolbarTemplate" type="text/x-kendo-template">
 	<div style="float: left">
 		<a class="k-button k-button-icon" id="excludeBtn" style="width:120px;">
@@ -59,6 +71,7 @@
 	</div>
 
 </script>
+
 
 <script src="~/js/custom-validation.js"></script>
 <script>
@@ -74,7 +87,8 @@
 				},
 				{
 					title: "Цена",
-					field: "Price"
+					field: "Price",
+					template: '#: kendo.format("{0:c}", Price)#'
 				},
 				{
 					title: "Исключен из расчета",

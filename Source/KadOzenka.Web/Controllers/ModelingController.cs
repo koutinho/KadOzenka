@@ -68,8 +68,8 @@ namespace KadOzenka.Web.Controllers
 			ModelingService.UpdateModel(modelDto);
 
 			//TODO удалить код для отладки и добавить процесс
-			var process = new ModelingProcess();
-			process.StartProcess(new OMProcessType(), new OMQueue{ObjectId = modelDto.ModelId}, new CancellationToken());
+			//var process = new ModelingProcess();
+			//process.StartProcess(new OMProcessType(), new OMQueue{ObjectId = modelDto.ModelId}, new CancellationToken());
 
 			return Json(new { Message = "Обновление выполнено. Процедура формирования модели поставлена в очередь." });
 		}
@@ -77,7 +77,7 @@ namespace KadOzenka.Web.Controllers
 		#endregion
 
 
-		#region Model Objects
+		#region Market Objects For Model
 
 		[HttpGet]
 		public ActionResult ObjectsFromModels()

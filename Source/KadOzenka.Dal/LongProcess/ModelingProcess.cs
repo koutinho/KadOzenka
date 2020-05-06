@@ -62,7 +62,12 @@ namespace KadOzenka.Dal.LongProcess
 				}
 			});
 
-			//TODO send objects {CN + Price} to API-service
+			//загружаем второй раз, т.к. некоторые объекты могут быть исключены вручную
+			var objectsForCalculation = OMModelToMarketObjects.Where(x =>
+				x.ModelId == model.ModelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
+
+
+			//TODO send objectsForCalculation {CN + Price} to API-service
 
 			//WorkerCommon.SetProgress(processQueue, 100);
 		}

@@ -159,31 +159,16 @@ namespace KadOzenka.Dal.Modeling
 				existedModel.MarketSegment_Code = modelDto.MarketSegment;
 				existedModel.Save();
 
-				if (newAttributes == null || newAttributes.Count == 0)
+				existedModelAttributes.ForEach(x => x.Destroy());
+				newAttributes?.ForEach(newAttribute =>
 				{
-					existedModelAttributes.ForEach(x => x.Destroy());
-				}
-				else
-				{
-					newAttributes.ForEach(newAttribute =>
+					new OMModelAttributesRelation
 					{
-						var existedAttribute = existedModelAttributes.FirstOrDefault(x => x.AttributeId == newAttribute.AttributeId);
-						if (existedAttribute == null)
-						{
-							new OMModelAttributesRelation
-							{
-								ModelId = modelDto.ModelId,
-								AttributeId = newAttribute.AttributeId.Value,
-								DictionaryId = newAttribute.DictionaryId
-							}.Save();
-						}
-						else
-						{
-							existedAttribute.DictionaryId = newAttribute.DictionaryId;
-							existedAttribute.Save();
-						}
-					});
-				}
+						ModelId = modelDto.ModelId,
+						AttributeId = newAttribute.AttributeId.Value,
+						DictionaryId = newAttribute.DictionaryId
+					}.Save();
+				});
 
 				ts.Complete();
 			}
