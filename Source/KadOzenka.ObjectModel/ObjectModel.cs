@@ -21417,16 +21417,16 @@ namespace ObjectModel.ES
         [RegisterAttribute(AttributeID = 60001100)]
         public string SegmentType
         {
-	        get
-	        {
-		        CheckPropertyInited("SegmentType");
-		        return _segmenttype;
-	        }
-	        set
-	        {
-		        _segmenttype = value;
-		        NotifyPropertyChanged("SegmentType");
-	        }
+            get
+            {
+                CheckPropertyInited("SegmentType");
+                return _segmenttype;
+            }
+            set
+            {
+                _segmenttype = value;
+                NotifyPropertyChanged("SegmentType");
+            }
         }
 
 
@@ -21437,35 +21437,35 @@ namespace ObjectModel.ES
         [RegisterAttribute(AttributeID = 60001100)]
         public MarketSegment SegmentType_Code
         {
-	        get
-	        {
-		        CheckPropertyInited("SegmentType_Code");
-		        return this._segmenttype_Code;
-	        }
-	        set
-	        {
-		        string descr = value.GetEnumDescription();
+            get
+            {
+                CheckPropertyInited("SegmentType_Code");
+                return this._segmenttype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
 
-		        if (string.IsNullOrEmpty(descr))
-		        {
-			        if (string.IsNullOrEmpty(_segmenttype))
-			        {
-				        _segmenttype = descr;
-			        }
-		        }
-		        else
-		        {
-			        _segmenttype = descr;
-		        }
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_segmenttype))
+                    {
+                         _segmenttype = descr;
+                    }
+                }
+                else
+                {
+                     _segmenttype = descr;
+                }
 
-		        this._segmenttype_Code = value;
-		        NotifyPropertyChanged("SegmentType");
-		        NotifyPropertyChanged("SegmentType_Code");
-	        }
+                this._segmenttype_Code = value;
+                NotifyPropertyChanged("SegmentType");
+                NotifyPropertyChanged("SegmentType_Code");
+            }
         }
 
 
-	}
+    }
 }
 
 namespace ObjectModel.ES
@@ -22467,6 +22467,26 @@ namespace ObjectModel.Modeling
             {
                 _modelid = value;
                 NotifyPropertyChanged("ModelId");
+            }
+        }
+
+
+        private string _coefficients;
+        /// <summary>
+        /// 70200600 Рассчитанные коэффициенты для объекта (COEFFICIENTS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200600)]
+        public string Coefficients
+        {
+            get
+            {
+                CheckPropertyInited("Coefficients");
+                return _coefficients;
+            }
+            set
+            {
+                _coefficients = value;
+                NotifyPropertyChanged("Coefficients");
             }
         }
 
