@@ -17,7 +17,7 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult AllCadastralsQuarters([DataSourceRequest] DataSourceRequest request)
 		{
-			var result = OMKadastrKvartal.Where(x => x).SelectAll().Execute().AsEnumerable().ToTreeDataSourceResult(request,
+			var result = OMKadastrKvartal.Where(x => x).SelectAll().OrderBy(x => x.KadastrKvartal).Execute().AsEnumerable().ToTreeDataSourceResult(request,
 				e => e.Id,
 				e => e.ParentId,
 				e => e
