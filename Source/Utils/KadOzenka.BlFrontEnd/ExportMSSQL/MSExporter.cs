@@ -2540,6 +2540,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
             LoadUnitTaskUncomplited_2018_VUON(tour.Id);
         }
+
         public static void LoadUnitTaskParcel_2018_VUON(long id_tour)
         {
             using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_Parcel_2018"]))
@@ -2621,6 +2622,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_inputdoc"]);
                     Int64 id_outputDoc = NullConvertor.DBToInt(myOleDbDataReader["id_outputdoc"]);
+                    
                     int doc_in_status = NullConvertor.DBToInt(myOleDbDataReader["doc_in_status"]);
                     KoNoteType koNoteType = KoNoteType.Initial;
                     switch (doc_in_status)
@@ -2646,38 +2648,56 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     if (id_inputDoc > 0)
                     {
+                        string inRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]);
+                        DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]);
+                        DateTime inApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]);
+                        string inDescription = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]);
+
                         inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 100000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc==null)
+                        {
+                            inputDoc = OMInstance.Where(x => x.RegNumber==inRegNumber &&  x.CreateDate==inCreateDate && x.ApproveDate==inApproveDate && x.Description==inDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (inputDoc == null)
                         {
                             inputDoc = new OMInstance
                             {
                                 Id = id_inputDoc + 100000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
+                                RegNumber = inRegNumber,
+                                CreateDate = inCreateDate,
+                                ApproveDate = inApproveDate,
+                                Description = inDescription,
                             };
                             inputDoc.Save();
                         }
                     }
                     if (id_outputDoc > 0)
                     {
+                        string outRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]);
+                        DateTime outCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]);
+                        DateTime outApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]);
+                        string outDescription = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]);
+
                         outputDoc = OMInstance.Where(x => x.Id == (id_outputDoc + 100000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (outputDoc == null)
+                        {
+                            outputDoc = OMInstance.Where(x => x.RegNumber == outRegNumber && x.CreateDate == outCreateDate && x.ApproveDate == outApproveDate && x.Description == outDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (outputDoc == null)
                         {
                             outputDoc = new OMInstance
                             {
                                 Id = id_outputDoc + 100000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
+                                RegNumber = outRegNumber,
+                                CreateDate = outCreateDate,
+                                ApproveDate = outApproveDate,
+                                Description = outDescription,
                             };
                             outputDoc.Save();
                         }
                     }
 
-                    if (id_inputDoc > 0)
+                    if (inputDoc!=null)
                     {
                         ObjectModel.KO.OMTask task = null;
                         task = ObjectModel.KO.OMTask.Where(x => x.DocumentId == inputDoc.Id).SelectAll().ExecuteFirstOrDefault();
@@ -2852,38 +2872,54 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     if (id_inputDoc > 0)
                     {
+                        string inRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]);
+                        DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]);
+                        DateTime inApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]);
+                        string inDescription = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]);
                         inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = OMInstance.Where(x => x.RegNumber == inRegNumber && x.CreateDate == inCreateDate && x.ApproveDate == inApproveDate && x.Description == inDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (inputDoc == null)
                         {
                             inputDoc = new OMInstance
                             {
                                 Id = id_inputDoc + 200000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
+                                RegNumber = inRegNumber,
+                                CreateDate = inCreateDate,
+                                ApproveDate = inApproveDate,
+                                Description = inDescription,
                             };
                             inputDoc.Save();
                         }
                     }
                     if (id_outputDoc > 0)
                     {
+                        string outRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]);
+                        DateTime outCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]);
+                        DateTime outApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]);
+                        string outDescription = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]);
                         outputDoc = OMInstance.Where(x => x.Id == (id_outputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (outputDoc == null)
+                        {
+                            outputDoc = OMInstance.Where(x => x.RegNumber == outRegNumber && x.CreateDate == outCreateDate && x.ApproveDate == outApproveDate && x.Description == outDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (outputDoc == null)
                         {
                             outputDoc = new OMInstance
                             {
                                 Id = id_outputDoc + 200000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
+                                RegNumber = outRegNumber,
+                                CreateDate = outCreateDate,
+                                ApproveDate = outApproveDate,
+                                Description = outDescription,
                             };
                             outputDoc.Save();
                         }
                     }
 
-                    if (id_inputDoc > 0)
+                    if (inputDoc != null)
                     {
                         ObjectModel.KO.OMTask task = null;
                         task = ObjectModel.KO.OMTask.Where(x => x.DocumentId == inputDoc.Id).SelectAll().ExecuteFirstOrDefault();
@@ -3058,38 +3094,56 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     if (id_inputDoc > 0)
                     {
+                        string inRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]);
+                        DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]);
+                        DateTime inApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]);
+                        string inDescription = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]);
+
                         inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = OMInstance.Where(x => x.RegNumber == inRegNumber && x.CreateDate == inCreateDate && x.ApproveDate == inApproveDate && x.Description == inDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (inputDoc == null)
                         {
                             inputDoc = new OMInstance
                             {
                                 Id = id_inputDoc + 200000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
+                                RegNumber = inRegNumber,
+                                CreateDate = inCreateDate,
+                                ApproveDate = inApproveDate,
+                                Description = inDescription,
                             };
                             inputDoc.Save();
                         }
                     }
                     if (id_outputDoc > 0)
                     {
+                        string outRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]);
+                        DateTime outCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]);
+                        DateTime outApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]);
+                        string outDescription = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]);
+
                         outputDoc = OMInstance.Where(x => x.Id == (id_outputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (outputDoc == null)
+                        {
+                            outputDoc = OMInstance.Where(x => x.RegNumber == outRegNumber && x.CreateDate == outCreateDate && x.ApproveDate == outApproveDate && x.Description == outDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (outputDoc == null)
                         {
                             outputDoc = new OMInstance
                             {
                                 Id = id_outputDoc + 200000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
+                                RegNumber = outRegNumber,
+                                CreateDate = outCreateDate,
+                                ApproveDate = outApproveDate,
+                                Description = outDescription,
                             };
                             outputDoc.Save();
                         }
                     }
 
-                    if (id_inputDoc > 0)
+                    if (inputDoc != null)
                     {
                         ObjectModel.KO.OMTask task = null;
                         task = ObjectModel.KO.OMTask.Where(x => x.DocumentId == inputDoc.Id).SelectAll().ExecuteFirstOrDefault();
@@ -3264,38 +3318,54 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     if (id_inputDoc > 0)
                     {
+                        string inRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]);
+                        DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]);
+                        DateTime inApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]);
+                        string inDescription = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]);
                         inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = OMInstance.Where(x => x.RegNumber == inRegNumber && x.CreateDate == inCreateDate && x.ApproveDate == inApproveDate && x.Description == inDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (inputDoc == null)
                         {
                             inputDoc = new OMInstance
                             {
                                 Id = id_inputDoc + 200000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
+                                RegNumber = inRegNumber,
+                                CreateDate = inCreateDate,
+                                ApproveDate = inApproveDate,
+                                Description = inDescription,
                             };
                             inputDoc.Save();
                         }
                     }
                     if (id_outputDoc > 0)
                     {
+                        string outRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]);
+                        DateTime outCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]);
+                        DateTime outApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]);
+                        string outDescription = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]);
                         outputDoc = OMInstance.Where(x => x.Id == (id_outputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (outputDoc == null)
+                        {
+                            outputDoc = OMInstance.Where(x => x.RegNumber == outRegNumber && x.CreateDate == outCreateDate && x.ApproveDate == outApproveDate && x.Description == outDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (outputDoc == null)
                         {
                             outputDoc = new OMInstance
                             {
                                 Id = id_outputDoc + 200000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
+                                RegNumber = outRegNumber,
+                                CreateDate = outCreateDate,
+                                ApproveDate = outApproveDate,
+                                Description = outDescription,
                             };
                             outputDoc.Save();
                         }
                     }
 
-                    if (id_inputDoc > 0)
+                    if (inputDoc != null)
                     {
                         ObjectModel.KO.OMTask task = null;
                         task = ObjectModel.KO.OMTask.Where(x => x.DocumentId == inputDoc.Id).SelectAll().ExecuteFirstOrDefault();
@@ -3471,38 +3541,54 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                     if (id_inputDoc > 0)
                     {
+                        string inRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]);
+                        DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]);
+                        DateTime inApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]);
+                        string inDescription = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]);
                         inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = OMInstance.Where(x => x.RegNumber == inRegNumber && x.CreateDate == inCreateDate && x.ApproveDate == inApproveDate && x.Description == inDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (inputDoc == null)
                         {
                             inputDoc = new OMInstance
                             {
                                 Id = id_inputDoc + 200000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]),
+                                RegNumber = inRegNumber,
+                                CreateDate = inCreateDate,
+                                ApproveDate = inApproveDate,
+                                Description = inDescription,
                             };
                             inputDoc.Save();
                         }
                     }
                     if (id_outputDoc > 0)
                     {
+                        string outRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]);
+                        DateTime outCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]);
+                        DateTime outApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]);
+                        string outDescription = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]);
                         outputDoc = OMInstance.Where(x => x.Id == (id_outputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (outputDoc == null)
+                        {
+                            outputDoc = OMInstance.Where(x => x.RegNumber == outRegNumber && x.CreateDate == outCreateDate && x.ApproveDate == outApproveDate && x.Description == outDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
                         if (outputDoc == null)
                         {
                             outputDoc = new OMInstance
                             {
                                 Id = id_outputDoc + 200000000,
-                                RegNumber = NullConvertor.ToString(myOleDbDataReader["doc_out_num"]),
-                                CreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_date"]),
-                                ApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_out_app"]),
-                                Description = NullConvertor.ToString(myOleDbDataReader["doc_out_name"]),
+                                RegNumber = outRegNumber,
+                                CreateDate = outCreateDate,
+                                ApproveDate = outApproveDate,
+                                Description = outDescription,
                             };
                             outputDoc.Save();
                         }
                     }
 
-                    if (id_inputDoc > 0)
+                    if (inputDoc != null)
                     {
                         ObjectModel.KO.OMTask task = null;
                         task = ObjectModel.KO.OMTask.Where(x => x.DocumentId == inputDoc.Id).SelectAll().ExecuteFirstOrDefault();
