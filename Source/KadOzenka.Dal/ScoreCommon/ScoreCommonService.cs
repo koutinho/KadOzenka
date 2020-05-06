@@ -30,21 +30,19 @@ namespace KadOzenka.Dal.ScoreCommon
 
 		public QSQuery GetQsQuery(int registerId, int filterId, List<long> filterValues, QSConditionGroup qsGroup = null)
 		{
-			var requiredCondition = new QSConditionSimple
+			var qsConditionGroup = new QSConditionGroup(QSConditionGroupType.And);
+			qsConditionGroup.Add(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.In,
 				LeftOperand = new QSColumnSimple(filterId),
 				RightOperand = new QSColumnConstant(filterValues)
-			};
-
-			var resQsCGroup = new QSConditionGroup(QSConditionGroupType.And);
-			resQsCGroup.Add(qsGroup);
-			resQsCGroup.Add(requiredCondition);
+			});
+			qsConditionGroup.Add(qsGroup);
 
 			var query = new QSQuery
 			{
 				MainRegisterID = registerId,
-				Condition = resQsCGroup
+				Condition = qsConditionGroup
 			};
 
 			return query;
@@ -52,13 +50,12 @@ namespace KadOzenka.Dal.ScoreCommon
 
 		public decimal GetCoefficientFromStringFactor(AttributeDto attribute, int referenceId)
 		{
-			var dict = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
-				.ToList();
-			var type = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault().ValueType_Code;
+			var referenceItems = GetReferenceItems(referenceId);
+			var type = GetReferenceValueType(referenceId);
 
 			if (type == ReferenceItemCodeType.String)
 			{
-				return dict.Select(ReferenceToString).FirstOrDefault(x => x.Key == attribute.StringValue)?.Value ?? 1;
+				return referenceItems.Select(ReferenceToString).FirstOrDefault(x => x.Key == attribute.StringValue)?.Value ?? 1;
 			}
 			return 0;
 		}
@@ -70,26 +67,24 @@ namespace KadOzenka.Dal.ScoreCommon
 				return attribute.NumberValue;
 			}
 
-			var dict = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
-				.ToList();
-			var type = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault().ValueType_Code;
+			var referenceItems = GetReferenceItems(referenceId);
+			var type = GetReferenceValueType(referenceId);
 
 			if (type == ReferenceItemCodeType.Number)
 			{
-				return dict.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == attribute.NumberValue)?.Value ?? 1;
+				return referenceItems.Select(ReferenceToNumber).FirstOrDefault(x => x.Key == attribute.NumberValue)?.Value ?? 1;
 			}
 			return 0;
 		}
 
 		public decimal GetCoefficientFromDateFactor(AttributeDto attribute, int referenceId)
 		{
-			var dict = OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute()
-				.ToList();
-			var type = OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault().ValueType_Code;
+			var referenceItems = GetReferenceItems(referenceId);
+			var type = GetReferenceValueType(referenceId);
 
 			if (type == ReferenceItemCodeType.Date)
 			{
-				return dict.Select(ReferenceToDate).FirstOrDefault(x => x.Key == attribute.DateValue)?.Value ?? 1;
+				return referenceItems.Select(ReferenceToDate).FirstOrDefault(x => x.Key == attribute.DateValue)?.Value ?? 1;
 			}
 			return 0;
 		}
@@ -120,5 +115,20 @@ namespace KadOzenka.Dal.ScoreCommon
 				Value = item.CalculationValue.GetValueOrDefault()
 			};
 		}
+
+
+		#region Support Methods
+
+		private List<OMEsReferenceItem> GetReferenceItems(int referenceId)
+		{
+			return OMEsReferenceItem.Where(x => x.ReferenceId == referenceId).SelectAll().Execute().ToList();
+		}
+
+		private ReferenceItemCodeType GetReferenceValueType(int referenceId)
+		{
+			return OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault().ValueType_Code;
+		}
+
+		#endregion
 	}
 }
