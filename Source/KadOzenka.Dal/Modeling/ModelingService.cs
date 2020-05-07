@@ -205,19 +205,22 @@ namespace KadOzenka.Dal.Modeling
 
 		public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
 		{
-			var ids = objects.Select(x => x.Id);
-			var objectsFromDb = OMModelToMarketObjects.Where(x => ids.Contains(x.Id)).SelectAll().Execute();
-			objects.ForEach(obj =>
-			{
-				var objFromDb = objectsFromDb.FirstOrDefault(x => x.Id == obj.Id);
-				if (objFromDb == null)
-					return;
+			var ids = objects.Select(x => x.Id).ToList();
+            if (ids.Count == 0)
+                return;
 
-				objFromDb.IsExcluded = obj.IsExcluded;
+            var objectsFromDb = OMModelToMarketObjects.Where(x => ids.Contains(x.Id)).SelectAll().Execute();
+            objects.ForEach(obj =>
+            {
+                var objFromDb = objectsFromDb.FirstOrDefault(x => x.Id == obj.Id);
+                if (objFromDb == null)
+                    return;
+
+                objFromDb.IsExcluded = obj.IsExcluded;
                 objFromDb.Coefficients = null;
                 objFromDb.Save();
-			});
-		}
+            });
+        }
 
         #endregion
 
@@ -358,6 +361,7 @@ namespace KadOzenka.Dal.Modeling
 				CadastralNumber = entity.CadastralNumber,
 				Price = entity.Price,
 				IsExcluded = entity.IsExcluded.GetValueOrDefault(), 
+                IsForTraining = entity.IsForTraining.GetValueOrDefault(),
                 Coefficients = entity.Coefficients.DeserializeFromXml<List<ModelAttributeDto>>()
             };
 		}

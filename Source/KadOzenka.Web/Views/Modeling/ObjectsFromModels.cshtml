@@ -1,123 +1,83 @@
-﻿@using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new { id = "saveModelForm" }))
-{
-	<div class="form-horizontal" style="padding: 2%;">
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabel("Модель")
-			</div>
-			<div class="col-sm-9">
-				@(Html.Kendo().DropDownList()
-							.Name("ModelId")
-							.DataTextField("Text")
-							.DataValueField("Value")
-							.Filter(FilterType.Contains)
-							.DataSource(x =>
-							{
-								x.Read("GetModels", "Modeling");
-							})
-							.Events(x =>
-							{
-								x.DataBound("updateModelInfo");
-								x.Change("updateModelInfo");
-							}))
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.Label("", "Сегмент")
-			</div>
-			<div class="col-sm-9">
-				<div id="segment"></div>
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.Label("", "Тур")
-			</div>
-			<div class="col-sm-9">
-				<div id="tour"></div>
-			</div>
-		</div>
+﻿<div class="form-horizontal" style="padding: 2%;">
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Модель")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                        .Name("ModelId")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Filter(FilterType.Contains)
+                        .DataSource(x =>
+                        {
+                            x.Read("GetModels", "Modeling");
+                        })
+                        .Events(x =>
+                        {
+                            x.DataBound("updateModelInfo");
+                            x.Change("updateModelInfo");
+                        }))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.Label("", "Сегмент")
+        </div>
+        <div class="col-sm-9">
+            <div id="segment"></div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.Label("", "Тур")
+        </div>
+        <div class="col-sm-9">
+            <div id="tour"></div>
+        </div>
+    </div>
 
-		<div class="form-group">
-			<div style="display: flex;">
-				<div style="align-items: stretch">
-					<div id="grid"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-}
+    <div class="form-group">
+        <div id="grid"></div>
+    </div>
+</div>
 
 
 
 <style>
-	#grid .k-grid-header .k-header {
-		text-align: center;
-	}
+    #grid .k-grid-header .k-header {
+        text-align: center;
+    }
 
-	#grid {
-		text-align: center;
-	}
+    #grid {
+        text-align: center;
+    }
 </style>
 
 
+
 <script id="GridToolbarTemplate" type="text/x-kendo-template">
-	<div style="float: left">
-		<a class="k-button k-button-icon" id="excludeBtn" style="width:120px;">
-			<span class="k-icon k-i-save" style="padding-right: 30%"></span>
-			Сохранить
-		</a>
-	</div>
+    <div style="float: left">
+        <a class="k-button k-button-icon" id="excludeBtn" style="width:120px;">
+            <span class="k-icon k-i-save" style="padding-right: 30%"></span>
+            Сохранить
+        </a>
+    </div>
 
 </script>
+
 
 
 <script src="~/js/custom-validation.js"></script>
 <script>
 	$(document).ready(function () {
 
-		$("#grid").kendoGrid({
-			toolbar: kendo.template($("#GridToolbarTemplate").html()),
-            pageable: true,
-            filterable: {
-                extra: false,
-                operators: {
-                    string: {
-                        startswith: "Начинается с",
-                        eq: "Равно",
-                        neq: "Не равно"
-                    }
-                }
-            },
-			columns: [
-				{
-					title: "Кадастровый номер",
-                    field: "CadastralNumber"
-				},
-				{
-					title: "Цена",
-					field: "Price",
-                    template: '#: kendo.format("{0:c}", Price)#',
-                    filterable: false
-				},
-				{
-					title: "Исключен из расчета",
-					field: "IsExcluded",
-                    template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx" />',
-                    filterable: false
-				}
-			]
-		});
-
-		$("#grid .k-grid-content").on("change", "input.chkbx", updateGridDataSource);
-		$('#excludeBtn').on('click', excludeBuildingsFromCalculation);
-	});
+    });
 
 
 
-	function updateModelMainInfo() {
-		var modelId = $("#ModelId").data("kendoDropDownList").value();
+    function updateModelInfo() {
+        var modelId = $("#ModelId").data("kendoDropDownList").value();
 		kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'GET',
@@ -135,8 +95,9 @@
 					dataValueField: 'TourId',
 					dataSource: [{ TourId: response.TourId, TourYear: response.TourYear }],
 					enable: false
-				});
-			},
+                });
+                updateGrid(response.Attributes);
+            },
 			error: function (response) {
 				Common.ShowError(response.responseText);
 			},
@@ -147,8 +108,8 @@
 	}
 
 
-	function updateGrid() {
-		var modelId = $("#ModelId").data("kendoDropDownList").value();
+    function updateGrid(modelAttributes) {
+        var modelId = $("#ModelId").data("kendoDropDownList").value();
 		var dataSource = new kendo.data.DataSource({
 			transport: {
 				read: {
@@ -159,46 +120,105 @@
 			},
 			schema: {
 				model: {
-					id: "Id",
+                    id: "Id",
+                    EmptyField: "",
 					fields: {
 						Id: {editable: false, nullable: true},
 						CadastralNumber: { editable: false },
 						Price: { editable: false },
-						IsExcluded: { type: "boolean", editable: true }
+                        IsExcluded: { type: "boolean", editable: true },
+                        IsForTraining: { type: "boolean", editable: false }
 					}
-				}
-			},
+                }
+            },
 			pageSize: 15
-		});
-		$("#grid").data("kendoGrid").setDataSource(dataSource);
-	}
+        });
+
+        var grid = $("#grid").data("kendoGrid");
+        if (grid) {
+            $("#grid").empty().kendoGrid();
+        }
+
+        $("#grid").kendoGrid({
+            toolbar: kendo.template($("#GridToolbarTemplate").html()),
+            pageable: true,
+            filterable: {
+                extra: false,
+                operators: {
+                    string: {
+                        startswith: "Начинается с",
+                        eq: "Равно",
+                        neq: "Не равно"
+                    }
+                }
+            }, 
+            columns: generateColumns(modelAttributes),
+            dataSource: dataSource
+        });
+
+        $("#grid .k-grid-content").on("change", "input.chkbx", updateGridDataSource);
+        $('#excludeBtn').on('click', excludeObjectsFromCalculation);
+    }
 
 
-	function updateModelInfo() {
-		updateModelMainInfo();
-		updateGrid();
-	}
+    function generateColumns(modelAttributes) {
+        var additionalColumns = modelAttributes.map(function (attribute) {
+            var field = "Coefficients == undefined || Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + ") == undefined " +
+                "? EmptyField " +
+                ": Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + ").Coefficient";
+            return {
+                title: attribute.AttributeName,
+                field: field,
+                filterable: false
+            };
+        });
+        var baseColumns = [
+            {
+                title: "Исключен из расчета",
+                field: "IsExcluded",
+                template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx" />',
+                filterable: false
+            },
+            {
+                title: "Кадастровый номер",
+                field: "CadastralNumber"
+            },
+            {
+                title: "Цена",
+                field: "Price",
+                template: '#: kendo.format("{0:c}", Price)#',
+                filterable: false
+            },
+            {
+                title: "Объект для обучения",
+                field: "IsForTraining",
+                template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # disabled />',
+                filterable: false
+            }
+        ];
+        return baseColumns.concat(additionalColumns);
+    }
 
 
-	function updateGridDataSource(e) {
-		var grid = $("#grid").data("kendoGrid");
+    function updateGridDataSource(e) {
+        var grid = $("#grid").data("kendoGrid");
 		var dataItem = grid.dataItem($(e.target).closest("tr"));
 		dataItem.IsExcluded = this.checked;
 		dataItem.IsDirty = true;
 	}
 
 
-	function excludeBuildingsFromCalculation() {
-		var modelId = $("#ModelId").data("kendoDropDownList").value();
-		var objects = $("#grid").data("kendoGrid").dataSource.data();
-		kendo.ui.progress($('body'), true);
+    function excludeObjectsFromCalculation() {
+        var modelId = $("#ModelId").data("kendoDropDownList").value();
+        var objects = $("#grid").data("kendoGrid").dataSource.data();
+        kendo.ui.progress($('body'), true);
 		$.ajax({
 			type: 'POST',
 			url: '@Url.Action("ChangeObjectsStatusInCalculation", "Modeling")',
 			data: { objects: JSON.stringify({ objects }), modelId: modelId },
 			success: function (response) {
-				Common.ShowMessage(response.Message);
-			},
+                Common.ShowMessage(response.Message);
+            },
 			error: function(response) {
 				Common.ShowError(response.responseText);
 			},

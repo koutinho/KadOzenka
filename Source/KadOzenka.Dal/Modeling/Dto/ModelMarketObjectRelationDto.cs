@@ -8,6 +8,7 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public string CadastralNumber { get; set; }
 		public decimal Price { get; set; }
 		public bool IsExcluded { get; set; }
+        public bool IsForTraining { get; set; }
         public List<ModelAttributeDto> Coefficients { get; set; }
-	}
+    }
 }

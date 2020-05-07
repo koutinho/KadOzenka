@@ -31,7 +31,7 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ModelCard(long modelId)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
-			var model = ModelingModel.ToModel(modelDto);
+            var model = ModelingModel.ToModel(modelDto);
 			return View(model);
 		}
 
@@ -75,17 +75,17 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         public JsonResult TrainModel(long modelId)
         {
-            //TODO код для отладки, позже переделать на добавление процесса в очередь
-            var process = new ModelingProcess();
-            var inputRequest = new ModelingRequest
-            {
-                IsTrainingMode = true
-            };
-            process.StartProcess(new OMProcessType(), new OMQueue
-            {
-                ObjectId = modelId,
-                Parameters = inputRequest.SerializeToXml()
-            },  new CancellationToken());
+            ////TODO код для отладки, позже переделать на добавление процесса в очередь
+            //var process = new ModelingProcess();
+            //var inputRequest = new ModelingRequest
+            //{
+            //    IsTrainingMode = true
+            //};
+            //process.StartProcess(new OMProcessType(), new OMQueue
+            //{
+            //    ObjectId = modelId,
+            //    Parameters = inputRequest.SerializeToXml()
+            //}, new CancellationToken());
 
             return Json(new { Message = "Процесс обучения модели поставлен в очередь" });
         }
@@ -93,17 +93,17 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         public JsonResult Calculate(long modelId)
         {
-            //TODO код для отладки, позже переделать на добавление процесса в очередь
-            var process = new ModelingProcess();
-            var inputRequest = new ModelingRequest
-            {
-                IsTrainingMode = false
-            };
-            process.StartProcess(new OMProcessType(), new OMQueue
-            {
-                ObjectId = modelId,
-                Parameters = inputRequest.SerializeToXml()
-            }, new CancellationToken());
+            ////TODO код для отладки, позже переделать на добавление процесса в очередь
+            //var process = new ModelingProcess();
+            //var inputRequest = new ModelingRequest
+            //{
+            //    IsTrainingMode = false
+            //};
+            //process.StartProcess(new OMProcessType(), new OMQueue
+            //{
+            //    ObjectId = modelId,
+            //    Parameters = inputRequest.SerializeToXml()
+            //}, new CancellationToken());
 
             return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
         }
@@ -135,8 +135,9 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetModelById(long modelId)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
-			var model = ModelingModel.ToModel(modelDto);
-			return Json(model);
+            modelDto.Attributes = ModelingService.GetModelAttributes(modelId);
+            var model = ModelingModel.ToModel(modelDto);
+            return Json(model);
 		}
 
 		[HttpGet]
