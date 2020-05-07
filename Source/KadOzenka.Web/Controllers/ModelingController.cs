@@ -1,15 +1,17 @@
 ﻿using System.Linq;
-using System.Threading;
-using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Modeling;
 using System.Collections.Generic;
+using System.Threading;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Core.LongProcess;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -59,7 +61,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public JsonResult Calculate(ModelingModel modelingModel)
+		public JsonResult UpdateModel(ModelingModel modelingModel)
 		{
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
@@ -67,19 +69,51 @@ namespace KadOzenka.Web.Controllers
 			var modelDto = ModelingModel.FromModel(modelingModel);
 			ModelingService.UpdateModel(modelDto);
 
-			//TODO удалить код для отладки и добавить процесс
-			//var process = new ModelingProcess();
-			//process.StartProcess(new OMProcessType(), new OMQueue{ObjectId = modelDto.ModelId}, new CancellationToken());
-
-			return Json(new { Message = "Обновление выполнено. Процедура формирования модели поставлена в очередь." });
+            return Json(new { Message = "Обновление выполнено" });
 		}
 
-		#endregion
+        [HttpPost]
+        public JsonResult TrainModel(long modelId)
+        {
+            //TODO код для отладки, позже переделать на добавление процесса в очередь
+            var process = new ModelingProcess();
+            var inputRequest = new ModelingRequest
+            {
+                IsTrainingMode = true
+            };
+            process.StartProcess(new OMProcessType(), new OMQueue
+            {
+                ObjectId = modelId,
+                Parameters = inputRequest.SerializeToXml()
+            },  new CancellationToken());
+
+            return Json(new { Message = "Процесс обучения модели поставлен в очередь" });
+        }
+
+        [HttpPost]
+        public JsonResult Calculate(long modelId)
+        {
+            //TODO код для отладки, позже переделать на добавление процесса в очередь
+            var process = new ModelingProcess();
+            var inputRequest = new ModelingRequest
+            {
+                IsTrainingMode = false
+            };
+            process.StartProcess(new OMProcessType(), new OMQueue
+            {
+                ObjectId = modelId,
+                Parameters = inputRequest.SerializeToXml()
+            }, new CancellationToken());
+
+            return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
+        }
+
+        #endregion
 
 
-		#region Market Objects For Model
+        #region Market Objects For Model
 
-		[HttpGet]
+        [HttpGet]
 		public ActionResult ObjectsFromModels()
 		{
 			return View();

@@ -2,12 +2,12 @@
 
 namespace KadOzenka.Dal.Modeling.Dto
 {
-	public class PureAttributeDto
+	public class CalculationSet
 	{
 		public List<string> AttributeNames { get; set; }
 		public List<decimal> Coefficients { get; set; }
 
-		public PureAttributeDto()
+		public CalculationSet()
 		{
 			AttributeNames = new List<string>();
 			Coefficients = new List<decimal>();

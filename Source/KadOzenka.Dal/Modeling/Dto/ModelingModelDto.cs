@@ -10,11 +10,11 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public long TourId { get; set; }
 		public long TourYear { get; set; }
 		public MarketSegment MarketSegment { get; set; }
-		public List<AttributeDto> Attributes { get; set; }
+		public List<ModelAttributeDto> Attributes { get; set; }
 
 		public ModelingModelDto()
 		{
-			Attributes = new List<AttributeDto>();
+			Attributes = new List<ModelAttributeDto>();
 		}
 	}
 }

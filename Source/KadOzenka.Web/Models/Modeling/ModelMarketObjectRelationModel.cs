@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Modeling.Dto;
+﻿using System.Collections.Generic;
+using KadOzenka.Dal.Modeling.Dto;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -9,16 +10,18 @@ namespace KadOzenka.Web.Models.Modeling
 		public decimal Price { get; set; }
 		public bool IsExcluded { get; set; }
 		public bool IsDirty { get; set; }
+        public List<ModelAttributeDto> Coefficients { get; set; }
 
 
-		public static ModelMarketObjectRelationModel ToModel(ModelMarketObjectRelationDto entity)
+        public static ModelMarketObjectRelationModel ToModel(ModelMarketObjectRelationDto entity)
 		{
 			return new ModelMarketObjectRelationModel
 			{
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
 				Price = entity.Price,
-				IsExcluded = entity.IsExcluded
+				IsExcluded = entity.IsExcluded, 
+                Coefficients = entity.Coefficients
 			};
 		}
 

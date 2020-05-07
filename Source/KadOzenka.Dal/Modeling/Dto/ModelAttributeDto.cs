@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.Modeling.Dto
 {
-	public class AttributeDto
+	public class ModelAttributeDto
 	{
 		public long RegisterId { get; set; }
 		public long AttributeId { get; set; }

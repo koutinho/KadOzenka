@@ -23,7 +23,7 @@
 	</div>
 </div>
 
-@using (Html.BeginForm("Calculate", "Modeling", FormMethod.Post, new { id = "calculateModelForm" }))
+@using (Html.BeginForm("UpdateModel", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
 {
 	@Html.HiddenFor(x => x.Id)
 	<div style="padding: 2%">
@@ -100,8 +100,22 @@
 					text: '',
 				    attributes: { title: "Сохранить" },
 				    icon: 'save',
-				    click: calculate
-			    }
+				    click: updateModel
+                },
+                {
+                    type: 'button',
+                    text: '',
+                    attributes: { title: "Обучить" },
+                    icon: 'paste-plain-text',
+                    click: trainModel
+                },
+                {
+                    type: 'button',
+                    text: '',
+                    attributes: { title: "Рассчитать" },
+                    icon: 'calculator', 
+                    click: calculate
+                }
 		    ]
 	    });
 	    $('#attributesToolbar').kendoToolBar({
@@ -149,8 +163,8 @@
 						    DictionaryName: { type: "string" }
 					    }
 				    }
-				},
-				pageSize: 10
+                },
+                pageSize: 10
 			},
 		    columns: [
 			    {
@@ -179,8 +193,8 @@
 		    change: changeToolBarButtonsClass,
 		    width: '100%',
 		    scrollable: true,
-		    selectable: true
-	    });
+            selectable: true
+        });
 
 		$("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
 	});
@@ -208,11 +222,11 @@
 	}
 
 
-	function calculate() {
+	function updateModel() {
 		if (!validateForm())
 			return;
 		var attributes = getAttributesFromGrid();
-		var form = $('#calculateModelForm');
+		var form = $('#updateModelModelForm');
 		var formObject = Common.Functions.FormToObject(form);
 		formObject['Attributes'] = attributes;
 		kendo.ui.progress($('body'), true);
@@ -236,7 +250,57 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
-	}
+    }
+
+
+    function trainModel() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("TrainModel", "Modeling")',
+            data: {modelId : '@Model.Id'},
+            success: function(response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage(response.Message);
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function calculate() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("Calculate", "Modeling")',
+            data: {modelId : '@Model.Id'},
+            success: function(response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage(response.Message);
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 
 
 	function validateForm() {
