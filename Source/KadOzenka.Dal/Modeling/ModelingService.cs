@@ -5,6 +5,7 @@ using System.Text;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using DevExpress.CodeParser;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.ScoreCommon.Dto;
@@ -114,6 +115,7 @@ namespace KadOzenka.Dal.Modeling
 					}
 				}
 			};
+			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(AttributeDto.RegisterId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(AttributeDto.AttributeId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(AttributeDto.AttributeName)));
 			query.AddColumn(OMEsReference.GetColumn(x => x.Id, nameof(AttributeDto.DictionaryId)));
@@ -125,20 +127,22 @@ namespace KadOzenka.Dal.Modeling
 			{
 				var row = table.Rows[i];
 
-				var attributeId = row[nameof(AttributeDto.AttributeId)].ParseToLongNullable();
+				var registerId = row[nameof(AttributeDto.RegisterId)].ParseToLong();
+
+				var attributeId = row[nameof(AttributeDto.AttributeId)].ParseToLong();
 				var attributeName = row[nameof(AttributeDto.AttributeName)].ParseToString();
 
 				var dictionaryId = row[nameof(AttributeDto.DictionaryId)].ParseToLongNullable();
 				var dictionaryName = row[nameof(AttributeDto.DictionaryName)].ParseToString();
 
-				if (attributeId != null || dictionaryId != null)
-					attributes.Add(new AttributeDto
-					{
-						AttributeId = attributeId,
-						AttributeName = attributeName,
-						DictionaryId = dictionaryId,
-						DictionaryName = dictionaryName
-					});
+				attributes.Add(new AttributeDto
+				{
+					RegisterId = registerId,
+					AttributeId = attributeId,
+					AttributeName = attributeName,
+					DictionaryId = dictionaryId,
+					DictionaryName = dictionaryName
+				});
 			}
 
 			return attributes;
@@ -178,7 +182,7 @@ namespace KadOzenka.Dal.Modeling
 					new OMModelAttributesRelation
 					{
 						ModelId = modelDto.ModelId,
-						AttributeId = newAttribute.AttributeId.Value,
+						AttributeId = newAttribute.AttributeId,
 						DictionaryId = newAttribute.DictionaryId
 					}.Save();
 				});
@@ -186,86 +190,6 @@ namespace KadOzenka.Dal.Modeling
 				ts.Complete();
 			}
 		}
-
-		#endregion
-
-		#region Calculation
-
-		public void CalculateCoefficientsForObjects(List<string> cadastralNumbers, long modelId)
-		{
-			var model = GetModelById(modelId);
-			var objectsForCalculation = OMModelToMarketObjects.Where(x =>
-				x.ModelId == model.ModelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
-
-			var attributes = GetModelAttributes(modelId);
-
-			objectsForCalculation.ForEach(obj =>
-			{
-				attributes.ForEach(modelAttribute =>
-				{
-					var register = OMAttribute.Where(x => x.Id == modelAttribute.AttributeId).Select(x => x.RegisterId)
-						.ExecuteFirstOrDefault();
-					if (register == null)
-						throw new Exception($"Не найден аттрибут с Id='{modelAttribute.AttributeId}'");
-
-					var attributeData = GetAttributeDataByCadastralNumber(obj.CadastralNumber, (int) model.TourId,
-						(int) modelAttribute.AttributeId.Value, (int) register.Id);
-
-					switch (attributeData.Type)
-					{
-						case ParameterType.String:
-						{
-							if (modelAttribute.DictionaryId == null)
-							{
-								//log error
-							}
-							else
-							{
-								modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromStringFactor(attributeData,
-									(int)modelAttribute.DictionaryId.GetValueOrDefault());
-							}
-
-							break;
-						}
-						case ParameterType.Date:
-						{
-							if (modelAttribute.DictionaryId == null)
-							{
-								//log error
-							}
-							else
-							{
-								modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromDateFactor(attributeData,
-									(int)modelAttribute.DictionaryId.GetValueOrDefault());
-							}
-
-							break;
-						}
-						case ParameterType.Number:
-						{
-							modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromNumberFactor(attributeData,
-								(int)modelAttribute.DictionaryId.GetValueOrDefault());
-
-								break;
-						}
-						default:
-						{
-							//log error
-							break;
-						}
-					}
-				});
-
-
-			});
-		}
-
-		private ScoreCommon.Dto.ParameterDataDto GetAttributeDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
-		{
-			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
-			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;
-		}
-
 
 		#endregion
 
@@ -300,19 +224,78 @@ namespace KadOzenka.Dal.Modeling
 		#endregion
 
 
-		#region Support Methods
+		#region Calculation for Process
 
-		public ModelingModelDto ToDto(OMModelingModel entity)
+		public void CreateObjectsForModel(ModelingModelDto modelDto)
 		{
-			return new ModelingModelDto
+			var groupedObjects = OMCoreObject.Where(x =>
+					x.PropertyMarketSegment_Code == modelDto.MarketSegment &&
+					x.CadastralNumber != null && x.CadastralNumber != string.Empty)
+				.Select(x => x.CadastralNumber)
+				.Select(x => x.Price)
+				.Execute()
+				.GroupBy(x => new
+				{
+					x.CadastralNumber,
+					x.Price
+				}).ToList();
+
+			var objectsFromPreviousCalculation = OMModelToMarketObjects.Where(x => x.ModelId == modelDto.ModelId).SelectAll().Execute();
+			groupedObjects.ForEach(groupedObj =>
 			{
-				ModelId = entity.Id,
-				Name = entity.Name,
-				TourId = entity.TourId,
-				TourYear = entity.ParentTour.Year ?? 0,
-				MarketSegment = entity.MarketSegment_Code
-			};
+				var existedObject = objectsFromPreviousCalculation.FirstOrDefault(x =>
+					x.CadastralNumber == groupedObj.Key.CadastralNumber && x.Price == groupedObj.Key.Price);
+				if (existedObject == null)
+				{
+					new OMModelToMarketObjects
+					{
+						ModelId = modelDto.ModelId,
+						CadastralNumber = groupedObj.Key.CadastralNumber,
+						Price = groupedObj.Key.Price ?? 0
+					}.Save();
+				}
+			});
 		}
+
+		public void CreateCoefficientsForObjects(long modelId)
+		{
+			var model = GetModelById(modelId);
+
+			var modelAttributes = GetModelAttributes(model.ModelId);
+
+			var modelMarketObjects = GetModelMarketObjects(model.ModelId);
+
+			modelMarketObjects.ForEach(modelMarketObject =>
+			{
+				modelAttributes.ForEach(modelAttribute =>
+				{
+					modelAttribute.Coefficient = null;
+					modelAttribute.Message = null;
+
+					var objectParameterData = GetParameterDataByCadastralNumber(modelMarketObject.CadastralNumber, (int)model.TourId,
+						(int)modelAttribute.AttributeId, (int)modelAttribute.RegisterId);
+					if (objectParameterData == null)
+					{
+						modelAttribute.Message =
+							$"Не найдено значение. Аттрибут '{modelAttribute.AttributeName}' для объекта '{modelMarketObject.CadastralNumber}'.";
+					}
+					else
+					{
+						CalculateCoefficients(objectParameterData, modelAttribute, modelMarketObject);
+					}
+				});
+
+				modelMarketObject.Coefficients = modelAttributes.SerializeToXml();
+				modelMarketObject.Save();
+			});
+		}
+
+		
+
+		#endregion
+
+
+		#region Support Methods
 
 		public ModelMarketObjectRelationDto ToDto(OMModelToMarketObjects entity)
 		{
@@ -341,6 +324,74 @@ namespace KadOzenka.Dal.Modeling
 
 			if (message.Length != 0)
 				throw new Exception(message.ToString());
+		}
+
+		private List<OMModelToMarketObjects> GetModelMarketObjects(long modelId)
+		{
+			return OMModelToMarketObjects.Where(x =>
+				x.ModelId == modelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
+		}
+
+		private ParameterDataDto GetParameterDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
+		{
+			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
+			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;
+		}
+
+		private void CalculateCoefficients(ParameterDataDto objectParameterData, AttributeDto modelAttribute, OMModelToMarketObjects modelMarketObject)
+		{
+			switch (objectParameterData.Type)
+			{
+				case ParameterType.String:
+				{
+					if (modelAttribute.DictionaryId == null)
+					{
+						modelAttribute.Message = GetErrorMessage(modelAttribute.AttributeName,
+							modelMarketObject.CadastralNumber, "строка");
+					}
+					else
+					{
+						modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromStringFactor(objectParameterData,
+							(int)modelAttribute.DictionaryId.GetValueOrDefault());
+					}
+
+					break;
+				}
+				case ParameterType.Date:
+				{
+					if (modelAttribute.DictionaryId == null)
+					{
+						modelAttribute.Message =
+							GetErrorMessage(modelAttribute.AttributeName, modelMarketObject.CadastralNumber, "дата");
+					}
+					else
+					{
+						modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromDateFactor(objectParameterData,
+							(int)modelAttribute.DictionaryId.GetValueOrDefault());
+					}
+
+					break;
+				}
+				case ParameterType.Number:
+				{
+					modelAttribute.Coefficient = ScoreCommonService.GetCoefficientFromNumberFactor(objectParameterData,
+						(int)modelAttribute.DictionaryId.GetValueOrDefault());
+
+					break;
+				}
+				default:
+				{
+					modelAttribute.Message = GetErrorMessage(modelAttribute.AttributeName, modelMarketObject.CadastralNumber,
+						"неизвестный тип");
+					break;
+				}
+			}
+		}
+
+		//TODO remove
+		private string GetErrorMessage(string attributeName, string cadastralNumber, string type)
+		{
+			return $"Ошибка: нет справочника. Аттрибут '{attributeName}' для объекта '{cadastralNumber}' относится к типу '{type}', но к нему не выбран справочник.";
 		}
 
 		#endregion

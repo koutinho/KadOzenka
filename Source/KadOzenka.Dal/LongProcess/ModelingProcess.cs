@@ -5,6 +5,8 @@ using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.ScoreCommon;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
@@ -31,46 +33,15 @@ namespace KadOzenka.Dal.LongProcess
 			//	return;
 			//}
 
-			//var service = new ModelingService();
-			//var model = service.GetModelById(processQueue.ObjectId.Value);
+			var modelingService = new ModelingService(new ScoreCommonService());
+			var model = modelingService.GetModelById(processQueue.ObjectId.Value);
 
-			//var groupedObjects = OMCoreObject.Where(x =>
-			//		x.PropertyMarketSegment_Code == model.MarketSegment &&
-			//		x.CadastralNumber != null && x.CadastralNumber != string.Empty)
-			//	.Select(x => x.CadastralNumber)
-			//	.Select(x => x.Price)
-			//	.Execute()
-			//	.GroupBy(x => new
-			//	{
-			//		x.CadastralNumber,
-			//		x.Price
-			//	}).ToList();
+			modelingService.CreateObjectsForModel(model);
 
-			//var objectsFromPreviousCalculation = OMModelToMarketObjects.Where(x => x.ModelId == model.ModelId).SelectAll().Execute();
-			//groupedObjects.ForEach(groupedObj =>
-			//{
-			//	var existedObject = objectsFromPreviousCalculation.FirstOrDefault(x =>
-			//		x.CadastralNumber == groupedObj.Key.CadastralNumber && x.Price == groupedObj.Key.Price);
-			//	if (existedObject == null)
-			//	{
-			//		new OMModelToMarketObjects
-			//		{
-			//			ModelId = model.ModelId,
-			//			CadastralNumber = groupedObj.Key.CadastralNumber,
-			//			Price = groupedObj.Key.Price ?? 0
-			//		}.Save();
-			//	}
-			//});
+			//загружаем второй раз, т.к. некоторые объекты могут быть исключены вручную
+			modelingService.CreateCoefficientsForObjects(model.ModelId);
 
-			////загружаем второй раз, т.к. некоторые объекты могут быть исключены вручную
-			//var objectsForCalculation = OMModelToMarketObjects.Where(x =>
-			//	x.ModelId == model.ModelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
-
-			//var attributes = service.GetModelAttributes(model.ModelId);
-
-
-
-			//TODO send objectsForCalculation {CN + Price} to API-service
+            //TODO send coefficients to API-service
 
 			//WorkerCommon.SetProgress(processQueue, 100);
 		}

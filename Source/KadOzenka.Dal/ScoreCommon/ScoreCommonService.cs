@@ -23,9 +23,9 @@ namespace KadOzenka.Dal.ScoreCommon
 			var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == registerId && x.IsPrimaryKey)?.Id;
 
 			var query = GetQsQuery(registerId, (int)idAttribute.GetValueOrDefault(), unitsIds, qsGroup);
-			query.AddColumn(new QSColumnSimple(attributeId, nameof(PureAttributeDataDto.Value)));
+			query.AddColumn(new QSColumnSimple(attributeId, nameof(PureParameterDataDto.Value)));
 
-			return query.ExecuteQuery<PureAttributeDataDto>().Select(x => new ParameterDataDto(x)).OrderByDescending(x => x.Id).FirstOrDefault();
+			return query.ExecuteQuery<PureParameterDataDto>().Select(x => new ParameterDataDto(x)).OrderByDescending(x => x.Id).FirstOrDefault();
 		}
 
 		public QSQuery GetQsQuery(int registerId, int filterId, List<long> filterValues, QSConditionGroup qsGroup = null)
@@ -37,7 +37,8 @@ namespace KadOzenka.Dal.ScoreCommon
 				LeftOperand = new QSColumnSimple(filterId),
 				RightOperand = new QSColumnConstant(filterValues)
 			});
-			qsConditionGroup.Add(qsGroup);
+			if(qsGroup != null)
+				qsConditionGroup.Add(qsGroup);
 
 			var query = new QSQuery
 			{

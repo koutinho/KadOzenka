@@ -16,7 +16,7 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 
 		public dynamic Value { get; set; }
 
-		public ParameterDataDto(PureAttributeDataDto es)
+		public ParameterDataDto(PureParameterDataDto es)
 		{
 			Id = es.Id;
 			Value = es.Value;
@@ -80,7 +80,7 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 		}
 	}
 
-	public class PureAttributeDataDto
+	public class PureParameterDataDto
 	{
 		public long Id { get; set; }
 
