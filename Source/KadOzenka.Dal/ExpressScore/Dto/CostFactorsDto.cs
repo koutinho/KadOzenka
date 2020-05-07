@@ -21,6 +21,16 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// ид аттрибута года постройки для поиска аналогов
 		/// </summary>
 		public decimal? YearBuildId { get; set; }
+
+		/// <summary>
+		/// Ид словаря индекс дата для обязательного параметра
+		/// </summary>
+		public decimal? IndexDateDicId { get; set; }
+
+		/// <summary>
+		/// Ид словаря доля ЗУ для обязательного параметра
+		/// </summary>
+		public decimal? LandShareDicId { get; set; }
 		public List<SimpleCostFactor> SimpleCostFactors { get; set; }
 		public List<ComplexCostFactor> ComplexCostFactors { get; set; }
 	}

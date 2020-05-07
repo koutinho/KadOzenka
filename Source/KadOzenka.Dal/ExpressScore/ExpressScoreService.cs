@@ -288,6 +288,12 @@ namespace KadOzenka.Dal.ExpressScore
 				return 0;
 			}
 
+			if (exCostFactors.LandShareDicId == null || exCostFactors.IndexDateDicId == null)
+			{
+				msg = "Не заданы обязательные настройки";
+				return 0;
+			}
+
 			foreach (var analog in analogs)
 			{
 				decimal yPrice = 0; // Удельный показатель стоимости
@@ -303,7 +309,7 @@ namespace KadOzenka.Dal.ExpressScore
 				#region Корректировка на дату
 
 				//Корректировка на дату 
-				var dateDict = OMEsReferenceItem.Where(x => x.ReferenceId == 44138946).SelectAll().Execute()
+				var dateDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.IndexDateDicId).SelectAll().Execute()
 					.Select(ScoreCommonService.ReferenceToDate).ToList();
 
 				var dateEstimate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
@@ -338,13 +344,13 @@ namespace KadOzenka.Dal.ExpressScore
 				//Корректировка на долю ЗУ
 				if (scenarioType != null && scenarioType == ScenarioType.Oks)
 				{
-					var dateNumb = OMEsReferenceItem.Where(x => x.ReferenceId == 44205104).SelectAll().Execute()
+					var dateNumb = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.LandShareDicId).SelectAll().Execute()
 						.Select(ScoreCommonService.ReferenceToNumber).ToList();
 
 					if (analog.FloorsCount != 0)
 					{
 						var coefficient = dateNumb.FirstOrDefault(x => x.Key == analog.FloorsCount)?.Value ??
-						                  dateNumb.Last().Value;
+						                  dateNumb.Last()?.Value ?? 1;
 
 						cost = cost * coefficient;
 					}

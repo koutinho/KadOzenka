@@ -16,7 +16,7 @@
 		bottom: 20px;
 		width: 100%;
 	}
-	fieldset.complex-factor, fieldset.required-param{
+	fieldset.complex-factor, fieldset.required-param, fieldset.static-param {
 		margin-left: 5px;
 		margin-right: 5px;
 	}
@@ -46,17 +46,17 @@
 				</div>
 				<div class="col-sm-9">
 					@(Html.Kendo().DropDownListFor(m => m.TourId)
-										.DataTextField("Text")
-										.DataValueField("Value")
-										.Filter(FilterType.Contains)
-										.DataSource(source =>
-										{
-											source.Read("GetRatingTours", "Tour");
-										}).Events(
-											e =>
-											{
-												e.Cascade("handlerChangeTour");
-											}))
+						.DataTextField("Text")
+						.DataValueField("Value")
+						.Filter(FilterType.Contains)
+						.DataSource(source =>
+						{
+							source.Read("GetRatingTours", "Tour");
+						}).Events(
+							e =>
+							{
+								e.Cascade("handlerChangeTour");
+							}))
 				</div>
 			</div>
 			<div class="form-group">
@@ -78,33 +78,70 @@
 						)
 				</div>
 			</div>
-			<div class="form-group">
-				<div class="col-sm-3">
-					@Html.CustomLabelFor("Атрибут года постройки", true)
-				</div>
-				<div class="col-sm-9">
-					@(Html.Kendo().DropDownListFor(m => m.CostFactors.YearBuildId)
-						.DataTextField("Text")
-						.DataValueField("Value")
-						.Filter(FilterType.Contains)
-						.DataSource(source =>
-						{
-							source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
-						}).HtmlAttributes(new
-						{
-							name = "YearBuildId"
-						}))
-				</div>
-			</div>
 		</li>
-		@*<li id="RequiredParam" data-expand>
-				<fieldset class="required-param">
-					<legend>Обязательные параметры</legend>
-				</fieldset>
-
-			</li>*@
-		<li id="StaticFactor" data-expand>
+		<li id="RequiredParam" data-expand>
 			<fieldset class="required-param">
+				<legend>Обязательные параметры</legend>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor("Атрибут года постройки", true)
+					</div>
+					<div class="col-sm-9">
+						@(Html.Kendo().DropDownListFor(m => m.CostFactors.YearBuildId)
+							.DataTextField("Text")
+							.DataValueField("Value")
+							.Filter(FilterType.Contains)
+							.DataSource(source =>
+							{
+								source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
+							}).HtmlAttributes(new
+							{
+								name = "YearBuildId"
+							}))
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor(@"Корректировка на дату ""Справочник""", true)
+					</div>
+					<div class="col-sm-9">
+						@(Html.Kendo().DropDownListFor(m => m.CostFactors.IndexDateDicId)
+							.DataTextField("Text")
+							.DataValueField("Value")
+							.Filter(FilterType.Contains)
+							.DataSource(source =>
+							{
+								source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+							}
+							).HtmlAttributes(new
+							{
+								name = "IndexDateDicId"
+							}))
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor(@"Корректировка на долю земельного участка ""Справочник""", true)
+					</div>
+					<div class="col-sm-9">
+						@(Html.Kendo().DropDownListFor(m => m.CostFactors.LandShareDicId)
+							.DataTextField("Text")
+							.DataValueField("Value")
+							.Filter(FilterType.Contains)
+							.DataSource(source =>
+							{
+								source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+							}
+							).HtmlAttributes(new
+							{
+								name = "LandShareDicId"
+							}))
+					</div>
+				</div>
+			</fieldset>
+		</li>
+		<li id="StaticFactor" data-expand>
+			<fieldset class="static-param">
 				<legend>Статичные коэффициенты</legend>
 				@{
 					int i = 0;
@@ -144,91 +181,84 @@
 				</div>
 			</fieldset>
 		</li>
-
-		@{
-			i = 0;
-			foreach (var item in Model.CostFactors.ComplexCostFactors)
-			{
-		<li id="factor-@i">
+		<li id="ComplexFactor" data-expand>
 			<fieldset class="complex-factor">
-					<div class="form-group">
-						<div class="col-sm-12">
-							<span class="k-icon k-i-close remove" style="float: right; margin-top: 5px;"></span>
-						</div>
-					</div>
-					<div class="form-group">
-						<div class="col-sm-2">
-							@Html.CustomLabelFor("Имя фактора", true)
-						</div>
-						<div class="col-sm-4">
-							@Html.Kendo().TextBox().Name($"Name-{i}").Value(Model.CostFactors.ComplexCostFactors[i].Name)
-						</div>
-						<div class="col-sm-2">
-							@Html.CustomLabelFor("Коэф. влияния", true)
-						</div>
-						<div class="col-sm-4">
-							@Html.Kendo().NumericTextBox().Name($"Coefficient-{i}").Decimals(6).Format("n6").Spinners(false).Value((double)Model.CostFactors.ComplexCostFactors[i].Coefficient.GetValueOrDefault())
-						</div>
-					</div>
-				<div class="form-group">
-					<div class="col-sm-2">
-						@Html.CustomLabelFor("Имя атрибута", true)
-					</div>
-					<div class="col-sm-4">
-						@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactors[i].AttributeId)
-							.DataTextField("Text")
-							.DataValueField("Value")
-							.Filter(FilterType.Contains)
-							.DataSource(source =>
-							{
-								source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
-							})
-							.HtmlAttributes(new { name = $"AttributeId-{i}", id = $"AttributeId-{i}" })
-							)
-					</div>
-					<div class="col-sm-2">
-						@Html.CustomLabelFor("Словарь")
-					</div>
-					<div class="col-sm-4">
-						@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactors[i].DictionaryId)
-							.DataTextField("Text")
-							.DataValueField("Value")
-							.Filter(FilterType.Contains)
-							.DataSource(source =>
-							{
-								source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
-							})
-							.HtmlAttributes(new { name = $"DictionaryId-{i}", id = $"DictionaryId-{i}" })
-							)
-					</div>
-				</div>
-				</fieldset>
-			<div class="form-group"></div>
-		</li>
-				i++;
-			}
-		}
-	</ul>
-</div>
-	<div class="static-nav">
-		<nav id="navigation-menu">
-			<a href="#SectionRegister">Тур и реестр</a>
-			@*<a href="#RequiredParam">Обязательные параметры</a>*@
-			<a href="#StaticFactor">Статичные коэффициенты</a>
-			@{
-				int j = 0;
-				foreach (var factor in Model.CostFactors.ComplexCostFactors)
-				{
-					<a href="#factor-@j">@factor.Name</a>
-
+				<legend>Оценочные факторы</legend>
+				@{
+					i = 0;
+					foreach (var item in Model.CostFactors.ComplexCostFactors)
+					{
+						<fieldset id="factor-@i">
+							<div class="form-group">
+								<div class="col-sm-12">
+									<span class="k-icon k-i-close remove" style="float: right; margin-top: 5px;"></span>
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-2">
+									@Html.CustomLabelFor("Имя фактора", true)
+								</div>
+								<div class="col-sm-4">
+									@Html.Kendo().TextBox().Name($"Name-{i}").Value(Model.CostFactors.ComplexCostFactors[i].Name)
+								</div>
+								<div class="col-sm-2">
+									@Html.CustomLabelFor("Коэф. влияния", true)
+								</div>
+								<div class="col-sm-4">
+									@Html.Kendo().NumericTextBox().Name($"Coefficient-{i}").Decimals(6).Format("n6").Spinners(false).Value((double)Model.CostFactors.ComplexCostFactors[i].Coefficient.GetValueOrDefault())
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-2">
+									@Html.CustomLabelFor("Имя атрибута", true)
+								</div>
+								<div class="col-sm-4">
+									@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactors[i].AttributeId)
+												.DataTextField("Text")
+												.DataValueField("Value")
+												.Filter(FilterType.Contains)
+												.DataSource(source =>
+												{
+													source.Read(a => a.Action("GetAttributes", "ExpressScore").Data("getDataAttribute"));
+												})
+												.HtmlAttributes(new { name = $"AttributeId-{i}", id = $"AttributeId-{i}" })
+									)
+								</div>
+								<div class="col-sm-2">
+									@Html.CustomLabelFor("Справочник")
+								</div>
+								<div class="col-sm-4">
+									@(Html.Kendo().DropDownListFor(m => m.CostFactors.ComplexCostFactors[i].DictionaryId)
+												.DataTextField("Text")
+												.DataValueField("Value")
+												.Filter(FilterType.Contains)
+												.DataSource(source =>
+												{
+													source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+												})
+												.HtmlAttributes(new { name = $"DictionaryId-{i}", id = $"DictionaryId-{i}" })
+									)
+								</div>
+							</div>
+						</fieldset>
+						<div class="form-group"></div>
+						i++;
+					}
 				}
-		 }
-			<div id="toolbar"></div>
-		</nav>
+			</fieldset>
+		</li>
+	</ul>
 	</div>
-	<div style="display: none" id="wrapper"></div>
-
 }
+<div class="static-nav">
+	<nav id="navigation-menu">
+		<a href="#SectionRegister">Тур и реестр</a>
+		<a href="#RequiredParam">Обязательные параметры</a>
+		<a href="#StaticFactor">Статичные коэффициенты</a>
+		<a href="#ComplexFactor">Оценочные факторы</a>
+		<div id="toolbar"></div>
+	</nav>
+</div>
 
 <script src="~/js/custom-validation.js"></script>
 
@@ -273,7 +303,7 @@
 		try {
 			for (var i = 0; i < complexFactorsCount; i++) {
 				var obj = {};
-				if (!!$(`li#factor-${i}`)[0]) {
+				if (!!$(`fieldset#factor-${i}`)[0]) {
 					obj['Name'] = validateParams(formObject[`Name-${i}`]);
 					obj['Coefficient'] = validateParams(formObject[`Coefficient-${i}`]);
 					obj['AttributeId'] = validateParams(formObject[`AttributeId-${i}`]);
@@ -304,7 +334,9 @@
 			CostFactors: {
 				YearBuildId: formObject['YearBuildId'],
 				complexCostFactors,
-				simpleCostFactors
+				simpleCostFactors,
+				LandShareDicId: formObject["LandShareDicId"],
+				IndexDateDicId: formObject["IndexDateDicId"]
 			},
 			SegmentType: "@Model.SegmentType"
 		}
@@ -336,29 +368,29 @@
 		kendo.ui.progress($('body'), true);
 		var url = "@Url.Action("AddNewComplexCard","ExpressScore")" + `?count=${complexFactorsCount}`;
 
-		var li$ = $('<li id="factor-'+ complexFactorsCount +'" style= "display: none"></li>');
-		$(li$).load(url, null, function (data, status, jqXGR) {
+		var fieldset$ = $('<fieldset id="factor-' + complexFactorsCount +'" style= "display: none"></fieldset>');
+		$(fieldset$).load(url, null, function (data, status, jqXGR) {
 			if (status === 'success') {
-				$('ul#ls_panelbar').append(li$);
-				li$.show();
+				$('fieldset.complex-factor').append(fieldset$);
+				fieldset$.show();
 				complexFactorsCount++;
-				removeHandlers();
-				li$.get(0).scrollIntoView();
+				refreshComplexHandlers();
+				fieldset$.get(0).scrollIntoView();
 				kendo.ui.progress($('body'), false);
 			}
 		});
 	}
 
-	function removeHandlers() {
+	function refreshComplexHandlers() {
 		$('.remove').off('click', removeComplexFactors);
 		$('.remove').on('click', removeComplexFactors);
 	}
 
 	function removeComplexFactors() {
-		$(this).closest('li').remove();
+		$(this).closest('fieldset').remove();
 	}
 
-	function removeSimpleHandlers() {
+	function refreshSimpleHandlers() {
 		$('.remove-simple').off('click', removeSimpleFactors);
 		$('.remove-simple').on('click', removeSimpleFactors);
 	}
@@ -368,8 +400,8 @@
 	}
 
 	$(document).ready(function () {
-		removeHandlers();
-		removeSimpleHandlers();
+		refreshComplexHandlers();
+		refreshSimpleHandlers();
 		$('#addSimpleFactor').on('click',
 			function () {
 				kendo.ui.progress($('body'), true);
@@ -381,7 +413,7 @@
 						$('.wrapper-simple').append(div$);
 						div$.show();
 						simpleFactorsCount++;
-						removeSimpleHandlers();
+						refreshSimpleHandlers();
 						kendo.ui.progress($('body'), false);
 					}
 				});

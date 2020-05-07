@@ -55,7 +55,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 
 			if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
-				if (CostFactors.ComplexCostFactors.Any(x => x.Name == null || x.Coefficient == null || x.Coefficient == 0))
+				if (CostFactors.ComplexCostFactors.Any(x => x.Name == null || x.Coefficient == null || x.Coefficient == 0 || x.AttributeId == 0 ||  x.AttributeId == null))
 				{
 					yield return
 						new ValidationResult(errorMessage: "Заполните обязательные параметры");
@@ -69,6 +69,17 @@ namespace KadOzenka.Web.Models.ExpressScore
 					new ValidationResult(errorMessage: "Заполните атрибут года постройки");
 			}
 
+			if (CostFactors != null && CostFactors.IndexDateDicId == 0 || CostFactors.IndexDateDicId == null)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Выберите словарь");
+			}
+
+			if (CostFactors != null && CostFactors.LandShareDicId == 0 || CostFactors.LandShareDicId == null)
+			{
+				yield return
+					new ValidationResult(errorMessage: "Выберите словарь");
+			}
 		}
 	}
 }
