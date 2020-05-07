@@ -31,6 +31,8 @@
 		height: 93vh;
 		border-radius: 10px;
 		padding-right: 10px;
+		overflow-y: scroll;
+		overflow-x: hidden;
 	}
 
 	.separator {
@@ -64,11 +66,15 @@
 		margin: 10px
 	}
 
-		.wrapper-success-dialog label {
-			font-weight: bold !important;
-			display: block;
-			padding: 2px;
+	.wrapper-success-dialog label {
+		font-weight: bold !important;
+		display: block;
+		padding: 2px;
 		}
+
+	div#slider {
+		width: 100%;
+	}
 </style>
 
 <div class="form-horizontal col-sm-12">
@@ -137,12 +143,16 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
+					<div class="col-sm-10">
 						@Html.CustomLabelFor("Количество аналогов", htmlAttributes: new { style = "padding-top: 0" })
 					</div>
-					<div class="col-sm-9">
-						<div id="select-count">
-						</div>
+					<div class="col-sm-12">
+						<input id="slider" value="0" title="slider" />
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-sm-10">
+						<button class="k-button analogs" type="button">Поиск аналогов</button>
 					</div>
 				</div>
 				<div class="form-group">
@@ -150,7 +160,7 @@
 				</div>
 				<div class="form-group">
 					<div class="col-sm-10">
-						<button id="" class="k-button calculate" type="button">Расчитать стоимость</button>
+						<button id="" disabled="disabled" class="k-button calculate" type="button">Расчитать стоимость</button>
 					</div>
 				</div>
 			</div>
@@ -221,15 +231,27 @@
 		findPointsIds = [];
 	}
 
-	$("#select-count").kendoButtonGroup({
-		items: [
-			{ text: "5", attributes: { class: "btn-count analogs" } },
-			{ text: "10", attributes: { class: "btn-count analogs " } },
-			{ text: "20", attributes: { class: "btn-count analogs" } }
-		]
+
+	$("#slider").kendoSlider({
+		increaseButtonTitle: "Right",
+		decreaseButtonTitle: "Left",
+		min: -0,
+		max: 30,
+		smallStep: 1,
+		largeStep: 10,
+		showButtons: false,
+		dragHandleTitle: 0
 	});
+	var slider = $("#slider").getKendoSlider();
+	slider.wrapper.css("width", "95%");
+	slider.wrapper.css("margin-left", "5px");
+	slider.resize();
 
+	slider.bind('change', handlerChangeSlider);
 
+	function handlerChangeSlider(e) {
+		$(slider.wrapper).find('.k-draghandle').prop('title', e.value);
+	}
 	//Устанавливаем кад номер в 2-х случиях
 	//1 - ввели самии адрес
 	// 2 - указали точку на карте
@@ -414,7 +436,7 @@
 				var floor = $('#floor').val();
 				var square = $('#square').val();
 				var segment = $('#segment').val();
-				var quality = $(this).text();
+				var quality = $("#slider").getKendoSlider() && $("#slider").getKendoSlider().value() || 0;
 				var dealTypeShort = $("input[name='DealTypeShort']:checked").val();
 				var actualDate = kendo.toString($("#ActualDate").data('kendoDatePicker').value(), "MM/dd/yyyy");
 
@@ -441,6 +463,10 @@
 					}
 
 					if (data.response && data.response.coordinates) {
+						Common.ShowMessage(`Было найдено ${data.response.coordinates.length} объектов.`);
+						$(slider.wrapper).find('.k-draghandle').prop('title', data.response.coordinates.length);
+						slider.value(data.response.coordinates.length);
+
 						data.response.coordinates.forEach(function (data) {
 							findPointsIds.push(data.Id);
 							var coord = [data.Lat, data.Lng];
