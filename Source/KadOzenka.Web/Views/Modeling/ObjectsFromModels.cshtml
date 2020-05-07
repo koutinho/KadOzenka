@@ -79,21 +79,33 @@
 
 		$("#grid").kendoGrid({
 			toolbar: kendo.template($("#GridToolbarTemplate").html()),
-			pageable: true,
+            pageable: true,
+            filterable: {
+                extra: false,
+                operators: {
+                    string: {
+                        startswith: "Начинается с",
+                        eq: "Равно",
+                        neq: "Не равно"
+                    }
+                }
+            },
 			columns: [
 				{
 					title: "Кадастровый номер",
-					field: "CadastralNumber"
+                    field: "CadastralNumber"
 				},
 				{
 					title: "Цена",
 					field: "Price",
-					template: '#: kendo.format("{0:c}", Price)#'
+                    template: '#: kendo.format("{0:c}", Price)#',
+                    filterable: false
 				},
 				{
 					title: "Исключен из расчета",
 					field: "IsExcluded",
-					template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx" />'
+                    template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx" />',
+                    filterable: false
 				}
 			]
 		});
