@@ -1823,24 +1823,24 @@ namespace ObjectModel.Market
         }
 
 
-		private decimal? _priceaftercorrectionbystage;
-		/// <summary>
-		/// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 10008500)]
-		public decimal? PriceAfterCorrectionByStage
-		{
-			get
-			{
-				CheckPropertyInited("PriceAfterCorrectionByStage");
-				return _priceaftercorrectionbystage;
-			}
-			set
-			{
-				_priceaftercorrectionbystage = value;
-				NotifyPropertyChanged("PriceAfterCorrectionByStage");
-			}
-		}
+        private decimal? _priceaftercorrectionbystage;
+        /// <summary>
+        /// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008500)]
+        public decimal? PriceAfterCorrectionByStage
+        {
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionByStage");
+                return _priceaftercorrectionbystage;
+            }
+            set
+            {
+                _priceaftercorrectionbystage = value;
+                NotifyPropertyChanged("PriceAfterCorrectionByStage");
+            }
+        }
 
 
 
@@ -21410,6 +21410,7 @@ namespace ObjectModel.ES
             }
         }
 
+
         private string _segmenttype;
         /// <summary>
         /// 60001100 Тип сегмента ()
@@ -21463,7 +21464,6 @@ namespace ObjectModel.ES
                 NotifyPropertyChanged("SegmentType_Code");
             }
         }
-
 
     }
 }
@@ -22487,6 +22487,26 @@ namespace ObjectModel.Modeling
             {
                 _coefficients = value;
                 NotifyPropertyChanged("Coefficients");
+            }
+        }
+
+
+        private bool? _isfortraining;
+        /// <summary>
+        /// 70200700 Признак: используется ли объект для обучения модели (IS_FOR_TRAINING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200700)]
+        public bool? IsForTraining
+        {
+            get
+            {
+                CheckPropertyInited("IsForTraining");
+                return _isfortraining;
+            }
+            set
+            {
+                _isfortraining = value;
+                NotifyPropertyChanged("IsForTraining");
             }
         }
 
