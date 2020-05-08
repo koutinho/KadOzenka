@@ -116,7 +116,7 @@ namespace KadOzenka.Web.Controllers
 					continue;
 				}
 
-				var analog = OMCoreObject.Where(x => x.Id == obj.Id && x.ParserTime <= actualDate)
+				var analog = OMCoreObject.Where(x => x.Id == obj.Id && (x.ParserTime <= actualDate || x.LastDateUpdate <= actualDate))
 					.ExecuteFirstOrDefault();
 				if (analog != null)
 				{
