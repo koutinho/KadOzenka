@@ -91,8 +91,7 @@
 
     function updateModelInfo() {
         var modelId = $("#ModelId").data("kendoDropDownList").value();
-		kendo.ui.progress($('body'), true);
-		$.ajax({
+        $.ajax({
 			type: 'GET',
 			url: '@Url.Action("GetModelById", "Modeling")',
 			data: { modelId: modelId},
@@ -113,15 +112,13 @@
             },
 			error: function (response) {
 				Common.ShowError(response.responseText);
-			},
-			complete: function () {
-				kendo.ui.progress($('body'), false);
 			}
 		});
 	}
 
 
     function updateGrid(modelAttributes) {
+        kendo.ui.progress($('body'), true);
         var modelId = $("#ModelId").data("kendoDropDownList").value();
         var dataSource = new kendo.data.DataSource({
 			transport: {
@@ -144,6 +141,7 @@
 					}
                 },
                 data: function (response) {
+                    kendo.ui.progress($('body'), false);
                     $("#warnings").text(response.Warnings);
                     return response.Models;
                 }
@@ -204,6 +202,12 @@
                 title: "Цена",
                 field: "Price",
                 template: '#: kendo.format("{0:c}", Price)#',
+                filterable: false
+            },
+            {
+                title: "Спрогнозированная цена",
+                field: "PriceFromModel",
+                template: '#: PriceFromModel == null ? "" : kendo.format("{0:c}", PriceFromModel) #',
                 filterable: false
             },
             {

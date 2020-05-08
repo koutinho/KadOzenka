@@ -11,7 +11,8 @@ namespace KadOzenka.Web.Models.Modeling
 		public long Id { get; set; }
 		public string CadastralNumber { get; set; }
 		public decimal Price { get; set; }
-		public bool IsExcluded { get; set; }
+        public decimal? PriceFromModel { get; set; }
+        public bool IsExcluded { get; set; }
         public bool IsForTraining { get; set; }
         public bool IsDirty { get; set; }
         public List<ModelAttributeDto> Coefficients { get; set; }
@@ -28,7 +29,8 @@ namespace KadOzenka.Web.Models.Modeling
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
 				Price = entity.Price,
-				IsExcluded = entity.IsExcluded,
+                PriceFromModel = entity.PriceFromModel,
+                IsExcluded = entity.IsExcluded,
                 IsForTraining = entity.IsForTraining,
                 Coefficients = entity.Coefficients,
                 Warnings = warnings.ToString()

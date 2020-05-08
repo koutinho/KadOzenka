@@ -297,48 +297,6 @@ namespace KadOzenka.Dal.Modeling
             });
         }
 
-        public TrainingSet GetCoefficientsToTrainModel(long modelId)
-        {
-            var trainingSet = new TrainingSet();
-
-            var modelMarketObjects = GetIncludedModelMarketObjects(modelId).Where(x => x.IsForTraining == true).ToList();
-
-            modelMarketObjects.ForEach(modelObject =>
-            {
-                var coefficients = modelObject.Coefficients.DeserializeFromXml<List<ModelAttributeDto>>()
-                    ?.Where(x => x.Coefficient != null).ToList();
-                if (coefficients == null || coefficients.Count == 0)
-                    return;
-
-                trainingSet.Prices.Add(modelObject.Price);
-                trainingSet.AttributeNames.AddRange(coefficients.Select(x => x.AttributeName).ToList());
-                trainingSet.Coefficients.AddRange(coefficients.Select(x => x.Coefficient.Value).ToList());
-            });
-
-            return trainingSet;
-        }
-
-        public CalculationSet GetCoefficientsToCalculateModel(long modelId)
-        {
-            var calculationSet = new CalculationSet();
-
-            var modelMarketObjects = GetIncludedModelMarketObjects(modelId)
-                .Where(x => x.IsForTraining == null || x.IsForTraining == false).ToList();
-
-            modelMarketObjects.ForEach(modelObject =>
-            {
-                var coefficients = modelObject.Coefficients.DeserializeFromXml<List<ModelAttributeDto>>()
-                    ?.Where(x => x.Coefficient != null).ToList();
-                if (coefficients == null || coefficients.Count == 0)
-                    return;
-
-                calculationSet.AttributeNames.AddRange(coefficients.Select(x => x.AttributeName).ToList());
-                calculationSet.Coefficients.AddRange(coefficients.Select(x => x.Coefficient.Value).ToList());
-            });
-
-            return calculationSet;
-        }
-
         #endregion
 
 
@@ -360,6 +318,7 @@ namespace KadOzenka.Dal.Modeling
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
 				Price = entity.Price,
+                PriceFromModel = entity.PriceFromModel,
 				IsExcluded = entity.IsExcluded.GetValueOrDefault(), 
                 IsForTraining = entity.IsForTraining.GetValueOrDefault(),
                 Coefficients = entity.Coefficients.DeserializeFromXml<List<ModelAttributeDto>>()
@@ -387,11 +346,6 @@ namespace KadOzenka.Dal.Modeling
 		private List<OMModelToMarketObjects> GetAllModelMarketObjects(long modelId)
         {
             return OMModelToMarketObjects.Where(x => x.ModelId == modelId).SelectAll().Execute();
-        }
-
-        private List<OMModelToMarketObjects> GetIncludedModelMarketObjects(long modelId)
-        {
-            return OMModelToMarketObjects.Where(x => x.ModelId == modelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
         }
 
         private ParameterDataDto GetParameterDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)

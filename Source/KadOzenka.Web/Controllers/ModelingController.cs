@@ -78,7 +78,7 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         public JsonResult TrainModel(long modelId)
         {
-            ////TODO код для отладки, позже переделать на добавление процесса в очередь
+            //////TODO код для отладки, позже переделать на добавление процесса в очередь
             //var process = new ModelingProcess();
             //var inputRequest = new ModelingRequest
             //{
@@ -109,6 +109,20 @@ namespace KadOzenka.Web.Controllers
             //}, new CancellationToken());
 
             return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
+        }
+
+        [HttpPost]
+        public void TestTraining([FromBody]object test)
+        {
+            
+        }
+
+        [HttpPost]
+        public JsonResult TestCalculation([FromBody]object test)
+        {
+            var prices = new decimal[] { 1, 2, 3, 4, 5 };
+
+            return Json(prices);
         }
 
         #endregion
