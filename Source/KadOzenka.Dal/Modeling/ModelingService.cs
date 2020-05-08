@@ -5,7 +5,6 @@ using System.Text;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using DevExpress.CodeParser;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.ScoreCommon.Dto;
@@ -54,8 +53,9 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMModelingModel.GetColumn(x => x.TourId, nameof(ModelingModelDto.TourId)));
 			query.AddColumn(OMTour.GetColumn(x => x.Year, nameof(ModelingModelDto.TourYear)));
 			query.AddColumn(OMModelingModel.GetColumn(x => x.MarketSegment_Code, nameof(ModelingModelDto.MarketSegment)));
+            query.AddColumn(OMModelingModel.GetColumn(x => x.WasTrained, nameof(ModelingModelDto.WasTrained)));
 
-			var table = query.ExecuteQuery();
+            var table = query.ExecuteQuery();
 			ModelingModelDto model = null;
 			if (table.Rows.Count != 0)
 			{
@@ -65,15 +65,17 @@ namespace KadOzenka.Dal.Modeling
 				var tourId = row[nameof(ModelingModelDto.TourId)].ParseToLong();
 				var tourYear = row[nameof(ModelingModelDto.TourYear)].ParseToLong();
 				var segment = (MarketSegment)row[nameof(ModelingModelDto.MarketSegment)];
+                var wasTrained = row[nameof(ModelingModelDto.WasTrained)].ParseToBooleanNullable();
 
-				model = new ModelingModelDto
+                model = new ModelingModelDto
 				{
 					ModelId = modelId,
 					Name = modelName,
 					TourId = tourId,
 					TourYear = tourYear,
-					MarketSegment = segment
-				};
+					MarketSegment = segment,
+                    WasTrained = wasTrained.GetValueOrDefault()
+                };
 			}
 
 			if (model == null)
@@ -159,34 +161,58 @@ namespace KadOzenka.Dal.Modeling
 			}.Save();
 		}
 
-		public void UpdateModel(ModelingModelDto modelDto)
+		public bool UpdateModel(ModelingModelDto modelDto)
 		{
 			ValidateModel(modelDto);
+
 			var existedModel = GetModelByIdInternal(modelDto.ModelId);
 
-			var newAttributes = modelDto.Attributes;
+			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeDto>();
 			var existedModelAttributes = OMModelAttributesRelation.Where(x => x.ModelId == modelDto.ModelId).SelectAll().Execute();
-			using (var ts = new TransactionScope())
-			{
-				existedModel.Name = modelDto.Name;
-				existedModel.TourId = modelDto.TourId;
-				existedModel.MarketSegment_Code = modelDto.MarketSegment;
-				existedModel.Save();
 
-				existedModelAttributes.ForEach(x => x.Destroy());
-				newAttributes?.ForEach(newAttribute =>
-				{
-					new OMModelAttributesRelation
-					{
-						ModelId = modelDto.ModelId,
-						AttributeId = newAttribute.AttributeId,
-						DictionaryId = newAttribute.DictionaryId
-					}.Save();
-				});
+            var isModelChanged = IsModelChanged(existedModel, modelDto, existedModelAttributes, newAttributes);
 
-				ts.Complete();
-			}
-		}
+            using (var ts = new TransactionScope())
+            {
+                existedModel.Name = modelDto.Name;
+                existedModel.TourId = modelDto.TourId;
+                existedModel.MarketSegment_Code = modelDto.MarketSegment;
+                if (isModelChanged)
+                    existedModel.WasTrained = false;
+                existedModel.Save();
+
+                existedModelAttributes.ForEach(x => x.Destroy());
+                newAttributes.ForEach(newAttribute =>
+                {
+                    new OMModelAttributesRelation
+                    {
+                        ModelId = modelDto.ModelId,
+                        AttributeId = newAttribute.AttributeId,
+                        DictionaryId = newAttribute.DictionaryId
+                    }.Save();
+                });
+
+                ts.Complete();
+            }
+
+            return isModelChanged;
+        }
+
+        private bool IsModelChanged(OMModelingModel existedModel, ModelingModelDto newModel, List<OMModelAttributesRelation> existedAttributes, List<ModelAttributeDto> newAttributes)
+        {
+            var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x);
+            var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x);
+            var areAttributeIdsEqual = oldAttributeIds.SequenceEqual(newAttributeIds);
+
+            var oldDictionaryIds = existedAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
+            var newDictionaryIIds = newAttributes.Select(x => x.DictionaryId).OrderBy(x => x);
+            var areDictionaryIdsSequenceEqualEqual = oldDictionaryIds.SequenceEqual(newDictionaryIIds);
+
+            return !(existedModel.TourId == newModel.TourId &&
+                   existedModel.MarketSegment_Code == newModel.MarketSegment &&
+                   areAttributeIdsEqual &&
+                   areDictionaryIdsSequenceEqualEqual);
+        }
 
 		#endregion
 

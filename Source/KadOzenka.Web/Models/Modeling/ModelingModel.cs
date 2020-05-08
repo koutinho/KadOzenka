@@ -10,8 +10,9 @@ namespace KadOzenka.Web.Models.Modeling
 	public class ModelingModel
 	{
 		public long Id { get; set; }
+        public bool IsModelWasTrained { get; set; }
 
-		[Display(Name = "Имя")]
+        [Display(Name = "Имя")]
 		[Required(ErrorMessage = "Не заполнено Имя")]
 		public string Name { get; set; }
 
@@ -44,7 +45,8 @@ namespace KadOzenka.Web.Models.Modeling
 				TourId = entity.TourId,
 				TourYear = entity.TourYear,
 				Name = entity.Name,
-				Attributes = entity.Attributes
+				Attributes = entity.Attributes,
+                IsModelWasTrained = entity.WasTrained
 			};
 		}
 

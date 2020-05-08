@@ -62,6 +62,7 @@ namespace KadOzenka.Dal.LongProcess
 
             ModelingService = new ModelingService(new ScoreCommonService());
             var modelId = processQueue.ObjectId.Value;
+            var model = GetModel(modelId, isTrainingMode);
 
             if (isTrainingMode)
             {
@@ -72,13 +73,31 @@ namespace KadOzenka.Dal.LongProcess
 
             SendSetToService(coefficientsForModel, isTrainingMode).GetAwaiter().GetResult();
 
+            if (isTrainingMode)
+            {
+                model.WasTrained = true;
+                model.Save();
+            }
+
             //WorkerCommon.SetProgress(processQueue, 100);
         }
 
 
         #region Support Methods
 
-        public Data GetCoefficientsForModel(long modelId, bool isForTraining)
+        private OMModelingModel GetModel(long modelId, bool isTrainingMode)
+        {
+            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+            if (model == null)
+                throw new Exception($"Не найдена модель с Id='{modelId}'");
+
+            if (!isTrainingMode && !model.WasTrained.GetValueOrDefault())
+                throw new Exception($"Модель '{model.Name}' с Id='{modelId}' не была обучена. Расчет невозможен.");
+
+            return model;
+        }
+
+        private Data GetCoefficientsForModel(long modelId, bool isForTraining)
         {
             var data = new Data(isForTraining);
 

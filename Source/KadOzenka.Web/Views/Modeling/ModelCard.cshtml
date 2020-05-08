@@ -77,11 +77,7 @@
 				<div style="padding-top: 2%;">
 					<div id="attributesToolbar"></div>
 				</div>
-				<div style="display: flex;">
-					<div style="align-items: stretch">
-						<div id="grid"></div>
-					</div>
-				</div>
+                <div id="grid"></div>
 			</div>
 		</div>
 	</div>
@@ -110,10 +106,12 @@
                     click: trainModel
                 },
                 {
+                    id: 'calculateModelBtn',
                     type: 'button',
                     text: '',
                     attributes: { title: "Рассчитать" },
-                    icon: 'calculator', 
+                    icon: 'calculator',
+                    enable: '@Model.IsModelWasTrained' === "True",
                     click: calculate
                 }
 		    ]
@@ -196,8 +194,8 @@
             selectable: true
         });
 
-		$("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
-	});
+        $("#grid .k-grid-content").on("change", "input.chkbx", onNormalizationChecked);
+    });
 
 
 
@@ -239,7 +237,11 @@
 					var errors = getErrors(response.Errors);
 					Common.ShowError(errors);
 					return;
-				} else {
+                } else {
+                    if (response.IsModelWasChanged) {
+                        var toolbar = $("#mainToolbar").data("kendoToolBar");
+                        toolbar.enable("#calculateModelBtn", false);
+                    }
 					Common.ShowMessage(response.Message);
 				}
 			},

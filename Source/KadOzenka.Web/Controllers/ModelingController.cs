@@ -35,7 +35,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
             var model = ModelingModel.ToModel(modelDto);
-			return View(model);
+            return View(model);
 		}
 
 		[HttpGet]
@@ -70,15 +70,15 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 
 			var modelDto = ModelingModel.FromModel(modelingModel);
-			ModelingService.UpdateModel(modelDto);
+			var isModelChanged = ModelingService.UpdateModel(modelDto);
 
-            return Json(new { Message = "Обновление выполнено" });
+            return Json(new { IsModelWasChanged = isModelChanged, Message = "Обновление выполнено" });
 		}
 
         [HttpPost]
         public JsonResult TrainModel(long modelId)
         {
-            //////TODO код для отладки, позже переделать на добавление процесса в очередь
+            ////TODO код для отладки, позже переделать на добавление процесса в очередь
             //var process = new ModelingProcess();
             //var inputRequest = new ModelingRequest
             //{
