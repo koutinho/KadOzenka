@@ -1,12 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Modeling;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using Core.Shared.Extensions;
+using DevExpress.DataProcessing;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using Newtonsoft.Json;
@@ -144,8 +147,12 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult GetObjectsForModel(long modelId)
 		{
 			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
-			var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel);
-			return new JsonResult(models);
+			var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
+
+            var warnings = new StringBuilder();
+            models.Where(x => !string.IsNullOrWhiteSpace(x.Warnings)).ForEach(x => warnings.AppendLine(x.Warnings));
+
+            return Json(new {Models = models, Warnings = warnings.ToString().Trim() });
 		}
 
 		[HttpPost]

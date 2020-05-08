@@ -243,7 +243,7 @@ namespace KadOzenka.Dal.Modeling
 					x.Price
 				}).ToList();
 
-			var existedModelObjects = GetModelMarketObjects(modelId);
+			var existedModelObjects = GetAllModelMarketObjects(modelId);
             var modelAttributes = GetModelAttributes(modelId);
 
             for (var i = 0; i < groupedObjects.Count; i++)
@@ -301,7 +301,7 @@ namespace KadOzenka.Dal.Modeling
         {
             var trainingSet = new TrainingSet();
 
-            var modelMarketObjects = GetModelMarketObjects(modelId).Where(x => x.IsForTraining == true).ToList();
+            var modelMarketObjects = GetIncludedModelMarketObjects(modelId).Where(x => x.IsForTraining == true).ToList();
 
             modelMarketObjects.ForEach(modelObject =>
             {
@@ -322,7 +322,7 @@ namespace KadOzenka.Dal.Modeling
         {
             var calculationSet = new CalculationSet();
 
-            var modelMarketObjects = GetModelMarketObjects(modelId)
+            var modelMarketObjects = GetIncludedModelMarketObjects(modelId)
                 .Where(x => x.IsForTraining == null || x.IsForTraining == false).ToList();
 
             modelMarketObjects.ForEach(modelObject =>
@@ -384,14 +384,17 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(message.ToString());
 		}
 
-		private List<OMModelToMarketObjects> GetModelMarketObjects(long modelId)
+		private List<OMModelToMarketObjects> GetAllModelMarketObjects(long modelId)
         {
-            return OMModelToMarketObjects
-                .Where(x => x.ModelId == modelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll()
-                .Execute();
+            return OMModelToMarketObjects.Where(x => x.ModelId == modelId).SelectAll().Execute();
         }
 
-		private ParameterDataDto GetParameterDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
+        private List<OMModelToMarketObjects> GetIncludedModelMarketObjects(long modelId)
+        {
+            return OMModelToMarketObjects.Where(x => x.ModelId == modelId && (x.IsExcluded == null || x.IsExcluded == false)).SelectAll().Execute();
+        }
+
+        private ParameterDataDto GetParameterDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
 		{
 			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(kn, tourId);
 			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;

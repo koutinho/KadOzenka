@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using DevExpress.DataProcessing;
 using KadOzenka.Dal.Modeling.Dto;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -12,19 +15,24 @@ namespace KadOzenka.Web.Models.Modeling
         public bool IsForTraining { get; set; }
         public bool IsDirty { get; set; }
         public List<ModelAttributeDto> Coefficients { get; set; }
+        public string Warnings { get; set; }
 
 
         public static ModelMarketObjectRelationModel ToModel(ModelMarketObjectRelationDto entity)
-		{
-			return new ModelMarketObjectRelationModel
+        {
+            var warnings = new StringBuilder();
+            entity.Coefficients?.Where(x => !string.IsNullOrWhiteSpace(x.Message)).ForEach(x => warnings.AppendLine(x.Message));
+            
+            return new ModelMarketObjectRelationModel
 			{
 				Id = entity.Id,
 				CadastralNumber = entity.CadastralNumber,
 				Price = entity.Price,
 				IsExcluded = entity.IsExcluded,
                 IsForTraining = entity.IsForTraining,
-                Coefficients = entity.Coefficients
-			};
+                Coefficients = entity.Coefficients,
+                Warnings = warnings.ToString()
+            };
 		}
 
 		public static ModelMarketObjectRelationDto FromModel(ModelMarketObjectRelationModel model)

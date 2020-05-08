@@ -5,24 +5,24 @@
         </div>
         <div class="col-sm-9">
             @(Html.Kendo().DropDownList()
-                        .Name("ModelId")
-                        .DataTextField("Text")
-                        .DataValueField("Value")
-                        .Filter(FilterType.Contains)
-                        .DataSource(x =>
-                        {
-                            x.Read("GetModels", "Modeling");
-                        })
-                        .Events(x =>
-                        {
-                            x.DataBound("updateModelInfo");
-                            x.Change("updateModelInfo");
-                        }))
+                                .Name("ModelId")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .Filter(FilterType.Contains)
+                                .DataSource(x =>
+                                {
+                                    x.Read("GetModels", "Modeling");
+                                })
+                                .Events(x =>
+                                {
+                                    x.DataBound("updateModelInfo");
+                                    x.Change("updateModelInfo");
+                                }))
         </div>
     </div>
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.Label("", "Сегмент")
+            @Html.CustomLabel("Сегмент")
         </div>
         <div class="col-sm-9">
             <div id="segment"></div>
@@ -30,13 +30,26 @@
     </div>
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.Label("", "Тур")
+            @Html.CustomLabel("Тур")
         </div>
         <div class="col-sm-9">
             <div id="tour"></div>
         </div>
     </div>
-
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Предупреждения")
+        </div>
+        <div class="col-sm-8">
+            @Html.TextArea("textarea", "", new { @class = "k-textbox", style = "width: 100%;", id = "warnings", rows = 5, @readonly = "readonly" })
+        </div>
+        <div class="col-sm-1">
+            @(Html.Kendo().Button()
+                .Name("copyWarningsBtn")
+                .Icon("copy")
+                .Events(x => x.Click("copyWarnings")))
+        </div>
+    </div>
     <div class="form-group">
         <div id="grid"></div>
     </div>
@@ -110,7 +123,7 @@
 
     function updateGrid(modelAttributes) {
         var modelId = $("#ModelId").data("kendoDropDownList").value();
-		var dataSource = new kendo.data.DataSource({
+        var dataSource = new kendo.data.DataSource({
 			transport: {
 				read: {
 					url: '@Url.Action("GetObjectsForModel", "Modeling")' + "?modelId=" + modelId,
@@ -129,6 +142,10 @@
                         IsExcluded: { type: "boolean", editable: true },
                         IsForTraining: { type: "boolean", editable: false }
 					}
+                },
+                data: function (response) {
+                    $("#warnings").text(response.Warnings);
+                    return response.Models;
                 }
             },
 			pageSize: 15
@@ -226,7 +243,15 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
-	}
+    }
+
+
+    function copyWarnings() {
+        var copyText = $("#warnings");
+        copyText.select();
+        document.execCommand("copy");
+        //document.getSelection().removeAllRanges();
+    }
 
 </script>
 

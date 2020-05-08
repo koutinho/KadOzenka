@@ -42,7 +42,9 @@ namespace KadOzenka.Dal.Tours
 
             var registerId = existedTourFactorRegisters.First().RegisterId;
 
-            return OMAttribute.Where(x => x.RegisterId == registerId && x.IsDeleted.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
+            return OMAttribute
+                .Where(x => x.RegisterId == registerId && x.IsDeleted.Coalesce(false) == false &&
+                            x.IsPrimaryKey.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
         }
 
         public OMRegister GetTourRegister(long tourId, ObjectType objectType)
