@@ -22266,6 +22266,26 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private bool? _wastrained;
+        /// <summary>
+        /// 70000500 Признак, который показывает - была ли обучена модель (WAS_TRAINED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70000500)]
+        public bool? WasTrained
+        {
+            get
+            {
+                CheckPropertyInited("WasTrained");
+                return _wastrained;
+            }
+            set
+            {
+                _wastrained = value;
+                NotifyPropertyChanged("WasTrained");
+            }
+        }
+
     }
 }
 
