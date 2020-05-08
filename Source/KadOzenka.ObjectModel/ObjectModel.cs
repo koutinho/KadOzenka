@@ -22510,6 +22510,26 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private decimal? _pricefrommodel;
+        /// <summary>
+        /// 70200800 Цена объекта, спрогнозированная моделью (PRICE_FROM_MODEL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70200800)]
+        public decimal? PriceFromModel
+        {
+            get
+            {
+                CheckPropertyInited("PriceFromModel");
+                return _pricefrommodel;
+            }
+            set
+            {
+                _pricefrommodel = value;
+                NotifyPropertyChanged("PriceFromModel");
+            }
+        }
+
     }
 }
 
