@@ -756,12 +756,16 @@
 		var buttonId = initElement[0].element[0].id;
 		var objId = parseInt(buttonId.split('_')[1]);
 		findPointsIds.remove(objId);
-		findPoints.forEach(function (item) {
+		findPoints.forEach(function(item) {
 			if (!!map) {
 				if (item.properties._data.pointId === objId)
 					map.geoObjects.remove(item);
 			}
 		});
+		if (slider) {
+			slider.value(findPointsIds.length);
+			$(slider.wrapper).find('.k-draghandle').prop('title', findPointsIds.length);
+		}
 		Common.ShowMessage("Объект исключен из расчета");
 	}
 </script>
