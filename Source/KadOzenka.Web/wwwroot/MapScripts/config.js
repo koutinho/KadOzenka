@@ -33,6 +33,12 @@ var MapWithDefinedObjectSettings = {
     iconImageOffset: [-25, -50]
 }
 
+var ManagementDecisionSupportMapSettings = {
+    containerId: "map",
+    center: [55.76, 37.64],
+    zoom: 13
+};
+
 var SelectedClusterSettings = {
 	clusterIconHref: 'MapIcons/home.svg',
 	clusterIconSize: [40, 40],

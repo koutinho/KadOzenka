@@ -1,0 +1,493 @@
+﻿<head>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <div class="wrap-map">
+                    <div id="map" class="map"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+@section styles {
+    <link rel="stylesheet" href="~/MapPlugins/Colorjoe/css/colorjoe.css" />
+
+    <style>
+        .colorPicker {
+            width: 100%;
+        }
+
+        .colorPicker {
+            width: 100%;
+        }
+
+        .colorPicker {
+            width: 100%;
+            display: flex;
+        }
+
+        .colorPickerContainer {
+            width: 100%;
+        }
+
+        .colorPickerContainer section {
+            height: 150px;
+            width: 100%;
+        }
+
+        .colorPicker .twod, .colorPicker .twod .bg {
+            width: 150px;
+            height: 150px;
+        }
+
+        .colorPicker .oned, .colorPicker .oned .bg, .colorPicker .oned .pointer .shape {
+            width: 20px;
+        }
+
+        .colorPicker .oned, .colorPicker .oned .bg {
+            height: 150px;
+        }
+
+        .colorShowPanelLabel {
+            font-weight: bold;
+            text-align: center;
+            margin-left: 5px;
+            margin-top: 15px;
+            font-size: initial;
+            display: none;
+        }
+
+        .colorPickerContainer .colorShowPanel {
+            margin-top: 7px;
+            padding: 10px;
+            border-radius: 100%;
+            height: 15px;
+            width: 15px;
+        }
+
+        .legendContainer {
+            margin-top: 5px;
+            display: flex;
+        }
+
+        .legendContainer .coloredSegment {
+            width: 100%;
+            height: 40px;
+        }
+
+        .legendContainer .coloredSegment:first-child {
+            border: solid 1px #1984c8;
+        }
+
+        .legendContainer .coloredSegment:not(:first-child) {
+            border-top: solid 1px #1984c8;
+            border-right: solid 1px #1984c8;
+            border-bottom: solid 1px #1984c8;
+        }
+
+        .humidity {
+            width: 100%
+        }
+
+        .wrap-form {
+            width: 422px;
+        }
+
+        .wrap-map {
+            display: flex;
+            justify-content: center;
+            background-color: white;
+            height: 98vh;
+            padding: 10px;
+            flex-direction: column;
+        }
+
+        .map {
+            width: 100%;
+            height: 100%;
+        }
+
+        fieldset {
+            border: 1px solid #c8c6cc;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background-color: #f8f8f973;
+        }
+
+            fieldset legend {
+                font-size: initial;
+                font-weight: bold;
+            }
+
+        .k-button-group {
+            width: 100%;
+        }
+
+        .k-button-group > span {
+            width: 33.33%;
+            border-color: #c8c6cc;
+        }
+    </style>
+}
+
+@section scripts {
+    <script src="~/MapScripts/colorsGraduator.js" charset="utf-8"></script>
+    <script src="~/MapPlugins/Colorjoe/dist/colorjoe.js" charset="utf-8"></script>
+    <script src="~/MapPlugins/Colorjoe/js/scale.fix.js" charset="utf-8"></script>
+    <script src="~/MapScripts/config.js" charset="utf-8"></script>
+    <script src="~/js/custom-validation.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+        var map;
+        var isPanelShown = true;
+        var SOM = null;
+        var heatMapData = null;
+
+        const DivisionType = {
+            DISTRINCS: 0,
+            REGIONS: 1,
+            ZONES: 2,
+            QUARTAL: 3
+        };
+        Object.freeze(DivisionType);
+
+        var segmentsData = @(Html.Raw(Json.Serialize((System.Collections.IEnumerable) ViewBag.Segments)));
+
+        $(function() {
+            initMap();
+        });
+
+        function initMap() {
+            var script = document.createElement('script');
+            script.src =
+                `${AppData.protocol}://api-maps.yandex.ru/${AppData.version}/?apikey=${AppData.key}&lang=${AppData.lang}`;
+            script.type = "text/javascript";
+            document.head.appendChild(script);
+            script.onload = function () {
+                ymaps.ready(function () {
+                    map = new ymaps.Map(ManagementDecisionSupportMapSettings.containerId,
+                        {
+                            center: ManagementDecisionSupportMapSettings.center,
+                            zoom: ManagementDecisionSupportMapSettings.zoom,
+                            controls: ['fullscreenControl', 'zoomControl']
+                        });
+
+                    createSettingsFormWidget();
+                    map.controls.get("zoomControl").options.set({ position: { bottom: 45, right: 10 } });
+
+                    //button = new ymaps.control.Button({
+                    //        data: {
+                    //            content: "Скрыть настройки",
+                    //    },
+                    //        options: {
+                    //            maxWidth: 300
+                    //        }
+                    //    }
+                    //);
+                    //button.events
+                    //    .add(
+                    //        'press',
+                    //        function() {
+                    //            if (isPanelShown) {
+                    //                isPanelShown = false;
+                    //                button.data.set({ content: 'Показать настройки' });
+                    //                $("#wrap-form").hide();
+                    //            } else {
+                    //                isPanelShown = true;
+                    //                button.data.set({ content: 'Скрыть настройки' });
+                    //                $("#wrap-form").show();
+                    //            }
+                    //        });
+
+                    //map.controls.add(button, {
+                    //    float: "right"
+                    //});
+                });
+            };
+        }
+
+        function createSettingsFormWidget() {
+            settingsFormWidgetClass = function (options) {
+                settingsFormWidgetClass.superclass.constructor.call(this, options);
+                this._$content = null;
+                this._geocoderDeferred = null;
+            };
+            ymaps.util.augment(settingsFormWidgetClass, ymaps.collection.Item, {
+                onAddToMap: function (map) {
+                    settingsFormWidgetClass.superclass.onAddToMap.call(this, map);
+                    this._lastCenter = null;
+                    this.getParent().getChildElement(this).then(this._onGetChildElement, this);
+                },
+                _onGetChildElement: function (parentDomContainer) {
+                    this._$content = $(`
+                        <button id="showSettings" class="k-button" type="button">Скрыть настройки</button>
+                        <div class="wrap-form" id="wrap-form">
+                            <div class="form-group"></div>
+                            <fieldset>
+                                <legend>Загрузка данных</legend>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <label class="control-label">Тур</label>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <input id="tourDropdownList" style="width: 100%;" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <label class="control-label">Вид объекта недвижимости</label>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <input id="segmentDropdownList" style="width: 100%;" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <label class="control-label">Тип деления</label>
+                                    </div>
+                                    <div class="col-sm-12" style="text-align: center;" data-stretch="true">
+                                        <div id="divisionLoadTypeGroupButton"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group paletteContainer">
+                                    <div class="col-sm-6">
+                                        <div id="colorPickerContainerInitial" class="colorPickerContainer">
+                                            <section>
+                                                <div id="rgbInitialValue"></div>
+                                                <div id="rgbInitialPicker"></div>
+                                            </section>
+                                            <div style="display: flex;">
+                                                <div id="rgbInitialShowPanel" class="colorShowPanel"></div>
+                                                <label class="colorShowPanelLabel" id="rgbInitialShowPanelColor"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div id="colorPickerContainerResult" class="colorPickerContainer">
+                                            <section>
+                                                <div id="rgbResultValue"></div>
+                                                <div id="rgbResultPicker"></div>
+                                            </section>
+                                            <div style="display: flex;">
+                                                <div id="rgbResultShowPanel" class="colorShowPanel"></div>
+                                                <label class="colorShowPanelLabel" id="rgbResultShowPanelColor"></label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <label class="control-label">Кол-во градаций: </label>
+                                        <label class="control-label" style="font-weight: bold" id="splicedDeltaContent"></label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <input id="splicedDeltaController" class="humidity" value="4" />
+                                    </div>
+                                    <div class="col-sm-12 legendContainer" id="legendPaleteContainer">
+                                    </div>
+                                </div>
+                                <div class="form-group"></div>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <button id="loadData" class="k-button" type="button" style="float: right;">Загрузить данные</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+            `).appendTo(parentDomContainer);
+                    this.addEventListeners();
+                },
+                addEventListeners: function () {
+                    $('#tourDropdownList')
+                        .kendoDropDownList({
+                            dataTextField: 'Text',
+                            dataValueField: 'Value',
+                            filter: "contains",
+                            dataSource:
+                            {
+                                transport: {
+                                    read: {
+                                        url: '@Url.Action("GetRatingTours", "Tour")',
+                                        dataType: 'json'
+                                    }
+                                }
+                            }
+                        });
+                    $('#segmentDropdownList')
+                        .kendoDropDownList({
+                            dataTextField: 'Text',
+                            dataValueField: 'Value',
+                            dataSource: segmentsData
+                        });
+                    $("#divisionLoadTypeGroupButton").kendoButtonGroup({
+                        items: [
+                            { text: "Округа"},
+                            { text: "Районы"},
+                            { text: "Зоны"},
+                            { text: "Кварталы", enabled: false }
+                        ]
+                    });
+                    $("#splicedDeltaController").kendoSlider({
+                        orientation: "horizontal",
+                        tickPlacement: "none",
+                        min: 4,
+                        max: 30,
+                        smallStep: 1,
+                        largeStep: 26,
+                        change: sliderChange,
+                        slide: sliderChange
+                    });
+                    createColorPicker('rgbInitialValue', 'rgbInitialPicker', 'rgbInitialShowPanel', 'rgbInitialShowPanelColor');
+                    createColorPicker('rgbResultValue', 'rgbResultPicker', 'rgbResultShowPanel', 'rgbResultShowPanelColor');
+                    var sliderValue = $("#splicedDeltaController").val();
+                    $("#splicedDeltaContent").text(sliderValue);
+                    $('#loadData').on('click', loadData);
+
+                    $('#showSettings').on('click', () => {
+                        if (isPanelShown) {
+                            isPanelShown = false;
+                            $('#showSettings').text('Показать настройки');
+                            $("#wrap-form").hide();
+                        } else {
+                            isPanelShown = true;
+                            $('#showSettings').text('Скрыть настройки');
+                            $("#wrap-form").show();
+                        }
+                    });
+                }
+            });
+
+            map.controls.add(new settingsFormWidgetClass(), { float: 'none', position: { top: 20, left: 10 }});
+        }
+
+        function sliderChange(e) {
+            $("#splicedDeltaContent").text(e.value);
+            createColorLegend(e.value,
+                document.getElementById('rgbInitialShowPanel').style.background,
+                document.getElementById('rgbResultShowPanel').style.background);
+        }
+
+        function createColorLegend(delta, initialColor, resultColor) {
+            var resultColors = generateColor(initialColor.replace(/[^0-9,]/gi, '').split(','), resultColor.replace(/[^0-9,]/gi, '').split(','), delta).reverse();
+            var content = '';
+            for (var i = 0; i < delta; i++) {
+                content += `<div class="coloredSegment" style="background: ${resultColors[i]}"></div>`;
+            }
+            document.getElementById('legendPaleteContainer').innerHTML = content;
+        };
+
+        function createColorPicker(rgbValue, rgbPicker, rgbShowPanel, rgbShowPanelLabel) {
+            fixScale(document);
+
+            var val = document.getElementById(rgbValue);
+
+            colorjoe.registerExtra('text', function (p, joe, o) { e(p, o.text ? o.text : 'text'); });
+
+            function e(parent, text) {
+                var elem = document.createElement('div');
+                elem.innerHTML = text;
+                parent.appendChild(elem);
+            }
+
+            colorjoe.rgb(rgbPicker).on('change',
+                function (c) {
+                    document.getElementById(rgbShowPanel).style.background = c.hex();
+                    $(`#${rgbShowPanelLabel}`).text(c.hex());
+                    document.getElementById("splicedDeltaContent").innerHTML = document.getElementById("splicedDeltaController").value;
+                    createColorLegend(document.getElementById("splicedDeltaController").value,
+                        document.getElementById('rgbInitialShowPanel').style.background,
+                        document.getElementById('rgbResultShowPanel').style.background);
+                }).update();
+        }
+
+        function loadData() {
+            kendo.ui.progress($('body'), true);
+
+            var divisionGroup = $('#divisionLoadTypeGroupButton').data("kendoButtonGroup").selectedIndices;
+            if (divisionGroup.length === 0) {
+                kendo.ui.progress($('body'), false);
+                Common.ShowError("Выберите тип деления");
+                return;
+            }
+            var tourId = $('#tourDropdownList').data('kendoDropDownList').value();
+            var objectType = $('#segmentDropdownList').data('kendoDropDownList').value();
+            $.ajax({
+                type: "GET",
+                url: "HeatMapData",
+                contentType: 'application/json; charset=utf-8',
+                data: {
+                    colors: generateColor(
+                        document.getElementById('rgbInitialShowPanel').style.background.replace(/[^0-9,]/gi, '').split(','),
+                        document.getElementById('rgbResultShowPanel').style.background.replace(/[^0-9,]/gi, '').split(','),
+                        document.getElementById("splicedDeltaController").value).reverse().join(","),
+                    divisionType: divisionGroup[0],
+                    toutId: tourId,
+                    objectType: objectType
+                },
+                dataType: 'json',
+                success: function (result) {
+                    heatMapData = result;
+                    changeLayer(divisionGroup[0]);
+                }
+            });
+        }
+
+        function changeLayer(type) {
+            map.geoObjects.remove(SOM);
+            switch (type) {
+            case DivisionType.DISTRINCS:
+                setCurrentLayer('/MapJSONData/districts.min.json');
+                break;
+                case DivisionType.REGIONS:
+                setCurrentLayer('/MapJSONData/regions.min.json');
+                break;
+                case DivisionType.ZONES:
+                setCurrentLayer('/MapJSONData/zones.min.json');
+                break;
+                case DivisionType.QUARTAL:
+                //setQuartalTiles();
+                //setCurrentLayer('/MapJSONData/quartal.min.json');
+                break;
+            }
+        }
+
+        function setCurrentLayer(url) {
+            SOM = new ymaps.GeoObjectCollection();
+                $.getJSON(url).done(function (geoJson) {
+                    var defaultColor = null;
+                    geoJson.features.forEach(function (obj) {
+                        var color = getCollors(obj.name);
+                        var opacity = color ? 0.75 : 0;
+                        SOM.add(new ymaps.GeoObject({
+                            geometry: obj.geometry,
+                            properties: { balloonContent: obj.name }
+                        }, {
+                            fillColor: color,
+                            strokeColor: obj.options.strokeColor,
+                            fillOpacity: opacity,
+                            strokeWidth: parseInt(obj.options.strokeWidth),
+                            strokeOpacity: obj.options.strokeOpacity,
+                            name: obj.name,
+                            id: obj.id
+                        }));
+                    });
+                    map.geoObjects.add(SOM);
+                    kendo.ui.progress($('body'), false);
+                });
+        }
+
+        function getCollors(name) {
+            if (heatMapData)
+                return heatMapData.find(x => x.name == name) ? heatMapData.find(x => x.name == name).color : undefined;
+            else return undefined;
+        }
+    </script>
+}

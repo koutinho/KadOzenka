@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.ExpressScore;
+using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.Tasks;
@@ -70,6 +71,7 @@ namespace CIPJS
 	        services.AddTransient<ExpressScoreReferenceService>();
 	        services.AddTransient<ViewRenderService>();
 	        services.AddTransient<ModelingService>();
+	        services.AddTransient<ManagementDecisionSupportService>();
 
 	        services.AddHttpContextAccessor();
             services.AddSession(options =>
