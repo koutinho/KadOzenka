@@ -123,6 +123,9 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("222", "Импорт данных KO (БД) ВУОН Помещения", MSExporter.DoLoadBd2018Unit_Flat_VUON);
 			consoleHelper.AddCommand("223", "Импорт данных KO (БД) ВУОН ОНС", MSExporter.DoLoadBd2018Unit_Uncomplited_VUON);
 
+			consoleHelper.AddCommand("231", "Импорт данных ГБУ(БД) ВУОН Земля", MSExporter.DoLoadBd2018Unit_Parcel_VUON_GKN);
+			consoleHelper.AddCommand("232", "Импорт данных ГБУ(БД) ВУОН Здания", MSExporter.DoLoadBd2018Unit_Build_VUON_GKN);
+
 			consoleHelper.AddCommand("250", "Формула 2016", MSExporter.GetFormulaText);
 			consoleHelper.AddCommand("251", "Рассчет", MSExporter.GetCalcGroup);
 			consoleHelper.AddCommand("252", "История", () =>

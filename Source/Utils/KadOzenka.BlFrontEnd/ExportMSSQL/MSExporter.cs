@@ -3660,5 +3660,252 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             }
         }
 
+
+        public static void DoLoadBd2018Unit_Parcel_VUON_GKN()
+        {
+            long curYear = 2018;
+            ObjectModel.KO.OMTour tour = ObjectModel.KO.OMTour.Where(x => x.Year == curYear).SelectAll().ExecuteFirstOrDefault();
+            if (tour == null)
+            {
+                tour = new ObjectModel.KO.OMTour
+                {
+                    Year = curYear,
+                    Id = curYear,
+                };
+                tour.Save();
+            }
+
+            LoadUnitTaskParcel_2018_VUON_GKN(tour.Id);
+        }
+        public static void DoLoadBd2018Unit_Build_VUON_GKN()
+        {
+            long curYear = 2018;
+            ObjectModel.KO.OMTour tour = ObjectModel.KO.OMTour.Where(x => x.Year == curYear).SelectAll().ExecuteFirstOrDefault();
+            if (tour == null)
+            {
+                tour = new ObjectModel.KO.OMTour
+                {
+                    Year = curYear,
+                    Id = curYear,
+                };
+                tour.Save();
+            }
+
+            LoadUnitTaskBuild_2018_VUON_GKN(tour.Id);
+        }
+
+        public static void LoadUnitTaskParcel_2018_VUON_GKN(long id_tour)
+        {
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_Parcel_2018"]))
+            {
+                connection.Open();
+
+                SqlCommand myOleDbCommand = connection.CreateCommand();
+                myOleDbCommand.CommandTimeout = 300;
+                myOleDbCommand.CommandType = System.Data.CommandType.Text;
+
+                myOleDbCommand.CommandText = "select o.*, c.id_inputdoc, c.id_outputdoc, dIn.name_doc as doc_in_name, dIn.date_doc as doc_in_date, dIn.num_doc as doc_in_num, dIn.date_app as doc_in_app, dIn.status_doc as doc_in_status, dOut.name_doc as doc_out_name, dOut.date_doc as doc_out_date, dOut.num_doc as doc_out_num, dOut.date_app as doc_out_app, dOut.status_doc as doc_out_status, dOut.name_out, dOut.num_out, dOut.date_out from tbObjectParcel o, tbCalcObject c left join tbDocObject dIn on dIn.id_doc = c.id_inputdoc and dIn.type_doc = 0 left join tbDocObject dOut on dOut.id_doc = c.id_outputdoc and dOut.type_doc = 1 where o.ID_OBJECT = c.id_object and c.type_object = 1 and o.change_object > 0";
+
+                SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
+                long count = 0;
+                List<ObjectModel.Gbu.OMMainObject> Items = new List<ObjectModel.Gbu.OMMainObject>();
+
+                while (myOleDbDataReader.Read())
+                {
+                    Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_inputdoc"]);
+
+                    OMInstance inputDoc = null;
+
+                    if (id_inputDoc > 0)
+                    {
+                        string inRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]);
+                        DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]);
+                        DateTime inApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]);
+                        string inDescription = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]);
+
+                        inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 100000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = OMInstance.Where(x => x.RegNumber == inRegNumber && x.CreateDate == inCreateDate && x.ApproveDate == inApproveDate && x.Description == inDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
+                        if (inputDoc == null)
+                        {
+                            inputDoc = new OMInstance
+                            {
+                                Id = id_inputDoc + 100000000,
+                                RegNumber = inRegNumber,
+                                CreateDate = inCreateDate,
+                                ApproveDate = inApproveDate,
+                                Description = inDescription,
+                            };
+                            inputDoc.Save();
+                        }
+                    }
+
+                    if (inputDoc != null)
+                    {
+                        string kn = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]);
+                        decimal Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]);
+                        string CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]);
+                        string Name = NullConvertor.ToString(myOleDbDataReader["name_object"]);
+                        string Place = NullConvertor.ToString(myOleDbDataReader["place_object"]);
+                        string Adress = NullConvertor.ToString(myOleDbDataReader["adress_object"]);
+                        string Category = NullConvertor.ToString(myOleDbDataReader["key_parametr"]);
+                        string ByDoc = NullConvertor.ToString(myOleDbDataReader["use_object"]);
+
+                        ObjectModel.Gbu.OMMainObject obj = ObjectModel.Gbu.OMMainObject.Where().SelectAll().ExecuteFirstOrDefault();
+                        if (obj != null)
+                        {
+                            count++;
+
+                            #region Сохранение данных ГКН
+                            //Наименование участка
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(1, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Площадь
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Тип объекта
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(26, "Земельный участок", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Местоположение
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Адрес
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Кадастровый квартал
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Категория земель
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(3, Category, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Вид использования по документам
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(4, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            #endregion
+
+
+
+
+                            Items.Add(obj);
+                            if (count % 25 == 0)
+                            {
+                                Console.WriteLine(count);
+                            }
+                        }
+                    }
+                }
+                Console.WriteLine(count);
+                myOleDbDataReader.Close();
+                connection.Close();
+            }
+        }
+        public static void LoadUnitTaskBuild_2018_VUON_GKN(long id_tour)
+        {
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_OKS_2018"]))
+            {
+                connection.Open();
+
+                SqlCommand myOleDbCommand = connection.CreateCommand();
+                myOleDbCommand.CommandTimeout = 300;
+                myOleDbCommand.CommandType = System.Data.CommandType.Text;
+
+                myOleDbCommand.CommandText = "select o.*, c.id_inputdoc, c.id_outputdoc, dIn.name_doc as doc_in_name, dIn.date_doc as doc_in_date, dIn.num_doc as doc_in_num, dIn.date_app as doc_in_app, dIn.status_doc as doc_in_status, dOut.name_doc as doc_out_name, dOut.date_doc as doc_out_date, dOut.num_doc as doc_out_num, dOut.date_app as doc_out_app, dOut.status_doc as doc_out_status, dOut.name_out, dOut.num_out, dOut.date_out from tbObjectBuild o, tbCalcObject c left join tbDocObject dIn on dIn.id_doc = c.id_inputdoc and dIn.type_doc = 0 left join tbDocObject dOut on dOut.id_doc = c.id_outputdoc and dOut.type_doc = 1 where o.ID_OBJECT = c.id_object and c.type_object = 2 and o.change_object > 0";
+
+                SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
+                long count = 0;
+                List<ObjectModel.Gbu.OMMainObject> Items = new List<ObjectModel.Gbu.OMMainObject>();
+
+                while (myOleDbDataReader.Read())
+                {
+                    Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_inputdoc"]);
+                    OMInstance inputDoc = null;
+                    if (id_inputDoc > 0)
+                    {
+                        string inRegNumber = NullConvertor.ToString(myOleDbDataReader["doc_in_num"]);
+                        DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_date"]);
+                        DateTime inApproveDate = NullConvertor.DBToDateTime(myOleDbDataReader["doc_in_app"]);
+                        string inDescription = NullConvertor.ToString(myOleDbDataReader["doc_in_name"]);
+                        inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 200000000)).SelectAll().ExecuteFirstOrDefault();
+                        if (inputDoc == null)
+                        {
+                            inputDoc = OMInstance.Where(x => x.RegNumber == inRegNumber && x.CreateDate == inCreateDate && x.ApproveDate == inApproveDate && x.Description == inDescription).SelectAll().ExecuteFirstOrDefault();
+                        }
+                        if (inputDoc == null)
+                        {
+                            inputDoc = new OMInstance
+                            {
+                                Id = id_inputDoc + 200000000,
+                                RegNumber = inRegNumber,
+                                CreateDate = inCreateDate,
+                                ApproveDate = inApproveDate,
+                                Description = inDescription,
+                            };
+                            inputDoc.Save();
+                        }
+                    }
+ 
+                    if (inputDoc != null)
+                    {
+                        string kn = NullConvertor.ToString(myOleDbDataReader["KN_OBJECT"]);
+                        string zu = NullConvertor.ToString(myOleDbDataReader["KN_ZU"]);
+                        decimal Square = NullConvertor.DBToDecimal(myOleDbDataReader["SQUARE_OBJECT"]);
+                        string CadastralBlock = NullConvertor.ToString(myOleDbDataReader["KN_KK"]);
+                        string Name = NullConvertor.ToString(myOleDbDataReader["name_object"]);
+                        string Place = NullConvertor.ToString(myOleDbDataReader["place_object"]);
+                        string Adress = NullConvertor.ToString(myOleDbDataReader["adress_object"]);
+                        string Category = NullConvertor.ToString(myOleDbDataReader["key_parametr"]);
+                        string ByDoc = NullConvertor.ToString(myOleDbDataReader["use_object"]);
+                        string wall = NullConvertor.ToString(myOleDbDataReader["wall"]);
+                        string floor = NullConvertor.ToString(myOleDbDataReader["floors"]);
+                        string unfloor = NullConvertor.ToString(myOleDbDataReader["under_floors"]);
+                        string built = NullConvertor.ToString(myOleDbDataReader["year_built"]);
+                        string used = NullConvertor.ToString(myOleDbDataReader["year_used"]);
+
+                        ObjectModel.Gbu.OMMainObject obj = ObjectModel.Gbu.OMMainObject.Where().SelectAll().ExecuteFirstOrDefault();
+                        if (obj != null)
+                        {
+                            count++;
+
+                            #region Сохранение данных ГКН
+                            //Площадь
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Назначение здания
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(14, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Наименование объекта
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(19, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Количество этажей
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(17, floor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Количество подземных этажей
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(18, unfloor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Год ввода в эксплуатацию
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(16, used, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Год постройки
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(15, built, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Тип объекта
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(26, "Здание", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Материал стен
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(21, wall, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Местоположение
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Адрес
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Кадастровый квартал
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            //Земельный участок
+                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(602, zu, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            #endregion
+
+
+
+
+                            Items.Add(obj);
+                            if (count % 25 == 0)
+                            {
+                                Console.WriteLine(count);
+                            }
+                        }
+                    }
+                }
+                Console.WriteLine(count);
+                myOleDbDataReader.Close();
+                connection.Close();
+            }
+        }
+
+
     }
 }
