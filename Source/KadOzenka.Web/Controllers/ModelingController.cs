@@ -90,6 +90,11 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
+            ModelingProcess.AddProcessToQueue(modelId, new ModelingRequest
+            {
+                IsTrainingMode = true
+            });
+
             return Json(new { Message = "Процесс обучения модели поставлен в очередь" });
         }
 
@@ -107,22 +112,12 @@ namespace KadOzenka.Web.Controllers
             //    ObjectId = modelId,
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
+            ModelingProcess.AddProcessToQueue(modelId, new ModelingRequest
+            {
+                IsTrainingMode = false
+            });
 
             return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
-        }
-
-        [HttpPost]
-        public void TestTraining([FromBody]object test)
-        {
-            
-        }
-
-        [HttpPost]
-        public JsonResult TestCalculation([FromBody]object test)
-        {
-            var prices = new decimal[] { 1, 2, 3, 4, 5 };
-
-            return Json(prices);
         }
 
         #endregion

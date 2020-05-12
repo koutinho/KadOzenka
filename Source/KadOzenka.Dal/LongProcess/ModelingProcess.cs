@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using Core.Register.LongProcessManagment;
@@ -13,15 +11,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.ScoreCommon;
 using Newtonsoft.Json;
-using ObjectModel.Directory;
-using ObjectModel.Directory.MarketObjects;
-using ObjectModel.Market;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.LongProcess
@@ -38,21 +32,22 @@ namespace KadOzenka.Dal.LongProcess
         private string _urlToCalculation = "http://82.148.28.237:5000/api/predict/TestModel";
         private ModelingService ModelingService { get; set; }
 
-        public static void AddProcessToQueue(long modelId)
-		{
-			LongProcessManager.AddTaskToQueue(LongProcessName, objectId: modelId, registerId: OMModelingModel.GetRegisterId());
-		}
+        public static void AddProcessToQueue(long modelId, ModelingRequest request)
+        {
+            LongProcessManager.AddTaskToQueue(LongProcessName, objectId: modelId,
+                registerId: OMModelingModel.GetRegisterId(), parameters: request.SerializeToXml());
+        }
 
         //TODO
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-            //WorkerCommon.SetProgress(processQueue, 0);
-            //if (!processQueue.ObjectId.HasValue)
-            //{
-            //	WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-            //	WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-            //	return;
-            //}
+            WorkerCommon.SetProgress(processQueue, 0);
+            if (!processQueue.ObjectId.HasValue)
+            {
+                WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+                WorkerCommon.SetProgress(processQueue, Consts.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+                return;
+            }
 
             var isTrainingMode = false;
             if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
@@ -67,10 +62,10 @@ namespace KadOzenka.Dal.LongProcess
 
             if (isTrainingMode)
             {
-                //ModelingService.CreateObjectsForModel(modelId);
+                ModelingService.CreateObjectsForModel(modelId);
             }
 
-            var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
+            //var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
 
             //SendDataToService(coefficientsForModel, model.Name, isTrainingMode).GetAwaiter().GetResult();
 
@@ -80,7 +75,11 @@ namespace KadOzenka.Dal.LongProcess
                 model.Save();
             }
 
-            //WorkerCommon.SetProgress(processQueue, 100);
+            WorkerCommon.SetProgress(processQueue, 100);
+
+            var subject = isTrainingMode ? $"Процесс обучения модели {model.Name}" : $"Процесс прогнозирования цены для модели {model.Name}";
+
+            NotificationSender.SendNotification(processQueue, subject, "Операция успешно завершена");
         }
 
 
