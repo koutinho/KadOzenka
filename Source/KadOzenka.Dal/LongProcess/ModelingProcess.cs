@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.LongProcess
             WorkerCommon.SetProgress(processQueue, 80);
 
             var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
-            SendDataToService(coefficientsForModel, model.Name.ToLower(), isTrainingMode).GetAwaiter().GetResult();
+            var result = SendDataToService(coefficientsForModel, model.Name.ToLower(), isTrainingMode).GetAwaiter().GetResult();
 
             if (isTrainingMode)
             {
@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.LongProcess
 
             var subject = isTrainingMode ? $"Процесс обучения модели '{model.Name}'" : $"Процесс прогнозирования цены для модели '{model.Name}'";
 
-            NotificationSender.SendNotification(processQueue, subject, "Операция успешно завершена");
+            NotificationSender.SendNotification(processQueue, subject, "Операция успешно завершена " + result);
         }
 
 
@@ -131,7 +131,7 @@ namespace KadOzenka.Dal.LongProcess
         }
 
 
-        private async Task SendDataToService(Data data, string modelName, bool isTrainingMode)
+        private async Task<string> SendDataToService(Data data, string modelName, bool isTrainingMode)
         {
             var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data));
             var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
@@ -143,10 +143,10 @@ namespace KadOzenka.Dal.LongProcess
             var response = await _httpClient.PostAsync(path, httpContent);
             response.EnsureSuccessStatusCode();
 
-            await ParseResponse(data, response);
+            return await ParseResponse(data, response);
         }
 
-        private async Task ParseResponse(Data data, HttpResponseMessage responseMessage)
+        private async Task<string> ParseResponse(Data data, HttpResponseMessage responseMessage)
         {
             var responseContentStr = await responseMessage.Content.ReadAsStringAsync();
             //обрабатываем кириллицу
@@ -157,10 +157,35 @@ namespace KadOzenka.Dal.LongProcess
             if(responseContentStr.ToLower().Contains("message"))
                 throw new Exception("Сервис для моделирования вернул ошибку: " + responseContentStr);
 
-            var prices = JsonConvert.DeserializeObject<Result>(responseContentStr)?.y_predict;
-            if (prices == null || prices.Count != data.CadastralNumbers.Count)
-                throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
-            SavePriceFromModel(data, prices);
+            if (data.IsForTraining)
+            {
+                ////var result = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
+                ////return result.AccuracyScore;
+                //TODO rewrite
+                try
+                {
+                    var pattern = "accuracy_score\":";
+                    var pFrom = responseContentStr.IndexOf(pattern) + pattern.Length;
+                    var pTo = responseContentStr.LastIndexOf("\"data\":");
+
+                    var result = responseContentStr.Substring(pFrom, pTo - pFrom);
+
+                    return result;
+                }
+                catch (Exception)
+                {
+                    return responseContentStr;
+                }
+            }
+            else
+            {
+                var prices = JsonConvert.DeserializeObject<CalculationResult>(responseContentStr)?.y_predict;
+                if (prices == null || prices.Count != data.CadastralNumbers.Count)
+                    throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
+                SavePriceFromModel(data, prices);
+            }
+
+            return string.Empty;
         }
 
         private void SavePriceFromModel(Data data, List<decimal> prices)
@@ -192,7 +217,7 @@ namespace KadOzenka.Dal.LongProcess
         #endregion
 
         //TODO rewrite
-        public class Result
+        public class CalculationResult
         {
             public List<decimal> y_predict { get; set; }
         }
