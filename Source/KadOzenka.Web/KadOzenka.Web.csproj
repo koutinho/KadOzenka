@@ -139,6 +139,7 @@
     <None Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
     <None Remove="Config\Registers\Views\DeclarationsUved.xml" />
     <None Remove="Config\Registers\Views\EsConstructorCard.xml" />
+    <None Remove="Config\Registers\Views\EsEstimateObjectCard.xml" />
     <None Remove="Config\Registers\Views\EsEstimates.xml" />
     <None Remove="Config\Registers\Views\EsReferenceItems.xml" />
     <None Remove="Config\Registers\Views\EsReferences.xml" />
@@ -149,6 +150,7 @@
     <None Remove="Config\Registers\Views\InspectorPersonSelect.xml" />
     <None Remove="Config\Registers\Views\KoObjects.xml" />
     <None Remove="Config\Registers\Views\KoObjectsCard.xml" />
+    <None Remove="Config\Registers\Views\KoObjectsWithoutDefaultSearchControls.xml" />
     <None Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
     <None Remove="Config\Registers\Views\KoTasks.xml" />
     <None Remove="Config\Registers\Views\KoTours.xml" />
@@ -295,7 +297,12 @@
     <Content Include="Config\Registers\Views\DeclarationsUved.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Config\Registers\Views\EsConstructorCard.xml" />
+    <Content Include="Config\Registers\Views\EsConstructorCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\EsEstimateObjectCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\Registers\Views\EsEstimates.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -315,6 +322,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\KoObjectsCard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\KoObjectsWithoutDefaultSearchControls.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\KoTaskGknFilesCard.xml">
@@ -425,7 +435,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.403" />
+    <PackageReference Include="Platform.Web" Version="1.0.407" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
@@ -617,7 +627,52 @@
     <None Update="ConfigCore\Registers\Views\CoreSRDUserSession.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\BtiObjectsImportConditions.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\MappingConfiguration\DictionaryMapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Bti\MappingConfiguration\DictionarySqlMapping.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Dev.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Ppr.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Ehd\EhdObjectsImportConditions.Prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\LeftPanel\Dashboard.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\nach\ConfigA.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\nach\ConfigB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\strah\ConfigA.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Mfc\Upload\strah\ConfigB.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectFlagInsur.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectMapBuilding.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Param\InsurObjectMapFlat.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\DeclarationsBookSelect.xml">
@@ -671,16 +726,55 @@
     <None Update="Config\Reports\AdoptionOfDeclarationNotificationReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\CalculationPagesReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CalculationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CCCReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\CCC_OUReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\CorrectionByBargainReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\CorrectionByDateReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\InformationCardReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MFCReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NotificationReport_NoSign.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisterOfPaymentOIReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\RegisterOfPaymentReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\ReturnPermIOReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\SubmitDocForApprovalReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\TestReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

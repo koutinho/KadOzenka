@@ -74,3 +74,13 @@ function generateNewFilter(filterInfo) {
     if (filterMarketSegments) result.push(filterMarketSegments);
     return JSON.stringify(result);
 };
+
+function getCollorsForHeatMap(name) {
+    if (heatMapData)
+        switch (currentLayer) {
+            case MapZoneType.district: return heatMapData.districts.find(x => x.name == name) ? heatMapData.districts.find(x => x.name == name).color : undefined;
+            case MapZoneType.region: return heatMapData.regions.find(x => x.name == name) ? heatMapData.regions.find(x => x.name == name).color : undefined;
+            case MapZoneType.zone: return heatMapData.zones.find(x => x.name == name) ? heatMapData.zones.find(x => x.name == name).color : undefined;
+        }
+    else return undefined;
+};

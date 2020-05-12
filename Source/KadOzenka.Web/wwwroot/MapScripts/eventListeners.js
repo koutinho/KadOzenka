@@ -48,7 +48,8 @@ function removeTarget(placemark) {
 };
 
 function refreshFilterWidget(filterInfo) {
-    var propertyTypeData = '', dealTypeData = '', commertialMarketSegmentData = '', propertyMarketSegmentData = '';
+
+    var propertyTypeData = '', dealTypeData = '', commertialMarketSegmentData = '', propertyMarketSegmentData = '', sourceTypeData = '', districtTypeData = '';
     filterInfo.propertyTypeFilter.propertyTypeList.forEach(x => propertyTypeData +=
         `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
     filterInfo.dealTypeFilter.dealTypeList.forEach(x => dealTypeData +=
@@ -57,33 +58,51 @@ function refreshFilterWidget(filterInfo) {
         `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
     filterInfo.commertialMarketFilter.commertialMarketSegmentList.forEach(x => commertialMarketSegmentData += 
         `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'}">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
+    filterInfo.sourceTypeFilter.sourceTypeList.forEach(x => sourceTypeData += 
+        `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'} sourceButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
+    filterInfo.districtTypeFilter.districtTypeList.forEach(x => districtTypeData +=
+        `<div id="${x.Name}FilterButton" elementId="${x.Id}" elementValue="${x.Value}" class="filterButton${x.Selected ? '' : ' inactive'} districtButton">${x.Value.replace(new RegExp(' ', 'g'), '&nbsp;')}</div>`);
+
     document.getElementById('propertyTypePanel').innerHTML = propertyTypeData;
     document.getElementById('dealTypePanel').innerHTML = dealTypeData;
     document.getElementById('propertyMarketSegmentPanel').innerHTML = propertyMarketSegmentData;
     document.getElementById('commercialMarketSegmentPanel').innerHTML = commertialMarketSegmentData;
-    listenFilter(filterInfo.dealTypeFilter.dealTypeList, filterInfo);
-    listenFilter(filterInfo.propertyTypeFilter.propertyTypeList, filterInfo);
-    listenFilter(filterInfo.propertyMarketFilter.propertyMarketSegmentList, filterInfo);
-    listenFilter(filterInfo.commertialMarketFilter.commertialMarketSegmentList, filterInfo);
-    listenTagFilter();
+    document.getElementById('sourcePanel').innerHTML = sourceTypeData;
+    document.getElementById('districtPanel').innerHTML = districtTypeData;
+
+    listenFilter(filterInfo.dealTypeFilter.dealTypeList, filterInfo, true);
+    listenFilter(filterInfo.propertyTypeFilter.propertyTypeList, filterInfo, true);
+    listenFilter(filterInfo.propertyMarketFilter.propertyMarketSegmentList, filterInfo, true);
+    listenFilter(filterInfo.commertialMarketFilter.commertialMarketSegmentList, filterInfo, true);
+    listenFilter(filterInfo.sourceTypeFilter.sourceTypeList, filterInfo, false, 'sourceButton', 'source');
+    listenFilter(filterInfo.districtTypeFilter.districtTypeList, filterInfo, false, 'districtButton', 'district');
+
 };
 
-function listenFilter(initialList, filterInfo) {
+function listenFilter(initialList, filterInfo, inPool, panelId, type) {
     initialList.forEach(x => {
         document.getElementById(`${x.Name}FilterButton`).addEventListener('click', function (e) {
-            this.classList.toggle("inactive");
-            refreshCurrentToken();
-            SetFilterData(generateNewFilter(filterInfo));
+            if (inPool) {
+                this.classList.toggle("inactive");
+                refreshCurrentToken();
+                SetFilterData(generateNewFilter(filterInfo));
+            }
+            else {
+                console.log(document.getElementsByClassName(panelId));
+                Array.from(document.getElementsByClassName(panelId)).forEach(x => { if (x.id != this.id) x.classList.add("inactive"); });
+                this.classList.toggle("inactive");
+                switch (type) {
+                    case 'source':
+                        SOURCE_DATA = this.classList.contains("inactive") ? null : this.innerHTML.replace(/&nbsp;/g, " ");;
+                        break;
+                    case 'district':
+                        DISTRICTS_DATA = this.classList.contains("inactive") ? null : this.innerHTML.replace(/&nbsp;/g, " ");;
+                        break;
+                }
+                refreshCurrentToken();
+                GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
+            }
         });
-    });
-};
-
-function listenTagFilter() {
-    document.getElementById("refreshHeatMapButton").addEventListener('click', function (e) {
-        if (document.getElementById("refreshHeatMapButton").classList.contains("inactive")) {
-            setHeatMapButtonState(true);
-            GetHeatMapData();
-        }
     });
 };
 
@@ -93,22 +112,6 @@ function changeMapType(type, element) {
     Array.from(document.getElementsByClassName("layerButton")).forEach(x => { if (x.id != element.id) x.classList.add("inactive"); });
     element.classList.toggle("inactive");
     changeLayer(!element.classList.contains("inactive") ? type : 0);
-};
-
-function changeDistrictType(element) {
-    Array.from(document.getElementsByClassName("districtButton")).forEach(x => { if (x.id != element.id) x.classList.add("inactive"); });
-    element.classList.toggle("inactive");
-    DISTRICTS_DATA = element.classList.contains("inactive") ? null : element.innerHTML;
-    refreshCurrentToken();
-    GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
-};
-
-function changeSourceType(element) {
-    Array.from(document.getElementsByClassName("sourceButton")).forEach(x => { if (x.id != element.id) x.classList.add("inactive"); });
-    element.classList.toggle("inactive");
-    SOURCE_DATA = element.classList.contains("inactive") ? null : element.innerHTML;
-    refreshCurrentToken();
-    GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
 };
 
 function changeLayer(type) {
@@ -150,7 +153,7 @@ function setCurrentLayer(url) {
         $.getJSON(url).done(function (geoJson) {
             var defaultColor = null;
             geoJson.features.forEach(function (obj) {
-                var color = getCollors(obj.name);
+                var color = getCollorsForHeatMap(obj.name);
                 var opacity = color ? 0.75 : 0;
                 SOM.add(new ymaps.GeoObject({
                     geometry: obj.geometry,
@@ -173,17 +176,6 @@ function setCurrentLayer(url) {
             map.geoObjects.add(SOM);
         });
     }
-};
-
-function getCollors(name) {
-    console.log(currentLayer);
-    if (heatMapData)
-        switch (currentLayer) {
-            case MapZoneType.district: return heatMapData.districts.find(x => x.name == name) ? heatMapData.districts.find(x => x.name == name).color : undefined;
-            case MapZoneType.region: return heatMapData.regions.find(x => x.name == name) ? heatMapData.regions.find(x => x.name == name).color : undefined;
-            case MapZoneType.zone: return heatMapData.zones.find(x => x.name == name) ? heatMapData.zones.find(x => x.name == name).color : undefined;
-        }
-    else return undefined;
 };
 
 function enableEditableMode() {
