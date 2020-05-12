@@ -383,9 +383,6 @@ namespace KadOzenka.Dal.Modeling
 
 		private void CalculateCoefficients(ParameterDataDto objectParameterData, ModelAttributeDto modelModelAttribute, OMModelToMarketObjects modelMarketObject)
 		{
-            if(objectParameterData.Value == null)
-                return;
-
             switch (objectParameterData.Type)
 			{
 				case ParameterType.String:
