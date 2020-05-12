@@ -90,6 +90,9 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
+            var attributes = ModelingService.GetModelAttributes(modelId);
+            if (attributes == null || attributes.Count == 0)
+                throw new Exception("Для модели не найдено сохраненных аттрибутов");
 
             ModelingProcess.AddProcessToQueue(modelId, new ModelingRequest
             {
@@ -114,6 +117,9 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
+            var model = ModelingService.GetModelById(modelId);
+            if(!model.WasTrained)
+                throw new Exception("Модель не была обучена, процесс прогнозирования не запущен.");
 
             ModelingProcess.AddProcessToQueue(modelId, new ModelingRequest
             {
@@ -164,8 +170,8 @@ namespace KadOzenka.Web.Controllers
             var warnings = new StringBuilder();
             models.Where(x => !string.IsNullOrWhiteSpace(x.Warnings)).ForEach(x => warnings.AppendLine(x.Warnings));
 
-            return Json(new {Models = models, Warnings = warnings.ToString().Trim() });
-		}
+            return Json(new { Models = models, Warnings = warnings.ToString().Trim() });
+        }
 
 		[HttpPost]
 		public JsonResult ChangeObjectsStatusInCalculation(string objects, long modelId)
