@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.CodeAnalysis;
 
 namespace KadOzenka.Dal.ScoreCommon.Dto
 {
@@ -23,32 +24,11 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 		}
 
 		private DateTime _date;
-		public DateTime DateValue
-		{
-			get
-			{
-				if (Type == ParameterType.Date && DateTime.TryParse(Value.ToString(), out _date))
-				{
-					return _date;
-				}
-				
-				return DateTime.MinValue;
-			}
-		}
+
+		public DateTime DateValue => _date;
 
 		private decimal _numberValue;
-		public decimal NumberValue
-		{
-			get
-			{
-				if (Type == ParameterType.Number && decimal.TryParse(Value.ToString(), out _numberValue))
-				{
-					return _numberValue;
-				}
-
-				return _numberValue;
-			}
-		}
+		public decimal NumberValue => _numberValue;
 
 
 		public string StringValue
@@ -68,13 +48,12 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 		{
 			get
 			{
+				if (decimal.TryParse((string)Value.ToString().Replace('.', ','), out _numberValue))
+					return ParameterType.Number;
+				if (DateTime.TryParse(Value.ToString(), out _date))
+					return ParameterType.Date;
 				if (Value is string)
 					return ParameterType.String;
-				if (Value is decimal)
-					return ParameterType.Number;
-				if (Value is DateTime)
-					return ParameterType.Date;
-
 				return ParameterType.None;
 			}
 		}
