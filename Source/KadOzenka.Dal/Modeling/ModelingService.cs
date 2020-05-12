@@ -259,7 +259,8 @@ namespace KadOzenka.Dal.Modeling
 
 			var groupedObjects = OMCoreObject.Where(x =>
 					x.PropertyMarketSegment_Code == model.MarketSegment_Code &&
-					x.CadastralNumber != null && x.CadastralNumber != string.Empty)
+					x.CadastralNumber != null && x.CadastralNumber != string.Empty && 
+                    x.ProcessType_Code != ProcessStep.Excluded)
 				.Select(x => x.CadastralNumber)
 				.Select(x => x.Price)
 				.Execute()

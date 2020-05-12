@@ -135,7 +135,8 @@
 					fields: {
 						Id: {editable: false, nullable: true},
 						CadastralNumber: { editable: false },
-						Price: { editable: false },
+                        Price: { type: "number", editable: false },
+                        PriceFromModel: { type: "number", editable: false },
                         IsExcluded: { type: "boolean", editable: true },
                         IsForTraining: { type: "boolean", editable: false }
 					}
@@ -156,7 +157,6 @@
 
         $("#grid").kendoGrid({
             toolbar: kendo.template($("#GridToolbarTemplate").html()),
-            pageable: true,
             filterable: {
                 extra: false,
                 operators: {
@@ -164,11 +164,17 @@
                         startswith: "Начинается с",
                         eq: "Равно",
                         neq: "Не равно"
+                    },
+                    number: {
+                        gte: "Больше",
+                        lte: "Меньше"
                     }
                 }
             }, 
             columns: generateColumns(modelAttributes),
-            dataSource: dataSource
+            dataSource: dataSource,
+            pageable: true,
+            sortable: true
         });
 
         $("#grid .k-grid-content").on("change", "input.chkbx", updateGridDataSource);
@@ -184,7 +190,8 @@
             return {
                 title: attribute.AttributeName,
                 field: field,
-                filterable: false
+                filterable: false,
+                sortable: false
             };
         });
         var baseColumns = [
@@ -192,29 +199,34 @@
                 title: "Исключен из расчета",
                 field: "IsExcluded",
                 template: '<input type="checkbox" #= IsExcluded ? \'checked="checked"\' : "" # class="chkbx" />',
-                filterable: false
+                filterable: false,
+                sortable: false
             },
             {
                 title: "Кадастровый номер",
-                field: "CadastralNumber"
+                field: "CadastralNumber",
+                sortable: false
             },
             {
                 title: "Цена",
                 field: "Price",
                 template: '#: kendo.format("{0:c}", Price)#',
-                filterable: false
+                filterable: true, 
+                sortable: true
             },
             {
                 title: "Спрогнозированная цена",
                 field: "PriceFromModel",
                 template: '#: PriceFromModel == null ? "" : kendo.format("{0:c}", PriceFromModel) #',
-                filterable: false
+                filterable: true,
+                sortable: true
             },
             {
                 title: "Объект для обучения",
                 field: "IsForTraining",
                 template: '<input type="checkbox" #= IsForTraining ? \'checked="checked"\' : "" # disabled />',
-                filterable: false
+                filterable: false,
+                sortable: false
             }
         ];
         return baseColumns.concat(additionalColumns);
