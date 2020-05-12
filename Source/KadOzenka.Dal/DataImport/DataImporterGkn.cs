@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.DataImport
     public class DataImporterGkn
     {
         //Объект-блокиратор для многопоточки
-        private readonly object locked = new object();
+        private static object locked = new object();
         //ID фактора Материал стен итоговый
         public Int64 Id_Factor_Wall { get; private set; }
         //ID фактора Год постройки итоговый
@@ -176,11 +176,32 @@ namespace KadOzenka.Dal.DataImport
             Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
 
         }
+
+        public static void SaveAttributeValueWithCheck(GbuObjectAttribute attributeValue)
+        {
+            try
+            {
+                attributeValue.Save();
+            }
+            catch (Exception ex)
+            {
+                var existsAttributeValue = GbuObjectService.CheckExistsValueFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot);
+
+                // Проблема не в наличии значения на ту же дату ОТ
+                if (existsAttributeValue == null) throw ExceptionInitializer.Create("Ошибка сохранения знчения показателя", $"Значение: {attributeValue.SerializeToXml()}", ex);
+
+                lock (locked)
+                {
+                    // Проблема в наличии значения на ту же дату ОТ
+                    attributeValue.Ot = GbuObjectService.GetNextOtFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot);
+
+                    attributeValue.Save();
+                }
+            }
+        }
+
         public static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
-            // Проверяем что значение уже было загружено ранее
-            if (CheckAttributeValueExists(idObject, idAttribute, otDate, idDocument)) return;
-
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
@@ -190,17 +211,14 @@ namespace KadOzenka.Dal.DataImport
                 S = sDate,
                 ChangeUserId = idUser,
                 ChangeDate = DateTime.Now,
-                Ot= otDate,
-                StringValue=value,
+                Ot = otDate,
+                StringValue = value,
             };
-            attributeValue.Save();
+            SaveAttributeValueWithCheck(attributeValue);
         }
 
         public static void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
-            // Проверяем что значение уже было загружено ранее
-            if (CheckAttributeValueExists(idObject, idAttribute, otDate, idDocument)) return;
-
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
@@ -213,15 +231,13 @@ namespace KadOzenka.Dal.DataImport
                 Ot = otDate,
                 NumValue = value,
             };
-            attributeValue.Save();
+
+            SaveAttributeValueWithCheck(attributeValue);
         }
 
 
         public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
         {
-            // Проверяем что значение уже было загружено ранее
-            if (CheckAttributeValueExists(idObject, idAttribute, otDate, idDocument)) return;
-
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
@@ -234,32 +250,16 @@ namespace KadOzenka.Dal.DataImport
                 Ot = otDate,
                 DtValue = value,
             };
-            attributeValue.Save();
-        }
 
-        /// <summary>
-        /// Нужно при повторных загрузках файла
-        /// </summary>
-        /// <param name="idAttribute"></param>
-        /// <param name="otDate"></param>
-        /// <param name="idDocument"></param>
-        private static bool CheckAttributeValueExists(long objectId, long idAttribute, DateTime otDate, long idDocument)
-        {
-            var attributeValue = GbuObjectService.CheckExistsValueFromAttributeIdPartition(objectId, idAttribute, otDate);
-
-            if (attributeValue == null) return false;
-
-            if (attributeValue.ChangeDocId == idDocument) return true;
-
-            throw ExceptionInitializer.Create("В БД уже есть значение данного атрибута источника Росреестр, сохраненного другим документом", $"Объект: {objectId}; Атрибут: {idAttribute}; От: {otDate.ToLongDateString()}; Документ в БД: {attributeValue.ChangeDocId}; Переданный документ: {idDocument}");
+            SaveAttributeValueWithCheck(attributeValue);
         }
 
         public static KoStatusRepeatCalc GetNewtatusRepeatCalc(List<ObjectModel.KO.OMUnit> units)
         {
             KoStatusRepeatCalc koStatusRepeatCalc = KoStatusRepeatCalc.New;
-            if (units.Count>0)
+            if (units.Count > 0)
             {
-                foreach(ObjectModel.KO.OMUnit unit in units)
+                foreach (ObjectModel.KO.OMUnit unit in units)
                 {
                     if (unit.StatusRepeatCalc_Code == KoStatusRepeatCalc.Initial || unit.StatusRepeatCalc_Code == KoStatusRepeatCalc.RepeatedInitial)
                         koStatusRepeatCalc = KoStatusRepeatCalc.RepeatedInitial;
@@ -578,7 +578,7 @@ namespace KadOzenka.Dal.DataImport
                 ts.Complete();
             }
 
-            lock(locked)
+            lock (locked)
             {
                 CountImportBuildings++;
             }
@@ -657,7 +657,7 @@ namespace KadOzenka.Dal.DataImport
 
             if (current.CadastralCost != null)
             {
-                ObjectModel.KO.OMCostRosreestr cost = ObjectModel.KO.OMCostRosreestr.Where(x=>x.IdObject==koUnit.Id).SelectAll().ExecuteFirstOrDefault();
+                ObjectModel.KO.OMCostRosreestr cost = ObjectModel.KO.OMCostRosreestr.Where(x => x.IdObject == koUnit.Id).SelectAll().ExecuteFirstOrDefault();
                 if (cost == null)
                 {
                     cost = new ObjectModel.KO.OMCostRosreestr
@@ -1442,7 +1442,7 @@ namespace KadOzenka.Dal.DataImport
             }
 
         }
-        
+
         private static void SaveGknDataUncomplited(xmlObjectUncomplited current, long gbuObjectId, DateTime sDate, DateTime otDate, long idDocument)
         {
             #region Сохранение данных ГКН
@@ -1760,7 +1760,7 @@ namespace KadOzenka.Dal.DataImport
 
             #endregion
         }
-        
+
         private static ObjectModel.KO.OMUnit SaveUnitFlat(xmlObjectFlat current, long gbuObjectId, DateTime unitDate, long idTour, long idTask, KoUnitStatus unitStatus, KoStatusRepeatCalc calcStatus)
         {
             #region Задание на оценку

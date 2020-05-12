@@ -32,6 +32,16 @@ namespace KadOzenka.Dal.GbuObject
 			return QSQuery.ExecuteSql<GbuObjectAttribute>(sql).FirstOrDefault();
 		}
 
+		public static DateTime GetNextOtFromAttributeIdPartition(long objectId, long attributeId, DateTime otDate)
+		{
+			while(true)
+			{
+				otDate = otDate.AddSeconds(1);
+
+				if (CheckExistsValueFromAttributeIdPartition(objectId, attributeId, otDate) == null) return otDate; 
+			}
+		}
+
 		public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null, List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null)
 		{
 			var getSources = sources;
