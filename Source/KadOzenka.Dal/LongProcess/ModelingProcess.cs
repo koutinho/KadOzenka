@@ -71,7 +71,7 @@ namespace KadOzenka.Dal.LongProcess
 
             WorkerCommon.SetProgress(processQueue, 100);
 
-            var subject = isTrainingMode ? $"Процесс обучения модели {model.Name}" : $"Процесс прогнозирования цены для модели {model.Name}";
+            var subject = isTrainingMode ? $"Процесс обучения модели '{model.Name}'" : $"Процесс прогнозирования цены для модели '{model.Name}'";
 
             NotificationSender.SendNotification(processQueue, subject, "Операция успешно завершена");
         }
