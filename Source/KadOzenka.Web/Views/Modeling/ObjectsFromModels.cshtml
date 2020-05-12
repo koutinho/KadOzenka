@@ -145,6 +145,11 @@
                     kendo.ui.progress($('body'), false);
                     $("#warnings").text(response.Warnings);
                     return response.Models;
+                },
+                total: function (response) {
+                    if (response.Models)
+                        return response.Models.length;
+                    return 0;
                 }
             },
 			pageSize: 15
