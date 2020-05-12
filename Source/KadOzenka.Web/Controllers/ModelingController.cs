@@ -90,6 +90,7 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
+
             ModelingProcess.AddProcessToQueue(modelId, new ModelingRequest
             {
                 IsTrainingMode = true
@@ -112,6 +113,8 @@ namespace KadOzenka.Web.Controllers
             //    ObjectId = modelId,
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
+
+
             ModelingProcess.AddProcessToQueue(modelId, new ModelingRequest
             {
                 IsTrainingMode = false

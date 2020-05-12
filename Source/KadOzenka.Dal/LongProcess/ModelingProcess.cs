@@ -23,13 +23,7 @@ namespace KadOzenka.Dal.LongProcess
 	public class ModelingProcess : LongProcess
 	{
         public const string LongProcessName = nameof(ModelingProcess);
-
         private static HttpClient _httpClient = new HttpClient();
-        //TODO код для отладки, будет удален позже
-        //private string _urlToTrainModel = ConfigurationManager.AppSettings["trainModelLink"];
-        //private string _urlToCalculation = ConfigurationManager.AppSettings["calculateModelLink"];
-        private string _urlToTrainModel = "http://82.148.28.237:5000/api/teach/TestModel";
-        private string _urlToCalculation = "http://82.148.28.237:5000/api/predict/TestModel";
         private ModelingService ModelingService { get; set; }
 
         public static void AddProcessToQueue(long modelId, ModelingRequest request)
@@ -64,9 +58,9 @@ namespace KadOzenka.Dal.LongProcess
             {
                 ModelingService.CreateObjectsForModel(modelId);
             }
+            WorkerCommon.SetProgress(processQueue, 80);
 
             //var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
-
             //SendDataToService(coefficientsForModel, model.Name, isTrainingMode).GetAwaiter().GetResult();
 
             if (isTrainingMode)
@@ -117,10 +111,14 @@ namespace KadOzenka.Dal.LongProcess
                     coefficients.Add(modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId)?.Coefficient);
                 });
 
-                data.Coefficients.Add(coefficients);
-                data.Prices.Add(modelObject.Price);
-                data.CadastralNumbers.Add(modelObject.CadastralNumber);
-                data.OmModelToMarketObjectsIds.Add(modelObject.Id);
+                //TODO эта проверка будет в сервисе
+                if (coefficients.All(x => x != null))
+                {
+                    data.Coefficients.Add(coefficients);
+                    data.Prices.Add(modelObject.Price);
+                    data.CadastralNumbers.Add(modelObject.CadastralNumber);
+                    data.OmModelToMarketObjectsIds.Add(modelObject.Id);
+                }
             });
 
             return data;
@@ -139,31 +137,37 @@ namespace KadOzenka.Dal.LongProcess
             var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data));
             var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
 
-            var path = isTrainingMode ? _urlToTrainModel : _urlToCalculation;
+            var path = isTrainingMode ? GetUrlToTrainModel(modelName) : GetUrlToPredictModel(modelName);
             if (string.IsNullOrWhiteSpace(path))
                 throw new Exception("Не найден URL для сервиса моделирования");
 
             var response = await _httpClient.PostAsync(path, httpContent);
             response.EnsureSuccessStatusCode();
 
-            //if (!isTrainingMode)
-            {
-                await SavePriceFromModel(data, response);
-            }
+            await ParseResponse(data, response);
         }
 
-        private static async Task SavePriceFromModel(Data data, HttpResponseMessage responseMessage)
+        private async Task ParseResponse(Data data, HttpResponseMessage responseMessage)
         {
             var responseContentStr = await responseMessage.Content.ReadAsStringAsync();
+            //обрабатываем кириллицу
             responseContentStr = Regex.Replace(responseContentStr, @"\\u([0-9A-Fa-f]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());
             if (string.IsNullOrWhiteSpace(responseContentStr))
                 throw new Exception("Сервис для моделирования вернул пустой ответ");
-            
+            //TODO переделаем на обработку json-объекта ошибки, после аналогичных изменений в сервисе
+            if(responseContentStr.ToLower().Contains("message"))
+                throw new Exception("Сервис для моделирования вернул ошибку: " + responseContentStr);
+
             var preprocessedPricesStr = responseContentStr.Substring(1, responseContentStr.Length - 2);
             var prices = preprocessedPricesStr.Split(',').Select(x => Convert.ToDecimal(x, CultureInfo.InvariantCulture))
                 .ToArray();
             //if(prices.Length != data.CadastralNumbers.Count)
             //    throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
+            SavePriceFromModel(data, prices);
+        }
+
+        private void SavePriceFromModel(Data data, decimal[] prices)
+        {
             for (var i = 0; i < data.CadastralNumbers.Count; i++)
             {
                 var modelObject = OMModelToMarketObjects.Where(x => x.Id == data.OmModelToMarketObjectsIds[i])
@@ -174,6 +178,18 @@ namespace KadOzenka.Dal.LongProcess
                 modelObject.PriceFromModel = prices[i];
                 modelObject.Save();
             }
+        }
+
+        private string GetUrlToTrainModel(string modelName)
+        {
+            //TODO ConfigurationManager.AppSettings["trainModelLink"];
+            return $"http://82.148.28.237:5000/api/teach/{modelName}";
+        }
+
+        private string GetUrlToPredictModel(string modelName)
+        {
+            //TODO ConfigurationManager.AppSettings["calculateModelLink"];
+            return $"http://82.148.28.237:5000/api/predict/{modelName}";
         }
 
         #endregion
