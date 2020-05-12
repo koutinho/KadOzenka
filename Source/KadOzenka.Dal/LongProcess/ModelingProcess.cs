@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -60,8 +59,8 @@ namespace KadOzenka.Dal.LongProcess
             }
             WorkerCommon.SetProgress(processQueue, 80);
 
-            //var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
-            //SendDataToService(coefficientsForModel, model.Name, isTrainingMode).GetAwaiter().GetResult();
+            var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
+            SendDataToService(coefficientsForModel, model.Name.ToLower(), isTrainingMode).GetAwaiter().GetResult();
 
             if (isTrainingMode)
             {
@@ -158,15 +157,13 @@ namespace KadOzenka.Dal.LongProcess
             if(responseContentStr.ToLower().Contains("message"))
                 throw new Exception("Сервис для моделирования вернул ошибку: " + responseContentStr);
 
-            var preprocessedPricesStr = responseContentStr.Substring(1, responseContentStr.Length - 2);
-            var prices = preprocessedPricesStr.Split(',').Select(x => Convert.ToDecimal(x, CultureInfo.InvariantCulture))
-                .ToArray();
-            //if(prices.Length != data.CadastralNumbers.Count)
-            //    throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
+            var prices = JsonConvert.DeserializeObject<Result>(responseContentStr)?.y_predict;
+            if (prices == null || prices.Count != data.CadastralNumbers.Count)
+                throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
             SavePriceFromModel(data, prices);
         }
 
-        private void SavePriceFromModel(Data data, decimal[] prices)
+        private void SavePriceFromModel(Data data, List<decimal> prices)
         {
             for (var i = 0; i < data.CadastralNumbers.Count; i++)
             {
@@ -194,6 +191,11 @@ namespace KadOzenka.Dal.LongProcess
 
         #endregion
 
+        //TODO rewrite
+        public class Result
+        {
+            public List<decimal> y_predict { get; set; }
+        }
 
         public class Data
         {
@@ -204,12 +206,11 @@ namespace KadOzenka.Dal.LongProcess
             [JsonIgnore]
             public List<long> OmModelToMarketObjectsIds { get; set; }
 
-            [JsonProperty("y_train")]
+            [JsonProperty("y")]
             public List<decimal> Prices { get; set; }
             [JsonProperty("columns")]
             public List<string> AttributeNames { get; set; }
-            [JsonProperty("x_predict")]
-            //[JsonProperty("x_train")]
+            [JsonProperty("x")]
             public List<List<decimal?>> Coefficients { get; set; }
 
             public Data(bool isForTraining)
