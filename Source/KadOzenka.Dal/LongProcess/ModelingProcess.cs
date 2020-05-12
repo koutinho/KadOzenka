@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
@@ -33,8 +34,8 @@ namespace KadOzenka.Dal.LongProcess
         //TODO код для отладки, будет удален позже
         //private string _urlToTrainModel = ConfigurationManager.AppSettings["trainModelLink"];
         //private string _urlToCalculation = ConfigurationManager.AppSettings["calculateModelLink"];
-        private string _urlToTrainModel = "https://localhost:50252/Modeling/TestTraining";
-        private string _urlToCalculation = "https://localhost:50252/Modeling/TestCalculation";
+        private string _urlToTrainModel = "http://82.148.28.237:5000/api/teach/TestModel";
+        private string _urlToCalculation = "http://82.148.28.237:5000/api/predict/TestModel";
         private ModelingService ModelingService { get; set; }
 
         public static void AddProcessToQueue(long modelId)
@@ -71,7 +72,7 @@ namespace KadOzenka.Dal.LongProcess
 
             var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
 
-            SendSetToService(coefficientsForModel, isTrainingMode).GetAwaiter().GetResult();
+            //SendDataToService(coefficientsForModel, model.Name, isTrainingMode).GetAwaiter().GetResult();
 
             if (isTrainingMode)
             {
@@ -134,9 +135,9 @@ namespace KadOzenka.Dal.LongProcess
         }
 
 
-        private async Task SendSetToService(Data data, bool isTrainingMode)
+        private async Task SendDataToService(Data data, string modelName, bool isTrainingMode)
         {
-            var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(new { test = data }));
+            var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data));
             var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
 
             var path = isTrainingMode ? _urlToTrainModel : _urlToCalculation;
@@ -146,19 +147,20 @@ namespace KadOzenka.Dal.LongProcess
             var response = await _httpClient.PostAsync(path, httpContent);
             response.EnsureSuccessStatusCode();
 
-            if (!isTrainingMode)
+            //if (!isTrainingMode)
             {
                 await SavePriceFromModel(data, response);
             }
         }
 
-        private static async Task SavePriceFromModel(Data data, HttpResponseMessage response)
+        private static async Task SavePriceFromModel(Data data, HttpResponseMessage responseMessage)
         {
-            var pricesStr = await response.Content.ReadAsStringAsync();
-            if (string.IsNullOrWhiteSpace(pricesStr))
+            var responseContentStr = await responseMessage.Content.ReadAsStringAsync();
+            responseContentStr = Regex.Replace(responseContentStr, @"\\u([0-9A-Fa-f]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());
+            if (string.IsNullOrWhiteSpace(responseContentStr))
                 throw new Exception("Сервис для моделирования вернул пустой ответ");
-
-            var preprocessedPricesStr = pricesStr.Substring(1, pricesStr.Length - 2);
+            
+            var preprocessedPricesStr = responseContentStr.Substring(1, responseContentStr.Length - 2);
             var prices = preprocessedPricesStr.Split(',').Select(x => Convert.ToDecimal(x, CultureInfo.InvariantCulture))
                 .ToArray();
             //if(prices.Length != data.CadastralNumbers.Count)
@@ -182,16 +184,17 @@ namespace KadOzenka.Dal.LongProcess
         {
             [JsonIgnore]
             public bool IsForTraining { get; set; }
-            //[JsonIgnore]
+            [JsonIgnore]
             public List<string> CadastralNumbers { get; set; }
-            //[JsonIgnore]
+            [JsonIgnore]
             public List<long> OmModelToMarketObjectsIds { get; set; }
 
-            [JsonProperty("prices")]
+            [JsonProperty("y_train")]
             public List<decimal> Prices { get; set; }
             [JsonProperty("columns")]
             public List<string> AttributeNames { get; set; }
-            [JsonProperty("data")]
+            [JsonProperty("x_predict")]
+            //[JsonProperty("x_train")]
             public List<List<decimal?>> Coefficients { get; set; }
 
             public Data(bool isForTraining)
@@ -206,6 +209,11 @@ namespace KadOzenka.Dal.LongProcess
             }
 
             public bool ShouldSerializePrices()
+            {
+                return IsForTraining;
+            }
+
+            public bool ShouldSerializeAttributeNames()
             {
                 return IsForTraining;
             }
