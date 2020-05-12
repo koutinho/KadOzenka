@@ -22286,6 +22286,26 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private string _internalname;
+        /// <summary>
+        /// 70000600 Внутреннее имя (для сервиса) (INTERNAL_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70000600)]
+        public string InternalName
+        {
+            get
+            {
+                CheckPropertyInited("InternalName");
+                return _internalname;
+            }
+            set
+            {
+                _internalname = value;
+                NotifyPropertyChanged("InternalName");
+            }
+        }
+
     }
 }
 
