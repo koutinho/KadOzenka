@@ -22306,6 +22306,66 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private string _lineartrainingresult;
+        /// <summary>
+        /// 70000700 Результат обучения по линейной формуле (LINEAR_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70000700)]
+        public string LinearTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("LinearTrainingResult");
+                return _lineartrainingresult;
+            }
+            set
+            {
+                _lineartrainingresult = value;
+                NotifyPropertyChanged("LinearTrainingResult");
+            }
+        }
+
+
+        private string _exponentialtrainingresult;
+        /// <summary>
+        /// 70000800 Результат обучения по экспоненциальной формуле (EXPONENTIAL_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70000800)]
+        public string ExponentialTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("ExponentialTrainingResult");
+                return _exponentialtrainingresult;
+            }
+            set
+            {
+                _exponentialtrainingresult = value;
+                NotifyPropertyChanged("ExponentialTrainingResult");
+            }
+        }
+
+
+        private string _multiplicativetrainingresult;
+        /// <summary>
+        /// 70000900 Результат обучения по мультипликативной формуле (MULTIPLICATIVE_TRAINING_RESULT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70000900)]
+        public string MultiplicativeTrainingResult
+        {
+            get
+            {
+                CheckPropertyInited("MultiplicativeTrainingResult");
+                return _multiplicativetrainingresult;
+            }
+            set
+            {
+                _multiplicativetrainingresult = value;
+                NotifyPropertyChanged("MultiplicativeTrainingResult");
+            }
+        }
+
     }
 }
 
