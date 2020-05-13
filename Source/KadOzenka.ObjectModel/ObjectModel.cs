@@ -22366,6 +22366,26 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private bool? _isoksobjecttype;
+        /// <summary>
+        /// 70001000 Тип объекта (IS_OKS_OBJECT_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70001000)]
+        public bool? IsOksObjectType
+        {
+            get
+            {
+                CheckPropertyInited("IsOksObjectType");
+                return _isoksobjecttype;
+            }
+            set
+            {
+                _isoksobjecttype = value;
+                NotifyPropertyChanged("IsOksObjectType");
+            }
+        }
+
     }
 }
 
