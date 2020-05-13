@@ -22398,6 +22398,26 @@ namespace ObjectModel.Modeling
             }
         }
 
+
+        private decimal? _coefficient;
+        /// <summary>
+        /// 70100500 Коэффициент после обучения модели (COEFFICIENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 70100500)]
+        public decimal? Coefficient
+        {
+            get
+            {
+                CheckPropertyInited("Coefficient");
+                return _coefficient;
+            }
+            set
+            {
+                _coefficient = value;
+                NotifyPropertyChanged("Coefficient");
+            }
+        }
+
     }
 }
 
