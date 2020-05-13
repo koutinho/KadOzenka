@@ -280,6 +280,20 @@ namespace ObjectModel.SRD
                 
               // Просмотр всех сообщений (1300140)
               public const string CORE_MESSAGES_ALL = "CORE.MESSAGES.ALL";
+
+			  //Экспресс оценка(560)
+              public const string EXPRES_SSCORE = "EXPRESSSCORE";
+
+              //История расчетов(562)
+              public const string EXPRES_SSCORE_HISTORY = "EXPRESSSCORE.HISTORY";
+
+			  //Расчет экспресс оценки(561)
+              public const string EXPRES_SSCORE_CALCULATE = "EXPRESSSCORE.CALCULATE";
+
+			  //Конструктор экспресс оценки(563)
+              public const string EXPRES_SSCORE_CONSTRUCTOR = "EXPRESSSCORE.CONSTRUCTOR";
+
+
                 
     }
 }
