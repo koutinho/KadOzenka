@@ -12,11 +12,11 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public MarketSegment MarketSegment { get; set; }
         public bool WasTrained { get; set; }
         public bool IsOksObjectType { get; set; }
-        public List<ModelAttributeDto> Attributes { get; set; }
+        public List<ModelAttributeRelationDto> Attributes { get; set; }
 
 		public ModelingModelDto()
 		{
-			Attributes = new List<ModelAttributeDto>();
+			Attributes = new List<ModelAttributeRelationDto>();
 		}
 	}
 }

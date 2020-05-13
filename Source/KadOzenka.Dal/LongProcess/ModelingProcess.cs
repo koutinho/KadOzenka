@@ -61,16 +61,14 @@ namespace KadOzenka.Dal.LongProcess
                 else
                 {
                     if (!model.WasTrained.GetValueOrDefault())
-                        throw new Exception($"Модель '{model.Name}' не была обучена. Рассчет невозможен");
-
+                        throw new Exception($"Модель '{model.Name}' не была обучена. Расчет невозможен.");
                 }
 
                 WorkerCommon.SetProgress(processQueue, 80);
 
                 var data = GetCoefficientsForModel(modelId, isTrainingMode);
                 if (data.Coefficients.Count == 0)
-                    throw new Exception(
-                        "Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
+                    throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
                 var response = SendDataToService(data, model.InternalName, isTrainingMode)
                     .GetAwaiter().GetResult();
@@ -87,7 +85,7 @@ namespace KadOzenka.Dal.LongProcess
 
                 SendNotification(isTrainingMode, model.Name, "Операция успешно завершена", processQueue);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 SendNotification(isTrainingMode, model.Name,
                     "Операция завершена с ошибкой. Подробнее в списке процессов", processQueue);
@@ -120,14 +118,14 @@ namespace KadOzenka.Dal.LongProcess
             var modelObjects = GetIncludedModelObjects(modelId, isForTraining);
             modelObjects.ForEach(modelObject =>
             {
-                var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<ModelAttributeDto>>();
+                var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
                 if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
                     return;
 
                 var coefficients = new List<decimal?>();
                 allAttributes.ForEach(modelAttribute =>
                 {
-                    coefficients.Add(modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId)?.CalculatedCoefficient);
+                    coefficients.Add(modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId)?.Coefficient);
                 });
 
                 //TODO эта проверка будет в сервисе

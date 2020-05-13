@@ -87,7 +87,7 @@ namespace KadOzenka.Dal.Modeling
 			return model;
 		}
 
-		public List<ModelAttributeDto> GetModelAttributes(long modelId)
+		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId)
 		{
 			var query = new QSQuery
 			{
@@ -119,33 +119,33 @@ namespace KadOzenka.Dal.Modeling
 					}
 				}
 			};
-            query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Id, nameof(ModelAttributeDto.Id)));
-            query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeDto.RegisterId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeDto.AttributeId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeDto.AttributeName)));
-			query.AddColumn(OMEsReference.GetColumn(x => x.Id, nameof(ModelAttributeDto.DictionaryId)));
-			query.AddColumn(OMEsReference.GetColumn(x => x.Name, nameof(ModelAttributeDto.DictionaryName)));
-            query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Coefficient, nameof(ModelAttributeDto.CoefficientFromModel)));
+            query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.Id)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
+			query.AddColumn(OMEsReference.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMEsReference.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
+            query.AddColumn(OMModelAttributesRelation.GetColumn(x => x.Coefficient, nameof(ModelAttributeRelationDto.Coefficient)));
 
-            var attributes = new List<ModelAttributeDto>();
+            var attributes = new List<ModelAttributeRelationDto>();
 			var table = query.ExecuteQuery();
 			for (var i = 0; i < table.Rows.Count; i++)
 			{
 				var row = table.Rows[i];
 
-                var id = row[nameof(ModelAttributeDto.Id)].ParseToLong();
+                var id = row[nameof(ModelAttributeRelationDto.Id)].ParseToLong();
 
-                var registerId = row[nameof(ModelAttributeDto.RegisterId)].ParseToLong();
+                var registerId = row[nameof(ModelAttributeRelationDto.RegisterId)].ParseToLong();
 
-				var attributeId = row[nameof(ModelAttributeDto.AttributeId)].ParseToLong();
-				var attributeName = row[nameof(ModelAttributeDto.AttributeName)].ParseToString();
+				var attributeId = row[nameof(ModelAttributeRelationDto.AttributeId)].ParseToLong();
+				var attributeName = row[nameof(ModelAttributeRelationDto.AttributeName)].ParseToString();
 
-				var dictionaryId = row[nameof(ModelAttributeDto.DictionaryId)].ParseToLongNullable();
-				var dictionaryName = row[nameof(ModelAttributeDto.DictionaryName)].ParseToString();
+				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
+				var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToString();
 
-                var coefficientFromModel = row[nameof(ModelAttributeDto.CoefficientFromModel)].ParseToDecimalNullable();
+                var coefficientFromModel = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
 
-                attributes.Add(new ModelAttributeDto
+                attributes.Add(new ModelAttributeRelationDto
 				{
                     Id = id,
 					RegisterId = registerId,
@@ -153,7 +153,7 @@ namespace KadOzenka.Dal.Modeling
 					AttributeName = attributeName,
 					DictionaryId = dictionaryId,
 					DictionaryName = dictionaryName,
-                    CoefficientFromModel = coefficientFromModel
+                    Coefficient = coefficientFromModel
                 });
 			}
 
@@ -189,7 +189,7 @@ namespace KadOzenka.Dal.Modeling
 
 			var existedModel = GetModelByIdInternal(modelDto.ModelId);
 
-			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeDto>();
+			var newAttributes = modelDto.Attributes ?? new List<ModelAttributeRelationDto>();
 			var existedModelAttributes = OMModelAttributesRelation.Where(x => x.ModelId == modelDto.ModelId).SelectAll().Execute();
 
             var isModelChanged = IsModelChanged(existedModel, modelDto, existedModelAttributes, newAttributes);
@@ -221,7 +221,7 @@ namespace KadOzenka.Dal.Modeling
             return isModelChanged;
         }
 
-        private bool IsModelChanged(OMModelingModel existedModel, ModelingModelDto newModel, List<OMModelAttributesRelation> existedAttributes, List<ModelAttributeDto> newAttributes)
+        private bool IsModelChanged(OMModelingModel existedModel, ModelingModelDto newModel, List<OMModelAttributesRelation> existedAttributes, List<ModelAttributeRelationDto> newAttributes)
         {
             var oldAttributeIds = existedAttributes.Select(x => x.AttributeId).OrderBy(x => x);
             var newAttributeIds = newAttributes.Select(x => x.AttributeId).OrderBy(x => x);
@@ -312,32 +312,38 @@ namespace KadOzenka.Dal.Modeling
                     IsForTraining = isForTraining
                 };
 
-                CalculateCoefficientsForModelObject(model.TourId, existedModelObject, modelAttributes);
+                var calculatedCoefficients = GetCoefficientsForModelObject(model.TourId,
+                    existedModelObject.CadastralNumber, modelAttributes);
 
-                existedModelObject.Coefficients = modelAttributes.SerializeToXml();
+                existedModelObject.Coefficients = calculatedCoefficients.SerializeToXml();
                 existedModelObject.Save();
             }
         }
 
-		public void CalculateCoefficientsForModelObject(long tourId, OMModelToMarketObjects modelObject, List<ModelAttributeDto> modelAttributes)
-        { 
+		private List<CoefficientForObject> GetCoefficientsForModelObject(long tourId, string cadastralNumber, List<ModelAttributeRelationDto> modelAttributes)
+        {
+            var coefficients = new List<CoefficientForObject>();
             modelAttributes.ForEach(modelAttribute =>
             {
-                modelAttribute.CalculatedCoefficient = null;
-                modelAttribute.Message = null;
-
-                var objectParameterData = GetParameterDataByCadastralNumber(modelObject.CadastralNumber, (int) tourId,
+                CoefficientForObject coefficient;
+                var objectParameterData = GetParameterDataByCadastralNumber(cadastralNumber, (int) tourId,
                     (int) modelAttribute.AttributeId, (int) modelAttribute.RegisterId);
                 if (objectParameterData == null)
                 {
-                    modelAttribute.Message =
-                        $"Не найдено значение. Аттрибут '{modelAttribute.AttributeName}' для объекта '{modelObject.CadastralNumber}'.";
+                    coefficient = new CoefficientForObject(modelAttribute.AttributeId)
+                    {
+                        Message = $"Не найдено значение. Аттрибут '{modelAttribute.AttributeName}' для объекта '{cadastralNumber}'."
+                    };
                 }
                 else
                 {
-                    CalculateCoefficients(objectParameterData, modelAttribute, modelObject);
+                    coefficient = CalculateCoefficient(objectParameterData, modelAttribute, cadastralNumber);
                 }
+
+                coefficients.Add(coefficient);
             });
+
+            return coefficients;
         }
 
         #endregion
@@ -364,7 +370,7 @@ namespace KadOzenka.Dal.Modeling
                 PriceFromModel = entity.PriceFromModel,
 				IsExcluded = entity.IsExcluded.GetValueOrDefault(), 
                 IsForTraining = entity.IsForTraining.GetValueOrDefault(),
-                Coefficients = entity.Coefficients.DeserializeFromXml<List<ModelAttributeDto>>()
+                Coefficients = entity.Coefficients.DeserializeFromXml<List<CoefficientForObject>>()
             };
 		}
 
@@ -397,55 +403,56 @@ namespace KadOzenka.Dal.Modeling
 			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;
 		}
 
-		private void CalculateCoefficients(ParameterDataDto objectParameterData, ModelAttributeDto modelModelAttribute, OMModelToMarketObjects modelMarketObject)
-		{
+		private CoefficientForObject CalculateCoefficient(ParameterDataDto objectParameterData, ModelAttributeRelationDto modelAttribute, string cadastralNumber)
+        {
+            var coefficient = new CoefficientForObject(modelAttribute.AttributeId);
+
             switch (objectParameterData.Type)
 			{
 				case ParameterType.String:
 				{
-					if (modelModelAttribute.DictionaryId == null)
+					if (modelAttribute.DictionaryId == null)
 					{
-						modelModelAttribute.Message = GetErrorMessage(modelModelAttribute.AttributeName,
-							modelMarketObject.CadastralNumber, "строка");
+                        coefficient.Message = GetErrorMessage(modelAttribute.AttributeName, cadastralNumber, "строка");
 					}
 					else
 					{
-						modelModelAttribute.CalculatedCoefficient = ScoreCommonService.GetCoefficientFromStringFactor(objectParameterData,
-							(int)modelModelAttribute.DictionaryId.GetValueOrDefault());
+                        coefficient.Coefficient = ScoreCommonService.GetCoefficientFromStringFactor(objectParameterData,
+							(int)modelAttribute.DictionaryId.GetValueOrDefault());
 					}
 
 					break;
 				}
 				case ParameterType.Date:
 				{
-					if (modelModelAttribute.DictionaryId == null)
+					if (modelAttribute.DictionaryId == null)
 					{
-						modelModelAttribute.Message =
-							GetErrorMessage(modelModelAttribute.AttributeName, modelMarketObject.CadastralNumber, "дата");
+                        coefficient.Message = GetErrorMessage(modelAttribute.AttributeName, cadastralNumber, "дата");
 					}
 					else
 					{
-						modelModelAttribute.CalculatedCoefficient = ScoreCommonService.GetCoefficientFromDateFactor(objectParameterData,
-							(int)modelModelAttribute.DictionaryId.GetValueOrDefault());
+                        coefficient.Coefficient = ScoreCommonService.GetCoefficientFromDateFactor(objectParameterData,
+							(int)modelAttribute.DictionaryId.GetValueOrDefault());
 					}
 
 					break;
 				}
 				case ParameterType.Number:
 				{
-					modelModelAttribute.CalculatedCoefficient = ScoreCommonService.GetCoefficientFromNumberFactor(objectParameterData,
-						(int)modelModelAttribute.DictionaryId.GetValueOrDefault());
+                    coefficient.Coefficient = ScoreCommonService.GetCoefficientFromNumberFactor(objectParameterData,
+						(int)modelAttribute.DictionaryId.GetValueOrDefault());
 
 					break;
 				}
 				default:
 				{
-					modelModelAttribute.Message = GetErrorMessage(modelModelAttribute.AttributeName, modelMarketObject.CadastralNumber,
-						"неизвестный тип");
+                    coefficient.Message = GetErrorMessage(modelAttribute.AttributeName, cadastralNumber, "неизвестный тип");
 					break;
 				}
 			}
-		}
+
+            return coefficient;
+        }
 
 		//TODO remove
 		private string GetErrorMessage(string attributeName, string cadastralNumber, string type)

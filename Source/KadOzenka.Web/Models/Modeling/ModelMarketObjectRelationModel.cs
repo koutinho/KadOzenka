@@ -15,7 +15,7 @@ namespace KadOzenka.Web.Models.Modeling
         public bool IsExcluded { get; set; }
         public bool IsForTraining { get; set; }
         public bool IsDirty { get; set; }
-        public List<ModelAttributeDto> Coefficients { get; set; }
+        public List<CoefficientForObject> Coefficients { get; set; }
         public string Warnings { get; set; }
 
 

@@ -10,6 +10,6 @@ namespace KadOzenka.Dal.Modeling.Dto
         public decimal? PriceFromModel { get; set; }
         public bool IsExcluded { get; set; }
         public bool IsForTraining { get; set; }
-        public List<ModelAttributeDto> Coefficients { get; set; }
+        public List<CoefficientForObject> Coefficients { get; set; }
     }
 }
