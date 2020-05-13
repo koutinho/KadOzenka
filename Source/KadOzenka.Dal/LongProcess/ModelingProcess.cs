@@ -58,11 +58,13 @@ namespace KadOzenka.Dal.LongProcess
             }
             WorkerCommon.SetProgress(processQueue, 80);
 
-            var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
-            if(coefficientsForModel.Coefficients.Count == 0)
+            var data = GetCoefficientsForModel(modelId, isTrainingMode);
+            if(data.Coefficients.Count == 0)
                 throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
 
-            var result = SendDataToService(coefficientsForModel, model.InternalName.ToLower(), isTrainingMode).GetAwaiter().GetResult();
+            var response = SendDataToService(data, model.InternalName, isTrainingMode)
+                .GetAwaiter().GetResult();
+            ParseResponse(data, response);
 
             if (isTrainingMode)
             {
@@ -72,9 +74,10 @@ namespace KadOzenka.Dal.LongProcess
 
             WorkerCommon.SetProgress(processQueue, 100);
 
-            var subject = isTrainingMode ? $"Процесс обучения модели '{model.Name}'" : $"Процесс прогнозирования цены для модели '{model.Name}'";
-            var message = "Операция успешно завершена " + result;
-            NotificationSender.SendNotification(processQueue, subject, message);
+            var subject = isTrainingMode
+                ? $"Процесс обучения модели '{model.Name}'"
+                : $"Процесс прогнозирования цены для модели '{model.Name}'";
+            NotificationSender.SendNotification(processQueue, subject, "Операция успешно завершена");
         }
 
 
@@ -96,8 +99,9 @@ namespace KadOzenka.Dal.LongProcess
         {
             var data = new Data(isForTraining);
 
-            var modelAttributes = ModelingService.GetModelAttributes(modelId);
-            data.AttributeNames.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
+            var allAttributes = ModelingService.GetModelAttributes(modelId);
+            data.AttributeNames.AddRange(allAttributes.Select(x => x.AttributeName));
+            data.OmModelAttributeRelationIds.AddRange(allAttributes.Select(x => x.Id));
 
             var modelObjects = GetIncludedModelObjects(modelId, isForTraining);
             modelObjects.ForEach(modelObject =>
@@ -107,9 +111,9 @@ namespace KadOzenka.Dal.LongProcess
                     return;
 
                 var coefficients = new List<decimal?>();
-                modelAttributes.ForEach(modelAttribute =>
+                allAttributes.ForEach(modelAttribute =>
                 {
-                    coefficients.Add(modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId)?.Coefficient);
+                    coefficients.Add(modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId)?.CalculatedCoefficient);
                 });
 
                 //TODO эта проверка будет в сервисе
@@ -145,46 +149,59 @@ namespace KadOzenka.Dal.LongProcess
             var response = await _httpClient.PostAsync(path, httpContent);
             response.EnsureSuccessStatusCode();
 
-            return await ParseResponse(data, response);
+            return await response.Content.ReadAsStringAsync();
         }
 
-        private async Task<string> ParseResponse(Data data, HttpResponseMessage responseMessage)
+        private void ParseResponse(Data data, string responseContentStr)
         {
-            var responseContentStr = await responseMessage.Content.ReadAsStringAsync();
             //обрабатываем кириллицу
             responseContentStr = Regex.Replace(responseContentStr, @"\\u([0-9A-Fa-f]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());
             if (string.IsNullOrWhiteSpace(responseContentStr))
                 throw new Exception("Сервис для моделирования вернул пустой ответ");
+
             //TODO переделаем на обработку json-объекта ошибки, после аналогичных изменений в сервисе
             if(responseContentStr.ToLower().Contains("message"))
                 throw new Exception("Сервис для моделирования вернул ошибку: " + responseContentStr);
 
             if (data.IsForTraining)
             {
-                var result = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
-                var sb = new StringBuilder();
-                sb.Append("Средняя абсолютная ошибка: ").AppendLine(result?.AccuracyScore?.MeanSquaredError?.ToString());
-                sb.Append("Критерий Фишера: ").AppendLine(result?.AccuracyScore?.FisherCriterion?.ToString());
-                sb.Append("Коэффициент детерминации (R²): ").AppendLine(result?.AccuracyScore?.R2?.ToString());
-                return sb.ToString();
+                var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
+                SaveCoefficientsFromModel(data, trainingResult.CoefficientsForAttributes.Values);
             }
             else
             {
                 var prices = JsonConvert.DeserializeObject<CalculationResult>(responseContentStr)?.Prices;
                 if (prices == null || prices.Count != data.CadastralNumbers.Count)
                     throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
+
                 SavePriceFromModel(data, prices);
             }
+        }
 
-            return string.Empty;
+        private void SaveCoefficientsFromModel(Data data, Dictionary<string, decimal>.ValueCollection coefficients)
+        {
+            var modelAttributeRelations = OMModelAttributesRelation
+                .Where(x => data.OmModelAttributeRelationIds.Contains(x.Id)).SelectAll().Execute();
+
+            for (var i = 0; i < data.OmModelAttributeRelationIds.Count; i++)
+            {
+                var modelAttributeRelation = modelAttributeRelations.FirstOrDefault(x => x.Id == data.OmModelAttributeRelationIds[i]);
+                if (modelAttributeRelation == null)
+                    continue;
+
+                modelAttributeRelation.Coefficient = coefficients.ElementAtOrDefault(i);
+                modelAttributeRelation.Save();
+            }
         }
 
         private void SavePriceFromModel(Data data, List<decimal> prices)
         {
+            var modelObjects = OMModelToMarketObjects.Where(x => data.OmModelToMarketObjectsIds.Contains(x.Id))
+                .SelectAll().Execute();
+
             for (var i = 0; i < data.CadastralNumbers.Count; i++)
             {
-                var modelObject = OMModelToMarketObjects.Where(x => x.Id == data.OmModelToMarketObjectsIds[i])
-                    .ExecuteFirstOrDefault();
+                var modelObject = modelObjects.FirstOrDefault(x => x.Id == data.OmModelToMarketObjectsIds[i]);
                 if (modelObject == null)
                     continue;
 
@@ -265,6 +282,8 @@ namespace KadOzenka.Dal.LongProcess
             public List<string> CadastralNumbers { get; set; }
             [JsonIgnore]
             public List<long> OmModelToMarketObjectsIds { get; set; }
+            [JsonIgnore]
+            public List<long> OmModelAttributeRelationIds { get; set; }
 
             [JsonProperty("y")]
             public List<decimal> Prices { get; set; }
@@ -278,6 +297,7 @@ namespace KadOzenka.Dal.LongProcess
                 IsForTraining = isForTraining;
                 CadastralNumbers = new List<string>();
                 OmModelToMarketObjectsIds = new List<long>();
+                OmModelAttributeRelationIds = new List<long>();
 
                 Prices = new List<decimal>();
                 AttributeNames = new List<string>();

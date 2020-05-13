@@ -166,7 +166,8 @@
 							DictionaryId: { type: "number" },
 							AttributeName: { type: "string" },
 							IsNormalized: { type: "boolean" },
-						    DictionaryName: { type: "string" }
+                            DictionaryName: { type: "string" },
+                            CoefficientFromModel: { type: "number" }
 					    }
 				    }
                 },
@@ -194,7 +195,11 @@
 			    {
 				    field: 'DictionaryName',
 				    title: 'Справочник'
-			    }
+                },
+                {
+                    field: 'CoefficientFromModel',
+                    title: 'Коэффициент'
+                }
 		    ],
             change: changeToolBarButtonsClass,
             dataBound: changeToolBarButtonsClass,
