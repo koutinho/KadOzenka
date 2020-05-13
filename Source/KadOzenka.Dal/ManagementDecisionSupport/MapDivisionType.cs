@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport
 {
-	public enum DivisionType
+	public enum MapDivisionType
 	{
 		Districts = 0,
 		Regions = 1,

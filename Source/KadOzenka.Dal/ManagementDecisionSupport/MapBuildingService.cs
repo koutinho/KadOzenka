@@ -4,33 +4,34 @@ using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.MapBuilding;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport
 {
-	public class ManagementDecisionSupportService
+	public class MapBuildingService
 	{
-		public IEnumerable<ColoredDataDto> GetHeatMapData(long toutId, PropertyTypes objectType, DivisionType divisionType, string[] colors)
+		public IEnumerable<ColoredDataDto> GetHeatMapData(long tourId, PropertyTypes objectType, MapDivisionType divisionType, string[] colors)
 		{
 			string divisionField = null;
 			switch (divisionType)
 			{
-				case DivisionType.Districts:
+				case MapDivisionType.Districts:
 					divisionField = "district";
 					break;
-				case DivisionType.Regions:
+				case MapDivisionType.Regions:
 					divisionField = "region";
 					break;
-				case DivisionType.Zones:
+				case MapDivisionType.Zones:
 					divisionField = "zone_region";
 					break;
-				case DivisionType.Quarters:
+				case MapDivisionType.Quarters:
 					divisionField = "cadastral_quartal";
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(nameof(divisionType), divisionType, null);
 			}
-
+			
 			var sql = $@"
 				select u.id as Id, 
 					u.cadastral_cost as CadastralCost, 
@@ -38,7 +39,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 				from ko_unit u
 					join ko_tour tour on tour.id=u.tour_id
 					join market_region_dictionaty d on d.cadastral_quartal=u.cadastral_block
-				where tour.id={toutId} and property_type_code={(int)objectType}";
+				where tour.id={tourId} and property_type_code={(int)objectType}";
 			var data = QSQuery.ExecuteSql<UnitNewDto>(sql);
 			var unitAverageDtos = data.Where(x => x.CadastralCost.HasValue).GroupBy(x => new { x.DivisionField })
 				.Select(
