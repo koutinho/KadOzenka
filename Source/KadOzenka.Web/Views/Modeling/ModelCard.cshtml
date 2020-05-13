@@ -69,15 +69,16 @@
 					@Html.LabelFor(x => x.ObjectType)
 				</div>
 				<div class="col-sm-9">
-					@(Html.Kendo().RadioButtonFor(x => x.ObjectType)
-					    .Label(ObjectType.Oks.GetEnumDescription())
-					    .Value((int)ObjectType.Oks))
+                    @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
+                        .Label(ObjectType.Oks.GetEnumDescription())
+                        .Value((int)ObjectType.Oks)
+                        .Checked(Model.ObjectType == ObjectType.Oks))
 
                     @(Html.Kendo().RadioButtonFor(x => x.ObjectType)
-					    .Label(ObjectType.ZU.GetEnumDescription())
+                        .Label(ObjectType.ZU.GetEnumDescription())
 					    .Value((int)ObjectType.ZU)
-					    .Checked(true)
-					    .HtmlAttributes(new { style = "padding-left:1%;" }))
+                        .Checked(Model.ObjectType == ObjectType.ZU)
+                        .HtmlAttributes(new {  style = "padding-left:1%;" }))
 				</div>
 			</div>
 			<div class="form-group">
@@ -94,16 +95,16 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-	$(document).ready(function () {
+    $(document).ready(function() {
 
-		$('#mainToolbar').kendoToolBar({
-			items: [
-				{
-					type: 'button',
-					text: '',
-				    attributes: { title: "Сохранить" },
-				    icon: 'save',
-				    click: updateModel
+        $('#mainToolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: '',
+                    attributes: { title: "Сохранить" },
+                    icon: 'save',
+                    click: updateModel
                 },
                 {
                     id: 'trainModelBtn',
@@ -122,89 +123,89 @@
                     enable: '@Model.IsModelWasTrained' === "True",
                     click: calculate
                 }
-		    ]
-	    });
-	    $('#attributesToolbar').kendoToolBar({
-		    items: [
-			    {
-				    type: 'button',
-				    text: '',
-				    attributes: { title: "Добавить" },
-				    icon: 'add',
-				    click: addAttribute
-			    },
-			    {
-				    type: 'button',
-				    id: 'deleteAttributeBtn',
-				    className: "k-state-disabled",
-				    text: '',
-				    attributes: { title: "Удалить" },
-				    icon: 'delete',
-				    click: deleteAttribute
-			    }
-		    ]
-	    });
-	    $('#deleteAttributeBtn').addClass('k-state-disabled');
-	    $(".k-toolbar [title]").kendoTooltip({
-		    position: "top"
-	    });
+            ]
+        });
+        $('#attributesToolbar').kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    text: '',
+                    attributes: { title: "Добавить" },
+                    icon: 'add',
+                    click: addAttribute
+                },
+                {
+                    type: 'button',
+                    id: 'deleteAttributeBtn',
+                    className: "k-state-disabled",
+                    text: '',
+                    attributes: { title: "Удалить" },
+                    icon: 'delete',
+                    click: deleteAttribute
+                }
+            ]
+        });
+        $('#deleteAttributeBtn').addClass('k-state-disabled');
+        $(".k-toolbar [title]").kendoTooltip({
+            position: "top"
+        });
 
-	    $('#grid').kendoGrid({
-			dataSource: {
-				transport: {
-					read: {
-						url: '@Url.Action("GetModelAttributes", "Modeling", new { modelId = Model.Id })',
-						contentType: 'application/json; charset=utf-8',
-						dataType: 'json'
-					}
-				},
-				schema: {
-				    model: {
-					    id: "AttributeId",
-						fields: {
-							AttributeId: { type: "number" },
-							DictionaryId: { type: "number" },
-							AttributeName: { type: "string" },
-							IsNormalized: { type: "boolean" },
+        $('#grid').kendoGrid({
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetModelAttributes", "Modeling", new { modelId = Model.Id })',
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                },
+                schema: {
+                    model: {
+                        id: "AttributeId",
+                        fields: {
+                            AttributeId: { type: "number" },
+                            DictionaryId: { type: "number" },
+                            AttributeName: { type: "string" },
+                            IsNormalized: { type: "boolean" },
                             DictionaryName: { type: "string" },
                             CoefficientFromModel: { type: "number" }
-					    }
-				    }
+                        }
+                    }
                 },
                 pageSize: 10
-			},
-		    columns: [
-			    {
-				    field: 'AttributeId',
-				    hidden: true
-				},
-			    {
-				    field: 'DictionaryId',
-				    hidden: true
-			    },
-			    {
-				    field: 'AttributeName',
-				    title: 'Аттрибут'
-			    },
-			    {
-					field: 'IsNormalized',
-				    title: 'Нормализация',
-				    template:
-					    '<input type="checkbox" #= IsNormalized ? \'checked="checked"\' : "" # class="chkbx" />'
-			    },
-			    {
-				    field: 'DictionaryName',
-				    title: 'Справочник'
+            },
+            columns: [
+                {
+                    field: 'AttributeId',
+                    hidden: true
+                },
+                {
+                    field: 'DictionaryId',
+                    hidden: true
+                },
+                {
+                    field: 'AttributeName',
+                    title: 'Аттрибут'
+                },
+                {
+                    field: 'IsNormalized',
+                    title: 'Нормализация',
+                    template:
+                        '<input type="checkbox" #= IsNormalized ? \'checked="checked"\' : "" # class="chkbx" />'
+                },
+                {
+                    field: 'DictionaryName',
+                    title: 'Справочник'
                 },
                 {
                     field: 'CoefficientFromModel',
                     title: 'Коэффициент'
                 }
-		    ],
+            ],
             change: changeToolBarButtonsClass,
             dataBound: changeToolBarButtonsClass,
-		    width: '100%',
-		    scrollable: true,
+            width: '100%',
+            scrollable: true,
             selectable: true
         });
 
@@ -225,9 +226,7 @@
                 $("#grid").data("kendoGrid").dataSource.data([]);
             },
             onFail: function () {
-                var newCheckedValue = $('input[name="ObjectType"]:checked').val();
-                var previousValue = newCheckedValue === "0" ? 1 : 0;
-                var selector = "input[name='ObjectType'][value='" + previousValue + "']";
+                var selector = "input[name='ObjectType'][value='" + @((int)Model.ObjectType) + "']";
                 $(selector).prop('checked', true);
                 closeConfirmWindow($(this));
             }

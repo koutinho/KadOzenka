@@ -11,6 +11,7 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public long TourYear { get; set; }
 		public MarketSegment MarketSegment { get; set; }
         public bool WasTrained { get; set; }
+        public bool IsOksObjectType { get; set; }
         public List<ModelAttributeDto> Attributes { get; set; }
 
 		public ModelingModelDto()

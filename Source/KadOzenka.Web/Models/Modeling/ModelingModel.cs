@@ -46,8 +46,9 @@ namespace KadOzenka.Web.Models.Modeling
 				TourYear = entity.TourYear,
 				Name = entity.Name,
 				Attributes = entity.Attributes,
-                IsModelWasTrained = entity.WasTrained
-			};
+                IsModelWasTrained = entity.WasTrained,
+                ObjectType = entity.IsOksObjectType ? ObjectType.Oks : ObjectType.ZU
+            };
 		}
 
 		public static ModelingModelDto FromModel(ModelingModel model)
@@ -58,7 +59,8 @@ namespace KadOzenka.Web.Models.Modeling
 				Name = model.Name,
 				TourId = model.TourId,
 				MarketSegment = model.MarketSegmentCode,
-				Attributes = model.Attributes
+				Attributes = model.Attributes,
+                IsOksObjectType = model.ObjectType == ObjectType.Oks
 			};
 		}
 	}

@@ -54,6 +54,7 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMTour.GetColumn(x => x.Year, nameof(ModelingModelDto.TourYear)));
 			query.AddColumn(OMModelingModel.GetColumn(x => x.MarketSegment_Code, nameof(ModelingModelDto.MarketSegment)));
             query.AddColumn(OMModelingModel.GetColumn(x => x.WasTrained, nameof(ModelingModelDto.WasTrained)));
+            query.AddColumn(OMModelingModel.GetColumn(x => x.IsOksObjectType, nameof(ModelingModelDto.IsOksObjectType)));
 
             var table = query.ExecuteQuery();
 			ModelingModelDto model = null;
@@ -66,6 +67,7 @@ namespace KadOzenka.Dal.Modeling
 				var tourYear = row[nameof(ModelingModelDto.TourYear)].ParseToLong();
 				var segment = (MarketSegment)row[nameof(ModelingModelDto.MarketSegment)];
                 var wasTrained = row[nameof(ModelingModelDto.WasTrained)].ParseToBooleanNullable();
+                var isOksObjectType = row[nameof(ModelingModelDto.IsOksObjectType)].ParseToBooleanNullable();
 
                 model = new ModelingModelDto
 				{
@@ -74,7 +76,8 @@ namespace KadOzenka.Dal.Modeling
 					TourId = tourId,
 					TourYear = tourYear,
 					MarketSegment = segment,
-                    WasTrained = wasTrained.GetValueOrDefault()
+                    WasTrained = wasTrained.GetValueOrDefault(),
+                    IsOksObjectType = isOksObjectType.GetValueOrDefault()
                 };
 			}
 
@@ -196,6 +199,7 @@ namespace KadOzenka.Dal.Modeling
                 existedModel.Name = modelDto.Name;
                 existedModel.TourId = modelDto.TourId;
                 existedModel.MarketSegment_Code = modelDto.MarketSegment;
+                existedModel.IsOksObjectType = modelDto.IsOksObjectType;
                 if (isModelChanged)
                     existedModel.WasTrained = false;
                 existedModel.Save();
@@ -229,6 +233,7 @@ namespace KadOzenka.Dal.Modeling
 
             return !(existedModel.TourId == newModel.TourId &&
                    existedModel.MarketSegment_Code == newModel.MarketSegment &&
+                   existedModel.IsOksObjectType == newModel.IsOksObjectType &&
                    areAttributeIdsEqual &&
                    areDictionaryIdsSequenceEqualEqual);
         }
