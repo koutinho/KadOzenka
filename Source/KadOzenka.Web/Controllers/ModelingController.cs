@@ -12,6 +12,7 @@ using Core.Shared.Extensions;
 using DevExpress.DataProcessing;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.Modeling.Dto;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.LongProcess;
@@ -131,6 +132,23 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
+        #region Model Details
+
+        [HttpGet]
+        public ActionResult LinearModelDetails(long modelId)
+        {
+            var model = OMModelingModel.Where(x => x.Id == modelId).Select(x => x.LinearTrainingResult).ExecuteFirstOrDefault();
+            if (model == null)
+                throw new Exception($"Не найдена модель с Id='{modelId}'");
+
+            var details = string.IsNullOrWhiteSpace(model.LinearTrainingResult)
+                ? null
+                : JsonConvert.DeserializeObject<TrainingResult>(model.LinearTrainingResult);
+
+            return View("ModelDetails", details);
+        }
+
+        #endregion
 
         #region Market Objects For Model
 

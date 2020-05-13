@@ -1,0 +1,113 @@
+﻿@model KadOzenka.Dal.Modeling.Dto.TrainingResult
+
+@if (Model == null)
+{
+    <div class="form-horizontal col-sm-12" style="padding: 2%">
+        <div class="form-group">
+            <span>Не найдено информации</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="form-horizontal col-sm-12" style="padding: 1% 2%">
+        <div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Коэффициент детерминации (R²):")
+                </div>
+            </div>
+            <div class="form-group coefficients-block">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Test:")
+                </div>
+                <div class="col-sm-6">
+                    @Html.KendoTextBoxFor(x => x.AccuracyScore.R2.Test, isReadonly: true)
+                </div>
+            </div>
+            <div class="form-group coefficients-block">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Train:")
+                </div>
+                <div class="col-sm-6">
+                    @Html.KendoTextBoxFor(x => x.AccuracyScore.R2.Train, isReadonly: true)
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Критерий Фишера:")
+                </div>
+            </div>
+            <div class="form-group coefficients-block">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Test:")
+                </div>
+                <div class="col-sm-6">
+                    @Html.KendoTextBoxFor(x => x.AccuracyScore.FisherCriterion.Test, isReadonly: true)
+                </div>
+            </div>
+            <div class="form-group coefficients-block">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Train:")
+                </div>
+                <div class="col-sm-6">
+                    @Html.KendoTextBoxFor(x => x.AccuracyScore.FisherCriterion.Train, isReadonly: true)
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Средняя абсолютная ошибка:")
+                </div>
+            </div>
+            <div class="form-group coefficients-block">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Test:")
+                </div>
+                <div class="col-sm-6">
+                    @Html.KendoTextBoxFor(x => x.AccuracyScore.MeanSquaredError.Test, isReadonly: true)
+                </div>
+            </div>
+            <div class="form-group coefficients-block">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Train:")
+                </div>
+                <div class="col-sm-6">
+                    @Html.KendoTextBoxFor(x => x.AccuracyScore.MeanSquaredError.Train, isReadonly: true)
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" style="padding-top: 2%">
+            <img src="@Model.LinkToGraph"/>
+        </div>
+    </div>
+}
+
+
+
+<style>
+    .coefficients-block {
+        padding-left: 2%
+    }
+
+    .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    }
+</style>
+
+
+
+<script>
+    $(document).ready(function () {
+    });
+
+</script>

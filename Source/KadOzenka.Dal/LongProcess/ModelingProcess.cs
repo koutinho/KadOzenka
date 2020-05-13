@@ -64,7 +64,7 @@ namespace KadOzenka.Dal.LongProcess
 
             var response = SendDataToService(data, model.InternalName, isTrainingMode)
                 .GetAwaiter().GetResult();
-            ParseResponse(data, response);
+            ParseResponse(data, model, response);
 
             if (isTrainingMode)
             {
@@ -152,7 +152,7 @@ namespace KadOzenka.Dal.LongProcess
             return await response.Content.ReadAsStringAsync();
         }
 
-        private void ParseResponse(Data data, string responseContentStr)
+        private void ParseResponse(Data data, OMModelingModel model, string responseContentStr)
         {
             //обрабатываем кириллицу
             responseContentStr = Regex.Replace(responseContentStr, @"\\u([0-9A-Fa-f]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());
@@ -166,7 +166,11 @@ namespace KadOzenka.Dal.LongProcess
             if (data.IsForTraining)
             {
                 var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
+                trainingResult.LinkToGraph = GetUrlToModelGraph(model.InternalName);
                 SaveCoefficientsFromModel(data, trainingResult.CoefficientsForAttributes.Values);
+
+                model.LinearTrainingResult = responseContentStr;
+                model.Save();
             }
             else
             {
@@ -222,6 +226,12 @@ namespace KadOzenka.Dal.LongProcess
             return $"http://82.148.28.237:5000/api/predict/{modelName}";
         }
 
+        private string GetUrlToModelGraph(string modelName)
+        {
+            //TODO ConfigurationManager.AppSettings["calculateModelLink"];
+            return $"http://82.148.28.237:5000/api/graph/{modelName}";
+        }
+
         #endregion
 
 
@@ -231,47 +241,6 @@ namespace KadOzenka.Dal.LongProcess
         {
             [JsonProperty("y_predict")]
             public List<decimal> Prices { get; set; }
-        }
-
-        public class TrainingResult
-        {
-            [JsonProperty("coef")]
-            public Dictionary<string, decimal> CoefficientsForAttributes { get; set; }
-
-            [JsonProperty("accuracy_score")]
-            public AccuracyScore AccuracyScore { get; set; }
-
-            [JsonProperty("data")]
-            public TrainingGeneralResult Data { get; set; }
-
-            [JsonProperty("model")]
-            public string Model { get; set; }
-        }
-
-        public class AccuracyScore
-        {
-            [JsonProperty("mean_squared_error")]
-            public TrainingGeneralResult MeanSquaredError { get; set; }
-            [JsonProperty("Fisher_criterion")]
-            public TrainingGeneralResult FisherCriterion { get; set; }
-            [JsonProperty("R2")]
-            public TrainingGeneralResult R2 { get; set; }
-        }
-
-        public class TrainingGeneralResult
-        {
-            [JsonProperty("train")]
-            public string Train { get; set; }
-            [JsonProperty("test")]
-            public string Test { get; set; }
-
-            public override string ToString()
-            {
-                var sb = new StringBuilder();
-                sb.Append("Train: ").Append(Train).Append("; ");
-                sb.Append("Test: ").Append(Test);
-                return sb.ToString();
-            }
         }
 
         public class Data
