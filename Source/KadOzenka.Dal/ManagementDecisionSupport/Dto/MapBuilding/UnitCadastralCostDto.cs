@@ -1,8 +1,9 @@
 ﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.MapBuilding
 {
-	public class UnitAverageDto
+	public class UnitCadastralCostDto
 	{
-		public decimal? AverageCadastralCost { get; set; }
+		public long Id { get; set; }
+		public decimal? CadastralCost { get; set; }
 		public string DivisionField { get; set; }
 	}
 }
