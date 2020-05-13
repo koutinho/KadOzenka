@@ -31,8 +31,9 @@ namespace KadOzenka.Dal.LongProcess
                 registerId: OMModelingModel.GetRegisterId(), parameters: request.SerializeToXml());
         }
 
-		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
-		{
+        public override void StartProcess(OMProcessType processType, OMQueue processQueue,
+            CancellationToken cancellationToken)
+        {
             WorkerCommon.SetProgress(processQueue, 0);
             if (!processQueue.ObjectId.HasValue)
             {
@@ -51,35 +52,48 @@ namespace KadOzenka.Dal.LongProcess
             ModelingService = new ModelingService(new ScoreCommonService());
             var modelId = processQueue.ObjectId.Value;
             var model = GetModel(modelId, isTrainingMode);
-
-            if (isTrainingMode)
+            try
             {
-                ModelingService.CreateObjectsForModel(modelId);
+                if (isTrainingMode)
+                {
+                    ModelingService.CreateObjectsForModel(modelId);
+                }
+                else
+                {
+                    if (!model.WasTrained.GetValueOrDefault())
+                        throw new Exception($"Модель '{model.Name}' не была обучена. Рассчет невозможен");
+
+                }
+
+                WorkerCommon.SetProgress(processQueue, 80);
+
+                var data = GetCoefficientsForModel(modelId, isTrainingMode);
+                if (data.Coefficients.Count == 0)
+                    throw new Exception(
+                        "Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
+
+                var response = SendDataToService(data, model.InternalName, isTrainingMode)
+                    .GetAwaiter().GetResult();
+
+                ParseResponse(data, model, response);
+
+                if (isTrainingMode)
+                {
+                    model.WasTrained = true;
+                    model.Save();
+                }
+
+                WorkerCommon.SetProgress(processQueue, 100);
+
+                SendNotification(isTrainingMode, model.Name, "Операция успешно завершена", processQueue);
             }
-            WorkerCommon.SetProgress(processQueue, 80);
-
-            var data = GetCoefficientsForModel(modelId, isTrainingMode);
-            if(data.Coefficients.Count == 0)
-                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
-
-            var response = SendDataToService(data, model.InternalName, isTrainingMode)
-                .GetAwaiter().GetResult();
-            ParseResponse(data, model, response);
-
-            if (isTrainingMode)
+            catch (Exception e)
             {
-                model.WasTrained = true;
-                model.Save();
+                SendNotification(isTrainingMode, model.Name,
+                    "Операция завершена с ошибкой. Подробнее в списке процессов", processQueue);
+                throw;
             }
-
-            WorkerCommon.SetProgress(processQueue, 100);
-
-            var subject = isTrainingMode
-                ? $"Процесс обучения модели '{model.Name}'"
-                : $"Процесс прогнозирования цены для модели '{model.Name}'";
-            NotificationSender.SendNotification(processQueue, subject, "Операция успешно завершена");
         }
-
 
         #region Support Methods
 
@@ -166,7 +180,6 @@ namespace KadOzenka.Dal.LongProcess
             if (data.IsForTraining)
             {
                 var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
-                trainingResult.LinkToGraph = GetUrlToModelGraph(model.InternalName);
                 SaveCoefficientsFromModel(data, trainingResult.CoefficientsForAttributes.Values);
 
                 model.LinearTrainingResult = responseContentStr;
@@ -226,10 +239,13 @@ namespace KadOzenka.Dal.LongProcess
             return $"http://82.148.28.237:5000/api/predict/{modelName}";
         }
 
-        private string GetUrlToModelGraph(string modelName)
+        private void SendNotification(bool isTrainingMode, string modelName, string message, OMQueue processQueue)
         {
-            //TODO ConfigurationManager.AppSettings["calculateModelLink"];
-            return $"http://82.148.28.237:5000/api/graph/{modelName}";
+            var subject = isTrainingMode
+                ? $"Процесс обучения модели '{modelName}'"
+                : $"Процесс прогнозирования цены для модели '{modelName}'";
+
+            NotificationSender.SendNotification(processQueue, subject, message);
         }
 
         #endregion
