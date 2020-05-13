@@ -31,7 +31,6 @@ namespace KadOzenka.Dal.LongProcess
                 registerId: OMModelingModel.GetRegisterId(), parameters: request.SerializeToXml());
         }
 
-        //TODO
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
             WorkerCommon.SetProgress(processQueue, 0);
@@ -60,7 +59,10 @@ namespace KadOzenka.Dal.LongProcess
             WorkerCommon.SetProgress(processQueue, 80);
 
             var coefficientsForModel = GetCoefficientsForModel(modelId, isTrainingMode);
-            var result = SendDataToService(coefficientsForModel, model.Name.ToLower(), isTrainingMode).GetAwaiter().GetResult();
+            if(coefficientsForModel.Coefficients.Count == 0)
+                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех аттрибутов не пустые)");
+
+            var result = SendDataToService(coefficientsForModel, model.InternalName.ToLower(), isTrainingMode).GetAwaiter().GetResult();
 
             if (isTrainingMode)
             {
@@ -71,8 +73,8 @@ namespace KadOzenka.Dal.LongProcess
             WorkerCommon.SetProgress(processQueue, 100);
 
             var subject = isTrainingMode ? $"Процесс обучения модели '{model.Name}'" : $"Процесс прогнозирования цены для модели '{model.Name}'";
-
-            NotificationSender.SendNotification(processQueue, subject, "Операция успешно завершена " + result);
+            var message = "Операция успешно завершена " + result;
+            NotificationSender.SendNotification(processQueue, subject, message);
         }
 
 
@@ -159,27 +161,16 @@ namespace KadOzenka.Dal.LongProcess
 
             if (data.IsForTraining)
             {
-                ////var result = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
-                ////return result.AccuracyScore;
-                //TODO rewrite
-                try
-                {
-                    var pattern = "accuracy_score\":";
-                    var pFrom = responseContentStr.IndexOf(pattern) + pattern.Length;
-                    var pTo = responseContentStr.LastIndexOf("\"data\":");
-
-                    var result = responseContentStr.Substring(pFrom, pTo - pFrom);
-
-                    return result;
-                }
-                catch (Exception)
-                {
-                    return responseContentStr;
-                }
+                var result = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
+                var sb = new StringBuilder();
+                sb.Append("Средняя абсолютная ошибка: ").AppendLine(result?.AccuracyScore?.MeanSquaredError?.ToString());
+                sb.Append("Критерий Фишера: ").AppendLine(result?.AccuracyScore?.FisherCriterion?.ToString());
+                sb.Append("Коэффициент детерминации (R²): ").AppendLine(result?.AccuracyScore?.R2?.ToString());
+                return sb.ToString();
             }
             else
             {
-                var prices = JsonConvert.DeserializeObject<CalculationResult>(responseContentStr)?.y_predict;
+                var prices = JsonConvert.DeserializeObject<CalculationResult>(responseContentStr)?.Prices;
                 if (prices == null || prices.Count != data.CadastralNumbers.Count)
                     throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
                 SavePriceFromModel(data, prices);
@@ -216,10 +207,54 @@ namespace KadOzenka.Dal.LongProcess
 
         #endregion
 
-        //TODO rewrite
+
+        #region Entities
+
         public class CalculationResult
         {
-            public List<decimal> y_predict { get; set; }
+            [JsonProperty("y_predict")]
+            public List<decimal> Prices { get; set; }
+        }
+
+        public class TrainingResult
+        {
+            [JsonProperty("coef")]
+            public Dictionary<string, decimal> CoefficientsForAttributes { get; set; }
+
+            [JsonProperty("accuracy_score")]
+            public AccuracyScore AccuracyScore { get; set; }
+
+            [JsonProperty("data")]
+            public TrainingGeneralResult Data { get; set; }
+
+            [JsonProperty("model")]
+            public string Model { get; set; }
+        }
+
+        public class AccuracyScore
+        {
+            [JsonProperty("mean_squared_error")]
+            public TrainingGeneralResult MeanSquaredError { get; set; }
+            [JsonProperty("Fisher_criterion")]
+            public TrainingGeneralResult FisherCriterion { get; set; }
+            [JsonProperty("R2")]
+            public TrainingGeneralResult R2 { get; set; }
+        }
+
+        public class TrainingGeneralResult
+        {
+            [JsonProperty("train")]
+            public string Train { get; set; }
+            [JsonProperty("test")]
+            public string Test { get; set; }
+
+            public override string ToString()
+            {
+                var sb = new StringBuilder();
+                sb.Append("Train: ").Append(Train).Append("; ");
+                sb.Append("Test: ").Append(Test);
+                return sb.ToString();
+            }
         }
 
         public class Data
@@ -259,5 +294,7 @@ namespace KadOzenka.Dal.LongProcess
                 return IsForTraining;
             }
         }
+
+        #endregion
     }
 }

@@ -153,13 +153,24 @@ namespace KadOzenka.Dal.Modeling
 		{
 			ValidateModel(modelDto);
 
-			return new OMModelingModel
-			{
-				Name = modelDto.Name,
-				TourId = modelDto.TourId,
-				MarketSegment_Code = modelDto.MarketSegment
-			}.Save();
-		}
+            using (var ts = new TransactionScope())
+            {
+                var model = new OMModelingModel
+                {
+                    Name = modelDto.Name,
+                    TourId = modelDto.TourId,
+                    MarketSegment_Code = modelDto.MarketSegment
+                };
+
+                var id = model.Save();
+                model.InternalName = $"model_{id}";
+                model.Save();
+
+                ts.Complete();
+
+                return id;
+            }
+        }
 
 		public bool UpdateModel(ModelingModelDto modelDto)
 		{
@@ -271,6 +282,8 @@ namespace KadOzenka.Dal.Modeling
 				}).ToList();
 
 			var existedModelObjects = GetAllModelMarketObjects(modelId);
+            existedModelObjects.ForEach(x => x.Destroy());
+
             var modelAttributes = GetModelAttributes(modelId);
 
             for (var i = 0; i < groupedObjects.Count; i++)
@@ -278,23 +291,13 @@ namespace KadOzenka.Dal.Modeling
                 var isForTraining = i < groupedObjects.Count / 2;
 
                 var groupedObj = groupedObjects[i];
-                var existedModelObject = existedModelObjects.FirstOrDefault(x =>
-                    x.CadastralNumber == groupedObj.Key.CadastralNumber && x.Price == groupedObj.Key.Price);
-
-                if (existedModelObject == null)
+                var existedModelObject = new OMModelToMarketObjects
                 {
-                    existedModelObject = new OMModelToMarketObjects
-                    {
-                        ModelId = modelId,
-                        CadastralNumber = groupedObj.Key.CadastralNumber,
-                        Price = groupedObj.Key.Price ?? 0,
-                        IsForTraining = isForTraining
-                    };
-                }
-                else
-                {
-                    existedModelObject.IsForTraining = isForTraining;
-                }
+                    ModelId = modelId,
+                    CadastralNumber = groupedObj.Key.CadastralNumber,
+                    Price = groupedObj.Key.Price ?? 0,
+                    IsForTraining = isForTraining
+                };
 
                 CalculateCoefficientsForModelObject(model.TourId, existedModelObject, modelAttributes);
 
