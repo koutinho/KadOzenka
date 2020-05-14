@@ -130,7 +130,7 @@ namespace KadOzenka.Dal.Modeling
                     break;
             }
             if (string.IsNullOrWhiteSpace(trainingResult))
-                throw new Exception($"Не найдено результатов обучения модели типа: {InputParameters.PredictionType.GetEnumDescription()}");
+                throw new Exception($"Не найдено результатов обучения модели типа: '{InputParameters.PredictionType.GetEnumDescription()}'");
 
             return trainingResult;
         }

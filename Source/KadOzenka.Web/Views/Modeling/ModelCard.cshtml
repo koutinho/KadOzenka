@@ -1,4 +1,5 @@
-﻿@using KadOzenka.Dal.Oks
+﻿@using KadOzenka.Dal.Modeling.Entities
+@using KadOzenka.Dal.Oks
 @model KadOzenka.Web.Models.Modeling.ModelingModel
 
 <!-- Модальное окно для добавления аттрибута -->
@@ -14,13 +15,39 @@
 
 <!-- Модальное окно для добавления справочника -->
 <div id="dictionaryAdditionModal" style="display: none;  padding: 2%;">
-	<div class="form-horizontal col-sm-12">
-		<div class="form-group">
-			<div class="col-sm-12">
-				<div id="dictionary"></div>
-			</div>
-		</div>
-	</div>
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-12">
+                <div id="dictionary"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для выбора типа модели для прогнозирования цены -->
+<div id="predictionTypeModal" style="display: none; padding: 4% 2%;">
+    <div class="form-horizontal col-sm-12" style="width: 100%;">
+        <div class="form-group">
+            <div class="col-sm-12" style="width: 100%;">
+                @(Html.Kendo().ButtonGroup()
+                    .Name("choosePredictionType")
+                    .Selection("single")
+                    .Items(t =>
+                    {
+                        t.Add().Text(PredictionType.Linear.GetEnumDescription())
+                            .HtmlAttributes(new { style = "width: 100%;" });
+                        t.Add().Text(PredictionType.Exponential.GetEnumDescription())
+                            .Enabled(false)
+                            .HtmlAttributes(new { style = "margin-left: 1%; width: 100%;" });
+                        t.Add().Text(PredictionType.Multiplicative.GetEnumDescription())
+                            .Enabled(false)
+                            .HtmlAttributes(new { style = "margin-left: 1%; width: 100%;" });
+                    })
+                    .HtmlAttributes(new { style = "width: 100%;" })
+                    .Events(ev => ev.Select("onPredictionTypeSelect")))
+            </div>
+        </div>
+    </div>
 </div>
 
 @using (Html.BeginForm("UpdateModel", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
@@ -115,13 +142,13 @@
                     click: trainModel
                 },
                 {
-                    id: 'calculateModelBtn',
+                    id: 'predictModelBtn',
                     type: 'button',
                     text: '',
                     attributes: { title: "Рассчитать" },
                     icon: 'calculator',
                     enable: '@Model.IsModelWasTrained' === "True",
-                    click: calculate
+                    click: predict
                 }
             ]
         });
@@ -283,7 +310,7 @@
                 } else {
                     if (response.IsModelWasChanged) {
                         var toolbar = $("#mainToolbar").data("kendoToolBar");
-                        toolbar.enable("#calculateModelBtn", false);
+                        toolbar.enable("#predictModelBtn", false);
                     }
 					Common.ShowMessage(response.Message);
 				}
@@ -323,12 +350,19 @@
     }
 
 
-    function calculate() {
+    function predict() {
+        var modal = $("#predictionTypeModal");
+        ShowModal(modal, '60%', '10%', "Выбор типа модели");
+    }
+
+    function onPredictionTypeSelect(e) {
+        var modal = $('#predictionTypeModal');
+        modal.data("kendoWindow").close();
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("Calculate", "Modeling")',
-            data: {modelId : '@Model.Id'},
+            url: '@Url.Action("Predict", "Modeling")',
+            data: { modelId: '@Model.Id', predictionType: e.indices},
             success: function(response) {
                 if (response.Errors) {
                     var errors = getErrors(response.Errors);

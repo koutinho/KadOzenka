@@ -106,7 +106,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult Calculate(long modelId)
+        public JsonResult Predict(long modelId, PredictionType predictionType)
         {
             ////TODO код для отладки, позже переделать на добавление процесса в очередь
             //var process = new ModelingProcess();
@@ -114,7 +114,7 @@ namespace KadOzenka.Web.Controllers
             //{
             //    ModelId = modelId,
             //    IsTrainingMode = false,
-            //    PredictionType = PredictionType.Linear // TODO
+            //    PredictionType = predictionType
             //};
             //process.StartProcess(new OMProcessType(), new OMQueue
             //{
@@ -122,14 +122,14 @@ namespace KadOzenka.Web.Controllers
             //}, new CancellationToken());
 
             var model = ModelingService.GetModelById(modelId);
-            if(!model.WasTrained)
+            if (!model.WasTrained)
                 throw new Exception("Модель не была обучена, процесс прогнозирования не запущен.");
 
             ModelingProcess.AddProcessToQueue(modelId, new ModelingInputParameters
             {
                 ModelId = modelId,
                 IsTrainingMode = false,
-                PredictionType = PredictionType.Linear //TODO
+                PredictionType = predictionType
             });
 
             return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
