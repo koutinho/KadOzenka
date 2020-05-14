@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.LongProcess
                 var requestForService = strategy.GetRequestForService();
 
                 var response = SendDataToService(requestForService, strategy.Url).GetAwaiter().GetResult();
-                CheckServiceResponse(response);
+                response = PreProcessServiceResponse(response);
 
                 strategy.SaveResult(response);
 
@@ -102,7 +102,7 @@ namespace KadOzenka.Dal.LongProcess
             return await response.Content.ReadAsStringAsync();
         }
 
-        private void CheckServiceResponse(string responseContentStr)
+        private string PreProcessServiceResponse(string responseContentStr)
         {
             //обрабатываем кириллицу
             responseContentStr = Regex.Replace(responseContentStr, @"\\u([0-9A-Fa-f]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());
@@ -112,6 +112,8 @@ namespace KadOzenka.Dal.LongProcess
             //TODO переделаем на обработку json-объекта ошибки, после реализации в сервисе
             if (responseContentStr.ToLower().Contains("message"))
                 throw new Exception("Сервис для моделирования вернул ошибку: " + responseContentStr);
+
+            return responseContentStr;
         }
 
         private void SendNotification(bool isTrainingMode, string modelName, string message, OMQueue processQueue)
