@@ -142,16 +142,53 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult LinearModelDetails(long modelId)
         {
-            var model = OMModelingModel.Where(x => x.Id == modelId).Select(x => x.LinearTrainingResult).ExecuteFirstOrDefault();
-            if (model == null)
-                throw new Exception($"Не найдена модель с Id='{modelId}'");
+            var model = GetModel(modelId);
 
-            var details = string.IsNullOrWhiteSpace(model.LinearTrainingResult)
-                ? null
-                : JsonConvert.DeserializeObject<TrainingResult>(model.LinearTrainingResult);
+            var details = GetDetails(model.LinearTrainingResult);
 
             return View("ModelDetails", details);
         }
+
+        [HttpGet]
+        public ActionResult ExponentialModelDetails(long modelId)
+        {
+            var model = GetModel(modelId);
+
+            var details = GetDetails(model.ExponentialTrainingResult);
+
+            return View("ModelDetails", details);
+        }
+
+        [HttpGet]
+        public ActionResult MultiplicativeModelDetails(long modelId)
+        {
+            var model = GetModel(modelId);
+
+            var details = GetDetails(model.MultiplicativeTrainingResult);
+
+            return View("ModelDetails", details);
+        }
+
+
+        #region Support Methods
+
+        private OMModelingModel GetModel(long modelId)
+        {
+            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+            if (model == null)
+                throw new Exception($"Не найдена модель с Id='{modelId}'");
+
+            return model;
+        }
+
+        private TrainingResult GetDetails(string trainingResult)
+        {
+            return string.IsNullOrWhiteSpace(trainingResult)
+                ? null
+                : JsonConvert.DeserializeObject<TrainingResult>(trainingResult);
+        }
+
+        #endregion
 
         #endregion
 
