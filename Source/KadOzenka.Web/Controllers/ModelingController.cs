@@ -144,7 +144,8 @@ namespace KadOzenka.Web.Controllers
         {
             var model = GetModel(modelId);
 
-            var details = GetDetails(model.LinearTrainingResult);
+            var trainingResult = GetDetails(model.LinearTrainingResult);
+            var details = TrainingDetailsModel.ToModel(trainingResult);
 
             return View("ModelDetails", details);
         }
@@ -154,7 +155,8 @@ namespace KadOzenka.Web.Controllers
         {
             var model = GetModel(modelId);
 
-            var details = GetDetails(model.ExponentialTrainingResult);
+            var trainingResult = GetDetails(model.ExponentialTrainingResult);
+            var details = TrainingDetailsModel.ToModel(trainingResult);
 
             return View("ModelDetails", details);
         }
@@ -164,7 +166,8 @@ namespace KadOzenka.Web.Controllers
         {
             var model = GetModel(modelId);
 
-            var details = GetDetails(model.MultiplicativeTrainingResult);
+            var trainingResult = GetDetails(model.MultiplicativeTrainingResult);
+            var details = TrainingDetailsModel.ToModel(trainingResult);
 
             return View("ModelDetails", details);
         }

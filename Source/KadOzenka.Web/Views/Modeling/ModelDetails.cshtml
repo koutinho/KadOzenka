@@ -1,4 +1,4 @@
-﻿@model KadOzenka.Dal.Modeling.Entities.TrainingResult
+﻿@model KadOzenka.Web.Models.Modeling.TrainingDetailsModel
 
 @if (Model == null)
 {
@@ -10,81 +10,45 @@
 }
 else
 {
-    <div class="form-horizontal col-sm-12" style="padding: 1% 2%">
-        <div>
-            <div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Коэффициент детерминации (R²):")
-                    </div>
-                </div>
-                <div class="form-group coefficients-block">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Test:")
-                    </div>
-                    <div class="col-sm-3">
-                        @Html.KendoTextBoxFor(x => x.AccuracyScore.R2.Test, isReadonly: true)
-                    </div>
-                </div>
-                <div class="form-group coefficients-block">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Train:")
-                    </div>
-                    <div class="col-sm-3">
-                        @Html.KendoTextBoxFor(x => x.AccuracyScore.R2.Train, isReadonly: true)
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Критерий Фишера:")
-                    </div>
-                </div>
-                <div class="form-group coefficients-block">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Test:")
-                    </div>
-                    <div class="col-sm-3">
-                        @Html.KendoTextBoxFor(x => x.AccuracyScore.FisherCriterion.Test, isReadonly: true)
-                    </div>
-                </div>
-                <div class="form-group coefficients-block">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Train:")
-                    </div>
-                    <div class="col-sm-3">
-                        @Html.KendoTextBoxFor(x => x.AccuracyScore.FisherCriterion.Train, isReadonly: true)
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Средняя абсолютная ошибка:")
-                    </div>
-                </div>
-                <div class="form-group coefficients-block">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Test:")
-                    </div>
-                    <div class="col-sm-3">
-                        @Html.KendoTextBoxFor(x => x.AccuracyScore.MeanSquaredError.Test, isReadonly: true)
-                    </div>
-                </div>
-                <div class="form-group coefficients-block">
-                    <div class="col-sm-2">
-                        @Html.CustomLabel("Train:")
-                    </div>
-                    <div class="col-sm-3">
-                        @Html.KendoTextBoxFor(x => x.AccuracyScore.MeanSquaredError.Train, isReadonly: true)
-                    </div>
-                </div>
-            </div>
+    <div class="form-horizontal col-sm-12" style="padding: 3%">
+        <div class="form-group">
+            @(Html.Kendo().Grid(new List<KadOzenka.Web.Models.Modeling.TrainingDetailsModel>{Model})
+                .Name("priceHistoryGrid")
+                .Columns(columns =>
+                {
+                    columns.Group(g => g.Title("Средняя абсолютная ошибка")
+                        .Columns(c =>
+                        {
+                            c.Bound(x => x.MeanSquaredErrorTrain).Title("Train");
+                            c.Bound(x => x.MeanSquaredErrorTest).Title("Test");
+                        }));
+                    columns.Group(g => g.Title("Критерий Фишера")
+                        .Columns(c =>
+                        {
+                            c.Bound(x => x.FisherCriterionTrain).Title("Train");
+                            c.Bound(x => x.FisherCriterionTest).Title("Test");
+                        }));
+                    columns.Group(g => g.Title("Коэффициент детерминации (R²)")
+                        .Columns(c =>
+                        {
+                            c.Bound(x => x.R2Train).Title("Train");
+                            c.Bound(x => x.R2Test).Title("Test");
+                        }));
+                })
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .ServerOperation(false)
+                    .Model(x =>
+                    {
+                        x.Field(c => c.MeanSquaredErrorTrain).Editable(false);
+                        x.Field(c => c.MeanSquaredErrorTest).Editable(false);
+                        x.Field(c => c.FisherCriterionTrain).Editable(false);
+                        x.Field(c => c.FisherCriterionTest).Editable(false);
+                        x.Field(c => c.R2Train).Editable(false);
+                        x.Field(c => c.R2Test).Editable(false);
+                    }))
+                .HtmlAttributes(new {@class = "coefficients-grid" }))
         </div>
-
         <div class="form-group" style="padding-top: 2%">
             <div class="col-sm-5 center">
                 @Html.CustomLabel("Разброс:")
@@ -95,14 +59,14 @@ else
         </div>
         <div class="form-group">
             <div class="col-sm-5 center">
-                <img src="@Model.Images?.ScatterLink" alt="Изображение не найдено"/>
+                <img src="@Model.ScatterImageLink" alt="Изображение не найдено"/>
             </div>
             <div class="col-sm-5 center">
-                <img src="@Model.Images?.CorrelationLink" alt="Изображение не найдено"/>
+                <img src="@Model.CorrelationImageLink" alt="Изображение не найдено"/>
             </div>
         </div>
-
     </div>
+
 }
 
 
@@ -117,6 +81,14 @@ else
         margin-left: auto;
         margin-right: auto;
         width: 50%;
+    }
+
+    .k-header {
+        text-align: center !important;
+    }
+
+    .coefficients-grid {
+        text-align: center;
     }
 </style>
 
