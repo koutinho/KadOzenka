@@ -1,4 +1,4 @@
-﻿@model KadOzenka.Dal.Modeling.Dto.TrainingResult
+﻿@model KadOzenka.Dal.Modeling.Entities.TrainingResult
 
 @if (Model == null)
 {
@@ -12,80 +12,96 @@ else
 {
     <div class="form-horizontal col-sm-12" style="padding: 1% 2%">
         <div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Коэффициент детерминации (R²):")
+            <div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Коэффициент детерминации (R²):")
+                    </div>
+                </div>
+                <div class="form-group coefficients-block">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Test:")
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoTextBoxFor(x => x.AccuracyScore.R2.Test, isReadonly: true)
+                    </div>
+                </div>
+                <div class="form-group coefficients-block">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Train:")
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoTextBoxFor(x => x.AccuracyScore.R2.Train, isReadonly: true)
+                    </div>
                 </div>
             </div>
-            <div class="form-group coefficients-block">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Test:")
-                </div>
-                <div class="col-sm-6">
-                    @Html.KendoTextBoxFor(x => x.AccuracyScore.R2.Test, isReadonly: true)
-                </div>
-            </div>
-            <div class="form-group coefficients-block">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Train:")
-                </div>
-                <div class="col-sm-6">
-                    @Html.KendoTextBoxFor(x => x.AccuracyScore.R2.Train, isReadonly: true)
-                </div>
-            </div>
-        </div>
 
-        <div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Критерий Фишера:")
+            <div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Критерий Фишера:")
+                    </div>
+                </div>
+                <div class="form-group coefficients-block">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Test:")
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoTextBoxFor(x => x.AccuracyScore.FisherCriterion.Test, isReadonly: true)
+                    </div>
+                </div>
+                <div class="form-group coefficients-block">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Train:")
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoTextBoxFor(x => x.AccuracyScore.FisherCriterion.Train, isReadonly: true)
+                    </div>
                 </div>
             </div>
-            <div class="form-group coefficients-block">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Test:")
-                </div>
-                <div class="col-sm-6">
-                    @Html.KendoTextBoxFor(x => x.AccuracyScore.FisherCriterion.Test, isReadonly: true)
-                </div>
-            </div>
-            <div class="form-group coefficients-block">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Train:")
-                </div>
-                <div class="col-sm-6">
-                    @Html.KendoTextBoxFor(x => x.AccuracyScore.FisherCriterion.Train, isReadonly: true)
-                </div>
-            </div>
-        </div>
 
-        <div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Средняя абсолютная ошибка:")
+            <div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Средняя абсолютная ошибка:")
+                    </div>
                 </div>
-            </div>
-            <div class="form-group coefficients-block">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Test:")
+                <div class="form-group coefficients-block">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Test:")
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoTextBoxFor(x => x.AccuracyScore.MeanSquaredError.Test, isReadonly: true)
+                    </div>
                 </div>
-                <div class="col-sm-6">
-                    @Html.KendoTextBoxFor(x => x.AccuracyScore.MeanSquaredError.Test, isReadonly: true)
-                </div>
-            </div>
-            <div class="form-group coefficients-block">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Train:")
-                </div>
-                <div class="col-sm-6">
-                    @Html.KendoTextBoxFor(x => x.AccuracyScore.MeanSquaredError.Train, isReadonly: true)
+                <div class="form-group coefficients-block">
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Train:")
+                    </div>
+                    <div class="col-sm-3">
+                        @Html.KendoTextBoxFor(x => x.AccuracyScore.MeanSquaredError.Train, isReadonly: true)
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="form-group" style="padding-top: 2%">
-            <img src="@Model.LinkToGraph"/>
+            <div class="col-sm-5 center">
+                @Html.CustomLabel("Разброс:")
+            </div>
+            <div class="col-sm-5 center">
+                @Html.CustomLabel("Корреляция:")
+            </div>
         </div>
+        <div class="form-group">
+            <div class="col-sm-5 center">
+                <img src="@Model.Images?.ScatterLink" alt="Изображение не найдено"/>
+            </div>
+            <div class="col-sm-5 center">
+                <img src="@Model.Images?.CorrelationLink" alt="Изображение не найдено"/>
+            </div>
+        </div>
+
     </div>
 }
 
@@ -93,7 +109,7 @@ else
 
 <style>
     .coefficients-block {
-        padding-left: 2%
+        padding-left: 2%;
     }
 
     .center {

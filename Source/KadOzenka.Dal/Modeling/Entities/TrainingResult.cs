@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace KadOzenka.Dal.Modeling.Dto
+namespace KadOzenka.Dal.Modeling.Entities
 {
     public class TrainingResult
     {
@@ -17,8 +17,8 @@ namespace KadOzenka.Dal.Modeling.Dto
         [JsonProperty("model")]
         public string Model { get; set; }
 
-        [JsonProperty("link_to_graph")]
-        public string LinkToGraph { get; set; }
+        [JsonProperty("images")]
+        public Images Images { get; set; }
     }
 
     public class AccuracyScore
@@ -37,5 +37,13 @@ namespace KadOzenka.Dal.Modeling.Dto
         public string Train { get; set; }
         [JsonProperty("test")]
         public string Test { get; set; }
+    }
+
+    public class Images
+    {
+        [JsonProperty("scatter")]
+        public string ScatterLink { get; set; }
+        [JsonProperty("correlation")]
+        public string CorrelationLink { get; set; }
     }
 }

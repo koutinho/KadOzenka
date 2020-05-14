@@ -14,6 +14,7 @@
             AttributeId = attributeId;
         }
 
+        //для сериализации нужен конструктор без параметров
         protected CoefficientForObject()
         {
 

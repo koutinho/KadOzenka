@@ -312,15 +312,15 @@ namespace KadOzenka.Dal.Modeling
                     IsForTraining = isForTraining
                 };
 
-                var calculatedCoefficients = GetCoefficientsForModelObject(model.TourId,
+                var objectCoefficients = GetCoefficientsForObject(model.TourId,
                     existedModelObject.CadastralNumber, modelAttributes);
 
-                existedModelObject.Coefficients = calculatedCoefficients.SerializeToXml();
+                existedModelObject.Coefficients = objectCoefficients.SerializeToXml();
                 existedModelObject.Save();
             }
         }
 
-		private List<CoefficientForObject> GetCoefficientsForModelObject(long tourId, string cadastralNumber, List<ModelAttributeRelationDto> modelAttributes)
+		private List<CoefficientForObject> GetCoefficientsForObject(long tourId, string cadastralNumber, List<ModelAttributeRelationDto> modelAttributes)
         {
             var coefficients = new List<CoefficientForObject>();
             modelAttributes.ForEach(modelAttribute =>
@@ -344,6 +344,13 @@ namespace KadOzenka.Dal.Modeling
             });
 
             return coefficients;
+        }
+
+        public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
+        {
+            return OMModelToMarketObjects
+                .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
+                            x.IsForTraining.Coalesce(false) == isForTraining).SelectAll().Execute();
         }
 
         #endregion

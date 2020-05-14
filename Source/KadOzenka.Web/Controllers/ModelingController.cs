@@ -13,6 +13,7 @@ using DevExpress.DataProcessing;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.LongProcess;
@@ -81,13 +82,13 @@ namespace KadOzenka.Web.Controllers
         {
             ////TODO код для отладки, позже переделать на добавление процесса в очередь
             //var process = new ModelingProcess();
-            //var inputRequest = new ModelingRequest
+            //var inputRequest = new ModelingInputParameters
             //{
+            //    ModelId = modelId,
             //    IsTrainingMode = true
             //};
             //process.StartProcess(new OMProcessType(), new OMQueue
             //{
-            //    ObjectId = modelId,
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
@@ -95,8 +96,9 @@ namespace KadOzenka.Web.Controllers
             if (attributes == null || attributes.Count == 0)
                 throw new Exception("Для модели не найдено сохраненных аттрибутов");
 
-            ModelingProcess.AddProcessToQueue(modelId, new ModelingRequest
+            ModelingProcess.AddProcessToQueue(modelId, new ModelingInputParameters
             {
+                ModelId = modelId,
                 IsTrainingMode = true
             });
 
@@ -108,13 +110,14 @@ namespace KadOzenka.Web.Controllers
         {
             ////TODO код для отладки, позже переделать на добавление процесса в очередь
             //var process = new ModelingProcess();
-            //var inputRequest = new ModelingRequest
+            //var inputRequest = new ModelingInputParameters
             //{
-            //    IsTrainingMode = false
+            //    ModelId = modelId,
+            //    IsTrainingMode = false,
+            //    PredictionType = PredictionType.Linear // TODO
             //};
             //process.StartProcess(new OMProcessType(), new OMQueue
             //{
-            //    ObjectId = modelId,
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
@@ -122,9 +125,11 @@ namespace KadOzenka.Web.Controllers
             if(!model.WasTrained)
                 throw new Exception("Модель не была обучена, процесс прогнозирования не запущен.");
 
-            ModelingProcess.AddProcessToQueue(modelId, new ModelingRequest
+            ModelingProcess.AddProcessToQueue(modelId, new ModelingInputParameters
             {
-                IsTrainingMode = false
+                ModelId = modelId,
+                IsTrainingMode = false,
+                PredictionType = PredictionType.Linear //TODO
             });
 
             return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
