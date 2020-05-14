@@ -6,7 +6,7 @@ namespace KadOzenka.Dal.Modeling.Entities
     public class TrainingRequest : GeneralRequest
     {
         [JsonProperty("y")]
-        public List<decimal> Prices { get; set; }
+        public List<List<decimal>> Prices { get; set; }
         [JsonProperty("columns")]
         public List<string> AttributeNames { get; set; }
         [JsonProperty("x")]
@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.Modeling.Entities
 
         public TrainingRequest()
         {
-            Prices = new List<decimal>();
+            Prices = new List<List<decimal>>();
             AttributeNames = new List<string>();
             Coefficients = new List<List<decimal?>>();
         }

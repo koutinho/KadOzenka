@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
@@ -31,7 +32,7 @@ namespace KadOzenka.Dal.Modeling
             RequestForService = new TrainingRequest();
 
             var allAttributes = ModelingService.GetModelAttributes(InputParameters.ModelId);
-            RequestForService.AttributeNames.AddRange(allAttributes.Select(x => x.AttributeName));
+            RequestForService.AttributeNames.AddRange(allAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
 
             var modelObjects = ModelingService.GetIncludedModelObjects(InputParameters.ModelId, true);
             modelObjects.ForEach(modelObject =>
@@ -50,7 +51,7 @@ namespace KadOzenka.Dal.Modeling
                 if (coefficients.All(x => x != null))
                 {
                     RequestForService.Coefficients.Add(coefficients);
-                    RequestForService.Prices.Add(modelObject.Price);
+                    RequestForService.Prices.Add(new List<decimal>{modelObject.Price});
                     RequestForService.CadastralNumbers.Add(modelObject.CadastralNumber);
                 }
             });
@@ -78,6 +79,12 @@ namespace KadOzenka.Dal.Modeling
 
 
         #region Support Methods
+
+        private string PreProcessAttributeName(string name)
+        {
+            var pattern = new Regex("[() ]");
+            return pattern.Replace(name, string.Empty);
+        }
 
         private void ResetPredictedPrice()
         {
