@@ -1,6 +1,13 @@
 ﻿@using ObjectModel.Directory
 @model KadOzenka.Web.Models.MarketObject.CoreObjectDto
 
+<style>
+	.object-icon {
+		margin-left: 22px;
+		vertical-align: baseline;
+	}
+</style>
+
 <div class="form-horizontal col-sm-12 general">
 	<div class="form-group" style="margin-bottom: 0;">
 		<div class="col-sm-3">
@@ -14,6 +21,14 @@
 					{
 						<img src="@Model.ImageUrl" onerror="this.onerror=null; this.src='@Model.MarketLogoUrl'" class="img-thumbnail">
 					}
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-12">
+					<a href="/ObjectCard?ObjId=@Model.Id&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true" target="_blank">
+						Карточка объекта
+						<span class="object-icon k-icon fas fa-landmark"></span>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -76,7 +91,7 @@
 					@Html.LabelFor(x => x.Address)
 				</div>
 				<div class="col-sm-8" title="@Model.Address">
-					@Html.Label("Name", Model.AddressShort, new {style = "word-wrap: normal" })
+					@Html.Label("Name", Model.AddressShort, new { style = "word-wrap: normal" })
 				</div>
 			</div>
 			<div class="form-group">
@@ -97,7 +112,7 @@
 			</div>
 			<div class="form-group" style="padding-bottom: 0;">
 				<div class="col-sm-10 col-sm-offset-2">
-					<input type="button" value="Исключить из расчета" id="excludeFromCalculation_@Model.Id"/>
+					<input type="button" value="Исключить из расчета" id="excludeFromCalculation_@Model.Id" />
 				</div>
 			</div>
 		</div>
