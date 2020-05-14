@@ -14,7 +14,6 @@ using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.LongProcess
 {
-    //TODO будет заменен на ModelingProcess после показа
     public class ModelingProcess : LongProcess
     {
         public const string LongProcessName = nameof(ModelingProcess);
