@@ -50,7 +50,7 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 			{
                 if(Value == null)
                     return ParameterType.None;
-                if (decimal.TryParse((string)Value.ToString().Replace('.', ','), out _numberValue))
+                if (decimal.TryParse((string)Value.ToString()?.Replace('.', ','), out _numberValue))
 					return ParameterType.Number;
 				if (DateTime.TryParse(Value.ToString(), out _date))
 					return ParameterType.Date;
