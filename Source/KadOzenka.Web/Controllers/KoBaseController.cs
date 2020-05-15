@@ -18,15 +18,14 @@ namespace KadOzenka.Web.Controllers
                 Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
                 {
                     Control = x.Key,
-                    Message = string.Join("\n", x.Value.Errors.Select(e =>
+                    Message = x.Value.Errors.Select(e =>
                     {
                         if (e.ErrorMessage == "The value '' is invalid.")
                         {
                             return $"{e.ErrorMessage} Поле {x.Key}";
                         }
-
                         return e.ErrorMessage;
-                    }))
+                    })
                 })
             });
         }
