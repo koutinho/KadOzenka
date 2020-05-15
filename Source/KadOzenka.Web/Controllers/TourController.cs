@@ -45,6 +45,7 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult TourCard(long? tourId, long? parentGroupId, long? groupId)
         {
+            //нужно чтобы при обновлении данных поставить фокус на нужный элемент в дереве
 	        ViewBag.ChangedTourId = tourId ?? 0;
 	        ViewBag.ChangedGroupParentGroupId = parentGroupId ?? 0;
 			ViewBag.ChangedGroupId = groupId ?? 0;
