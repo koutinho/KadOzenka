@@ -10,14 +10,18 @@ using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.Charts;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.Oks;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using ObjectModel.Market;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport
 {
 	public class DashboardWidgetService
 	{
+		#region ObjectsByGroupsWidget
+
 		public List<ChartGroupDto> GetChartParentGroupsData(DateTime actualDate)
 		{
 			var dateFrom = actualDate.Date;
@@ -76,6 +80,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 				.Select(x => x.GroupAlgoritm_Code)
 				.Execute();
 
+			var parentGroupCache = new Dictionary<long, OMGroup>();
 			foreach (var childGroup in childGroups)
 			{
 				var objCount = loadedObjectsByGroups.First(x => x.GroupId == childGroup.Id).ObjectCount;
@@ -97,12 +102,22 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 					var parentId = childGroup.ParentId;
 					while (true)
 					{
-						var parentGroup = OMGroup.Where(x => x.Id == parentId).SelectAll().ExecuteFirstOrDefault();
-						if (parentGroup == null)
+						if (!parentId.HasValue || parentId == -1)
 						{
 							break;
 						}
 
+						if (!parentGroupCache.ContainsKey(parentId.Value))
+						{
+							var parentGroupDb = OMGroup.Where(x => x.Id == parentId).SelectAll().ExecuteFirstOrDefault();
+							if (parentGroupDb == null)
+							{
+								break;
+							}
+							parentGroupCache.Add(parentGroupDb.Id, parentGroupDb);
+						}
+
+						var parentGroup = parentGroupCache[parentId.Value];
 						if (parentGroup.ParentId == -1)
 						{
 							if (parentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.MainOKS ||
@@ -137,7 +152,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 
 			return parentGroupChartData;
 		}
-
 
 		public Stream ExportChartDataToExcel(DateTime actualDate)
 		{
@@ -211,6 +225,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 				};
 				var locked = new object();
 				var rowValueList = new List<List<object>>();
+				var parentGroupCache = new Dictionary<long, OMGroup>();
 
 				Parallel.ForEach(table.AsEnumerable(), options, obj =>
 				{
@@ -221,25 +236,60 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 						var parentGroupId = obj["ParentGroupId"].ParseToLongNullable();
 						var groupAlgoritmCode = obj["GroupAlgoritm_Code"].ParseToLongNullable();
 
-						if (parentGroupId != -1)
+						if (parentGroupId.HasValue && parentGroupId != -1)
 						{
-							var parentGroup = OMGroup.Where(x => x.Id == parentGroupId).SelectAll().ExecuteFirstOrDefault();
-							if (parentGroup != null &&
-							    (parentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.MainOKS ||
-							     parentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.MainParcel))
+							if (!parentGroupCache.ContainsKey(parentGroupId.Value))
 							{
-								var rowValue = new List<object>
+								var parentGroupDb = OMGroup.Where(x => x.Id == parentGroupId).SelectAll().ExecuteFirstOrDefault();
+								if (parentGroupDb != null)
 								{
-									obj["CadastralNumber"],
-									obj["PropertyType"],
-									obj["Square"].ParseToDecimalNullable(),
-									obj["CadastralCost"].ParseToDecimalNullable(),
-									obj["GroupName"],
-									parentGroup.GroupName
-								};
-								lock (locked)
+									lock (locked)
+									{
+										if (!parentGroupCache.ContainsKey(parentGroupId.Value))
+										{
+											parentGroupCache.Add(parentGroupId.Value, parentGroupDb);
+										}
+									}
+
+									var parentGroup = parentGroupCache[parentGroupId.Value];
+									if (parentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.MainOKS ||
+									    parentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.MainParcel)
+									{
+										var rowValue = new List<object>
+										{
+											obj["CadastralNumber"],
+											obj["PropertyType"],
+											obj["Square"].ParseToDecimalNullable(),
+											obj["CadastralCost"].ParseToDecimalNullable(),
+											obj["GroupName"],
+											parentGroup.GroupName
+										};
+										lock (locked)
+										{
+											rowValueList.Add(rowValue);
+										}
+									}
+								}
+							}
+							else
+							{
+								var parentGroup = parentGroupCache[parentGroupId.Value];
+								if (parentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.MainOKS ||
+								     parentGroup.GroupAlgoritm_Code == KoGroupAlgoritm.MainParcel)
 								{
-									rowValueList.Add(rowValue);
+									var rowValue = new List<object>
+									{
+										obj["CadastralNumber"],
+										obj["PropertyType"],
+										obj["Square"].ParseToDecimalNullable(),
+										obj["CadastralCost"].ParseToDecimalNullable(),
+										obj["GroupName"],
+										parentGroup.GroupName
+									};
+									lock (locked)
+									{
+										rowValueList.Add(rowValue);
+									}
 								}
 							}
 						}
@@ -278,5 +328,410 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			stream.Seek(0, SeekOrigin.Begin);
 			return stream;
 		}
+
+		#endregion ObjectsByGroupsWidget
+
+		#region StatisticsReportsWidget
+
+		public List<ZoneRegionDto> GetZoneData()
+		{
+			var entities = OMQuartalDictionary.Where(x => true)
+				.Select(x => x.ZoneRegion)
+				.OrderBy(x => x.ZoneRegion).Execute();
+			return entities.Select(x => new ZoneRegionDto {Zone = x.ZoneRegion}).DistinctBy(x => x.Zone).ToList();
+		}
+
+		public List<UnitObjectDto> GetImportedObjectsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
+
+			var query = new QSQuery
+			{
+				MainRegisterID = OMUnit.GetRegisterId(),
+				Condition = new QSConditionGroup
+				{
+					Type = QSConditionGroupType.And,
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.GreaterOrEqual,
+							dateStart.Value.Date),
+						new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.LessOrEqual,
+							dateEnd.Value.GetEndOfTheDay())
+					}
+				},
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMTask.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
+							RightOperand = OMTask.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Inner
+					}
+				}
+			};
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(UnitObjectDto.CadastralNumber)));
+			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, nameof(UnitObjectDto.PropertyType)));
+			query.AddColumn(OMUnit.GetColumn(x => x.Square, nameof(UnitObjectDto.Square)));
+			query.AddColumn(OMTask.GetColumn(x => x.CreationDate, nameof(UnitObjectDto.TaskCreationDate)));
+
+			var table = query.ExecuteQuery();
+			var result = new List<UnitObjectDto>();
+			if (table.Rows.Count != 0)
+			{
+				for (var i = 0; i < table.Rows.Count; i++)
+				{
+					var dto = new UnitObjectDto
+					{
+						ID = table.Rows[i][nameof(UnitObjectDto.ID)].ParseToLong(),
+						CadastralNumber = table.Rows[i][nameof(UnitObjectDto.CadastralNumber)].ParseToString(),
+						PropertyType = table.Rows[i][nameof(UnitObjectDto.PropertyType)].ParseToString(),
+						Square = table.Rows[i][nameof(UnitObjectDto.Square)].ParseToDecimalNullable(),
+						TaskCreationDate = table.Rows[i][nameof(UnitObjectDto.TaskCreationDate)].ParseToDateTime(),
+					};
+					result.Add(dto);
+				}
+			}
+
+			return result;
+		}
+
+		public List<ExportedObjectDto> GetExportedObjectsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
+
+			var recalculatedStatus = KoUnitStatus.Recalculated.GetEnumDescription();
+			var query = new QSQuery
+			{
+				MainRegisterID = OMUnit.GetRegisterId(),
+				Condition =  new QSConditionGroup
+				{
+					Type = QSConditionGroupType.And,
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionGroup
+						{
+							Type = QSConditionGroupType.And,
+							Conditions = new List<QSCondition>
+							{
+								new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.GreaterOrEqual,
+									dateStart.Value.Date),
+								new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.LessOrEqual,
+									dateEnd.Value.GetEndOfTheDay())
+							}
+						},
+						new QSConditionSimple(OMUnit.GetColumn(x => x.Status), QSConditionType.Equal, recalculatedStatus)
+					}
+				},
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMTask.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
+							RightOperand = OMTask.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Inner
+					}
+				}
+			};
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(ExportedObjectDto.CadastralNumber)));
+			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, nameof(ExportedObjectDto.PropertyType)));
+			query.AddColumn(OMUnit.GetColumn(x => x.Square, nameof(ExportedObjectDto.Square)));
+			query.AddColumn(OMTask.GetColumn(x => x.CreationDate, nameof(ExportedObjectDto.TaskCreationDate)));
+			query.AddColumn(OMUnit.GetColumn(x => x.Status, nameof(ExportedObjectDto.Status)));
+
+			var table = query.ExecuteQuery();
+			var result = new List<ExportedObjectDto>();
+			if (table.Rows.Count != 0)
+			{
+				for (var i =0; i < table.Rows.Count; i++)
+				{
+					var dto = new ExportedObjectDto
+					{
+						ID = table.Rows[i][nameof(ExportedObjectDto.ID)].ParseToLong(),
+						CadastralNumber = table.Rows[i][nameof(ExportedObjectDto.CadastralNumber)].ParseToString(),
+						PropertyType = table.Rows[i][nameof(ExportedObjectDto.PropertyType)].ParseToString(),
+						Square = table.Rows[i][nameof(ExportedObjectDto.Square)].ParseToDecimalNullable(),
+						TaskCreationDate = table.Rows[i][nameof(ExportedObjectDto.TaskCreationDate)].ParseToDateTime(),
+						Status = table.Rows[i][nameof(ExportedObjectDto.Status)].ParseToString()
+					};
+					result.Add(dto);
+				}
+			}
+
+			return result;
+		}
+
+		public List<ZoneStatisticDto> GetZoneStatisticsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
+
+			var query = new QSQuery
+			{
+				MainRegisterID = OMUnit.GetRegisterId(),
+				Condition = new QSConditionGroup
+				{
+					Type = QSConditionGroupType.And,
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.GreaterOrEqual,
+							dateStart.Value.Date),
+						new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.LessOrEqual,
+							dateEnd.Value.GetEndOfTheDay())
+					}
+				},
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMTask.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
+							RightOperand = OMTask.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Inner
+					},
+					new QSJoin
+					{
+						RegisterId = OMQuartalDictionary.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
+							RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
+						},
+						JoinType = QSJoinType.Left
+					}
+				}
+			};
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(ZoneStatisticDto.CadastralNumber)));
+			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, nameof(ZoneStatisticDto.PropertyType)));
+			query.AddColumn(OMUnit.GetColumn(x => x.Square, nameof(ZoneStatisticDto.Square)));
+			query.AddColumn(OMTask.GetColumn(x => x.CreationDate, nameof(ZoneStatisticDto.TaskCreationDate)));
+			query.AddColumn(OMQuartalDictionary.GetColumn(x => x.ZoneRegion, nameof(ZoneStatisticDto.Zone)));
+
+			var table = query.ExecuteQuery();
+			var result = new List<ZoneStatisticDto>();
+			if (table.Rows.Count != 0)
+			{
+				for (var i = 0; i < table.Rows.Count; i++)
+				{
+					var dto = new ZoneStatisticDto
+					{
+						ID = table.Rows[i][nameof(ZoneStatisticDto.ID)].ParseToLong(),
+						CadastralNumber = table.Rows[i][nameof(ZoneStatisticDto.CadastralNumber)].ParseToString(),
+						PropertyType = table.Rows[i][nameof(ZoneStatisticDto.PropertyType)].ParseToString(),
+						Square = table.Rows[i][nameof(ZoneStatisticDto.Square)].ParseToDecimalNullable(),
+						TaskCreationDate = table.Rows[i][nameof(ZoneStatisticDto.TaskCreationDate)].ParseToDateTime(),
+						Zone = table.Rows[i][nameof(ZoneStatisticDto.Zone)].ParseToString()
+					};
+					result.Add(dto);
+				}
+			}
+
+			return result;
+		}
+
+		public List<FactorStatisticDto> GetFactorStatisticsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
+
+			var query = new QSQuery
+			{
+				MainRegisterID = OMUnit.GetRegisterId(),
+				Condition = new QSConditionGroup
+				{
+					Type = QSConditionGroupType.And,
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.GreaterOrEqual,
+							dateStart.Value.Date),
+						new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.LessOrEqual,
+							dateEnd.Value.GetEndOfTheDay())
+					}
+				},
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMTask.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
+							RightOperand = OMTask.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Inner
+					},
+					new QSJoin
+					{
+						RegisterId = OMUnitChange.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.Id),
+							RightOperand = OMUnitChange.GetColumn(x => x.UnitId)
+						},
+						JoinType = QSJoinType.Inner
+					}
+				}
+			};
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(FactorStatisticDto.CadastralNumber)));
+			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, nameof(FactorStatisticDto.PropertyType)));
+			query.AddColumn(OMUnit.GetColumn(x => x.Square, nameof(FactorStatisticDto.Square)));
+			query.AddColumn(OMTask.GetColumn(x => x.CreationDate, nameof(FactorStatisticDto.TaskCreationDate)));
+			query.AddColumn(OMUnitChange.GetColumn(x => x.ChangeStatus, nameof(FactorStatisticDto.ChangedFactor)));
+
+			var table = query.ExecuteQuery();
+			var data = new List<FactorStatisticDto>();
+			if (table.Rows.Count != 0)
+			{
+				for (var i = 0; i < table.Rows.Count; i++)
+				{
+					var dto = new FactorStatisticDto
+					{
+						ID = table.Rows[i][nameof(FactorStatisticDto.ID)].ParseToLong(),
+						CadastralNumber = table.Rows[i][nameof(FactorStatisticDto.CadastralNumber)].ParseToString(),
+						PropertyType = table.Rows[i][nameof(FactorStatisticDto.PropertyType)].ParseToString(),
+						Square = table.Rows[i][nameof(FactorStatisticDto.Square)].ParseToDecimalNullable(),
+						TaskCreationDate = table.Rows[i][nameof(FactorStatisticDto.TaskCreationDate)].ParseToDateTime(),
+						ChangedFactor = table.Rows[i][nameof(FactorStatisticDto.ChangedFactor)].ParseToString()
+					};
+					data.Add(dto);
+				}
+			}
+
+			var result = data.GroupBy(x => new { x.ID, x.CadastralNumber, x.PropertyType, x.Square, x.TaskCreationDate }).Select(
+				group => new FactorStatisticDto
+				{
+					ID = group.Key.ID,
+					CadastralNumber = group.Key.CadastralNumber,
+					PropertyType = group.Key.PropertyType,
+					Square = group.Key.Square,
+					TaskCreationDate = group.Key.TaskCreationDate,
+					ChangedFactors = string.Join("; ",group.ToList().Select(x => x.ChangedFactor).Distinct().ToList())
+				}).ToList();
+
+			return result;
+		}
+
+		public List<GroupStatisticDto> GetGroupStatisticsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			ValidateTaskCreationDatePeriod(dateStart, dateEnd);
+
+			var query = new QSQuery
+			{
+				MainRegisterID = OMUnit.GetRegisterId(),
+				Condition = new QSConditionGroup
+				{
+					Type = QSConditionGroupType.And,
+					Conditions = new List<QSCondition>
+					{
+						new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.GreaterOrEqual,
+							dateStart.Value.Date),
+						new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.LessOrEqual,
+							dateEnd.Value.GetEndOfTheDay())
+					}
+				},
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMTask.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
+							RightOperand = OMTask.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Inner
+					},
+					new QSJoin
+					{
+						RegisterId = OMGroup.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.GroupId),
+							RightOperand = OMGroup.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Left
+					},
+				}
+			};
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(GroupStatisticDto.CadastralNumber)));
+			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, nameof(GroupStatisticDto.PropertyType)));
+			query.AddColumn(OMUnit.GetColumn(x => x.Square, nameof(GroupStatisticDto.Square)));
+			query.AddColumn(OMTask.GetColumn(x => x.CreationDate, nameof(GroupStatisticDto.TaskCreationDate)));
+			query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(GroupStatisticDto.Group)));
+			query.AddColumn(OMGroup.GetColumn(x => x.ParentId, nameof(GroupStatisticDto.SubGroupId)));
+			var table = query.ExecuteQuery();
+
+			var result = new List<GroupStatisticDto>();
+			var groupCache = new Dictionary<long, string>();
+			if (table.Rows.Count != 0)
+			{
+				for (var i = 0; i < table.Rows.Count; i++)
+				{
+					var dto = new GroupStatisticDto
+					{
+						ID = table.Rows[i][nameof(GroupStatisticDto.ID)].ParseToLong(),
+						CadastralNumber = table.Rows[i][nameof(GroupStatisticDto.CadastralNumber)].ParseToString(),
+						PropertyType = table.Rows[i][nameof(GroupStatisticDto.PropertyType)].ParseToString(),
+						Square = table.Rows[i][nameof(GroupStatisticDto.Square)].ParseToDecimalNullable(),
+						TaskCreationDate = table.Rows[i][nameof(GroupStatisticDto.TaskCreationDate)].ParseToDateTime(),
+						Group = table.Rows[i][nameof(GroupStatisticDto.Group)].ParseToString(),
+					};
+					var subGroupId = table.Rows[i][nameof(GroupStatisticDto.SubGroupId)].ParseToLongNullable();
+					if (subGroupId.HasValue && subGroupId != -1)
+					{
+						if (groupCache.ContainsKey(subGroupId.Value))
+						{
+							dto.SubGroup = groupCache[subGroupId.Value];
+						}
+						else
+						{
+							var subgroup = OMGroup.Where(x => x.Id == subGroupId).Select(x => x.GroupName)
+								.ExecuteFirstOrDefault();
+							dto.SubGroup = subgroup?.GroupName;
+							groupCache.Add(subGroupId.Value, subgroup?.GroupName);
+						}
+					}
+
+					result.Add(dto);
+				}
+			}
+
+			return result;
+		}
+
+		#endregion StatisticsReportsWidget
+
+		#region Helpers
+
+		private void ValidateTaskCreationDatePeriod(DateTime? dateStart, DateTime? dateEnd)
+		{
+			if (!dateStart.HasValue)
+			{
+				throw new Exception("Не указана дата начала периода");
+			}
+
+			if (!dateEnd.HasValue)
+			{
+				throw new Exception("Не указана дата окончания периода");
+			}
+		}
+
+		#endregion Helpers
 	}
 }

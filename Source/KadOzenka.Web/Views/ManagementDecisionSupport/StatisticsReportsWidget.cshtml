@@ -1,0 +1,511 @@
+﻿
+<form class="statisticsReportsWidget">
+    <div class="form-horizontal col-sm-12">
+
+        <div class="statistics-block">
+            <div class="row statistics-title-row">
+                <div class="col-sm-4">
+                    <div>
+                        <div class="col-sm-2">
+                            <label class="statistics-control-label">С </label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input id="periodStart">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div>
+                        <div class="col-sm-2">
+                            <label class="statistics-control-label">По </label>
+                        </div>
+                        <div class="col-sm-10">
+                            <input id="periodEnd">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4 statistics-tittle-buttons-container">
+                    <a id="searchButton" class="k-button" >
+                        <span class="k-icon icon-search_small"></span> Поиск
+                    </a>
+                    <a id="exportButton" class="k-button">
+                        <span class="k-icon icon-excel"></span> Выгрузить в Excel
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="statistics-block">
+            <div id="statisticsTabstrip">
+                <ul>
+                    <li id="importedObjectsTab">Загруженные объекты</li>
+                    <li id="exportedObjectsTab">Выгруженные объекты</li>
+                    <li id="zoneStatisticsTab">Статистика по зонам</li>
+                    <li id="factorStatisticsTab">Статистика по ценообразующим факторам</li>
+                    <li id="groupStatisticsTab">Статистика по группам</li>
+                </ul>
+                <div class="statistic-tab-content">
+                    <div id="importedObjectsGrid" class="statistics-grid register-grid"></div>
+                </div>
+                <div class="statistic-tab-content">
+                    <div id="exportedObjectsGrid" class="statistics-grid register-grid"></div>
+                </div>
+                <div class="statistic-tab-content">
+                    <div id="zoneStatisticsGrid" class="statistics-grid register-grid"></div>
+                </div>
+                <div class="statistic-tab-content">
+                    <div id="factorStatisticsGrid" class="statistics-grid register-grid"></div>
+                </div>
+                <div class="statistic-tab-content">
+                    <div id="groupStatisticsGrid" class="statistics-grid register-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    .statistics-block {
+        box-sizing: border-box;
+        padding: 0 0 0 0;
+    }
+
+    .statistics-control-label {
+        font-weight: bold !important;
+        margin-top: 6px;
+    }
+
+    .statistics-title-row {
+        margin-bottom: 5px;
+    }
+
+    .statistics-tittle-buttons-container {
+        text-align: right;
+    }
+
+    .statistics-grid {
+        height: 100%;
+        flex: 1;
+        box-sizing: border-box;
+        max-width: 100%;
+        min-height: 600px;
+    }
+
+    .k-filtercell > .k-operator-hidden {
+        padding-right: 0;
+    }
+
+    .k-filtercell>span>.k-button {
+        display: none;
+    }
+
+    .k-icon.icon-search_small, .k-icon.icon-excel {
+        font-size: 24px !important;
+    }
+</style>
+
+
+
+<script src="~/js/custom-validation.js" charset="utf-8"></script>
+<script type="text/javascript">
+    const GridIdList = {
+        ImportedObjectsGrid: "importedObjectsGrid",
+        ExportedObjectsGrid: "exportedObjectsGrid",
+        ZoneStatisticsGrid: "zoneStatisticsGrid",
+        FactorStatisticsGrid: "factorStatisticsGrid",
+        GroupStatisticsGrid: "groupStatisticsGrid"
+    };
+    Object.freeze(GridIdList);
+
+    var periodStartPicker, periodEndPicker;
+    var statisticsTabstrip;
+    var currentGrid;
+
+    $(document).ready(function () {
+        var now = new Date();
+        periodStartPicker = createDatePicker($('#periodStart'), now);
+        periodEndPicker = createDatePicker($('#periodEnd'), now);
+
+        statisticsTabstrip = $('#statisticsTabstrip').kendoTabStrip({
+            activate: onActivateTab,
+            navigatable: false,
+            scrollable: false,
+            animation: false
+        }).data('kendoTabStrip');
+
+        $('#searchButton').click(refreshCurrentGrid);
+        $('#exportButton').click(exportCurrentGrid);
+
+        createGrids();
+        statisticsTabstrip.activateTab($("#importedObjectsTab"));
+    });
+
+    function createDatePicker(element, value) {
+        return element.kendoDatePicker({
+            culture: "ru-RU",
+            format: "dd.MM.yyyy",
+            parseFormats: ["ddMMyyyy", "ddMMyy", "dd.MM.yyyy", "dd.MM.yy", "dd/MM/yyyy", "dd/MM/yy"],
+            value: value
+        }).data('kendoDatePicker');
+    }
+
+    function createGrids() {
+        createImportedObjectsGrid();
+        createExportedObjectsGrid();
+        createZoneStatisticsGrid();
+        createFactorStatisticsGrid();
+        createGroupStatisticsGrid();
+    }
+
+    function createImportedObjectsGrid() {
+        var url = '@Html.Raw(Url.Action("GetImportedObjectsData", "ManagementDecisionSupport"))';
+        var dataSourceFields = {
+            ID: { type: "number" },
+            CadastralNumber: { type: "string" },
+            PropertyType: { type: "string" },
+            Square: { type: "number" },
+            TaskCreationDate: {
+                type: "date"
+            }
+        };
+        var columns = getGeneralColumns();
+        var excelName = "Статистика по количеству загруженных объектов";
+
+        createGrid($('#' + GridIdList.ImportedObjectsGrid), url, dataSourceFields, columns, excelName);
+    }
+
+    function createExportedObjectsGrid() {
+        var url = '@Html.Raw(Url.Action("GetExportedObjectsData", "ManagementDecisionSupport"))';
+        var dataSourceFields = {
+            ID: { type: "number" },
+            CadastralNumber: { type: "string" },
+            PropertyType: { type: "string" },
+            Square: { type: "number" },
+            TaskCreationDate: { type: "date" },
+            Status: { type: "string" }
+        };
+        var columns = getGeneralColumns();
+        columns.push({
+            title: "Статус",
+            field: "Status",
+            template: "#= (Status && Status.length > 0) ? Status : '-' #",
+            filterable: {
+                cell: {
+                    showOperators: false,
+                    operator: "contains",
+                    minLength: 999
+                }
+            }
+        });
+        var excelName = "Статистика по количеству выгруженных объектов";
+
+        createGrid($('#' + GridIdList.ExportedObjectsGrid), url, dataSourceFields, columns, excelName);
+    }
+
+    function createZoneStatisticsGrid() {
+        var url = '@Html.Raw(Url.Action("GetZoneStatisticsData", "ManagementDecisionSupport"))';
+        var dataSourceFields = {
+            ID: { type: "number" },
+            CadastralNumber: { type: "string" },
+            PropertyType: { type: "string" },
+            Square: { type: "number" },
+            TaskCreationDate: { type: "date" },
+            Zone: { type: "string" }
+        };
+        var columns = getGeneralColumns();
+        columns.push({
+            title: "Зона",
+            field: "Zone",
+            template: "#= (Zone && Zone.length > 0) ? Zone : '-' #",
+            filterable: {
+                cell: {
+                    showOperators: false,
+                    operator: "contains",
+                    template: function (args) {
+                        var zoneTypeDataSource = new kendo.data.DataSource({
+                            transport: {
+                                read: {
+                                    url: '@Html.Raw(Url.Action("GetZoneTypes", "ManagementDecisionSupport"))',
+                                    dataType: "json"
+                                }
+                            }
+                        });
+                        args.element.kendoDropDownList({
+                            dataSource: zoneTypeDataSource,
+                            filter: "contains",
+                            optionLabel: " ",
+                            dataTextField: "Zone",
+                            dataValueField: "Zone",
+                            valuePrimitive: true
+                        });
+                    }
+                }
+            }
+        });
+        var excelName = "Статистика по зонам";
+
+        createGrid($('#' + GridIdList.ZoneStatisticsGrid), url, dataSourceFields, columns, excelName);
+    }
+
+    function createFactorStatisticsGrid() {
+        var url = '@Html.Raw(Url.Action("GetFactorStatisticsData", "ManagementDecisionSupport"))';
+        var dataSourceFields = {
+            ID: { type: "number" },
+            CadastralNumber: { type: "string" },
+            PropertyType: { type: "string" },
+            Square: { type: "number" },
+            TaskCreationDate: { type: "date" },
+            ChangedFactors: { type: "string" }
+        };
+        var columns = getGeneralColumns();
+        columns.push({
+            title: "Измененные факторы",
+            field: "ChangedFactors",
+            template: "#= (ChangedFactors && ChangedFactors.length > 0) ? ChangedFactors : '-' #",
+            filterable: {
+            cell: {
+                showOperators: false,
+                operator: "contains",
+                minLength: 999
+            }
+            }
+        });
+        var excelName = "Статистика по ценообразующим факторам";
+
+        createGrid($('#' + GridIdList.FactorStatisticsGrid), url, dataSourceFields, columns, excelName);
+    }
+
+    function createGroupStatisticsGrid() {
+        var url = '@Html.Raw(Url.Action("GetGroupStatisticsData", "ManagementDecisionSupport"))';
+        var dataSourceFields = {
+            ID: { type: "number" },
+            CadastralNumber: { type: "string" },
+            PropertyType: { type: "string" },
+            Square: { type: "number" },
+            TaskCreationDate: { type: "date" },
+            Group: { type: "string" },
+            SubGroup: { type: "string" }
+        };
+        var columns = getGeneralColumns();
+        columns.push({
+            title: "Группа",
+            field: "Group",
+            template: "#= (Group && Group.length > 0) ? Group : '-' #",
+            filterable: {
+                cell: {
+                    showOperators: false,
+                    operator: "contains",
+                    minLength: 999
+                }
+            }
+        });
+        columns.push({
+            title: "Подгруппа",
+            field: "SubGroup",
+            template: "#= (SubGroup && SubGroup.length > 0) ? SubGroup : '-' #",
+            filterable: {
+                cell: {
+                    showOperators: false,
+                    operator: "contains",
+                    minLength: 999
+                }
+            }
+        });
+        var excelName = "Статистика по группам";
+
+        createGrid($('#' + GridIdList.GroupStatisticsGrid), url, dataSourceFields, columns, excelName);
+    }
+
+    function getGeneralColumns() {
+        return [
+            {
+                title: "Кадастровый номер",
+                field: "CadastralNumber",
+                template: getUnitCardLinkTemplate,
+                filterable: {
+                    cell: {
+                        showOperators: false,
+                        operator: "contains",
+                        minLength: 999
+                    }
+                }
+            },
+            {
+                title: "Вид объекта недвижимости",
+                field: "PropertyType",
+                filterable: {
+                    cell: {
+                        showOperators: false,
+                        operator: "contains",
+                        template: function (args) {
+                            var propertyTypeDataSource = new kendo.data.DataSource({
+                                transport: {
+                                    read: {
+                                        url: '@Html.Raw(Url.Action("GetUnitPropertyTypes", "ManagementDecisionSupport"))',
+                                        dataType: "json"
+                                    }
+                                }
+                            });
+                            args.element.kendoDropDownList({
+                                dataSource: propertyTypeDataSource,
+                                optionLabel: " ",
+                                dataTextField: "Text",
+                                dataValueField: "Text",
+                                valuePrimitive: true
+                            });
+                        }
+                    }
+                }
+            },
+            {
+                title: "Площадь",
+                field: "Square",
+                template: "#= (Square == null) ? '-' : kendo.toString(Square,'n4') #",
+                filterable: {
+                    cell: {
+                        showOperators: false,
+                        operator: "eq",
+                        template: function (args) {
+                            args.element.kendoNumericTextBox({
+                                format: "n4",
+                                spinners: false
+                            });
+                        }
+                    }
+                }
+            },
+            {
+                title: "Дата создания задания на оценку",
+                field: 'TaskCreationDate',
+                template: '#= kendo.toString(TaskCreationDate, "dd.MM.yyyy") #',
+                filterable: {
+                    cell: {
+                        showOperators: false,
+                        operator: "eq",
+                        template: function (args) {
+                            args.element.kendoDatePicker({
+                                format: "dd.MM.yyyy"
+                            });
+                        }
+                    }
+                }
+            }
+        ];
+    }
+
+    function getUnitCardLinkTemplate(row) {
+        var cadastralNumberView = row.CadastralNumber && row.CadastralNumber.length > 0
+            ? row.CadastralNumber
+            : "-";
+        var unitCardUrl = `/Unit/ObjectCard?unitId=${row.ID}`;
+        return `<a target="_blank" href="${unitCardUrl}">${cadastralNumberView}</a>`;
+    }
+
+    function createGrid(element, dataUrl, dataFields, columns, excelName) {
+        element.kendoGrid({
+            dataSource: {
+                transport: {
+                    read: function(options) {
+                        $.ajax({
+                            url: dataUrl,
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: "json",
+                            data: getGridParams(),
+                            success: function(result) {
+                                options.success(result);
+                            },
+                            error: function(result) {
+                                Common.ShowError(result.responseText);
+                                options.error(result);
+                            }
+                        });
+                    }
+                },
+                schema: {
+                    model: {
+                        fields: dataFields
+                    },
+                    parse: function (response) {
+                        for (var i = 0; i < response.length; i++) {
+                            var datetime = kendo.parseDate(response[i].TaskCreationDate);
+                            var date = new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), 0, 0, 0, 0);
+                            response[i].TaskCreationDate = date;
+                        }
+                        return response;
+                    }
+                }
+            },
+            noRecords: {
+                template: "<div style='padding: 6px 0 6px 0;'>Не найдена ни одна запись</div>"
+            },
+            columns: columns,
+            sortable: true,
+            autoBind: false,
+            scrollable: true,
+            filterable: { mode: 'row' },
+            pageable: {
+                alwaysVisible: false,
+                pageSize: 15
+            },
+            excel: {
+                fileName: excelName,
+                allPages: true
+            },
+            excelExport: function (e) {
+                kendo.ui.progress($('.statisticsReportsWidget'), false);
+                e.workbook.fileName = getExcelFileName(excelName);
+            }
+        });
+
+        element.data("kendoGrid").tbody.kendoTooltip({
+            filter: "td",
+            content: function (e) {
+                return e.target.text();
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });
+    }
+
+    function getGridParams() {
+        var dateStart = periodStartPicker.value();
+        if (dateStart) {
+            dateStart = dateStart.toUTCString();
+        }
+        var dateEnd = periodEndPicker.value();
+        if (dateEnd) {
+            dateEnd = dateEnd.toUTCString();
+        }
+        return { dateStart: dateStart, dateEnd: dateEnd };
+    }
+
+    function onActivateTab(e) {
+        currentGrid = e.contentElement.firstElementChild.id;
+        refreshCurrentGrid();
+    }
+
+    function refreshCurrentGrid() {
+        if (!periodStartPicker.value() || !periodEndPicker.value()) {
+            Common.ShowError("Не задан период");
+            return;
+        }
+
+        $('#' + currentGrid).data('kendoGrid').dataSource.read();
+    }
+
+    function getExcelFileName(excelFileName) {
+        var startDate = kendo.toString(kendo.parseDate(periodStartPicker.value()), "dd.MM.yyyy");
+        var endDate = kendo.toString(kendo.parseDate(periodEndPicker.value()), "dd.MM.yyyy");
+
+        return excelFileName +
+            `(Период с ${startDate} по ${endDate }).xlsx`;
+    }
+
+    function exportCurrentGrid() {
+        kendo.ui.progress($('.statisticsReportsWidget'), true);
+        setTimeout(function() {
+            $('#' + currentGrid).data('kendoGrid').saveAsExcel();
+        }, 100);
+    }
+</script>

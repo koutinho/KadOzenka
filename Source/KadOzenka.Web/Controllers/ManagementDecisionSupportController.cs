@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport;
+using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Directory;
 
@@ -59,5 +60,52 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion ObjectsByGroupsWidget
+
+		#region StatisticsReportsWidget
+
+		public JsonResult GetUnitPropertyTypes()
+		{
+			var types = Helpers.EnumExtensions.GetSelectList(typeof(PropertyTypes));
+			return Json(types);
+		}
+
+		public JsonResult GetZoneTypes()
+		{
+			var types = _dashboardWidgetService.GetZoneData();
+			return Json(types);
+		}
+
+		public JsonResult GetImportedObjectsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			List<UnitObjectDto> data = _dashboardWidgetService.GetImportedObjectsData(dateStart, dateEnd);
+			return Json(data);
+		}
+
+		public JsonResult GetExportedObjectsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			List<ExportedObjectDto> data = _dashboardWidgetService.GetExportedObjectsData(dateStart, dateEnd);
+			return Json(data);
+
+		}
+
+		public JsonResult GetZoneStatisticsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			List<ZoneStatisticDto> data = _dashboardWidgetService.GetZoneStatisticsData(dateStart, dateEnd);
+			return Json(data);
+		}
+
+		public JsonResult GetFactorStatisticsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			List<FactorStatisticDto> data = _dashboardWidgetService.GetFactorStatisticsData(dateStart, dateEnd);
+			return Json(data);
+		}
+
+		public JsonResult GetGroupStatisticsData(DateTime? dateStart, DateTime? dateEnd)
+		{
+			List<GroupStatisticDto> data = _dashboardWidgetService.GetGroupStatisticsData(dateStart, dateEnd);
+			return Json(data);
+		}
+
+		#endregion StatisticsReportsWidget
 	}
 }

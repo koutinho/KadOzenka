@@ -215,7 +215,6 @@
                 return;
             }
             actualDate = response.actualDate;
-            debugger;
             oksParentGroupsData = response.data.filter(x => x.ObjectType == @((int) ObjectType.Oks)).sort(compareGroups);
             zuParentGroupsData = response.data.filter(x => x.ObjectType == @((int) ObjectType.ZU)).sort(compareGroups);
             updateCustomChart(oksMainChart, "Объекты ОКС по группам", oksParentGroupsData);
