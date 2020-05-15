@@ -15,12 +15,11 @@ namespace CIPJS.Models.ExpressScore
 		Sale = 2
 	}
 
-	public class NearestObjectViewModel
+	public class NearestObjectViewModel: IValidatableObject
 	{
 		/// <summary>
 		/// Площадь
 		/// </summary>
-		[Required(ErrorMessage = "Заполните площадь")]
 		[Range(1, 5000, ErrorMessage = "Диапозон значений площади от 1 до 5000 кв. м")]
 		public decimal? Square { get; set; }
 
@@ -86,5 +85,22 @@ namespace CIPJS.Models.ExpressScore
 		[Required(ErrorMessage = "Не указана дата актуальности")]
 		public DateTime? ActualDate { get; set; }
 
+		/// <summary>
+		/// Учитывать или нет год постройки для поиска объектов
+		/// </summary>
+		public bool UseYearBuild { get; set; }
+
+		/// <summary>
+		/// Учитывать или нет площадь для поиска объектов
+		/// </summary>
+		public bool UseSquare { get; set; }
+
+		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+		{
+			if (UseSquare && (Square == null || Square == 0))
+			{
+				yield return new ValidationResult("Заполните площадь");
+			}
+		}
 	}
 }

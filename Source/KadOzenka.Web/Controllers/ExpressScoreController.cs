@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CIPJS.Models.ExpressScore;
 using Core.Register;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
@@ -80,19 +81,13 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage(resMessage);
 			}
 
-			if (squareRange == null || yearRange == null)
+			if (squareRange == null && param.UseSquare || yearRange == null && param.UseYearBuild)
 			{
 				return SendErrorMessage("Не найден дипозон даты постройки или площади.");
 			}
 
-			var objects = OMCoreObject.Where(x =>
-					x.ProcessType_Code != ProcessStep.Excluded && x.PropertyMarketSegment_Code == param.Segment
-															   && x.BuildingYear != null &&
-															   x.BuildingYear < yearRange.YearTo &&
-															   yearRange.YearFrom < x.BuildingYear
-															   && x.Area != null && x.Area < squareRange.SquareTo &&
-															   squareRange.SquareFrom <
-															   x.Area && param.DealType.Contains(x.DealType_Code))
+			var condition = _service.GetSearchCondition(yearRange, squareRange, param.UseYearBuild, param.UseSquare, param.Segment.GetValueOrDefault(), param.DealType );
+			var objects = OMCoreObject.Where(condition)
 				.Select(x => new
 				{
 					x.Id,
@@ -110,9 +105,13 @@ namespace KadOzenka.Web.Controllers
 			List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
 
 			var actualDate = new DateTime(param.ActualDate.Value.Year, param.ActualDate.Value.Month, param.ActualDate.Value.Day) + new TimeSpan(23, 59, 59);
+			var idsObjects = objects.Select(y => y.Id).ToList();
+			var cachePriceHistory = OMPriceHistory.Where(x => idsObjects.Contains(x.InitialId)).SelectAll().Execute();
+
 			foreach (var obj in objects)
 			{
-				var historyPrices = OMPriceHistory.Where(x => x.InitialId == obj.Id && x.ChangingDate <= actualDate).SelectAll().Execute();
+				var historyPrices = cachePriceHistory.Where(x => x.InitialId == obj.Id && x.ChangingDate <= actualDate)
+					.ToList();
 
 				if (historyPrices.Count > 0)
 				{

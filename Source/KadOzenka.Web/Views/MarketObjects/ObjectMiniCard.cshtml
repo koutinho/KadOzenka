@@ -2,9 +2,16 @@
 @model KadOzenka.Web.Models.MarketObject.CoreObjectDto
 
 <style>
-	.object-icon {
+	.object-link-icon {
 		margin-left: 22px;
 		vertical-align: baseline;
+	}
+	a.object-link {
+		white-space: nowrap;
+		text-decoration: none;
+	}
+	.object-link-text {
+		white-space: break-spaces;
 	}
 </style>
 
@@ -25,9 +32,9 @@
 			</div>
 			<div class="form-group">
 				<div class="col-sm-12">
-					<a href="/ObjectCard?ObjId=@Model.Id&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true" target="_blank">
-						Карточка объекта
-						<span class="object-icon k-icon fas fa-landmark"></span>
+					<a class="object-link" href="/ObjectCard?ObjId=@Model.Id&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true" target="_blank">
+						<span class="object-link-text">Карточка объекта</span>
+						<span class="object-link-icon k-icon fas fa-landmark"></span>
 					</a>
 				</div>
 			</div>

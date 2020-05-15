@@ -113,6 +113,67 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
+		public QSCondition GetSearchCondition(OMYearConstruction yearRange, OMSquare squareRange, bool useYearBuild, bool useSquare, MarketSegment marketSegment, List<DealType> dealType)
+		{
+
+			var condition = new QSConditionSimple
+			{
+				ConditionType = QSConditionType.NotEqual,
+				LeftOperand = OMCoreObject.GetColumn(x => x.ProcessType_Code),
+				RightOperand = new QSColumnConstant(ProcessStep.Excluded)
+			}.And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.Equal,
+				LeftOperand = OMCoreObject.GetColumn(x => x.PropertyMarketSegment_Code),
+				RightOperand = new QSColumnConstant(marketSegment)
+			}).And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.IsNotNull,
+				LeftOperand = OMCoreObject.GetColumn(x => x.Area)
+			}).And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.In,
+				LeftOperand = OMCoreObject.GetColumn(x => x.DealType_Code),
+				RightOperand = new QSColumnConstant(dealType)
+			});
+
+			if (useYearBuild)
+			{
+				condition.Add(new QSConditionSimple
+				{
+					ConditionType = QSConditionType.IsNotNull,
+					LeftOperand = OMCoreObject.GetColumn(x => x.BuildingYear),
+				}.And(new QSConditionSimple
+				{
+					ConditionType = QSConditionType.LessOrEqual,
+					LeftOperand = OMCoreObject.GetColumn(x => x.BuildingYear),
+					RightOperand = new QSColumnConstant(yearRange?.YearTo)
+				}).And(new QSConditionSimple
+				{
+					ConditionType = QSConditionType.GreaterOrEqual,
+					LeftOperand = OMCoreObject.GetColumn(x => x.BuildingYear),
+					RightOperand = new QSColumnConstant(yearRange?.YearFrom)
+				}));
+			}
+
+			if (useSquare)
+			{
+				condition.Add(new QSConditionSimple
+				{
+					ConditionType = QSConditionType.LessOrEqual,
+					LeftOperand = OMCoreObject.GetColumn(x => x.Area),
+					RightOperand = new QSColumnConstant(squareRange?.SquareTo)
+				}.And(new QSConditionSimple
+				{
+					ConditionType = QSConditionType.GreaterOrEqual,
+					LeftOperand = OMCoreObject.GetColumn(x => x.Area),
+					RightOperand = new QSColumnConstant(squareRange?.SquareFrom)
+				}));
+			}
+
+			return condition;
+		}
+
 		public List<CoordinatesDto> GetNearestCoordinates(Dictionary<long, CoordinatesDto> coordinates, Dictionary<long, double> distances, int quantity)
 		{
 			List<KeyValuePair<long, double>> myList = distances.ToList();

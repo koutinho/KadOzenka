@@ -78,7 +78,28 @@ namespace KadOzenka.Web.Models.ExpressScore
 				errors.Add(new ValidationResult(errorMessage: "Выберите справочник для корректировки земельного участка."));
 			}
 
-		
+			if(CostFactors != null && CostFactors.IndexDateDicId != 0 && CostFactors.IndexDateDicId != null)
+			{
+				var dicType = OMEsReference.Where(x => x.Id == CostFactors.IndexDateDicId).SelectAll()
+					.ExecuteFirstOrDefault()?.ValueType_Code;
+				if (dicType != ReferenceItemCodeType.Date)
+				{
+					errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки даты должен быть типа ""дата""."));
+
+				}
+			}
+
+			if (CostFactors != null && CostFactors.LandShareDicId != 0 && CostFactors.LandShareDicId != null)
+			{
+				var dicType = OMEsReference.Where(x => x.Id == CostFactors.LandShareDicId).SelectAll()
+					.ExecuteFirstOrDefault()?.ValueType_Code;
+				if (dicType != ReferenceItemCodeType.Number)
+				{
+					errors.Add(new ValidationResult(errorMessage: @"Справочник для корректировки земельного участка должен быть типа ""число""."));
+
+				}
+			}
+
 			if (CostFactors.ComplexCostFactors != null && CostFactors.ComplexCostFactors.Count != 0)
 			{
 				foreach (var complexFactor in CostFactors.ComplexCostFactors)
@@ -126,7 +147,7 @@ namespace KadOzenka.Web.Models.ExpressScore
 							}
 							case RegisterAttributeType.INTEGER :
 							{
-								if (dictionaryType != ReferenceItemCodeType.Date)
+								if (dictionaryType != ReferenceItemCodeType.Number)
 								{
 									errors.Add(new ValidationResult($@"Выберите словарь типа ""число"" для коэффициента {complexFactor.Name}"));
 								}
@@ -134,9 +155,9 @@ namespace KadOzenka.Web.Models.ExpressScore
 							}
 							case RegisterAttributeType.DECIMAL:
 							{
-								if (dictionaryType != ReferenceItemCodeType.Date)
+								if (dictionaryType != ReferenceItemCodeType.Number)
 								{
-									errors.Add(new ValidationResult($@"Выберите словарь ""типа"" число для коэффициента {complexFactor.Name}"));
+									errors.Add(new ValidationResult($@"Выберите словарь типа ""число"" для коэффициента {complexFactor.Name}"));
 								}
 								break;
 							}
