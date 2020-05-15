@@ -5,11 +5,15 @@ namespace KadOzenka.Dal.Modeling.Entities
 {
     public class PredictionRequest : GeneralRequest
     {
-        //для сохранения коэффициентов, на основании которых прогнозировалась цена
+        /// <summary>
+        /// Для сохранения коэффициентов, на основании которых прогнозировалась цена
+        /// </summary>
         [JsonIgnore]
         public List<long> OmModelAttributeRelationIds { get; set; }
 
-        //для сохранения спрогнозированной цены
+        /// <summary>
+        /// Для сохранения спрогнозированной цены
+        /// </summary>
         [JsonIgnore]
         public List<long> OmModelToMarketObjectsIds { get; set; }
 

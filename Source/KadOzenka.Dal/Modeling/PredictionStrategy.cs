@@ -6,6 +6,8 @@ using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
+using ObjectModel.Directory;
+using ObjectModel.KO;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling
@@ -134,6 +136,110 @@ namespace KadOzenka.Dal.Modeling
 
             return trainingResult;
         }
+
+
+        #region Integration With KO SubSystem
+
+        private void SaveResultToCalculationSubSystem()
+        {
+            var groupId = GetGroupIdBySegment();
+
+            var modelAlgorithmType = GetModelAlgorithmType();
+
+            var koModel = CreateModel(modelAlgorithmType, groupId);
+
+            koModel.Formula = koModel.GetFormulaFull(true);
+            koModel.Save();
+        }
+
+        private KoAlgoritmType GetModelAlgorithmType()
+        {
+            switch (InputParameters.PredictionType)
+            {
+                case PredictionType.Linear:
+                    return KoAlgoritmType.Line;
+                case PredictionType.Exponential:
+                    return KoAlgoritmType.Exp;
+                case PredictionType.Multiplicative:
+                    return KoAlgoritmType.Multi;
+            }
+
+            throw new Exception($"Неизвестный тип модели {InputParameters.PredictionType}");
+        }
+
+        private long GetGroupIdBySegment()
+        {
+            //TODO
+            return 100009;
+        }
+
+        private OMModel CreateModel(KoAlgoritmType algorithmType, long groupId)
+        {
+            var exitedModel = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
+            if (exitedModel == null)
+            {
+                exitedModel = new OMModel
+                {
+                    AlgoritmType_Code = algorithmType,
+                    Formula = string.Empty,
+                    Description = Model.Name,
+                    Name = Model.Name,
+                    GroupId = groupId
+                };
+            }
+            else
+            {
+                exitedModel.AlgoritmType_Code = algorithmType;
+                exitedModel.Formula = string.Empty;
+                exitedModel.Name = Model.Name;
+                exitedModel.GroupId = groupId;
+            }
+
+            exitedModel.Save();
+
+            return exitedModel;
+        }
+
+        public void CreateFactors(long koModelId, TrainingResult trainingResult)
+        {
+            foreach (var entry in trainingResult.CoefficientsForAttributes)
+            {
+                new OMModelFactor
+                {
+                    ModelId = koModelId,
+                    FactorId = entry.Key.ParseToLong(),
+                    MarkerId = -1,
+                    Weight = entry.Value,
+                    B0 = 0 //TODO only for multiplicative
+                }.Save();
+            }
+        }
+
+        public void CreateMarkCatalog(long groupId, TrainingResult trainingResult)
+        {
+            var modelObjects = ModelingService.GetIncludedModelObjects(Model.Id, false);
+            foreach (var entry in trainingResult.CoefficientsForAttributes)
+            {
+                var factorId = entry.Key.ParseToLong();
+
+                modelObjects.ForEach(modelObject =>
+                {
+                    var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                    var value = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId)?.Coefficient;
+                    var metka = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId)?.Coefficient;
+
+                    new OMMarkCatalog
+                    {
+                        GroupId = groupId,
+                        FactorId = factorId,
+                        ValueFactor = value.ToString(), //TODO
+                        MetkaFactor = metka //TODO
+                    }.Save();
+                });
+            }
+        }
+
+        #endregion
 
         #endregion
     }
