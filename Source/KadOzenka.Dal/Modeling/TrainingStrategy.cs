@@ -33,6 +33,7 @@ namespace KadOzenka.Dal.Modeling
 
             var allAttributes = ModelingService.GetModelAttributes(InputParameters.ModelId);
             RequestForService.AttributeNames.AddRange(allAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
+            RequestForService.AttributeIds.AddRange(allAttributes.Select(x => x.AttributeId));
 
             var modelObjects = ModelingService.GetIncludedModelObjects(InputParameters.ModelId, true);
             modelObjects.ForEach(modelObject =>
@@ -66,15 +67,36 @@ namespace KadOzenka.Dal.Modeling
         {
             //it will be list
             var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
+            PreprocessTrainingResult(trainingResult);
 
             ResetPredictedPrice();
             ResetCoefficientsForPredictedPrice();
 
-            Model.LinearTrainingResult = responseContentStr;
+            Model.LinearTrainingResult = JsonConvert.SerializeObject(trainingResult);
             //Model.ExponentialTrainingResult = responseContentStr;
             //Model.MultiplicativeTrainingResult = responseContentStr;
             Model.WasTrained = true;
             Model.Save();
+        }
+
+        /// <summary>
+        /// Заменяем имена аттрибутов на их Id
+        /// </summary>
+        /// <param name="result"></param>
+        public void PreprocessTrainingResult(TrainingResult result)
+        {
+            var newCoefficients = new Dictionary<string, decimal>();
+            var oldCoefficients = result.CoefficientsForAttributes;
+
+            for (var i = 0; i < oldCoefficients.Count; i++)
+            {
+                var entry = oldCoefficients.ElementAt(i);
+                var attributeId = RequestForService.AttributeIds.ElementAt(i);
+
+                newCoefficients.Add(attributeId.ToString(), entry.Value);
+            }
+
+            result.CoefficientsForAttributes = newCoefficients;
         }
 
 
