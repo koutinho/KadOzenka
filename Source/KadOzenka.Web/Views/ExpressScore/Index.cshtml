@@ -25,10 +25,10 @@
 	}
 
 	.wrap-form {
-		margin-top: 5px;
+		/*margin-top: 5px;*/
 		padding-top: 20px;
 		background-color: white;
-		height: 93vh;
+		height: 95vh;
 		border-radius: 10px;
 		padding-right: 10px;
 		overflow-y: scroll;
@@ -104,31 +104,31 @@
 					<div class="separator col-sm-12"></div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
+					<div class="col-sm-12 col-md-3">
 						@Html.CustomLabelFor("Сегмент", true)
 					</div>
-					<div class="col-sm-9">
+					<div class="col-sm-12 col-md-9">
 						@(Html.Kendo().DropDownList().Name("segment")
 									.BindTo(ComboBoxHelper.GetSelectList(typeof(MarketSegment), new long[] { 744, 745, 750, 746, 747, 748, 749, 751, 752, 753, 754, 795 })).NoDataTemplate("Ничего не найдено!")
 									.Events(e => e.Cascade("handlerChangeSegment")))
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
+					<div class="col-sm-12 col-md-3">
 						@Html.CustomLabelFor("Площадь", true)
 					</div>
-					<div class="col-sm-4">
+					<div class="col-sm-12 col-md-4">
 						@Html.Kendo().TextBox().Name("square").HtmlAttributes(new { style = "width: 100%", type = "number" })
 					</div>
-					<div class="col-sm-2">
+					<div class="col-sm-3 col-md-2">
 						@Html.CustomLabelFor("Этаж")
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-12 col-md-3">
 						@Html.Kendo().TextBox().Name("floor").HtmlAttributes(new { style = "width: 100%" })
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
+					<div class="col-sm-12">
 						@Html.CustomLabelFor("Учитывать год постройки")
 					</div>
 					<div class="col-sm-9">
@@ -137,7 +137,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
+					<div class="col-sm-12">
 						@Html.CustomLabelFor("Учитывать площадь")
 					</div>
 					<div class="col-sm-9">
@@ -146,8 +146,8 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-3">
-						@Html.CustomLabelFor("Тип сделки", true)
+					<div class="col-sm-12">
+						@Html.CustomLabelFor("Тип сделки")
 					</div>
 					<div class="col-sm-9">
 						@Html.Kendo().RadioButton().Name("DealTypeShort").Label(DealTypeShort.Rent.GetEnumDescription()).Value(DealTypeShort.Rent).Checked(true)
@@ -171,15 +171,10 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-10">
-						<button class="k-button analogs" type="button">Поиск аналогов</button>
+					<div class="col-sm-12 col-md-5">
+						<button class="k-button analogs" type="button">Поиск</button>
 					</div>
-				</div>
-				<div class="form-group">
-					<div class="separator col-sm-12"></div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-10">
+					<div class="col-sm-12 col-md-7">
 						<button id="" disabled="disabled" class="k-button calculate" type="button">Расчитать стоимость</button>
 					</div>
 				</div>
