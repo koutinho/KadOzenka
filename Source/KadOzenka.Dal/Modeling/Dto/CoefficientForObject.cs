@@ -6,6 +6,8 @@
 
         public decimal? Coefficient { get; set; }
 
+        public string Value { get; set; }
+
         //временное решение (нужно логировать ошибки). в будущем будем обрабатывать этот кейс раньше
         public string Message { get; set; }
 

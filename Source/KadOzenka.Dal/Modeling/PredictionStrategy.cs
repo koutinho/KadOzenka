@@ -34,7 +34,6 @@ namespace KadOzenka.Dal.Modeling
             RequestForService = new PredictionRequest();
 
             var allAttributes = ModelingService.GetModelAttributes(InputParameters.ModelId);
-            RequestForService.OmModelAttributeRelationIds.AddRange(allAttributes.Select(x => x.Id));
 
             var modelObjects = ModelingService.GetIncludedModelObjects(InputParameters.ModelId, false);
             modelObjects.ForEach(modelObject =>
@@ -71,9 +70,14 @@ namespace KadOzenka.Dal.Modeling
             if (predictionResult.Prices == null || predictionResult.Prices.Count != RequestForService.CadastralNumbers.Count)
                 throw new Exception("Сервис для моделирования вернул цены не для всех объектов");
 
+            var trainingResultStr = GetTrainingResultStr();
+            var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(trainingResultStr);
+
             SavePredictedPrice(predictionResult.Prices);
 
-            SaveCoefficientsForPredictedPrice();
+            SaveCoefficientsForPredictedPrice(trainingResult.CoefficientsForAttributes);
+
+            SaveResultToCalculationSubSystem(trainingResult.CoefficientsForAttributes);
         }
 
 
@@ -95,23 +99,17 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        private void SaveCoefficientsForPredictedPrice()
+        private void SaveCoefficientsForPredictedPrice(Dictionary<string, decimal> coefficients)
         {
-            var trainingResultStr = GetTrainingResultStr();
-            var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(trainingResultStr);
+            var modelAttributeRelations = OMModelAttributesRelation.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
 
-            var coefficients = trainingResult.CoefficientsForAttributes.Values.ToList();
-
-            var modelAttributeRelations = OMModelAttributesRelation
-                .Where(x => RequestForService.OmModelAttributeRelationIds.Contains(x.Id)).SelectAll().Execute();
-
-            for (var i = 0; i < RequestForService.OmModelAttributeRelationIds.Count; i++)
+            foreach (var coefficient in coefficients)
             {
-                var modelAttributeRelation = modelAttributeRelations.FirstOrDefault(x => x.Id == RequestForService.OmModelAttributeRelationIds[i]);
+                var modelAttributeRelation = modelAttributeRelations.FirstOrDefault(x => x.AttributeId == coefficient.Key.ParseToLong());
                 if (modelAttributeRelation == null)
                     continue;
 
-                modelAttributeRelation.Coefficient = coefficients.ElementAtOrDefault(i);
+                modelAttributeRelation.Coefficient = coefficient.Value;
                 modelAttributeRelation.Save();
             }
         }
@@ -140,13 +138,15 @@ namespace KadOzenka.Dal.Modeling
 
         #region Integration With KO SubSystem
 
-        private void SaveResultToCalculationSubSystem()
+        private void SaveResultToCalculationSubSystem(Dictionary<string, decimal> coefficientsForAttributes)
         {
             var groupId = GetGroupIdBySegment();
 
-            var modelAlgorithmType = GetModelAlgorithmType();
+            var koModelAlgorithmType = GetModelAlgorithmType();
 
-            var koModel = CreateModel(modelAlgorithmType, groupId);
+            var koModel = CreateModel(koModelAlgorithmType, groupId);
+
+            CreateFactors(koModel.Id, groupId, coefficientsForAttributes);
 
             koModel.Formula = koModel.GetFormulaFull(true);
             koModel.Save();
@@ -170,12 +170,12 @@ namespace KadOzenka.Dal.Modeling
         private long GetGroupIdBySegment()
         {
             //TODO
-            return 100009;
+            return 44205943;
         }
 
         private OMModel CreateModel(KoAlgoritmType algorithmType, long groupId)
         {
-            var exitedModel = OMModel.Where(x => x.GroupId == groupId).ExecuteFirstOrDefault();
+            var exitedModel = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
             if (exitedModel == null)
             {
                 exitedModel = new OMModel
@@ -192,18 +192,22 @@ namespace KadOzenka.Dal.Modeling
                 exitedModel.AlgoritmType_Code = algorithmType;
                 exitedModel.Formula = string.Empty;
                 exitedModel.Name = Model.Name;
-                exitedModel.GroupId = groupId;
             }
-
-            exitedModel.Save();
 
             return exitedModel;
         }
 
-        public void CreateFactors(long koModelId, TrainingResult trainingResult)
+        public void CreateFactors(long koModelId, long groupId, Dictionary<string, decimal> coefficientsForAttributes)
         {
-            foreach (var entry in trainingResult.CoefficientsForAttributes)
+            var modelObjects = ModelingService.GetIncludedModelObjects(Model.Id, false);
+
+            var existedFactors = OMModelFactor.Where(x => x.ModelId == koModelId).SelectAll().Execute();
+            existedFactors.ForEach(x => x.Destroy());
+
+            foreach (var entry in coefficientsForAttributes)
             {
+                var factorId = entry.Key.ParseToLong();
+
                 new OMModelFactor
                 {
                     ModelId = koModelId,
@@ -212,31 +216,34 @@ namespace KadOzenka.Dal.Modeling
                     Weight = entry.Value,
                     B0 = 0 //TODO only for multiplicative
                 }.Save();
+
+                CreateMarkCatalog(groupId, factorId, modelObjects);
             }
         }
 
-        public void CreateMarkCatalog(long groupId, TrainingResult trainingResult)
+        public void CreateMarkCatalog(long groupId, long factorId, List<OMModelToMarketObjects> modelObjects)
         {
-            var modelObjects = ModelingService.GetIncludedModelObjects(Model.Id, false);
-            foreach (var entry in trainingResult.CoefficientsForAttributes)
+            var existedMarks = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId).SelectAll().Execute();
+            existedMarks.ForEach(x => x.Destroy());
+
+            modelObjects.ForEach(modelObject =>
             {
-                var factorId = entry.Key.ParseToLong();
+                var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId);
+                if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
+                    return;
 
-                modelObjects.ForEach(modelObject =>
+                var value = objectCoefficient.Value;
+                var metka = objectCoefficient.Coefficient;
+
+                new OMMarkCatalog
                 {
-                    var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-                    var value = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId)?.Coefficient;
-                    var metka = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId)?.Coefficient;
-
-                    new OMMarkCatalog
-                    {
-                        GroupId = groupId,
-                        FactorId = factorId,
-                        ValueFactor = value.ToString(), //TODO
-                        MetkaFactor = metka //TODO
-                    }.Save();
-                });
-            }
+                    GroupId = groupId,
+                    FactorId = factorId,
+                    ValueFactor = value,
+                    MetkaFactor = metka
+                }.Save();
+            });
         }
 
         #endregion

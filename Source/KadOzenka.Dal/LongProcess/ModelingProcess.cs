@@ -70,8 +70,18 @@ namespace KadOzenka.Dal.LongProcess
             }
             catch (Exception)
             {
+                if (inputParameters.IsTrainingMode)
+                {
+                    model.WasTrained = false;
+                    model.LinearTrainingResult = null;
+                    model.ExponentialTrainingResult = null;
+                    model.MultiplicativeTrainingResult = null;
+                    model.Save();
+                }
+
                 SendNotification(inputParameters.IsTrainingMode, model.Name,
                     "Операция завершена с ошибкой. Подробнее в списке процессов", processQueue);
+
                 throw;
             }
         }

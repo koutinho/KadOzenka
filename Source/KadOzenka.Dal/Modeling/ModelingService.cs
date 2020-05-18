@@ -423,7 +423,8 @@ namespace KadOzenka.Dal.Modeling
                         coefficient.Message = GetErrorMessage(modelAttribute.AttributeName, cadastralNumber, "строка");
 					}
 					else
-					{
+                    {
+                        coefficient.Value = objectParameterData.StringValue;
                         coefficient.Coefficient = ScoreCommonService.GetCoefficientFromStringFactor(objectParameterData,
 							(int)modelAttribute.DictionaryId.GetValueOrDefault());
 					}
@@ -438,6 +439,7 @@ namespace KadOzenka.Dal.Modeling
 					}
 					else
 					{
+                        coefficient.Value = objectParameterData.DateValue.ToShortDateString();
                         coefficient.Coefficient = ScoreCommonService.GetCoefficientFromDateFactor(objectParameterData,
 							(int)modelAttribute.DictionaryId.GetValueOrDefault());
 					}
@@ -446,10 +448,12 @@ namespace KadOzenka.Dal.Modeling
 				}
 				case ParameterType.Number:
 				{
-                    coefficient.Coefficient = ScoreCommonService.GetCoefficientFromNumberFactor(objectParameterData,
-						(int)modelAttribute.DictionaryId.GetValueOrDefault());
+                    var number = ScoreCommonService.GetCoefficientFromNumberFactor(objectParameterData,
+                        (int)modelAttribute.DictionaryId.GetValueOrDefault());
 
-					break;
+                    coefficient.Value = number.ToString();
+                    coefficient.Coefficient = number;
+                    break;
 				}
 				default:
 				{
