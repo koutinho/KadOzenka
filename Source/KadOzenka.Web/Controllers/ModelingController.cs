@@ -80,7 +80,7 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         public JsonResult TrainModel(long modelId)
         {
-            ////TODO код для отладки, позже переделать на добавление процесса в очередь
+            ////TODO код для отладки
             //var process = new ModelingProcess();
             //var inputRequest = new ModelingInputParameters
             //{
@@ -94,7 +94,7 @@ namespace KadOzenka.Web.Controllers
 
             var attributes = ModelingService.GetModelAttributes(modelId);
             if (attributes == null || attributes.Count == 0)
-                throw new Exception("Для модели не найдено сохраненных аттрибутов");
+                throw new Exception("Для модели не найдено сохраненных атрибутов");
 
             ModelingProcess.AddProcessToQueue(modelId, new ModelingInputParameters
             {
@@ -108,7 +108,7 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         public JsonResult Predict(long modelId, PredictionType predictionType)
         {
-            ////TODO код для отладки, позже переделать на добавление процесса в очередь
+            ////TODO код для отладки
             //var process = new ModelingProcess();
             //var inputRequest = new ModelingInputParameters
             //{
@@ -121,8 +121,8 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
-            var model = ModelingService.GetModelById(modelId);
-            if (!model.WasTrained)
+            var model = GetModel(modelId);
+            if (!model.WasTrained.GetValueOrDefault())
                 throw new Exception("Модель не была обучена, процесс прогнозирования не запущен.");
 
             ModelingProcess.AddProcessToQueue(modelId, new ModelingInputParameters
@@ -133,6 +133,14 @@ namespace KadOzenka.Web.Controllers
             });
 
             return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
+        }
+
+        [HttpGet]
+        public FileResult DownloadLogs(long modelId)
+        {
+            var fileStream = ModelingService.GetLogs(modelId);
+
+            return File(fileStream, Helpers.Consts.ExcelContentType, $"Логи для модели {modelId}" + ".xlsx");
         }
 
         #endregion
@@ -174,15 +182,6 @@ namespace KadOzenka.Web.Controllers
 
 
         #region Support Methods
-
-        private OMModelingModel GetModel(long modelId)
-        {
-            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
-            if (model == null)
-                throw new Exception($"Не найдена модель с Id='{modelId}'");
-
-            return model;
-        }
 
         private TrainingResult GetDetails(string trainingResult)
         {
@@ -229,11 +228,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
 			var models = objectsDto.Select(ModelMarketObjectRelationModel.ToModel).ToList();
-
-            var warnings = new StringBuilder();
-            models.Where(x => !string.IsNullOrWhiteSpace(x.Warnings)).ForEach(x => warnings.AppendLine(x.Warnings));
-
-            return Json(new { Models = models, Warnings = warnings.ToString().Trim() });
+            return Json(models);
         }
 
 		[HttpPost]
@@ -253,6 +248,20 @@ namespace KadOzenka.Web.Controllers
 			return Json(new { Message = message });
 		}
 
-		#endregion
-	}
+        #endregion
+
+
+        #region Support Methods
+
+        private OMModelingModel GetModel(long modelId)
+        {
+            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+            if (model == null)
+                throw new Exception($"Не найдена модель с Id='{modelId}'");
+
+            return model;
+        }
+
+        #endregion
+    }
 }

@@ -16,14 +16,10 @@ namespace KadOzenka.Web.Models.Modeling
         public bool IsForTraining { get; set; }
         public bool IsDirty { get; set; }
         public List<CoefficientForObject> Coefficients { get; set; }
-        public string Warnings { get; set; }
 
 
         public static ModelMarketObjectRelationModel ToModel(ModelMarketObjectRelationDto entity)
         {
-            var warnings = new StringBuilder();
-            entity.Coefficients?.Where(x => !string.IsNullOrWhiteSpace(x.Message)).ForEach(x => warnings.AppendLine(x.Message));
-            
             return new ModelMarketObjectRelationModel
 			{
 				Id = entity.Id,
@@ -32,8 +28,7 @@ namespace KadOzenka.Web.Models.Modeling
                 PriceFromModel = entity.PriceFromModel,
                 IsExcluded = entity.IsExcluded,
                 IsForTraining = entity.IsForTraining,
-                Coefficients = entity.Coefficients,
-                Warnings = warnings.ToString()
+                Coefficients = entity.Coefficients
             };
 		}
 

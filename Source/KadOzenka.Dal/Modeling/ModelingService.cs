@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Transactions;
@@ -14,6 +15,7 @@ using ObjectModel.ES;
 using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
+using GemBox.Spreadsheet;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -241,7 +243,7 @@ namespace KadOzenka.Dal.Modeling
 		#endregion
 
 
-		#region Cofficeints
+		#region Model Object Relations
 
 		public List<ModelMarketObjectRelationDto> GetMarketObjectsForModel(long modelId)
 		{
@@ -270,6 +272,76 @@ namespace KadOzenka.Dal.Modeling
                 objFromDb.Coefficients = null;
                 objFromDb.Save();
             });
+        }
+
+        public Stream GetLogs(long modelId)
+        {
+            var modelAttributes = GetModelAttributes(modelId);
+
+            var modelMarketObjects = OMModelToMarketObjects
+                .Where(x => x.ModelId == modelId && x.Coefficients != null && x.IsExcluded.Coalesce(false) == false)
+                .Select(x => x.CadastralNumber)
+                .Select(x => x.Coefficients)
+                .Execute();
+
+            var excelTemplate = new ExcelFile();
+            var mainWorkSheet = excelTemplate.Worksheets.Add("Логи");
+
+            var columnHeaders = new List<object> {"Кадастровый номер"};
+            columnHeaders.AddRange(modelAttributes.Select(x => x.AttributeName).ToList());
+
+            AddRow(mainWorkSheet, 0, columnHeaders.ToArray());
+
+            var rowCounter = 1;
+            modelMarketObjects.ForEach(modelMarketObject =>
+            {
+                var coefficients = modelMarketObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                if (coefficients.All(x => string.IsNullOrWhiteSpace(x.Message)))
+                    return;
+
+                var values = new List<object> {modelMarketObject.CadastralNumber};
+
+                modelAttributes.ForEach(attribute =>
+                {
+                    var message = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Message;
+                    values.Add(message);
+                });
+
+                AddRow(mainWorkSheet, rowCounter++, values.ToArray());
+            });
+
+
+            var stream = new MemoryStream();
+            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+
+
+        private void AddRow(ExcelWorksheet sheet, int row, object[] values)
+        {
+            var col = 0;
+            foreach (object value in values)
+            {
+                switch (value)
+                {
+                    case decimal _:
+                    case double _:
+                        sheet.Rows[row].Cells[col].SetValue(Convert.ToDouble(value));
+                        sheet.Rows[row].Cells[col].Style.NumberFormat = "#,##0.00";
+                        break;
+                    case DateTime _:
+                        sheet.Rows[row].Cells[col].SetValue(Convert.ToDateTime(value));
+                        sheet.Rows[row].Cells[col].Style.NumberFormat = "mm/dd/yyyy";
+                        break;
+                    default:
+                        sheet.Rows[row].Cells[col].SetValue(value as string);
+                        break;
+                }
+
+                sheet.Rows[row].Cells[col].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+                col++;
+            }
         }
 
         #endregion
@@ -304,7 +376,7 @@ namespace KadOzenka.Dal.Modeling
                 var isForTraining = i < groupedObjects.Count / 2;
 
                 var groupedObj = groupedObjects[i];
-                var existedModelObject = new OMModelToMarketObjects
+                var modelObject = new OMModelToMarketObjects
                 {
                     ModelId = modelId,
                     CadastralNumber = groupedObj.Key.CadastralNumber,
@@ -313,10 +385,10 @@ namespace KadOzenka.Dal.Modeling
                 };
 
                 var objectCoefficients = GetCoefficientsForObject(model.TourId,
-                    existedModelObject.CadastralNumber, modelAttributes);
+                    modelObject.CadastralNumber, modelAttributes);
 
-                existedModelObject.Coefficients = objectCoefficients.SerializeToXml();
-                existedModelObject.Save();
+                modelObject.Coefficients = objectCoefficients.SerializeToXml();
+                modelObject.Save();
             }
         }
 
@@ -332,12 +404,12 @@ namespace KadOzenka.Dal.Modeling
                 {
                     coefficient = new CoefficientForObject(modelAttribute.AttributeId)
                     {
-                        Message = $"Не найдено значение. Аттрибут '{modelAttribute.AttributeName}' для объекта '{cadastralNumber}'."
+                        Message = "Не найдено значение."
                     };
                 }
                 else
                 {
-                    coefficient = CalculateCoefficient(objectParameterData, modelAttribute, cadastralNumber);
+                    coefficient = CalculateCoefficient(objectParameterData, modelAttribute);
                 }
 
                 coefficients.Add(coefficient);
@@ -410,7 +482,7 @@ namespace KadOzenka.Dal.Modeling
 			return unitsIds.Count > 0 ? ScoreCommonService.GetParameters(unitsIds, attributeId, registerId) : null;
 		}
 
-		private CoefficientForObject CalculateCoefficient(ParameterDataDto objectParameterData, ModelAttributeRelationDto modelAttribute, string cadastralNumber)
+		private CoefficientForObject CalculateCoefficient(ParameterDataDto objectParameterData, ModelAttributeRelationDto modelAttribute)
         {
             var coefficient = new CoefficientForObject(modelAttribute.AttributeId);
 
@@ -420,7 +492,7 @@ namespace KadOzenka.Dal.Modeling
 				{
 					if (modelAttribute.DictionaryId == null)
 					{
-                        coefficient.Message = GetErrorMessage(modelAttribute.AttributeName, cadastralNumber, "строка");
+                        coefficient.Message = GetErrorMessage("строка");
 					}
 					else
                     {
@@ -435,7 +507,7 @@ namespace KadOzenka.Dal.Modeling
 				{
 					if (modelAttribute.DictionaryId == null)
 					{
-                        coefficient.Message = GetErrorMessage(modelAttribute.AttributeName, cadastralNumber, "дата");
+                        coefficient.Message = GetErrorMessage("дата");
 					}
 					else
 					{
@@ -457,18 +529,17 @@ namespace KadOzenka.Dal.Modeling
 				}
 				default:
 				{
-                    coefficient.Message = GetErrorMessage(modelAttribute.AttributeName, cadastralNumber, "неизвестный тип");
-					break;
+                    coefficient.Message = "Ошибка: атрибут относится к типу 'неизвестный тип'.";
+                    break;
 				}
 			}
 
             return coefficient;
         }
 
-		//TODO remove
-		private string GetErrorMessage(string attributeName, string cadastralNumber, string type)
+		private string GetErrorMessage(string type)
 		{
-			return $"Ошибка: нет справочника. Аттрибут '{attributeName}' для объекта '{cadastralNumber}' относится к типу '{type}', но к нему не выбран справочник.";
+			return $"Ошибка: нет справочника. Атрибут относится к типу '{type}', но к нему не выбран справочник.";
 		}
 
 		#endregion

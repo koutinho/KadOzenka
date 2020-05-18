@@ -169,6 +169,15 @@
                     attributes: { title: "Удалить" },
                     icon: 'delete',
                     click: deleteAttribute
+                },
+                {
+                    type: 'button',
+                    id: 'warningsBtn',
+                    className: '@Model.IsModelWasTrained' === "True" , "k-state-disabled" : "",
+                    text: '',
+                    attributes: { title: "Логи" },
+                    icon: 'clock',
+                    click: downloadLogs
                 }
             ]
         });
@@ -555,6 +564,11 @@
     function getSelectedRowInGrid() {
 		var grid = $("#grid").data("kendoGrid");
 		return grid.select();
-	}
+    }
+
+
+    function downloadLogs() {
+        window.open('@Url.Action("DownloadLogs", "Modeling")' + '?modelId=' + '@Model.Id');
+    }
 
 </script>

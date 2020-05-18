@@ -36,20 +36,6 @@
             <div id="tour"></div>
         </div>
     </div>
-    <div class="form-group" style="display: none">
-        <div class="col-sm-2">
-            @Html.CustomLabel("Предупреждения")
-        </div>
-        <div class="col-sm-8">
-            @Html.TextArea("textarea", "", new { @class = "k-textbox", style = "width: 100%;", id = "warnings", rows = 5, @readonly = "readonly" })
-        </div>
-        <div class="col-sm-1">
-            @(Html.Kendo().Button()
-                .Name("copyWarningsBtn")
-                .Icon("copy")
-                .Events(x => x.Click("copyWarnings")))
-        </div>
-    </div>
     <div class="form-group">
         <div id="grid"></div>
     </div>
@@ -143,13 +129,7 @@
                 },
                 data: function (response) {
                     kendo.ui.progress($('body'), false);
-                    $("#warnings").text(response.Warnings);
-                    return response.Models;
-                },
-                total: function (response) {
-                    if (response.Models)
-                        return response.Models.length;
-                    return 0;
+                    return response;
                 }
             },
 			pageSize: 15
@@ -264,14 +244,6 @@
 				kendo.ui.progress($('body'), false);
 			}
 		});
-    }
-
-
-    function copyWarnings() {
-        var copyText = $("#warnings");
-        copyText.select();
-        document.execCommand("copy");
-        //document.getSelection().removeAllRanges();
     }
 
 </script>
