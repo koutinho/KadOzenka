@@ -230,7 +230,8 @@ namespace KadOzenka.Dal.Modeling
             {
                 var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
                 var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == factorId);
-                if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message))
+                if (objectCoefficient == null || !string.IsNullOrWhiteSpace(objectCoefficient.Message) ||
+                    objectCoefficient.Value == null)
                     return;
 
                 var value = objectCoefficient.Value;
