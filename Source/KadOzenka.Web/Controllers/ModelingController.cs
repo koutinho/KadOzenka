@@ -145,7 +145,8 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
-        #region Model Details
+
+        #region Models Training Results
 
         [HttpGet]
         public ActionResult LinearModelDetails(long modelId)
@@ -155,7 +156,7 @@ namespace KadOzenka.Web.Controllers
             var trainingResult = GetDetails(model.LinearTrainingResult);
             var details = TrainingDetailsModel.ToModel(trainingResult);
 
-            return View("ModelDetails", details);
+            return View("ModelTrainingResult", details);
         }
 
         [HttpGet]
@@ -166,7 +167,7 @@ namespace KadOzenka.Web.Controllers
             var trainingResult = GetDetails(model.ExponentialTrainingResult);
             var details = TrainingDetailsModel.ToModel(trainingResult);
 
-            return View("ModelDetails", details);
+            return View("ModelTrainingResult", details);
         }
 
         [HttpGet]
@@ -177,53 +178,24 @@ namespace KadOzenka.Web.Controllers
             var trainingResult = GetDetails(model.MultiplicativeTrainingResult);
             var details = TrainingDetailsModel.ToModel(trainingResult);
 
-            return View("ModelDetails", details);
-        }
-
-
-        #region Support Methods
-
-        private TrainingResult GetDetails(string trainingResult)
-        {
-            return string.IsNullOrWhiteSpace(trainingResult)
-                ? null
-                : JsonConvert.DeserializeObject<TrainingResult>(trainingResult);
+            return View("ModelTrainingResult", details);
         }
 
         #endregion
 
-        #endregion
 
         #region Market Objects For Model
 
         [HttpGet]
-		public ActionResult ObjectsFromModels()
+		public ActionResult ModelObjects(long modelId)
 		{
-			return View();
-		}
-
-		[HttpGet]
-		public JsonResult GetModels()
-		{
-			var models = OMModelingModel.Where(x => true).SelectAll().Execute()
-				.Select(x => new SelectListItem
-				{
-					Value = x.Id.ToString(),
-					Text = x.Name.ToString()
-				});
-			return Json(models);
-		}
-
-		[HttpGet]
-		public JsonResult GetModelById(long modelId)
-		{
-			var modelDto = ModelingService.GetModelById(modelId);
+            var modelDto = ModelingService.GetModelById(modelId);
             modelDto.Attributes = ModelingService.GetModelAttributes(modelId);
             var model = ModelingModel.ToModel(modelDto);
-            return Json(model);
+            return View(model);
 		}
 
-		[HttpGet]
+        [HttpGet]
 		public JsonResult GetObjectsForModel(long modelId)
 		{
 			var objectsDto = ModelingService.GetMarketObjectsForModel(modelId);
@@ -241,11 +213,8 @@ namespace KadOzenka.Web.Controllers
 			var objectsDtos = changedModels.Select(ModelMarketObjectRelationModel.FromModel).ToList();
 			
 			ModelingService.ChangeObjectsStatusInCalculation(objectsDtos);
-			//TODO добавить процесс
 
-			var message = "Данные успешно обновлены, процедура перерасчета модели добавлена в очередь.";
-
-			return Json(new { Message = message });
+			return Json(new { Message = "Данные успешно обновлены" });
 		}
 
         #endregion
@@ -260,6 +229,13 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception($"Не найдена модель с Id='{modelId}'");
 
             return model;
+        }
+
+        private TrainingResult GetDetails(string trainingResult)
+        {
+            return string.IsNullOrWhiteSpace(trainingResult)
+                ? null
+                : JsonConvert.DeserializeObject<TrainingResult>(trainingResult);
         }
 
         #endregion

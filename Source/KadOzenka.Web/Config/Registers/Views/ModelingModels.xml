@@ -7,7 +7,11 @@
   
   <Buttons>
     <Button Caption="Модель" NavigateURL="/Modeling/AddModel" WindowHeight="400" WindowWidth="800" Icon="fas fa-plus"/>
-    <Button Caption="Просмотр объектов" NavigateURL="/Modeling/ObjectsFromModels" OpenInNewWindow="true" Icon="fas fa-eye" />
+    <Button Caption="Просмотр объектов" NavigateURL="/Modeling/ModelObjects" OpenInNewWindow="true" Icon="fas fa-eye">
+      <Parameters>
+        <Parameter Key="ModelId" Value="[ObjectId]" />
+      </Parameters>
+    </Button>
   </Buttons>
 
 

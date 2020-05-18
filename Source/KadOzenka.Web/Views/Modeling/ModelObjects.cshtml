@@ -1,23 +1,15 @@
-﻿<div class="form-horizontal" style="padding: 2%;">
+﻿@model KadOzenka.Web.Models.Modeling.ModelingModel
+
+<div class="form-horizontal" style="padding: 2%;">
     <div class="form-group">
         <div class="col-sm-2">
             @Html.CustomLabel("Модель")
         </div>
         <div class="col-sm-9">
-            @(Html.Kendo().DropDownList()
-                                .Name("ModelId")
-                                .DataTextField("Text")
-                                .DataValueField("Value")
-                                .Filter(FilterType.Contains)
-                                .DataSource(x =>
-                                {
-                                    x.Read("GetModels", "Modeling");
-                                })
-                                .Events(x =>
-                                {
-                                    x.DataBound("updateModelInfo");
-                                    x.Change("updateModelInfo");
-                                }))
+            @(Html.Kendo().DropDownListFor(m => m.Name)
+                .DataTextField("Name")
+                .DataValueField("Name")
+                .Enable(false))
         </div>
     </div>
     <div class="form-group">
@@ -25,7 +17,10 @@
             @Html.CustomLabel("Сегмент")
         </div>
         <div class="col-sm-9">
-            <div id="segment"></div>
+            @(Html.Kendo().DropDownListFor(m => m.MarketSegment)
+                .DataTextField("Name")
+                .DataValueField("Name")
+                .Enable(false))
         </div>
     </div>
     <div class="form-group">
@@ -33,7 +28,10 @@
             @Html.CustomLabel("Тур")
         </div>
         <div class="col-sm-9">
-            <div id="tour"></div>
+            @(Html.Kendo().DropDownListFor(m => m.TourYear)
+                .DataTextField("Name")
+                .DataValueField("Name")
+                .Enable(false))
         </div>
     </div>
     <div class="form-group">
@@ -70,42 +68,15 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
 	$(document).ready(function () {
-
+        updateGrid();
     });
 
 
 
-    function updateModelInfo() {
-        var modelId = $("#ModelId").data("kendoDropDownList").value();
-        $.ajax({
-			type: 'GET',
-			url: '@Url.Action("GetModelById", "Modeling")',
-			data: { modelId: modelId},
-			success: function (response) {
-				$("#segment").kendoDropDownList({
-					dataTextField: 'SegmentName',
-					dataValueField: 'SegmentCode',
-					dataSource: [{ SegmentCode: response.MarketSegmentCode, SegmentName: response.MarketSegment }],
-					enable: false
-				});
-				$("#tour").kendoDropDownList({
-					dataTextField: 'TourYear',
-					dataValueField: 'TourId',
-					dataSource: [{ TourId: response.TourId, TourYear: response.TourYear }],
-					enable: false
-                });
-                updateGrid(response.Attributes);
-            },
-			error: function (response) {
-				Common.ShowError(response.responseText);
-			}
-		});
-	}
+    function updateGrid() {
 
-
-    function updateGrid(modelAttributes) {
         kendo.ui.progress($('body'), true);
-        var modelId = $("#ModelId").data("kendoDropDownList").value();
+        var modelId = '@Model.Id';
         var dataSource = new kendo.data.DataSource({
 			transport: {
 				read: {
@@ -155,8 +126,8 @@
                         lte: "Меньше"
                     }
                 }
-            }, 
-            columns: generateColumns(modelAttributes),
+            },
+            columns: generateColumns(),
             dataSource: dataSource,
             pageable: true,
             sortable: true
@@ -167,7 +138,9 @@
     }
 
 
-    function generateColumns(modelAttributes) {
+    function generateColumns() {
+        var model = '@Json.Serialize(Model.Attributes)';
+        var modelAttributes = JSON.parse(model);
         var additionalColumns = modelAttributes.map(function (attribute) {
             var field = "Coefficients == undefined || Coefficients.find(x => x.AttributeId === " + attribute.AttributeId + ") == undefined " +
                 "? EmptyField " +
@@ -196,7 +169,7 @@
                 title: "Цена",
                 field: "Price",
                 template: '#: kendo.format("{0:c}", Price)#',
-                filterable: true, 
+                filterable: true,
                 sortable: true
             },
             {
@@ -227,7 +200,7 @@
 
 
     function excludeObjectsFromCalculation() {
-        var modelId = $("#ModelId").data("kendoDropDownList").value();
+        var modelId = '@Model.Id';
         var objects = $("#grid").data("kendoGrid").dataSource.data();
         kendo.ui.progress($('body'), true);
 		$.ajax({
