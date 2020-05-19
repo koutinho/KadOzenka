@@ -4292,6 +4292,103 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             }
         }
 
+        public static void DoLoadBd2018Unit_Unit_GBU_TEXT(PropertyTypes types)
+        {
+            List<ObjectModel.Gbu.OMMainObject> objs = ObjectModel.Gbu.OMMainObject.Where(x=>x.ObjectType_Code== types).SelectAll().Execute();
+            using (SqlConnection connection = new SqlConnection(ConfigurationManager.AppSettings["SQL_connection_GBU"]))
+            {
+                connection.Open();
+
+                SqlCommand myOleDbCommand = connection.CreateCommand();
+                myOleDbCommand.CommandTimeout = 300;
+                myOleDbCommand.CommandType = System.Data.CommandType.Text;
+
+                foreach (ObjectModel.Gbu.OMMainObject obj in objs)
+                {
+
+                    myOleDbCommand.CommandText = "select ft.id_factor, ft.id_document, ft.value, ft.date_value, d.num_document, d.date_document, d.name_document from tbObject o, tbFactorTextValue ft, tbFactor f, tbDocument d " +
+                                                 "where o.kn_object = '"+obj.CadastralNumber+ "' and o.id_object = ft.id_object and f.id_har = ft.id_factor and f.type_har = 1 and ft.id_factor<=594 and f.id_source <> 2 and d.id_document = ft.id_document  order by id_factor";
+
+                    SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
+                    long count = 0;
+                    while (myOleDbDataReader.Read())
+                    {
+                        Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_document"]);
+                        OMInstance inputDoc = null;
+                        if (id_inputDoc > 0)
+                        {
+                            string inRegNumber = NullConvertor.ToString(myOleDbDataReader["num_document"]);
+                            DateTime inCreateDate = NullConvertor.DBToDateTime(myOleDbDataReader["date_document"]);
+                            string inDescription = NullConvertor.ToString(myOleDbDataReader["name_document"]);
+
+                            inputDoc = OMInstance.Where(x => x.Id == (id_inputDoc + 300000000)).SelectAll().ExecuteFirstOrDefault();
+                            if (inputDoc == null)
+                            {
+                                inputDoc = OMInstance.Where(x => x.RegNumber == inRegNumber && x.CreateDate == inCreateDate && x.Description == inDescription).SelectAll().ExecuteFirstOrDefault();
+                            }
+                            if (inputDoc == null)
+                            {
+                                inputDoc = new OMInstance
+                                {
+                                    Id = id_inputDoc + 300000000,
+                                    RegNumber = inRegNumber,
+                                    CreateDate = inCreateDate,
+                                    ApproveDate = inCreateDate,
+                                    Description = inDescription,
+                                };
+                                inputDoc.Save();
+                            }
+                        }
+
+                        if (inputDoc != null)
+                        {
+                            long id_factor = NullConvertor.DBToInt64(myOleDbDataReader["id_factor"]);
+                            string value = NullConvertor.ToString(myOleDbDataReader["value"]);
+                            DateTime date = NullConvertor.DBToDateTime(myOleDbDataReader["date_value"]);
+
+
+                            if (obj != null)
+                            {
+                                #region Сохранение данных ГКН
+                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(id_factor, value, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                //Площадь
+                                //KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                #endregion
+                            }
+                        }
+                    }
+                    myOleDbDataReader.Close();
+
+                    count++;
+                    Console.WriteLine(count);
+                }
+
+
+
+                connection.Close();
+            }
+        }
+        public static void DoLoadBd_Parcel_GBU_TEXT()
+        {
+            DoLoadBd2018Unit_Unit_GBU_TEXT(PropertyTypes.Stead);
+        }
+        public static void DoLoadBd_Build_GBU_TEXT()
+        {
+            DoLoadBd2018Unit_Unit_GBU_TEXT(PropertyTypes.Building);
+        }
+        public static void DoLoadBd_Construction_GBU_TEXT()
+        {
+            DoLoadBd2018Unit_Unit_GBU_TEXT(PropertyTypes.Construction);
+        }
+        public static void DoLoadBd_Uncomplited_GBU_TEXT()
+        {
+            DoLoadBd2018Unit_Unit_GBU_TEXT(PropertyTypes.UncompletedBuilding);
+        }
+        public static void DoLoadBd_Flat_GBU_TEXT()
+        {
+            DoLoadBd2018Unit_Unit_GBU_TEXT(PropertyTypes.Parking);
+            DoLoadBd2018Unit_Unit_GBU_TEXT(PropertyTypes.Pllacement);
+        }
 
     }
 }
