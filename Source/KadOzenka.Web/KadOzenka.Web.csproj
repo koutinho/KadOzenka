@@ -744,6 +744,9 @@
     <None Update="Config\Reports\RegisteredObjectsByPropertyTypeReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\RegisteredChangedObjectsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\RegisteredObjectsDefaultReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1036,6 +1039,7 @@
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\RegisteredChangedObjectsReport.frx" />
     <ConfigPath Remove="Config\Reports\RegisteredObjectsByPropertyTypeReport.frx" />
     <ConfigPath Remove="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx" />
     <ConfigPath Remove="Config\Reports\RegisteredObjectsDefaultReport.frx" />

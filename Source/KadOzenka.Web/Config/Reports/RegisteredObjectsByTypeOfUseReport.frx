@@ -9,8 +9,6 @@
         <TextObject Name="TypeOfUseText" Left="7.56" Width="272.3" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.TypeOfUse]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="ObjectsCountText" Left="279.86" Width="249.07" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.ObjectsCount]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <DataHeaderBand Name="DataHeader1" Top="89.05" Width="1047.06" Height="132.3">
-            <!--<TextObject Name="ColumnNumber1" Left="7.56" Top="132.3" Width="272.3" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
-            <TextObject Name="ColumnNumber2" Left="279.86" Top="132.3" Width="249.07" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>-->
             <TextObject Name="TypeOfUseHeaderText" Left="7.56" Width="272.3" Height="132.3" Border.Lines="All" Text="Вид использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
             <TextObject Name="CreationDateHeaderText" Left="279.86" Width="249.07" Height="132.3" Border.Lines="All" Text="Количество объектов" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
         </DataHeaderBand>

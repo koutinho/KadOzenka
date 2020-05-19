@@ -7,7 +7,6 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.ReportingFormFormation;
-using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -118,9 +117,146 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			return GetObjectsByTypeOfUseAttributeData(attribute, KoUnitStatus.Recalculated, taskCreationDateFrom, taskCreationDateTo);
 		}
 
-		private QSQuery<OMUnit> MakeQsQuery(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo, KoUnitStatus status)
+		public List<UnitWithChangedFactorsDto> GetChangedObjects(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
 		{
-			var query = OMUnit.Where(x => x.Status_Code == status);
+			var query = new QSQuery
+			{
+				MainRegisterID = OMUnit.GetRegisterId(),
+				Joins = new List<QSJoin>
+				{
+					new QSJoin
+					{
+						RegisterId = OMTask.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
+							RightOperand = OMTask.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Inner
+					},
+					new QSJoin
+					{
+						RegisterId = OMUnitChange.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMUnit.GetColumn(x => x.Id),
+							RightOperand = OMUnitChange.GetColumn(x => x.UnitId)
+						},
+						JoinType = QSJoinType.Inner
+					}
+				}
+			};
+
+			if (taskCreationDateFrom.HasValue || taskCreationDateTo.HasValue)
+			{
+				var condition = new QSConditionGroup(QSConditionGroupType.And);
+				if (taskCreationDateFrom.HasValue)
+				{
+					condition.Conditions.Add(new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.GreaterOrEqual,
+						taskCreationDateFrom.Value.Date));
+				}
+
+				if (taskCreationDateTo.HasValue)
+				{
+					condition.Conditions.Add(new QSConditionSimple(OMTask.GetColumn(x => x.CreationDate), QSConditionType.LessOrEqual,
+						taskCreationDateTo.Value.GetEndOfTheDay()));
+				}
+
+				query.Condition = condition;
+			}
+
+			query.AddColumn(OMUnit.GetColumn(x => x.Id, nameof(UnitWithChangedFactorsDto.Id)));
+			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, nameof(UnitWithChangedFactorsDto.CadastralNumber)));
+			query.AddColumn(OMTask.GetColumn(x => x.CreationDate, nameof(UnitWithChangedFactorsDto.CreationDate)));
+			query.AddColumn(OMUnit.GetColumn(x => x.StatusRepeatCalc_Code, nameof(UnitWithChangedFactorsDto.StatusRepeatCalc)));
+			query.AddColumn(OMUnit.GetColumn(x => x.Square, nameof(UnitWithChangedFactorsDto.Square)));
+			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType_Code, nameof(UnitWithChangedFactorsDto.PropertyType)));
+			query.AddColumn(OMUnit.GetColumn(x => x.Status_Code, nameof(UnitWithChangedFactorsDto.Status)));
+			query.AddColumn(OMUnitChange.GetColumn(x => x.ChangeStatus, nameof(UnitWithChangedFactorsDto.ChangedFactor)));
+
+			var table = query.ExecuteQuery();
+			var data = new List<UnitWithChangedFactorsDto>();
+			if (table.Rows.Count != 0)
+			{
+				for (var i = 0; i < table.Rows.Count; i++)
+				{
+					var dto = new UnitWithChangedFactorsDto
+					{
+						Id = table.Rows[i][nameof(UnitWithChangedFactorsDto.Id)].ParseToLong(),
+						CadastralNumber = table.Rows[i][nameof(UnitWithChangedFactorsDto.CadastralNumber)].ParseToString(),
+						CreationDate = table.Rows[i][nameof(UnitWithChangedFactorsDto.CreationDate)].ParseToDateTimeNullable(),
+						StatusRepeatCalc = (KoStatusRepeatCalc)table.Rows[i][nameof(UnitWithChangedFactorsDto.StatusRepeatCalc)].ParseToLong(),
+						Square = table.Rows[i][nameof(UnitWithChangedFactorsDto.Square)].ParseToDecimalNullable(),
+						PropertyType = (PropertyTypes)table.Rows[i][nameof(UnitWithChangedFactorsDto.PropertyType)].ParseToLong(),
+						Status = (KoUnitStatus)table.Rows[i][nameof(UnitWithChangedFactorsDto.Status)].ParseToLong(),
+						ChangedFactor = table.Rows[i][nameof(UnitWithChangedFactorsDto.ChangedFactor)].ParseToString()
+					};
+					data.Add(dto);
+				}
+			}
+
+			var result = data.GroupBy(x => x.Id).Select(
+				group => new UnitWithChangedFactorsDto
+				{
+					Id = group.Key,
+					CadastralNumber = group.ToList().FirstOrDefault()?.CadastralNumber,
+					CreationDate = group.ToList().FirstOrDefault()?.CreationDate,
+					StatusRepeatCalc = group.ToList().Count > 0 ? group.ToList().First().StatusRepeatCalc : KoStatusRepeatCalc.None,
+					Square = group.ToList().FirstOrDefault()?.Square,
+					PropertyType = group.ToList().Count > 0 ?  group.ToList().First().PropertyType : PropertyTypes.None,
+					Status = group.ToList().Count > 0 ? group.ToList().First().Status : KoUnitStatus.None,
+					ChangedFactors =  group.ToList().Select(x => x.ChangedFactor).Distinct().ToList()
+				}).ToList();
+
+			return result;
+		}
+
+		public List<UnitCountByPropertyTypeDto> GetChangedObjectsByPropertyType(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
+		{
+			var query = MakeQsQuery(taskCreationDateFrom, taskCreationDateTo);
+
+			var subQuery = new QSQuery(OMUnitChange.GetRegisterId())
+			{
+				Columns = new List<QSColumn>
+					{
+						new QSColumnConstant(1)
+					},
+				Condition = new QSConditionGroup(QSConditionGroupType.And)
+				{
+					Conditions = new List<QSCondition>
+						{
+							new QSConditionSimple(
+								OMUnitChange.GetColumn(x => x.UnitId),
+								QSConditionType.Equal,
+								OMUnit.GetColumn(x => x.Id)){
+								RightOperandLevel = 1
+							}
+						}
+				}
+			};
+
+			var factorsCondition = new QSConditionSimple(new QSColumnQuery(subQuery, "factors"), QSConditionType.Exists);
+			query = query.And(factorsCondition);
+			var objects = query
+				.Select(x => x.PropertyType)
+				.Select(x => x.PropertyType_Code)
+				.Execute();
+
+			return objects
+				.GroupBy(x => x.PropertyType_Code)
+				.Select(g => new UnitCountByPropertyTypeDto { PropertyType = g.Key, ObjectsCount = g.ToList().Count }).ToList();
+		}
+
+		private QSQuery<OMUnit> MakeQsQuery(DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo, KoUnitStatus? status = null)
+		{
+			var query = OMUnit.Where(x => true);
+			if (status.HasValue)
+			{
+				query.And(x => x.Status_Code == status);
+			}
+
 			if (taskCreationDateFrom.HasValue)
 			{
 				var dateFrom = taskCreationDateFrom.Value.Date;

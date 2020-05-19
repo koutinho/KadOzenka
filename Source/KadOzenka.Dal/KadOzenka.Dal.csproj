@@ -89,6 +89,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="FastReports\ChangedRegisteredObjectsReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="FastReports\PreviouslyRegisteredObjectsReport.cs">
       <SubType>Component</SubType>
     </Compile>
