@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="03/23/2020 16:47:17" ReportInfo.CreatorVersion="2017.4.7.0">
+  <Dictionary/>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt">
+    <DataBand Name="BandCommon" Width="1047.06" Height="85.05" CanGrow="true">
+        <TextObject Name="Text6" Left="7.56" Top="28.35" Width="521.37" Height="56.7" Text="[Common.Title]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold" CanGrow="true"/>
+    </DataBand>
+    <DataBand Name="BandData" Top="272.6" Width="1047.06" Height="18.9" CanGrow="true">
+        <TextObject Name="TypeOfUseText" Left="7.56" Width="272.3" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.TypeOfUse]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="ObjectsCountText" Left="279.86" Width="249.07" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.ObjectsCount]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <DataHeaderBand Name="DataHeader1" Top="89.05" Width="1047.06" Height="132.3">
+            <!--<TextObject Name="ColumnNumber1" Left="7.56" Top="132.3" Width="272.3" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="ColumnNumber2" Left="279.86" Top="132.3" Width="249.07" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>-->
+            <TextObject Name="TypeOfUseHeaderText" Left="7.56" Width="272.3" Height="132.3" Border.Lines="All" Text="Вид использования" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+            <TextObject Name="CreationDateHeaderText" Left="279.86" Width="249.07" Height="132.3" Border.Lines="All" Text="Количество объектов" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+        </DataHeaderBand>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="295.35" Width="1047.06" Height="47.25"/>
+  </ReportPage>
+</Report>

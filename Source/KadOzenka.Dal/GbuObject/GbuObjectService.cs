@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
+using ObjectModel.Directory;
+using Platform.Register;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -318,6 +320,71 @@ where a.object_id = {objectId}";
 			return result;
 		}
 
+		public List<GbuAttributeValueObjectsCountDto> GetAttributeValueKoObjectsCount(long attributeId, KoUnitStatus koUnitStatus, DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo)
+		{
+			var attributeData = RegisterCache.GetAttributeData(attributeId);
+			var registerData = RegisterCache.GetRegisterData(attributeData.RegisterId);
+
+			string postfix;
+			if (registerData.AllpriPartitioning == AllpriPartitioningType.DataType)
+			{
+				switch (attributeData.Type)
+				{
+					case RegisterAttributeType.INTEGER:
+					case RegisterAttributeType.DECIMAL:
+					case RegisterAttributeType.BOOLEAN:
+						postfix  = "NUM";
+						break;
+					case RegisterAttributeType.DATE:
+						postfix = "DT";
+						break;
+					default:
+						postfix = "TXT";
+						break;
+				}
+			}
+			else
+			{
+				postfix = attributeData.Id.ToString();
+			}
+
+			string sql =
+$@"select 
+	data.Value as AttributeValue, 
+	count(data.UnitId) as ObjectsCount
+from (select 
+			a.value as Value, 
+			u.id as UnitId
+		from {registerData.AllpriTable}_{postfix} a 
+		join ko_unit u on u.object_id=a.object_id
+		join ko_task t on t.id=u.task_id
+		where a.S <= {CrossDBSQL.ToDate(DateTime.Now.GetEndOfTheDay())} 
+			and a.OT = (SELECT MAX(A2.OT) FROM
+						{registerData.AllpriTable}_{postfix} A2 
+						WHERE A2.object_id = A.object_id
+							AND A2.s <= {CrossDBSQL.ToDate(DateTime.Now.GetEndOfTheDay())})
+			and u.STATUS_CODE = {(long)koUnitStatus}";
+
+			if (registerData.AllpriPartitioning == AllpriPartitioningType.DataType)
+			{
+				sql += $" and a.attribute_id={attributeData.Id}";
+			}
+
+			if (taskCreationDateFrom.HasValue)
+			{
+				sql += $" and t.CREATION_DATE >= {CrossDBSQL.ToDate(taskCreationDateFrom.Value)}";
+			}
+
+			if (taskCreationDateTo.HasValue)
+			{
+				sql += $" and t.CREATION_DATE <= {CrossDBSQL.ToDate(taskCreationDateTo.Value)}";
+			}
+
+			sql += ") data group by data.Value";
+
+			return QSQuery.ExecuteSql<GbuAttributeValueObjectsCountDto>(sql);
+		}
+
 		public List<long> GetGbuRegistersIds()
 		{
 			return OMObjectsCharacteristicsRegister.Where(x => true)
@@ -341,7 +408,7 @@ where a.object_id = {objectId}";
 
         public List<OMAttribute> GetGbuAttributes()
         {
-	        return OMAttribute.Where(x => GetGbuRegistersIds().Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false).SelectAll().Execute();
+	        return OMAttribute.Where(x => GetGbuRegistersIds().Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false).SelectAll().Select(x => x.ParentRegister.RegisterDescription).Execute();
         }
 
         public int AddNewVirtualAttribute(string attributeName, long registerId, RegisterAttributeType type)
