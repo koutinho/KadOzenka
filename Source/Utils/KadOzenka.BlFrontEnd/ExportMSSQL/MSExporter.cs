@@ -4303,6 +4303,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 myOleDbCommand.CommandTimeout = 300;
                 myOleDbCommand.CommandType = System.Data.CommandType.Text;
 
+                long count = 0;
                 foreach (ObjectModel.Gbu.OMMainObject obj in objs)
                 {
 
@@ -4310,7 +4311,6 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                                  "where o.kn_object = '"+obj.CadastralNumber+ "' and o.id_object = ft.id_object and f.id_har = ft.id_factor and f.type_har = 1 and ft.id_factor<=594 and f.id_source <> 2 and d.id_document = ft.id_document  order by id_factor";
 
                     SqlDataReader myOleDbDataReader = myOleDbCommand.ExecuteReader();
-                    long count = 0;
                     while (myOleDbDataReader.Read())
                     {
                         Int64 id_inputDoc = NullConvertor.DBToInt64(myOleDbDataReader["id_document"]);
@@ -4360,8 +4360,9 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     myOleDbDataReader.Close();
 
                     count++;
-                    Console.WriteLine(count);
+                    if (count % 25 == 0) Console.WriteLine(count);
                 }
+                Console.WriteLine(count);
 
 
 
