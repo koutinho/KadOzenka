@@ -3,20 +3,20 @@ using System.Linq;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Modeling;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using DevExpress.DataProcessing;
+using Core.SRD;
+using Core.UI.Registers.CoreUI.Registers;
+using Core.UI.Registers.Services;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
-using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ObjectModel.Core.LongProcess;
+using ObjectModel.Core.Register;
+using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -24,9 +24,10 @@ namespace KadOzenka.Web.Controllers
 	{
 		public ModelingService ModelingService { get; set; }
 
-		public ModelingController(ModelingService modelingService)
-		{
-			ModelingService = modelingService;
+
+        public ModelingController(ModelingService modelingService)
+        {
+            ModelingService = modelingService;
 		}
 
 		
@@ -220,6 +221,56 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
 
+        #region Correlation
+
+        [HttpGet]
+        public ActionResult Correlation()
+        {
+            try
+            {
+                var queryFromLayout = GetQueryFromLayout();
+                ViewBag.QueryFromLayout = queryFromLayout.SerializeToXml();
+            }
+            catch (Exception)
+            {
+                ViewBag.ErrorMessage = "Дождитесь выполнения запроса в раскладке";
+            }
+
+            return View();
+        }
+
+        [HttpGet]
+        public JsonResult GetMarketObjectAttributes()
+        {
+            var marketObjectAttributes = OMAttribute.Where(x => x.RegisterId == OMCoreObject.GetRegisterId())
+                .Select(x => x.Id)
+                .Select(x => x.Name)
+                .OrderBy(x => x.Name)
+                .Execute()
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Name
+                });
+
+            return new JsonResult(marketObjectAttributes);
+        }
+
+        [HttpPost]
+        public JsonResult Correlation(List<long> attributeIds)
+        {
+            if (attributeIds == null || attributeIds.Count == 0)
+                throw new Exception("Не выбраны атрибуты");
+
+            //var a = OMAttribute.Where(x => attributeIds.Contains(x.Id)).SelectAll().Execute().Select(x => x.Name)
+            //    .ToList();
+
+            return new JsonResult(new {Message = "Наиболее влиятельный фактор - ХХХ"});
+        }
+
+        #endregion
+
+
         #region Support Methods
 
         private OMModelingModel GetModel(long modelId)
@@ -236,6 +287,28 @@ namespace KadOzenka.Web.Controllers
             return string.IsNullOrWhiteSpace(trainingResult)
                 ? null
                 : JsonConvert.DeserializeObject<TrainingResult>(trainingResult);
+        }
+
+        private QSQuery GetQueryFromLayout()
+        {
+            var databaseFilters = OMQry.Where(x =>
+                    x.RegisterViewId == "MarketObjects" && x.QryId > 1000000 &&
+                    (x.IsCommon || x.UserId == SRDSession.GetCurrentUserId()))
+                .Select(x => x.QSCondition)
+                .Execute()
+                ?.Select(x => x.QSCondition?.DeserializeFromXml<QSCondition>()).ToList();
+
+            var conditionGroup = new QSConditionGroup(QSConditionGroupType.And);
+            databaseFilters?.ForEach(x => conditionGroup.Add(x));
+
+            var personalFilter = RegistersVariables.CurrentQueryFilter;
+            if (personalFilter != null)
+                conditionGroup.Add(personalFilter);
+
+            var generalQuery = RegistersCommon.GetCurrentRegisterQuery();
+            generalQuery.Condition = conditionGroup;
+
+            return generalQuery;
         }
 
         #endregion

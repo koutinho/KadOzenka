@@ -1,0 +1,98 @@
+﻿<div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
+    <div id="checkboxList"></div>
+
+    <div class="form-group" id="calculateBtnBlock" style="display: none">
+        <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
+            @Html.KendoButton("Calculate", "Рассчитать")
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var template = kendo.template(
+        "<div class='form-group'>" +
+            "<div class='col-sm-2'>" +
+                "<div class='custom-checkbox'>" +
+                    "<input class='k-checkbox' editmode='true' id='#: Id #' name='#: Id #' type='checkbox' value='true'>" +
+                    "<label class='k-checkbox-label' for='#: Id #'>" + "#: Name #" + "</label>" +
+                "</div>" +
+            "</div>" +
+        "</div>");
+</script>
+
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+        if ('@ViewBag.ErrorMessage') {
+            Common.ShowError('@ViewBag.ErrorMessage');
+        } else {
+            getMarketObjectAttributes();
+            $("#Calculate").on('click', calculate);
+        }
+    });
+
+
+
+    function getMarketObjectAttributes() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetMarketObjectAttributes", "Modeling")',
+            success: function (response) {
+                var html = kendo.render(template, response);
+                $("#checkboxList").html(html);
+                $("#calculateBtnBlock").show();
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function calculate() {
+        var attributeIds = [];
+        var selectedCheckboxes = $("input[type='checkbox']:checked");
+        selectedCheckboxes.each(function() {
+            attributeIds.push($(this).attr('id'));
+        });
+        if (attributeIds.length === 0) {
+            Common.ShowError("Не выбраны атрибуты");
+            return;
+        }
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("Correlation", "Modeling")',
+            data: { attributeIds: attributeIds },
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage(response.Message);
+                    CloseMainWindow();
+                }
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function CloseMainWindow() {
+        setTimeout(function () {
+            Common.UI.CloseWindow('registerModalWindow', window.parent);
+        }, 5000);
+    }
+
+</script>

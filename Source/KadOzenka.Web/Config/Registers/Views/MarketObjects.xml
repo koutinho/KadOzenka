@@ -34,7 +34,9 @@
 
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
 
-	  <Button Caption="Корректировка на дату" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
+    <Button Caption="Корреляция (моделирование)" NavigateURL="~/Modeling/Correlation" WindowHeight="700" WindowWidth="500" Icon="fas fa-chart-line" />
+
+    <Button Caption="Корректировка на дату" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
 		  <DropDownButtons>
         <Button Caption="Просмотр коэффициентов" NavigateURL="~/MarketObjects/CorrectionByDateGeneralCoefficients" OpenInRadWindow="true" WindowHeight="550" WindowWidth="1000" Icon="fas fa-eye" />
       </DropDownButtons>
