@@ -25,10 +25,32 @@ namespace KadOzenka.Dal.ScoreCommon.Dto
 
 		private DateTime _date;
 
-		public DateTime DateValue => _date;
+		public DateTime DateValue
+		{
+			get
+			{
+				if (Type == ParameterType.Date)
+				{
+					return _date;
+				}
+
+				return DateTime.MinValue;
+			}
+		}
 
 		private decimal _numberValue;
-		public decimal NumberValue => _numberValue;
+
+		public decimal NumberValue
+		{
+			get
+			{
+				if (Type == ParameterType.Number)
+				{
+					return _numberValue;
+				}
+				return 0;
+			}
+		}
 
 
 		public string StringValue

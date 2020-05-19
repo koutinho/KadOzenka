@@ -42,5 +42,23 @@ namespace KadOzenka.Web.Models.ExpressScore
 		/// </summary>
 		[Required(ErrorMessage = "Выберите сегмент")]
 		public MarketSegment Segment { get; set; }
+
+		/// <summary>
+		/// Адрес целевого объекта
+		/// </summary>
+		[Required(ErrorMessage = "Не заполнен Адрес")]
+		public string Address { get; set; }
+
+		/// <summary>
+		/// Кадастровый номер
+		/// </summary>
+		[Required(ErrorMessage = "Не заполнен кадастровый номер")]
+		public string Kn { get; set; }
+
+		/// <summary>
+		/// Тип сделки
+		/// </summary>
+		[Required(ErrorMessage = "Не заполнен тип сделки")]
+		public DealTypeShort DealType { get; set; }
 	}
 }

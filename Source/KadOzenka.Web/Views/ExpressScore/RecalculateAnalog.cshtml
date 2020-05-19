@@ -53,6 +53,9 @@
 						if (parent.updateCost) {
 							parent.updateCost(data.success.cost, data.success.squareCost);
 						}
+						if (parent.updateReportId) {
+							parent.updateReportId(data.success.reportId);
+						}
 						Common.ShowMessage("Перерасчет успешно выполнен. Закройте окно.");
 					}
 

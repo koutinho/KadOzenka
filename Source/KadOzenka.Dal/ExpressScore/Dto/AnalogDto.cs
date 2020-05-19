@@ -32,7 +32,14 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// </summary>
 		public long FloorsCount { get; set; }
 
+		/// <summary>
+		/// Год постройки
+		/// </summary>
+		public long YearBuild { get; set; }
 
-
+		/// <summary>
+		/// Адрес аналога
+		/// </summary>
+		public string Address { get; set; }
 	}
 }

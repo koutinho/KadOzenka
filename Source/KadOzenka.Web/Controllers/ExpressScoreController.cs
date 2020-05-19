@@ -2,18 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using CIPJS.Models.ExpressScore;
+using Core.Main.FileStorages;
 using Core.Register;
+using Core.Register.Enums;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
+using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Dal.LongProcess.SudLongProcesses;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ExpressScore;
 using KadOzenka.Web.Models.MarketObject;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ObjectModel.Common;
 using ObjectModel.Directory;
 using ObjectModel.Es;
 using ObjectModel.ES;
@@ -190,9 +195,20 @@ namespace KadOzenka.Web.Controllers
 				return GenerateMessageNonValidModel();
 			}
 
-			string resMsg = _service.CalculateExpressScore(_service.GetAnalogsByIds(viewModel.SelectedPoints),
-				viewModel.TargetObjectId.GetValueOrDefault(), viewModel.Floor.GetValueOrDefault(), viewModel.Square.GetValueOrDefault(),
-				out ResultCalculateDto resultCalculate, viewModel.ScenarioType, viewModel.Segment);
+			var inputParam = new InputCalculateDto
+			{
+				Address = viewModel.Address,
+				Analogs = _service.GetAnalogsByIds(viewModel.SelectedPoints),
+				DealType = viewModel.DealType,
+				Floor = viewModel.Floor.GetValueOrDefault(),
+				Kn = viewModel.Kn,
+				ScenarioType = viewModel.ScenarioType,
+				Square = viewModel.Square.GetValueOrDefault(),
+				Segment = viewModel.Segment,
+				TargetObjectId = viewModel.TargetObjectId.GetValueOrDefault()
+			};
+
+			string resMsg = _service.CalculateExpressScore(inputParam, out ResultCalculateDto resultCalculate);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{
@@ -245,15 +261,27 @@ namespace KadOzenka.Web.Controllers
 
 			}
 
-			string resMsg = _service.RecalculateExpressScore(_service.GetAnalogsByIds(analogIds), analogIds,
-				(int)obj.Objectid, (int)obj.Floor, obj.Square, expressScoreId, obj.ScenarioType_Code, obj.SegmentType_Code, out decimal cost, out decimal squareCost);
+			var inputParam = new InputCalculateDto
+			{
+				Address = "",
+				Kn = obj.KadastralNumber,
+				Analogs = _service.GetAnalogsByIds(analogIds),
+				DealType = obj.DealType_Code == DealType.RentDeal ? DealTypeShort.Rent : DealTypeShort.Sale,
+				Floor = (int) obj.Floor,
+				ScenarioType = obj.ScenarioType_Code,
+				Square = obj.Square,
+				Segment = obj.SegmentType_Code,
+				TargetObjectId = (int) obj.Objectid
+			};
+
+			string resMsg = _service.RecalculateExpressScore(inputParam, analogIds, expressScoreId, out decimal cost, out decimal squareCost, out long reportId);
 
 			if (!string.IsNullOrEmpty(resMsg))
 			{
 				return SendErrorMessage(resMsg);
 			}
 
-			return Json( new {success = new { cost, squareCost } });
+			return Json( new {success = new { cost, squareCost, reportId } });
 		}
 
 		#endregion
@@ -378,6 +406,27 @@ namespace KadOzenka.Web.Controllers
 
 
 
+
+		#endregion
+
+		#region download report
+
+		public FileResult DownloadReport(long reportId)
+		{
+			var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
+
+			if (export == null)
+			{
+				throw new Exception($"В журнале выгрузок не найдена запись с ИД {reportId}");
+			}
+
+			var templateFile = FileStorageManager.GetFileStream(ExpressScoreReportService.ExpressScoreReportStorage, export.DateCreated,
+				export.Id.ToString());
+
+			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
+
+			return File(templateFile, contentType, export.TemplateFileName + "." + fileExtension);
+		}
 
 		#endregion
 

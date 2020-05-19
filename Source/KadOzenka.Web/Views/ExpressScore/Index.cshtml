@@ -1,4 +1,5 @@
 ﻿@using CIPJS.Models.ExpressScore
+@using KadOzenka.Dal.Enum
 @using ObjectModel.Directory
 @using ObjectModel.Directory.ES
 
@@ -11,7 +12,7 @@
 		display: flex;
 		justify-content: center;
 		background-color: white;
-		height: 93vh;
+		height: 95vh;
 		padding-left: 10px;
 		padding-right: 10px;
 		padding-bottom: 10px;
@@ -664,6 +665,12 @@
 		}
 	}
 
+	function updateReportId(reportId = null) {
+		if (reportId) {
+			$('#report').data('report-id', reportId);
+		}
+	}
+
 	$(document).ready(function () {
 		initDialog();
 		$('.calculate').on('click', function () {
@@ -692,8 +699,11 @@
 			scenarioType,
 			floor: $('#floor').val(),
 			square: $('#square').val(),
-			segment: $('#segment').val()
-		}
+			segment: $('#segment').val(),
+			address: $('#address').val(),
+			kn: $('#Kn').val(),
+			dealType: $("input[name='DealTypeShort']:checked").val()
+	}
 
 		var topBody = window.top.document.body;
 		kendo.ui.progress($(topBody), true);

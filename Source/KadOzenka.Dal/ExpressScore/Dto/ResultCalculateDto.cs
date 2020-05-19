@@ -19,6 +19,8 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 
 		public decimal SquareCost { get; set; }
 
+		public long ReportId { get; set; }
+
 		public List<AnalogResultDto> Analogs { get; set; }
 	}
 }

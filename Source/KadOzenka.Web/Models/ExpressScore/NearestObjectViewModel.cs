@@ -2,19 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Dal.Enum;
 using ObjectModel.Directory;
 
 namespace CIPJS.Models.ExpressScore
 {
-	public enum DealTypeShort : long
-	{
-		[Description("Аренда")]
-		Rent = 1,
-
-		[Description("Продажа")]
-		Sale = 2
-	}
-
 	public class NearestObjectViewModel: IValidatableObject
 	{
 		/// <summary>
