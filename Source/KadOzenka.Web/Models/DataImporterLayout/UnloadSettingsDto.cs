@@ -23,6 +23,11 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 		public bool UnloadXML1 { get; set; }
 		public bool UnloadXML2 { get; set; }
 
+		/// <summary>
+		/// Отправка результатов в РЕОН
+		/// </summary>
+		public bool SendResultToReon { get; set; }
+
 		public static KOUnloadSettings Map(UnloadSettingsDto entity)
 		{
 			KOUnloadSettings result = new KOUnloadSettings
@@ -40,7 +45,8 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 				UnloadTable10 = entity.UnloadTable10,
 				UnloadTable11 = entity.UnloadTable11,
 				UnloadXML1 = entity.UnloadXML1,
-				UnloadXML2 = entity.UnloadXML2
+				UnloadXML2 = entity.UnloadXML2,
+				SendResultToReon = entity.SendResultToReon
 			};
 
 			return result;
