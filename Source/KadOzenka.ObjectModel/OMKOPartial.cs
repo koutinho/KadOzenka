@@ -2396,5 +2396,10 @@ namespace ObjectModel.KO
         /// Выгрузка XML 2 результатов Кадастровой оценки по группам.
         /// </summary>
         public bool UnloadXML2;
+
+		/// <summary>
+		/// Отправка результатов в РЕОН
+		/// </summary>
+		public bool SendResultToReon { get; set; }
     }
 }
