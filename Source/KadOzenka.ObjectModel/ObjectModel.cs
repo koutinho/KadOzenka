@@ -21465,7 +21465,26 @@ namespace ObjectModel.ES
             }
         }
 
-    }
+        private string _address;
+        /// <summary>
+        /// 60001200 Адрес (ADDRESS)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 60001200)]
+        public string Address
+        {
+	        get
+	        {
+		        CheckPropertyInited("Address");
+		        return _address;
+	        }
+	        set
+	        {
+		        _address = value;
+		        NotifyPropertyChanged("Address");
+	        }
+        }
+
+	}
 }
 
 namespace ObjectModel.ES
