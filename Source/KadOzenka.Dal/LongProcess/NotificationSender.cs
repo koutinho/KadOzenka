@@ -7,7 +7,7 @@ namespace KadOzenka.Dal.LongProcess
 {
 	public class NotificationSender
 	{
-		public void SendNotification(OMQueue processQueue, string subject, string message)
+		public static void SendNotification(OMQueue processQueue, string subject, string message)
 		{
 			new MessageService().SendMessages(new MessageDto
 			{

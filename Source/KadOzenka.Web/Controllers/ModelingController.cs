@@ -84,13 +84,18 @@ namespace KadOzenka.Web.Controllers
         {
             ////TODO код для отладки
             //var process = new ModelingProcess();
+            var trainingInputParameters = new TrainingInputParameters
+            {
+                ModelId = modelId
+            };
             //var inputRequest = new ModelingInputParameters
             //{
-            //    ModelId = modelId,
-            //    IsTrainingMode = true
+            //    ModelingType = ModelingType.Training,
+            //    InputParametersXml = trainingInputParameters.SerializeToXml<TrainingInputParameters>()
             //};
             //process.StartProcess(new OMProcessType(), new OMQueue
             //{
+            //    UserId = SRDSession.GetCurrentUserId(),
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
@@ -98,10 +103,10 @@ namespace KadOzenka.Web.Controllers
             if (attributes == null || attributes.Count == 0)
                 throw new Exception("Для модели не найдено сохраненных атрибутов");
 
-            ModelingProcess.AddProcessToQueue(modelId, new ModelingInputParameters
+            ModelingProcess.AddProcessToQueue(new ModelingInputParameters
             {
-                ModelId = modelId,
-                IsTrainingMode = true
+                ModelingType = ModelingType.Training,
+                InputParametersXml = trainingInputParameters.SerializeToXml<TrainingInputParameters>()
             });
 
             return Json(new { Message = "Процесс обучения модели поставлен в очередь" });
@@ -112,14 +117,19 @@ namespace KadOzenka.Web.Controllers
         {
             ////TODO код для отладки
             //var process = new ModelingProcess();
+            var predictionInputParameters = new PredictionInputParameters
+            {
+                ModelId = modelId,
+                PredictionType = predictionType
+            };
             //var inputRequest = new ModelingInputParameters
             //{
-            //    ModelId = modelId,
-            //    IsTrainingMode = false,
-            //    PredictionType = predictionType
+            //    ModelingType = ModelingType.Prediction,
+            //    InputParametersXml = predictionInputParameters.SerializeToXml()
             //};
             //process.StartProcess(new OMProcessType(), new OMQueue
             //{
+            //    UserId = SRDSession.GetCurrentUserId(),
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
@@ -127,11 +137,10 @@ namespace KadOzenka.Web.Controllers
             if (!model.WasTrained.GetValueOrDefault())
                 throw new Exception("Модель не была обучена, процесс прогнозирования не запущен.");
 
-            ModelingProcess.AddProcessToQueue(modelId, new ModelingInputParameters
+            ModelingProcess.AddProcessToQueue(new ModelingInputParameters
             {
-                ModelId = modelId,
-                IsTrainingMode = false,
-                PredictionType = predictionType
+                ModelingType = ModelingType.Prediction,
+                InputParametersXml = predictionInputParameters.SerializeToXml()
             });
 
             return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });

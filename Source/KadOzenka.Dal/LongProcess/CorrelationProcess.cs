@@ -10,6 +10,7 @@ using System.Threading;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.Register;
 using ObjectModel.Market;
@@ -172,27 +173,8 @@ namespace KadOzenka.Dal.LongProcess
         #endregion
 
 
-        public class CorrelationRequest
-        {
-            [JsonProperty("y")]
-            public List<List<decimal>> Prices { get; set; }
-            [JsonProperty("columns")]
-            public List<string> AttributeNames { get; set; }
-            [JsonProperty("x")]
-            public List<List<decimal?>> Coefficients { get; set; }
+       
 
-            public CorrelationRequest()
-            {
-                Prices = new List<List<decimal>>();
-                AttributeNames = new List<string>();
-                Coefficients = new List<List<decimal?>>();
-            }
-        }
-
-        public class CorrelationResult
-        {
-            [JsonProperty("coef")]
-            public Dictionary<string, decimal> CoefficientsForAttributes { get; set; }
-        }
+        
     }
 }

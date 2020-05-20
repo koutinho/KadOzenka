@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
@@ -17,10 +19,13 @@ namespace KadOzenka.Dal.Modeling
         //TODO ConfigurationManager.AppSettings["calculateModelLink"];
         public override string Url => $"http://82.148.28.237:5000/api/predict/{Model.InternalName}";
         private PredictionRequest RequestForService { get; set; }
+        protected PredictionInputParameters InputParameters { get; set; }
+        protected OMModelingModel Model { get; }
 
-        public PredictionStrategy(ModelingInputParameters request, OMModelingModel model)
-            : base(request, model)
+        public PredictionStrategy(string inputParametersXml)
         {
+            InputParameters = inputParametersXml.DeserializeFromXml<PredictionInputParameters>();
+            Model = GetModel(InputParameters.ModelId);
         }
 
         public override void PrepareData()
@@ -78,6 +83,25 @@ namespace KadOzenka.Dal.Modeling
             SaveCoefficientsForPredictedPrice(trainingResult.CoefficientsForAttributes);
 
             SaveResultToCalculationSubSystem(trainingResult.CoefficientsForAttributes);
+        }
+
+        public override void RollBackResult()
+        {
+           
+        }
+
+        public override void SendSuccessNotification(OMQueue processQueue)
+        {
+            var subject = $"Процесс прогнозирования цены для модели '{Model.Name}'";
+            var message = "Операция успешно завершена";
+            NotificationSender.SendNotification(processQueue, subject, message);
+        }
+
+        public override void SendFailNotification(OMQueue processQueue)
+        {
+            var subject = $"Процесс обучения модели '{Model.Name}'";
+            var message = "Операция завершена с ошибкой. Подробнее в списке процессов";
+            NotificationSender.SendNotification(processQueue, subject, message);
         }
 
 

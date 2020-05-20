@@ -1,21 +1,18 @@
-﻿using KadOzenka.Dal.ScoreCommon;
+﻿using System;
+using KadOzenka.Dal.ScoreCommon;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Modeling;
-using KadOzenka.Dal.LongProcess.InputParameters;
 
 namespace KadOzenka.Dal.Modeling
 {
     public abstract class AModelingStrategy
     {
         public abstract string Url { get; }
-        protected ModelingInputParameters InputParameters { get; }
-        protected OMModelingModel Model { get; }
         protected ModelingService ModelingService { get; set; }
 
 
-        protected AModelingStrategy(ModelingInputParameters inputParameters, OMModelingModel model)
+        protected AModelingStrategy()
         {
-            InputParameters = inputParameters;
-            Model = model;
             ModelingService = new ModelingService(new ScoreCommonService());
         }
 
@@ -25,5 +22,21 @@ namespace KadOzenka.Dal.Modeling
         public abstract object GetRequestForService();
 
         public abstract void SaveResult(string responseFromService);
+
+        public abstract void RollBackResult();
+
+        public abstract void SendSuccessNotification(OMQueue processQueue);
+
+        public abstract void SendFailNotification(OMQueue processQueue);
+
+
+        protected OMModelingModel GetModel(long modelId)
+        {
+            var model = OMModelingModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+            if (model == null)
+                throw new Exception($"Не найдена модель с Id='{modelId}'");
+
+            return model;
+        }
     }
 }

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling
@@ -16,10 +18,13 @@ namespace KadOzenka.Dal.Modeling
         //TODO ConfigurationManager.AppSettings["trainModelLink"];
         public override string Url => $"http://82.148.28.237:5000/api/teach/{Model.InternalName}";
         private TrainingRequest RequestForService { get; set; }
+        protected TrainingInputParameters InputParameters { get; set; }
+        protected OMModelingModel Model { get; }
 
-        public TrainingStrategy(ModelingInputParameters request, OMModelingModel model)
-            : base(request, model)
+        public TrainingStrategy(string inputParametersXml)
         {
+            InputParameters = inputParametersXml.DeserializeFromXml<TrainingInputParameters>();
+            Model = GetModel(InputParameters.ModelId);
         }
 
         public override void PrepareData()
@@ -79,11 +84,37 @@ namespace KadOzenka.Dal.Modeling
             Model.Save();
         }
 
+        public override void RollBackResult()
+        {
+            Model.WasTrained = false;
+            Model.LinearTrainingResult = null;
+            Model.ExponentialTrainingResult = null;
+            Model.MultiplicativeTrainingResult = null;
+            Model.Save();
+        }
+
+        public override void SendSuccessNotification(OMQueue processQueue)
+        {
+            var subject = $"Процесс обучения модели '{Model.Name}'";
+            var message = "Операция успешно завершена";
+            NotificationSender.SendNotification(processQueue, subject, message);
+        }
+
+        public override void SendFailNotification(OMQueue processQueue)
+        {
+            var subject = $"Процесс обучения модели '{Model.Name}'";
+            var message = "Операция завершена с ошибкой. Подробнее в списке процессов";
+            NotificationSender.SendNotification(processQueue, subject, message);
+        }
+
+
+        #region Support Methods
+
         /// <summary>
         /// Заменяем имена аттрибутов на их Id
         /// </summary>
         /// <param name="result"></param>
-        public void PreprocessTrainingResult(TrainingResult result)
+        private void PreprocessTrainingResult(TrainingResult result)
         {
             var newCoefficients = new Dictionary<string, decimal>();
             var oldCoefficients = result.CoefficientsForAttributes;
@@ -98,9 +129,6 @@ namespace KadOzenka.Dal.Modeling
 
             result.CoefficientsForAttributes = newCoefficients;
         }
-
-
-        #region Support Methods
 
         private string PreProcessAttributeName(string name)
         {
