@@ -1,12 +1,18 @@
-﻿<div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
-    <div id="checkboxList"></div>
+﻿@model KadOzenka.Web.Models.Modeling.CorrelationModel
 
-    <div class="form-group" id="calculateBtnBlock" style="display: none">
-        <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-            @Html.KendoButton("Calculate", "Рассчитать")
+@using (Html.BeginForm("Correlation", "Modeling", FormMethod.Post, htmlAttributes: new {id = "calculateForm"}))
+{
+    @Html.HiddenFor(x => x.QsQueryXmlStr)
+    <div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
+        <div id="checkboxList"></div>
+        <div class="form-group" id="calculateBtnBlock" style="display: none">
+            <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
+                @Html.KendoButton("Calculate", "Рассчитать", isReadonly: true)
+            </div>
         </div>
     </div>
-</div>
+}
+
 
 
 <script>
@@ -39,8 +45,8 @@
         $.ajax({
             type: 'GET',
             url: '@Url.Action("GetMarketObjectAttributes", "Modeling")',
-            success: function (response) {
-                var html = kendo.render(template, response);
+            success: function (attributes) {
+                var html = kendo.render(template, attributes);
                 $("#checkboxList").html(html);
                 $("#calculateBtnBlock").show();
             },
@@ -64,11 +70,14 @@
             Common.ShowError("Не выбраны атрибуты");
             return;
         }
+        var form = $('#calculateForm');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject['AttributeIds'] = attributeIds;
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("Correlation", "Modeling")',
-            data: { attributeIds: attributeIds },
+            url: form.attr('action'),
+            data: formObject,
             success: function (response) {
                 if (response.Errors) {
                     var errors = getErrors(response.Errors);

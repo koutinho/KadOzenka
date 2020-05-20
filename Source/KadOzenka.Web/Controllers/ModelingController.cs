@@ -5,16 +5,17 @@ using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Modeling;
 using System.Collections.Generic;
+using System.Threading;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
-using Core.UI.Registers.Services;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
 using ObjectModel.Market;
 
@@ -226,23 +227,24 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult Correlation()
         {
+            var model = new CorrelationModel();
             try
             {
                 var queryFromLayout = GetQueryFromLayout();
-                ViewBag.QueryFromLayout = queryFromLayout.SerializeToXml();
+                model.QsQueryXmlStr = queryFromLayout.SerializeToXml();
             }
             catch (Exception)
             {
                 ViewBag.ErrorMessage = "Дождитесь выполнения запроса в раскладке";
             }
 
-            return View();
+            return View(model);
         }
 
         [HttpGet]
         public JsonResult GetMarketObjectAttributes()
         {
-            var marketObjectAttributes = OMAttribute.Where(x => x.RegisterId == OMCoreObject.GetRegisterId())
+            var marketObjectAttributes = OMAttribute.Where(x => x.RegisterId == OMCoreObject.GetRegisterId() && x.Type == 2)
                 .Select(x => x.Id)
                 .Select(x => x.Name)
                 .OrderBy(x => x.Name)
@@ -257,15 +259,32 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult Correlation(List<long> attributeIds)
+        public JsonResult Correlation(CorrelationModel model)
         {
-            if (attributeIds == null || attributeIds.Count == 0)
+            if(string.IsNullOrWhiteSpace(model.QsQueryXmlStr))
+                throw new Exception("Не переден запрос для формирования списка объектов");
+            if (model.AttributeIds == null || model.AttributeIds.Count == 0)
                 throw new Exception("Не выбраны атрибуты");
 
-            //var a = OMAttribute.Where(x => attributeIds.Contains(x.Id)).SelectAll().Execute().Select(x => x.Name)
-            //    .ToList();
+            ////TODO код для отладки
+            //var process = new CorrelationProcess();
+            //var inputRequest = new CorrelationInputParameters
+            //{
+            //    AttributeIds = model.AttributeIds,
+            //    QsQueryStr = model.QsQueryXmlStr
+            //};
+            //process.StartProcess(new OMProcessType(), new OMQueue
+            //{
+            //    Parameters = inputRequest.SerializeToXml()
+            //}, new CancellationToken());
 
-            return new JsonResult(new {Message = "Наиболее влиятельный фактор - ХХХ"});
+            //CorrelationProcess.AddProcessToQueue(new CorrelationInputParameters
+            //{
+            //    AttributeIds = model.AttributeIds,
+            //    QsQueryStr = model.QsQueryXmlStr
+            //});
+
+            return new JsonResult(new {Message = "Процесс корреляции поставлен в очередь."});
         }
 
         #endregion
