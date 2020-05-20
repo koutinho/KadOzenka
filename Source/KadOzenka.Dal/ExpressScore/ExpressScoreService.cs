@@ -285,7 +285,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			DealType dealType = inputParam.DealType == DealTypeShort.Rent ? DealType.RentDeal : DealType.SaleDeal;
 			msg = SaveSuccessExpressScore(inputParam.TargetObjectId, summaryCost, squareCost, out int id, square: inputParam.Square, floor: inputParam.Floor, scenarioType: inputParam.ScenarioType, 
-				segmentType: inputParam.Segment, dealType: dealType);
+				segmentType: inputParam.Segment, dealType: dealType, address: inputParam.Address);
 			if (!string.IsNullOrEmpty(msg)) return msg;
 
 			msg = AddDependenceEsFromMarketCoreObject(id, successAnalogIds);
@@ -696,7 +696,7 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 
 		public string SaveSuccessExpressScore(int targetObjectId, decimal summaryCost, decimal costSquareMeter, out int id, int? expressScoreId = null,
-			decimal? square = null, int? floor = null, ScenarioType? scenarioType = null, MarketSegment? segmentType = null, DealType? dealType = null)
+			decimal? square = null, int? floor = null, ScenarioType? scenarioType = null, MarketSegment? segmentType = null, DealType? dealType = null, string address = null)
 		{
 			id = 0;
 			try
@@ -710,7 +710,7 @@ namespace KadOzenka.Dal.ExpressScore
 				}
 
 				id = expressScoreId == null
-					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId, scenarioType.GetValueOrDefault(), segmentType.GetValueOrDefault(), dealType.GetValueOrDefault())
+					? AddExpressScore(kn, summaryCost, costSquareMeter, square.Value, floor.Value, targetObjectId, scenarioType.GetValueOrDefault(), segmentType.GetValueOrDefault(), dealType.GetValueOrDefault(), address)
 					:  UpdateCostsExpressScore(expressScoreId.Value, summaryCost, costSquareMeter);
 			}
 			catch (Exception e)
@@ -723,7 +723,7 @@ namespace KadOzenka.Dal.ExpressScore
 			return "";
 		}
 
-		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId, ScenarioType scenarioType, MarketSegment segmentType, DealType dealType)
+		private int AddExpressScore(string kn, decimal cost, decimal costSquareMeter, decimal square, int floor, int targetObjectId, ScenarioType scenarioType, MarketSegment segmentType, DealType dealType, string address)
 		{
 			return new OMExpressScore
 			{
@@ -736,7 +736,8 @@ namespace KadOzenka.Dal.ExpressScore
 				Square = square,
 				ScenarioType_Code = scenarioType,
 				SegmentType_Code = segmentType,
-				DealType_Code = dealType
+				DealType_Code = dealType,
+				Address = address
 			}.Save();
 		}
 

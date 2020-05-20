@@ -263,7 +263,7 @@ namespace KadOzenka.Web.Controllers
 
 			var inputParam = new InputCalculateDto
 			{
-				Address = "",
+				Address = obj.Address,
 				Kn = obj.KadastralNumber,
 				Analogs = _service.GetAnalogsByIds(analogIds),
 				DealType = obj.DealType_Code == DealType.RentDeal ? DealTypeShort.Rent : DealTypeShort.Sale,
