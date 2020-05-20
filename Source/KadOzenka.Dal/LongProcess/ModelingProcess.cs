@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text;
+using System.Text.RegularExpressions;
 using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
+using System.Threading.Tasks;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Entities;
+using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -50,8 +54,7 @@ namespace KadOzenka.Dal.LongProcess
                 response = PreProcessServiceResponse(response);
                 WorkerCommon.SetProgress(processQueue, 80);
 
-                strategy.SaveResult(response);
-
+                strategy.ProcessServiceAnswer(response);
                 WorkerCommon.SetProgress(processQueue, 100);
 
                 strategy.SendSuccessNotification(processQueue);
@@ -75,9 +78,39 @@ namespace KadOzenka.Dal.LongProcess
                     return new TrainingStrategy(inputParameters.InputParametersXml);
                 case ModelingType.Prediction:
                     return new PredictionStrategy(inputParameters.InputParametersXml);
+                case ModelingType.Correlation:
+                    return new CorrelationStrategy(inputParameters.InputParametersXml);
                 default:
                     throw new Exception("Не определен тип моделирования");
             }
+        }
+
+        protected async Task<string> SendDataToService(HttpClient httpClient, string url, object data)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new Exception("Не найден URL для сервиса");
+
+            var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data));
+            var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
+
+            var response = await httpClient.PostAsync(url, httpContent);
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        protected string PreProcessServiceResponse(string responseContentStr)
+        {
+            //обрабатываем кириллицу
+            responseContentStr = Regex.Replace(responseContentStr, @"\\u([0-9A-Fa-f]{4})", m => ((char)Convert.ToInt32(m.Groups[1].Value, 16)).ToString());
+            if (string.IsNullOrWhiteSpace(responseContentStr))
+                throw new Exception("Сервис для моделирования вернул пустой ответ");
+
+            //TODO переделаем на обработку json-объекта ошибки, после реализации в сервисе
+            if (responseContentStr.ToLower().Contains("message"))
+                throw new Exception("Сервис для моделирования вернул ошибку: " + responseContentStr);
+
+            return responseContentStr;
         }
 
         #endregion

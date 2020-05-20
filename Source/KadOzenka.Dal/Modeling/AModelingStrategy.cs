@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.Modeling
 
         public abstract object GetRequestForService();
 
-        public abstract void SaveResult(string responseFromService);
+        public abstract void ProcessServiceAnswer(string responseFromService);
 
         public abstract void RollBackResult();
 

@@ -275,23 +275,26 @@ namespace KadOzenka.Web.Controllers
             if (model.AttributeIds == null || model.AttributeIds.Count == 0)
                 throw new Exception("Не выбраны атрибуты");
 
-            ////TODO код для отладки
-            //var process = new CorrelationProcess();
-            //var inputRequest = new CorrelationInputParameters
-            //{
-            //    AttributeIds = model.AttributeIds,
-            //    QsQueryStr = model.QsQueryXmlStr
-            //};
+            var correlationInputParameters = new CorrelationInputParameters
+            {
+                AttributeIds = model.AttributeIds,
+                QsQueryStr = model.QsQueryXmlStr
+            };
+            var inputRequest = new ModelingInputParameters
+            {
+                ModelingType = ModelingType.Correlation,
+                InputParametersXml = correlationInputParameters.SerializeToXml<CorrelationInputParameters>()
+            };
+
+            //TODO код для отладки
+            //var process = new ModelingProcess();
             //process.StartProcess(new OMProcessType(), new OMQueue
             //{
+            //    UserId = SRDSession.GetCurrentUserId(),
             //    Parameters = inputRequest.SerializeToXml()
             //}, new CancellationToken());
 
-            //CorrelationProcess.AddProcessToQueue(new CorrelationInputParameters
-            //{
-            //    AttributeIds = model.AttributeIds,
-            //    QsQueryStr = model.QsQueryXmlStr
-            //});
+            ModelingProcess.AddProcessToQueue(inputRequest);
 
             return new JsonResult(new {Message = "Процесс корреляции поставлен в очередь."});
         }

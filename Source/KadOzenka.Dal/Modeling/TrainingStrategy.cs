@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.Modeling
             return RequestForService;
         }
 
-        public override void SaveResult(string responseContentStr)
+        public override void ProcessServiceAnswer(string responseContentStr)
         {
             //it will be list
             var trainingResult = JsonConvert.DeserializeObject<TrainingResult>(responseContentStr);
