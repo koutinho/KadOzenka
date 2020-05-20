@@ -74,7 +74,7 @@ namespace KadOzenka.Dal.ExpressScore
 			var unitsIds = ScoreCommonService.GetUnitsIdsByCadastralNumber(yandexAddress.CadastralNumber, (int)setting.TourId);
 			if (unitsIds.Count == 0)
 			{
-				return "Для выбранного тура и объекта в Ко части нет данных";
+				return "Выбранный объект не входит в тур или его параметры оценки не заполнены";
 			}
 
 			var idAttribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.RegisterId == setting.Registerid && x.IsPrimaryKey)?.Id;

@@ -104,8 +104,12 @@ namespace KadOzenka.Web.Controllers
 					Lat = x.Lat.GetValueOrDefault(),
 					Lng = x.Lng.GetValueOrDefault(),
 				}).Distinct().ToList();
-				
 
+
+			if (objects.Count == 0)
+			{
+				return SendErrorMessage("Объекты аналоги не найдены");
+			}
 			//Проверяем дату актуальности
 			List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
 
@@ -369,7 +373,7 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetAttributes(int registerId)
 		{
-			var attributes =	RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == registerId).Select(x => new
+			var attributes =	RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == registerId && !x.IsPrimaryKey).Select(x => new
 			{
 				Text = x.Name,
 				Value = x.Id
