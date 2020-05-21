@@ -29,6 +29,7 @@ using KadOzenka.Dal.ExcelParser;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.WebClients.ReonClient.Api;
 using System.Linq;
+using KadOzenka.Dal.LongProcess;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -193,20 +194,24 @@ namespace KadOzenka.BlFrontEnd
 
 			});
 
-
 			consoleHelper.AddCommand("901", "Тест API РЕОН", () =>
 			{
 				var service = new RosreestrDataApi();
 				
 				List<IO.Swagger.Model.RRDataLoadModel> result = service.RosreestrDataGetRRData(DateTime.Today.AddDays(-1), DateTime.Today);
 
-
-
-				Console.WriteLine($"Из РЕОН получено заданий: {result.Count}");
+                Console.WriteLine($"Из РЕОН получено заданий: {result.Count}");
 				Console.WriteLine(String.Join("\n", result.Select(x => $"{x.DocNumber} от {x.DocDate.Value.ToShortDateString()}")));
 			});
 
-			consoleHelper.AddCommand("554", "эксель импорт", 
+            consoleHelper.AddCommand("902", "Тест Сервиса для создания задач на основе данных из РЕОН", () =>
+            {
+                new KoTaskFromReon().StartProcess(null,
+                    null,
+                    new System.Threading.CancellationToken());
+            });
+
+            consoleHelper.AddCommand("554", "эксель импорт", 
 				() => new DataImporterCommon().StartProcess(null, 
 					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
 					new System.Threading.CancellationToken()));

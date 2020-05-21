@@ -34,7 +34,7 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>Object</returns>
-        object RosreestrDataGetFileByIdCA(long? loadId, string fname);
+        string RosreestrDataGetFileByIdCA(long? loadId, string fname);
 
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки
@@ -46,7 +46,7 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>ApiResponse of Object</returns>
-        ApiResponse<object> RosreestrDataGetFileByIdCAWithHttpInfo(long? loadId, string fname);
+        ApiResponse<string> RosreestrDataGetFileByIdCAWithHttpInfo(long? loadId, string fname);
         /// <summary>
         /// Возвращает документ из файлового хранилища по id
         /// </summary>
@@ -301,9 +301,9 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>Object</returns>
-        public object RosreestrDataGetFileByIdCA(long? loadId, string fname)
+        public string RosreestrDataGetFileByIdCA(long? loadId, string fname)
         {
-            ApiResponse<object> localVarResponse = RosreestrDataGetFileByIdCAWithHttpInfo(loadId, fname);
+            ApiResponse<string> localVarResponse = RosreestrDataGetFileByIdCAWithHttpInfo(loadId, fname);
             return localVarResponse.Data;
         }
 
@@ -314,7 +314,7 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>ApiResponse of Object</returns>
-        public ApiResponse<object> RosreestrDataGetFileByIdCAWithHttpInfo(long? loadId, string fname)
+        public ApiResponse<string> RosreestrDataGetFileByIdCAWithHttpInfo(long? loadId, string fname)
         {
             // verify the required parameter 'loadId' is set
             if (loadId == null)
@@ -364,9 +364,9 @@ namespace KadOzenka.WebClients.ReonClient.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<object>(localVarStatusCode,
+            return new ApiResponse<string>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                Configuration.ApiClient.Deserialize(localVarResponse, typeof(object)));
+                (string)Configuration.ApiClient.Deserialize(localVarResponse, typeof(string)));
         }
 
         /// <summary>

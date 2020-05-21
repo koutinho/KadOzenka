@@ -3,34 +3,37 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using IO.Swagger.Model;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.WebClients.ReonClient.Api;
 using Newtonsoft.Json;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess
 {
     public class KoTaskFromReon : LongProcess
     {
-        private const string MAIN_URL = "http://localhost/cadAppraisal/cadappraisaldataapi/RosreestrData/xml_by_date";
-        private const string BASE_URL_FOR_FILE = "http://localhost/cadAppraisal/cadappraisaldataapi/RosreestrData";
-        private static HttpClient _httpClient;
         private TaskService TaskService { get; set; }
+        private RosreestrDataApi ReonWebClientService { get; set; }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)
         {
             //WorkerCommon.SetProgress(processQueue, 0);
-            if(_httpClient == null)
-                _httpClient = new HttpClient();
             TaskService = new TaskService();
+            ReonWebClientService = new RosreestrDataApi();
 
             var request = GetRequest();
-            var response = SendDataToService(request).GetAwaiter().GetResult();
+            var response = ReonWebClientService.RosreestrDataGetRRData(request.DateFrom, request.DateTo);
             ProcessResponse(response);
 
             //WorkerCommon.SetProgress(processQueue, 100);
@@ -44,30 +47,13 @@ namespace KadOzenka.Dal.LongProcess
         private TaskFromReonRequest GetRequest()
         {
             var dateFrom = DateTime.Today.AddDays(-1);
-            var dateTo = DateTime.Today.AddTicks(-1);
+            var dateTo = DateTime.Today;
 
             return new TaskFromReonRequest(dateFrom, dateTo);
         }
 
-        private async Task<string> SendDataToService(TaskFromReonRequest request)
+        public void ProcessResponse(List<RRDataLoadModel> tasksFromResponse)
         {
-            var builder = new UriBuilder(MAIN_URL);
-            var query = HttpUtility.ParseQueryString(builder.Query);
-            query["dateFrom"] = request.DateFrom.ToShortDateString();
-            query["dateTo"] = request.DateTo.ToShortDateString();
-            builder.Query = query.ToString();
-            var url = builder.ToString();
-
-            var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadAsStringAsync();
-        }
-
-        public void ProcessResponse(string responseContentStr)
-        {
-            var tasksFromResponse = JsonConvert.DeserializeObject<List<TaskFromReonResponse>>(responseContentStr);
-
             tasksFromResponse.ForEach(task =>
             {
                 var documentId = TaskService.CreateDocument(task.DocNumber, task.DocName, task.DocDate);
@@ -76,12 +62,12 @@ namespace KadOzenka.Dal.LongProcess
 
                 foreach (var fileInfo in task.XmlDocUrls)
                 {
-                    ProcessFile(fileInfo, omTask.Id);
+                    ProcessFile(fileInfo.FileName, task.Id, omTask.Id);
                 }
             });
         }
 
-        private OMTask CreateTask(TaskFromReonResponse task, long documentId)
+        private OMTask CreateTask(RRDataLoadModel task, long documentId)
         {
             var omTask = new OMTask
             {
@@ -89,32 +75,69 @@ namespace KadOzenka.Dal.LongProcess
                 DocumentId = documentId,
                 CreationDate = DateTime.Now,
                 EstimationDate = task.DateAppraisal,
-                NoteType_Code = ObjectModel.Directory.KoNoteType.Day, //TODO Converter
-                Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
+                NoteType_Code = GetTaskNoteType(task.LoadType),
+                Status_Code = KoTaskStatus.InWork
             };
             omTask.Save();
 
             return omTask;
         }
 
-        private void ProcessFile(XmlDocUrls fileInfo, long taskId)
-        {
-            var urlForFile = BASE_URL_FOR_FILE + fileInfo.Url;
-            var data = GetFileData(urlForFile);
-            var stream = new MemoryStream(data);
-            var fileName = fileInfo.FileName;
 
+        private KoNoteType GetTaskNoteType(string loadType)
+        {
+            switch (loadType)
+            {
+                case "Плановый":
+                    return KoNoteType.Initial;
+                case "Вновь учтенные объекты":
+                    return KoNoteType.Day;
+                case "Внеплановый (полный)":
+                    return KoNoteType.Year;
+                default:
+                    return KoNoteType.None;
+            }
+        }
+
+        private void ProcessFile(string fileName, long? loadId, long taskId)
+        {
+            var file = ReonWebClientService.RosreestrDataGetFileByIdCA(loadId, fileName);
+            if (file == null)
+                return;
+
+            //var stream = SerializeToStream(file);
+            var byteArray = Encoding.UTF8.GetBytes(file);
+            var stream = new MemoryStream(byteArray);
             DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", fileName,
                 stream, OMTask.GetRegisterId(), taskId);
         }
 
-        private static byte[] GetFileData(string url)
+        public static MemoryStream SerializeToStream(object obj)
         {
-            using (var client = new WebClient())
-            {
-                return client.DownloadData(url);
-            }
+            var stream = new MemoryStream();
+            var formatter = new BinaryFormatter();
+            formatter.Serialize(stream, obj);
+            return stream;
         }
+
+        //TODO оставила код, пока в апи не реализована загрузка файла
+        //private void ProcessFile(XmlDocUrls fileInfo, long taskId)
+        //{
+        //    var data = GetFileData(urlForFile);
+        //    var stream = new MemoryStream(data);
+        //    var fileName = fileInfo.FileName;
+
+        //    DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", fileName,
+        //        stream, OMTask.GetRegisterId(), taskId);
+        //}
+
+        //private static byte[] GetFileData(string url)
+        //{
+        //    using (var client = new WebClient())
+        //    {
+        //        return client.DownloadData(url);
+        //    }
+        //}
 
         #endregion
 
@@ -131,34 +154,6 @@ namespace KadOzenka.Dal.LongProcess
                 DateFrom = dateFrom;
                 DateTo = dateTo;
             }
-        }
-
-        public class TaskFromReonResponse
-        {
-            public DateTime LoadDate { get; set; }
-
-            public string DocNumber { get; set; }
-
-            public DateTime DocDate { get; set; }
-
-            public string DocName { get; set; }
-
-            public string OrgName { get; set; }
-
-            public DateTime DateAppraisal { get; set; }
-
-            public string LoadType { get; set; }
-
-            public XmlDocUrls DocBaseUrl { get; set; }
-
-            public List<XmlDocUrls> XmlDocUrls { get; set; }
-        }
-
-        public class XmlDocUrls
-        {
-            public string FileName { get; set; }
-
-            public string Url { get; set; }
         }
 
         #endregion

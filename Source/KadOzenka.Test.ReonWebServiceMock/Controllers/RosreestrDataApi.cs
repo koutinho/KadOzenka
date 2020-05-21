@@ -15,6 +15,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using IO.Swagger.Attributes;
 
 using Microsoft.AspNetCore.Authorization;
@@ -27,12 +28,12 @@ namespace IO.Swagger.Controllers
     /// </summary>
     [ApiController]
     public class RosreestrDataApiController : ControllerBase
-    { 
+    {
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки
         /// </summary>
-        
-        /// <param name="loadId">Идентификатор загрузки</param>
+
+        /// <param name="load_id">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <response code="200">OK</response>
         [HttpGet]
@@ -40,19 +41,15 @@ namespace IO.Swagger.Controllers
         [ValidateModelState]
         [SwaggerOperation("RosreestrDataGetFileByIdCA")]
         [SwaggerResponse(statusCode: 200, type: typeof(Object), description: "OK")]
-        public virtual IActionResult RosreestrDataGetFileByIdCA([FromRoute][Required]long? loadId, [FromRoute][Required]string fname)
-        { 
+        public virtual IActionResult RosreestrDataGetFileByIdCA([FromRoute][Required]long? load_id, [FromRoute][Required]string fname)
+        {
             //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
             // return StatusCode(200, default(Object));
 
-            string exampleJson = null;
-            exampleJson = "\"{}\"";
-            
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<Object>(exampleJson)
-            : default(Object);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+
+            var xml = System.IO.File.ReadAllText(".\\TestResponces\\File_Ca_By_Id.xml");
+
+            return File(Encoding.UTF8.GetBytes(xml), "application/xml", "File_Ca_By_Id.xml");
         }
 
         /// <summary>
