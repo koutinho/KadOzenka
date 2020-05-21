@@ -33,8 +33,17 @@ namespace GenerateDbScripts
 			
 			ExportProfile exportProfile = File.ReadAllText(exportProfileFilename).DeserializeFromXml<ExportProfile>();
 
-			DbExporter dbExporter = new DbExporter(connectionString, providerName);
-			dbExporter.GenerateExportScripts(baseFolder, exportProfile);
+			try
+			{
+				DbExporter dbExporter = new DbExporter(connectionString, providerName);
+				dbExporter.GenerateExportScripts(baseFolder, exportProfile);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+
+			
 
 			Console.WriteLine("Done");
 			Console.ReadLine();

@@ -26,6 +26,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP.Sdk.Core", "Utils\EP.Sdk
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StartProject", "StartProject\StartProject.csproj", "{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KadOzenka.WebClients", "KadOzenka.WebClients\KadOzenka.WebClients.csproj", "{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{424A8967-E655-42CB-A88A-B30251FB0ACB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KadOzenka.Test.ReonWebServiceMock", "KadOzenka.Test.ReonWebServiceMock\KadOzenka.Test.ReonWebServiceMock.csproj", "{35BD5D31-C805-4528-AA4E-855795AFE7AE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +112,22 @@ Global
 		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|x86.ActiveCfg = Release|Any CPU
 		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}.Release|x86.Build.0 = Release|Any CPU
+		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Debug|x86.Build.0 = Debug|Any CPU
+		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Release|x86.ActiveCfg = Release|Any CPU
+		{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}.Release|x86.Build.0 = Release|Any CPU
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Debug|x86.Build.0 = Debug|Any CPU
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Release|x86.ActiveCfg = Release|Any CPU
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,12 +139,13 @@ Global
 		{E885A580-E156-4906-8978-41B59991EF01} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{F9CC1690-F519-4C76-A52B-78625BF288AC} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
+		{35BD5D31-C805-4528-AA4E-855795AFE7AE} = {424A8967-E655-42CB-A88A-B30251FB0ACB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 10
+		SccNumberOfProjects = 12
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
 		SccLocalPath0 = .
@@ -159,5 +182,12 @@ Global
 		SccProjectTopLevelParentUniqueName9 = KadOzenka.sln
 		SccProjectName9 = StartProject
 		SccLocalPath9 = StartProject
+		SccProjectUniqueName10 = KadOzenka.WebClients\\KadOzenka.WebClients.csproj
+		SccProjectName10 = KadOzenka.WebClients
+		SccLocalPath10 = KadOzenka.WebClients
+		SccProjectUniqueName11 = KadOzenka.Test.ReonWebServiceMock\\KadOzenka.Test.ReonWebServiceMock.csproj
+		SccProjectTopLevelParentUniqueName11 = KadOzenka.sln
+		SccProjectName11 = KadOzenka.Test.ReonWebServiceMock
+		SccLocalPath11 = KadOzenka.Test.ReonWebServiceMock
 	EndGlobalSection
 EndGlobal
