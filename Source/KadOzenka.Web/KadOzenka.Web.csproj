@@ -61,6 +61,7 @@
     <None Remove="Config\Param\Postgres.Backup.Dev.xml" />
     <None Remove="Config\Param\Postgres.Backup.Ppr.xml" />
     <None Remove="Config\Param\Postgres.Backup.Prod.xml" />
+    <None Remove="Config\Param\ReonServiceConfig.xml" />
     <None Remove="Config\ReadMe.txt" />
     <None Remove="Config\Registers\SearchPanels\CalculatePerson.xml" />
     <None Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
@@ -190,6 +191,9 @@
 
   <ItemGroup>
     <Content Include="Config\Common\MainMenu.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Param\ReonServiceConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Param\Core.FileStorages.Ppr.Ppr2.xml">
@@ -1011,6 +1015,7 @@
   <ItemGroup>
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
+    <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />

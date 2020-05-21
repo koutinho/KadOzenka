@@ -224,29 +224,13 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// Initializes a new instance of the <see cref="RosreestrDataApi"/> class.
         /// </summary>
         /// <returns></returns>
-        public RosreestrDataApi(string basePath)
+        public RosreestrDataApi()
         {
-            Configuration = new Configuration { BasePath = basePath };
+            Configuration = new Configuration { BasePath = ReonServiceConfig.Current.BaseUrl };
 
             ExceptionFactory = Configuration.DefaultExceptionFactory;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RosreestrDataApi"/> class
-        /// using Configuration object
-        /// </summary>
-        /// <param name="configuration">An instance of Configuration</param>
-        /// <returns></returns>
-        public RosreestrDataApi(Configuration configuration = null)
-        {
-            if (configuration == null) // use the default one in Configuration
-                Configuration = Configuration.Default;
-            else
-                Configuration = configuration;
-
-            ExceptionFactory = Configuration.DefaultExceptionFactory;
-        }
-
+        
         /// <summary>
         /// Gets the base path of the API client.
         /// </summary>

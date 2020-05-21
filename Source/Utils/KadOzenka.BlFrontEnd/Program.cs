@@ -196,10 +196,7 @@ namespace KadOzenka.BlFrontEnd
 
 			consoleHelper.AddCommand("901", "Тест API РЕОН", () =>
 			{
-				var baseUrl = "http://localhost:5000/CadAppraisal/CadAppraisalDataApi/RosreestrData/xml_by_date?dateFrom=2020-05-01&dateTo=2020-05-02";
-
-
-				var service = new RosreestrDataApi("http://localhost:5000/CadAppraisal/CadAppraisalDataApi");
+				var service = new RosreestrDataApi();
 				
 				List<IO.Swagger.Model.RRDataLoadModel> result = service.RosreestrDataGetRRData(DateTime.Today.AddDays(-1), DateTime.Today);
 
