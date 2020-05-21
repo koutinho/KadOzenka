@@ -651,9 +651,6 @@
     <None Update="Config\Ehd\EhdObjectsImportConditions.Prod.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\LeftPanel\Dashboard.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Config\Mfc\Upload\nach\ConfigA.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
