@@ -2402,4 +2402,20 @@ namespace ObjectModel.KO
 		/// </summary>
 		public bool SendResultToReon { get; set; }
     }
+
+    public class ResultKoUnloadSettings
+    {
+	    public ResultKoUnloadSettings(bool noResult = false)
+	    {
+		    NoResult = noResult;
+	    }
+
+	    public long FileId { get; set; }
+
+	    public string FileName { get; set; }
+
+	    public bool IsXml { get; set; }
+
+		public bool NoResult { get; set; }
+    }
 }

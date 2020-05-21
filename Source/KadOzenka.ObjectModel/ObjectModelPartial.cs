@@ -1738,6 +1738,30 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
+	/// <summary>
+	/// 221 Журнал отправки итогов расчета КО
+	/// </summary>
+	public partial class OMKoResultSendJournal
+	{
+
+		public OMKoResultSendJournal()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMKoResultSendJournal(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
+namespace ObjectModel.KO
+{
     /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года
     /// </summary>

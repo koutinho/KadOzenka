@@ -8176,6 +8176,158 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
+	/// <summary>
+	/// 221 Журнал отправки итогов расчета КО (KO_RESULT_SEND_JOURNAL)
+	/// </summary>
+	[RegisterInfo(RegisterID = 221)]
+	[Serializable]
+	public partial class OMKoResultSendJournal : OMBaseClass<OMKoResultSendJournal>
+	{
+
+		private long _id;
+		/// <summary>
+		/// 22100100 Идентификатор (ID)
+		/// </summary>
+		[PrimaryKey(AttributeID = 22100100)]
+		public long Id
+		{
+			get
+			{
+				CheckPropertyInited("Id");
+				return _id;
+			}
+			set
+			{
+				_id = value;
+				NotifyPropertyChanged("Id");
+			}
+		}
+
+
+		private string _guid;
+		/// <summary>
+		/// 22100200 Глобальный идентификатор сообщения (GUID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 22100200)]
+		public string Guid
+		{
+			get
+			{
+				CheckPropertyInited("Guid");
+				return _guid;
+			}
+			set
+			{
+				_guid = value;
+				NotifyPropertyChanged("Guid");
+			}
+		}
+
+
+		private long _taskid;
+		/// <summary>
+		/// 22100300 ИД Задания на оценку (TASK_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 22100300)]
+		public long TaskId
+		{
+			get
+			{
+				CheckPropertyInited("TaskId");
+				return _taskid;
+			}
+			set
+			{
+				_taskid = value;
+				NotifyPropertyChanged("TaskId");
+			}
+		}
+
+
+		private DateTime _createdate;
+		/// <summary>
+		/// 22100400 Дата создания записи в журнале (CREATE_DATE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 22100400)]
+		public DateTime CreateDate
+		{
+			get
+			{
+				CheckPropertyInited("CreateDate");
+				return _createdate;
+			}
+			set
+			{
+				_createdate = value;
+				NotifyPropertyChanged("CreateDate");
+			}
+		}
+
+
+		private DateTime _senddate;
+		/// <summary>
+		/// 22100500 Дата прочтения сообщения ИС РЕОН (SEND_DATE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 22100500)]
+		public DateTime SendDate
+		{
+			get
+			{
+				CheckPropertyInited("SendDate");
+				return _senddate;
+			}
+			set
+			{
+				_senddate = value;
+				NotifyPropertyChanged("SendDate");
+			}
+		}
+
+
+		private DateTime _confirmdate;
+		/// <summary>
+		/// 22100600 Дата подтверждения сообщения ИС РЕОН (CONFIRM_DATE)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 22100600)]
+		public DateTime ConfirmDate
+		{
+			get
+			{
+				CheckPropertyInited("ConfirmDate");
+				return _confirmdate;
+			}
+			set
+			{
+				_confirmdate = value;
+				NotifyPropertyChanged("ConfirmDate");
+			}
+		}
+
+
+		private long _resultexportid;
+		/// <summary>
+		/// 22100700 Идентификатор результата выгрузки (RESULT_EXPORT_ID)
+		/// </summary>
+		[RegisterAttribute(AttributeID = 22100700)]
+		public long ResultExportId
+		{
+			get
+			{
+				CheckPropertyInited("ResultExportId");
+				return _resultexportid;
+			}
+			set
+			{
+				_resultexportid = value;
+				NotifyPropertyChanged("ResultExportId");
+			}
+		}
+
+	}
+}
+
+namespace ObjectModel.KO
+{
     /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года (KO_UNIT_PARAMS_OKS_2018)
     /// </summary>
