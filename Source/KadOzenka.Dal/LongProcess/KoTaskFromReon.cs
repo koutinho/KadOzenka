@@ -30,10 +30,10 @@ namespace KadOzenka.Dal.LongProcess
                 _httpClient = new HttpClient();
             TaskService = new TaskService();
 
-            var requestForService = GetRequestForService();
-            //var response = SendDataToService(_httpClient, Url, requestForService).GetAwaiter().GetResult();
+            var request = GetRequest();
+            //var response = SendDataToService(_httpClient, Url, request).GetAwaiter().GetResult();
             var response = string.Empty;
-            ProcessServiceResponse(response);
+            ProcessResponse(response);
 
             NotificationSender.SendNotification(processQueue, "Получения заданий на оценку из ИС РЕОН", "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.");
             //WorkerCommon.SetProgress(processQueue, 100);
@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.LongProcess
 
         #region Support Methods
 
-        private TaskFromReonRequest GetRequestForService()
+        private TaskFromReonRequest GetRequest()
         {
             var dateFrom = DateTime.Today.AddDays(-1);
             var dateTo = DateTime.Today.AddTicks(-1);
@@ -64,7 +64,7 @@ namespace KadOzenka.Dal.LongProcess
             return await response.Content.ReadAsStringAsync();
         }
 
-        public void ProcessServiceResponse(string responseContentStr)
+        public void ProcessResponse(string responseContentStr)
         {
             //var tasksFromResponse = JsonConvert.DeserializeObject<List<TaskFromReonResponse>>(responseContentStr);
             var tasksFromResponse = new List<TaskFromReonResponse>

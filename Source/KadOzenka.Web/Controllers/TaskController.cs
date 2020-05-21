@@ -667,6 +667,26 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
+
+        #region Загрузка графических факторов из РЕОН
+
+        [HttpGet]
+        public ActionResult DownloadGraphicFactorsFromReon(long taskId)
+        {
+            ////TODO код для отладки
+            //new KoFactorsFromReon().StartProcess(new OMProcessType(), new OMQueue
+            //{
+            //    ObjectId = taskId,
+            //    UserId = SRDSession.GetCurrentUserId()
+            //}, new CancellationToken());
+
+            //KoFactorsFromReon.AddProcessToQueue(taskId);
+            return View();
+        }
+
+        #endregion
+
+
         public ActionResult DataMapping(long taskId)
 		{
 			OMTask task = OMTask.Where(x => x.Id == taskId)				
