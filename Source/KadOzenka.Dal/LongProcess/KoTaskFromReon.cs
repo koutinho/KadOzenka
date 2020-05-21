@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
 using Newtonsoft.Json;
@@ -14,11 +14,10 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess
 {
-    //TODO пока нет апи, поэтому процесс не доработан
     public class KoTaskFromReon : LongProcess
     {
-        public const string LongProcessName = nameof(KoTaskFromReon);
-        private string Url => "";
+        private const string MAIN_URL = "http://localhost/cadAppraisal/cadappraisaldataapi/RosreestrData/xml_by_date";
+        private const string BASE_URL_FOR_FILE = "http://localhost/cadAppraisal/cadappraisaldataapi/RosreestrData";
         private static HttpClient _httpClient;
         private TaskService TaskService { get; set; }
 
@@ -31,12 +30,12 @@ namespace KadOzenka.Dal.LongProcess
             TaskService = new TaskService();
 
             var request = GetRequest();
-            //var response = SendDataToService(_httpClient, Url, request).GetAwaiter().GetResult();
-            var response = string.Empty;
+            var response = SendDataToService(request).GetAwaiter().GetResult();
             ProcessResponse(response);
 
-            NotificationSender.SendNotification(processQueue, "Получения заданий на оценку из ИС РЕОН", "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.");
             //WorkerCommon.SetProgress(processQueue, 100);
+            NotificationSender.SendNotification(processQueue, "Получения заданий на оценку из ИС РЕОН",
+                "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.");
         }
 
 
@@ -50,15 +49,16 @@ namespace KadOzenka.Dal.LongProcess
             return new TaskFromReonRequest(dateFrom, dateTo);
         }
 
-        private async Task<string> SendDataToService(HttpClient httpClient, string url, object data)
+        private async Task<string> SendDataToService(TaskFromReonRequest request)
         {
-            if (string.IsNullOrWhiteSpace(url))
-                throw new Exception("Не найден URL для сервиса");
+            var builder = new UriBuilder(MAIN_URL);
+            var query = HttpUtility.ParseQueryString(builder.Query);
+            query["dateFrom"] = request.DateFrom.ToShortDateString();
+            query["dateTo"] = request.DateTo.ToShortDateString();
+            builder.Query = query.ToString();
+            var url = builder.ToString();
 
-            var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data));
-            var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-
-            var response = await httpClient.PostAsync(url, httpContent);
+            var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
             return await response.Content.ReadAsStringAsync();
@@ -66,32 +66,17 @@ namespace KadOzenka.Dal.LongProcess
 
         public void ProcessResponse(string responseContentStr)
         {
-            //var tasksFromResponse = JsonConvert.DeserializeObject<List<TaskFromReonResponse>>(responseContentStr);
-            var tasksFromResponse = new List<TaskFromReonResponse>
-            {
-                new TaskFromReonResponse
-                {
-                    DownloadDate = DateTime.Today,
-                    DocumentNumber = "DocumentNumber",
-                    DocumentDate = DateTime.Today,
-                    DocumentName = "DocumentName",
-                    Organization = "Organization",
-                    EstimationDate = DateTime.Today,
-                    DownloadType = 1,
-                    LinkToFileBase = "LinkToFileBase",
-                    LinksToXmlFiles = new List<string> { "https://localhost:50252/DataImporterLayout/Download?importId=17618271&downloadResult=False&fileNameWithExtension=list_1_1A1B68C2-47F4-42DD-9AF5-8A921CBD9D96_deleted888.xml" }
-                }
-            };
+            var tasksFromResponse = JsonConvert.DeserializeObject<List<TaskFromReonResponse>>(responseContentStr);
 
             tasksFromResponse.ForEach(task =>
             {
-                var documentId = TaskService.CreateDocument(task.DocumentNumber, task.DocumentName, task.DocumentDate);
+                var documentId = TaskService.CreateDocument(task.DocNumber, task.DocName, task.DocDate);
 
                 var omTask = CreateTask(task, documentId);
 
-                foreach (var link in task.LinksToXmlFiles)
+                foreach (var fileInfo in task.XmlDocUrls)
                 {
-                    ProcessFile(link, omTask.Id);
+                    ProcessFile(fileInfo, omTask.Id);
                 }
             });
         }
@@ -100,11 +85,11 @@ namespace KadOzenka.Dal.LongProcess
         {
             var omTask = new OMTask
             {
-                TourId = 2018, //TODO dto.TourYear,
+                TourId = 2018, //TODO TourId,
                 DocumentId = documentId,
                 CreationDate = DateTime.Now,
-                EstimationDate = task.EstimationDate,
-                NoteType_Code = (ObjectModel.Directory.KoNoteType)task.DownloadType,
+                EstimationDate = task.DateAppraisal,
+                NoteType_Code = ObjectModel.Directory.KoNoteType.Day, //TODO Converter
                 Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
             };
             omTask.Save();
@@ -112,33 +97,33 @@ namespace KadOzenka.Dal.LongProcess
             return omTask;
         }
 
-        private void ProcessFile(string link, long taskId)
+        private void ProcessFile(XmlDocUrls fileInfo, long taskId)
         {
-            var data = GetFileData(link);
+            var urlForFile = BASE_URL_FOR_FILE + fileInfo.Url;
+            var data = GetFileData(urlForFile);
             var stream = new MemoryStream(data);
-            var fileName = $"file_for_task_{taskId}.xml";
+            var fileName = fileInfo.FileName;
 
             DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", fileName,
                 stream, OMTask.GetRegisterId(), taskId);
         }
 
-        private static byte[] GetFileData(string address)
+        private static byte[] GetFileData(string url)
         {
             using (var client = new WebClient())
             {
-                return client.DownloadData(address);
+                return client.DownloadData(url);
             }
         }
 
         #endregion
 
+
         #region Entities
 
         public class TaskFromReonRequest
         {
-            [JsonProperty("dateFrom")]
             public DateTime DateFrom { get; set; }
-            [JsonProperty("dateTo")]
             public DateTime DateTo { get; set; }
 
             public TaskFromReonRequest(DateTime dateFrom, DateTime dateTo)
@@ -150,32 +135,30 @@ namespace KadOzenka.Dal.LongProcess
 
         public class TaskFromReonResponse
         {
-            [JsonProperty("dateFrom")]
-            public DateTime DownloadDate { get; set; }
+            public DateTime LoadDate { get; set; }
 
-            [JsonProperty("dateTo")]
-            public string DocumentNumber { get; set; }
+            public string DocNumber { get; set; }
 
-            [JsonProperty("dateTo")]
-            public DateTime DocumentDate { get; set; }
+            public DateTime DocDate { get; set; }
 
-            [JsonProperty("dateTo")]
-            public string DocumentName { get; set; }
+            public string DocName { get; set; }
 
-            [JsonProperty("dateTo")]
-            public string Organization { get; set; }
+            public string OrgName { get; set; }
 
-            [JsonProperty("dateTo")]
-            public DateTime EstimationDate { get; set; }
+            public DateTime DateAppraisal { get; set; }
 
-            [JsonProperty("dateTo")]
-            public long DownloadType { get; set; }
+            public string LoadType { get; set; }
 
-            [JsonProperty("dateTo")]
-            public string LinkToFileBase { get; set; }
+            public XmlDocUrls DocBaseUrl { get; set; }
 
-            [JsonProperty("dateTo")]
-            public List<string> LinksToXmlFiles { get; set; }
+            public List<XmlDocUrls> XmlDocUrls { get; set; }
+        }
+
+        public class XmlDocUrls
+        {
+            public string FileName { get; set; }
+
+            public string Url { get; set; }
         }
 
         #endregion
