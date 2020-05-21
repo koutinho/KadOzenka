@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.LongProcess
     public class ModelingProcess : LongProcess
     {
         public const string LongProcessName = nameof(ModelingProcess);
-        private static HttpClient _httpClient = new HttpClient();
+        private static HttpClient _httpClient;
 
         public static void AddProcessToQueue(ModelingInputParameters inputParameters)
         {
@@ -28,6 +28,8 @@ namespace KadOzenka.Dal.LongProcess
             CancellationToken cancellationToken)
         {
             WorkerCommon.SetProgress(processQueue, 0);
+            if (_httpClient == null)
+                _httpClient = new HttpClient();
 
             ModelingInputParameters inputParameters = null;
             if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
