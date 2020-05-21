@@ -127,14 +127,14 @@ namespace IO.Swagger.Controllers
             // return StatusCode(200, default(List<RRDataLoadModel>));
 
             string exampleJson = null;
-            exampleJson = "[ {\n  \"LoadDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DateAppraisal\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocBaseUrl\" : {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  },\n  \"DocDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocNumber\" : \"DocNumber\",\n  \"DocName\" : \"DocName\",\n  \"OrgName\" : \"OrgName\",\n  \"Id\" : 0,\n  \"XmlDocUrls\" : [ {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  }, {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  } ],\n  \"LoadType\" : \"LoadType\"\n}, {\n  \"LoadDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DateAppraisal\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocBaseUrl\" : {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  },\n  \"DocDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocNumber\" : \"DocNumber\",\n  \"DocName\" : \"DocName\",\n  \"OrgName\" : \"OrgName\",\n  \"Id\" : 0,\n  \"XmlDocUrls\" : [ {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  }, {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  } ],\n  \"LoadType\" : \"LoadType\"\n} ]";
+            exampleJson = System.IO.File.ReadAllText(".\\TestResponces\\XmlByDateResponce.json"); // "[ {\n  \"LoadDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DateAppraisal\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocBaseUrl\" : {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  },\n  \"DocDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocNumber\" : \"DocNumber\",\n  \"DocName\" : \"DocName\",\n  \"OrgName\" : \"OrgName\",\n  \"Id\" : 0,\n  \"XmlDocUrls\" : [ {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  }, {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  } ],\n  \"LoadType\" : \"LoadType\"\n}, {\n  \"LoadDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DateAppraisal\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocBaseUrl\" : {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  },\n  \"DocDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocNumber\" : \"DocNumber\",\n  \"DocName\" : \"DocName\",\n  \"OrgName\" : \"OrgName\",\n  \"Id\" : 0,\n  \"XmlDocUrls\" : [ {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  }, {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  } ],\n  \"LoadType\" : \"LoadType\"\n} ]";
             
             
             var example = exampleJson != null
             ? JsonConvert.DeserializeObject<List<RRDataLoadModel>>(exampleJson)
             : default(List<RRDataLoadModel>);
             //TODO: Change the data returned
-            return new ObjectResult(example);
+            return new JsonResult(example);
         }
     }
 }

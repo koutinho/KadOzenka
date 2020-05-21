@@ -16,7 +16,7 @@ using RestSharp;
 using IO.Swagger.Client;
 using IO.Swagger.Model;
 
-namespace IO.Swagger.Api
+namespace KadOzenka.WebClients.ReonClient.Api
 {
     /// <summary>
     /// Represents a collection of functions to interact with the API endpoints
@@ -30,11 +30,11 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>Object</returns>
-        Object RosreestrDataGetFileByIdCA (long? loadId, string fname);
+        object RosreestrDataGetFileByIdCA(long? loadId, string fname);
 
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки
@@ -42,22 +42,22 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>ApiResponse of Object</returns>
-        ApiResponse<Object> RosreestrDataGetFileByIdCAWithHttpInfo (long? loadId, string fname);
+        ApiResponse<object> RosreestrDataGetFileByIdCAWithHttpInfo(long? loadId, string fname);
         /// <summary>
         /// Возвращает документ из файлового хранилища по id
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <returns>Object</returns>
-        Object RosreestrDataGetFileByIdZD (long? id, string fname);
+        object RosreestrDataGetFileByIdZD(long? id, string fname);
 
         /// <summary>
         /// Возвращает документ из файлового хранилища по id
@@ -65,22 +65,22 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <returns>ApiResponse of Object</returns>
-        ApiResponse<Object> RosreestrDataGetFileByIdZDWithHttpInfo (long? id, string fname);
+        ApiResponse<object> RosreestrDataGetFileByIdZDWithHttpInfo(long? id, string fname);
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>Object</returns>
-        Object RosreestrDataGetGraphFactorsByCadNum (string cadNum, DateTime? dateAppraisal);
+        object RosreestrDataGetGraphFactorsByCadNum(string cadNum, DateTime? dateAppraisal);
 
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру
@@ -88,22 +88,22 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>ApiResponse of Object</returns>
-        ApiResponse<Object> RosreestrDataGetGraphFactorsByCadNumWithHttpInfo (string cadNum, DateTime? dateAppraisal);
+        ApiResponse<object> RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(string cadNum, DateTime? dateAppraisal);
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <returns>List&lt;RRDataLoadModel&gt;</returns>
-        List<RRDataLoadModel> RosreestrDataGetRRData (DateTime? dateFrom, DateTime? dateTo);
+        List<RRDataLoadModel> RosreestrDataGetRRData(DateTime? dateFrom, DateTime? dateTo);
 
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно
@@ -111,11 +111,11 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <returns>ApiResponse of List&lt;RRDataLoadModel&gt;</returns>
-        ApiResponse<List<RRDataLoadModel>> RosreestrDataGetRRDataWithHttpInfo (DateTime? dateFrom, DateTime? dateTo);
+        ApiResponse<List<RRDataLoadModel>> RosreestrDataGetRRDataWithHttpInfo(DateTime? dateFrom, DateTime? dateTo);
         #endregion Synchronous Operations
         #region Asynchronous Operations
         /// <summary>
@@ -124,11 +124,11 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>Task of Object</returns>
-        System.Threading.Tasks.Task<Object> RosreestrDataGetFileByIdCAAsync (long? loadId, string fname);
+        System.Threading.Tasks.Task<object> RosreestrDataGetFileByIdCAAsync(long? loadId, string fname);
 
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки
@@ -136,22 +136,22 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>Task of ApiResponse (Object)</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> RosreestrDataGetFileByIdCAAsyncWithHttpInfo (long? loadId, string fname);
+        System.Threading.Tasks.Task<ApiResponse<object>> RosreestrDataGetFileByIdCAAsyncWithHttpInfo(long? loadId, string fname);
         /// <summary>
         /// Возвращает документ из файлового хранилища по id
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <returns>Task of Object</returns>
-        System.Threading.Tasks.Task<Object> RosreestrDataGetFileByIdZDAsync (long? id, string fname);
+        System.Threading.Tasks.Task<object> RosreestrDataGetFileByIdZDAsync(long? id, string fname);
 
         /// <summary>
         /// Возвращает документ из файлового хранилища по id
@@ -159,22 +159,22 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <returns>Task of ApiResponse (Object)</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> RosreestrDataGetFileByIdZDAsyncWithHttpInfo (long? id, string fname);
+        System.Threading.Tasks.Task<ApiResponse<object>> RosreestrDataGetFileByIdZDAsyncWithHttpInfo(long? id, string fname);
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>Task of Object</returns>
-        System.Threading.Tasks.Task<Object> RosreestrDataGetGraphFactorsByCadNumAsync (string cadNum, DateTime? dateAppraisal);
+        System.Threading.Tasks.Task<object> RosreestrDataGetGraphFactorsByCadNumAsync(string cadNum, DateTime? dateAppraisal);
 
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру
@@ -182,22 +182,22 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>Task of ApiResponse (Object)</returns>
-        System.Threading.Tasks.Task<ApiResponse<Object>> RosreestrDataGetGraphFactorsByCadNumAsyncWithHttpInfo (string cadNum, DateTime? dateAppraisal);
+        System.Threading.Tasks.Task<ApiResponse<object>> RosreestrDataGetGraphFactorsByCadNumAsyncWithHttpInfo(string cadNum, DateTime? dateAppraisal);
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно
         /// </summary>
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <returns>Task of List&lt;RRDataLoadModel&gt;</returns>
-        System.Threading.Tasks.Task<List<RRDataLoadModel>> RosreestrDataGetRRDataAsync (DateTime? dateFrom, DateTime? dateTo);
+        System.Threading.Tasks.Task<List<RRDataLoadModel>> RosreestrDataGetRRDataAsync(DateTime? dateFrom, DateTime? dateTo);
 
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно
@@ -205,11 +205,11 @@ namespace IO.Swagger.Api
         /// <remarks>
         /// 
         /// </remarks>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <returns>Task of ApiResponse (List&lt;RRDataLoadModel&gt;)</returns>
-        System.Threading.Tasks.Task<ApiResponse<List<RRDataLoadModel>>> RosreestrDataGetRRDataAsyncWithHttpInfo (DateTime? dateFrom, DateTime? dateTo);
+        System.Threading.Tasks.Task<ApiResponse<List<RRDataLoadModel>>> RosreestrDataGetRRDataAsyncWithHttpInfo(DateTime? dateFrom, DateTime? dateTo);
         #endregion Asynchronous Operations
     }
 
@@ -218,17 +218,17 @@ namespace IO.Swagger.Api
     /// </summary>
     public partial class RosreestrDataApi : IRosreestrDataApi
     {
-        private IO.Swagger.Client.ExceptionFactory _exceptionFactory = (name, response) => null;
+        private ExceptionFactory _exceptionFactory = (name, response) => null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RosreestrDataApi"/> class.
         /// </summary>
         /// <returns></returns>
-        public RosreestrDataApi(String basePath)
+        public RosreestrDataApi(string basePath)
         {
-            this.Configuration = new IO.Swagger.Client.Configuration { BasePath = basePath };
+            Configuration = new Configuration { BasePath = basePath };
 
-            ExceptionFactory = IO.Swagger.Client.Configuration.DefaultExceptionFactory;
+            ExceptionFactory = Configuration.DefaultExceptionFactory;
         }
 
         /// <summary>
@@ -237,23 +237,23 @@ namespace IO.Swagger.Api
         /// </summary>
         /// <param name="configuration">An instance of Configuration</param>
         /// <returns></returns>
-        public RosreestrDataApi(IO.Swagger.Client.Configuration configuration = null)
+        public RosreestrDataApi(Configuration configuration = null)
         {
             if (configuration == null) // use the default one in Configuration
-                this.Configuration = IO.Swagger.Client.Configuration.Default;
+                Configuration = Configuration.Default;
             else
-                this.Configuration = configuration;
+                Configuration = configuration;
 
-            ExceptionFactory = IO.Swagger.Client.Configuration.DefaultExceptionFactory;
+            ExceptionFactory = Configuration.DefaultExceptionFactory;
         }
 
         /// <summary>
         /// Gets the base path of the API client.
         /// </summary>
         /// <value>The base path</value>
-        public String GetBasePath()
+        public string GetBasePath()
         {
-            return this.Configuration.ApiClient.RestClient.BaseUrl.ToString();
+            return Configuration.ApiClient.RestClient.BaseUrl.ToString();
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace IO.Swagger.Api
         /// </summary>
         /// <value>The base path</value>
         [Obsolete("SetBasePath is deprecated, please do 'Configuration.ApiClient = new ApiClient(\"http://new-path\")' instead.")]
-        public void SetBasePath(String basePath)
+        public void SetBasePath(string basePath)
         {
             // do nothing
         }
@@ -270,12 +270,12 @@ namespace IO.Swagger.Api
         /// Gets or sets the configuration object
         /// </summary>
         /// <value>An instance of the Configuration</value>
-        public IO.Swagger.Client.Configuration Configuration {get; set;}
+        public Configuration Configuration { get; set; }
 
         /// <summary>
         /// Provides a factory method hook for the creation of exceptions.
         /// </summary>
-        public IO.Swagger.Client.ExceptionFactory ExceptionFactory
+        public ExceptionFactory ExceptionFactory
         {
             get
             {
@@ -293,9 +293,9 @@ namespace IO.Swagger.Api
         /// </summary>
         /// <returns>Dictionary of HTTP header</returns>
         [Obsolete("DefaultHeader is deprecated, please use Configuration.DefaultHeader instead.")]
-        public IDictionary<String, String> DefaultHeader()
+        public IDictionary<string, string> DefaultHeader()
         {
-            return new ReadOnlyDictionary<string, string>(this.Configuration.DefaultHeader);
+            return new ReadOnlyDictionary<string, string>(Configuration.DefaultHeader);
         }
 
         /// <summary>
@@ -307,30 +307,30 @@ namespace IO.Swagger.Api
         [Obsolete("AddDefaultHeader is deprecated, please use Configuration.AddDefaultHeader instead.")]
         public void AddDefaultHeader(string key, string value)
         {
-            this.Configuration.AddDefaultHeader(key, value);
+            Configuration.AddDefaultHeader(key, value);
         }
 
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>Object</returns>
-        public Object RosreestrDataGetFileByIdCA (long? loadId, string fname)
+        public object RosreestrDataGetFileByIdCA(long? loadId, string fname)
         {
-             ApiResponse<Object> localVarResponse = RosreestrDataGetFileByIdCAWithHttpInfo(loadId, fname);
-             return localVarResponse.Data;
+            ApiResponse<object> localVarResponse = RosreestrDataGetFileByIdCAWithHttpInfo(loadId, fname);
+            return localVarResponse.Data;
         }
 
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>ApiResponse of Object</returns>
-        public ApiResponse< Object > RosreestrDataGetFileByIdCAWithHttpInfo (long? loadId, string fname)
+        public ApiResponse<object> RosreestrDataGetFileByIdCAWithHttpInfo(long? loadId, string fname)
         {
             // verify the required parameter 'loadId' is set
             if (loadId == null)
@@ -340,39 +340,39 @@ namespace IO.Swagger.Api
                 throw new ApiException(400, "Missing required parameter 'fname' when calling RosreestrDataApi->RosreestrDataGetFileByIdCA");
 
             var localVarPath = "/RosreestrData/file_ca_by_id/{load_id}/{fname}";
-            var localVarPathParams = new Dictionary<String, String>();
-            var localVarQueryParams = new List<KeyValuePair<String, String>>();
-            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
-            var localVarFormParams = new Dictionary<String, String>();
-            var localVarFileParams = new Dictionary<String, FileParameter>();
-            Object localVarPostBody = null;
+            var localVarPathParams = new Dictionary<string, string>();
+            var localVarQueryParams = new List<KeyValuePair<string, string>>();
+            var localVarHeaderParams = new Dictionary<string, string>(Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<string, string>();
+            var localVarFileParams = new Dictionary<string, FileParameter>();
+            object localVarPostBody = null;
 
             // to determine the Content-Type header
-            String[] localVarHttpContentTypes = new String[] {
+            string[] localVarHttpContentTypes = new string[] {
             };
-            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+            string localVarHttpContentType = Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
 
             // to determine the Accept header
-            String[] localVarHttpHeaderAccepts = new String[] {
+            string[] localVarHttpHeaderAccepts = new string[] {
                 "application/json",
                 "text/json",
                 "application/xml",
                 "text/xml"
             };
-            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            string localVarHttpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
             if (localVarHttpHeaderAccept != null)
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
-            if (loadId != null) localVarPathParams.Add("load_id", this.Configuration.ApiClient.ParameterToString(loadId)); // path parameter
-            if (fname != null) localVarPathParams.Add("fname", this.Configuration.ApiClient.ParameterToString(fname)); // path parameter
+            if (loadId != null) localVarPathParams.Add("load_id", Configuration.ApiClient.ParameterToString(loadId)); // path parameter
+            if (fname != null) localVarPathParams.Add("fname", Configuration.ApiClient.ParameterToString(fname)); // path parameter
 
 
             // make the HTTP request
-            IRestResponse localVarResponse = (IRestResponse) this.Configuration.ApiClient.CallApi(localVarPath,
+            IRestResponse localVarResponse = (IRestResponse)Configuration.ApiClient.CallApi(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
-            int localVarStatusCode = (int) localVarResponse.StatusCode;
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
 
             if (ExceptionFactory != null)
             {
@@ -380,33 +380,33 @@ namespace IO.Swagger.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<Object>(localVarStatusCode,
+            return new ApiResponse<object>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (Object) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(Object)));
+                Configuration.ApiClient.Deserialize(localVarResponse, typeof(object)));
         }
 
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>Task of Object</returns>
-        public async System.Threading.Tasks.Task<Object> RosreestrDataGetFileByIdCAAsync (long? loadId, string fname)
+        public async System.Threading.Tasks.Task<object> RosreestrDataGetFileByIdCAAsync(long? loadId, string fname)
         {
-             ApiResponse<Object> localVarResponse = await RosreestrDataGetFileByIdCAAsyncWithHttpInfo(loadId, fname);
-             return localVarResponse.Data;
+            ApiResponse<object> localVarResponse = await RosreestrDataGetFileByIdCAAsyncWithHttpInfo(loadId, fname);
+            return localVarResponse.Data;
 
         }
 
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="loadId">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <returns>Task of ApiResponse (Object)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<Object>> RosreestrDataGetFileByIdCAAsyncWithHttpInfo (long? loadId, string fname)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> RosreestrDataGetFileByIdCAAsyncWithHttpInfo(long? loadId, string fname)
         {
             // verify the required parameter 'loadId' is set
             if (loadId == null)
@@ -416,39 +416,39 @@ namespace IO.Swagger.Api
                 throw new ApiException(400, "Missing required parameter 'fname' when calling RosreestrDataApi->RosreestrDataGetFileByIdCA");
 
             var localVarPath = "/RosreestrData/file_ca_by_id/{load_id}/{fname}";
-            var localVarPathParams = new Dictionary<String, String>();
-            var localVarQueryParams = new List<KeyValuePair<String, String>>();
-            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
-            var localVarFormParams = new Dictionary<String, String>();
-            var localVarFileParams = new Dictionary<String, FileParameter>();
-            Object localVarPostBody = null;
+            var localVarPathParams = new Dictionary<string, string>();
+            var localVarQueryParams = new List<KeyValuePair<string, string>>();
+            var localVarHeaderParams = new Dictionary<string, string>(Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<string, string>();
+            var localVarFileParams = new Dictionary<string, FileParameter>();
+            object localVarPostBody = null;
 
             // to determine the Content-Type header
-            String[] localVarHttpContentTypes = new String[] {
+            string[] localVarHttpContentTypes = new string[] {
             };
-            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+            string localVarHttpContentType = Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
 
             // to determine the Accept header
-            String[] localVarHttpHeaderAccepts = new String[] {
+            string[] localVarHttpHeaderAccepts = new string[] {
                 "application/json",
                 "text/json",
                 "application/xml",
                 "text/xml"
             };
-            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            string localVarHttpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
             if (localVarHttpHeaderAccept != null)
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
-            if (loadId != null) localVarPathParams.Add("load_id", this.Configuration.ApiClient.ParameterToString(loadId)); // path parameter
-            if (fname != null) localVarPathParams.Add("fname", this.Configuration.ApiClient.ParameterToString(fname)); // path parameter
+            if (loadId != null) localVarPathParams.Add("load_id", Configuration.ApiClient.ParameterToString(loadId)); // path parameter
+            if (fname != null) localVarPathParams.Add("fname", Configuration.ApiClient.ParameterToString(fname)); // path parameter
 
 
             // make the HTTP request
-            IRestResponse localVarResponse = (IRestResponse) await this.Configuration.ApiClient.CallApiAsync(localVarPath,
+            IRestResponse localVarResponse = (IRestResponse)await Configuration.ApiClient.CallApiAsync(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
-            int localVarStatusCode = (int) localVarResponse.StatusCode;
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
 
             if (ExceptionFactory != null)
             {
@@ -456,32 +456,32 @@ namespace IO.Swagger.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<Object>(localVarStatusCode,
+            return new ApiResponse<object>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (Object) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(Object)));
+                Configuration.ApiClient.Deserialize(localVarResponse, typeof(object)));
         }
 
         /// <summary>
         /// Возвращает документ из файлового хранилища по id 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <returns>Object</returns>
-        public Object RosreestrDataGetFileByIdZD (long? id, string fname)
+        public object RosreestrDataGetFileByIdZD(long? id, string fname)
         {
-             ApiResponse<Object> localVarResponse = RosreestrDataGetFileByIdZDWithHttpInfo(id, fname);
-             return localVarResponse.Data;
+            ApiResponse<object> localVarResponse = RosreestrDataGetFileByIdZDWithHttpInfo(id, fname);
+            return localVarResponse.Data;
         }
 
         /// <summary>
         /// Возвращает документ из файлового хранилища по id 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <returns>ApiResponse of Object</returns>
-        public ApiResponse< Object > RosreestrDataGetFileByIdZDWithHttpInfo (long? id, string fname)
+        public ApiResponse<object> RosreestrDataGetFileByIdZDWithHttpInfo(long? id, string fname)
         {
             // verify the required parameter 'id' is set
             if (id == null)
@@ -491,39 +491,39 @@ namespace IO.Swagger.Api
                 throw new ApiException(400, "Missing required parameter 'fname' when calling RosreestrDataApi->RosreestrDataGetFileByIdZD");
 
             var localVarPath = "/RosreestrData/file_zd_by_id/{id}/{fname}";
-            var localVarPathParams = new Dictionary<String, String>();
-            var localVarQueryParams = new List<KeyValuePair<String, String>>();
-            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
-            var localVarFormParams = new Dictionary<String, String>();
-            var localVarFileParams = new Dictionary<String, FileParameter>();
-            Object localVarPostBody = null;
+            var localVarPathParams = new Dictionary<string, string>();
+            var localVarQueryParams = new List<KeyValuePair<string, string>>();
+            var localVarHeaderParams = new Dictionary<string, string>(Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<string, string>();
+            var localVarFileParams = new Dictionary<string, FileParameter>();
+            object localVarPostBody = null;
 
             // to determine the Content-Type header
-            String[] localVarHttpContentTypes = new String[] {
+            string[] localVarHttpContentTypes = new string[] {
             };
-            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+            string localVarHttpContentType = Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
 
             // to determine the Accept header
-            String[] localVarHttpHeaderAccepts = new String[] {
+            string[] localVarHttpHeaderAccepts = new string[] {
                 "application/json",
                 "text/json",
                 "application/xml",
                 "text/xml"
             };
-            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            string localVarHttpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
             if (localVarHttpHeaderAccept != null)
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
-            if (id != null) localVarPathParams.Add("id", this.Configuration.ApiClient.ParameterToString(id)); // path parameter
-            if (fname != null) localVarPathParams.Add("fname", this.Configuration.ApiClient.ParameterToString(fname)); // path parameter
+            if (id != null) localVarPathParams.Add("id", Configuration.ApiClient.ParameterToString(id)); // path parameter
+            if (fname != null) localVarPathParams.Add("fname", Configuration.ApiClient.ParameterToString(fname)); // path parameter
 
 
             // make the HTTP request
-            IRestResponse localVarResponse = (IRestResponse) this.Configuration.ApiClient.CallApi(localVarPath,
+            IRestResponse localVarResponse = (IRestResponse)Configuration.ApiClient.CallApi(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
-            int localVarStatusCode = (int) localVarResponse.StatusCode;
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
 
             if (ExceptionFactory != null)
             {
@@ -531,33 +531,33 @@ namespace IO.Swagger.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<Object>(localVarStatusCode,
+            return new ApiResponse<object>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (Object) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(Object)));
+                Configuration.ApiClient.Deserialize(localVarResponse, typeof(object)));
         }
 
         /// <summary>
         /// Возвращает документ из файлового хранилища по id 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <returns>Task of Object</returns>
-        public async System.Threading.Tasks.Task<Object> RosreestrDataGetFileByIdZDAsync (long? id, string fname)
+        public async System.Threading.Tasks.Task<object> RosreestrDataGetFileByIdZDAsync(long? id, string fname)
         {
-             ApiResponse<Object> localVarResponse = await RosreestrDataGetFileByIdZDAsyncWithHttpInfo(id, fname);
-             return localVarResponse.Data;
+            ApiResponse<object> localVarResponse = await RosreestrDataGetFileByIdZDAsyncWithHttpInfo(id, fname);
+            return localVarResponse.Data;
 
         }
 
         /// <summary>
         /// Возвращает документ из файлового хранилища по id 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <returns>Task of ApiResponse (Object)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<Object>> RosreestrDataGetFileByIdZDAsyncWithHttpInfo (long? id, string fname)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> RosreestrDataGetFileByIdZDAsyncWithHttpInfo(long? id, string fname)
         {
             // verify the required parameter 'id' is set
             if (id == null)
@@ -567,39 +567,39 @@ namespace IO.Swagger.Api
                 throw new ApiException(400, "Missing required parameter 'fname' when calling RosreestrDataApi->RosreestrDataGetFileByIdZD");
 
             var localVarPath = "/RosreestrData/file_zd_by_id/{id}/{fname}";
-            var localVarPathParams = new Dictionary<String, String>();
-            var localVarQueryParams = new List<KeyValuePair<String, String>>();
-            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
-            var localVarFormParams = new Dictionary<String, String>();
-            var localVarFileParams = new Dictionary<String, FileParameter>();
-            Object localVarPostBody = null;
+            var localVarPathParams = new Dictionary<string, string>();
+            var localVarQueryParams = new List<KeyValuePair<string, string>>();
+            var localVarHeaderParams = new Dictionary<string, string>(Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<string, string>();
+            var localVarFileParams = new Dictionary<string, FileParameter>();
+            object localVarPostBody = null;
 
             // to determine the Content-Type header
-            String[] localVarHttpContentTypes = new String[] {
+            string[] localVarHttpContentTypes = new string[] {
             };
-            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+            string localVarHttpContentType = Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
 
             // to determine the Accept header
-            String[] localVarHttpHeaderAccepts = new String[] {
+            string[] localVarHttpHeaderAccepts = new string[] {
                 "application/json",
                 "text/json",
                 "application/xml",
                 "text/xml"
             };
-            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            string localVarHttpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
             if (localVarHttpHeaderAccept != null)
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
-            if (id != null) localVarPathParams.Add("id", this.Configuration.ApiClient.ParameterToString(id)); // path parameter
-            if (fname != null) localVarPathParams.Add("fname", this.Configuration.ApiClient.ParameterToString(fname)); // path parameter
+            if (id != null) localVarPathParams.Add("id", Configuration.ApiClient.ParameterToString(id)); // path parameter
+            if (fname != null) localVarPathParams.Add("fname", Configuration.ApiClient.ParameterToString(fname)); // path parameter
 
 
             // make the HTTP request
-            IRestResponse localVarResponse = (IRestResponse) await this.Configuration.ApiClient.CallApiAsync(localVarPath,
+            IRestResponse localVarResponse = (IRestResponse)await Configuration.ApiClient.CallApiAsync(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
-            int localVarStatusCode = (int) localVarResponse.StatusCode;
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
 
             if (ExceptionFactory != null)
             {
@@ -607,32 +607,32 @@ namespace IO.Swagger.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<Object>(localVarStatusCode,
+            return new ApiResponse<object>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (Object) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(Object)));
+                Configuration.ApiClient.Deserialize(localVarResponse, typeof(object)));
         }
 
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>Object</returns>
-        public Object RosreestrDataGetGraphFactorsByCadNum (string cadNum, DateTime? dateAppraisal)
+        public object RosreestrDataGetGraphFactorsByCadNum(string cadNum, DateTime? dateAppraisal)
         {
-             ApiResponse<Object> localVarResponse = RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(cadNum, dateAppraisal);
-             return localVarResponse.Data;
+            ApiResponse<object> localVarResponse = RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(cadNum, dateAppraisal);
+            return localVarResponse.Data;
         }
 
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>ApiResponse of Object</returns>
-        public ApiResponse< Object > RosreestrDataGetGraphFactorsByCadNumWithHttpInfo (string cadNum, DateTime? dateAppraisal)
+        public ApiResponse<object> RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(string cadNum, DateTime? dateAppraisal)
         {
             // verify the required parameter 'cadNum' is set
             if (cadNum == null)
@@ -642,39 +642,39 @@ namespace IO.Swagger.Api
                 throw new ApiException(400, "Missing required parameter 'dateAppraisal' when calling RosreestrDataApi->RosreestrDataGetGraphFactorsByCadNum");
 
             var localVarPath = "/RosreestrData/graph_factors_by_cad_num";
-            var localVarPathParams = new Dictionary<String, String>();
-            var localVarQueryParams = new List<KeyValuePair<String, String>>();
-            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
-            var localVarFormParams = new Dictionary<String, String>();
-            var localVarFileParams = new Dictionary<String, FileParameter>();
-            Object localVarPostBody = null;
+            var localVarPathParams = new Dictionary<string, string>();
+            var localVarQueryParams = new List<KeyValuePair<string, string>>();
+            var localVarHeaderParams = new Dictionary<string, string>(Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<string, string>();
+            var localVarFileParams = new Dictionary<string, FileParameter>();
+            object localVarPostBody = null;
 
             // to determine the Content-Type header
-            String[] localVarHttpContentTypes = new String[] {
+            string[] localVarHttpContentTypes = new string[] {
             };
-            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+            string localVarHttpContentType = Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
 
             // to determine the Accept header
-            String[] localVarHttpHeaderAccepts = new String[] {
+            string[] localVarHttpHeaderAccepts = new string[] {
                 "application/json",
                 "text/json",
                 "application/xml",
                 "text/xml"
             };
-            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            string localVarHttpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
             if (localVarHttpHeaderAccept != null)
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
-            if (cadNum != null) localVarQueryParams.AddRange(this.Configuration.ApiClient.ParameterToKeyValuePairs("", "cad_num", cadNum)); // query parameter
-            if (dateAppraisal != null) localVarQueryParams.AddRange(this.Configuration.ApiClient.ParameterToKeyValuePairs("", "date_appraisal", dateAppraisal)); // query parameter
+            if (cadNum != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "cad_num", cadNum)); // query parameter
+            if (dateAppraisal != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "date_appraisal", dateAppraisal)); // query parameter
 
 
             // make the HTTP request
-            IRestResponse localVarResponse = (IRestResponse) this.Configuration.ApiClient.CallApi(localVarPath,
+            IRestResponse localVarResponse = (IRestResponse)Configuration.ApiClient.CallApi(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
-            int localVarStatusCode = (int) localVarResponse.StatusCode;
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
 
             if (ExceptionFactory != null)
             {
@@ -682,33 +682,33 @@ namespace IO.Swagger.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<Object>(localVarStatusCode,
+            return new ApiResponse<object>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (Object) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(Object)));
+                Configuration.ApiClient.Deserialize(localVarResponse, typeof(object)));
         }
 
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>Task of Object</returns>
-        public async System.Threading.Tasks.Task<Object> RosreestrDataGetGraphFactorsByCadNumAsync (string cadNum, DateTime? dateAppraisal)
+        public async System.Threading.Tasks.Task<object> RosreestrDataGetGraphFactorsByCadNumAsync(string cadNum, DateTime? dateAppraisal)
         {
-             ApiResponse<Object> localVarResponse = await RosreestrDataGetGraphFactorsByCadNumAsyncWithHttpInfo(cadNum, dateAppraisal);
-             return localVarResponse.Data;
+            ApiResponse<object> localVarResponse = await RosreestrDataGetGraphFactorsByCadNumAsyncWithHttpInfo(cadNum, dateAppraisal);
+            return localVarResponse.Data;
 
         }
 
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>Task of ApiResponse (Object)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<Object>> RosreestrDataGetGraphFactorsByCadNumAsyncWithHttpInfo (string cadNum, DateTime? dateAppraisal)
+        public async System.Threading.Tasks.Task<ApiResponse<object>> RosreestrDataGetGraphFactorsByCadNumAsyncWithHttpInfo(string cadNum, DateTime? dateAppraisal)
         {
             // verify the required parameter 'cadNum' is set
             if (cadNum == null)
@@ -718,39 +718,39 @@ namespace IO.Swagger.Api
                 throw new ApiException(400, "Missing required parameter 'dateAppraisal' when calling RosreestrDataApi->RosreestrDataGetGraphFactorsByCadNum");
 
             var localVarPath = "/RosreestrData/graph_factors_by_cad_num";
-            var localVarPathParams = new Dictionary<String, String>();
-            var localVarQueryParams = new List<KeyValuePair<String, String>>();
-            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
-            var localVarFormParams = new Dictionary<String, String>();
-            var localVarFileParams = new Dictionary<String, FileParameter>();
-            Object localVarPostBody = null;
+            var localVarPathParams = new Dictionary<string, string>();
+            var localVarQueryParams = new List<KeyValuePair<string, string>>();
+            var localVarHeaderParams = new Dictionary<string, string>(Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<string, string>();
+            var localVarFileParams = new Dictionary<string, FileParameter>();
+            object localVarPostBody = null;
 
             // to determine the Content-Type header
-            String[] localVarHttpContentTypes = new String[] {
+            string[] localVarHttpContentTypes = new string[] {
             };
-            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+            string localVarHttpContentType = Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
 
             // to determine the Accept header
-            String[] localVarHttpHeaderAccepts = new String[] {
+            string[] localVarHttpHeaderAccepts = new string[] {
                 "application/json",
                 "text/json",
                 "application/xml",
                 "text/xml"
             };
-            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            string localVarHttpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
             if (localVarHttpHeaderAccept != null)
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
-            if (cadNum != null) localVarQueryParams.AddRange(this.Configuration.ApiClient.ParameterToKeyValuePairs("", "cad_num", cadNum)); // query parameter
-            if (dateAppraisal != null) localVarQueryParams.AddRange(this.Configuration.ApiClient.ParameterToKeyValuePairs("", "date_appraisal", dateAppraisal)); // query parameter
+            if (cadNum != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "cad_num", cadNum)); // query parameter
+            if (dateAppraisal != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "date_appraisal", dateAppraisal)); // query parameter
 
 
             // make the HTTP request
-            IRestResponse localVarResponse = (IRestResponse) await this.Configuration.ApiClient.CallApiAsync(localVarPath,
+            IRestResponse localVarResponse = (IRestResponse)await Configuration.ApiClient.CallApiAsync(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
-            int localVarStatusCode = (int) localVarResponse.StatusCode;
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
 
             if (ExceptionFactory != null)
             {
@@ -758,32 +758,32 @@ namespace IO.Swagger.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<Object>(localVarStatusCode,
+            return new ApiResponse<object>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (Object) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(Object)));
+                Configuration.ApiClient.Deserialize(localVarResponse, typeof(object)));
         }
 
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <returns>List&lt;RRDataLoadModel&gt;</returns>
-        public List<RRDataLoadModel> RosreestrDataGetRRData (DateTime? dateFrom, DateTime? dateTo)
+        public List<RRDataLoadModel> RosreestrDataGetRRData(DateTime? dateFrom, DateTime? dateTo)
         {
-             ApiResponse<List<RRDataLoadModel>> localVarResponse = RosreestrDataGetRRDataWithHttpInfo(dateFrom, dateTo);
-             return localVarResponse.Data;
+            ApiResponse<List<RRDataLoadModel>> localVarResponse = RosreestrDataGetRRDataWithHttpInfo(dateFrom, dateTo);
+            return localVarResponse.Data;
         }
 
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <returns>ApiResponse of List&lt;RRDataLoadModel&gt;</returns>
-        public ApiResponse< List<RRDataLoadModel> > RosreestrDataGetRRDataWithHttpInfo (DateTime? dateFrom, DateTime? dateTo)
+        public ApiResponse<List<RRDataLoadModel>> RosreestrDataGetRRDataWithHttpInfo(DateTime? dateFrom, DateTime? dateTo)
         {
             // verify the required parameter 'dateFrom' is set
             if (dateFrom == null)
@@ -793,39 +793,39 @@ namespace IO.Swagger.Api
                 throw new ApiException(400, "Missing required parameter 'dateTo' when calling RosreestrDataApi->RosreestrDataGetRRData");
 
             var localVarPath = "/RosreestrData/xml_by_date";
-            var localVarPathParams = new Dictionary<String, String>();
-            var localVarQueryParams = new List<KeyValuePair<String, String>>();
-            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
-            var localVarFormParams = new Dictionary<String, String>();
-            var localVarFileParams = new Dictionary<String, FileParameter>();
-            Object localVarPostBody = null;
+            var localVarPathParams = new Dictionary<string, string>();
+            var localVarQueryParams = new List<KeyValuePair<string, string>>();
+            var localVarHeaderParams = new Dictionary<string, string>(Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<string, string>();
+            var localVarFileParams = new Dictionary<string, FileParameter>();
+            object localVarPostBody = null;
 
             // to determine the Content-Type header
-            String[] localVarHttpContentTypes = new String[] {
+            string[] localVarHttpContentTypes = new string[] {
             };
-            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+            string localVarHttpContentType = Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
 
             // to determine the Accept header
-            String[] localVarHttpHeaderAccepts = new String[] {
+            string[] localVarHttpHeaderAccepts = new string[] {
                 "application/json",
                 "text/json",
                 "application/xml",
                 "text/xml"
             };
-            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            string localVarHttpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
             if (localVarHttpHeaderAccept != null)
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
-            if (dateFrom != null) localVarQueryParams.AddRange(this.Configuration.ApiClient.ParameterToKeyValuePairs("", "dateFrom", dateFrom)); // query parameter
-            if (dateTo != null) localVarQueryParams.AddRange(this.Configuration.ApiClient.ParameterToKeyValuePairs("", "dateTo", dateTo)); // query parameter
+            if (dateFrom != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "dateFrom", dateFrom)); // query parameter
+            if (dateTo != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "dateTo", dateTo)); // query parameter
 
 
             // make the HTTP request
-            IRestResponse localVarResponse = (IRestResponse) this.Configuration.ApiClient.CallApi(localVarPath,
+            IRestResponse localVarResponse = (IRestResponse)Configuration.ApiClient.CallApi(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
-            int localVarStatusCode = (int) localVarResponse.StatusCode;
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
 
             if (ExceptionFactory != null)
             {
@@ -835,31 +835,31 @@ namespace IO.Swagger.Api
 
             return new ApiResponse<List<RRDataLoadModel>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<RRDataLoadModel>) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(List<RRDataLoadModel>)));
+                (List<RRDataLoadModel>)Configuration.ApiClient.Deserialize(localVarResponse, typeof(List<RRDataLoadModel>)));
         }
 
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <returns>Task of List&lt;RRDataLoadModel&gt;</returns>
-        public async System.Threading.Tasks.Task<List<RRDataLoadModel>> RosreestrDataGetRRDataAsync (DateTime? dateFrom, DateTime? dateTo)
+        public async System.Threading.Tasks.Task<List<RRDataLoadModel>> RosreestrDataGetRRDataAsync(DateTime? dateFrom, DateTime? dateTo)
         {
-             ApiResponse<List<RRDataLoadModel>> localVarResponse = await RosreestrDataGetRRDataAsyncWithHttpInfo(dateFrom, dateTo);
-             return localVarResponse.Data;
+            ApiResponse<List<RRDataLoadModel>> localVarResponse = await RosreestrDataGetRRDataAsyncWithHttpInfo(dateFrom, dateTo);
+            return localVarResponse.Data;
 
         }
 
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно 
         /// </summary>
-        /// <exception cref="IO.Swagger.Client.ApiException">Thrown when fails to make API call</exception>
+        /// <exception cref="ApiException">Thrown when fails to make API call</exception>
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <returns>Task of ApiResponse (List&lt;RRDataLoadModel&gt;)</returns>
-        public async System.Threading.Tasks.Task<ApiResponse<List<RRDataLoadModel>>> RosreestrDataGetRRDataAsyncWithHttpInfo (DateTime? dateFrom, DateTime? dateTo)
+        public async System.Threading.Tasks.Task<ApiResponse<List<RRDataLoadModel>>> RosreestrDataGetRRDataAsyncWithHttpInfo(DateTime? dateFrom, DateTime? dateTo)
         {
             // verify the required parameter 'dateFrom' is set
             if (dateFrom == null)
@@ -869,39 +869,39 @@ namespace IO.Swagger.Api
                 throw new ApiException(400, "Missing required parameter 'dateTo' when calling RosreestrDataApi->RosreestrDataGetRRData");
 
             var localVarPath = "/RosreestrData/xml_by_date";
-            var localVarPathParams = new Dictionary<String, String>();
-            var localVarQueryParams = new List<KeyValuePair<String, String>>();
-            var localVarHeaderParams = new Dictionary<String, String>(this.Configuration.DefaultHeader);
-            var localVarFormParams = new Dictionary<String, String>();
-            var localVarFileParams = new Dictionary<String, FileParameter>();
-            Object localVarPostBody = null;
+            var localVarPathParams = new Dictionary<string, string>();
+            var localVarQueryParams = new List<KeyValuePair<string, string>>();
+            var localVarHeaderParams = new Dictionary<string, string>(Configuration.DefaultHeader);
+            var localVarFormParams = new Dictionary<string, string>();
+            var localVarFileParams = new Dictionary<string, FileParameter>();
+            object localVarPostBody = null;
 
             // to determine the Content-Type header
-            String[] localVarHttpContentTypes = new String[] {
+            string[] localVarHttpContentTypes = new string[] {
             };
-            String localVarHttpContentType = this.Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
+            string localVarHttpContentType = Configuration.ApiClient.SelectHeaderContentType(localVarHttpContentTypes);
 
             // to determine the Accept header
-            String[] localVarHttpHeaderAccepts = new String[] {
+            string[] localVarHttpHeaderAccepts = new string[] {
                 "application/json",
                 "text/json",
                 "application/xml",
                 "text/xml"
             };
-            String localVarHttpHeaderAccept = this.Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
+            string localVarHttpHeaderAccept = Configuration.ApiClient.SelectHeaderAccept(localVarHttpHeaderAccepts);
             if (localVarHttpHeaderAccept != null)
                 localVarHeaderParams.Add("Accept", localVarHttpHeaderAccept);
 
-            if (dateFrom != null) localVarQueryParams.AddRange(this.Configuration.ApiClient.ParameterToKeyValuePairs("", "dateFrom", dateFrom)); // query parameter
-            if (dateTo != null) localVarQueryParams.AddRange(this.Configuration.ApiClient.ParameterToKeyValuePairs("", "dateTo", dateTo)); // query parameter
+            if (dateFrom != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "dateFrom", dateFrom)); // query parameter
+            if (dateTo != null) localVarQueryParams.AddRange(Configuration.ApiClient.ParameterToKeyValuePairs("", "dateTo", dateTo)); // query parameter
 
 
             // make the HTTP request
-            IRestResponse localVarResponse = (IRestResponse) await this.Configuration.ApiClient.CallApiAsync(localVarPath,
+            IRestResponse localVarResponse = (IRestResponse)await Configuration.ApiClient.CallApiAsync(localVarPath,
                 Method.GET, localVarQueryParams, localVarPostBody, localVarHeaderParams, localVarFormParams, localVarFileParams,
                 localVarPathParams, localVarHttpContentType);
 
-            int localVarStatusCode = (int) localVarResponse.StatusCode;
+            int localVarStatusCode = (int)localVarResponse.StatusCode;
 
             if (ExceptionFactory != null)
             {
@@ -911,7 +911,7 @@ namespace IO.Swagger.Api
 
             return new ApiResponse<List<RRDataLoadModel>>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                (List<RRDataLoadModel>) this.Configuration.ApiClient.Deserialize(localVarResponse, typeof(List<RRDataLoadModel>)));
+                (List<RRDataLoadModel>)Configuration.ApiClient.Deserialize(localVarResponse, typeof(List<RRDataLoadModel>)));
         }
 
     }

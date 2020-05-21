@@ -27,11 +27,13 @@ using KadOzenka.Dal.CadastralInfoFillingForMarketObjects;
 using KadOzenka.Dal.YandexParser;
 using KadOzenka.Dal.ExcelParser;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.WebClients.ReonClient.Api;
+using System.Linq;
 
 namespace KadOzenka.BlFrontEnd
 {
 
-    class Program
+	class Program
 	{
 
 		static void Main(string[] args)
@@ -191,6 +193,22 @@ namespace KadOzenka.BlFrontEnd
 
 			});
 
+
+			consoleHelper.AddCommand("901", "Тест API РЕОН", () =>
+			{
+				var baseUrl = "http://localhost:5000/CadAppraisal/CadAppraisalDataApi/RosreestrData/xml_by_date?dateFrom=2020-05-01&dateTo=2020-05-02";
+
+
+				var service = new RosreestrDataApi("http://localhost:5000/CadAppraisal/CadAppraisalDataApi");
+				
+				List<IO.Swagger.Model.RRDataLoadModel> result = service.RosreestrDataGetRRData(DateTime.Today.AddDays(-1), DateTime.Today);
+
+
+
+				Console.WriteLine($"Из РЕОН получено заданий: {result.Count}");
+				Console.WriteLine(String.Join("\n", result.Select(x => $"{x.DocNumber} от {x.DocDate.Value.ToShortDateString()}")));
+			});
+
 			consoleHelper.AddCommand("554", "эксель импорт", 
 				() => new DataImporterCommon().StartProcess(null, 
 					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
@@ -204,6 +222,7 @@ namespace KadOzenka.BlFrontEnd
 					 q,
 					 new System.Threading.CancellationToken());
 				});
+
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
 		}

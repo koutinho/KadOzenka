@@ -54,6 +54,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
+    <ProjectReference Include="..\..\KadOzenka.WebClients\KadOzenka.WebClients.csproj" />
   </ItemGroup>
 
 </Project>
