@@ -11,6 +11,7 @@ using KadOzenka.Dal.Registers;
 using KadOzenka.WebClients.ReonClient.Api;
 using Newtonsoft.Json;
 using ObjectModel.Core.Register;
+using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Configurator;
@@ -44,6 +45,7 @@ namespace KadOzenka.Dal.LongProcess
             RegisterAttributeService = new RegisterAttributeService();
 
             var task = GetTask(processQueue.ObjectId.Value);
+            var document = GetDocument(task.DocumentId);
             var units = GetUnits(task.Id);
 
             units.ForEach(unit =>
@@ -61,6 +63,8 @@ namespace KadOzenka.Dal.LongProcess
                     {
                         new GraphFactors
                         {
+                            LayerSourceName = "LayerSourceName",
+                            LayerTargetName = "LayerTargetName",
                             FactorName = "Test string",
                             FactorValue = "value"
                         },
@@ -76,7 +80,7 @@ namespace KadOzenka.Dal.LongProcess
                         }
                     }
                 };
-                ProcessServiceResponse(unit.ObjectId.Value, response);
+                ProcessServiceResponse(unit.ObjectId.Value, document, response);
             });
 
             NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН", "Операция выполнена успешно.");
@@ -90,6 +94,15 @@ namespace KadOzenka.Dal.LongProcess
         {
             return OMTask.Where(x => x.Id == taskId)
                 .Select(x => x.EstimationDate)
+                .Select(x => x.DocumentId)
+                .ExecuteFirstOrDefault();
+        }
+
+        private OMInstance GetDocument(long? documentId)
+        {
+            return OMInstance.Where(x => x.Id == documentId)
+                .Select(x => x.Id)
+                .Select(x => x.CreateDate)
                 .ExecuteFirstOrDefault();
         }
 
@@ -108,17 +121,18 @@ namespace KadOzenka.Dal.LongProcess
             return new FactorsFromReonRequest(unit.CadastralNumber, task.EstimationDate);
         }
 
-        public void ProcessServiceResponse(long objectId, FactorsFromReonResponse response)
+        public void ProcessServiceResponse(long objectId, OMInstance taskDocument, FactorsFromReonResponse response)
         {
             response.GraphicFactors?.ForEach(factor =>
             {
                 var attributeType = GetFactorType(factor.FactorValue);
+                var attributeName = CreateAttributeName(factor);
 
-                var attribute = GetAttribute(factor.FactorName);
+                var attribute = GetAttribute(attributeName);
                 if (attribute == null)
-                    attribute = CreateAttribute(factor.FactorName, attributeType);
+                    attribute = CreateAttribute(attributeName, attributeType);
 
-                SaveFactor(objectId, attribute.Id, attributeType, factor);
+                SaveFactor(objectId, attribute.Id, attributeType, factor, taskDocument);
             });
         }
 
@@ -134,6 +148,11 @@ namespace KadOzenka.Dal.LongProcess
                 return RegisterAttributeType.DATE;
 
             return RegisterAttributeType.STRING;
+        }
+
+        private string CreateAttributeName(GraphFactors factor)
+        {
+            return string.Join(" - ", new List<string> {factor.LayerSourceName, factor.LayerTargetName, factor.FactorName});
         }
 
         private OMAttribute GetAttribute(string attributeName)
@@ -163,15 +182,15 @@ namespace KadOzenka.Dal.LongProcess
         }
 
         private void SaveFactor(long objectId, long attributeId, RegisterAttributeType attributeType,
-            GraphFactors factor)
+            GraphFactors factor, OMInstance taskDocument)
         {
             var gbuObjectAttribute = new GbuObjectAttribute
             {
                 ObjectId = objectId,
                 AttributeId = attributeId,
-                S = DateTime.Today,
-                Ot = DateTime.Today,
-                ChangeDocId = -1,
+                S = taskDocument.CreateDate,
+                Ot = taskDocument.CreateDate,
+                ChangeDocId = taskDocument.Id,
                 ChangeUserId = SRDSession.Current.UserID,
                 ChangeDate = DateTime.Now
             };
