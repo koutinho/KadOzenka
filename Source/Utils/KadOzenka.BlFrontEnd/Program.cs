@@ -29,6 +29,7 @@ using KadOzenka.Dal.ExcelParser;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.WebClients.ReonClient.Api;
 using System.Linq;
+using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using ObjectModel.Core.LongProcess;
 
@@ -208,7 +209,7 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("902", "Тест Сервиса для создания задач на основе данных из РЕОН", () =>
             {
                 new KoTaskFromReon().StartProcess(null,
-                    null,
+                    new OMQueue { UserId = SRDSession.Current.UserID },
                     new System.Threading.CancellationToken());
             });
 
@@ -216,7 +217,7 @@ namespace KadOzenka.BlFrontEnd
             {
                 var taskId = 44354853;
                 new KoFactorsFromReon().StartProcess(null,
-                    new OMQueue {ObjectId = taskId}, 
+                    new OMQueue {ObjectId = taskId, UserId = SRDSession.Current.UserID }, 
                     new System.Threading.CancellationToken());
             });
 

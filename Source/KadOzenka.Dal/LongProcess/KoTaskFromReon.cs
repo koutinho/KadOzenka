@@ -2,20 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
+using Core.ErrorManagment;
+using Core.Register.LongProcessManagment;
 using IO.Swagger.Model;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.WebClients;
 using KadOzenka.WebClients.ReonClient.Api;
-using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -29,17 +24,19 @@ namespace KadOzenka.Dal.LongProcess
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)
         {
-            //WorkerCommon.SetProgress(processQueue, 0);
+            WorkerCommon.SetProgress(processQueue, 0);
             TaskService = new TaskService();
             ReonWebClientService = new RosreestrDataApi();
 
             var request = GetRequest();
             var response = ReonWebClientService.RosreestrDataGetRRData(request.DateFrom, request.DateTo);
-            ProcessResponse(response);
+            var errorIds = ProcessResponse(response);
+            var message = errorIds.Count > 0 
+                ? $"Не удалось обработать все данные, подробно в журнале №{string.Join(", ", errorIds)}" 
+                : "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.";
 
-            //WorkerCommon.SetProgress(processQueue, 100);
-            NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН",
-                "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.");
+            WorkerCommon.SetProgress(processQueue, 100);
+            NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message);
         }
 
 
@@ -53,19 +50,30 @@ namespace KadOzenka.Dal.LongProcess
             return new TaskFromReonRequest(dateFrom, dateTo);
         }
 
-        public void ProcessResponse(List<RRDataLoadModel> tasksFromResponse)
+        public List<long> ProcessResponse(List<RRDataLoadModel> tasksFromResponse)
         {
+            var errorIds = new List<long>();
             tasksFromResponse.ForEach(task =>
             {
-                var documentId = TaskService.CreateDocument(task.DocNumber, task.DocName, task.DocDate);
-
-                var omTask = CreateTask(task, documentId);
-
-                foreach (var fileInfo in task.XmlDocUrls)
+                try
                 {
-                    ProcessFile(fileInfo, omTask.Id);
+                    var documentId = TaskService.CreateDocument(task.DocNumber, task.DocName, task.DocDate);
+
+                    var omTask = CreateTask(task, documentId);
+
+                    foreach (var fileInfo in task.XmlDocUrls)
+                    {
+                        ProcessFile(fileInfo, omTask.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    long errorId = ErrorManager.LogError(ex);
+                    errorIds.Add(errorId);
                 }
             });
+
+            return errorIds;
         }
 
         private OMTask CreateTask(RRDataLoadModel task, long documentId)
