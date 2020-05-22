@@ -134,7 +134,7 @@
         }).data('kendoTabStrip');
 
         $('#searchButton').click(refreshCurrentGrid);
-        $('#exportButton').click(exportCurrentGrid);
+        $('#exportButton').click(onExportClicked);
 
         createGrids();
         statisticsTabstrip.activateTab($("#importedObjectsTab"));
@@ -169,7 +169,7 @@
             }
         };
         var columns = getGeneralColumns();
-        var excelName = "Статистика по количеству загруженных объектов";
+        var excelName = getGridExcelName(GridIdList.ImportedObjectsGrid);
 
         createGrid($('#' + GridIdList.ImportedObjectsGrid), url, dataSourceFields, columns, excelName);
     }
@@ -193,11 +193,14 @@
                 cell: {
                     showOperators: false,
                     operator: "contains",
-                    minLength: 999
+                    minLength: 999,
+                    template: function(args) {
+                        args.element.addClass("k-textbox");
+                    }
                 }
             }
         });
-        var excelName = "Статистика по количеству выгруженных объектов";
+        var excelName = getGridExcelName(GridIdList.ExportedObjectsGrid);
 
         createGrid($('#' + GridIdList.ExportedObjectsGrid), url, dataSourceFields, columns, excelName);
     }
@@ -242,7 +245,7 @@
                 }
             }
         });
-        var excelName = "Статистика по зонам";
+        var excelName = getGridExcelName(GridIdList.ZoneStatisticsGrid);
 
         createGrid($('#' + GridIdList.ZoneStatisticsGrid), url, dataSourceFields, columns, excelName);
     }
@@ -266,11 +269,14 @@
             cell: {
                 showOperators: false,
                 operator: "contains",
-                minLength: 999
+                    minLength: 999,
+                template: function(args) {
+                    args.element.addClass("k-textbox");
+                }
             }
             }
         });
-        var excelName = "Статистика по ценообразующим факторам";
+        var excelName = getGridExcelName(GridIdList.FactorStatisticsGrid);
 
         createGrid($('#' + GridIdList.FactorStatisticsGrid), url, dataSourceFields, columns, excelName);
     }
@@ -295,7 +301,10 @@
                 cell: {
                     showOperators: false,
                     operator: "contains",
-                    minLength: 999
+                    minLength: 999,
+                    template: function(args) {
+                        args.element.addClass("k-textbox");
+                    }
                 }
             }
         });
@@ -307,11 +316,14 @@
                 cell: {
                     showOperators: false,
                     operator: "contains",
-                    minLength: 999
+                    minLength: 999,
+                    template: function(args) {
+                        args.element.addClass("k-textbox");
+                    }
                 }
             }
         });
-        var excelName = "Статистика по группам";
+        var excelName = getGridExcelName(GridIdList.GroupStatisticsGrid);
 
         createGrid($('#' + GridIdList.GroupStatisticsGrid), url, dataSourceFields, columns, excelName);
     }
@@ -326,7 +338,10 @@
                     cell: {
                         showOperators: false,
                         operator: "contains",
-                        minLength: 999
+                        minLength: 999,
+                        template: function(args) {
+                            args.element.addClass("k-textbox");
+                        }
                     }
                 }
             },
@@ -336,7 +351,7 @@
                 filterable: {
                     cell: {
                         showOperators: false,
-                        operator: "contains",
+                        operator: "eq",
                         template: function (args) {
                             var propertyTypeDataSource = new kendo.data.DataSource({
                                 transport: {
@@ -404,24 +419,29 @@
     function createGrid(element, dataUrl, dataFields, columns, excelName) {
         element.kendoGrid({
             dataSource: {
+                type: "webapi",
                 transport: {
-                    read: function(options) {
-                        $.ajax({
-                            url: dataUrl,
-                            contentType: 'application/json; charset=utf-8',
-                            dataType: "json",
-                            data: getGridParams(),
-                            success: function(result) {
-                                options.success(result);
-                            },
-                            error: function(result) {
-                                Common.ShowError(result.responseText);
-                                options.error(result);
-                            }
-                        });
+                    read: {
+                        url: dataUrl,
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        data: getGridParams
                     }
                 },
+                error: function (e) {
+                    if (e.xhr && e.xhr.responseText) {
+                        Common.ShowError(e.xhr.responseText);
+                    } else {
+                        Common.ShowError();
+                    }
+                },
+                serverPaging: true,
+                serverSorting: true,
+                serverFiltering: true,
+                serverAggregates: true,
                 schema: {
+                    data: 'Data',
+                    total: 'Total',
                     model: {
                         fields: dataFields
                     },
@@ -502,10 +522,71 @@
             `(Период с ${startDate} по ${endDate }).xlsx`;
     }
 
-    function exportCurrentGrid() {
+    function onExportClicked() {
         kendo.ui.progress($('.statisticsReportsWidget'), true);
-        setTimeout(function() {
-            $('#' + currentGrid).data('kendoGrid').saveAsExcel();
-        }, 100);
+        var url = getGridExportUrl(currentGrid);
+        var excelName = getGridExcelName(currentGrid);
+
+        var grid = $('#' + currentGrid).data("kendoGrid");
+        var parameterMap = grid.dataSource.transport.parameterMap;
+        var data = getGridParams();
+        data.filters = parameterMap({ filter: grid.dataSource.filter() }).filter;
+        data.sorts = parameterMap({ sort: grid.dataSource.sort() }).sort;
+        data.pageSize = grid.dataSource.total();
+        data.page = 1;
+
+        $.ajax({
+            url: url,
+            cache: false,
+            data: data,
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(blob) {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = getExcelFileName(excelName);
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            },
+            error: function (response, textStatus, errorThrown) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('.statisticsReportsWidget'), false);
+            }});
+    }
+
+    function getGridExportUrl(gridId) {
+        switch (gridId) {
+        case GridIdList.ImportedObjectsGrid:
+                return '/ManagementDecisionSupport/ExportImportedObjects';
+        case GridIdList.ExportedObjectsGrid:
+                return '/ManagementDecisionSupport/ExportExportedObjects';
+        case GridIdList.ZoneStatisticsGrid:
+                return '/ManagementDecisionSupport/ExportZoneStatistics';
+        case GridIdList.FactorStatisticsGrid:
+                return '/ManagementDecisionSupport/ExportFactorStatistics';
+        case GridIdList.GroupStatisticsGrid:
+                return '/ManagementDecisionSupport/ExportGroupStatistics';
+        }
+    }
+
+    function getGridExcelName(gridId) {
+        switch (gridId) {
+        case GridIdList.ImportedObjectsGrid:
+                return "Статистика по количеству загруженных объектов";
+        case GridIdList.ExportedObjectsGrid:
+                return "Статистика по количеству выгруженных объектов";
+        case GridIdList.ZoneStatisticsGrid:
+                return "Статистика по зонам";
+        case GridIdList.FactorStatisticsGrid:
+                return "Статистика по ценообразующим факторам";
+        case GridIdList.GroupStatisticsGrid:
+                return "Статистика по группам";
+        }
     }
 </script>

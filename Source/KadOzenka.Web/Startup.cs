@@ -73,6 +73,8 @@ namespace CIPJS
 	        services.AddTransient<ModelingService>();
 	        services.AddTransient<MapBuildingService>();
 	        services.AddTransient<DashboardWidgetService>();
+	        services.AddTransient<StatisticsReportsService>();
+	        services.AddTransient<StatisticsReportsExportService>();
 
 	        services.AddHttpContextAccessor();
             services.AddSession(options =>

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
+using Kendo.Mvc;
+using Kendo.Mvc.Infrastructure;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Directory;
 
@@ -12,11 +15,15 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly MapBuildingService _mapBuildingService;
 		private readonly DashboardWidgetService _dashboardWidgetService;
+		private readonly StatisticsReportsService _statisticsReportsService;
+		private readonly StatisticsReportsExportService _statisticsReportsExportService;
 
-		public ManagementDecisionSupportController(MapBuildingService mapBuildingService, DashboardWidgetService dashboardWidgetService)
+		public ManagementDecisionSupportController(MapBuildingService mapBuildingService, DashboardWidgetService dashboardWidgetService, StatisticsReportsService statisticsReportsService, StatisticsReportsExportService statisticsReportsExportService)
 		{
 			_mapBuildingService = mapBuildingService;
 			_dashboardWidgetService = dashboardWidgetService;
+			_statisticsReportsService = statisticsReportsService;
+			_statisticsReportsExportService = statisticsReportsExportService;
 		}
 
 		#region MapBuilding
@@ -61,7 +68,7 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion ObjectsByGroupsWidget
 
-		#region StatisticsReportsWidget
+		#region StatisticsReports
 
 		public JsonResult GetUnitPropertyTypes()
 		{
@@ -71,41 +78,104 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetZoneTypes()
 		{
-			var types = _dashboardWidgetService.GetZoneData();
+			var types = _statisticsReportsService.GetZoneData();
 			return Json(types);
 		}
 
-		public JsonResult GetImportedObjectsData(DateTime? dateStart, DateTime? dateEnd)
+		public ActionResult GetImportedObjectsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			List<UnitObjectDto> data = _dashboardWidgetService.GetImportedObjectsData(dateStart, dateEnd);
+			GridDataDto<UnitObjectDto> data = _statisticsReportsService.GetImportedObjectsData(request, dateStart, dateEnd);
 			return Json(data);
 		}
 
-		public JsonResult GetExportedObjectsData(DateTime? dateStart, DateTime? dateEnd)
+		public JsonResult GetExportedObjectsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			List<ExportedObjectDto> data = _dashboardWidgetService.GetExportedObjectsData(dateStart, dateEnd);
-			return Json(data);
-
-		}
-
-		public JsonResult GetZoneStatisticsData(DateTime? dateStart, DateTime? dateEnd)
-		{
-			List<ZoneStatisticDto> data = _dashboardWidgetService.GetZoneStatisticsData(dateStart, dateEnd);
+			GridDataDto<ExportedObjectDto> data = _statisticsReportsService.GetExportedObjectsData(request, dateStart, dateEnd);
 			return Json(data);
 		}
 
-		public JsonResult GetFactorStatisticsData(DateTime? dateStart, DateTime? dateEnd)
+		public JsonResult GetZoneStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			List<FactorStatisticDto> data = _dashboardWidgetService.GetFactorStatisticsData(dateStart, dateEnd);
+			GridDataDto<ZoneStatisticDto> data = _statisticsReportsService.GetZoneStatisticsData(request, dateStart, dateEnd);
 			return Json(data);
 		}
 
-		public JsonResult GetGroupStatisticsData(DateTime? dateStart, DateTime? dateEnd)
+		public JsonResult GetFactorStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
 		{
-			List<GroupStatisticDto> data = _dashboardWidgetService.GetGroupStatisticsData(dateStart, dateEnd);
+			GridDataDto<FactorStatisticDto> data = _statisticsReportsService.GetFactorStatisticsData(request, dateStart, dateEnd);
 			return Json(data);
 		}
 
-		#endregion StatisticsReportsWidget
+		public JsonResult GetGroupStatisticsData([DataSourceRequest]DataSourceRequest request, DateTime? dateStart, DateTime? dateEnd)
+		{
+			GridDataDto<GroupStatisticDto> data = _statisticsReportsService.GetGroupStatisticsData(request, dateStart, dateEnd);
+			return Json(data);
+		}
+
+		#endregion StatisticsReports
+
+		#region StatisticsReportsExport
+
+		public FileResult ExportImportedObjects(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = new DataSourceRequest();
+			request.Filters = FilterDescriptorFactory.Create(filters);
+			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
+			request.PageSize = pageSize;
+			request.Page = page;
+
+			var file = _statisticsReportsExportService.ExportImportedObjects(request, dateStart, dateEnd);
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+		}
+
+		public FileResult ExportExportedObjects(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = new DataSourceRequest();
+			request.Filters = FilterDescriptorFactory.Create(filters);
+			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
+			request.PageSize = pageSize;
+			request.Page = page;
+
+			var file = _statisticsReportsExportService.ExportExportedObjects(request, dateStart, dateEnd);
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+		}
+
+		public FileResult ExportZoneStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = new DataSourceRequest();
+			request.Filters = FilterDescriptorFactory.Create(filters);
+			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
+			request.PageSize = pageSize;
+			request.Page = page;
+
+			var file = _statisticsReportsExportService.ExportZoneStatistics(request, dateStart, dateEnd);
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+		}
+
+		public FileResult ExportFactorStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = new DataSourceRequest();
+			request.Filters = FilterDescriptorFactory.Create(filters);
+			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
+			request.PageSize = pageSize;
+			request.Page = page;
+
+			var file = _statisticsReportsExportService.ExportFactorStatistics(request, dateStart, dateEnd);
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+		}
+
+		public FileResult ExportGroupStatistics(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
+		{
+			var request = new DataSourceRequest();
+			request.Filters = FilterDescriptorFactory.Create(filters);
+			request.Sorts = DataSourceDescriptorSerializer.Deserialize<SortDescriptor>(sorts);
+			request.PageSize = pageSize;
+			request.Page = page;
+
+			var file = _statisticsReportsExportService.ExportGroupStatistics(request, dateStart, dateEnd);
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
+		}
+
+		#endregion StatisticsReportsExport
 	}
 }
