@@ -53,7 +53,7 @@ namespace KadOzenka.Dal.FastReports
 			        var attributes = _gbuObjectService.GetGbuAttributes();
 			        typeOfUseAttributeFilterValue.ReportParameters.Add(new ReportParameter { Value = string.Empty, Key = string.Empty });
 			        typeOfUseAttributeFilterValue.ReportParameters.AddRange(attributes.Select(x => new ReportParameter
-					        {Value = $"{x.Name} ({x.ParentRegister.RegisterDescription})", Key = $"key:{x.Id}"})
+					        {Value = $"{x.Name} ({x.ParentRegister?.RegisterDescription})", Key = $"key:{x.Id}"})
 				        );
 		        }
 	        }
