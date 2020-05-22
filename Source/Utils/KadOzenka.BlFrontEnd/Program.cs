@@ -30,6 +30,7 @@ using KadOzenka.Dal.DataImport;
 using KadOzenka.WebClients.ReonClient.Api;
 using System.Linq;
 using KadOzenka.Dal.LongProcess;
+using ObjectModel.Core.LongProcess;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -208,6 +209,14 @@ namespace KadOzenka.BlFrontEnd
             {
                 new KoTaskFromReon().StartProcess(null,
                     null,
+                    new System.Threading.CancellationToken());
+            });
+
+            consoleHelper.AddCommand("903", "Тест Сервиса для получения графических факторов из РЕОН", () =>
+            {
+                var taskId = 44354853;
+                new KoFactorsFromReon().StartProcess(null,
+                    new OMQueue {ObjectId = taskId}, 
                     new System.Threading.CancellationToken());
             });
 

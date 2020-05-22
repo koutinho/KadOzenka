@@ -673,14 +673,7 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult DownloadGraphicFactorsFromReon(long taskId)
         {
-            ////TODO код для отладки
-            //new KoFactorsFromReon().StartProcess(new OMProcessType(), new OMQueue
-            //{
-            //    ObjectId = taskId,
-            //    UserId = SRDSession.GetCurrentUserId()
-            //}, new CancellationToken());
-
-            //KoFactorsFromReon.AddProcessToQueue(taskId);
+            KoFactorsFromReon.AddProcessToQueue(taskId);
             return View();
         }
 
