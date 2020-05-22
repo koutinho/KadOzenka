@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using System.Transactions;
+using CadAppraisalDataApi.Models;
 using Core.Register;
 using Core.Register.LongProcessManagment;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Registers;
 using KadOzenka.WebClients.ReonClient.Api;
-using Newtonsoft.Json;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
@@ -54,32 +54,7 @@ namespace KadOzenka.Dal.LongProcess
                     return;
 
                 var request = GetRequest(task, unit);
-                //var response = ReonWebClientService.RosreestrDataGetGraphFactorsByCadNum(request.CadastralNumber, request.EstimationDate);
-                var response = new FactorsFromReonResponse
-                {
-                    CadNum = "CadastralNumber",
-                    DateAppraisal = DateTime.Today,
-                    GraphicFactors = new List<GraphFactors>
-                    {
-                        new GraphFactors
-                        {
-                            LayerSourceName = "LayerSourceName",
-                            LayerTargetName = "LayerTargetName",
-                            FactorName = "Test string",
-                            FactorValue = "value"
-                        },
-                        new GraphFactors
-                        {
-                            FactorName = "Test decimal",
-                            FactorValue = 1.5m
-                        },
-                        new GraphFactors
-                        {
-                            FactorName = "Test date",
-                            FactorValue = DateTime.Today
-                        }
-                    }
-                };
+                var response = ReonWebClientService.RosreestrDataGetGraphFactorsByCadNum(request.CadastralNumber, request.EstimationDate);
                 ProcessServiceResponse(unit.ObjectId.Value, document, response);
             });
 
@@ -121,11 +96,11 @@ namespace KadOzenka.Dal.LongProcess
             return new FactorsFromReonRequest(unit.CadastralNumber, task.EstimationDate);
         }
 
-        public void ProcessServiceResponse(long objectId, OMInstance taskDocument, FactorsFromReonResponse response)
+        public void ProcessServiceResponse(long objectId, OMInstance taskDocument, GraphFactorsData response)
         {
-            response.GraphicFactors?.ForEach(factor =>
+            response.GraphFactors?.ForEach(factor =>
             {
-                var attributeType = GetFactorType(factor.FactorValue);
+                var attributeType = RegisterAttributeType.DECIMAL;
                 var attributeName = CreateAttributeName(factor);
 
                 var attribute = GetAttribute(attributeName);
@@ -136,21 +111,21 @@ namespace KadOzenka.Dal.LongProcess
             });
         }
 
-        private RegisterAttributeType GetFactorType(object factorValue)
-        {
-            if (factorValue == null)
-                return RegisterAttributeType.STRING;
+        //private RegisterAttributeType GetFactorType(object factorValue)
+        //{
+        //    if (factorValue == null)
+        //        return RegisterAttributeType.STRING;
 
-            if (decimal.TryParse(factorValue.ToString(), out var number))
-                return RegisterAttributeType.DECIMAL;
+        //    if (decimal.TryParse(factorValue.ToString(), out var number))
+        //        return RegisterAttributeType.DECIMAL;
 
-            if (DateTime.TryParse(factorValue.ToString(), out var date))
-                return RegisterAttributeType.DATE;
+        //    if (DateTime.TryParse(factorValue.ToString(), out var date))
+        //        return RegisterAttributeType.DATE;
 
-            return RegisterAttributeType.STRING;
-        }
+        //    return RegisterAttributeType.STRING;
+        //}
 
-        private string CreateAttributeName(GraphFactors factor)
+        private string CreateAttributeName(GraphFactor factor)
         {
             return string.Join(" - ", new List<string> {factor.LayerSourceName, factor.LayerTargetName, factor.FactorName});
         }
@@ -182,12 +157,13 @@ namespace KadOzenka.Dal.LongProcess
         }
 
         private void SaveFactor(long objectId, long attributeId, RegisterAttributeType attributeType,
-            GraphFactors factor, OMInstance taskDocument)
+            GraphFactor factor, OMInstance taskDocument)
         {
             var gbuObjectAttribute = new GbuObjectAttribute
             {
                 ObjectId = objectId,
                 AttributeId = attributeId,
+                NumValue = factor.FactorValue,
                 S = taskDocument.CreateDate,
                 Ot = taskDocument.CreateDate,
                 ChangeDocId = taskDocument.Id,
@@ -195,26 +171,27 @@ namespace KadOzenka.Dal.LongProcess
                 ChangeDate = DateTime.Now
             };
 
-            if (factor.FactorValue != null)
-            {
-                switch (attributeType)
-                {
-                    case RegisterAttributeType.STRING:
-                        gbuObjectAttribute.StringValue = factor.FactorValue.ToString();
-                        break;
-                    case RegisterAttributeType.DECIMAL:
-                        gbuObjectAttribute.NumValue = decimal.Parse(factor.FactorValue.ToString());
-                        break;
-                    case RegisterAttributeType.DATE:
-                        gbuObjectAttribute.DtValue = DateTime.Parse(factor.FactorValue.ToString());
-                        break;
-                }
-            }
+            //if (factor.FactorValue != null)
+            //{
+            //    switch (attributeType)
+            //    {
+            //        case RegisterAttributeType.STRING:
+            //            gbuObjectAttribute.StringValue = factor.FactorValue.ToString();
+            //            break;
+            //        case RegisterAttributeType.DECIMAL:
+            //            gbuObjectAttribute.NumValue = decimal.Parse(factor.FactorValue.ToString());
+            //            break;
+            //        case RegisterAttributeType.DATE:
+            //            gbuObjectAttribute.DtValue = DateTime.Parse(factor.FactorValue.ToString());
+            //            break;
+            //    }
+            //}
 
             gbuObjectAttribute.Save();
         }
 
         #endregion
+
 
         #region Entities
 
@@ -229,51 +206,6 @@ namespace KadOzenka.Dal.LongProcess
                 CadastralNumber = cadastralNumber;
                 EstimationDate = estimationDate;
             }
-        }
-
-        public class FactorsFromReonResponse
-        {
-            [JsonProperty("CadastralNumber")]
-            public string CadNum { get; set; }
-
-            [JsonProperty("CalculationDate")]
-            public DateTime DateAppraisal { get; set; }
-
-            [JsonProperty("GraphicFactors")]
-            public List<GraphFactors> GraphicFactors { get; set; }
-        }
-
-        public class GraphFactors
-        {
-            [JsonProperty("CalculationDate")]
-            public DateTime DateCalc { get; set; }
-
-            [JsonProperty("SourceCadastralNumber")]
-            public string CadBlock { get; set; }
-
-            [JsonProperty("SourceLayerName")]
-            public string LayerSourceName { get; set; }
-
-            [JsonProperty("CalculationFactorLayerName")]
-            public string LayerTargetName { get; set; }
-
-            [JsonProperty("CalculationType")]
-            public string CalcType { get; set; }
-
-            [JsonProperty("FactorName")]
-            public string FactorName { get; set; }
-
-            [JsonProperty("FactorValue")]
-            public object FactorValue { get; set; }
-
-            [JsonProperty("ObjectName")]
-            public string ObjectName { get; set; }
-
-            [JsonProperty("FactorValueByQuartal")]
-            public long FactorValueByCadBlock { get; set; }
-
-            [JsonProperty("ObjectNameByQuartal")]
-            public string ObjectNameByCadBlock { get; set; }
         }
 
         #endregion

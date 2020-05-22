@@ -15,6 +15,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using CadAppraisalDataApi.Models;
 using IO.Swagger.Attributes;
 using IO.Swagger.Models;
 
@@ -77,23 +78,23 @@ namespace IO.Swagger.Controllers
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру
         /// </summary>
-        /// <param name="cadNum">Кадастровый номер</param>
-        /// <param name="dateAppraisal">Дата оценки</param>
+        /// <param name="cad_Num">Кадастровый номер</param>
+        /// <param name="date_Appraisal">Дата оценки</param>
         /// <response code="200">OK</response>
         [HttpGet]
         [Route("/CadAppraisal/CadAppraisalDataApi/RosreestrData/graph_factors_by_cad_num")]
         [ValidateModelState]
         [SwaggerOperation("RosreestrDataGetGraphFactorsByCadNum")]
         [SwaggerResponse(statusCode: 200, type: typeof(Object), description: "OK")]
-        public virtual IActionResult RosreestrDataGetGraphFactorsByCadNum([FromQuery][Required()]string cadNum, [FromQuery][Required()]DateTime? dateAppraisal)
+        public virtual IActionResult RosreestrDataGetGraphFactorsByCadNum([FromQuery][Required()]string cad_Num, [FromQuery][Required()]DateTime? date_Appraisal)
         {
             var exampleJson = System.IO.File.ReadAllText(@".\TestResponces\GraphFactorsByCadNum.json");
 
-            //var example = exampleJson != null
-            //    ? JsonConvert.DeserializeObject<List<ClassName>>(exampleJson)
-            //    : default(List<ClassName>);
+            var example = exampleJson != null
+                ? JsonConvert.DeserializeObject<GraphFactorsData>(exampleJson)
+                : default(GraphFactorsData);
 
-            return new JsonResult(exampleJson);
+            return new JsonResult(example);
         }
 
         /// <summary>

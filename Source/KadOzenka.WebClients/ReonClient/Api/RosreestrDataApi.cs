@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using CadAppraisalDataApi.Models;
 using RestSharp;
 using IO.Swagger.Client;
 using IO.Swagger.Model;
@@ -80,7 +81,7 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>Object</returns>
-        object RosreestrDataGetGraphFactorsByCadNum(string cadNum, DateTime? dateAppraisal);
+        GraphFactorsData RosreestrDataGetGraphFactorsByCadNum(string cadNum, DateTime? dateAppraisal);
 
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру
@@ -92,7 +93,7 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>ApiResponse of Object</returns>
-        ApiResponse<object> RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(string cadNum, DateTime? dateAppraisal);
+        ApiResponse<GraphFactorsData> RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(string cadNum, DateTime? dateAppraisal);
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно
         /// </summary>
@@ -603,9 +604,9 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>Object</returns>
-        public object RosreestrDataGetGraphFactorsByCadNum(string cadNum, DateTime? dateAppraisal)
+        public GraphFactorsData RosreestrDataGetGraphFactorsByCadNum(string cadNum, DateTime? dateAppraisal)
         {
-            ApiResponse<object> localVarResponse = RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(cadNum, dateAppraisal);
+            ApiResponse<GraphFactorsData> localVarResponse = RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(cadNum, dateAppraisal);
             return localVarResponse.Data;
         }
 
@@ -616,7 +617,7 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <returns>ApiResponse of Object</returns>
-        public ApiResponse<object> RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(string cadNum, DateTime? dateAppraisal)
+        public ApiResponse<GraphFactorsData> RosreestrDataGetGraphFactorsByCadNumWithHttpInfo(string cadNum, DateTime? dateAppraisal)
         {
             // verify the required parameter 'cadNum' is set
             if (cadNum == null)
@@ -666,9 +667,9 @@ namespace KadOzenka.WebClients.ReonClient.Api
                 if (exception != null) throw exception;
             }
 
-            return new ApiResponse<object>(localVarStatusCode,
+            return new ApiResponse<GraphFactorsData>(localVarStatusCode,
                 localVarResponse.Headers.ToDictionary(x => x.Name, x => x.Value.ToString()),
-                Configuration.ApiClient.Deserialize(localVarResponse, typeof(object)));
+                (GraphFactorsData)Configuration.ApiClient.Deserialize(localVarResponse, typeof(GraphFactorsData)));
         }
 
         /// <summary>
