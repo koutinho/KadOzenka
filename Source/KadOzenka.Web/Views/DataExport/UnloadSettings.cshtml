@@ -132,6 +132,7 @@
     </div>
 </div>
 
+<script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
         $('[name="Tour"]')
@@ -171,8 +172,13 @@
             $.ajax({                
                 type: 'POST',
                 data: dto,
-                success: function () {                    
-                    Common.ShowMessage('Расчет выполнен');                    
+				success: function (data) {
+					if (data.Errors) {
+						var errors = getErrors(data.Errors);
+						Common.ShowError(errors);
+						return;
+					}
+                    Common.ShowMessage('Выполнениие оперции поставленно в очередь. По окончанию расчета вы получите уведомление.');                    
                 },
                 error: function (response) {                    
                     Common.ShowError(response.responseText);

@@ -15,12 +15,13 @@ using Core.Main.FileStorages;
 using Core.Register;
 using ObjectModel.Common;
 using Core.SRD;
+using KadOzenka.Dal.LongProcess.CalculateSystem;
 using KadOzenka.Web.Models.DataImporterLayout;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Controllers
 {
-	public class DataExportController : BaseController
+	public class DataExportController : KoBaseController
 	{
 		private readonly int _dataCountForBackgroundLoading = 1000;
 
@@ -230,8 +231,39 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult UnloadSettings(UnloadSettingsDto settings)
 		{
-			KOUnloadResult.Unload(UnloadSettingsDto.Map(settings));
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			KOUnloadSettings settingsUnload = UnloadSettingsDto.Map(settings);
+			KoDownloadResultProcess.AddImportToQueue(settingsUnload.IdTour, settingsUnload);
 			return Ok();
+		}
+
+		public FileResult DownloadKoExportResult(long reportId, bool isXml)
+		{
+			var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
+
+			if (export == null)
+			{
+				throw new Exception($"В журнале выгрузок не найдена запись с ИД {reportId}");
+			}
+
+			var templateFile = FileStorageManager.GetFileStream(SaveReportDownload.StorageName, export.DateCreated,
+				export.Id.ToString());
+
+
+			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
+
+
+			if (isXml)
+			{
+				fileExtension = "xml";
+				contentType = "application/xml";
+			}
+
+			return File(templateFile, contentType, export.TemplateFileName + "." + fileExtension);
 		}
 	}
 }
