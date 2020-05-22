@@ -8264,12 +8264,12 @@ namespace ObjectModel.KO
 		}
 
 
-		private DateTime _senddate;
+		private DateTime? _senddate;
 		/// <summary>
 		/// 22100500 Дата прочтения сообщения ИС РЕОН (SEND_DATE)
 		/// </summary>
 		[RegisterAttribute(AttributeID = 22100500)]
-		public DateTime SendDate
+		public DateTime? SendDate
 		{
 			get
 			{
@@ -8284,12 +8284,12 @@ namespace ObjectModel.KO
 		}
 
 
-		private DateTime _confirmdate;
+		private DateTime? _confirmdate;
 		/// <summary>
 		/// 22100600 Дата подтверждения сообщения ИС РЕОН (CONFIRM_DATE)
 		/// </summary>
 		[RegisterAttribute(AttributeID = 22100600)]
-		public DateTime ConfirmDate
+		public DateTime? ConfirmDate
 		{
 			get
 			{

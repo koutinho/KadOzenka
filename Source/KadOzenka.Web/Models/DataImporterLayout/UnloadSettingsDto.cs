@@ -1,6 +1,7 @@
 ﻿using ObjectModel.KO;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,7 +9,10 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 {
 	public class UnloadSettingsDto
 	{
-		public long IdTour { get; set; }
+		[Required(ErrorMessage = "Заполните тур")]
+		public long? IdTour { get; set; }
+
+		[Required(ErrorMessage = "Заполните задание на оценку")]
 		public List<long> TaskFilter { get; set; }
 		public bool UnloadParcel { get; set; }
 		public bool UnloadChange { get; set; }
@@ -32,7 +36,7 @@ namespace KadOzenka.Web.Models.DataImporterLayout
 		{
 			KOUnloadSettings result = new KOUnloadSettings
 			{
-				IdTour = entity.IdTour,
+				IdTour = entity.IdTour.GetValueOrDefault(),
 				TaskFilter = entity.TaskFilter,
 				UnloadParcel = entity.UnloadParcel,
 				UnloadChange = entity.UnloadChange,
