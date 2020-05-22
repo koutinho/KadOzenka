@@ -4,6 +4,7 @@ using ObjectModel.Core.LongProcess;
 using System.Threading;
 using System.Transactions;
 using CadAppraisalDataApi.Models;
+using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.LongProcessManagment;
 using Core.SRD;
@@ -18,7 +19,6 @@ using Platform.Configurator;
 
 namespace KadOzenka.Dal.LongProcess
 {
-    //TODO пока нет апи, поэтому процесс не доработан
     public class KoFactorsFromReon : LongProcess
     {
         private const long REOIN_SOURCE_REGISTER_ID = 44355304;
@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.LongProcess
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)
         {
-            //WorkerCommon.SetProgress(processQueue, 0);
+            WorkerCommon.SetProgress(processQueue, 0);
             if (!processQueue.ObjectId.HasValue)
             {
                 WorkerCommon.SetMessage(processQueue, Consts.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
@@ -48,6 +48,7 @@ namespace KadOzenka.Dal.LongProcess
             var document = GetDocument(task.DocumentId);
             var units = GetUnits(task.Id);
 
+            var errorIds = new List<long>();
             units.ForEach(unit =>
             {
                 if (!unit.ObjectId.HasValue)
@@ -55,11 +56,16 @@ namespace KadOzenka.Dal.LongProcess
 
                 var request = GetRequest(task, unit);
                 var response = ReonWebClientService.RosreestrDataGetGraphFactorsByCadNum(request.CadastralNumber, request.EstimationDate);
-                ProcessServiceResponse(unit.ObjectId.Value, document, response);
+                var currentErrorIds = ProcessServiceResponse(unit.ObjectId.Value, document, response);
+                errorIds.AddRange(currentErrorIds);
             });
 
-            NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН", "Операция выполнена успешно.");
-            //WorkerCommon.SetProgress(processQueue, 100);
+            var message = errorIds.Count > 0
+                ? $"Не удалось обработать все данные, подробно в журнале №{string.Join(", ", errorIds)}"
+                : "Операция выполнена успешно.";
+
+            NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН", message);
+            WorkerCommon.SetProgress(processQueue, 100);
         }
 
 
@@ -96,19 +102,30 @@ namespace KadOzenka.Dal.LongProcess
             return new FactorsFromReonRequest(unit.CadastralNumber, task.EstimationDate);
         }
 
-        public void ProcessServiceResponse(long objectId, OMInstance taskDocument, GraphFactorsData response)
+        public List<long> ProcessServiceResponse(long objectId, OMInstance taskDocument, GraphFactorsData response)
         {
+            var errorIds = new List<long>();
             response.GraphFactors?.ForEach(factor =>
             {
-                var attributeType = RegisterAttributeType.DECIMAL;
-                var attributeName = CreateAttributeName(factor);
+                try
+                {
+                    var attributeType = RegisterAttributeType.DECIMAL;
+                    var attributeName = CreateAttributeName(factor);
 
-                var attribute = GetAttribute(attributeName);
-                if (attribute == null)
-                    attribute = CreateAttribute(attributeName, attributeType);
+                    var attribute = GetAttribute(attributeName);
+                    if (attribute == null)
+                        attribute = CreateAttribute(attributeName, attributeType);
 
-                SaveFactor(objectId, attribute.Id, attributeType, factor, taskDocument);
+                    SaveFactor(objectId, attribute.Id, attributeType, factor, taskDocument);
+                }
+                catch (Exception ex)
+                {
+                    long errorId = ErrorManager.LogError(ex);
+                    errorIds.Add(errorId);
+                }
             });
+
+            return errorIds;
         }
 
         //private RegisterAttributeType GetFactorType(object factorValue)

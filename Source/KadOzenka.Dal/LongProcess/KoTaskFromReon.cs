@@ -35,8 +35,8 @@ namespace KadOzenka.Dal.LongProcess
                 ? $"Не удалось обработать все данные, подробно в журнале №{string.Join(", ", errorIds)}" 
                 : "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.";
 
-            WorkerCommon.SetProgress(processQueue, 100);
             NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message);
+            WorkerCommon.SetProgress(processQueue, 100);
         }
 
 
