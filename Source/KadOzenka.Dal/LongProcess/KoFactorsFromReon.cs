@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Core.Register.LongProcessManagment;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.WebClients.ReonClient.Api;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -19,14 +20,11 @@ namespace KadOzenka.Dal.LongProcess
     //TODO пока нет апи, поэтому процесс не доработан
     public class KoFactorsFromReon : LongProcess
     {
-        public const string LongProcessName = nameof(KoFactorsFromReon);
-        private string Url => "";
-        private static HttpClient _httpClient;
-        private TaskService TaskService { get; set; }
+        private RosreestrDataApi ReonWebClientService { get; set; }
 
         public static void AddProcessToQueue(long taskId)
         {
-            LongProcessManager.AddTaskToQueue(LongProcessName, objectId: taskId, registerId: OMTask.GetRegisterId());
+            LongProcessManager.AddTaskToQueue(nameof(KoFactorsFromReon), objectId: taskId, registerId: OMTask.GetRegisterId());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
@@ -40,8 +38,7 @@ namespace KadOzenka.Dal.LongProcess
                 return;
             }
 
-            if (_httpClient == null)
-                _httpClient = new HttpClient();
+            ReonWebClientService = new RosreestrDataApi();
 
             var task = GetTask(processQueue.ObjectId.Value);
             var units = GetUnits(task.Id);
@@ -49,12 +46,11 @@ namespace KadOzenka.Dal.LongProcess
             units.ForEach(unit =>
             {
                 var request = GetRequest(task, unit);
-                //var response = SendDataToService(_httpClient, Url, request).GetAwaiter().GetResult();
-                var response = string.Empty;
-                ProcessServiceResponse(response);
+                var response = ReonWebClientService.RosreestrDataGetGraphFactorsByCadNum(request.CadastralNumber, request.EstimationDate);
+                //ProcessServiceResponse(response);
             });
 
-            NotificationSender.SendNotification(processQueue, "Получения заданий на оценку из ИС РЕОН", "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.");
+            NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН", "Операция выполнена успешно.");
             //WorkerCommon.SetProgress(processQueue, 100);
         }
 
@@ -82,43 +78,23 @@ namespace KadOzenka.Dal.LongProcess
             return new FactorsFromReonRequest(unit.CadastralNumber, task.EstimationDate);
         }
 
-        private async Task<string> SendDataToService(HttpClient httpClient, string url, object data)
-        {
-            if (string.IsNullOrWhiteSpace(url))
-                throw new Exception("Не найден URL для сервиса");
-
-            var stringPayload = await Task.Run(() => JsonConvert.SerializeObject(data));
-            var httpContent = new StringContent(stringPayload, Encoding.UTF8, "application/json");
-
-            var response = await httpClient.PostAsync(url, httpContent);
-            response.EnsureSuccessStatusCode();
-
-            return await response.Content.ReadAsStringAsync();
-        }
-
-        public void ProcessServiceResponse(string responseContentStr)
+        public void ProcessServiceResponse(FactorsFromReonResponse input)
         {
             //var factors = JsonConvert.DeserializeObject<List<FactorsFromReonResponse>>(responseContentStr);
-            var factors = new List<FactorsFromReonResponse>
+            input = new FactorsFromReonResponse
             {
-               new FactorsFromReonResponse
-               {
-                   CadastralNumber = "CadastralNumber",
-                   GraphicFactors = new List<string>{ "GraphicFactors" },
-                   SourceCadastralNumber = "SourceCadastralNumber",
-                   SourceLayerName = "SourceLayerName",
-                   CalculationFactorLayerName = "CalculationFactorLayerName",
-                   CalculationType = "CalculationType",
-                   FactorName = "FactorName",
-                   FactorValue = 0,
-                   ObjectName = "ObjectName",
-                   FactorValueByQuartal = 0,
-                   ObjectNameByQuartal = "ObjectNameByQuartal",
-                   CalculationDate = DateTime.Today
-               }
+                CadNum = "CadastralNumber",
+                DateAppraisal = DateTime.Today,
+                GraphicFactors = new List<GraphFactors>
+                {
+                    new GraphFactors
+                    {
+
+                    }
+                }
             };
 
-            factors.ForEach(task =>
+            input.GraphicFactors?.ForEach(task =>
             {
                 
             });
@@ -130,10 +106,8 @@ namespace KadOzenka.Dal.LongProcess
 
         public class FactorsFromReonRequest
         {
-            [JsonProperty("CadastralNumber")]
             public string CadastralNumber { get; set; }
 
-            [JsonProperty("EstimationdDate")]
             public DateTime? EstimationDate { get; set; }
 
             public FactorsFromReonRequest(string cadastralNumber, DateTime? estimationDate)
@@ -146,22 +120,31 @@ namespace KadOzenka.Dal.LongProcess
         public class FactorsFromReonResponse
         {
             [JsonProperty("CadastralNumber")]
-            public string CadastralNumber { get; set; }
+            public string CadNum { get; set; }
+
+            [JsonProperty("CalculationDate")]
+            public DateTime DateAppraisal { get; set; }
 
             [JsonProperty("GraphicFactors")]
-            public List<string> GraphicFactors { get; set; }
+            public List<GraphFactors> GraphicFactors { get; set; }
+        }
+
+        public class GraphFactors
+        {
+            [JsonProperty("CalculationDate")]
+            public DateTime DateCalc { get; set; }
 
             [JsonProperty("SourceCadastralNumber")]
-            public string SourceCadastralNumber { get; set; }
+            public string CadBlock { get; set; }
 
             [JsonProperty("SourceLayerName")]
-            public string SourceLayerName { get; set; }
+            public string LayerSourceName { get; set; }
 
             [JsonProperty("CalculationFactorLayerName")]
-            public string CalculationFactorLayerName { get; set; }
+            public string LayerTargetName { get; set; }
 
             [JsonProperty("CalculationType")]
-            public string CalculationType { get; set; }
+            public string CalcType { get; set; }
 
             [JsonProperty("FactorName")]
             public string FactorName { get; set; }
@@ -173,13 +156,10 @@ namespace KadOzenka.Dal.LongProcess
             public string ObjectName { get; set; }
 
             [JsonProperty("FactorValueByQuartal")]
-            public long FactorValueByQuartal { get; set; }
+            public long FactorValueByCadBlock { get; set; }
 
             [JsonProperty("ObjectNameByQuartal")]
-            public string ObjectNameByQuartal { get; set; }
-
-            [JsonProperty("CalculationDate")]
-            public DateTime CalculationDate { get; set; }
+            public string ObjectNameByCadBlock { get; set; }
         }
 
         #endregion

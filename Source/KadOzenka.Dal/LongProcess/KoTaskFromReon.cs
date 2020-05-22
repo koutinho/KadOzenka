@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.LongProcess
             ProcessResponse(response);
 
             //WorkerCommon.SetProgress(processQueue, 100);
-            NotificationSender.SendNotification(processQueue, "Получения заданий на оценку из ИС РЕОН",
+            NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН",
                 "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.");
         }
 

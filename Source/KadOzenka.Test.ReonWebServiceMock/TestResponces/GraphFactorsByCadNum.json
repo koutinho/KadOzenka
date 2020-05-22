@@ -1,0 +1,42 @@
+{
+  "CadNum": "77:02:0025009:1084",
+  "DateAppraisal": "2018-01-01T00:00:00",
+  "GraphFactors": [
+    {
+      "DateCalc": "2020-03-19T16:41:12",
+      "CadBlock": "77:02:0025009",
+      "LayerSourceName": "Здания",
+      "LayerTargetName": "Исторический центр г. Москвы",
+      "CalcType": 1,
+      "FactorName": "минимальное расстояние от центроида до центроидов",
+      "FactorValue": 20359.9257079244,
+      "ObjectName": "Центр Москвы (\"Нулевой километр\")",
+      "FactorValueByCadBlock": 20396.3467264238,
+      "ObjectNameByCadBlock": "Центр Москвы (\"Нулевой километр\")"
+    },
+    {
+      "DateCalc": "2020-03-19T16:41:12",
+      "CadBlock": "77:02:0025009",
+      "LayerSourceName": "Здания",
+      "LayerTargetName": "Остановка наземного общественного транспорта",
+      "CalcType": 1,
+      "FactorName": "минимальное расстояние от центроида до центроидов",
+      "FactorValue": 223.828853591311,
+      "ObjectName": "Управа района Северный",
+      "FactorValueByCadBlock": 253.941665742351,
+      "ObjectNameByCadBlock": "Управа района Северный"
+    },
+    {
+      "DateCalc": "2020-03-19T16:41:37",
+      "CadBlock": "77:02:0025009",
+      "LayerSourceName": "Здания",
+      "LayerTargetName": "Функциональные зоны",
+      "CalcType": 1,
+      "FactorName": "минимальное расстояние от границы до центроидов",
+      "FactorValue": 0.0,
+      "ObjectName": null,
+      "FactorValueByCadBlock": 0.0,
+      "ObjectNameByCadBlock": null
+    }
+  ]
+}

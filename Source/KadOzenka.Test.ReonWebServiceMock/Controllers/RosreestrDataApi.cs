@@ -12,13 +12,10 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using IO.Swagger.Attributes;
-
-using Microsoft.AspNetCore.Authorization;
 using IO.Swagger.Models;
 
 namespace IO.Swagger.Controllers
@@ -32,7 +29,6 @@ namespace IO.Swagger.Controllers
         /// <summary>
         /// Возвращает документ из папки для загрузок кадастровой оценки
         /// </summary>
-
         /// <param name="load_id">Идентификатор загрузки</param>
         /// <param name="fname">Название файла</param>
         /// <response code="200">OK</response>
@@ -55,7 +51,6 @@ namespace IO.Swagger.Controllers
         /// <summary>
         /// Возвращает документ из файлового хранилища по id
         /// </summary>
-        
         /// <param name="id"></param>
         /// <param name="fname"></param>
         /// <response code="200">OK</response>
@@ -82,7 +77,6 @@ namespace IO.Swagger.Controllers
         /// <summary>
         /// Возвращает графические факторы по кадастровому номеру
         /// </summary>
-        
         /// <param name="cadNum">Кадастровый номер</param>
         /// <param name="dateAppraisal">Дата оценки</param>
         /// <response code="200">OK</response>
@@ -92,24 +86,19 @@ namespace IO.Swagger.Controllers
         [SwaggerOperation("RosreestrDataGetGraphFactorsByCadNum")]
         [SwaggerResponse(statusCode: 200, type: typeof(Object), description: "OK")]
         public virtual IActionResult RosreestrDataGetGraphFactorsByCadNum([FromQuery][Required()]string cadNum, [FromQuery][Required()]DateTime? dateAppraisal)
-        { 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(Object));
+        {
+            var exampleJson = System.IO.File.ReadAllText(@".\TestResponces\GraphFactorsByCadNum.json");
 
-            string exampleJson = null;
-            exampleJson = "\"{}\"";
-            
-            var example = exampleJson != null
-            ? JsonConvert.DeserializeObject<Object>(exampleJson)
-            : default(Object);
-            //TODO: Change the data returned
-            return new ObjectResult(example);
+            //var example = exampleJson != null
+            //    ? JsonConvert.DeserializeObject<List<ClassName>>(exampleJson)
+            //    : default(List<ClassName>);
+
+            return new JsonResult(exampleJson);
         }
 
         /// <summary>
         /// Возвращает данные Росреестра по диапазону дат включительно
         /// </summary>
-        
         /// <param name="dateFrom">Дата с</param>
         /// <param name="dateTo">Дата по</param>
         /// <response code="200">OK</response>
@@ -119,18 +108,13 @@ namespace IO.Swagger.Controllers
         [SwaggerOperation("RosreestrDataGetRRData")]
         [SwaggerResponse(statusCode: 200, type: typeof(List<RRDataLoadModel>), description: "OK")]
         public virtual IActionResult RosreestrDataGetRRData([FromQuery][Required()]DateTime? dateFrom, [FromQuery][Required()]DateTime? dateTo)
-        { 
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(List<RRDataLoadModel>));
-
-            string exampleJson = null;
-            exampleJson = System.IO.File.ReadAllText(".\\TestResponces\\XmlByDateResponce.json"); // "[ {\n  \"LoadDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DateAppraisal\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocBaseUrl\" : {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  },\n  \"DocDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocNumber\" : \"DocNumber\",\n  \"DocName\" : \"DocName\",\n  \"OrgName\" : \"OrgName\",\n  \"Id\" : 0,\n  \"XmlDocUrls\" : [ {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  }, {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  } ],\n  \"LoadType\" : \"LoadType\"\n}, {\n  \"LoadDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DateAppraisal\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocBaseUrl\" : {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  },\n  \"DocDate\" : \"2000-01-23T04:56:07.000+00:00\",\n  \"DocNumber\" : \"DocNumber\",\n  \"DocName\" : \"DocName\",\n  \"OrgName\" : \"OrgName\",\n  \"Id\" : 0,\n  \"XmlDocUrls\" : [ {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  }, {\n    \"FileName\" : \"FileName\",\n    \"Url\" : \"Url\"\n  } ],\n  \"LoadType\" : \"LoadType\"\n} ]";
-            
+        {
+            var exampleJson = System.IO.File.ReadAllText(".\\TestResponces\\XmlByDateResponce.json");
             
             var example = exampleJson != null
             ? JsonConvert.DeserializeObject<List<RRDataLoadModel>>(exampleJson)
             : default(List<RRDataLoadModel>);
-            //TODO: Change the data returned
+
             return new JsonResult(example);
         }
     }
