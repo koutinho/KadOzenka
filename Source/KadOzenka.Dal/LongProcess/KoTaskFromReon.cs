@@ -13,6 +13,7 @@ using System.Web;
 using IO.Swagger.Model;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.WebClients;
 using KadOzenka.WebClients.ReonClient.Api;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
@@ -62,7 +63,7 @@ namespace KadOzenka.Dal.LongProcess
 
                 foreach (var fileInfo in task.XmlDocUrls)
                 {
-                    ProcessFile(fileInfo.FileName, task.Id, omTask.Id);
+                    ProcessFile(fileInfo, omTask.Id);
                 }
             });
         }
@@ -99,45 +100,23 @@ namespace KadOzenka.Dal.LongProcess
             }
         }
 
-        private void ProcessFile(string fileName, long? loadId, long taskId)
+        private void ProcessFile(DocUrl fileInfo, long taskId)
         {
-            var file = ReonWebClientService.RosreestrDataGetFileByIdCA(loadId, fileName);
-            if (file == null)
-                return;
+            var url = ReonServiceConfig.Current.BaseUrl + "/RosreestrData/" + fileInfo.Url;
+            var data = GetFileData(url);
+            var stream = new MemoryStream(data);
 
-            //var stream = SerializeToStream(file);
-            var byteArray = Encoding.UTF8.GetBytes(file);
-            var stream = new MemoryStream(byteArray);
-            DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", fileName,
+            DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", fileInfo.FileName,
                 stream, OMTask.GetRegisterId(), taskId);
         }
 
-        public static MemoryStream SerializeToStream(object obj)
+        private static byte[] GetFileData(string url)
         {
-            var stream = new MemoryStream();
-            var formatter = new BinaryFormatter();
-            formatter.Serialize(stream, obj);
-            return stream;
+            using (var client = new WebClient())
+            {
+                return client.DownloadData(url);
+            }
         }
-
-        //TODO оставила код, пока в апи не реализована загрузка файла
-        //private void ProcessFile(XmlDocUrls fileInfo, long taskId)
-        //{
-        //    var data = GetFileData(urlForFile);
-        //    var stream = new MemoryStream(data);
-        //    var fileName = fileInfo.FileName;
-
-        //    DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", fileName,
-        //        stream, OMTask.GetRegisterId(), taskId);
-        //}
-
-        //private static byte[] GetFileData(string url)
-        //{
-        //    using (var client = new WebClient())
-        //    {
-        //        return client.DownloadData(url);
-        //    }
-        //}
 
         #endregion
 

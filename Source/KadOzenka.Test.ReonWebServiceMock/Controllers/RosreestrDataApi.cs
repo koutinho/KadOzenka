@@ -40,10 +40,6 @@ namespace IO.Swagger.Controllers
         [SwaggerResponse(statusCode: 200, type: typeof(Object), description: "OK")]
         public virtual IActionResult RosreestrDataGetFileByIdCA([FromRoute][Required]long? load_id, [FromRoute][Required]string fname)
         {
-            //TODO: Uncomment the next line to return response 200 or use other options such as return this.NotFound(), return this.BadRequest(..), ...
-            // return StatusCode(200, default(Object));
-
-
             var xml = System.IO.File.ReadAllText(".\\TestResponces\\File_Ca_By_Id.xml");
 
             return File(Encoding.UTF8.GetBytes(xml), "application/xml", "File_Ca_By_Id.xml");
