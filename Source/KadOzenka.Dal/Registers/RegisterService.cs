@@ -2,6 +2,7 @@
 using System.Transactions;
 using Core.Shared.Extensions;
 using ObjectModel.Core.Register;
+using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.Registers
 {
@@ -21,11 +22,17 @@ namespace KadOzenka.Dal.Registers
                 RegisterName = registerName,
                 RegisterDescription = registerDescription,
                 QuantTable = quantTable,
-                AllpriTable = allPriTable,
                 StorageType = storageType,
                 ObjectSequence = "REG_OBJECT_SEQ",
                 ContainsQuantInFuture = false
             };
+
+            if (!string.IsNullOrWhiteSpace(allPriTable))
+            {
+                omRegister.AllpriTable = allPriTable;
+                omRegister.AllpriPartitioning = 1;
+                omRegister.MainRegister = OMMainObject.GetRegisterId();
+            }
 
             omRegister.Save();
 
