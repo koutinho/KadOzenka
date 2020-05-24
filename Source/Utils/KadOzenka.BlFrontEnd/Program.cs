@@ -140,10 +140,21 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("243", "Импорт данных ГБУ(БД) ОНС TXT", MSExporter.DoLoadBd_Uncomplited_GBU_TEXT);
 			consoleHelper.AddCommand("244", "Импорт данных ГБУ(БД) Помещения TXT", MSExporter.DoLoadBd_Flat_GBU_TEXT);
 
+			consoleHelper.AddCommand("245", "Импорт данных ГБУ(БД) Земля Numeric", MSExporter.DoLoadBd_Parcel_GBU_Numeric);
+			consoleHelper.AddCommand("246", "Импорт данных ГБУ(БД) Здания Numeric", MSExporter.DoLoadBd_Build_GBU_Numeric);
+			consoleHelper.AddCommand("247", "Импорт данных ГБУ(БД) Сооружения Numeric", MSExporter.DoLoadBd_Construction_GBU_Numeric);
+			consoleHelper.AddCommand("248", "Импорт данных ГБУ(БД) ОНС Numeric", MSExporter.DoLoadBd_Uncomplited_GBU_Numeric);
+			consoleHelper.AddCommand("249", "Импорт данных ГБУ(БД) Помещения Numeric", MSExporter.DoLoadBd_Flat_GBU_Numeric);
 
-			consoleHelper.AddCommand("250", "Формула 2016", MSExporter.GetFormulaText);
-			consoleHelper.AddCommand("251", "Рассчет", MSExporter.GetCalcGroup);
-			consoleHelper.AddCommand("252", "История", () =>
+			consoleHelper.AddCommand("250", "Импорт данных ГБУ(БД) Земля Date", MSExporter.DoLoadBd_Parcel_GBU_Date);
+			consoleHelper.AddCommand("251", "Импорт данных ГБУ(БД) Здания Date", MSExporter.DoLoadBd_Build_GBU_Date);
+			consoleHelper.AddCommand("252", "Импорт данных ГБУ(БД) Сооружения Date", MSExporter.DoLoadBd_Construction_GBU_Date);
+			consoleHelper.AddCommand("253", "Импорт данных ГБУ(БД) ОНС Date", MSExporter.DoLoadBd_Uncomplited_GBU_Date);
+			consoleHelper.AddCommand("254", "Импорт данных ГБУ(БД) Помещения Date", MSExporter.DoLoadBd_Flat_GBU_Date);
+
+			consoleHelper.AddCommand("290", "Формула 2016", MSExporter.GetFormulaText);
+			consoleHelper.AddCommand("291", "Рассчет", MSExporter.GetCalcGroup);
+			consoleHelper.AddCommand("292", "История", () =>
 			{
 				List<ObjectModel.KO.HistoryUnit> histories = ObjectModel.KO.HistoryUnit.GetHistory("77:17:0100302:62");
 				foreach (ObjectModel.KO.HistoryUnit history in histories) Console.WriteLine(history.ToString());
