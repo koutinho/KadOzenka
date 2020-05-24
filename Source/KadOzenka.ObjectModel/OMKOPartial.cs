@@ -752,363 +752,6 @@ namespace ObjectModel.KO
         }
         private void Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup, PropertyTypes curTypeObject)
         {
-            #region Эталонный
-            //if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
-            //{
-            //    ALLSubGroupFormulaItem formula = ALLSubGroupFormulaItem.GetSubGroupFormula(this);
-            //    if (formula != null)
-            //    {
-            //        frmWait fw = new frmWait();
-            //        fw.ShowText("Загрузка данных", 0, 0);
-            //        ALLSubGroupFormulaWeightItem[] weights = ALLSubGroupFormulaWeightItem.GetSubGroupFormulaWeight(this);
-            //        ALLObjectItem[] objs1 = ALLObjectItem.GetObjectsBetween(0, 700000, this.CurGroup.Id, Id, building, flat, construction, underconstruction, parcel, true, false, false, false, ALLParamItem.Change_Object);
-
-            //        List<ALLObjectItem> objs = new List<ALLObjectItem>();
-            //        objs.AddRange(objs1);
-            //        List<ALLFactorItem> factors = new List<ALLFactorItem>();
-            //        factors.AddRange(ALLFactorItem.GetFactors(this.CurGroup.Id, true));
-            //        bool usesquarefactor = false;
-            //        Int64 idsquarefactor = 0;
-            //        bool useanalogfactor = false;
-            //        Int64 idanalogfactor = 0;
-
-            //        foreach (ALLFactorItem factor in factors)
-            //        {
-            //            factor.FillMetka(this);
-            //            if (factor.TYPE_FACTOR == euFactorType.ftSquare)
-            //            {
-            //                usesquarefactor = true;
-            //                idsquarefactor = factor.Id;
-            //            }
-            //            if (factor.TYPE_FACTOR == euFactorType.ftAnalog)
-            //            {
-            //                useanalogfactor = true;
-            //                idanalogfactor = factor.Id;
-            //            }
-            //        }
-
-
-
-            //        int ccc = 0;
-            //        foreach (ALLObjectItem obj in objs)
-            //        {
-            //            if (obj.CheckDocInput(id_doc))
-            //            {
-
-            //                fw.ShowText(FullName_SubGroup, objs.Count, ccc);
-            //                ccc++;
-            //                if (obj.ETALON)
-            //                {
-            //                    decimal D = 0;
-            //                    decimal Dm = 1;
-            //                    decimal De = 1;
-            //                    decimal Dss = 0;
-            //                    List<ALLFactorValueItem> fvs = new List<ALLFactorValueItem>();
-            //                    fvs.AddRange(ALLFactorValueItem.GetAllFactors(obj.TYPE_OBJECT, obj.Id, obj.ID_GROUP, false));
-            //                    if (usesquarefactor)
-            //                    {
-            //                        bool findsquarevalue = false;
-            //                        foreach (ALLFactorValueItem fvi in fvs)
-            //                        {
-            //                            if (fvi.ID_FACTOR == idsquarefactor)
-            //                            {
-            //                                findsquarevalue = true;
-            //                                fvi.TYPE_FACTOR = euFactorType.ftSquare;
-            //                                if (obj._main)
-            //                                {
-            //                                    fvi.VALUE_FACTOR = obj.SQUARE_OBJECT.ToString();
-            //                                }
-            //                                else
-            //                                {
-            //                                    ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-            //                                    double exsquare = 0;
-            //                                    foreach (ALLExplicationValueItem exp in exps)
-            //                                    {
-            //                                        if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-            //                                        {
-            //                                            exsquare = exp.SQUARE;
-            //                                        }
-            //                                    }
-            //                                    fvi.VALUE_FACTOR = (exsquare.ToString());
-            //                                }
-            //                            }
-            //                        }
-            //                        if (!findsquarevalue)
-            //                        {
-            //                            if (obj._main)
-            //                            {
-            //                                fvs.Add(new ALLFactorValueItem(euFactorType.ftSquare, obj.Id, idsquarefactor, obj.SQUARE_OBJECT.ToString()));
-            //                            }
-            //                            else
-            //                            {
-            //                                ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-            //                                double exsquare = 0;
-            //                                foreach (ALLExplicationValueItem exp in exps)
-            //                                {
-            //                                    if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-            //                                    {
-            //                                        exsquare = exp.SQUARE;
-            //                                    }
-            //                                }
-            //                                fvs.Add(new ALLFactorValueItem(euFactorType.ftSquare, obj.Id, idsquarefactor, exsquare.ToString()));
-            //                            }
-            //                        }
-            //                    }
-            //                    if (useanalogfactor)
-            //                    {
-            //                        bool findanalogvalue = false;
-            //                        foreach (ALLFactorValueItem fvi in fvs)
-            //                        {
-            //                            if (fvi.ID_FACTOR == idanalogfactor)
-            //                            {
-            //                                findanalogvalue = true;
-            //                                fvi.TYPE_FACTOR = euFactorType.ftAnalog;
-            //                                if (!obj._main)
-            //                                {
-            //                                    ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-            //                                    string exanalog = string.Empty;
-            //                                    foreach (ALLExplicationValueItem exp in exps)
-            //                                    {
-            //                                        if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-            //                                        {
-            //                                            exanalog = exp.CALC_PARENT;
-            //                                        }
-            //                                    }
-            //                                    fvi.VALUE_FACTOR = exanalog;
-            //                                }
-            //                            }
-            //                        }
-            //                        if (!findanalogvalue)
-            //                        {
-            //                            if (!obj._main)
-            //                            {
-            //                                ALLExplicationValueItem[] exps = ALLExplicationValueItem.GetExplications(obj.Id, obj.TYPE_OBJECT, false);
-            //                                string exanalog = string.Empty;
-            //                                foreach (ALLExplicationValueItem exp in exps)
-            //                                {
-            //                                    if ((exp.ID_SUBGROUP == Id) && (exp.Id == obj._id_exp))
-            //                                    {
-            //                                        exanalog = exp.CALC_PARENT;
-            //                                    }
-            //                                }
-            //                                fvs.Add(new ALLFactorValueItem(euFactorType.ftAnalog, obj.Id, idanalogfactor, exanalog));
-            //                            }
-            //                        }
-            //                    }
-
-
-
-            //                    string strerror = "";
-
-            //                    foreach (ALLSubGroupFormulaWeightItem weight in weights)
-            //                    {
-            //                        bool prFind = false;
-            //                        foreach (ALLFactorValueItem fv in fvs)
-            //                        {
-            //                            if (fv.ID_FACTOR == weight.Id_Factor) prFind = true;
-            //                        }
-            //                        if ((!prFind) & (weight.FactorType != euFactorType.ftSquare) & (weight.FactorType != euFactorType.ftAnalog))
-            //                            strerror = strerror + "Отсутствует значение фактора " + weight.Name_Factor + Environment.NewLine;
-            //                    }
-
-            //                    foreach (ALLFactorValueItem fv in fvs)
-            //                    {
-            //                        foreach (ALLFactorItem factor in factors)
-            //                        {
-            //                            if (factor.Id == fv.ID_FACTOR)
-            //                            {
-            //                                foreach (ALLSubGroupFormulaWeightItem weight in weights)
-            //                                {
-            //                                    if (weight.Id_Factor == fv.ID_FACTOR)
-            //                                    {
-            //                                        if (weight.Pr_ADD)
-            //                                        {
-            //                                            if (weight.Pr_Metka)
-            //                                            {
-            //                                                bool mok = false;
-            //                                                decimal d = 0;
-            //                                                foreach (ALLFactorMetkaItem fmi in factor.Metkas)
-            //                                                {
-            //                                                    if (fmi.Value_Factor.ToUpper() == fv.VALUE_FACTOR.ToUpper())
-            //                                                    {
-            //                                                        d = fmi.Metka_Factor;
-            //                                                        mok = true;
-            //                                                    }
-            //                                                }
-            //                                                if (!mok)
-            //                                                    strerror = strerror + "Отсутствует значение метки фактора " + factor.NAME_FACTOR + " для значения " + fv.VALUE_FACTOR + Environment.NewLine;
-
-
-
-            //                                                if (formula.Type_Formula == 1)
-            //                                                {
-            //                                                    if (!weight.Pr_DIV)
-            //                                                        De = De * (weight.B0 + weight.Weight_Factor * d);
-            //                                                    else
-            //                                                        De = De * 1 / (weight.B0 + weight.Weight_Factor * d);
-            //                                                }
-
-            //                                                if (formula.Type_Formula == 3)
-            //                                                {
-            //                                                    if (!weight.Pr_DIV)
-            //                                                        Dss = Dss + (weight.B0 + weight.Weight_Factor * d);
-            //                                                    else
-            //                                                        Dss = Dss + 1 / (weight.B0 + weight.Weight_Factor * d);
-            //                                                    Dm = Dss;
-            //                                                }
-            //                                            }
-            //                                            else
-            //                                            {
-            //                                                decimal d = 0;
-            //                                                bool dok = decimal.TryParse(fv.VALUE_FACTOR, out d);
-            //                                                if (!dok)
-            //                                                    strerror = strerror + "Неверное значение фактора " + factor.NAME_FACTOR + " : " + fv.VALUE_FACTOR + Environment.NewLine;
-
-            //                                                if (formula.Type_Formula == 1)
-            //                                                {
-            //                                                    if (!weight.Pr_DIV)
-            //                                                        De = De * (weight.B0 + weight.Weight_Factor * d);
-            //                                                    else
-            //                                                        De = De * 1 / (weight.B0 + weight.Weight_Factor * d);
-            //                                                }
-
-            //                                                if (formula.Type_Formula == 3)
-            //                                                {
-            //                                                    if (!weight.Pr_DIV)
-            //                                                        Dss = Dss + (weight.B0 + weight.Weight_Factor * d);
-            //                                                    else
-            //                                                        Dss = Dss + 1 / (weight.B0 + weight.Weight_Factor * d);
-            //                                                    Dm = Dss;
-            //                                                }
-            //                                            }
-            //                                        }
-            //                                    }
-            //                                }
-            //                            }
-            //                        }
-
-            //                    }
-
-            //                    foreach (ALLFactorValueItem fv in fvs)
-            //                    {
-            //                        foreach (ALLFactorItem factor in factors)
-            //                        {
-            //                            if (factor.Id == fv.ID_FACTOR)
-            //                            {
-            //                                foreach (ALLSubGroupFormulaWeightItem weight in weights)
-            //                                {
-            //                                    if (weight.Id_Factor == fv.ID_FACTOR)
-            //                                    {
-            //                                        if (!weight.Pr_ADD)
-            //                                        {
-
-            //                                            if (weight.Pr_Metka)
-            //                                            {
-            //                                                decimal d = 0;
-            //                                                bool mok = false;
-            //                                                foreach (ALLFactorMetkaItem fmi in factor.Metkas)
-            //                                                {
-            //                                                    if (fmi.Value_Factor.ToUpper() == fv.VALUE_FACTOR.ToUpper())
-            //                                                    {
-            //                                                        d = fmi.Metka_Factor;
-            //                                                        mok = true;
-            //                                                    }
-            //                                                }
-
-            //                                                if (!mok)
-            //                                                    strerror = strerror + "Отсутствует значение метки фактора " + factor.NAME_FACTOR + " для значения " + fv.VALUE_FACTOR + Environment.NewLine;
-
-            //                                                if (!weight.Pr_DIV)
-            //                                                    D = D + weight.Weight_Factor * d;
-            //                                                else
-            //                                                    D = D + 1 / (weight.Weight_Factor * d);
-
-            //                                                if (formula.Type_Formula == 3)
-            //                                                {
-            //                                                    if (!weight.Pr_DIV)
-            //                                                        Dm = Dm * (weight.B0 + weight.Weight_Factor * d);
-            //                                                    else
-            //                                                        Dm = Dm / (weight.B0 + weight.Weight_Factor * d);
-            //                                                }
-            //                                            }
-            //                                            else
-            //                                            {
-            //                                                decimal d = 0;
-            //                                                bool dok = decimal.TryParse(fv.VALUE_FACTOR, out d);
-            //                                                if (!dok)
-            //                                                    strerror = strerror + "Неверное значение фактора " + factor.NAME_FACTOR + " : " + fv.VALUE_FACTOR + Environment.NewLine;
-
-            //                                                if (!weight.Pr_DIV)
-            //                                                    D = D + weight.Weight_Factor * d;
-            //                                                else
-            //                                                    D = D + 1 / (weight.Weight_Factor * d);
-
-            //                                                if (formula.Type_Formula == 3)
-            //                                                {
-            //                                                    if (!weight.Pr_DIV)
-            //                                                        Dm = Dm * (weight.B0 + weight.Weight_Factor * d);
-            //                                                    else
-            //                                                        Dm = Dm / (weight.B0 + weight.Weight_Factor * d);
-            //                                                }
-            //                                            }
-            //                                        }
-            //                                    }
-            //                                }
-            //                            }
-            //                        }
-
-            //                    }
-
-            //                    if (strerror != "")
-            //                    {
-            //                        sw.WriteLine(obj.KN_OBJECT);
-            //                        sw.WriteLine(strerror);
-            //                    }
-
-            //                    if (formula.Type_Formula == 1)
-            //                    {
-            //                        double UPKS = Math.Exp(Convert.ToDouble(formula.A0 + D)) * Convert.ToDouble(De);
-            //                        UPKS = Math.Round(UPKS, 2);
-            //                        ALLObjectItem[] chlobjs = ALLObjectItem.GetObjectsBetweenAllKK(obj.ID_GROUP, obj.ID_SUBGROUP, obj.KN_KK, ALLParamItem.Change_Object);
-            //                        foreach (ALLObjectItem chlobj in chlobjs)
-            //                        {
-            //                            chlobj.UpdateCalc(UPKS, UPKS * chlobj.SQUARE_CALC);
-            //                            chlobj.UpdateCalcRez(0, 0);
-            //                            if (strerror != string.Empty) chlobj.UpdateCalc(0, 0);
-            //                        }
-            //                    }
-            //                    if (formula.Type_Formula == 2)
-            //                    {
-            //                        double UPKS = Convert.ToDouble(formula.A0 + D);
-            //                        UPKS = Math.Round(UPKS, 2);
-            //                        ALLObjectItem[] chlobjs = ALLObjectItem.GetObjectsBetweenAllKK(obj.ID_GROUP, obj.ID_SUBGROUP, obj.KN_KK, ALLParamItem.Change_Object);
-            //                        foreach (ALLObjectItem chlobj in chlobjs)
-            //                        {
-            //                            chlobj.UpdateCalc(UPKS, UPKS * chlobj.SQUARE_CALC);
-            //                            chlobj.UpdateCalcRez(0, 0);
-            //                            if (strerror != string.Empty) chlobj.UpdateCalc(0, 0);
-            //                        }
-            //                    }
-            //                    if (formula.Type_Formula == 3)
-            //                    {
-            //                        double UPKS = Convert.ToDouble(formula.A0 * Dm);
-            //                        UPKS = Math.Round(UPKS, 2);
-            //                        ALLObjectItem[] chlobjs = ALLObjectItem.GetObjectsBetweenAllKK(obj.ID_GROUP, obj.ID_SUBGROUP, obj.KN_KK, ALLParamItem.Change_Object);
-            //                        foreach (ALLObjectItem chlobj in chlobjs)
-            //                        {
-            //                            chlobj.UpdateCalc(UPKS, UPKS * chlobj.SQUARE_CALC);
-            //                            chlobj.UpdateCalcRez(0, 0);
-            //                            if (strerror != string.Empty) chlobj.UpdateCalc(0, 0);
-            //                        }
-            //                    }
-            //                }
-            //            }
-            //        }
-            //        fw.HideText();
-            //    }
-            //}
-            #endregion
-
             #region Моделирование
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model || this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
             {
@@ -1414,7 +1057,7 @@ namespace ObjectModel.KO
                                         }
                                         unit.Upks = 0;
                                         unit.CadastralCost = 0;
-                                        //unit.Save();
+                                        unit.Save();
                                         if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
                                             CalculateChildForEtalon(unit);
                                     }
@@ -1459,7 +1102,7 @@ namespace ObjectModel.KO
                                         }
                                         unit.Upks = 0;
                                         unit.CadastralCost = 0;
-                                        //unit.Save();
+                                        unit.Save();
                                         if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
                                             CalculateChildForEtalon(unit);
                                     }
@@ -1502,7 +1145,7 @@ namespace ObjectModel.KO
                                         }
                                         unit.Upks = 0;
                                         unit.CadastralCost = 0;
-                                        //unit.Save();
+                                        unit.Save();
                                         if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
                                             CalculateChildForEtalon(unit);
                                     }
@@ -1839,15 +1482,15 @@ namespace ObjectModel.KO
 
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
-                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
                             unit.UpksPre = upksz;
                             unit.CadastralCostPre = cost;
                             unit.Upks = 0;
                             unit.CadastralCost = 0;
                             unit.ParentCalcNumber = calc_obj;
                             unit.ParentCalcType_Code = calc_obj_code;
-                            //unit.Save();
+                            unit.Save();
                         }
                     }
                 }
@@ -1886,15 +1529,15 @@ namespace ObjectModel.KO
 
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
-                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
                             unit.UpksPre = upksz;
                             unit.CadastralCostPre = cost;
                             unit.Upks = 0;
                             unit.CadastralCost = 0;
                             unit.ParentCalcNumber = calc_obj;
                             unit.ParentCalcType_Code = calc_obj_code;
-                            //unit.Save();
+                            unit.Save();
                         }
                     }
                 }
@@ -1935,15 +1578,15 @@ namespace ObjectModel.KO
 
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
-                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
                             unit.UpksPre = upksz;
                             unit.CadastralCostPre = cost;
                             unit.Upks = 0;
                             unit.CadastralCost = 0;
                             unit.ParentCalcNumber = calc_obj;
                             unit.ParentCalcType_Code = calc_obj_code;
-                            //unit.Save();
+                            unit.Save();
                         }
                     }
                 }
@@ -1982,15 +1625,15 @@ namespace ObjectModel.KO
 
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
-                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
                             unit.UpksPre = upksz;
                             unit.CadastralCostPre = cost;
                             unit.Upks = 0;
                             unit.CadastralCost = 0;
                             unit.ParentCalcNumber = calc_obj;
                             unit.ParentCalcType_Code = calc_obj_code;
-                            //unit.Save();
+                            unit.Save();
                         }
                     }
                 }
@@ -2031,15 +1674,15 @@ namespace ObjectModel.KO
 
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
-                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
                             unit.UpksPre = upksz;
                             unit.CadastralCostPre = cost;
                             unit.Upks = 0;
                             unit.CadastralCost = 0;
                             unit.ParentCalcNumber = calc_obj;
                             unit.ParentCalcType_Code = calc_obj_code;
-                            //unit.Save();
+                            unit.Save();
                         }
                     }
                 }
@@ -2078,15 +1721,15 @@ namespace ObjectModel.KO
 
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
-                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
                             unit.UpksPre = upksz;
                             unit.CadastralCostPre = cost;
                             unit.Upks = 0;
                             unit.CadastralCost = 0;
                             unit.ParentCalcNumber = calc_obj;
                             unit.ParentCalcType_Code = calc_obj_code;
-                            //unit.Save();
+                            unit.Save();
                         }
                     }
                 }
@@ -2132,15 +1775,15 @@ namespace ObjectModel.KO
                             upksz = Math.Round(upksz * pp, 2, MidpointRounding.AwayFromZero);
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
-                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
                             unit.UpksPre = upksz;
                             unit.CadastralCostPre = cost;
                             unit.Upks = 0;
                             unit.CadastralCost = 0;
                             unit.ParentCalcNumber = calc_obj;
                             unit.ParentCalcType_Code = calc_obj_code;
-                            //unit.Save();
+                            unit.Save();
                         }
                     }
                 }
@@ -2181,15 +1824,15 @@ namespace ObjectModel.KO
                             upksz = Math.Round(upksz * pp, 2, MidpointRounding.AwayFromZero);
                             decimal cost = Math.Round(upksz * square, 2, MidpointRounding.AwayFromZero);
 
-                            if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
-                                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
+                            //if (unit.UpksPre != upksz || unit.CadastralCostPre != cost)
+                            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3} po:{5} pn:{6}", unit.UpksPre, upksz, unit.CadastralCostPre, cost, unit.CadastralNumber, unit.ParentCalcNumber, calc_obj);
                             unit.UpksPre = upksz;
                             unit.CadastralCostPre = cost;
                             unit.Upks = 0;
                             unit.CadastralCost = 0;
                             unit.ParentCalcNumber = calc_obj;
                             unit.ParentCalcType_Code = calc_obj_code;
-                            //unit.Save();
+                            unit.Save();
                         }
                     }
                 }
@@ -2259,12 +1902,12 @@ namespace ObjectModel.KO
                 upks = 0;
             }
             decimal cost = Math.Round(upks.Value * square.Value, 2, MidpointRounding.AwayFromZero);
-            if (unit.Upks != upks || unit.CadastralCost != cost)
-                Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3}", unit.Upks, upks, unit.CadastralCost, cost, unit.CadastralNumber);
+            //if (unit.Upks != upks || unit.CadastralCost != cost)
+            //    Console.WriteLine("КН:{4} УПКС:{0} УПКС:{1} КС:{2} КС:{3}", unit.Upks, upks, unit.CadastralCost, cost, unit.CadastralNumber);
 
-            //unit.Upks = upks;
-            //unit.CadastralCost = cost;
-            //unit.Save();
+            unit.Upks = upks;
+            unit.CadastralCost = cost;
+            unit.Save();
         }
         private void CalculateChildForEtalon(ObjectModel.KO.OMUnit unit)
         {
@@ -2288,7 +1931,45 @@ namespace ObjectModel.KO
         }
         public static void CalculateSelectGroup(KOCalcSettings setting)
         {
-            //TODO
+            List<ObjectModel.KO.OMGroup> CalcGroups = new List<OMGroup>();
+
+            if (setting.CalcAllGroups)
+            {
+                CalcGroups = GetListGroupTour(setting.IdTour, (setting.CalcParcel ? KoGroupAlgoritm.MainParcel : KoGroupAlgoritm.MainOKS));
+            }
+            else
+            {
+                foreach (long idGroup in setting.CalcGroups)
+                {
+                    var group = ObjectModel.KO.OMGroup.Where(x => x.Id == idGroup).SelectAll().ExecuteFirstOrDefault();
+                    if (group != null) CalcGroups.Add(group);
+                }
+            }
+
+            foreach (ObjectModel.KO.OMGroup CalcGroup in CalcGroups)
+            {
+                if (CalcGroup != null)
+                {
+                    List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
+                    foreach (long taskId in setting.TaskFilter)
+                    {
+                        Units.AddRange(ObjectModel.KO.OMUnit.Where(x => (setting.CalcParcel ? (x.PropertyType_Code == PropertyTypes.Stead) : (x.PropertyType_Code != PropertyTypes.Stead)) && x.TaskId == taskId && x.GroupId== CalcGroup.Id).SelectAll().Execute());
+                    }
+
+                    List<long> calcParentGroup = new List<long>();
+                    List<ObjectModel.KO.OMCalcGroup> parentsGroups = ObjectModel.KO.OMCalcGroup.Where(x=>x.GroupId==CalcGroup.Id).SelectAll().Execute();
+                    foreach (ObjectModel.KO.OMCalcGroup parentsGroup in parentsGroups)
+                    {
+                        if (parentsGroup.ParentCalcGroupId != null)
+                            calcParentGroup.Add(parentsGroup.ParentCalcGroupId.Value);
+                    }
+                    if (setting.CalcStage1)
+                        CalcGroup.Calculate(Units, calcParentGroup);
+
+                    if (setting.CalcStage3)
+                        CalcGroup.CalculateResult(Units);
+                }
+            }
         }
     }
 
