@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29326.143
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal", "KadOzenka.Dal\KadOzenka.Dal.csproj", "{4B8710A1-4024-4C6E-87CD-F0734EE7F054}"
 EndProject
@@ -26,11 +26,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EP.Sdk.Core", "Utils\EP.Sdk
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StartProject", "StartProject\StartProject.csproj", "{DAEFC5C4-FF89-46A1-90B9-F4AB4BE24A3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KadOzenka.WebClients", "KadOzenka.WebClients\KadOzenka.WebClients.csproj", "{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.WebClients", "KadOzenka.WebClients\KadOzenka.WebClients.csproj", "{A6A83D28-EB29-40AD-AB55-F6FBC8B735F6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{424A8967-E655-42CB-A88A-B30251FB0ACB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KadOzenka.Test.ReonWebServiceMock", "KadOzenka.Test.ReonWebServiceMock\KadOzenka.Test.ReonWebServiceMock.csproj", "{35BD5D31-C805-4528-AA4E-855795AFE7AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Test.ReonWebServiceMock", "KadOzenka.Test.ReonWebServiceMock\KadOzenka.Test.ReonWebServiceMock.csproj", "{35BD5D31-C805-4528-AA4E-855795AFE7AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.WebServices", "KadOzenka.WebServices\KadOzenka.WebServices\KadOzenka.WebServices.csproj", "{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -128,6 +130,14 @@ Global
 		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Release|x86.ActiveCfg = Release|Any CPU
 		{35BD5D31-C805-4528-AA4E-855795AFE7AE}.Release|x86.Build.0 = Release|Any CPU
+		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Debug|x86.Build.0 = Debug|Any CPU
+		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Release|x86.ActiveCfg = Release|Any CPU
+		{ADC9CD98-AAD0-49C5-BF06-77F0A9BBA6D0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -145,7 +155,7 @@ Global
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
 	EndGlobalSection
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 12
+		SccNumberOfProjects = 13
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://192.168.3.86:8080/tfs/defaultcollection
 		SccLocalPath0 = .
@@ -189,5 +199,8 @@ Global
 		SccProjectTopLevelParentUniqueName11 = KadOzenka.sln
 		SccProjectName11 = KadOzenka.Test.ReonWebServiceMock
 		SccLocalPath11 = KadOzenka.Test.ReonWebServiceMock
+		SccProjectUniqueName12 = KadOzenka.WebServices\\KadOzenka.WebServices\\KadOzenka.WebServices.csproj
+		SccProjectName12 = KadOzenka.WebServices/KadOzenka.WebServices
+		SccLocalPath12 = KadOzenka.WebServices\\KadOzenka.WebServices
 	EndGlobalSection
 EndGlobal
