@@ -34,6 +34,9 @@ namespace KadOzenka.WebServices.Services
 			try
 			{
 				var record = _appContext.ReonJournal.Where(x => x.ConfirmDate == null).OrderBy(x => x.CreateDate).FirstOrDefault();
+
+				if (record == null) return null;
+
 				var updatedRecord= UpdateReadDate(record);
 				resRecord.ReportId = (int)updatedRecord.ResultReportId;
 				resRecord.CreateDate = updatedRecord.CreateDate;
