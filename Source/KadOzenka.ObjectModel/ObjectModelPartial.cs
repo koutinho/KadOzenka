@@ -1996,6 +1996,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+	/// <summary>
+	/// 260 Реестр настройки автоматического расчета
+	/// </summary>
+	public partial class OMAutoCalculationSettings
+	{
+
+		public OMAutoCalculationSettings()
+		{
+
+			Id = -1;
+
+			CollectPropertyChanged = true;
+			PropertyChangedList = new HashSet<String>();
+
+		}
+		public OMAutoCalculationSettings(bool trackPropertyChanging) : this()
+		{
+			CollectPropertyChanged = trackPropertyChanging;
+		}
+	}
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

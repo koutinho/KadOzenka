@@ -11836,6 +11836,178 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 260 Реестр настройки автоматического расчета (KO_AUTO_CALCULATION_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 260)]
+    [Serializable]
+    public partial class OMAutoCalculationSettings : OMBaseClass<OMAutoCalculationSettings>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 26000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 26000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _idtour;
+        /// <summary>
+        /// 26000200 Идентификатор тура оценки (TOUR_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26000200)]
+        public long IdTour
+        {
+            get
+            {
+                CheckPropertyInited("IdTour");
+                return _idtour;
+            }
+            set
+            {
+                _idtour = value;
+                NotifyPropertyChanged("IdTour");
+            }
+        }
+
+
+        private bool _calcparcel;
+        /// <summary>
+        /// 26000300 Объекты расчета: true-Земельный участок, false-ОКС (CALC_PARCEL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26000300)]
+        public bool CalcParcel
+        {
+            get
+            {
+                CheckPropertyInited("CalcParcel");
+                return _calcparcel;
+            }
+            set
+            {
+                _calcparcel = value;
+                NotifyPropertyChanged("CalcParcel");
+            }
+        }
+
+
+        private long _idgroup;
+        /// <summary>
+        /// 26000400 Идентификатор группы оценки (GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26000400)]
+        public long IdGroup
+        {
+            get
+            {
+                CheckPropertyInited("IdGroup");
+                return _idgroup;
+            }
+            set
+            {
+                _idgroup = value;
+                NotifyPropertyChanged("IdGroup");
+            }
+        }
+
+
+        private long _numberpriority;
+        /// <summary>
+        /// 26000500 Приоритет в очереди расчета (NUMBER_PRIORITY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26000500)]
+        public long NumberPriority
+        {
+            get
+            {
+                CheckPropertyInited("NumberPriority");
+                return _numberpriority;
+            }
+            set
+            {
+                _numberpriority = value;
+                NotifyPropertyChanged("NumberPriority");
+            }
+        }
+
+
+        private bool _calcstage1;
+        /// <summary>
+        /// 26000600 Предварительный расчет (CALC_STAGE_1)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26000600)]
+        public bool CalcStage1
+        {
+            get
+            {
+                CheckPropertyInited("CalcStage1");
+                return _calcstage1;
+            }
+            set
+            {
+                _calcstage1 = value;
+                NotifyPropertyChanged("CalcStage1");
+            }
+        }
+
+
+        private bool _calcstage2;
+        /// <summary>
+        /// 26000700 Расчет поправок/коэффициентов (CALC_STAGE_2)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26000700)]
+        public bool CalcStage2
+        {
+            get
+            {
+                CheckPropertyInited("CalcStage2");
+                return _calcstage2;
+            }
+            set
+            {
+                _calcstage2 = value;
+                NotifyPropertyChanged("CalcStage2");
+            }
+        }
+
+
+        private bool _calcstage3;
+        /// <summary>
+        /// 26000800 Окончательный расчет (CALC_STAGE_3)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26000800)]
+        public bool CalcStage3
+        {
+            get
+            {
+                CheckPropertyInited("CalcStage3");
+                return _calcstage3;
+            }
+            set
+            {
+                _calcstage3 = value;
+                NotifyPropertyChanged("CalcStage3");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
