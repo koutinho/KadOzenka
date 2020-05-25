@@ -256,14 +256,25 @@ namespace KadOzenka.Web.Controllers
 
 			StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
 
+			string defaultEx = ".xlsx";
+			string reportName = export.TemplateFileName;
+
+			if (string.IsNullOrEmpty(Path.GetExtension(reportName)) && !isXml)
+			{
+				reportName += defaultEx;
+			}
 
 			if (isXml)
 			{
-				fileExtension = "xml";
 				contentType = "application/xml";
+
+				if (string.IsNullOrEmpty(Path.GetExtension(reportName)))
+				{
+					reportName += ".xml";
+				}
 			}
 
-			return File(templateFile, contentType, export.TemplateFileName + "." + fileExtension);
+			return File(templateFile, contentType, reportName);
 		}
 	}
 }

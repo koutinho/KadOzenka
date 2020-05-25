@@ -3395,6 +3395,7 @@ namespace KadOzenka.Dal.DataExport
 	    {
 		    var currentDate = DateTime.Now;
 		    long reportId = 0;
+			string fileExtension = ".xlsx";
 			try
 		    {
 			    var export = new OMExportByTemplates
@@ -3402,7 +3403,7 @@ namespace KadOzenka.Dal.DataExport
 				    UserId = SRDSession.GetCurrentUserId().Value,
 				    DateCreated = currentDate,
 				    Status = (long)ImportStatus.Added,
-				    TemplateFileName = nameReport,
+				    TemplateFileName = nameReport + fileExtension,
 				    MainRegisterId = registerId,
 				    RegisterViewId = registerViewId
 				};
@@ -3445,14 +3446,15 @@ namespace KadOzenka.Dal.DataExport
 	    {
 		    var currentDate = DateTime.Now;
 		    long reportId = 0;
-		    try
+		    string fileExtension = ".xml";
+			try
 		    {
 			    var export = new OMExportByTemplates
 			    {
 				    UserId = SRDSession.GetCurrentUserId().Value,
 				    DateCreated = currentDate,
 				    Status = (long)ImportStatus.Added,
-				    TemplateFileName = nameReport,
+				    TemplateFileName = nameReport + fileExtension,
 				    MainRegisterId = registerId,
 				    RegisterViewId = registerViewId
 			    };

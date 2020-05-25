@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 
 				if (data.SendResultToReon)
 				{
-					foreach (var item in correctRes)
+					foreach (var item in correctRes.Where(x => x.FileId != 0).ToList())
 					{
 						new OMKoResultSendJournal
 						{
@@ -75,7 +75,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			if (withLink && result != null)
 			{
 				msgResult += "<br>";
-				msgResult += GetLinks(result);
+				msgResult += GetLinks(result.Where(x => x.FileId != 0).ToList());
 				msgResult += "<br>";
 				msgResult += GetFaultReportMessage(result.Where(x => x.FileId == 0).ToList());
 			}
@@ -86,7 +86,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 		public string GetLinks(List<ResultKoUnloadSettings> result)
 		{
 			string msg = "";
-			foreach (var item in result.Where(x => x.FileId != 0))
+			foreach (var item in result)
 			{
 				msg += $"<a href='/DataExport/DownloadKoExportResult?reportId={item.FileId}&isXml={item.IsXml}'>{item.FileName}</a>" + "<br>";
 			}
