@@ -23,5 +23,18 @@ namespace KadOzenka.Web.Models.Task
                 Stage3 = dto.Stage3
             };
         }
+
+        public static GroupCalculationSettingsDto FromModel(CadastralPriceCalculationSettingsModel model)
+        {
+            return new GroupCalculationSettingsDto
+            {
+                Id = model.Id,
+                GroupName = model.GroupName,
+                Priority = model.Priority,
+                Stage1 = model.Stage1,
+                Stage2 = model.Stage2,
+                Stage3 = model.Stage3
+            };
+        }
     }
 }

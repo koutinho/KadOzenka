@@ -200,6 +200,9 @@ namespace KadOzenka.Dal.Groups
 			return SetGroupFields(groupDto, group, tourGroup);
 		}
 
+
+        #region Calculation Settings To Calculate Cadastral Price
+
         public List<GroupCalculationSettingsDto> GetCalculationSettings(long tourId, bool isParcel)
         {
             var query = new QSQuery
@@ -247,6 +250,19 @@ namespace KadOzenka.Dal.Groups
 
             return query.ExecuteQuery<GroupCalculationSettingsDto>();
         }
+
+        public void ChangeCalculationSettingsPriority(List<GroupCalculationSettingsDto> settings)
+        {
+            var ids = settings.Select(x => x.Id);
+            var omSettings = OMAutoCalculationSettings.Where(x => ids.Contains(x.Id)).SelectAll().Execute();
+            omSettings.ForEach(setting =>
+            {
+                setting.NumberPriority = settings.First(x => x.Id == setting.Id).Priority;
+                setting.Save();
+            });
+        }
+
+        #endregion
 
 
         #region Support Methods
@@ -329,5 +345,5 @@ namespace KadOzenka.Dal.Groups
         }
 
         #endregion
-	}
+    }
 }

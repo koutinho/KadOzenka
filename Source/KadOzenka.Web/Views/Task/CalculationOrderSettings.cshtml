@@ -1,22 +1,19 @@
-﻿@*@using (Html.BeginForm("CalculateCadastralPrice", "Task", FormMethod.Post))*@
-{
-    <div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
-        <div class="form-group">
-            <div id="grid"></div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-1 col-sm-offset-10" style="padding: 1%;">
-                @(Html.Kendo().Button()
-                    .Name("execute")
-                    .Content("Расчет")
-                    .Events(x => x.Click("save"))
-                    .HtmlAttributes(new {type = "button"}))
-            </div>
-        </div>
-
+﻿
+<div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
+    <div class="form-group">
+        <div id="grid"></div>
     </div>
-}
+    <div class="form-group">
+        <div class="col-sm-1 col-sm-offset-10" style="padding: 1%;">
+            @(Html.Kendo().Button()
+                .Name("execute")
+                .Content("Расчет")
+                .Events(x => x.Click("save"))
+                .HtmlAttributes(new {type = "button"}))
+        </div>
+    </div>
+</div>
+
 
 <style>
     .k-grid tbody tr {
@@ -24,11 +21,11 @@
     }
 </style>
 
+
 <script type="text/javascript">
-    $(document).ready(function () {
+    $(document).ready(function() {
         fillGrid();
     });
-
 
 
     function fillGrid() {
@@ -83,12 +80,56 @@
                 }
             ]
         });
+        makeGridDraggable();
     }
 
 
-function save() {
+    function makeGridDraggable() {
+        var grid = $("#grid").data("kendoGrid");
+        grid.table.kendoSortable({
+            filter: ">tbody >tr",
+            hint: function (element) {
+                var table = grid.table.clone(),
+                    wrapperWidth = grid.wrapper.width(),
+                    wrapper = $("<div class='k-grid k-widget'></div>").width(wrapperWidth);
+                table.find("thead").remove(); // Remove the Grid header from the hint.
+                table.find("tbody").empty(); // Remove the existing rows from the hint.
+                table.wrap(wrapper); //wrap the table
+                table.append(element.clone()); // Append the dragged element.
+                table.css("opacity", 0.7);
+                return table.parent(); // Get the wrapper.
+            },
+            change: function(e) {
+                var skip = grid.dataSource.skip(),
+                    oldIndex = e.oldIndex + skip,
+                    newIndex = e.newIndex + skip,
+                    data = grid.dataSource.data(),
+                    dataItem = grid.dataSource.getByUid(e.item.data("uid"));
+                grid.dataSource.remove(dataItem);
+                grid.dataSource.insert(newIndex, dataItem);
+            }
+        });
+    }
 
-};
+
+    function save() {
+        var models = $("#grid").data("kendoGrid").dataSource.data();
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ChangeCalculationSettingsPriority", "Task")',
+            data: { models: JSON.stringify({ models }) },
+            success: function (response) {
+                Common.ShowMessage(response.Message);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 
 
 </script>

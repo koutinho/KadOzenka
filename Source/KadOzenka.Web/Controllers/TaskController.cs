@@ -25,6 +25,8 @@ using ObjectModel.Core.Register;
 using ObjectModel.Gbu.ExportAttribute;
 using KadOzenka.Dal.Models.Task;
 using KadOzenka.Dal.Tours;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -681,6 +683,24 @@ namespace KadOzenka.Web.Controllers
             var models = settings.Select(CadastralPriceCalculationSettingsModel.ToModel).ToList();
 
             return Json(models);
+        }
+
+        [HttpPost]
+        public JsonResult ChangeCalculationSettingsPriority(string models, DateTime date)
+        {
+            var settingsJson = JObject.Parse(models).SelectToken("models").ToString();
+
+            var settingsModels = JsonConvert.DeserializeObject<List<CadastralPriceCalculationSettingsModel>>(settingsJson);
+
+            var dtos = settingsModels.Select(CadastralPriceCalculationSettingsModel.FromModel).ToList();
+            for (var i = 0; i < dtos.Count; i++)
+            {
+                dtos[i].Priority = i;
+            }
+
+            GroupService.ChangeCalculationSettingsPriority(dtos);
+
+            return Json(new { Message = "Изменения сохранены" });
         }
 
         #endregion
