@@ -12,6 +12,8 @@ namespace KadOzenka.WebServices.Domain.Context
 		}
 
 		public DbSet<ReonJournal> ReonJournal { get; set; }
+
+		public DbSet<ExportTemplate> ExportTemplate { get; set; }
 	
 	}
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
+using Core.Shared.Extensions;
 using KadOzenka.WebServices.Domain.Context;
 using KadOzenka.WebServices.Domain.Model;
 using KadOzenka.WebServices.Services;
@@ -62,6 +64,22 @@ namespace KadOzenka.WebServices
 			}
 
 			return Ok();
+		}
+
+		/// <summary>
+		/// Get Report by guid
+		/// </summary>
+		/// <param name="guidRecord">Guid record</param>
+		[HttpGet("DownloadReport/{guidRecord}")]
+		public FileResult DownloadReport(Guid guidRecord)
+		{
+			var res = _journalService.GetFileReport(guidRecord);
+			if (res == null)
+			{
+				throw new Exception("Не удалось выгрузить файл");
+			}
+
+			return File(res.Stream, res.ContentType, res.FileName);
 		}
 	}
 }

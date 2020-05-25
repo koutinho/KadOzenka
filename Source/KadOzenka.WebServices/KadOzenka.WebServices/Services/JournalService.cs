@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using Core.Main.FileStorages;
 using KadOzenka.WebServices.Domain.Context;
 using KadOzenka.WebServices.Domain.Model;
+using KadOzenka.WebServices.Services.ModelDto;
 
 namespace KadOzenka.WebServices.Services
 {
@@ -25,13 +28,16 @@ namespace KadOzenka.WebServices.Services
 		/// Get last record
 		/// </summary>
 		/// <returns>Returns the first record without confirm date</returns>
-		public ReonJournal ReadLastRecord()
+		public RecordDto ReadLastRecord()
 		{
-			ReonJournal resRecord;
+			RecordDto resRecord = new RecordDto();
 			try
 			{
 				var record = _appContext.ReonJournal.Where(x => x.ConfirmDate == null).OrderBy(x => x.CreateDate).FirstOrDefault();
-				resRecord = UpdateReadDate(record);
+				var updatedRecord= UpdateReadDate(record);
+				resRecord.ReportId = (int)updatedRecord.ResultReportId;
+				resRecord.CreateDate = updatedRecord.CreateDate;
+				resRecord.Guid = updatedRecord.Guid;
 			}
 			catch (Exception e)
 			{
@@ -71,6 +77,74 @@ namespace KadOzenka.WebServices.Services
 			return res;
 		}
 
+		/// <summary>
+		/// Get file stream by guid
+		/// </summary>
+		/// <param name="guidRecord"></param>
+		/// <returns></returns>
+		public ResultLoadFileDto GetFileReport(Guid guidRecord)
+		{
+
+			string storageName = "KoExportResult";
+			string defaultContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+			var res =  new ResultLoadFileDto();
+			string defaultEx = ".xlsx";
+			FileStream stream;
+			try
+			{
+				var record = _appContext.ReonJournal.FirstOrDefault(x => x.Guid == guidRecord.ToString());
+
+				if (record == null || record.ResultReportId == 0)
+				{
+					return null;
+				}
+
+				var template = _appContext.ExportTemplate.FirstOrDefault(x => x.Id == record.ResultReportId);
+
+				if (template == null)
+				{
+					return null;
+				}
+
+				stream = FileStorageManager.GetFileStream(storageName, template.DateCreate, template.Id.ToString());
+				res.Stream = stream;
+				res.ContentType = GetContentType(template.TemplateFileName) ?? defaultContentType;
+				res.FileName = template.TemplateFileName;
+				if (string.IsNullOrEmpty(Path.GetExtension(res.FileName)))
+				{
+					res.FileName += defaultEx;
+				}
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
+			}
+
+			return res;
+		}
+
+		#region support method
+
+		private string GetContentType(string fileName)
+		{
+			string ex = Path.GetExtension(fileName);
+
+			if (string.IsNullOrEmpty(ex))
+			{
+				return null;
+			}
+			if (ex == ".xlsx")
+			{
+				return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+			}
+			if (ex == ".xml")
+			{
+				return "application/xml";
+			}
+
+			return null;
+		}
 
 		private ReonJournal UpdateReadDate(ReonJournal record)
 		{
@@ -84,6 +158,9 @@ namespace KadOzenka.WebServices.Services
 			record.ConfirmDate = DateTime.Now.Date;
 			_appContext.SaveChanges();
 		}
+
+		#endregion
+
 
 	}
 }

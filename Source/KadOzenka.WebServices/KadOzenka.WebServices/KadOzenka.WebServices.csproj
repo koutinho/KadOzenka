@@ -11,7 +11,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup>
     <DocumentationFile>bin\Debug\netcoreapp2.1\CheckoutAd.Api.xml</DocumentationFile>
     <OutputPath>bin\Debug\netcoreapp2.1\</OutputPath>
   </PropertyGroup>
@@ -24,6 +24,7 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.1.1" />
+    <PackageReference Include="Platform" Version="1.0.272" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
@@ -32,6 +33,11 @@
   </ItemGroup>
 
 	<ItemGroup>
+		<None Include="Config\**" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="appconfig.json" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="app.config" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 </Project>
