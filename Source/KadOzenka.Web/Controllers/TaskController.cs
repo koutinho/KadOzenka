@@ -13,6 +13,7 @@ using ObjectModel.KO;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Model;
 using KadOzenka.Dal.Oks;
@@ -34,15 +35,18 @@ namespace KadOzenka.Web.Controllers
 		public DataImporterService DataImporterService { get; set; }
 		public GbuObjectService GbuObjectService { get; set; }
 		public TourFactorService TourFactorService { get; set; }
+        public GroupService GroupService { get; set; }
 
-		public TaskController()
+        public TaskController()
 		{
 			TaskService = new TaskService();
 			ModelService = new ModelService();
 			DataImporterService = new DataImporterService();
 			GbuObjectService = new GbuObjectService();
 		    TourFactorService = new TourFactorService();
-		}
+            GroupService = new GroupService();
+
+        }
 
 		#region Карточка задачи
 
@@ -663,6 +667,20 @@ namespace KadOzenka.Web.Controllers
             OMGroup.CalculateSelectGroup(settings);
 
             return Json(new {Message = "Операция выполнена успешно"});
+        }
+
+        [HttpGet]
+        public ActionResult CalculationOrderSettings()
+        {
+            return View();
+        }
+
+        public JsonResult GetCalculationOrderSettings(long tourId, bool isParcel)
+        {
+            var settings = GroupService.GetCalculationSettings(tourId, isParcel);
+            var models = settings.Select(CadastralPriceCalculationSettingsModel.ToModel).ToList();
+
+            return Json(models);
         }
 
         #endregion

@@ -37,7 +37,7 @@ namespace KadOzenka.Web.Controllers
         {
             TourFactorService = new TourFactorService();
             TourService = new TourService(TourFactorService);
-            GroupService = new GroupService(TourService);
+            GroupService = new GroupService();
         }
 
         #region Карточка тура

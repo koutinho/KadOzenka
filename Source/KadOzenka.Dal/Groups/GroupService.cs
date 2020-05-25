@@ -6,7 +6,6 @@ using System.Transactions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
-using KadOzenka.Dal.Tours;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -14,14 +13,6 @@ namespace KadOzenka.Dal.Groups
 {
     public class GroupService
     {
-        private TourService TourService { get; set; }
-
-        public GroupService(TourService tourService)
-        {
-            TourService = tourService;
-        }
-
-
         public GroupDto GetGroupById(long? groupId)
         {
             var group = GetGroupByIdInternal(groupId);
@@ -188,9 +179,9 @@ namespace KadOzenka.Dal.Groups
 
         public int AddGroup(GroupDto groupDto)
         {
-			var tour = TourService.GetTourById(groupDto.RatingTourId);
+            ValidateTour(groupDto.RatingTourId);
 
-			var group = new OMGroup();
+            var group = new OMGroup();
 			var tourGroup = new OMTourGroup();
 
 			return SetGroupFields(groupDto, group, tourGroup);
@@ -198,7 +189,7 @@ namespace KadOzenka.Dal.Groups
 
         public int UpdateGroup(GroupDto groupDto)
         {
-			var tour = TourService.GetTourById(groupDto.RatingTourId);
+            ValidateTour(groupDto.RatingTourId);
 
 			var group = OMGroup.Where(x => x.Id == groupDto.Id)
 			 .SelectAll().ExecuteFirstOrDefault();
@@ -209,10 +200,68 @@ namespace KadOzenka.Dal.Groups
 			return SetGroupFields(groupDto, group, tourGroup);
 		}
 
+        public List<GroupCalculationSettingsDto> GetCalculationSettings(long tourId, bool isParcel)
+        {
+            var query = new QSQuery
+            {
+                MainRegisterID = OMAutoCalculationSettings.GetRegisterId(),
+                Condition = new QSConditionGroup
+                {
+                    Type = QSConditionGroupType.And,
+                    Conditions = new List<QSCondition>
+                    {
+                        new QSConditionSimple(OMAutoCalculationSettings.GetColumn(x => x.IdTour), QSConditionType.Equal, tourId),
+                        new QSConditionSimple
+                        {
+                            LeftOperand = OMAutoCalculationSettings.GetColumn(x => x.CalcParcel.Coalesce(false)),
+                            ConditionType = QSConditionType.Equal,
+                            RightOperand = new QSColumnConstant(isParcel)
+                        }
+                    }
+                },
+                Joins = new List<QSJoin>
+                {
+                    new QSJoin
+                    {
+                        RegisterId = OMGroup.GetRegisterId(),
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = OMGroup.GetColumn(x => x.Id),
+                            RightOperand = OMAutoCalculationSettings.GetColumn(x => x.IdGroup)
+                        },
+                        JoinType = QSJoinType.Inner
+                    }
+                }
+            };
+            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(GroupCalculationSettingsDto.GroupName)));
+            query.AddColumn(OMAutoCalculationSettings.GetColumn(x => x.NumberPriority, nameof(GroupCalculationSettingsDto.Priority)));
+            query.AddColumn(OMAutoCalculationSettings.GetColumn(x => x.CalcStage1, nameof(GroupCalculationSettingsDto.Stage1)));
+            query.AddColumn(OMAutoCalculationSettings.GetColumn(x => x.CalcStage2, nameof(GroupCalculationSettingsDto.Stage2)));
+            query.AddColumn(OMAutoCalculationSettings.GetColumn(x => x.CalcStage3, nameof(GroupCalculationSettingsDto.Stage3)));
+            query.OrderBy.Add(new QSOrder
+            {
+                Column = OMAutoCalculationSettings.GetColumn(x => x.NumberPriority),
+                Order = QSOrderType.ASC
+            });
 
-		#region Support Methods
+            return query.ExecuteQuery<GroupCalculationSettingsDto>();
+        }
 
-		private int SetGroupFields(GroupDto groupDto, OMGroup group, OMTourGroup tourGroup)
+
+        #region Support Methods
+
+        private void ValidateTour(long? tourId)
+        {
+            if (tourId == null)
+                throw new Exception("Не передан идентификатор Тура для поиска");
+
+            var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
+            if (tour == null)
+                throw new Exception($"Не найден Тур с id='{tourId}'");
+        }
+
+        private int SetGroupFields(GroupDto groupDto, OMGroup group, OMTourGroup tourGroup)
 		{
 			int groupId;
 			using (var ts = new TransactionScope())
