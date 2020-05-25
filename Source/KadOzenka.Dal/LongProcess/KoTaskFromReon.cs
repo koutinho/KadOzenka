@@ -80,7 +80,7 @@ namespace KadOzenka.Dal.LongProcess
         {
             var omTask = new OMTask
             {
-                TourId = 2018, //TODO TourId,
+                TourId = GetTourByYear(task),
                 DocumentId = documentId,
                 CreationDate = DateTime.Now,
                 EstimationDate = task.DateAppraisal,
@@ -90,6 +90,19 @@ namespace KadOzenka.Dal.LongProcess
             omTask.Save();
 
             return omTask;
+        }
+
+        private long GetTourByYear(RRDataLoadModel task)
+        {
+            if (task.TourYear == null)
+                throw new Exception(
+                    $"Сервис РЕОН не вернул год для задачи. Создание задачи прервано. Номер документа: '{task.DocNumber}'");
+
+            var tour = OMTour.Where(x => x.Year == task.TourYear).Select(x => x.Id).ExecuteFirstOrDefault();
+            if(tour == null)
+                throw new Exception($"Не найден тур с годом '{task.TourYear}'.");
+
+            return tour.Id;
         }
 
 
