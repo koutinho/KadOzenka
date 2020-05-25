@@ -5,14 +5,26 @@ using KadOzenka.WebServices.Domain.Model;
 
 namespace KadOzenka.WebServices.Services
 {
+	/// <summary>
+	/// Journal service
+	/// </summary>
 	public class JournalService
 	{
 		private ApplicationContext _appContext;
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="appContext"></param>
 		public JournalService(ApplicationContext appContext)
 		{
 			_appContext = appContext;
 		}
 
+		/// <summary>
+		/// Get last record
+		/// </summary>
+		/// <returns>Returns the first record without confirm date</returns>
 		public ReonJournal ReadLastRecord()
 		{
 			ReonJournal resRecord;
@@ -30,6 +42,12 @@ namespace KadOzenka.WebServices.Services
 			return resRecord;
 		}
 
+
+		/// <summary>
+		/// The method is setting confirm date for current record
+		/// </summary>
+		/// <param name="guidRecord"></param>
+		/// <returns></returns>
 		public bool Confirm(Guid guidRecord)
 		{
 			bool res = false;

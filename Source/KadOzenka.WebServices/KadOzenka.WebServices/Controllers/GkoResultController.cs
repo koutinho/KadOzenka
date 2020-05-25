@@ -12,11 +12,19 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace KadOzenka.WebServices
 {
+	/// <summary>
+	/// Controller for get records from journal
+	/// </summary>
 	[Route("journal")]
 	[ApiController]
 	public class GkoResultController : Controller
 	{
 		private JournalService _journalService;
+		
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="journalService"></param>
 		public GkoResultController(JournalService journalService)
 		{
 			_journalService = journalService;
