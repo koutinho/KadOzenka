@@ -2281,7 +2281,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_LONG_PROCESS_QUEUE', 'parameters')) then
-        execute 'alter table CORE_LONG_PROCESS_QUEUE add "parameters" VARCHAR(4000)';
+        execute 'alter table CORE_LONG_PROCESS_QUEUE add "parameters" VARCHAR';
     end if;
 end $$;
 
@@ -9108,76 +9108,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_COST_FACTOR')) then
-		execute 'create table ES_COST_FACTOR ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'id')) then
-        execute 'alter table ES_COST_FACTOR add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'factor')) then
-        execute 'alter table ES_COST_FACTOR add "factor" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'name')) then
-        execute 'alter table ES_COST_FACTOR add "name" VARCHAR NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'segment_type')) then
-        execute 'alter table ES_COST_FACTOR add "segment_type" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'id_attribute')) then
-        execute 'alter table ES_COST_FACTOR add "id_attribute" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_COST_FACTOR', 'id_dictionary')) then
-        execute 'alter table ES_COST_FACTOR add "id_dictionary" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('es_cost_factor_pkey')) then
-    execute 'alter table ES_COST_FACTOR add constraint es_cost_factor_pkey primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('ES_EXPRESS_SCORE')) then
 		execute 'create table ES_EXPRESS_SCORE ("id" BIGINT NOT NULL)';
 	end if;
@@ -9276,155 +9206,26 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'segment_type')) then
+        execute 'alter table ES_EXPRESS_SCORE add "segment_type" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ES_EXPRESS_SCORE', 'address')) then
+        execute 'alter table ES_EXPRESS_SCORE add "address" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('es_exspress_score_pkey')) then
     execute 'alter table ES_EXPRESS_SCORE add constraint es_exspress_score_pkey primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_FLOOR')) then
-		execute 'create table ES_FLOOR ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_FLOOR', 'id')) then
-        execute 'alter table ES_FLOOR add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_FLOOR', 'floor_name')) then
-        execute 'alter table ES_FLOOR add "floor_name" VARCHAR NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_FLOOR', 'factor')) then
-        execute 'alter table ES_FLOOR add "factor" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_FLOOR', 'floor')) then
-        execute 'alter table ES_FLOOR add "floor" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('es_floor_pkey')) then
-    execute 'alter table ES_FLOOR add constraint es_floor_pkey primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_INDEX_DATE')) then
-		execute 'create table ES_INDEX_DATE ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_INDEX_DATE', 'id')) then
-        execute 'alter table ES_INDEX_DATE add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_INDEX_DATE', 'date')) then
-        execute 'alter table ES_INDEX_DATE add "date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_INDEX_DATE', 'index')) then
-        execute 'alter table ES_INDEX_DATE add "index" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('ES_INDEX_DATE_pkey')) then
-    execute 'alter table ES_INDEX_DATE add constraint ES_INDEX_DATE_pkey primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_LAND_SHARE')) then
-		execute 'create table ES_LAND_SHARE ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_LAND_SHARE', 'id')) then
-        execute 'alter table ES_LAND_SHARE add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_LAND_SHARE', 'floor')) then
-        execute 'alter table ES_LAND_SHARE add "floor" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_LAND_SHARE', 'factor')) then
-        execute 'alter table ES_LAND_SHARE add "factor" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_LAND_SHARE', 'segment_type')) then
-        execute 'alter table ES_LAND_SHARE add "segment_type" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('es_land_share_pkey')) then
-    execute 'alter table ES_LAND_SHARE add constraint es_land_share_pkey primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -10188,7 +9989,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source1_a_dt', 'actual')) then
-        execute 'alter table gbu_source1_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source1_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -10320,7 +10121,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source1_a_num', 'actual')) then
-        execute 'alter table gbu_source1_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source1_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -10452,7 +10253,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source1_a_txt', 'actual')) then
-        execute 'alter table gbu_source1_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source1_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -10470,7 +10271,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source1_a_txt', 'value')) then
-        execute 'alter table gbu_source1_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source1_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -10593,7 +10394,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source10_a_dt', 'actual')) then
-        execute 'alter table gbu_source10_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source10_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -10725,7 +10526,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source10_a_num', 'actual')) then
-        execute 'alter table gbu_source10_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source10_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -10857,7 +10658,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source10_a_txt', 'actual')) then
-        execute 'alter table gbu_source10_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source10_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -10875,7 +10676,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source10_a_txt', 'value')) then
-        execute 'alter table gbu_source10_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source10_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -10998,7 +10799,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source11_a_dt', 'actual')) then
-        execute 'alter table gbu_source11_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source11_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -11130,7 +10931,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source11_a_num', 'actual')) then
-        execute 'alter table gbu_source11_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source11_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -11262,7 +11063,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source11_a_txt', 'actual')) then
-        execute 'alter table gbu_source11_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source11_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -11280,7 +11081,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source11_a_txt', 'value')) then
-        execute 'alter table gbu_source11_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source11_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -11403,7 +11204,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source12_a_dt', 'actual')) then
-        execute 'alter table gbu_source12_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source12_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -11535,7 +11336,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source12_a_num', 'actual')) then
-        execute 'alter table gbu_source12_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source12_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -11667,7 +11468,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source12_a_txt', 'actual')) then
-        execute 'alter table gbu_source12_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source12_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -11685,7 +11486,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source12_a_txt', 'value')) then
-        execute 'alter table gbu_source12_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source12_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -11808,7 +11609,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source13_a_dt', 'actual')) then
-        execute 'alter table gbu_source13_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source13_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -11940,7 +11741,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source13_a_num', 'actual')) then
-        execute 'alter table gbu_source13_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source13_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -12072,7 +11873,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source13_a_txt', 'actual')) then
-        execute 'alter table gbu_source13_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source13_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -12090,7 +11891,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source13_a_txt', 'value')) then
-        execute 'alter table gbu_source13_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source13_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -12213,7 +12014,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source14_a_dt', 'actual')) then
-        execute 'alter table gbu_source14_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source14_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -12345,7 +12146,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source14_a_num', 'actual')) then
-        execute 'alter table gbu_source14_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source14_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -12477,7 +12278,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source14_a_txt', 'actual')) then
-        execute 'alter table gbu_source14_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source14_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -12495,7 +12296,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source14_a_txt', 'value')) then
-        execute 'alter table gbu_source14_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source14_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -12618,7 +12419,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source15_a_dt', 'actual')) then
-        execute 'alter table gbu_source15_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source15_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -12750,7 +12551,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source15_a_num', 'actual')) then
-        execute 'alter table gbu_source15_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source15_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -12882,7 +12683,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source15_a_txt', 'actual')) then
-        execute 'alter table gbu_source15_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source15_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -12900,7 +12701,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source15_a_txt', 'value')) then
-        execute 'alter table gbu_source15_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source15_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -13023,7 +12824,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source16_a_dt', 'actual')) then
-        execute 'alter table gbu_source16_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source16_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -13155,7 +12956,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source16_a_num', 'actual')) then
-        execute 'alter table gbu_source16_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source16_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -13287,7 +13088,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source16_a_txt', 'actual')) then
-        execute 'alter table gbu_source16_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source16_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -13305,7 +13106,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source16_a_txt', 'value')) then
-        execute 'alter table gbu_source16_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source16_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -13428,7 +13229,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source17_a_dt', 'actual')) then
-        execute 'alter table gbu_source17_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source17_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -13560,7 +13361,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source17_a_num', 'actual')) then
-        execute 'alter table gbu_source17_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source17_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -13692,7 +13493,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source17_a_txt', 'actual')) then
-        execute 'alter table gbu_source17_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source17_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -13710,7 +13511,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source17_a_txt', 'value')) then
-        execute 'alter table gbu_source17_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source17_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -13833,7 +13634,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source18_a_dt', 'actual')) then
-        execute 'alter table gbu_source18_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source18_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -13965,7 +13766,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source18_a_num', 'actual')) then
-        execute 'alter table gbu_source18_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source18_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -14097,7 +13898,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source18_a_txt', 'actual')) then
-        execute 'alter table gbu_source18_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source18_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -14115,7 +13916,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source18_a_txt', 'value')) then
-        execute 'alter table gbu_source18_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source18_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -14238,7 +14039,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source19_a_dt', 'actual')) then
-        execute 'alter table gbu_source19_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source19_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -14370,7 +14171,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source19_a_num', 'actual')) then
-        execute 'alter table gbu_source19_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source19_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -14502,7 +14303,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source19_a_txt', 'actual')) then
-        execute 'alter table gbu_source19_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source19_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -14520,7 +14321,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source19_a_txt', 'value')) then
-        execute 'alter table gbu_source19_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source19_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -17667,7 +17468,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source2_a_602', 'value')) then
-        execute 'alter table gbu_source2_a_602 add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source2_a_602 add "value" VARCHAR(8000)';
     end if;
 end $$;
 
@@ -18491,7 +18292,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source20_a_dt', 'actual')) then
-        execute 'alter table gbu_source20_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source20_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -18623,7 +18424,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source20_a_num', 'actual')) then
-        execute 'alter table gbu_source20_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source20_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -18755,7 +18556,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source20_a_txt', 'actual')) then
-        execute 'alter table gbu_source20_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source20_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -18773,7 +18574,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source20_a_txt', 'value')) then
-        execute 'alter table gbu_source20_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source20_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -18896,7 +18697,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source21_a_dt', 'actual')) then
-        execute 'alter table gbu_source21_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source21_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19028,7 +18829,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source21_a_num', 'actual')) then
-        execute 'alter table gbu_source21_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source21_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19160,7 +18961,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source21_a_txt', 'actual')) then
-        execute 'alter table gbu_source21_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source21_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19178,7 +18979,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source21_a_txt', 'value')) then
-        execute 'alter table gbu_source21_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source21_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -19301,7 +19102,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source22_a_dt', 'actual')) then
-        execute 'alter table gbu_source22_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source22_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19433,7 +19234,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source22_a_num', 'actual')) then
-        execute 'alter table gbu_source22_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source22_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19565,7 +19366,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source22_a_txt', 'actual')) then
-        execute 'alter table gbu_source22_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source22_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19583,7 +19384,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source22_a_txt', 'value')) then
-        execute 'alter table gbu_source22_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source22_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -19706,7 +19507,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source23_a_dt', 'actual')) then
-        execute 'alter table gbu_source23_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source23_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19838,7 +19639,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source23_a_num', 'actual')) then
-        execute 'alter table gbu_source23_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source23_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19970,7 +19771,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source23_a_txt', 'actual')) then
-        execute 'alter table gbu_source23_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source23_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -19988,7 +19789,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source23_a_txt', 'value')) then
-        execute 'alter table gbu_source23_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source23_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -20111,7 +19912,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source3_a_dt', 'actual')) then
-        execute 'alter table gbu_source3_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source3_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -20243,7 +20044,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source3_a_num', 'actual')) then
-        execute 'alter table gbu_source3_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source3_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -20375,7 +20176,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source3_a_txt', 'actual')) then
-        execute 'alter table gbu_source3_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source3_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -20393,7 +20194,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source3_a_txt', 'value')) then
-        execute 'alter table gbu_source3_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source3_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -20516,7 +20317,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source4_a_dt', 'actual')) then
-        execute 'alter table gbu_source4_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source4_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -20648,7 +20449,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source4_a_num', 'actual')) then
-        execute 'alter table gbu_source4_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source4_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -20780,7 +20581,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source4_a_txt', 'actual')) then
-        execute 'alter table gbu_source4_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source4_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -20798,7 +20599,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source4_a_txt', 'value')) then
-        execute 'alter table gbu_source4_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source4_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -20921,7 +20722,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source5_a_dt', 'actual')) then
-        execute 'alter table gbu_source5_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source5_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -21053,7 +20854,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source5_a_num', 'actual')) then
-        execute 'alter table gbu_source5_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source5_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -21185,7 +20986,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source5_a_txt', 'actual')) then
-        execute 'alter table gbu_source5_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source5_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -21203,7 +21004,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source5_a_txt', 'value')) then
-        execute 'alter table gbu_source5_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source5_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -21326,7 +21127,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source6_a_dt', 'actual')) then
-        execute 'alter table gbu_source6_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source6_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -21458,7 +21259,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source6_a_num', 'actual')) then
-        execute 'alter table gbu_source6_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source6_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -21590,7 +21391,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source6_a_txt', 'actual')) then
-        execute 'alter table gbu_source6_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source6_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -21608,7 +21409,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source6_a_txt', 'value')) then
-        execute 'alter table gbu_source6_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source6_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -21731,7 +21532,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source7_a_dt', 'actual')) then
-        execute 'alter table gbu_source7_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source7_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -21863,7 +21664,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source7_a_num', 'actual')) then
-        execute 'alter table gbu_source7_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source7_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -21995,7 +21796,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source7_a_txt', 'actual')) then
-        execute 'alter table gbu_source7_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source7_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -22013,7 +21814,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source7_a_txt', 'value')) then
-        execute 'alter table gbu_source7_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source7_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -22136,7 +21937,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source8_a_dt', 'actual')) then
-        execute 'alter table gbu_source8_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source8_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -22268,7 +22069,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source8_a_num', 'actual')) then
-        execute 'alter table gbu_source8_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source8_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -22400,7 +22201,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source8_a_txt', 'actual')) then
-        execute 'alter table gbu_source8_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source8_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -22418,7 +22219,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source8_a_txt', 'value')) then
-        execute 'alter table gbu_source8_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source8_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -22541,7 +22342,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source9_a_dt', 'actual')) then
-        execute 'alter table gbu_source9_a_dt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source9_a_dt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -22673,7 +22474,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source9_a_num', 'actual')) then
-        execute 'alter table gbu_source9_a_num add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source9_a_num add "actual" BIGINT';
     end if;
 end $$;
 
@@ -22805,7 +22606,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source9_a_txt', 'actual')) then
-        execute 'alter table gbu_source9_a_txt add "actual" BIGINT NOT NULL';
+        execute 'alter table gbu_source9_a_txt add "actual" BIGINT';
     end if;
 end $$;
 
@@ -22823,7 +22624,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source9_a_txt', 'value')) then
-        execute 'alter table gbu_source9_a_txt add "value" VARCHAR(4000)';
+        execute 'alter table gbu_source9_a_txt add "value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -22929,6 +22730,94 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_213_q_pk')) then
     execute 'alter table KO_ATTRIBUTE_MAP add constraint reg_213_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_AUTO_CALCULATION_SETTINGS')) then
+		execute 'create table KO_AUTO_CALCULATION_SETTINGS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_AUTO_CALCULATION_SETTINGS', 'id')) then
+        execute 'alter table KO_AUTO_CALCULATION_SETTINGS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_AUTO_CALCULATION_SETTINGS', 'tour_id')) then
+        execute 'alter table KO_AUTO_CALCULATION_SETTINGS add "tour_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_AUTO_CALCULATION_SETTINGS', 'calc_parcel')) then
+        execute 'alter table KO_AUTO_CALCULATION_SETTINGS add "calc_parcel" SMALLINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_AUTO_CALCULATION_SETTINGS', 'group_id')) then
+        execute 'alter table KO_AUTO_CALCULATION_SETTINGS add "group_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_AUTO_CALCULATION_SETTINGS', 'number_priority')) then
+        execute 'alter table KO_AUTO_CALCULATION_SETTINGS add "number_priority" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_AUTO_CALCULATION_SETTINGS', 'calc_stage_1')) then
+        execute 'alter table KO_AUTO_CALCULATION_SETTINGS add "calc_stage_1" SMALLINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_AUTO_CALCULATION_SETTINGS', 'calc_stage_2')) then
+        execute 'alter table KO_AUTO_CALCULATION_SETTINGS add "calc_stage_2" SMALLINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_AUTO_CALCULATION_SETTINGS', 'calc_stage_3')) then
+        execute 'alter table KO_AUTO_CALCULATION_SETTINGS add "calc_stage_3" SMALLINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_260_q_pk')) then
+    execute 'alter table KO_AUTO_CALCULATION_SETTINGS add constraint reg_260_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
@@ -23233,7 +23122,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_COST_ROSREESTR', 'docname')) then
-        execute 'alter table KO_COST_ROSREESTR add "docname" VARCHAR(255)';
+        execute 'alter table KO_COST_ROSREESTR add "docname" VARCHAR(512)';
     end if;
 end $$;
 
@@ -23869,6 +23758,200 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_REPORT_HISTORY')) then
+		execute 'create table KO_REPORT_HISTORY ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'id')) then
+        execute 'alter table KO_REPORT_HISTORY add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'report_type')) then
+        execute 'alter table KO_REPORT_HISTORY add "report_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'report_type_code')) then
+        execute 'alter table KO_REPORT_HISTORY add "report_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'user_id')) then
+        execute 'alter table KO_REPORT_HISTORY add "user_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'create_date')) then
+        execute 'alter table KO_REPORT_HISTORY add "create_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'start_date')) then
+        execute 'alter table KO_REPORT_HISTORY add "start_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'end_date')) then
+        execute 'alter table KO_REPORT_HISTORY add "end_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'status')) then
+        execute 'alter table KO_REPORT_HISTORY add "status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'status_code')) then
+        execute 'alter table KO_REPORT_HISTORY add "status_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'parameters')) then
+        execute 'alter table KO_REPORT_HISTORY add "parameters" VARCHAR(4000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_REPORT_HISTORY', 'progress')) then
+        execute 'alter table KO_REPORT_HISTORY add "progress" BIGINT DEFAULT 0';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_report_history_pkey')) then
+    execute 'alter table KO_REPORT_HISTORY add constraint ko_report_history_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('KO_RESULT_SEND_JOURNAL')) then
+		execute 'create table KO_RESULT_SEND_JOURNAL ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'id')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'guid')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "guid" VARCHAR NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'task_id')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "task_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'create_date')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "create_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'send_date')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "send_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'confirm_date')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "confirm_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_RESULT_SEND_JOURNAL', 'result_export_id')) then
+        execute 'alter table KO_RESULT_SEND_JOURNAL add "result_export_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('ko_result_send_journal_pkey')) then
+    execute 'alter table KO_RESULT_SEND_JOURNAL add constraint ko_result_send_journal_pkey primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_TASK')) then
 		execute 'create table KO_TASK ("id" BIGINT NOT NULL)';
 	end if;
@@ -23969,6 +24052,14 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_203_q_pk')) then
     execute 'alter table KO_TASK add constraint reg_203_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('ko_task_creation_date_idx')) then
+	execute 'CREATE  INDEX ko_task_creation_date_idx on KO_TASK (creation_date)';
   end if;
 end $$;
 --<DO>--
@@ -28011,6 +28102,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'custom_zone')) then
+        execute 'alter table MARKET_CORE_OBJECT add "custom_zone" VARCHAR(256)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'phone_number')) then
+        execute 'alter table MARKET_CORE_OBJECT add "phone_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table MARKET_CORE_OBJECT add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -28858,6 +28967,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('MARKET_REGION_DICTIONATY', 'custom_zone')) then
+        execute 'alter table MARKET_REGION_DICTIONATY add "custom_zone" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_107_q_pk')) then
     execute 'alter table MARKET_REGION_DICTIONATY add constraint reg_107_q_pk primary key (id)';
   end if;
@@ -28986,8 +29104,261 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'tour_id')) then
+        execute 'alter table MODELING_MODEL add "tour_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'market_segment')) then
+        execute 'alter table MODELING_MODEL add "market_segment" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'was_trained')) then
+        execute 'alter table MODELING_MODEL add "was_trained" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'internal_name')) then
+        execute 'alter table MODELING_MODEL add "internal_name" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'linear_training_result')) then
+        execute 'alter table MODELING_MODEL add "linear_training_result" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'exponential_training_result')) then
+        execute 'alter table MODELING_MODEL add "exponential_training_result" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'multiplicative_training_result')) then
+        execute 'alter table MODELING_MODEL add "multiplicative_training_result" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL', 'is_oks_object_type')) then
+        execute 'alter table MODELING_MODEL add "is_oks_object_type" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_700_q_pk')) then
     execute 'alter table MODELING_MODEL add constraint reg_700_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MODELING_MODEL_ATTRIBUTE_RELATION')) then
+		execute 'create table MODELING_MODEL_ATTRIBUTE_RELATION ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'id')) then
+        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'model_id')) then
+        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "model_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'attribute_id')) then
+        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "attribute_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'dictionary_id')) then
+        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "dictionary_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_ATTRIBUTE_RELATION', 'coefficient')) then
+        execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add "coefficient" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('modeling_model_attribute_relation_idx')) then
+    execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add constraint modeling_model_attribute_relation_idx unique (model_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_701_q_pk')) then
+    execute 'alter table MODELING_MODEL_ATTRIBUTE_RELATION add constraint reg_701_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('modeling_model_attribute_relation_idx')) then
+	execute 'CREATE UNIQUE INDEX modeling_model_attribute_relation_idx on MODELING_MODEL_ATTRIBUTE_RELATION (model_id, attribute_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('MODELING_MODEL_TO_MARKET_OBJECTS')) then
+		execute 'create table MODELING_MODEL_TO_MARKET_OBJECTS ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'id')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'cadastral_number')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "cadastral_number" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'price')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "price" NUMERIC NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'is_excluded')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "is_excluded" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'model_id')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "model_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'coefficients')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "coefficients" VARCHAR';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'is_for_training')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "is_for_training" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MODELING_MODEL_TO_MARKET_OBJECTS', 'price_from_model')) then
+        execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add "price_from_model" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('modeling_model_to_market_objects_uniqueIndex')) then
+    execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add constraint modeling_model_to_market_objects_uniqueIndex unique (cadastral_number, model_id, price)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_702_q_pk')) then
+    execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add constraint reg_702_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('"modeling_model_to_market_objects_uniqueIndex"')) then
+	execute 'CREATE UNIQUE INDEX "modeling_model_to_market_objects_uniqueIndex" on MODELING_MODEL_TO_MARKET_OBJECTS (cadastral_number, model_id, price)';
   end if;
 end $$;
 --<DO>--
