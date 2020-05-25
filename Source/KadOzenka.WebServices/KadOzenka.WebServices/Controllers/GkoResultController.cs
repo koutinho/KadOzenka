@@ -52,8 +52,7 @@ namespace KadOzenka.WebServices
 		/// <response code="404">NotFound</response>
 		[SwaggerResponse(statusCode: 200, type: typeof(OkResult), description: "OK")]
 		[SwaggerResponse(statusCode: (int)HttpStatusCode.NotFound, type: typeof(OkResult), description: "OK")]
-		[Route("confirm")]
-		[HttpPut]
+		[HttpPut("confirm/{guidRecord}")]
 		public IActionResult Confirm(Guid guidRecord)
 		{
 			var res = _journalService.Confirm(guidRecord);
