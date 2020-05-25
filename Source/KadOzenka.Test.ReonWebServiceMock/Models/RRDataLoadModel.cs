@@ -20,81 +20,117 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace IO.Swagger.Models
-{ 
+{
     /// <summary>
-    /// 
+    /// RRDataLoadModel
     /// </summary>
     [DataContract]
-    public partial class RRDataLoadModel : IEquatable<RRDataLoadModel>
-    { 
+    public partial class RRDataLoadModel : IEquatable<RRDataLoadModel>, IValidatableObject
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RRDataLoadModel" /> class.
+        /// </summary>
+        /// <param name="id">id.</param>
+        /// <param name="loadDate">Дата загрузки.</param>
+        /// <param name="docNumber">Номер документа.</param>
+        /// <param name="docDate">Дата документа.</param>
+        /// <param name="docName">Наименование документа.</param>
+        /// <param name="orgName">Организация.</param>
+        /// <param name="dateAppraisal">Дата оценки.</param>
+        /// <param name="loadType">Тип загрузки.</param>
+        /// <param name="docBaseUrl">Ссылка на файл основание.</param>
+        /// <param name="xmlDocUrls">Список ссылок на файлы xml.</param>
+        /// <param name="tourYear">Год тура.</param>
+        public RRDataLoadModel(long? id = default(long?), DateTime? loadDate = default(DateTime?), string docNumber = default(string), DateTime? docDate = default(DateTime?), string docName = default(string), string orgName = default(string), DateTime? dateAppraisal = default(DateTime?), string loadType = default(string), DocUrl docBaseUrl = default(DocUrl), List<DocUrl> xmlDocUrls = default(List<DocUrl>), int? tourYear = default(int?))
+        {
+            this.Id = id;
+            this.LoadDate = loadDate;
+            this.DocNumber = docNumber;
+            this.DocDate = docDate;
+            this.DocName = docName;
+            this.OrgName = orgName;
+            this.DateAppraisal = dateAppraisal;
+            this.LoadType = loadType;
+            this.DocBaseUrl = docBaseUrl;
+            this.XmlDocUrls = xmlDocUrls;
+            this.TourYear = tourYear;
+        }
+
         /// <summary>
         /// Gets or Sets Id
         /// </summary>
-        [DataMember(Name="Id")]
+        [DataMember(Name = "Id", EmitDefaultValue = false)]
         public long? Id { get; set; }
 
         /// <summary>
         /// Дата загрузки
         /// </summary>
         /// <value>Дата загрузки</value>
-        [DataMember(Name="LoadDate")]
+        [DataMember(Name = "LoadDate", EmitDefaultValue = false)]
         public DateTime? LoadDate { get; set; }
 
         /// <summary>
         /// Номер документа
         /// </summary>
         /// <value>Номер документа</value>
-        [DataMember(Name="DocNumber")]
+        [DataMember(Name = "DocNumber", EmitDefaultValue = false)]
         public string DocNumber { get; set; }
 
         /// <summary>
         /// Дата документа
         /// </summary>
         /// <value>Дата документа</value>
-        [DataMember(Name="DocDate")]
+        [DataMember(Name = "DocDate", EmitDefaultValue = false)]
         public DateTime? DocDate { get; set; }
 
         /// <summary>
         /// Наименование документа
         /// </summary>
         /// <value>Наименование документа</value>
-        [DataMember(Name="DocName")]
+        [DataMember(Name = "DocName", EmitDefaultValue = false)]
         public string DocName { get; set; }
 
         /// <summary>
         /// Организация
         /// </summary>
         /// <value>Организация</value>
-        [DataMember(Name="OrgName")]
+        [DataMember(Name = "OrgName", EmitDefaultValue = false)]
         public string OrgName { get; set; }
 
         /// <summary>
         /// Дата оценки
         /// </summary>
         /// <value>Дата оценки</value>
-        [DataMember(Name="DateAppraisal")]
+        [DataMember(Name = "DateAppraisal", EmitDefaultValue = false)]
         public DateTime? DateAppraisal { get; set; }
 
         /// <summary>
         /// Тип загрузки
         /// </summary>
         /// <value>Тип загрузки</value>
-        [DataMember(Name="LoadType")]
+        [DataMember(Name = "LoadType", EmitDefaultValue = false)]
         public string LoadType { get; set; }
 
         /// <summary>
         /// Ссылка на файл основание
         /// </summary>
         /// <value>Ссылка на файл основание</value>
-        [DataMember(Name="DocBaseUrl")]
+        [DataMember(Name = "DocBaseUrl", EmitDefaultValue = false)]
         public DocUrl DocBaseUrl { get; set; }
 
         /// <summary>
         /// Список ссылок на файлы xml
         /// </summary>
         /// <value>Список ссылок на файлы xml</value>
-        [DataMember(Name="XmlDocUrls")]
+        [DataMember(Name = "XmlDocUrls", EmitDefaultValue = false)]
         public List<DocUrl> XmlDocUrls { get; set; }
+
+        /// <summary>
+        /// Год тура
+        /// </summary>
+        /// <value>Год тура</value>
+        [DataMember(Name = "TourYear", EmitDefaultValue = false)]
+        public int? TourYear { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -114,6 +150,7 @@ namespace IO.Swagger.Models
             sb.Append("  LoadType: ").Append(LoadType).Append("\n");
             sb.Append("  DocBaseUrl: ").Append(DocBaseUrl).Append("\n");
             sb.Append("  XmlDocUrls: ").Append(XmlDocUrls).Append("\n");
+            sb.Append("  TourYear: ").Append(TourYear).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -122,7 +159,7 @@ namespace IO.Swagger.Models
         /// Returns the JSON string presentation of the object
         /// </summary>
         /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
+        public virtual string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented);
         }
@@ -130,75 +167,78 @@ namespace IO.Swagger.Models
         /// <summary>
         /// Returns true if objects are equal
         /// </summary>
-        /// <param name="obj">Object to be compared</param>
+        /// <param name="input">Object to be compared</param>
         /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object input)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            return obj.GetType() == GetType() && Equals((RRDataLoadModel)obj);
+            return this.Equals(input as RRDataLoadModel);
         }
 
         /// <summary>
         /// Returns true if RRDataLoadModel instances are equal
         /// </summary>
-        /// <param name="other">Instance of RRDataLoadModel to be compared</param>
+        /// <param name="input">Instance of RRDataLoadModel to be compared</param>
         /// <returns>Boolean</returns>
-        public bool Equals(RRDataLoadModel other)
+        public bool Equals(RRDataLoadModel input)
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
+            if (input == null)
+                return false;
 
-            return 
+            return
                 (
-                    Id == other.Id ||
-                    Id != null &&
-                    Id.Equals(other.Id)
-                ) && 
+                    this.Id == input.Id ||
+                    (this.Id != null &&
+                    this.Id.Equals(input.Id))
+                ) &&
                 (
-                    LoadDate == other.LoadDate ||
-                    LoadDate != null &&
-                    LoadDate.Equals(other.LoadDate)
-                ) && 
+                    this.LoadDate == input.LoadDate ||
+                    (this.LoadDate != null &&
+                    this.LoadDate.Equals(input.LoadDate))
+                ) &&
                 (
-                    DocNumber == other.DocNumber ||
-                    DocNumber != null &&
-                    DocNumber.Equals(other.DocNumber)
-                ) && 
+                    this.DocNumber == input.DocNumber ||
+                    (this.DocNumber != null &&
+                    this.DocNumber.Equals(input.DocNumber))
+                ) &&
                 (
-                    DocDate == other.DocDate ||
-                    DocDate != null &&
-                    DocDate.Equals(other.DocDate)
-                ) && 
+                    this.DocDate == input.DocDate ||
+                    (this.DocDate != null &&
+                    this.DocDate.Equals(input.DocDate))
+                ) &&
                 (
-                    DocName == other.DocName ||
-                    DocName != null &&
-                    DocName.Equals(other.DocName)
-                ) && 
+                    this.DocName == input.DocName ||
+                    (this.DocName != null &&
+                    this.DocName.Equals(input.DocName))
+                ) &&
                 (
-                    OrgName == other.OrgName ||
-                    OrgName != null &&
-                    OrgName.Equals(other.OrgName)
-                ) && 
+                    this.OrgName == input.OrgName ||
+                    (this.OrgName != null &&
+                    this.OrgName.Equals(input.OrgName))
+                ) &&
                 (
-                    DateAppraisal == other.DateAppraisal ||
-                    DateAppraisal != null &&
-                    DateAppraisal.Equals(other.DateAppraisal)
-                ) && 
+                    this.DateAppraisal == input.DateAppraisal ||
+                    (this.DateAppraisal != null &&
+                    this.DateAppraisal.Equals(input.DateAppraisal))
+                ) &&
                 (
-                    LoadType == other.LoadType ||
-                    LoadType != null &&
-                    LoadType.Equals(other.LoadType)
-                ) && 
+                    this.LoadType == input.LoadType ||
+                    (this.LoadType != null &&
+                    this.LoadType.Equals(input.LoadType))
+                ) &&
                 (
-                    DocBaseUrl == other.DocBaseUrl ||
-                    DocBaseUrl != null &&
-                    DocBaseUrl.Equals(other.DocBaseUrl)
-                ) && 
+                    this.DocBaseUrl == input.DocBaseUrl ||
+                    (this.DocBaseUrl != null &&
+                    this.DocBaseUrl.Equals(input.DocBaseUrl))
+                ) &&
                 (
-                    XmlDocUrls == other.XmlDocUrls ||
-                    XmlDocUrls != null &&
-                    XmlDocUrls.SequenceEqual(other.XmlDocUrls)
+                    this.XmlDocUrls == input.XmlDocUrls ||
+                    this.XmlDocUrls != null &&
+                    this.XmlDocUrls.SequenceEqual(input.XmlDocUrls)
+                ) &&
+                (
+                    this.TourYear == input.TourYear ||
+                    (this.TourYear != null &&
+                    this.TourYear.Equals(input.TourYear))
                 );
         }
 
@@ -210,46 +250,42 @@ namespace IO.Swagger.Models
         {
             unchecked // Overflow is fine, just wrap
             {
-                var hashCode = 41;
-                // Suitable nullity checks etc, of course :)
-                    if (Id != null)
-                    hashCode = hashCode * 59 + Id.GetHashCode();
-                    if (LoadDate != null)
-                    hashCode = hashCode * 59 + LoadDate.GetHashCode();
-                    if (DocNumber != null)
-                    hashCode = hashCode * 59 + DocNumber.GetHashCode();
-                    if (DocDate != null)
-                    hashCode = hashCode * 59 + DocDate.GetHashCode();
-                    if (DocName != null)
-                    hashCode = hashCode * 59 + DocName.GetHashCode();
-                    if (OrgName != null)
-                    hashCode = hashCode * 59 + OrgName.GetHashCode();
-                    if (DateAppraisal != null)
-                    hashCode = hashCode * 59 + DateAppraisal.GetHashCode();
-                    if (LoadType != null)
-                    hashCode = hashCode * 59 + LoadType.GetHashCode();
-                    if (DocBaseUrl != null)
-                    hashCode = hashCode * 59 + DocBaseUrl.GetHashCode();
-                    if (XmlDocUrls != null)
-                    hashCode = hashCode * 59 + XmlDocUrls.GetHashCode();
+                int hashCode = 41;
+                if (this.Id != null)
+                    hashCode = hashCode * 59 + this.Id.GetHashCode();
+                if (this.LoadDate != null)
+                    hashCode = hashCode * 59 + this.LoadDate.GetHashCode();
+                if (this.DocNumber != null)
+                    hashCode = hashCode * 59 + this.DocNumber.GetHashCode();
+                if (this.DocDate != null)
+                    hashCode = hashCode * 59 + this.DocDate.GetHashCode();
+                if (this.DocName != null)
+                    hashCode = hashCode * 59 + this.DocName.GetHashCode();
+                if (this.OrgName != null)
+                    hashCode = hashCode * 59 + this.OrgName.GetHashCode();
+                if (this.DateAppraisal != null)
+                    hashCode = hashCode * 59 + this.DateAppraisal.GetHashCode();
+                if (this.LoadType != null)
+                    hashCode = hashCode * 59 + this.LoadType.GetHashCode();
+                if (this.DocBaseUrl != null)
+                    hashCode = hashCode * 59 + this.DocBaseUrl.GetHashCode();
+                if (this.XmlDocUrls != null)
+                    hashCode = hashCode * 59 + this.XmlDocUrls.GetHashCode();
+                if (this.TourYear != null)
+                    hashCode = hashCode * 59 + this.TourYear.GetHashCode();
                 return hashCode;
             }
         }
 
-        #region Operators
-        #pragma warning disable 1591
-
-        public static bool operator ==(RRDataLoadModel left, RRDataLoadModel right)
+        /// <summary>
+        /// To validate all properties of the instance
+        /// </summary>
+        /// <param name="validationContext">Validation context</param>
+        /// <returns>Validation Result</returns>
+        IEnumerable<System.ComponentModel.DataAnnotations.ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
         {
-            return Equals(left, right);
+            yield break;
         }
-
-        public static bool operator !=(RRDataLoadModel left, RRDataLoadModel right)
-        {
-            return !Equals(left, right);
-        }
-
-        #pragma warning restore 1591
-        #endregion Operators
     }
+
 }
