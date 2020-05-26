@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="05/25/2020 23:29:06" ReportInfo.CreatorVersion="2017.4.7.0">
+  <Dictionary/>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="7.56,1043.8,9.45,435.6,192.41">
+    <DataBand Name="BandCommon" Width="1047.06" Height="155.71" CanGrow="true" Guides="28.35,85.05">
+      <TextObject Name="Text6" Left="7.56" Top="28.35" Width="1036.24" Height="56.7" CanGrow="true" Text="[Common.Title]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+    </DataBand>
+    <DataBand Name="BandData" Top="159.71" Width="1047.06" Height="155.71" Guides="0,90.22,19.56,54.89">
+      <!--<MatrixObject Name="Matrix1" Left="7.56" Width="426.15" Height="90.22" FixedRows="3" FixedColumns="3" ShowTitle="true">
+          <MatrixColumns>
+              <Header Expression="[Data.Group]" Sort="None" Totals="false"/>
+          </MatrixColumns>
+          <MatrixRows>
+              <Header Expression="[Data.PropetyType]" Sort="Descending" Totals="false"/>
+          </MatrixRows>
+          <MatrixCells>
+              <Cell Expression="[Data.ObjectCount]"/>
+          </MatrixCells>
+      </MatrixObject>-->
+      <MatrixObject Name="Matrix1" Width="457.79" Height="67.47" FixedRows="1" FixedColumns="1" AutoSize="false" ModifyResultEvent="Matrix1_ModifyResult">
+        <MatrixColumns>
+          <Header Expression="[Data.PropertyType]"/>
+        </MatrixColumns>
+        <MatrixRows>
+          <Header Expression="[Data.Group]" Totals="false"/>
+        </MatrixRows>
+        <MatrixCells>
+          <Cell Expression="[Data.ObjectCount]"/>
+        </MatrixCells>
+        <!--<TableColumn Name="Column1" Width="112.55"/>
+        <TableColumn Name="Column2" Width="123.96"/>
+        <TableColumn Name="Column3" Width="120.09"/>
+        <TableColumn Name="Column4" Width="101.19"/>-->
+        <TableRow Name="Row1" Height="47.91">
+          <TableCell Name="Cell1" Border.Lines="All" Text="Тип объекта" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell2" Border.Lines="All" Fill.Color="DarkGray" Text="[Data.Group]" HorzAlign="Right" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row2" Height="19.56">
+          <TableCell Name="Cell3" Border.Lines="All" Text="[Data.PropertyType]"  HorzAlign="Right" VertAlign="Center"/>
+          <TableCell Name="Cell4" Border.Lines="All" Text="[Data.ObjectCount]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="3" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" VertAlign="Center"/>
+        </TableRow>
+      </MatrixObject>
+      </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="319.42" Width="1047.06" Height="47.25"/>
+  </ReportPage>
+</Report>

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
+using KadOzenka.Web.Models.ManagementDecisionSupport;
 using Kendo.Mvc;
 using Kendo.Mvc.Infrastructure;
 using Kendo.Mvc.UI;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Controllers
@@ -68,7 +72,7 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion ObjectsByGroupsWidget
 
-		#region StatisticsReports
+		#region StatisticsReportsWidget
 
 		public JsonResult GetUnitPropertyTypes()
 		{
@@ -112,9 +116,9 @@ namespace KadOzenka.Web.Controllers
 			return Json(data);
 		}
 
-		#endregion StatisticsReports
+		#endregion StatisticsReportsWidget
 
-		#region StatisticsReportsExport
+		#region StatisticsReportsWidgetExport
 
 		public FileResult ExportImportedObjects(string filters, string sorts, int pageSize, int page, DateTime? dateStart, DateTime? dateEnd)
 		{
@@ -176,6 +180,37 @@ namespace KadOzenka.Web.Controllers
 			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Выгрузка объектов.xlsx");
 		}
 
-		#endregion StatisticsReportsExport
+		#endregion StatisticsReportsWidgetExport
+
+		#region StatisticalData
+
+		public ActionResult StatisticalData()
+		{
+			return View(new StatisticalDataModel());
+		}
+
+		public IActionResult GetStatisticalDataReportUrl(StatisticalDataModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			var fmReportType =
+				((StatisticalDataType)model.ReportType.Value).GetAttributeValue<StatisticalDataFmReportCodeAttribute>(
+					nameof(StatisticalDataFmReportCodeAttribute.Code));
+			if(!int.TryParse(fmReportType, out var fmReportTypeValue))
+			{
+				throw new Exception(
+					$"Не удалось получить код отчета для типа '{((StatisticalDataType) model.ReportType.Value).GetEnumDescription()}'");
+			}
+
+			HttpContext currentHttpContext = HttpContextHelper.HttpContext;
+			currentHttpContext.Session.SetString($"Report{fmReportTypeValue}TaskFilter", JsonConvert.SerializeObject(model.TaskFilter));
+
+			return Json(new { reportUrl = $"/Report/Viewer?reportTypeId={fmReportTypeValue}" });
+		}
+
+		#endregion StatisticalData
 	}
 }

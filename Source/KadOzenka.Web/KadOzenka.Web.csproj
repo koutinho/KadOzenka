@@ -159,6 +159,7 @@
     <None Remove="Config\Registers\Views\KoToursFactorsList.xml" />
     <None Remove="Config\Registers\Views\MarketObjectCard.xml" />
     <None Remove="Config\Registers\Views\MarketObjects.xml" />
+    <None Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
     <None Remove="Config\Registers\Views\ModelingModels.xml" />
     <None Remove="Config\Registers\Views\Payments.xml" />
     <None Remove="Config\Registers\Views\PrimaryMatchingSelect.xml" />
@@ -299,6 +300,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\DeclarationsUved.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\Registers\Views\MdsStatisticalDataCard.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\Registers\Views\EsConstructorCard.xml">
@@ -739,6 +743,9 @@
     <None Update="Config\Reports\CCC_OUReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1033,12 +1040,14 @@
     <ConfigPath Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
     <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
+    <ConfigPath Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\ModelingModels.xml" />
     <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
     <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RegisteredChangedObjectsReport.frx" />

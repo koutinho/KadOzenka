@@ -1,0 +1,199 @@
+﻿@using KadOzenka.Dal.ManagementDecisionSupport
+
+@model KadOzenka.Web.Models.ManagementDecisionSupport.StatisticalDataModel;
+
+<style>
+    .subgroup {
+        margin-left: 5%;
+    }
+
+    .k-radio-label {
+        font-weight: normal
+    }
+</style>
+
+<div class="form-horizontal col-sm-12" style="height: 100%;">
+    <div class="form-group">
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor("Тур оценки")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                .Name("tour")
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Events(x =>
+                    x.Change("onTourChanged").DataBound("onTourChanged"))
+                .DataSource(data => data.Read("GetRatingTours", "Tour"))
+                )
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor("Задания на оценку")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().MultiSelectFor(x => x.TaskFilter)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Events(x =>
+                    x.Change("onTaskFilterChanged").DataBound("onTaskFilterChanged"))
+                .Filter("contains")
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetTasksByTour", "Task").Data("getTaskData");
+                    })
+                        .ServerFiltering(false);
+                }))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-11">
+            @Html.CustomLabelFor("Статистика по количеству объектов:")
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistricts.GetEnumDescription()).Value((long) StatisticalDataType.OnTheNumberOfObjectsByAdministrativeDistricts).Checked(true))
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByGroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheNumberOfObjectsByGroups))
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroups))
+        </div>
+        <div class="col-sm-11">
+            @Html.CustomLabelFor("Статистика по минимальным, максимальным и средним УПКС/УПРС:")
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts))
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByGroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByGroups))
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByCadastralQuarters.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByCadastralQuarters))
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.SubjectsUPKS.GetEnumDescription()).Value((long) StatisticalDataType.SubjectsUPKS))
+        </div>
+        <div class="col-sm-11">
+            @Html.CustomLabelFor("Результат оценки:")
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsByKR.GetEnumDescription()).Value((long) StatisticalDataType.ResultsByKR))
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApproval.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApproval))
+        </div>
+        <div class="col-sm-11 subgroup">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.KRSummaryResults.GetEnumDescription()).Value((long) StatisticalDataType.KRSummaryResults))
+        </div>
+
+
+        <div class="col-sm-11">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.UPKSAverageValuesByKKCadastralRegionsAndRussianFederationSubject.GetEnumDescription()).Value((long) StatisticalDataType.UPKSAverageValuesByKKCadastralRegionsAndRussianFederationSubject))
+        </div>
+        <div class="col-sm-11">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.GeneralizedIndicators.GetEnumDescription()).Value((long) StatisticalDataType.GeneralizedIndicators))
+        </div>
+        <div class="col-sm-11">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CadastralCostDeterminationResults.GetEnumDescription()).Value((long) StatisticalDataType.CadastralCostDeterminationResults))
+        </div>
+        <div class="col-sm-11">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.InfoAboutCadastralCostDeterminingMethod.GetEnumDescription()).Value((long) StatisticalDataType.InfoAboutCadastralCostDeterminingMethod))
+        </div>
+        <div class="col-sm-11">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CalculationParams.GetEnumDescription()).Value((long) StatisticalDataType.CalculationParams))
+        </div>
+        <div class="col-sm-11">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsComposition.GetEnumDescription()).Value((long) StatisticalDataType.PricingFactorsComposition))
+        </div>
+        <div class="col-sm-11">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResults.GetEnumDescription()).Value((long) StatisticalDataType.QualityPricingFactorsEncodingResults))
+        </div>
+        <div class="col-sm-11">
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.StatisticsInContextOfArbitraryParams.GetEnumDescription()).Value((long) StatisticalDataType.StatisticsInContextOfArbitraryParams))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12" style="position: absolute;bottom: 0;">
+            <button style="float: right" id="showViewer" class="k-button" type="button">Сформировать</button>
+        </div>
+    </div>
+    <div id="reportViewerWindow"></div>
+</div>
+
+<script type="text/javascript">
+    var dialog;
+    var window1;
+
+    $(document).ready(function () {
+        $('#showViewer').click(onShowViewerClicked);
+
+        window1 = $('#reportViewerWindow').kendoWindow({
+            visible: false,
+            resizable: false,
+            modal: true,
+            //title: 'Характеристики',
+            iframe: true,
+            close: function() {
+                this.content("");
+            },
+        }).data('kendoWindow');
+    });
+
+    function onTourChanged(e) {
+        $("#TaskFilter").data('kendoMultiSelect').dataSource.read();
+        $("#TaskFilter").data('kendoMultiSelect').refresh();
+    }
+
+    function onTaskFilterChanged(e) {
+        var value = this.value();
+        if (value.length == 0) {
+            $('#showViewer').attr('disabled', true);
+        } else {
+            $('#showViewer').attr('disabled', false);
+        }
+    }
+
+    function getTaskData() {
+        return {
+            tourId: $('[name ="tour"]').data('kendoDropDownList').value()
+        }
+    }
+
+    function onShowViewerClicked() {
+        var formObject = Common.Functions.FormToObject($('.form-horizontal'));
+        formObject.TaskFilter = $("#TaskFilter").data("kendoMultiSelect").value();
+
+        kendo.ui.progress($('body'), true);
+        $.post("/ManagementDecisionSupport/GetStatisticalDataReportUrl", formObject).done(function(response) {
+            if (response.Errors) {
+                var errors = getErrors(response.Errors);
+                Common.ShowError(errors);
+                return;
+            }
+            debugger;
+            window1.refresh({
+                url: response.reportUrl
+            });
+
+            //kendo.ui.progress($('#reportViewerWindow'), true);
+            //kendoWindow.bind('refresh', function () {
+            //    kendo.ui.progress($('#reportViewerWindow'), false);
+            //});
+
+            window1.center();
+            window1.open();
+            window1.maximize();
+
+        }).fail(function (response, textStatus, errorThrown) {
+            Common.ShowError(response.responseText);
+        }).always(function () {
+            kendo.ui.progress($('body'), false);
+        });
+    }
+</script>
