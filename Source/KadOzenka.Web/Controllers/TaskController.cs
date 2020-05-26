@@ -672,9 +672,11 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult CalculationOrderSettings()
+        public ActionResult CalculationOrderSettings(long tourId, bool isParcel)
         {
-            return View();
+            ViewBag.TourId = tourId;
+            ViewBag.IsParcel = isParcel;
+            return PartialView();
         }
 
         public JsonResult GetCalculationOrderSettings(long tourId, bool isParcel)
@@ -686,11 +688,13 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        public JsonResult ChangeCalculationSettingsPriority(string models, DateTime date)
+        public JsonResult SaveCalculationSettings(string models)
         {
             var settingsJson = JObject.Parse(models).SelectToken("models").ToString();
-
             var settingsModels = JsonConvert.DeserializeObject<List<CadastralPriceCalculationSettingsModel>>(settingsJson);
+
+            if (settingsModels.Count == 0)
+                return Json(new { Message = "Нет данных для изменения" });
 
             var dtos = settingsModels.Select(CadastralPriceCalculationSettingsModel.FromModel).ToList();
             for (var i = 0; i < dtos.Count; i++)
@@ -698,7 +702,7 @@ namespace KadOzenka.Web.Controllers
                 dtos[i].Priority = i;
             }
 
-            GroupService.ChangeCalculationSettingsPriority(dtos);
+            GroupService.SaveCalculationSettings(dtos);
 
             return Json(new { Message = "Изменения сохранены" });
         }

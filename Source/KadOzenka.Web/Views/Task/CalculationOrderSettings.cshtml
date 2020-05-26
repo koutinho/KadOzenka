@@ -1,18 +1,11 @@
 ﻿
-<div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
+<div class="form-horizontal col-sm-12">
     <div class="form-group">
         <div id="grid"></div>
     </div>
-    <div class="form-group">
-        <div class="col-sm-1 col-sm-offset-10" style="padding: 1%;">
-            @(Html.Kendo().Button()
-                .Name("execute")
-                .Content("Расчет")
-                .Events(x => x.Click("save"))
-                .HtmlAttributes(new {type = "button"}))
-        </div>
-    </div>
 </div>
+
+
 
 
 <style>
@@ -22,9 +15,26 @@
 </style>
 
 
+
+<script id="GridToolbarTemplate" type="text/x-kendo-template">
+    <div style="float: left">
+        <a class="k-button k-button-icon" id="saveBtn" style="width:120px;">
+            <span class="k-icon k-i-save" style="padding-right: 30%"></span>
+            Сохранить
+        </a>
+    </div>
+</script>
+
+
 <script type="text/javascript">
     $(document).ready(function() {
         fillGrid();
+
+        $("#grid .k-grid-content").on("change", "input.stage1", updateStage1);
+        $("#grid .k-grid-content").on("change", "input.stage2", updateStage2);
+        $("#grid .k-grid-content").on("change", "input.stage3", updateStage3);
+
+        $('#saveBtn').on('click', save);
     });
 
 
@@ -33,7 +43,7 @@
             transport: {
                 read: {
                     url: '@Url.Action("GetCalculationOrderSettings", "Task")',
-                    data: { tourId: 2018, isParcel: true },
+                    data: { tourId: '@ViewBag.TourId', isParcel: '@ViewBag.IsParcel' },
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json'
                 }
@@ -50,10 +60,12 @@
                     }
                 }
             },
-            pageSize: 15
+            //костыль, т.к. без пагинации перетаскивание строк не работает
+            pageSize: 1000
         });
         $("#grid").kendoGrid({
             dataSource: dataSource,
+            toolbar: kendo.template($("#GridToolbarTemplate").html()),
             pageable: true,
             columns: [
                 {
@@ -63,22 +75,27 @@
                 {
                     title: "Предварительный расчет",
                     field: "Stage1",
-                    template: '<input type="checkbox" #= Stage1 ? \'checked="checked"\' : "" # class="chkbx" />',
+                    template: '<input type="checkbox" #= Stage1 ? \'checked="checked"\' : "" # class="chkbx, stage1" />',
                     width: "10%"
                 },
                 {
                     title: "Расчет поправок/коэффициентов",
                     field: "Stage2",
-                    template: '<input type="checkbox" #= Stage2 ? \'checked="checked"\' : "" # class="chkbx" />',
+                    template: '<input type="checkbox" #= Stage2 ? \'checked="checked"\' : "" # class="chkbx, stage2" />',
                     width: "10%"
                 },
                 {
                     title: "Окончательный расчет",
                     field: "Stage3",
-                    template: '<input type="checkbox" #= Stage3 ? \'checked="checked"\' : "" # class="chkbx" />',
+                    template: '<input type="checkbox" #= Stage3 ? \'checked="checked"\' : "" # class="chkbx, stage3" />',
                     width: "10%"
                 }
-            ]
+            ],
+            dataBound: function () {
+                var numberOfRecords = $("#grid").data('kendoGrid').dataSource.total();
+                if (numberOfRecords === 0)
+                    $("#saveBtn").addClass("k-state-disabled");
+            }
         });
         makeGridDraggable();
     }
@@ -112,21 +129,40 @@
     }
 
 
+    function updateStage1(e) {
+        var dataItem = getDataItem(e);
+        dataItem.Stage1 = this.checked;
+    }
+    function updateStage2(e) {
+        var dataItem = getDataItem(e);
+        dataItem.Stage2 = this.checked;
+    }
+    function updateStage3(e) {
+        var dataItem = getDataItem(e);
+        dataItem.Stage3 = this.checked;
+    }
+    function getDataItem(e) {
+        var grid = $("#grid").data("kendoGrid");
+        return grid.dataItem($(e.target).closest("tr"));
+    }
+
+
     function save() {
         var models = $("#grid").data("kendoGrid").dataSource.data();
-        kendo.ui.progress($('body'), true);
+        kendo.ui.progress($('#calculationSettingsModal'), true);
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("ChangeCalculationSettingsPriority", "Task")',
+            url: '@Url.Action("SaveCalculationSettings", "Task")',
             data: { models: JSON.stringify({ models }) },
             success: function (response) {
                 Common.ShowMessage(response.Message);
+                $("#calculationSettingsModal").data("kendoWindow").close();
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
             },
             complete: function() {
-                kendo.ui.progress($('body'), false);
+                kendo.ui.progress($('#calculationSettingsModal'), false);
             }
         });
     }

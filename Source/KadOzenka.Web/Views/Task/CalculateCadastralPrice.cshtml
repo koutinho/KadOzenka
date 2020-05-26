@@ -1,8 +1,7 @@
 ﻿@model KadOzenka.Web.Models.Task.CadastralPriceCalculationModel
 
-
 <!-- Модальное окно для настройки порядка расчета -->
-<div id="сalculationSettingsModal" style="display: none; padding: 2%;">
+<div id="calculationSettingsModal" style="display: none; padding: 2%;">
 	<div class="form-horizontal col-sm-12">
 		<div class="form-group">
 			<div id="calculationSettingsModalContent"></div>
@@ -70,7 +69,7 @@
                 @(Html.Kendo().Button()
                             .Name("CalculationSettingsBtn")
                             .IconClass("k-icon k-i-gear")
-                            .Enable(false)
+                            .HtmlAttributes(new {type = "button"})
                             .Events(x => x.Click("openCalculationSettingsWindow")))
                 @(Html.Kendo().Tooltip()
                             .For("#CalculationSettingsBtn")
@@ -283,27 +282,27 @@
 
 
     function calculateCadastralPrice() {
-		var form = $('form');
+        var form = $('form');
         var formObject = Common.Functions.FormToObject(form);
         var tourId = $('#RatingTour').val();
         formObject['TourId'] = tourId;
-		formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
+        formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
         formObject = addGroupsToFormObject(formObject);
         kendo.ui.progress($('body'), true);
-		$.ajax({
-			type: 'POST',
-			url: form.attr('action'),
-			data: formObject,
-			success: function(response) {
+        $.ajax({
+            type: 'POST',
+            url: form.attr('action'),
+            data: formObject,
+            success: function(response) {
                 Common.ShowMessage(response.Message);
-			},
-			error: function(response) {
-				Common.ShowError(response.responseText);
-			},
-			complete: function() {
-				kendo.ui.progress($('body'), false);
-			}
-		});
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
     function addGroupsToFormObject(formObject) {
@@ -322,11 +321,13 @@
         return Object.assign({}, formObject, { SubGroups: subGroups });
     }
 
-    function openCalculationSettingsWindow(btn) {
-        btn.preventDefault();
-        window.open('@Url.Action("CalculationOrderSettings", "Task")');
-        @*$('#calculationSettingsModal').load('@Url.Action("CalculationOrderSettings", "Task")');
+    function openCalculationSettingsWindow() {
+        @*window.open('@Url.Action("CalculationOrderSettings", "Task")');*@
+        var tourId = $('#RatingTour').val();
+        var isParcel = $('input[name="IsParcel"]:checked').val();
+        $('#calculationSettingsModalContent').load('@Url.Action("CalculationOrderSettings", "Task")'
+            + "?tourId=" + tourId + "&isParcel=" + isParcel);
         var modal = $("#calculationSettingsModal");
-        ShowModal(modal, '60%', '10%', "Настройка автоматического расчета");*@
+        ShowModal(modal, '80%', '85%', "Настройка автоматического расчета");
     }
 </script>

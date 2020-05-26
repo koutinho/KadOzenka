@@ -251,14 +251,22 @@ namespace KadOzenka.Dal.Groups
             return query.ExecuteQuery<GroupCalculationSettingsDto>();
         }
 
-        public void ChangeCalculationSettingsPriority(List<GroupCalculationSettingsDto> settings)
+        public void SaveCalculationSettings(List<GroupCalculationSettingsDto> settings)
         {
+            if (settings.Count == 0)
+                return;
+
             var ids = settings.Select(x => x.Id);
             var omSettings = OMAutoCalculationSettings.Where(x => ids.Contains(x.Id)).SelectAll().Execute();
-            omSettings.ForEach(setting =>
+            omSettings.ForEach(currentSetting =>
             {
-                setting.NumberPriority = settings.First(x => x.Id == setting.Id).Priority;
-                setting.Save();
+                var dto = settings.First(x => x.Id == currentSetting.Id);
+
+                currentSetting.CalcStage1 = dto.Stage1;
+                currentSetting.CalcStage2 = dto.Stage2;
+                currentSetting.CalcStage3 = dto.Stage3;
+                currentSetting.NumberPriority = dto.Priority;
+                currentSetting.Save();
             });
         }
 
