@@ -2,6 +2,7 @@
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 using ObjectModel.Market;
 using Newtonsoft.Json.Linq;
@@ -115,6 +116,16 @@ namespace KadOzenka.Dal.JSONParser
             addressElement.Lng = lng;
             addressElement.Lat = lat;
             return addressElement;
+        }
+
+        public static string getFormalizedAddress(string initialAddress)
+        {
+            Regex regexMain = new Regex("(^[0-9]{6}[ ])|" +
+                                        "(, кв .*)|(, кв[.] .*)|(, кв[.].*)|( кв[.].*)|( кв .*)|(,ап[.].*)|(, квартира.*)|(,кв[.][0-9].*)|" +
+                                        "(, административные помещен.*)|(, нежилое помещен.*)|(, нежилые помещен.*)|(, кладовое помещен.*)|(, помещен.*)|( помещен.*)|(, пом([ ]|[.]|[ещ.]|[I]).*)|" +
+                                        "(, м/м.*)|(, I м/м.*)|(, машиноместо.*)|(, машино-место.*)|" +
+                                        "(, бокс.*)|(, гараж-бокс.*)|(, гаражный бокс.*)|( гар.бокс.*)|(, гараж.*)", RegexOptions.IgnoreCase), regexSpaces = new Regex("[ ]{2,}");
+            return regexMain.Replace(regexSpaces.Replace(initialAddress, " "), string.Empty);
         }
 
     }

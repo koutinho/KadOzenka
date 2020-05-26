@@ -285,16 +285,6 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 
         public static string getCadastralQuartal(string cadastralNumber) => cadastralNumber.Substring(0, cadastralNumber.LastIndexOf(":"));
 
-        public static string getFormalizedAddress(string initialAddress)
-        {
-            Regex regexMain = new Regex("(^[0-9]{6}[ ])|" +
-                                        "(, кв .*)|(, кв[.] .*)|(, кв[.].*)|( кв[.].*)|( кв .*)|(,ап[.].*)|(, квартира.*)|(,кв[.][0-9].*)|" +
-                                        "(, административные помещен.*)|(, нежилое помещен.*)|(, нежилые помещен.*)|(, кладовое помещен.*)|(, помещен.*)|( помещен.*)|(, пом([ ]|[.]|[ещ.]|[I]).*)|" +
-                                        "(, м/м.*)|(, I м/м.*)|(, машиноместо.*)|(, машино-место.*)|" +
-                                        "(, бокс.*)|(, гараж-бокс.*)|(, гаражный бокс.*)|( гар.бокс.*)|(, гараж.*)", RegexOptions.IgnoreCase), regexSpaces = new Regex("[ ]{2,}");
-            return regexMain.Replace(regexSpaces.Replace(initialAddress, " "), string.Empty);
-        }
-
         /// <summary>
         /// Метод с дополнительной обработкой объектов, чей адрес был определен неправильно
         /// </summary>
@@ -601,7 +591,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                 CCur++;
                 try
                 {
-                    OMYandexAddress address = new Dal.JSONParser.YandexGeocoder().ParseYandexAddress(new YandexGeocoder().GetDataByAddress(getFormalizedAddress(x.Address)));
+                    OMYandexAddress address = new Dal.JSONParser.YandexGeocoder().ParseYandexAddress(new YandexGeocoder().GetDataByAddress(Dal.JSONParser.YandexGeocoder.getFormalizedAddress(x.Address)));
                     x.Lng = address.Lng;
                     x.Lat = address.Lat;
                     x.ProcessType_Code = ObjectModel.Directory.ProcessStep.Dealed;
