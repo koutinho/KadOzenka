@@ -1376,6 +1376,18 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMTourGroup> TourGroup { get; set; }
+
+        /// <summary>
+        /// Ссылка на (222 Таблица для хранения отношений между группами и сегментами рынка)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Ko.OMGroupToMarketSegmentRelation> GroupToMarketSegmentRelation { get; set; }
+
+        /// <summary>
+        /// Ссылка на (260 Реестр настройки автоматического расчета)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMAutoCalculationSettings> AutoCalculationSettings { get; set; }
         public OMGroup()
         {
 
@@ -1391,6 +1403,10 @@ namespace ObjectModel.KO
             GroupFactor = new List<ObjectModel.KO.OMGroupFactor>();
 
             TourGroup = new List<ObjectModel.KO.OMTourGroup>();
+
+            GroupToMarketSegmentRelation = new List<ObjectModel.Ko.OMGroupToMarketSegmentRelation>();
+
+            AutoCalculationSettings = new List<ObjectModel.KO.OMAutoCalculationSettings>();
 
         }
         public OMGroup(bool trackPropertyChanging) : this()
@@ -1738,26 +1754,50 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
-	/// <summary>
-	/// 221 Журнал отправки итогов расчета КО
-	/// </summary>
-	public partial class OMKoResultSendJournal
-	{
+    /// <summary>
+    /// 221 Журнал отправки итогов расчета КО
+    /// </summary>
+    public partial class OMKoResultSendJournal
+    {
 
-		public OMKoResultSendJournal()
-		{
+        public OMKoResultSendJournal()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMKoResultSendJournal(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMKoResultSendJournal(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Ko
+{
+    /// <summary>
+    /// 222 Таблица для хранения отношений между группами и сегментами рынка
+    /// </summary>
+    public partial class OMGroupToMarketSegmentRelation
+    {
+
+        public OMGroupToMarketSegmentRelation()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMGroupToMarketSegmentRelation(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
 
 namespace ObjectModel.KO
@@ -1998,26 +2038,26 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
-	/// <summary>
-	/// 260 Реестр настройки автоматического расчета
-	/// </summary>
-	public partial class OMAutoCalculationSettings
-	{
+    /// <summary>
+    /// 260 Реестр настройки автоматического расчета
+    /// </summary>
+    public partial class OMAutoCalculationSettings
+    {
 
-		public OMAutoCalculationSettings()
-		{
+        public OMAutoCalculationSettings()
+        {
 
-			Id = -1;
+            Id = -1;
 
-			CollectPropertyChanged = true;
-			PropertyChangedList = new HashSet<String>();
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
 
-		}
-		public OMAutoCalculationSettings(bool trackPropertyChanging) : this()
-		{
-			CollectPropertyChanged = trackPropertyChanging;
-		}
-	}
+        }
+        public OMAutoCalculationSettings(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
 }
 
 namespace ObjectModel.Sud

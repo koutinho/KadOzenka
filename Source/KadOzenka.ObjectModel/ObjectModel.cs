@@ -8176,154 +8176,281 @@ namespace ObjectModel.KO
 
 namespace ObjectModel.KO
 {
-	/// <summary>
-	/// 221 Журнал отправки итогов расчета КО (KO_RESULT_SEND_JOURNAL)
-	/// </summary>
-	[RegisterInfo(RegisterID = 221)]
-	[Serializable]
-	public partial class OMKoResultSendJournal : OMBaseClass<OMKoResultSendJournal>
-	{
+    /// <summary>
+    /// 221 Журнал отправки итогов расчета КО (KO_RESULT_SEND_JOURNAL)
+    /// </summary>
+    [RegisterInfo(RegisterID = 221)]
+    [Serializable]
+    public partial class OMKoResultSendJournal : OMBaseClass<OMKoResultSendJournal>
+    {
 
-		private long _id;
-		/// <summary>
-		/// 22100100 Идентификатор (ID)
-		/// </summary>
-		[PrimaryKey(AttributeID = 22100100)]
-		public long Id
-		{
-			get
-			{
-				CheckPropertyInited("Id");
-				return _id;
-			}
-			set
-			{
-				_id = value;
-				NotifyPropertyChanged("Id");
-			}
-		}
-
-
-		private string _guid;
-		/// <summary>
-		/// 22100200 Глобальный идентификатор сообщения (GUID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 22100200)]
-		public string Guid
-		{
-			get
-			{
-				CheckPropertyInited("Guid");
-				return _guid;
-			}
-			set
-			{
-				_guid = value;
-				NotifyPropertyChanged("Guid");
-			}
-		}
+        private long _id;
+        /// <summary>
+        /// 22100100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 22100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
 
 
-		private long _taskid;
-		/// <summary>
-		/// 22100300 ИД Задания на оценку (TASK_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 22100300)]
-		public long TaskId
-		{
-			get
-			{
-				CheckPropertyInited("TaskId");
-				return _taskid;
-			}
-			set
-			{
-				_taskid = value;
-				NotifyPropertyChanged("TaskId");
-			}
-		}
+        private string _guid;
+        /// <summary>
+        /// 22100200 Глобальный идентификатор сообщения (GUID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22100200)]
+        public string Guid
+        {
+            get
+            {
+                CheckPropertyInited("Guid");
+                return _guid;
+            }
+            set
+            {
+                _guid = value;
+                NotifyPropertyChanged("Guid");
+            }
+        }
 
 
-		private DateTime _createdate;
-		/// <summary>
-		/// 22100400 Дата создания записи в журнале (CREATE_DATE)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 22100400)]
-		public DateTime CreateDate
-		{
-			get
-			{
-				CheckPropertyInited("CreateDate");
-				return _createdate;
-			}
-			set
-			{
-				_createdate = value;
-				NotifyPropertyChanged("CreateDate");
-			}
-		}
+        private long _taskid;
+        /// <summary>
+        /// 22100300 ИД Задания на оценку (TASK_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22100300)]
+        public long TaskId
+        {
+            get
+            {
+                CheckPropertyInited("TaskId");
+                return _taskid;
+            }
+            set
+            {
+                _taskid = value;
+                NotifyPropertyChanged("TaskId");
+            }
+        }
 
 
-		private DateTime? _senddate;
-		/// <summary>
-		/// 22100500 Дата прочтения сообщения ИС РЕОН (SEND_DATE)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 22100500)]
-		public DateTime? SendDate
-		{
-			get
-			{
-				CheckPropertyInited("SendDate");
-				return _senddate;
-			}
-			set
-			{
-				_senddate = value;
-				NotifyPropertyChanged("SendDate");
-			}
-		}
+        private DateTime _createdate;
+        /// <summary>
+        /// 22100400 Дата создания записи в журнале (CREATE_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22100400)]
+        public DateTime CreateDate
+        {
+            get
+            {
+                CheckPropertyInited("CreateDate");
+                return _createdate;
+            }
+            set
+            {
+                _createdate = value;
+                NotifyPropertyChanged("CreateDate");
+            }
+        }
 
 
-		private DateTime? _confirmdate;
-		/// <summary>
-		/// 22100600 Дата подтверждения сообщения ИС РЕОН (CONFIRM_DATE)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 22100600)]
-		public DateTime? ConfirmDate
-		{
-			get
-			{
-				CheckPropertyInited("ConfirmDate");
-				return _confirmdate;
-			}
-			set
-			{
-				_confirmdate = value;
-				NotifyPropertyChanged("ConfirmDate");
-			}
-		}
+        private DateTime? _senddate;
+        /// <summary>
+        /// 22100500 Дата прочтения сообщения ИС РЕОН (SEND_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22100500)]
+        public DateTime? SendDate
+        {
+            get
+            {
+                CheckPropertyInited("SendDate");
+                return _senddate;
+            }
+            set
+            {
+                _senddate = value;
+                NotifyPropertyChanged("SendDate");
+            }
+        }
 
 
-		private long _resultexportid;
-		/// <summary>
-		/// 22100700 Идентификатор результата выгрузки (RESULT_EXPORT_ID)
-		/// </summary>
-		[RegisterAttribute(AttributeID = 22100700)]
-		public long ResultExportId
-		{
-			get
-			{
-				CheckPropertyInited("ResultExportId");
-				return _resultexportid;
-			}
-			set
-			{
-				_resultexportid = value;
-				NotifyPropertyChanged("ResultExportId");
-			}
-		}
+        private DateTime? _confirmdate;
+        /// <summary>
+        /// 22100600 Дата подтверждения сообщения ИС РЕОН (CONFIRM_DATE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22100600)]
+        public DateTime? ConfirmDate
+        {
+            get
+            {
+                CheckPropertyInited("ConfirmDate");
+                return _confirmdate;
+            }
+            set
+            {
+                _confirmdate = value;
+                NotifyPropertyChanged("ConfirmDate");
+            }
+        }
 
-	}
+
+        private long _resultexportid;
+        /// <summary>
+        /// 22100700 Идентификатор результата выгрузки (RESULT_EXPORT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22100700)]
+        public long ResultExportId
+        {
+            get
+            {
+                CheckPropertyInited("ResultExportId");
+                return _resultexportid;
+            }
+            set
+            {
+                _resultexportid = value;
+                NotifyPropertyChanged("ResultExportId");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Ko
+{
+    /// <summary>
+    /// 222 Таблица для хранения отношений между группами и сегментами рынка (KO_GROUP_TO_MARKET_SEGMENT_RELATION)
+    /// </summary>
+    [RegisterInfo(RegisterID = 222)]
+    [Serializable]
+    public partial class OMGroupToMarketSegmentRelation : OMBaseClass<OMGroupToMarketSegmentRelation>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 22200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 22200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _groupid;
+        /// <summary>
+        /// 22200101 ИД группы (GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22200101)]
+        public long GroupId
+        {
+            get
+            {
+                CheckPropertyInited("GroupId");
+                return _groupid;
+            }
+            set
+            {
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
+            }
+        }
+
+
+        private string _marketsegment;
+        /// <summary>
+        /// 22200102 Сегмент рынка недвижимости ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22200102)]
+        public string MarketSegment
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment");
+                return _marketsegment;
+            }
+            set
+            {
+                _marketsegment = value;
+                NotifyPropertyChanged("MarketSegment");
+            }
+        }
+
+
+        private MarketSegment _marketsegment_Code;
+        /// <summary>
+        /// 22200102 Сегмент рынка недвижимости (справочный код) (MARKET_SEGMENT)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22200102)]
+        public MarketSegment MarketSegment_Code
+        {
+            get
+            {
+                CheckPropertyInited("MarketSegment_Code");
+                return this._marketsegment_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_marketsegment))
+                    {
+                         _marketsegment = descr;
+                    }
+                }
+                else
+                {
+                     _marketsegment = descr;
+                }
+
+                this._marketsegment_Code = value;
+                NotifyPropertyChanged("MarketSegment");
+                NotifyPropertyChanged("MarketSegment_Code");
+            }
+        }
+
+
+        private string _territory;
+        /// <summary>
+        /// 22200103 Территория (основная, дополнительная) (TERRITORY)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22200103)]
+        public string Territory
+        {
+            get
+            {
+                CheckPropertyInited("Territory");
+                return _territory;
+            }
+            set
+            {
+                _territory = value;
+                NotifyPropertyChanged("Territory");
+            }
+        }
+
+    }
 }
 
 namespace ObjectModel.KO
@@ -21796,19 +21923,19 @@ namespace ObjectModel.ES
         [RegisterAttribute(AttributeID = 60001200)]
         public string Address
         {
-	        get
-	        {
-		        CheckPropertyInited("Address");
-		        return _address;
-	        }
-	        set
-	        {
-		        _address = value;
-		        NotifyPropertyChanged("Address");
-	        }
+            get
+            {
+                CheckPropertyInited("Address");
+                return _address;
+            }
+            set
+            {
+                _address = value;
+                NotifyPropertyChanged("Address");
+            }
         }
 
-	}
+    }
 }
 
 namespace ObjectModel.ES

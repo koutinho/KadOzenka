@@ -152,19 +152,19 @@ namespace ObjectModel.Gbu
 
 namespace ObjectModel
 {
-	/// <summary>
-	/// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
-	/// </summary>
-	public partial class OMStarage
-	{
-		/// <summary>
-		/// Ссылка на (200 Объекты недвижимости)
-		/// </summary>
-		[ParentRegister]
-		[XmlIgnore]
-		public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+    /// <summary>
+    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
+    /// </summary>
+    public partial class OMStarage
+    {
+        /// <summary>
+        /// Ссылка на (200 Объекты недвижимости)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
 
-	}
+    }
 }
 
 
@@ -631,6 +631,25 @@ namespace ObjectModel.KO
 }
 
 
+namespace ObjectModel.Ko
+{
+    /// <summary>
+    /// 222 Таблица для хранения отношений между группами и сегментами рынка
+    /// </summary>
+    public partial class OMGroupToMarketSegmentRelation
+    {
+        /// <summary>
+        /// Ссылка на (205 Группы/Подгруппы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
+
+    }
+}
+
+
+
 namespace ObjectModel.KO
 {
     /// <summary>
@@ -698,6 +717,24 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMUnit ParentUnit { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 260 Реестр настройки автоматического расчета
+    /// </summary>
+    public partial class OMAutoCalculationSettings
+    {
+        /// <summary>
+        /// Ссылка на (205 Группы/Подгруппы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
 
     }
 }
