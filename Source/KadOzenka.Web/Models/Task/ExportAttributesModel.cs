@@ -230,7 +230,7 @@ namespace KadOzenka.Web.Models.Task
 				ReferenceId = attributeGbu.ReferenceId
 			};
 
-			long idKo = new ObjectsCharacteristicsService().AddCharacteristic(characteristicDto);
+			long idKo = new ObjectsCharacteristicsService().AddCharacteristic(characteristicDto, true);
 
 			//запомнить соответствие
 			OMTransferAttributes newTransferAttribute = new OMTransferAttributes

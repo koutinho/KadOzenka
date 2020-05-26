@@ -94,7 +94,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         #region Characteristic
 
-        public long AddCharacteristic(CharacteristicDto characteristicDto)
+        public long AddCharacteristic(CharacteristicDto characteristicDto, bool withValueField = false)
         {
             ValidateCharacteristic(characteristicDto);
 
@@ -102,7 +102,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             using (var ts = new TransactionScope())
             {
                 var omAttribute = RegisterAttributeService.CreateRegisterAttribute(characteristicDto.Name,
-                    characteristicDto.RegisterId, characteristicDto.Type, false, characteristicDto.ReferenceId);
+                    characteristicDto.RegisterId, characteristicDto.Type, withValueField, characteristicDto.ReferenceId);
                 id = omAttribute.Id;
 
                 var dbConfigurator = RegisterConfigurator.GetDbConfigurator();

@@ -84,13 +84,13 @@ namespace KadOzenka.Dal.GbuObject
                 ExportAttributeItem current = setting.Attributes.Find(x => x.IdAttributeGBU == attrib.AttributeId);
                 //if (current != null)
                 {
-                    long id_factor = current.IdAttributeKO;
-                    long RegId = id_factor / 100000;
-                    object value = attrib.StringValue;
+	                var attributeData = RegisterCache.GetAttributeData((int)current.IdAttributeKO);
+					long id_factor = current.IdAttributeKO;
+                    long RegId = attributeData.RegisterId;
+                    object value = attrib.GetValueInString();
 
 
                     RegisterObject registerObject = new RegisterObject((int)RegId, (int)unit.Id);
-                    var attributeData = RegisterCache.GetAttributeData((int)id_factor);
                     int referenceItemId = -1;
                     if (attributeData.CodeField.IsNotEmpty() && attributeData.ReferenceId > 0)
                     {
