@@ -48,6 +48,7 @@
     <Folder Include="LongProcess\TaskLongProcesses\" />
     <Folder Include="Correction\Dto\" />
     <Folder Include="Seman\" />
+    <Folder Include="CommonFunctions\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -76,7 +76,9 @@ namespace KadOzenka.BlFrontEnd
             /*Вспомогательные функции*/
             consoleHelper.AddCommand("1108", "Присвоение кадастровых кварталов, районов и зон", () => { new Cian().SetCadastralNumbers(); });
 
-            consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseXMLMapGeoData(); });
+			consoleHelper.AddCommand("1109", "Сгенерировать перечисления (материал стен)", () => { new InsertGenerator().GenerateInsertData("INSERT INTO core_reference_item (itemid, referenceid, code, value, name) VALUES ({0}, {1}, {2}, '{3}', '{4}');", 1079, 5, 115); });
+
+			consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseXMLMapGeoData(); });
             consoleHelper.AddCommand("21", "Парсинг excele файла", () => { FormRegionTable.parseExcelRegionsData(); });
 
             /*Генерация тайлов для карт яндекс*/
