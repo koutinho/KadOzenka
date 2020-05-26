@@ -9998,7 +9998,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source1_a_dt', 'value')) then
-        execute 'alter table gbu_source1_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source1_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -10403,7 +10403,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source10_a_dt', 'value')) then
-        execute 'alter table gbu_source10_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source10_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -10535,7 +10535,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source10_a_num', 'value')) then
-        execute 'alter table gbu_source10_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source10_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -10808,7 +10808,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source11_a_dt', 'value')) then
-        execute 'alter table gbu_source11_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source11_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -10940,7 +10940,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source11_a_num', 'value')) then
-        execute 'alter table gbu_source11_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source11_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -11213,7 +11213,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source12_a_dt', 'value')) then
-        execute 'alter table gbu_source12_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source12_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -11345,7 +11345,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source12_a_num', 'value')) then
-        execute 'alter table gbu_source12_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source12_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -11618,7 +11618,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source13_a_dt', 'value')) then
-        execute 'alter table gbu_source13_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source13_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -11750,7 +11750,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source13_a_num', 'value')) then
-        execute 'alter table gbu_source13_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source13_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -12023,7 +12023,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source14_a_dt', 'value')) then
-        execute 'alter table gbu_source14_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source14_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -12155,7 +12155,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source14_a_num', 'value')) then
-        execute 'alter table gbu_source14_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source14_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -12428,7 +12428,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source15_a_dt', 'value')) then
-        execute 'alter table gbu_source15_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source15_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -12560,7 +12560,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source15_a_num', 'value')) then
-        execute 'alter table gbu_source15_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source15_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -12833,7 +12833,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source16_a_dt', 'value')) then
-        execute 'alter table gbu_source16_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source16_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -12965,7 +12965,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source16_a_num', 'value')) then
-        execute 'alter table gbu_source16_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source16_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -13238,7 +13238,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source17_a_dt', 'value')) then
-        execute 'alter table gbu_source17_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source17_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -13370,7 +13370,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source17_a_num', 'value')) then
-        execute 'alter table gbu_source17_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source17_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -13643,7 +13643,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source18_a_dt', 'value')) then
-        execute 'alter table gbu_source18_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source18_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -13775,7 +13775,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source18_a_num', 'value')) then
-        execute 'alter table gbu_source18_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source18_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -14048,7 +14048,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source19_a_dt', 'value')) then
-        execute 'alter table gbu_source19_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source19_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -14180,7 +14180,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source19_a_num', 'value')) then
-        execute 'alter table gbu_source19_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source19_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -18301,7 +18301,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source20_a_dt', 'value')) then
-        execute 'alter table gbu_source20_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source20_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -18433,7 +18433,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source20_a_num', 'value')) then
-        execute 'alter table gbu_source20_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source20_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -18706,7 +18706,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source21_a_dt', 'value')) then
-        execute 'alter table gbu_source21_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source21_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -18838,7 +18838,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source21_a_num', 'value')) then
-        execute 'alter table gbu_source21_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source21_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -19111,7 +19111,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source22_a_dt', 'value')) then
-        execute 'alter table gbu_source22_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source22_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -19243,7 +19243,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source22_a_num', 'value')) then
-        execute 'alter table gbu_source22_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source22_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -19516,7 +19516,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source23_a_dt', 'value')) then
-        execute 'alter table gbu_source23_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source23_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -19648,7 +19648,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source23_a_num', 'value')) then
-        execute 'alter table gbu_source23_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source23_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -19921,7 +19921,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source3_a_dt', 'value')) then
-        execute 'alter table gbu_source3_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source3_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -20053,7 +20053,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source3_a_num', 'value')) then
-        execute 'alter table gbu_source3_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source3_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -20326,7 +20326,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source4_a_dt', 'value')) then
-        execute 'alter table gbu_source4_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source4_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -20458,7 +20458,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source4_a_num', 'value')) then
-        execute 'alter table gbu_source4_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source4_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -20731,7 +20731,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source5_a_dt', 'value')) then
-        execute 'alter table gbu_source5_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source5_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -20863,7 +20863,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source5_a_num', 'value')) then
-        execute 'alter table gbu_source5_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source5_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -21136,7 +21136,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source6_a_dt', 'value')) then
-        execute 'alter table gbu_source6_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source6_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -21268,7 +21268,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source6_a_num', 'value')) then
-        execute 'alter table gbu_source6_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source6_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -21541,7 +21541,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source7_a_dt', 'value')) then
-        execute 'alter table gbu_source7_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source7_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -21673,7 +21673,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source7_a_num', 'value')) then
-        execute 'alter table gbu_source7_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source7_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -21946,7 +21946,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source8_a_dt', 'value')) then
-        execute 'alter table gbu_source8_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source8_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -22078,7 +22078,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source8_a_num', 'value')) then
-        execute 'alter table gbu_source8_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source8_a_num add "value" NUMERIC';
     end if;
 end $$;
 
@@ -22351,7 +22351,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source9_a_dt', 'value')) then
-        execute 'alter table gbu_source9_a_dt add "value" TIMESTAMP NOT NULL';
+        execute 'alter table gbu_source9_a_dt add "value" TIMESTAMP';
     end if;
 end $$;
 
@@ -22483,7 +22483,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source9_a_num', 'value')) then
-        execute 'alter table gbu_source9_a_num add "value" NUMERIC NOT NULL';
+        execute 'alter table gbu_source9_a_num add "value" NUMERIC';
     end if;
 end $$;
 
