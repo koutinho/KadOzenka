@@ -16,6 +16,7 @@ using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
+using GroupDto = KadOzenka.Dal.Modeling.Dto.GroupDto;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -48,13 +49,25 @@ namespace KadOzenka.Dal.Modeling
 							RightOperand = OMTour.GetColumn(x => x.Id)
 						},
 						JoinType = QSJoinType.Inner
-					}
-				}
+					},
+                    new QSJoin
+                    {
+                        RegisterId = OMGroup.GetRegisterId(),
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = OMModelingModel.GetColumn(x => x.GroupId),
+                            RightOperand = OMGroup.GetColumn(x => x.Id)
+                        },
+                        JoinType = QSJoinType.Inner
+                    }
+                }
 			};
 			query.AddColumn(OMModelingModel.GetColumn(x => x.Name, nameof(ModelingModelDto.Name)));
 			query.AddColumn(OMModelingModel.GetColumn(x => x.TourId, nameof(ModelingModelDto.TourId)));
 			query.AddColumn(OMTour.GetColumn(x => x.Year, nameof(ModelingModelDto.TourYear)));
-			query.AddColumn(OMModelingModel.GetColumn(x => x.MarketSegment_Code, nameof(ModelingModelDto.MarketSegment)));
+			query.AddColumn(OMModelingModel.GetColumn(x => x.GroupId, nameof(ModelingModelDto.GroupId)));
+            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(ModelingModelDto.GroupName)));
             query.AddColumn(OMModelingModel.GetColumn(x => x.WasTrained, nameof(ModelingModelDto.WasTrained)));
             query.AddColumn(OMModelingModel.GetColumn(x => x.IsOksObjectType, nameof(ModelingModelDto.IsOksObjectType)));
 
@@ -67,7 +80,8 @@ namespace KadOzenka.Dal.Modeling
 				var modelName = row[nameof(ModelingModelDto.Name)].ParseToString();
 				var tourId = row[nameof(ModelingModelDto.TourId)].ParseToLong();
 				var tourYear = row[nameof(ModelingModelDto.TourYear)].ParseToLong();
-				var segment = (MarketSegment)row[nameof(ModelingModelDto.MarketSegment)];
+				var groupId = row[nameof(ModelingModelDto.GroupId)].ParseToLong();
+                var groupName = row[nameof(ModelingModelDto.GroupName)].ParseToString();
                 var wasTrained = row[nameof(ModelingModelDto.WasTrained)].ParseToBooleanNullable();
                 var isOksObjectType = row[nameof(ModelingModelDto.IsOksObjectType)].ParseToBooleanNullable();
 
@@ -77,7 +91,8 @@ namespace KadOzenka.Dal.Modeling
 					Name = modelName,
 					TourId = tourId,
 					TourYear = tourYear,
-					MarketSegment = segment,
+                    GroupId = groupId,
+                    GroupName = groupName,
                     WasTrained = wasTrained.GetValueOrDefault(),
                     IsOksObjectType = isOksObjectType.GetValueOrDefault()
                 };
@@ -89,7 +104,38 @@ namespace KadOzenka.Dal.Modeling
 			return model;
 		}
 
-		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId)
+        public List<GroupDto> GetGroups()
+        {
+            var query = new QSQuery
+            {
+                MainRegisterID = ObjectModel.Ko.OMGroupToMarketSegmentRelation.GetRegisterId(),
+                Joins = new List<QSJoin>
+                {
+                    new QSJoin
+                    {
+                        RegisterId = OMGroup.GetRegisterId(),
+                        JoinCondition = new QSConditionSimple
+                        {
+                            ConditionType = QSConditionType.Equal,
+                            LeftOperand = OMGroup.GetColumn(x => x.Id),
+                            RightOperand = ObjectModel.Ko.OMGroupToMarketSegmentRelation.GetColumn(x => x.GroupId)
+                        },
+                        JoinType = QSJoinType.Inner
+                    }
+                }
+            };
+            query.AddColumn(ObjectModel.Ko.OMGroupToMarketSegmentRelation.GetColumn(x => x.GroupId, nameof(GroupDto.GroupId)));
+            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, nameof(GroupDto.Name)));
+            query.OrderBy.Add(new QSOrder
+            {
+                Column = OMGroup.GetColumn(x => x.GroupName),
+                Order = QSOrderType.ASC
+            });
+
+            return query.ExecuteQuery<GroupDto>();
+        }
+
+        public List<ModelAttributeRelationDto> GetModelAttributes(long modelId)
 		{
 			var query = new QSQuery
 			{
@@ -172,7 +218,7 @@ namespace KadOzenka.Dal.Modeling
                 {
                     Name = modelDto.Name,
                     TourId = modelDto.TourId,
-                    MarketSegment_Code = modelDto.MarketSegment
+                    GroupId = modelDto.GroupId
                 };
 
                 var id = model.Save();
@@ -200,7 +246,7 @@ namespace KadOzenka.Dal.Modeling
             {
                 existedModel.Name = modelDto.Name;
                 existedModel.TourId = modelDto.TourId;
-                existedModel.MarketSegment_Code = modelDto.MarketSegment;
+                existedModel.GroupId = modelDto.GroupId;
                 existedModel.IsOksObjectType = modelDto.IsOksObjectType;
                 if (isModelChanged)
                     existedModel.WasTrained = false;
@@ -234,7 +280,7 @@ namespace KadOzenka.Dal.Modeling
             var areDictionaryIdsSequenceEqualEqual = oldDictionaryIds.SequenceEqual(newDictionaryIIds);
 
             return !(existedModel.TourId == newModel.TourId &&
-                   existedModel.MarketSegment_Code == newModel.MarketSegment &&
+                   existedModel.GroupId == newModel.GroupId &&
                    existedModel.IsOksObjectType == newModel.IsOksObjectType &&
                    areAttributeIdsEqual &&
                    areDictionaryIdsSequenceEqualEqual);
@@ -353,8 +399,12 @@ namespace KadOzenka.Dal.Modeling
         {
             var model = GetModelByIdInternal(modelId);
 
-			var groupedObjects = OMCoreObject.Where(x =>
-					x.PropertyMarketSegment_Code == model.MarketSegment_Code &&
+            var groupToMarketSegmentRelation = ObjectModel.Ko.OMGroupToMarketSegmentRelation
+                .Where(x => x.GroupId == model.GroupId).SelectAll().ExecuteFirstOrDefault();
+
+            var groupedObjects = OMCoreObject.Where(x =>
+					x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
+                    //TODO PART
 					x.CadastralNumber != null && x.CadastralNumber != string.Empty && 
                     x.ProcessType_Code != ProcessStep.Excluded)
 				.Select(x => x.CadastralNumber)
@@ -464,8 +514,8 @@ namespace KadOzenka.Dal.Modeling
 			if(!isTourExists)
 				message.AppendLine($"Не найден Тур с Id='{modelDto.TourId}'");
 
-			if(modelDto.MarketSegment == MarketSegment.None)
-				message.AppendLine("Для модели не выбран сегмент");
+			if(modelDto.GroupId == 0)
+				message.AppendLine("Для модели не выбрана группа");
 
 			if (message.Length != 0)
 				throw new Exception(message.ToString());

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Modeling.Dto
 {
@@ -9,12 +8,13 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public string Name { get; set; }
 		public long TourId { get; set; }
 		public long TourYear { get; set; }
-		public MarketSegment MarketSegment { get; set; }
+        public long GroupId { get; set; }
+        public string GroupName { get; set; }
         public bool WasTrained { get; set; }
         public bool IsOksObjectType { get; set; }
         public List<ModelAttributeRelationDto> Attributes { get; set; }
 
-		public ModelingModelDto()
+        public ModelingModelDto()
 		{
 			Attributes = new List<ModelAttributeRelationDto>();
 		}

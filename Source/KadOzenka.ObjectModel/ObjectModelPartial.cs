@@ -1388,6 +1388,12 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMAutoCalculationSettings> AutoCalculationSettings { get; set; }
+
+        /// <summary>
+        /// Ссылка на (700 Моделирование)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Modeling.OMModelingModel> ModelingModel { get; set; }
         public OMGroup()
         {
 
@@ -1407,6 +1413,8 @@ namespace ObjectModel.KO
             GroupToMarketSegmentRelation = new List<ObjectModel.Ko.OMGroupToMarketSegmentRelation>();
 
             AutoCalculationSettings = new List<ObjectModel.KO.OMAutoCalculationSettings>();
+
+            ModelingModel = new List<ObjectModel.Modeling.OMModelingModel>();
 
         }
         public OMGroup(bool trackPropertyChanging) : this()

@@ -28,14 +28,14 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Тур")]
 		public long TourYear { get; set; }
 
-		[Display(Name = "Сегмент")]
-		[Required(ErrorMessage = "Не выбран Сегмент")]
-		public MarketSegment MarketSegmentCode { get; set; }
+		[Display(Name = "Группа")]
+		[Required(ErrorMessage = "Не выбрана Группа")]
+		public long GroupId { get; set; }
 
-		[Display(Name = "Сегмент")]
-		public string MarketSegment => MarketSegmentCode.GetEnumDescription();
+        [Display(Name = "Группа")]
+        public string GroupName { get; set; }
 
-		[Display(Name = "Тип")]
+        [Display(Name = "Тип")]
 		public ObjectType ObjectType { get; set; }
 
 		public List<ModelAttributeRelationDto> Attributes { get; set; }
@@ -46,8 +46,9 @@ namespace KadOzenka.Web.Models.Modeling
 			return new ModelingModel
 			{
 				Id = entity.ModelId,
-				MarketSegmentCode = entity.MarketSegment,
-				TourId = entity.TourId,
+                GroupId = entity.GroupId,
+                GroupName = entity.GroupName,
+                TourId = entity.TourId,
 				TourYear = entity.TourYear,
 				Name = entity.Name,
 				Attributes = entity.Attributes,
@@ -63,7 +64,7 @@ namespace KadOzenka.Web.Models.Modeling
 				ModelId =  model.Id,
 				Name = model.Name,
 				TourId = model.TourId,
-				MarketSegment = model.MarketSegmentCode,
+                GroupId = model.GroupId,
 				Attributes = model.Attributes,
                 IsOksObjectType = model.ObjectType == ObjectType.Oks
 			};

@@ -649,7 +649,6 @@ namespace ObjectModel.Ko
 }
 
 
-
 namespace ObjectModel.KO
 {
     /// <summary>
@@ -1155,6 +1154,13 @@ namespace ObjectModel.Modeling
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMTour ParentTour { get; set; }
+
+        /// <summary>
+        /// Ссылка на (205 Группы/Подгруппы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
 
     }
 }

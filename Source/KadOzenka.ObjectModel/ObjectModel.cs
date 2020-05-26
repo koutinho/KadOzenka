@@ -1843,7 +1843,6 @@ namespace ObjectModel.Market
         }
 
 
-
         private decimal? _priceaftercorrectionforfirstfloor;
         /// <summary>
         /// 10008800 Цена после корректировки на первый этаж (PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR)
@@ -21916,6 +21915,7 @@ namespace ObjectModel.ES
             }
         }
 
+
         private string _address;
         /// <summary>
         /// 60001200 Адрес (ADDRESS)
@@ -22682,57 +22682,22 @@ namespace ObjectModel.Modeling
         }
 
 
-        private string _marketsegment;
+        private long _groupid;
         /// <summary>
-        /// 70000400 Сегмент рынка недвижимости ()
+        /// 70000400 ИД группы (GROUP_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 70000400)]
-        public string MarketSegment
+        public long GroupId
         {
             get
             {
-                CheckPropertyInited("MarketSegment");
-                return _marketsegment;
+                CheckPropertyInited("GroupId");
+                return _groupid;
             }
             set
             {
-                _marketsegment = value;
-                NotifyPropertyChanged("MarketSegment");
-            }
-        }
-
-
-        private MarketSegment _marketsegment_Code;
-        /// <summary>
-        /// 70000400 Сегмент рынка недвижимости (справочный код) (MARKET_SEGMENT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 70000400)]
-        public MarketSegment MarketSegment_Code
-        {
-            get
-            {
-                CheckPropertyInited("MarketSegment_Code");
-                return this._marketsegment_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_marketsegment))
-                    {
-                         _marketsegment = descr;
-                    }
-                }
-                else
-                {
-                     _marketsegment = descr;
-                }
-
-                this._marketsegment_Code = value;
-                NotifyPropertyChanged("MarketSegment");
-                NotifyPropertyChanged("MarketSegment_Code");
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
             }
         }
 
@@ -23968,3 +23933,4 @@ namespace ObjectModel.Gbu.Custom
     {
     }
 }
+

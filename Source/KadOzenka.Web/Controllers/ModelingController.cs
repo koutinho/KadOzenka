@@ -13,6 +13,7 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.LongProcess;
@@ -49,10 +50,22 @@ namespace KadOzenka.Web.Controllers
 			return Json(attributes);
 		}
 
-		[HttpGet]
+        public JsonResult GetGroups()
+        {
+            var groups = ModelingService.GetGroups()
+                .Select(x => new SelectListItem
+                {
+                    Value = x.GroupId.ToString(),
+                    Text = x.Name
+                });
+
+            return Json(groups);
+        }
+
+        [HttpGet]
 		public ActionResult AddModel()
 		{
-			return View();
+            return View();
 		}
 
 		[HttpPost]

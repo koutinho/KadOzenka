@@ -14,10 +14,10 @@
     </div>
     <div class="form-group">
         <div class="col-sm-2">
-            @Html.CustomLabel("Сегмент")
+            @Html.CustomLabel("Группа")
         </div>
         <div class="col-sm-9">
-            @(Html.Kendo().DropDownListFor(m => m.MarketSegment)
+            @(Html.Kendo().DropDownListFor(m => m.GroupName)
                 .DataTextField("Name")
                 .DataValueField("Name")
                 .Enable(false))
