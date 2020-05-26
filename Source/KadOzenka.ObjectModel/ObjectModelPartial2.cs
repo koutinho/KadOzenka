@@ -150,12 +150,12 @@ namespace ObjectModel.Gbu
 }
 
 
-namespace ObjectModel
+namespace ObjectModel.Gbu
 {
     /// <summary>
     /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
     /// </summary>
-    public partial class OMStarage
+    public partial class OMSource9
     {
         /// <summary>
         /// Ссылка на (200 Объекты недвижимости)
@@ -441,6 +441,24 @@ namespace ObjectModel.KO
 namespace ObjectModel.Market
 {
     /// <summary>
+    /// 101 Адреса в яндек-формате
+    /// </summary>
+    public partial class OMYandexAddress
+    {
+        /// <summary>
+        /// Ссылка на (100 Аналоги)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Market.OMCoreObject ParentCoreObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Market
+{
+    /// <summary>
     /// 105 Таблица, содержащая ретроспективу цен по объектам
     /// </summary>
     public partial class OMPriceHistory
@@ -481,6 +499,13 @@ namespace ObjectModel.KO
     /// </summary>
     public partial class OMUnit
     {
+        /// <summary>
+        /// Ссылка на (107 Таблица, содержащая информацию о соответствии кад кварталов районам, округам и зонам )
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Market.OMQuartalDictionary ParentQuartalDictionary { get; set; }
+
         /// <summary>
         /// Ссылка на (200 Объекты недвижимости)
         /// </summary>
@@ -709,6 +734,24 @@ namespace ObjectModel.KO
     /// 253 Параметры расчета для ЗУ 2016 года
     /// </summary>
     public partial class OMUnitParamsZu2016
+    {
+        /// <summary>
+        /// Ссылка на (201 Единица оценки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMUnit ParentUnit { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 256 Реестр для изменения сведений об объектах оценки
+    /// </summary>
+    public partial class OMUnitChange
     {
         /// <summary>
         /// Ссылка на (201 Единица оценки)

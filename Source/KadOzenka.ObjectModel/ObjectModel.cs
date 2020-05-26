@@ -568,12 +568,12 @@ namespace ObjectModel.Market
         }
 
 
-        private long _marketid;
+        private long? _marketid;
         /// <summary>
         /// 10002600 Идентификатор в Источнике данных (MARKET_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002600)]
-        public long MarketId
+        public long? MarketId
         {
             get
             {
@@ -1039,6 +1039,26 @@ namespace ObjectModel.Market
             {
                 _zoneregion = value;
                 NotifyPropertyChanged("ZoneRegion");
+            }
+        }
+
+
+        private string _customzone;
+        /// <summary>
+        /// 10005101 Настраиваемая зона (CUSTOM_ZONE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10005101)]
+        public string CustomZone
+        {
+            get
+            {
+                CheckPropertyInited("CustomZone");
+                return _customzone;
+            }
+            set
+            {
+                _customzone = value;
+                NotifyPropertyChanged("CustomZone");
             }
         }
 
@@ -1823,22 +1843,22 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _priceaftercorrectionbystage;
+        private long? _formalizedaddressid;
         /// <summary>
-        /// 10008500 Цена после корректировки на этажность (PRICE_AFTER_CORRECTION_BY_STAGE)
+        /// 10008600 Идентификатор формализованного адреса (FORMALIZED_ADDRESS_ID)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10008500)]
-        public decimal? PriceAfterCorrectionByStage
+        [RegisterAttribute(AttributeID = 10008600)]
+        public long? FormalizedAddressId
         {
             get
             {
-                CheckPropertyInited("PriceAfterCorrectionByStage");
-                return _priceaftercorrectionbystage;
+                CheckPropertyInited("FormalizedAddressId");
+                return _formalizedaddressid;
             }
             set
             {
-                _priceaftercorrectionbystage = value;
-                NotifyPropertyChanged("PriceAfterCorrectionByStage");
+                _formalizedaddressid = value;
+                NotifyPropertyChanged("FormalizedAddressId");
             }
         }
 
@@ -1859,6 +1879,26 @@ namespace ObjectModel.Market
             {
                 _priceaftercorrectionforfirstfloor = value;
                 NotifyPropertyChanged("PriceAfterCorrectionForFirstFloor");
+            }
+        }
+
+
+        private decimal? _priceaftercorrectionbystage;
+        /// <summary>
+        /// 10008900 Цена после корректировки на цоколь/подвал (PRICE_AFTER_CORRECTION_BY_STAGE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008900)]
+        public decimal? PriceAfterCorrectionByStage
+        {
+            get
+            {
+                CheckPropertyInited("PriceAfterCorrectionByStage");
+                return _priceaftercorrectionbystage;
+            }
+            set
+            {
+                _priceaftercorrectionbystage = value;
+                NotifyPropertyChanged("PriceAfterCorrectionByStage");
             }
         }
 
@@ -3653,6 +3693,26 @@ namespace ObjectModel.Market
             {
                 _zoneregion = value;
                 NotifyPropertyChanged("ZoneRegion");
+            }
+        }
+
+
+        private string _customzone;
+        /// <summary>
+        /// 10700700 Настраиваемая зона (CUSTOM_ZONE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10700700)]
+        public string CustomZone
+        {
+            get
+            {
+                CheckPropertyInited("CustomZone");
+                return _customzone;
+            }
+            set
+            {
+                _customzone = value;
+                NotifyPropertyChanged("CustomZone");
             }
         }
 
@@ -23934,3 +23994,26 @@ namespace ObjectModel.Gbu.Custom
     }
 }
 
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 44355285 Источник: Test after partition (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 44355285)]
+    [Serializable]
+    public partial class OMSource27 : OMBaseClass<OMSource27>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 44355304 Источник: РЕОН (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 44355304)]
+    [Serializable]
+    public partial class OMSource29 : OMBaseClass<OMSource29>
+    {
+    }
+}

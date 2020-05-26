@@ -570,6 +570,12 @@ namespace ObjectModel.Market
 
 
         /// <summary>
+        /// Ссылка на (101 Адреса в яндек-формате)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Market.OMYandexAddress> YandexAddress { get; set; }
+
+        /// <summary>
         /// Ссылка на (105 Таблица, содержащая ретроспективу цен по объектам)
         /// </summary>
         [Reference]
@@ -587,6 +593,8 @@ namespace ObjectModel.Market
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            YandexAddress = new List<ObjectModel.Market.OMYandexAddress>();
 
             PriceHistory = new List<ObjectModel.Market.OMPriceHistory>();
 
@@ -752,6 +760,12 @@ namespace ObjectModel.Market
     public partial class OMQuartalDictionary
     {
 
+
+        /// <summary>
+        /// Ссылка на (201 Единица оценки)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMUnit> Unit { get; set; }
         public OMQuartalDictionary()
         {
 
@@ -759,6 +773,8 @@ namespace ObjectModel.Market
 
             CollectPropertyChanged = true;
             PropertyChangedList = new HashSet<String>();
+
+            Unit = new List<ObjectModel.KO.OMUnit>();
 
         }
         public OMQuartalDictionary(bool trackPropertyChanging) : this()
@@ -1232,6 +1248,12 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMUnitParamsZu2016> UnitParamsZu2016 { get; set; }
+
+        /// <summary>
+        /// Ссылка на (256 Реестр для изменения сведений об объектах оценки)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMUnitChange> UnitChange { get; set; }
         public OMUnit()
         {
 
@@ -1247,6 +1269,8 @@ namespace ObjectModel.KO
             UnitParamsOks2016 = new List<ObjectModel.KO.OMUnitParamsOks2016>();
 
             UnitParamsZu2016 = new List<ObjectModel.KO.OMUnitParamsZu2016>();
+
+            UnitChange = new List<ObjectModel.KO.OMUnitChange>();
 
         }
         public OMUnit(bool trackPropertyChanging) : this()
@@ -3380,6 +3404,138 @@ namespace ObjectModel.Gbu.Custom
 
         }
         public OMSource22(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 41983898 Источник: Атрибут кода группы
+    /// </summary>
+    public partial class OMSource23
+    {
+
+        public OMSource23()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource23(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42430534 Источник: тестовый_2апреля
+    /// </summary>
+    public partial class OMSource24
+    {
+
+        public OMSource24()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource24(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42436643 Источник: источник информации
+    /// </summary>
+    public partial class OMSource25
+    {
+
+        public OMSource25()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource25(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 42726724 Источник: Test_All_Pri_2
+    /// </summary>
+    public partial class OMSource26
+    {
+
+        public OMSource26()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource26(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 44355285 Источник: Test after partition
+    /// </summary>
+    public partial class OMSource27
+    {
+
+        public OMSource27()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource27(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu.Custom
+{
+    /// <summary>
+    /// 44355304 Источник: РЕОН
+    /// </summary>
+    public partial class OMSource29
+    {
+
+        public OMSource29()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource29(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
