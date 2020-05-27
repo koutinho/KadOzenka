@@ -305,6 +305,7 @@ namespace KadOzenka.Dal.ExpressScore
 		}
 		private void AddRow(ExcelWorksheet sheet, int row, List<string> values)
 		{
+			bool isGreen = false;
 			int col = 0;
 			foreach (var val in values)
 			{
@@ -331,6 +332,10 @@ namespace KadOzenka.Dal.ExpressScore
 					sheet.Columns[col].Style.Font.Size = 250;
 					sheet.Columns[col].Style.Font.Weight = 600;
 					sheet.Columns[col].SetWidth(8.0, LengthUnit.Centimeter);
+					if (val.Contains("Корректировка"))
+					{
+						isGreen = true;
+					}
 				}
 
 				//sheet.Rows[row].SetHeight(1.5, LengthUnit.Centimeter);
@@ -338,11 +343,12 @@ namespace KadOzenka.Dal.ExpressScore
 				sheet.Rows[row].Cells[col].Style.WrapText = true;
 				sheet.Rows[row].Cells[col].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
 				sheet.Rows[row].Cells[col].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-
-				if (col == 0 && val.Contains("Корректировка"))
+				if (isGreen)
 				{
-					sheet.Rows[row].Style.FillPattern.PatternBackgroundColor = SpreadsheetColor.FromName(ColorName.LightGreen);
+					sheet.Rows[row].Cells[col].Style.FillPattern.SetPattern(FillPatternStyle.ThinHorizontalCrosshatch,
+						SpreadsheetColor.FromArgb(163, 222, 160), SpreadsheetColor.FromArgb(163, 222, 160));
 				}
+				
 
 				col++;
 			}
