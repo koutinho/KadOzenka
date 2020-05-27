@@ -1,10 +1,11 @@
-﻿@model KadOzenka.Web.Models.Tour.GroupModel
+﻿@using KadOzenka.Dal.Groups.Dto.Consts
+@model KadOzenka.Web.Models.Tour.GroupModel
 
 <div class="container">
 @using (Html.BeginForm("EditGroup", "Tour", FormMethod.Post, new { id = "updateGroupForm", enctype = "multipart/form-data" }))
 {
 	<div class="row" style="padding-top: 2%;">
-			<b>Настройка группы</b>
+        <b id="cardName"></b>
 	</div>
 	<div class="form-horizontal row" style="padding-top: 5%;">
 		@Html.HiddenFor(x => x.Id)
@@ -118,18 +119,18 @@
             var row = grid.select();
             if (row.length == 0) {
                 $('#edit-group').addClass('k-state-disabled');
-                $('#remove-group').addClass('k-state-disabled');                
+                $('#remove-group').addClass('k-state-disabled');
             }
             else {
                 $('#edit-group').removeClass('k-state-disabled');
-                $('#remove-group').removeClass('k-state-disabled');                
+                $('#remove-group').removeClass('k-state-disabled');
             }
         }
 
         $('#edit-group').addClass('k-state-disabled');
         $('#remove-group').addClass('k-state-disabled');
 
-        $('#add-group').on('click', function () {           
+        $('#add-group').on('click', function () {
             Common.UI.ShowWindow('Редактирование группы',
                 '@Url.Action("EditCalcGroup", "Tour")' + '?groupId=@Model.Id',
                 'editCalcWindow',
@@ -145,7 +146,7 @@
             var grid = $("#reestrGrid").data("kendoGrid");
             var row = grid.select();
             if (row.length > 0) {
-                var data = grid.dataItem(row);                
+                var data = grid.dataItem(row);
                 Common.UI.ShowWindow('Редактирование группы',
                     '@Url.Action("EditCalcGroup", "Tour")' + '?groupId=@Model.Id&id=' + data.Id,
                 'editCalcWindow',
@@ -155,7 +156,7 @@
                         }
                     },
                 800, 200);
-            }           
+            }
         });
 
         $('#remove-group').on('click', function () {
@@ -187,7 +188,7 @@
                     }
                 });
             }
-        });        
+        });
 
         @{
             if (Model.IsReadOnly)
@@ -195,6 +196,18 @@
                 <text>
                     $("#updateGroupNameId").prop("disabled", true);
                     $("#updateGroupBtn").prop( "disabled", true);
+                </text>
+            }
+            if (Model.GroupType == GroupType.SubGroup)
+            {
+                <text>
+                    $("#cardName").html("Настройка подгруппы");
+                </text>
+            }
+            else
+            {
+                <text>
+                    $("#cardName").html("Настройка группы");
                 </text>
             }
         }

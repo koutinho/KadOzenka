@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Groups.Dto;
+using KadOzenka.Dal.Groups.Dto.Consts;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Tour
@@ -9,8 +10,9 @@ namespace KadOzenka.Web.Models.Tour
 	{
 		public long? Id { get; set; }
 		public long? RatingTourId { get; set; }
+        public GroupType GroupType { get; set; }
 
-		public string ObjType { get; set; }
+        public string ObjType { get; set; }
 
 		public long? GroupingAlgorithmId { get; set; }
 
@@ -24,8 +26,13 @@ namespace KadOzenka.Web.Models.Tour
 
         public static GroupModel ToModel(GroupDto group)
         {
-	        var parentId = group.ParentGroupId;
-	        if (parentId == -1)
+            var parentId = group.ParentGroupId;
+
+            var groupType = parentId != null && parentId != -1 
+                ? GroupType.SubGroup 
+                : GroupType.Group;
+
+            if (parentId == -1)
 	        {
 		        if (group.GroupAlgorithmCode == KoGroupAlgoritm.MainOKS)
 		        {
@@ -37,13 +44,14 @@ namespace KadOzenka.Web.Models.Tour
 		        }
 	        }
 
-			return new GroupModel
+            return new GroupModel
             {
                 Id = group.Id,
 				RatingTourId = group.RatingTourId,
                 Name = group.Name,
 				ParentGroupId = parentId,
-				GroupingAlgorithmId = group.GroupingAlgorithmId,
+                GroupType = groupType,
+                GroupingAlgorithmId = group.GroupingAlgorithmId,
 				ObjType = group.GroupAlgorithmCode.GetEnumDescription()
 			};
         }
