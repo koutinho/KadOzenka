@@ -164,13 +164,11 @@ namespace KadOzenka.Dal.Modeling
 
         private void SaveResultToCalculationSubSystem(Dictionary<string, decimal> coefficientsForAttributes)
         {
-            var groupId = GetGroupIdBySegment();
-
             var koModelAlgorithmType = GetModelAlgorithmType();
 
-            var koModel = CreateModel(koModelAlgorithmType, groupId);
+            var koModel = CreateModel(koModelAlgorithmType);
 
-            CreateFactors(koModel.Id, groupId, coefficientsForAttributes);
+            CreateFactors(koModel.Id, coefficientsForAttributes);
 
             koModel.Formula = koModel.GetFormulaFull(true);
             koModel.Save();
@@ -191,15 +189,9 @@ namespace KadOzenka.Dal.Modeling
             throw new Exception($"Неизвестный тип модели {InputParameters.PredictionType}");
         }
 
-        private long GetGroupIdBySegment()
+        private OMModel CreateModel(KoAlgoritmType algorithmType)
         {
-            //TODO
-            return 44205943;
-        }
-
-        private OMModel CreateModel(KoAlgoritmType algorithmType, long groupId)
-        {
-            var exitedModel = OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
+            var exitedModel = OMModel.Where(x => x.GroupId == Model.GroupId).SelectAll().ExecuteFirstOrDefault();
             if (exitedModel == null)
             {
                 exitedModel = new OMModel
@@ -208,7 +200,7 @@ namespace KadOzenka.Dal.Modeling
                     Formula = string.Empty,
                     Description = Model.Name,
                     Name = Model.Name,
-                    GroupId = groupId
+                    GroupId = Model.GroupId
                 };
             }
             else
@@ -221,7 +213,7 @@ namespace KadOzenka.Dal.Modeling
             return exitedModel;
         }
 
-        public void CreateFactors(long koModelId, long groupId, Dictionary<string, decimal> coefficientsForAttributes)
+        public void CreateFactors(long koModelId, Dictionary<string, decimal> coefficientsForAttributes)
         {
             var modelObjects = ModelingService.GetIncludedModelObjects(Model.Id, false);
 
@@ -241,13 +233,13 @@ namespace KadOzenka.Dal.Modeling
                     B0 = 0 //TODO only for multiplicative
                 }.Save();
 
-                CreateMarkCatalog(groupId, factorId, modelObjects);
+                CreateMarkCatalog(factorId, modelObjects);
             }
         }
 
-        public void CreateMarkCatalog(long groupId, long factorId, List<OMModelToMarketObjects> modelObjects)
+        public void CreateMarkCatalog(long factorId, List<OMModelToMarketObjects> modelObjects)
         {
-            var existedMarks = OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId).SelectAll().Execute();
+            var existedMarks = OMMarkCatalog.Where(x => x.GroupId == Model.GroupId && x.FactorId == factorId).SelectAll().Execute();
             existedMarks.ForEach(x => x.Destroy());
 
             modelObjects.ForEach(modelObject =>
@@ -263,7 +255,7 @@ namespace KadOzenka.Dal.Modeling
 
                 new OMMarkCatalog
                 {
-                    GroupId = groupId,
+                    GroupId = Model.GroupId,
                     FactorId = factorId,
                     ValueFactor = value,
                     MetkaFactor = metka
