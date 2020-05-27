@@ -1734,7 +1734,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult RedirectToSpd(string appId)
 		{
-			return Redirect("http://webspd/gosusl/gosuslweb/WebFormDoc.aspx?APPID=" + appId);
+			return Redirect("http://webspd.mlc.gov/gosusl/gosuslweb/WebFormDoc.aspx?APPID=" + appId);
 		}
 	}
 }
