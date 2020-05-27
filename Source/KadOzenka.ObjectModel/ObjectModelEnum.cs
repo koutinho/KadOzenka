@@ -3654,87 +3654,87 @@ namespace ObjectModel.Directory
         [ShortTitle("")]
         None = 0,
 
-		/// <summary>
-		/// ЦАО (903)
-		/// </summary>
-		[Description("ЦАО")]
+        /// <summary>
+        /// ЦАО (903)
+        /// </summary>
+        [Description("ЦАО")]
         [EnumCode("1")]
         [ShortTitle("")]
         CAO = 903,
-		/// <summary>
-		/// САО (904)
-		/// </summary>
-		[Description("САО")]
+        /// <summary>
+        /// САО (904)
+        /// </summary>
+        [Description("САО")]
         [EnumCode("2")]
         [ShortTitle("")]
         SAO = 904,
-		/// <summary>
-		/// СВАО (905)
-		/// </summary>
-		[Description("СВАО")]
+        /// <summary>
+        /// СВАО (905)
+        /// </summary>
+        [Description("СВАО")]
         [EnumCode("3")]
         [ShortTitle("")]
         SVAO = 905,
-		/// <summary>
-		/// ВАО (906)
-		/// </summary>
-		[Description("ВАО")]
+        /// <summary>
+        /// ВАО (906)
+        /// </summary>
+        [Description("ВАО")]
         [EnumCode("4")]
         [ShortTitle("")]
         VAO = 906,
-		/// <summary>
-		/// ЮВАО (907)
-		/// </summary>
-		[Description("ЮВАО")]
+        /// <summary>
+        /// ЮВАО (907)
+        /// </summary>
+        [Description("ЮВАО")]
         [EnumCode("5")]
         [ShortTitle("")]
         YVAO = 907,
-		/// <summary>
-		/// ЮАО (908)
-		/// </summary>
-		[Description("ЮАО")]
+        /// <summary>
+        /// ЮАО (908)
+        /// </summary>
+        [Description("ЮАО")]
         [EnumCode("6")]
         [ShortTitle("")]
         YAO = 908,
-		/// <summary>
-		/// ЮЗАО (909)
-		/// </summary>
-		[Description("ЮЗАО")]
+        /// <summary>
+        /// ЮЗАО (909)
+        /// </summary>
+        [Description("ЮЗАО")]
         [EnumCode("7")]
         [ShortTitle("")]
         YZAO = 909,
-		/// <summary>
-		/// ЗАО (910)
-		/// </summary>
-		[Description("ЗАО")]
+        /// <summary>
+        /// ЗАО (910)
+        /// </summary>
+        [Description("ЗАО")]
         [EnumCode("8")]
         [ShortTitle("")]
         ZAO = 910,
-		/// <summary>
-		/// СЗАО (911)
-		/// </summary>
-		[Description("СЗАО")]
+        /// <summary>
+        /// СЗАО (911)
+        /// </summary>
+        [Description("СЗАО")]
         [EnumCode("9")]
         [ShortTitle("")]
         SZAO = 911,
-		/// <summary>
-		/// ЗелАО (912)
-		/// </summary>
-		[Description("ЗелАО")]
+        /// <summary>
+        /// ЗелАО (912)
+        /// </summary>
+        [Description("ЗелАО")]
         [EnumCode("10")]
         [ShortTitle("")]
         ZelAO = 912,
-		/// <summary>
-		/// НАО (913)
-		/// </summary>
-		[Description("НАО")]
+        /// <summary>
+        /// НАО (913)
+        /// </summary>
+        [Description("НАО")]
         [EnumCode("11")]
         [ShortTitle("")]
         NAO = 913,
-		/// <summary>
-		/// ТАО (914)
-		/// </summary>
-		[Description("ТАО")]
+        /// <summary>
+        /// ТАО (914)
+        /// </summary>
+        [Description("ТАО")]
         [EnumCode("12")]
         [ShortTitle("")]
         TAO = 914,
@@ -5692,12 +5692,19 @@ namespace ObjectModel.Directory
         [ShortTitle("")]
         Additional = 1508,
 		/// <summary>
-		/// ОсновнаяИДополнительная (1509)
+		/// Основная и Дополнительная (1509)
 		/// </summary>
-		[Description("ОсновнаяИДополнительная")]
+		[Description("Основная и Дополнительная")]
         [EnumCode("3")]
         [ShortTitle("")]
         MainAndAdditional = 1509,
+		/// <summary>
+		/// Нет (1510)
+		/// </summary>
+		[Description("Нет")]
+        [EnumCode("4")]
+        [ShortTitle("")]
+        No = 1510,
     }
 }
 

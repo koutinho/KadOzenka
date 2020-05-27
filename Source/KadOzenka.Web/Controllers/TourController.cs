@@ -16,7 +16,6 @@ using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Models.Tour;
-using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -120,6 +119,32 @@ namespace KadOzenka.Web.Controllers
             ViewBag.GroupId = groupId;
             ViewBag.FactorId = factorId;
             return View();
+        }
+
+        #endregion
+
+        #region Настройка отношения групп и сегментов рынка
+
+        [HttpGet]
+        public ActionResult GroupSegmentSettingsSubCard(long groupId)
+        {
+            var settings = GroupService.GetGroupToMarketSegmentRelation(groupId);
+            var model = settings == null
+                ? new GroupSegmentSettingsModel()
+                : GroupSegmentSettingsModel.FromEntity(settings);
+
+            return PartialView("~/Views/Tour/Partials/GroupSegmentSettingsSubCard.cshtml", model);
+        }
+
+        [HttpPost]
+        public JsonResult GroupSegmentSettingsSubCard(GroupSegmentSettingsModel model)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            GroupService.UpdateGroupToMarketSegmentRelation(model.GroupId, model.MarketSegment, model.TerritoryType);
+
+            return new JsonResult(new { Message = "Обновление выполнено" });
         }
 
         #endregion
@@ -761,27 +786,27 @@ namespace KadOzenka.Web.Controllers
 
 		public JsonResult GetCalcGroups(long groupId)
 		{
-			var groupList = OMCalcGroup.Where(x => x.GroupId == groupId)
-				.SelectAll().Execute();
+            var groupList = OMCalcGroup.Where(x => x.GroupId == groupId)
+                .SelectAll().Execute();
 
-			var groupIds = groupList.Select(x => x.ParentCalcGroupId).ToList();
+            var groupIds = groupList.Select(x => x.ParentCalcGroupId).ToList();
 
-			var groups = OMGroup.Where(x => groupIds.Contains(x.Id))
-				.Select(x => x.GroupName).Execute();
+            var groups = OMGroup.Where(x => groupIds.Contains(x.Id))
+                .Select(x => x.GroupName).Execute();
 
-			var result = groupList.Join(groups,
-				calc => calc.ParentCalcGroupId,
-				group => group.Id,
-				(calc, group) => new ParentCalcGroupModel
-				{
-					Id = calc.Id,
-					GroupId = calc.GroupId,
-					ParentCalcGroupId = calc.ParentCalcGroupId,
-					Title = group.GroupName
-				}).ToList();
+            var result = groupList.Join(groups,
+                calc => calc.ParentCalcGroupId,
+                group => group.Id,
+                (calc, group) => new ParentCalcGroupModel
+                {
+                    Id = calc.Id,
+                    GroupId = calc.GroupId,
+                    ParentCalcGroupId = calc.ParentCalcGroupId,
+                    Title = group.GroupName
+                }).ToList();
 
-			return Json(result);
-		}
+            return Json(result);
+        }
 
 		public JsonResult GetSubgroups(long groupId)
 		{

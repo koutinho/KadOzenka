@@ -13,6 +13,7 @@ namespace KadOzenka.Web.Models.Tour
 		public string GroupName { get; set; }
 		public long? TourId { get; set; }
         public string UrlForEdit { get; set; }
+        public string UrlForSegmentSettings { get; set; }
         public GroupType GroupType { get; set; }
         public bool HasChildren { get; set; }
 		public List<GroupTreeModel> Items { get; set; }
@@ -28,7 +29,8 @@ namespace KadOzenka.Web.Models.Tour
                 TourId = tree.TourId,
                 GroupType = tree.GroupType,
 				UrlForEdit = urlHelper.Action("GroupSubCard", "Tour", new {groupId = tree.Id, tourId = tree.TourId}),
-				Items = tree.Items?.Select(x => ToModel(x, urlHelper)).ToList()
+                UrlForSegmentSettings = urlHelper.Action("GroupSegmentSettingsSubCard", "Tour", new { groupId = tree.Id }),
+                Items = tree.Items?.Select(x => ToModel(x, urlHelper)).ToList()
             };
         }
 	}

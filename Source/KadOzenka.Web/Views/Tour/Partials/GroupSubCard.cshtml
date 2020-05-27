@@ -218,7 +218,6 @@
             url: '@Url.Action("Model", "Task")',
 			data: { 'groupId': '@Model.Id', isPartial : true },
             success: function (response) {
-                console.log("success");
                 $('#modelContent').html(response);
 				kendo.ui.progress($('#modelContent'), false);
             },

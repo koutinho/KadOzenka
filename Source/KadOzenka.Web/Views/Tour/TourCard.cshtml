@@ -1,4 +1,5 @@
-﻿<div class="flex-content">
+﻿
+<div class="flex-content">
     <!-- Модальное окно для добавления Тура -->
     <div id="tourAdditionModal" style="display: none;  padding: 2%;">
         <div class="form-group">
@@ -75,10 +76,24 @@
                             });
                     }))
             </div>
-            <div class="col-sm-6">
-                <div id="mainContent">
-
-                </div>
+            <div id="tabs" class="col-sm-6" style="display: none">
+                @(Html.Kendo().TabStrip()
+                    .Name("tabStrip")
+                    .Animation(false)
+                    .Items(tabstrip =>
+                    {
+                        tabstrip.Add().Text("Карточка")
+                            .Selected(true)
+                            .Content(@<text>
+                                         <div id="mainContent" style="width: 98%">
+                                         </div>
+                                      </text>);
+                        tabstrip.Add().Text("Настройка сегмента")
+                            .Content(@<text>
+                                         <div id="segmentSettings" style="width: 98%">
+                                         </div>
+                                      </text>);
+                    }))
             </div>
         </div>
     </div>
@@ -199,9 +214,20 @@
 	function UpdateMainContent() {
 		var row = GetSelectedRowInTree();
 		if (row.length > 0) {
-			var data = GetDataFromRowInTree(row);
-			$('#mainContent').load(data.UrlForEdit);
-		}
+            var data = GetDataFromRowInTree(row);
+            $("#tabs").show();
+            $('#mainContent').load(data.UrlForEdit);
+            var tabStrip = $("#tabStrip").kendoTabStrip().data("kendoTabStrip");
+            if (data.GroupType == "3" || data.GroupType == "4") {
+                $("#tabStrip-2").removeAttr("style");
+                $("#tabStrip-2").attr("style", "display: block");
+                $(tabStrip.items()[1]).show();
+                $('#segmentSettings').load(data.UrlForSegmentSettings);
+            } else {
+                tabStrip.select(0);
+                $(tabStrip.items()[1]).hide();
+            }
+        }
     }
 
 
@@ -446,7 +472,7 @@
         .height-constraint {
             max-height: 95%;
             max-height: 95vh;
-        } 
+        }
 
         .flex-content {
             display: flex;
@@ -486,6 +512,23 @@
             margin-bottom: 0px;
             font-weight: normal;
             vertical-align: sub;
+        }
+
+        /*Стили для табов*/
+        .k-panelbar .k-tabstrip > .k-content, .k-tabstrip > .k-content
+        {
+            background: transparent;
+            border: none;
+        }
+        .k-tabstrip .k-content.k-state-active {
+            background-color: transparent;
+        }
+        .k-active-filter, .k-state-active, .k-state-active:hover {
+            background-color: transparent;
+            border: none;
+        }
+        .k-tabstrip:focus {
+            box-shadow: none;
         }
     </style>
 }

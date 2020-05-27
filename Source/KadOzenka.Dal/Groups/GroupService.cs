@@ -7,6 +7,7 @@ using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using ObjectModel.Directory;
+using ObjectModel.Ko;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Groups
@@ -268,6 +269,33 @@ namespace KadOzenka.Dal.Groups
                 currentSetting.NumberPriority = dto.Priority;
                 currentSetting.Save();
             });
+        }
+
+        #endregion
+
+
+        #region Group To Market Segment Relation
+
+        public OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation(long groupId)
+        {
+            return GetOMGroupToMarketSegmentRelationByGroupId(groupId);
+        }
+
+        public void UpdateGroupToMarketSegmentRelation(long groupId, MarketSegment segment, TerritoryType territoryType)
+        {
+            var setting = GetOMGroupToMarketSegmentRelationByGroupId(groupId);
+            if (setting == null)
+                setting = new OMGroupToMarketSegmentRelation {GroupId = groupId};
+
+            setting.MarketSegment_Code = segment;
+            setting.TerritoryType_Code = territoryType;
+            setting.Save();
+        }
+
+        private OMGroupToMarketSegmentRelation GetOMGroupToMarketSegmentRelationByGroupId(long groupId)
+        {
+            return OMGroupToMarketSegmentRelation.Where(x => x.GroupId == groupId).SelectAll()
+                .ExecuteFirstOrDefault();
         }
 
         #endregion
