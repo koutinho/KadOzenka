@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
@@ -400,13 +401,19 @@ namespace KadOzenka.Dal.Modeling
             var model = GetModelByIdInternal(modelId);
 
             var groupToMarketSegmentRelation = ObjectModel.Ko.OMGroupToMarketSegmentRelation
-                .Where(x => x.GroupId == model.GroupId).SelectAll().ExecuteFirstOrDefault();
+                .Where(x => x.GroupId == model.GroupId)
+                .Select(x => x.MarketSegment_Code)
+                .Select(x => x.TerritoryType_Code)
+                .ExecuteFirstOrDefault();
+
+            //var territoryCondition = GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
 
             var groupedObjects = OMCoreObject.Where(x =>
 					x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-                    //TODO PART
-					x.CadastralNumber != null && x.CadastralNumber != string.Empty && 
+                    x.CadastralNumber != null && x.CadastralNumber != string.Empty && 
                     x.ProcessType_Code != ProcessStep.Excluded)
+                //TODO PART
+                //.And(territoryCondition)
 				.Select(x => x.CadastralNumber)
 				.Select(x => x.Price)
 				.Execute()
@@ -416,7 +423,7 @@ namespace KadOzenka.Dal.Modeling
 					x.Price
 				}).ToList();
 
-			var existedModelObjects = GetAllModelMarketObjects(modelId);
+            var existedModelObjects = GetAllModelMarketObjects(modelId);
             existedModelObjects.ForEach(x => x.Destroy());
 
             var modelAttributes = GetModelAttributes(modelId);
@@ -439,6 +446,25 @@ namespace KadOzenka.Dal.Modeling
 
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
+            }
+        }
+
+        private Expression<Func<OMCoreObject, bool>> GetConditionForTerritoryType(TerritoryType territoryType)
+        {
+            switch (territoryType)
+            {
+                case TerritoryType.Main:
+                    Expression<Func<OMCoreObject, bool>> mainTerritoryCondition = x => x.Address == "Main";
+                    return mainTerritoryCondition;
+                case TerritoryType.Additional:
+                    Expression<Func<OMCoreObject, bool>> additionalTerritoryCondition = x => x.Address == "Additional";
+                    return additionalTerritoryCondition;
+                case TerritoryType.MainAndAdditional:
+                    Expression<Func<OMCoreObject, bool>> bothTerritoryCondition = x => x.Address == "MainAndAdditional";
+                    return bothTerritoryCondition;
+                default:
+                    Expression<Func<OMCoreObject, bool>> unknownTerritoryCondition = x => x.Address == "default";
+                    return unknownTerritoryCondition;
             }
         }
 
