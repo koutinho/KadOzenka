@@ -285,6 +285,12 @@ namespace KadOzenka.Web.Controllers
 				return SendErrorMessage(resMsg);
 			}
 
+			if (inputParam.DealType == DealTypeShort.Rent)
+			{
+				squareCost *= 12;
+				cost *= 12;
+			}
+
 			return Json( new {success = new { cost, squareCost, reportId } });
 		}
 

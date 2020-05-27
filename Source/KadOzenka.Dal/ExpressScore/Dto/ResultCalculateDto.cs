@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KadOzenka.Dal.Enum;
 
 namespace KadOzenka.Dal.ExpressScore.Dto
 {
@@ -22,5 +23,7 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		public long ReportId { get; set; }
 
 		public List<AnalogResultDto> Analogs { get; set; }
+
+		public DealTypeShort DealType { get; set; }
 	}
 }

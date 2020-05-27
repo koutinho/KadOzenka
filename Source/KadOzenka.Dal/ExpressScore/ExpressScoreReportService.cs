@@ -180,6 +180,7 @@ namespace KadOzenka.Dal.ExpressScore
 		{
 			ExcelFile excelTemplate = new ExcelFile();
 			var mainWorkSheet = excelTemplate.Worksheets.Add("Экспресс оценка");
+			mainWorkSheet.Cells.Style.Font.Name = "Times New Roman";
 
 			//Создаем счетсчик строки и дальше увеличиваем по необходимости
 			int numberRow = 0;
@@ -274,7 +275,7 @@ namespace KadOzenka.Dal.ExpressScore
 			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 			stream.Seek(0, SeekOrigin.Begin);
 
-			long reportId = SaveReportToExportTable(stream, $"Очет по объекту {KnTargetObject}");
+			long reportId = SaveReportToExportTable(stream, $"Отчет по объекту {KnTargetObject}");
 
 			return reportId;
 		}
@@ -417,6 +418,9 @@ namespace KadOzenka.Dal.ExpressScore
 			mainWorkSheet.Rows[numberRow + 1].Cells[ColumnNameIndex].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
 			if (scenario == ScenarioType.Eon)
 			{
+				//mainWorkSheet.Pictures.Add("wwwroot/images/galochka.png",
+				//	new AnchorCell(mainWorkSheet.Columns[ColumnNameIndex], mainWorkSheet.Rows[numberRow], 100, 100),
+				//	new AnchorCell(mainWorkSheet.Columns[ColumnNameIndex], mainWorkSheet.Rows[numberRow], 100, 100)).Position.Mode = PositioningMode.Move;
 				mainWorkSheet.Rows[numberRow ].Cells[ColumnNameIndex].SetValue("V");
 			}
 
