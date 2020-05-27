@@ -220,7 +220,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			if (RequiredMatrixValueStrings != null)
 			{
-				for (int i = 4; i < CurrentRowRequiredParam - 3; i++) // по строкам
+				for (int i = 4; i < CurrentRowRequiredParam; i++) // по строкам
 				{
 					List<string> row = new List<string>();
 					row.Add(RequiredMatrixValueStrings[ColumnNameIndex, i]);
@@ -346,7 +346,7 @@ namespace KadOzenka.Dal.ExpressScore
 				if (isGreen)
 				{
 					sheet.Rows[row].Cells[col].Style.FillPattern.SetPattern(FillPatternStyle.ThinHorizontalCrosshatch,
-						SpreadsheetColor.FromArgb(163, 222, 160), SpreadsheetColor.FromArgb(163, 222, 160));
+						SpreadsheetColor.FromArgb(225, 232, 225), SpreadsheetColor.FromArgb(225, 232, 225));
 				}
 				
 

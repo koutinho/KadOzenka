@@ -512,17 +512,6 @@ namespace KadOzenka.Dal.ExpressScore
 
 				#endregion
 
-
-				foreach (var simple in exCostFactors.SimpleCostFactors)
-				{ text = new KeyValuePair<string, string>("Корректировка " + simple.Name, simple.Coefficient.ToString());
-					if (simple.Coefficient != null)
-					{
-						cost = cost * simple.Coefficient.GetValueOrDefault();
-					}
-					costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
-					costTargetObjectDataForReport.Add("");
-				}
-
 				if (dealTypeShort == DealTypeShort.Sale)
 				{
 					costFactorsDataForReport.Add(new Tuple<string, string>("Вид сделки (Предложение-продажа/Сделка купли-продажи)", analog.DealType.GetEnumDescription()));
@@ -534,6 +523,17 @@ namespace KadOzenka.Dal.ExpressScore
 					costFactorsDataForReport.Add(new Tuple<string, string>("Вид сделки (Предложение-аренда/Сделка-аренда)", analog.DealType.GetEnumDescription()));
 					costTargetObjectDataForReport.Add("");
 				}
+
+				foreach (var simple in exCostFactors.SimpleCostFactors)
+				{ text = new KeyValuePair<string, string>("Корректировка " + simple.Name, simple.Coefficient.ToString());
+					if (simple.Coefficient != null)
+					{
+						cost = cost * simple.Coefficient.GetValueOrDefault();
+					}
+					costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
+					costTargetObjectDataForReport.Add("");
+				}
+
 
 				bool isBreak = false;
 				foreach (var complex in exCostFactors.ComplexCostFactors)
