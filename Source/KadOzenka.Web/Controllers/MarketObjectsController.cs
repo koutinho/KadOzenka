@@ -101,6 +101,16 @@ namespace KadOzenka.Web.Controllers
 			}
 		}
 
+        [HttpGet]
+        public ActionResult ActivateProcess()
+        {
+            if (AddressesDetector.IsProcessAdditable())
+            {
+                AddressesDetector.AddProcessToQueue();
+                return Content("Присвоение зон, районов, округов");
+            }
+            else return Content("Процесс уже добавлен в очередь или выполняется");
+        }
 
         #region Correction By Date
 
