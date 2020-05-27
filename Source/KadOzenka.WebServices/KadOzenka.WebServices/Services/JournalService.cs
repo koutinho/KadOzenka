@@ -28,9 +28,9 @@ namespace KadOzenka.WebServices.Services
 		/// Get last record
 		/// </summary>
 		/// <returns>Returns the first record without confirm date</returns>
-		public RecordDto ReadLastRecord()
+		public KoResultMessage ReadLastRecord()
 		{
-			RecordDto resRecord = new RecordDto();
+			KoResultMessage resRecord = new KoResultMessage();
 			try
 			{
 				var record = _appContext.ReonJournal.Where(x => x.ConfirmDate == null).OrderBy(x => x.CreateDate).FirstOrDefault();
@@ -38,7 +38,6 @@ namespace KadOzenka.WebServices.Services
 				if (record == null) return null;
 
 				var updatedRecord= UpdateReadDate(record);
-				resRecord.ReportId = (int)updatedRecord.ResultReportId;
 				resRecord.CreateDate = updatedRecord.CreateDate;
 				resRecord.Guid = updatedRecord.Guid;
 			}

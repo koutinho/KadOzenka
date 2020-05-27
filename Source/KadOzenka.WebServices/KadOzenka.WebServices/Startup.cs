@@ -17,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Diagnostics;
+using Core.ErrorManagment;
 
 namespace KadOzenka.WebServices
 {
@@ -87,6 +89,20 @@ namespace KadOzenka.WebServices
 			{
 				c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
 			});
+
+			app.UseExceptionHandler(
+			  builder =>
+			  {
+				  builder.Run(
+					async context =>
+					{
+						IExceptionHandlerFeature error = context.Features.Get<IExceptionHandlerFeature>();
+						if (error != null)
+						{
+							await Task.Factory.StartNew(() => ErrorManager.LogServerError(error.Error));
+						}
+					});
+			  });
 		}
 
 		private string GetXmlCommentsPath()
