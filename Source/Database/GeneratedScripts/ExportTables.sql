@@ -31861,24 +31861,8 @@ end $$;
 
 DO $$
 begin
-  if (not core_updstru_checkexistconstraint('modeling_model_to_market_objects_uniqueIndex')) then
-    execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add constraint modeling_model_to_market_objects_uniqueIndex unique (cadastral_number, model_id, price)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
   if (not core_updstru_checkexistconstraint('reg_702_q_pk')) then
     execute 'alter table MODELING_MODEL_TO_MARKET_OBJECTS add constraint reg_702_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('"modeling_model_to_market_objects_uniqueIndex"')) then
-	execute 'CREATE UNIQUE INDEX "modeling_model_to_market_objects_uniqueIndex" on MODELING_MODEL_TO_MARKET_OBJECTS (cadastral_number, model_id, price)';
   end if;
 end $$;
 --<DO>--
