@@ -21,6 +21,7 @@ using Core.ErrorManagment;
 using ObjectModel.Core.Shared;
 using Core.Messages;
 using Core.Shared.Misc;
+using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 
@@ -168,8 +169,8 @@ namespace KadOzenka.Dal.DataImport
 		private static bool ProcessAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
 			ParallelOptions options, int maxColumns, List<string> columnNames)
 		{
-		    Parallel.ForEach(mainWorkSheet.Rows, options, row =>
-			{
+            Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+            {
 				try
 				{
 					if (row.Index != 0) //все, кроме заголовков
@@ -192,7 +193,6 @@ namespace KadOzenka.Dal.DataImport
 						}
 						objectId = mainObject.Id;
 
-						var loadColumns = columns.Where(y => !y.IsKey).ToList();
 						List<long> loadColumnIds = columns.Where(y => !y.IsKey).Select(x => x.AttributrId).ToList();
 
 						var registers = OMAttribute.Where(x => loadColumnIds.Contains(x.Id))
@@ -203,43 +203,46 @@ namespace KadOzenka.Dal.DataImport
 
 						foreach (var group in registerGroups)
 						{
-							long registerId = group.Key;
-							List<long> attributeIds = group.Select(x => x).ToList();
+                            List<long> attributeIds = group.Select(x => x).ToList();
 
-							RegisterObject registerObject = new RegisterObject((int)registerId, (int)objectId);
-
-							foreach (long attribute in attributeIds)
+                            foreach (long attribute in attributeIds)
 							{
-								DataExportColumn column = columns.Where(x => x.AttributrId == attribute).First();
+                                var gbuObjectAttribute = new GbuObjectAttribute
+                                {
+                                    ObjectId = objectId,
+                                    AttributeId = attribute,
+                                    S = DateTime.Now,
+                                    Ot = DateTime.Now,
+                                    ChangeDocId = -1
+                                };
+                                DataExportColumn column = columns.Where(x => x.AttributrId == attribute).First();
 
 								int cell = columnNames.IndexOf(column.ColumnName);
 								object value = mainWorkSheet.Rows[row.Index].Cells[cell].Value;
 
 								var attributeData = RegisterCache.GetAttributeData((int)column.AttributrId);
-
-							    switch (attributeData.Type)
+                                switch (attributeData.Type)
 								{
 									case RegisterAttributeType.INTEGER:
-										value = value.ParseToLongNullable();
+                                        gbuObjectAttribute.NumValue = value.ParseToLongNullable();
 										break;
 									case RegisterAttributeType.DECIMAL:
-										value = value.ParseToDecimalNullable();
+                                        gbuObjectAttribute.NumValue = value.ParseToDecimalNullable();
 										break;
-									case RegisterAttributeType.BOOLEAN:
-										value = value.ParseToBooleanNullable();
-										break;
-									case RegisterAttributeType.STRING:
-										value = value == null ? "" : value.ToString();
+                                    case RegisterAttributeType.STRING:
+                                        gbuObjectAttribute.StringValue = value == null ? "" : value.ToString();
 										break;
 									case RegisterAttributeType.DATE:
-										value = value.ParseToDateTimeNullable();
+                                        gbuObjectAttribute.DtValue = value.ParseToDateTimeNullable();
 										break;
-								}
+                                    default:
+                                        gbuObjectAttribute.StringValue = value == null ? "" : value.ToString();
+                                        break;
+                                }
 
-								registerObject.SetAttributeValue((int)column.AttributrId, value);
-							}
+                                gbuObjectAttribute.Save();
+                            }
 
-						    RegisterStorage.Save(registerObject);
 						    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
 						}
 					}
