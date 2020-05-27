@@ -43,11 +43,14 @@ namespace KadOzenka.Dal.LongProcess
 								WorkerCommon.SetProgress(processQueue, newProgress);
 							}
 						}
+
+						Thread.Sleep(1000);
 					}
-				}, cancelToken);
+				}, cancellationToken);
 
 				PriorityGrouping.SetPriorityGroup(settings);
 				//TestLongRunningProcess(settings);
+
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();

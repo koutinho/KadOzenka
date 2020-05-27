@@ -10,6 +10,7 @@ using ObjectModel.Core.TD;
 using ObjectModel.KO;
 using Core.ErrorManagment;
 using System.Security.Principal;
+using Core.Shared.Exceptions;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -1157,13 +1158,11 @@ namespace KadOzenka.Dal.GbuObject
 				ErrorMessages?.Clear();
 				if (MaxCount != SuccessCount)
 				{
-					throw new Exception(str);
-				}
+                    throw ExceptionInitializer.Create("При групперовке возникли ошибки", $"Всего объектов: {MaxCount}; Загружено успешно: {SuccessCount}; Всего обработано: {CurrentCount}; Ошибки: {str}");
+                }
 				CurrentCount = 0;
 				MaxCount = 0;
 				SuccessCount = 0;
-
-
             }
 			else
             {
@@ -1183,19 +1182,18 @@ namespace KadOzenka.Dal.GbuObject
                         ErrorManager.LogError(ex);
                     }
                 });
+
                 var str = string.Join(',', ErrorMessages);
                 ErrorMessages?.Clear();
                 if (MaxCount != SuccessCount)
                 {
-	                throw new Exception(str);
+	                throw ExceptionInitializer.Create("При групперовке возникли ошибки", $"Всего объектов: {MaxCount}; Загружено успешно: {SuccessCount}; Всего обработано: {CurrentCount}; Ошибки: {str}");
                 }
+
 				CurrentCount = 0;
                 MaxCount = 0;
                 SuccessCount = 0;
             }
-
-
         }
     }
-
 }
