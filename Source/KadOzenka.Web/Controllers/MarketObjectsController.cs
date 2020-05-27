@@ -112,6 +112,17 @@ namespace KadOzenka.Web.Controllers
             else return Content("Процесс уже добавлен в очередь или выполняется");
         }
 
+        [HttpGet]
+        public ActionResult ActivateCoordinates()
+        {
+            if (CoordinatesJoiner.IsProcessAdditable())
+            {
+                CoordinatesJoiner.AddProcessToQueue();
+                return Content("Присвоение координат");
+            }
+            else return Content("Процесс уже добавлен в очередь или выполняется");
+        }
+
         #region Correction By Date
 
         [HttpGet]
