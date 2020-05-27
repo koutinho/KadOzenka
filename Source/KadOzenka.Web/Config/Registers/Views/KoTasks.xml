@@ -23,7 +23,7 @@
       </Parameters>
     </Button>
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
-    <Button Caption="Загрузка графических факторов из ИС РЕОН" NavigateURL="/Task/DownloadGraphicFactorsFromReon" Icon="fas fa-code" WindowHeight="100" WindowWidth="500">
+    <Button Caption="Загрузка графических факторов из ИС РЕОН" NavigateURL="/Task/DownloadGraphicFactorsFromReon" Icon="fas fa-arrow-down" WindowHeight="100" WindowWidth="500">
       <Parameters>
         <Parameter Key="TaskId" Value="[ObjectID]" />        
       </Parameters>
