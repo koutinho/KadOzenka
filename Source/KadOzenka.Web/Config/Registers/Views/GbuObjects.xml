@@ -64,4 +64,14 @@
     <RowMenuButtons>
         <Button Caption="Объект недвижимости" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
     </RowMenuButtons>
+
+  <ObjectCardButtons>
+
+    <Button Caption="Все данные" NavigateURL="~/GbuObject/AllDataTree" Icon="icon-contract">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectID]" />
+      </Parameters>
+    </Button>
+
+  </ObjectCardButtons>
 </RegisterView>

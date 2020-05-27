@@ -249,6 +249,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Rows.Add("/RegistersView/SudOtchet", "Перейти к отчетам", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/SudZak", "Перейти к заключениям", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/SudResh", "Перейти к решениям", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/SudSpdRegister", "Перейти к заявкам СПД", _moveToPageSymbol);
 
             return data;
         }
@@ -286,6 +287,7 @@ namespace KadOzenka.Dal.Gadgets
             data.Rows.Add("/RegistersView/DeclarationsBook", "Перейти к книгам", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/DeclarationsSubject", "Перейти в субъекты", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/DeclarationsSignatory", "Перейти в подписанты", _moveToPageSymbol);
+            data.Rows.Add("/RegistersView/DeclarationsSpdRegister", "Перейти к заявкам СПД", _moveToPageSymbol);
 
             return data;
         }

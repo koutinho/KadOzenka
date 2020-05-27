@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="201" IsBasic="true" Description="Единицы оценки" DefaultLayoutId="1002012" LinkedRegistersList="201,202,203,250,251,252,253" UseSubMap="true"
-              OpenEmpty="false" JoinType="Left" 
+              OpenEmpty="false" JoinType="Left"
               ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="true" ShowFilterMenu="false">
 
-	<DefaultSearchControls>
-		<ControlElement AttributeNumber="20101400" ReferenceId="209" AllowDelete="false" />
-		<ControlElement AttributeNumber="20101700" CustomSearchUrl="/CustomSearch/CadastralQuarterFilter" AllowDelete="true" DefaultValue="77:10:0003004"/>
-	</DefaultSearchControls>
+  <DefaultSearchControls>
+    <ControlElement AttributeNumber="20101400" ReferenceId="209" AllowDelete="false" />
+    <ControlElement AttributeNumber="20101700" CustomSearchUrl="/CustomSearch/CadastralQuarterFilter" AllowDelete="true" DefaultValue="77:10:0003004"/>
+  </DefaultSearchControls>
 
-	<DefaultSearchControls>
+  <DefaultSearchControls>
     <ControlElement AttributeNumber="20101600" QueryOperation="Like" />
   </DefaultSearchControls>
-  
+
   <Buttons>
-    
+
     <Button Caption="Все данные" NavigateURL="~/LinkedRegisterObjects" Icon="icon-contract">
       <Parameters>
         <Parameter Key="ObjectId" Value="[ObjectID]" />
@@ -30,5 +30,25 @@
     </Button>
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
   </Buttons>
+
+  <Tabs>
+    <Tab Caption="Основные данные" NavigateURL="/Unit/ObjectCard">
+      <Parameters>
+        <Parameter Key="unitId" Value="[ObjectId]" />
+      </Parameters>
+    </Tab>
+  </Tabs>
+
+  <ObjectCardButtons>
+
+    <Button Caption="Все данные" Icon="icon-contract" NavigateURL="~/LinkedRegisterObjects">
+      <Parameters>
+        <Parameter Key="ObjectId" Value="[ObjectID]" />
+        <Parameter Key="RegisterId" Value="[RegisterId]" />
+        <Parameter Key="LightMode" Value="true" />
+      </Parameters>
+    </Button>
+
+  </ObjectCardButtons>
 
 </RegisterView>

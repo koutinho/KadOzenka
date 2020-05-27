@@ -45,7 +45,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (obj == null)
 			{
-				obj =  new OMObject();
+				obj = new OMObject();
 			}
 
 			if (drs == null)
@@ -137,7 +137,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var existObject = OMObject.Where(x => x.Date == data.Date && x.Kn == data.Kn).ExecuteFirstOrDefault();
-			if (data.Id == -1 && existObject != null || data.Id != -1 && existObject  != null && data.Id != existObject?.Id)
+			if (data.Id == -1 && existObject != null || data.Id != -1 && existObject != null && data.Id != existObject?.Id)
 			{
 				return NotFound($"Объект {data.Kn} на {data.Date?.ToShortDateString()} уже внесен");
 			}
@@ -145,10 +145,10 @@ namespace KadOzenka.Web.Controllers
 			using (var ts = new TransactionScope())
 			{
 				ObjectCardModel.ToOM(data, ref obj, ref drs);
-				
+
 				objId = obj.SaveAndCheckParam();
 
-                if (data.Id == -1 || drs.IdObject == -1)
+				if (data.Id == -1 || drs.IdObject == -1)
 				{
 					drs.IdObject = objId;
 				}
@@ -178,18 +178,18 @@ namespace KadOzenka.Web.Controllers
 			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_REMOVE, true, false, true);
 			if (idObject == 0)
 			{
-				return Json(new {error = "Ид объекта не может быть равен 0. Обратитесь к Администратору" });
+				return Json(new { error = "Ид объекта не может быть равен 0. Обратитесь к Администратору" });
 			}
 
 			if (string.IsNullOrEmpty(reason) &&
-			    !TdAttachmentsDAL.GetAllAttachments(idObject, OMObject.GetRegisterId()).Any())
+				!TdAttachmentsDAL.GetAllAttachments(idObject, OMObject.GetRegisterId()).Any())
 			{
 				return Json(new { error = "Укажите причину или загрузите файлы" });
 			}
 
 			var obj = OMObject.Where(x => x.Id == idObject).SelectAll().ExecuteFirstOrDefault();
 
-			if(obj == null)
+			if (obj == null)
 			{
 				return Json(new { error = "Объект не найден" });
 			}
@@ -205,7 +205,7 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception($"Ошибка при сохранении. Сообщение: {e.Message}");
 			}
 
-			return Json(new {success = "Удаление выполнено успешно."});
+			return Json(new { success = "Удаление выполнено успешно." });
 		}
 		#endregion
 
@@ -233,7 +233,7 @@ namespace KadOzenka.Web.Controllers
 					.ExecuteFirstOrDefault();
 			}
 
-			ReportLinkModel model = reportLinkId != 0 && reportLink != null && report !=null
+			ReportLinkModel model = reportLinkId != 0 && reportLink != null && report != null
 				? ReportLinkModel.FromEntity(reportLink, report) : ReportLinkModel.FromEntity(new OMOtchetLink(), new OMOtchet());
 
 			model.SudObjectId = reportLink != null && reportLinkId != 0 ? reportLink.IdObject.GetValueOrDefault() : sudObjectId;
@@ -267,11 +267,11 @@ namespace KadOzenka.Web.Controllers
 							return e.ErrorMessage;
 						}))
 					})
-			});
+				});
 			}
 
 			var links = OMOtchetLink.Where(x => x.IdObject == reportLinkViewModel.SudObjectId &&
-			                                 x.IdOtchet == reportLinkViewModel.IdReport && x.Id != reportLinkViewModel.Id).Execute();
+											 x.IdOtchet == reportLinkViewModel.IdReport && x.Id != reportLinkViewModel.Id).Execute();
 			if (links.Any())
 			{
 				return Json(new
@@ -344,7 +344,7 @@ namespace KadOzenka.Web.Controllers
 						{
 							if (e.ErrorMessage == "The value '' is invalid.")
 							{
-								return $"{e.ErrorMessage} Поле {x.Key}"; 
+								return $"{e.ErrorMessage} Поле {x.Key}";
 							}
 
 							return e.ErrorMessage;
@@ -379,7 +379,7 @@ namespace KadOzenka.Web.Controllers
 
 			reportViewModel.Id = id;
 
-			return Json(new {Success = "Сохранено успешно", data = reportViewModel});
+			return Json(new { Success = "Сохранено успешно", data = reportViewModel });
 		}
 
 		#endregion
@@ -449,14 +449,17 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var links = OMZakLink.Where(x => x.IdObject == conclusionLinkViewModel.SudObjectId &&
-			                                 x.IdZak == conclusionLinkViewModel.IdConclusion && x.Id != conclusionLinkViewModel.Id).Execute();
+											 x.IdZak == conclusionLinkViewModel.IdConclusion && x.Id != conclusionLinkViewModel.Id).Execute();
 			if (links.Any())
 			{
-				return Json(new { Errors = links.Select(x => new
+				return Json(new
 				{
-					Control = 0,
-					Message = "Объект с таким заключением уже существует. Выберите другое заключение."
-				})});
+					Errors = links.Select(x => new
+					{
+						Control = 0,
+						Message = "Объект с таким заключением уже существует. Выберите другое заключение."
+					})
+				});
 			}
 
 			var conclusionLink = OMZakLink
@@ -558,7 +561,7 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(new { Success = "Сохранено успешно", data = conclusionViewModel });
 		}
-#endregion
+		#endregion
 
 		#region OMData
 		[HttpGet]
@@ -573,7 +576,7 @@ namespace KadOzenka.Web.Controllers
 					Value = $"{x.Number} от {x.Date.GetString()}"
 				}).FirstOrDefault();
 
-			return Json(new {data = report});
+			return Json(new { data = report });
 		}
 
 
@@ -605,30 +608,30 @@ namespace KadOzenka.Web.Controllers
 					Value = $"{x.Number} от {x.Date.GetString()}"
 				}).FirstOrDefault();
 
-			return Json( new {data = сonclusion});
+			return Json(new { data = сonclusion });
 		}
 
 		[HttpGet]
-        public JsonResult GetApprovalFieldData(OMTableParam idTable, int objectId, string paramName, bool isActual)
-        {
-            var act = isActual ? OMParam.GetActual(idTable, objectId, paramName) : null;
-            var paramValues = isActual ? act != null ? new List<OMParam>{ OMParam.GetActual(idTable, objectId, paramName)} : new List<OMParam>() :
-                OMParam.GetParams(idTable, objectId, paramName).OrderByDescending(x => x.DateUser).ToList();
+		public JsonResult GetApprovalFieldData(OMTableParam idTable, int objectId, string paramName, bool isActual)
+		{
+			var act = isActual ? OMParam.GetActual(idTable, objectId, paramName) : null;
+			var paramValues = isActual ? act != null ? new List<OMParam> { OMParam.GetActual(idTable, objectId, paramName) } : new List<OMParam>() :
+				OMParam.GetParams(idTable, objectId, paramName).OrderByDescending(x => x.DateUser).ToList();
 
-            List<SelectListItem> res =  paramValues.Select(x => new SelectListItem
-                {
-                    Value = $"{x.Pid}",
-                    Text = $"{x} ({(SRDCache.Users.ContainsKey((int)x.IdUser) ? SRDCache.Users[(int)x.IdUser].FullName : String.Empty)}, {x.DateUser.ToString("dd.MM.yyyy")})"
-                }).ToList();
+			List<SelectListItem> res = paramValues.Select(x => new SelectListItem
+			{
+				Value = $"{x.Pid}",
+				Text = $"{x} ({(SRDCache.Users.ContainsKey((int)x.IdUser) ? SRDCache.Users[(int)x.IdUser].FullName : String.Empty)}, {x.DateUser.ToString("dd.MM.yyyy")})"
+			}).ToList();
 
-            return Json(res);
-        }
+			return Json(res);
+		}
 
-        [HttpGet]
-        public JsonResult GetAutoFillDataByKn(string kn)
-        {
-	        return Json(new { Address = "address", Type = SudObjectType.None});
-        }
+		[HttpGet]
+		public JsonResult GetAutoFillDataByKn(string kn)
+		{
+			return Json(new { Address = "address", Type = SudObjectType.None });
+		}
 
 		#endregion
 
@@ -681,7 +684,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			//OMSource2.Where(x => x.)
 
-			return new List<Object>() {new {text = "123", value = "123"}, new { text = "456", value = "456" } }.AsQueryable();
+			return new List<Object>() { new { text = "123", value = "123" }, new { text = "456", value = "456" } }.AsQueryable();
 		}
 
 		#endregion
@@ -821,7 +824,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var links = OMSudLink.Where(x => x.IdObject == courtLinkViewModel.ObjectId &&
-			                                    x.IdSud == courtLinkViewModel.SudId && x.Id != courtLinkViewModel.Id).Execute();
+												x.IdSud == courtLinkViewModel.SudId && x.Id != courtLinkViewModel.Id).Execute();
 			if (links.Any())
 			{
 				return Json(new
@@ -891,456 +894,456 @@ namespace KadOzenka.Web.Controllers
 			return NoContent();
 		}
 
-        #endregion
+		#endregion
 
-        #region Approval Card
-        [HttpGet]
-        public ActionResult EditApprovalObject(int idObject)
-        {
+		#region Approval Card
+		[HttpGet]
+		public ActionResult EditApprovalObject(int idObject)
+		{
 
-	        var isApproved = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE);
+			var isApproved = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE);
 
 			List<OMParam> paramValues = OMParam.GetAllParamsById(OMTableParam.Object, idObject)
-                .Where(x => x.ParamStatus_Code == ProcessingStatus.Processed).ToList();
+				.Where(x => x.ParamStatus_Code == ProcessingStatus.Processed).ToList();
 
-            var model = EditApprovalObjectModel.FromEntity(paramValues);
-            model.Id = idObject;
-            model.IsDisableButton = model.IsDisableButton || !isApproved;
+			var model = EditApprovalObjectModel.FromEntity(paramValues);
+			model.Id = idObject;
+			model.IsDisableButton = model.IsDisableButton || !isApproved;
 
 			return View(model);
-        }
+		}
 
-        [HttpPost]
-        public ActionResult EditApprovalObject(EditApprovalObjectModel model)
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE, true, false, true);
+		[HttpPost]
+		public ActionResult EditApprovalObject(EditApprovalObjectModel model)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_APPROVE, true, false, true);
 
 			if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-                    {
-                        Control = x.Key,
-                        Message = string.Join("\n", x.Value.Errors.Select(e =>
-                        {
-                            if (e.ErrorMessage == "The value '' is invalid.")
-                            {
-                                return $"{e.ErrorMessage} Поле {x.Key}";
-                            }
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
 
-                            return e.ErrorMessage;
-                        }))
-                    })
-                });
-            }
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
 
-            OMObject sudObject = OMObject.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
-            if(sudObject == null)
-            {
-                return NotFound();
-            }
+			OMObject sudObject = OMObject.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+			if (sudObject == null)
+			{
+				return NotFound();
+			}
 
-            OMParam pKn = OMParam.Where(x => x.Pid == long.Parse(model.Kn)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pType = OMParam.Where(x => x.Pid == long.Parse(model.TypeObj)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pSquare = OMParam.Where(x => x.Pid == long.Parse(model.Square)).SelectAll().ExecuteFirstOrDefault(); 
-            OMParam pKc = OMParam.Where(x => x.Pid == long.Parse(model.Kc)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.Date)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pNameCenter = OMParam.Where(x => x.Pid == long.Parse(model.NameCenter)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pStatDgi = OMParam.Where(x => x.Pid == long.Parse(model.StatDgi)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pAdres = OMParam.Where(x => x.Pid == long.Parse(model.Adres)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pOwner = OMParam.Where(x => x.Pid == long.Parse(model.Owner)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pApplicantType = OMParam.Where(x => x.Pid == long.Parse(model.ApplicantType)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pTypeOfOwnership = OMParam.Where(x => x.Pid == long.Parse(model.TypeOfOwnership)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pAdditionalAnalysisRequired = OMParam.Where(x => x.Pid == long.Parse(model.AdditionalAnalysisRequired)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pException = OMParam.Where(x => x.Pid == long.Parse(model.IsException)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pSatisfied = OMParam.Where(x => x.Pid == long.Parse(model.IsSatisfied)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pKn = OMParam.Where(x => x.Pid == long.Parse(model.Kn)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pType = OMParam.Where(x => x.Pid == long.Parse(model.TypeObj)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pSquare = OMParam.Where(x => x.Pid == long.Parse(model.Square)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pKc = OMParam.Where(x => x.Pid == long.Parse(model.Kc)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.Date)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pNameCenter = OMParam.Where(x => x.Pid == long.Parse(model.NameCenter)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pStatDgi = OMParam.Where(x => x.Pid == long.Parse(model.StatDgi)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pAdres = OMParam.Where(x => x.Pid == long.Parse(model.Adres)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pOwner = OMParam.Where(x => x.Pid == long.Parse(model.Owner)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pApplicantType = OMParam.Where(x => x.Pid == long.Parse(model.ApplicantType)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pTypeOfOwnership = OMParam.Where(x => x.Pid == long.Parse(model.TypeOfOwnership)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pAdditionalAnalysisRequired = OMParam.Where(x => x.Pid == long.Parse(model.AdditionalAnalysisRequired)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pException = OMParam.Where(x => x.Pid == long.Parse(model.IsException)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pSatisfied = OMParam.Where(x => x.Pid == long.Parse(model.IsSatisfied)).SelectAll().ExecuteFirstOrDefault();
 
-            sudObject.UpdateAndCheckParam(pKn, pType, pSquare, pKc, pDate, pNameCenter, pStatDgi, pAdres, pOwner, pApplicantType, pTypeOfOwnership, pAdditionalAnalysisRequired, pException, pSatisfied);
+			sudObject.UpdateAndCheckParam(pKn, pType, pSquare, pKc, pDate, pNameCenter, pStatDgi, pAdres, pOwner, pApplicantType, pTypeOfOwnership, pAdditionalAnalysisRequired, pException, pSatisfied);
 
-            return Json(new { Success = "Утверждено успешно" });
-        }
+			return Json(new { Success = "Утверждено успешно" });
+		}
 
-        public ActionResult GetReportContent(int idObject)
-        {
-	        bool isApprovedReportLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE);
+		public ActionResult GetReportContent(int idObject)
+		{
+			bool isApprovedReportLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE);
 
 			bool isApprovedReport = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_APPROVE);
 
 			List<OMOtchetLink> reportLinks = OMOtchetLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
 
-            List<long> idLinks = reportLinks.Select(x => x.Id).ToList();
-            List<long?> idReports = reportLinks.Select(x => x.IdOtchet).Where(x => x != null).ToList();
+			List<long> idLinks = reportLinks.Select(x => x.Id).ToList();
+			List<long?> idReports = reportLinks.Select(x => x.IdOtchet).Where(x => x != null).ToList();
 
-            if (idReports.Count == 0)
-            {
-                return PartialView("~/Views/Sud/TabContent/ReportContent.cshtml", new List<EditApprovalReportLinkModel>());
+			if (idReports.Count == 0)
+			{
+				return PartialView("~/Views/Sud/TabContent/ReportContent.cshtml", new List<EditApprovalReportLinkModel>());
 
-            }
-            List<OMParam> param =  OMParam.Where(x => (x.IdTable == (long) OMTableParam.OtchetLink  && idLinks.Contains(x.Id) || x.IdTable == (long) OMTableParam.Otchet
-                               && idReports.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
-
-
-            List<OMParam> forModel = new List<OMParam>();
-
-            List<EditApprovalReportLinkModel> model = new List<EditApprovalReportLinkModel>();
-
-            foreach (var reportLink in reportLinks)
-            {
-                forModel.AddRange(param.Where(x => x.Id == reportLink.Id));
-                forModel.AddRange(param.Where(x => x.Id == reportLink.IdOtchet));
-
-                var tempModel = EditApprovalReportLinkModel.FromEntity(forModel);
-                tempModel.Id = reportLink.Id;
-                tempModel.Report.Id = reportLink.IdOtchet;
-                tempModel.Report.IsDisableButton = tempModel.Report.IsDisableButton || !isApprovedReport;
-                tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedReportLink;
+			}
+			List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.OtchetLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Otchet
+							  && idReports.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
 
 
+			List<OMParam> forModel = new List<OMParam>();
 
-				model.Add(tempModel);
-                forModel.Clear();
-            }
+			List<EditApprovalReportLinkModel> model = new List<EditApprovalReportLinkModel>();
 
-            return PartialView("~/Views/Sud/TabContent/ReportContent.cshtml", model);
-        }
+			foreach (var reportLink in reportLinks)
+			{
+				forModel.AddRange(param.Where(x => x.Id == reportLink.Id));
+				forModel.AddRange(param.Where(x => x.Id == reportLink.IdOtchet));
 
-        public ActionResult EditApprovalReportLink(EditApprovalReportLinkModel model)
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE, true, false, true);
+				var tempModel = EditApprovalReportLinkModel.FromEntity(forModel);
+				tempModel.Id = reportLink.Id;
+				tempModel.Report.Id = reportLink.IdOtchet;
+				tempModel.Report.IsDisableButton = tempModel.Report.IsDisableButton || !isApprovedReport;
+				tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedReportLink;
 
-	        if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-                    {
-                        Control = x.Key,
-                        Message = string.Join("\n", x.Value.Errors.Select(e =>
-                        {
-                            if (e.ErrorMessage == "The value '' is invalid.")
-                            {
-                                return $"{e.ErrorMessage} Поле {x.Key}";
-                            }
-
-                            return e.ErrorMessage;
-                        }))
-                    })
-                });
-            }
-
-            OMOtchetLink reportLink = OMOtchetLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
-            if (reportLink == null)
-            {
-                throw new Exception("Не надена модель по указанному ИД");
-            }
-
-            OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Descr)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pIdOtchet = OMParam.Where(x => x.Pid == long.Parse(model.IdReport)).SelectAll().ExecuteFirstOrDefault();
-
-            reportLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdOtchet);
-
-            return Json(new { Success = "Утверждено успешно" });
-        }
-        public ActionResult EditApprovalReport(EditApprovalReportModel model)
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_APPROVE, true, false, true);
-
-	        if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-                    {
-                        Control = x.Key,
-                        Message = string.Join("\n", x.Value.Errors.Select(e =>
-                        {
-                            if (e.ErrorMessage == "The value '' is invalid.")
-                            {
-                                return $"{e.ErrorMessage} Поле {x.Key}";
-                            }
-
-                            return e.ErrorMessage;
-                        }))
-                    })
-                });
-            }
-
-            OMOtchet report = OMOtchet.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
-            if (report == null)
-            {
-                throw new Exception("Не надена модель по указанному ИД");
-            }
-
-            OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.ReportDate)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pDateIn = OMParam.Where(x => x.Pid == long.Parse(model.DateIn)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pJalob = OMParam.Where(x => x.Pid == long.Parse(model.Claim)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pOrg = OMParam.Where(x => x.Pid == long.Parse(model.Org)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pFio = OMParam.Where(x => x.Pid == long.Parse(model.Fio)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pSro = OMParam.Where(x => x.Pid == long.Parse(model.Sro)).SelectAll().ExecuteFirstOrDefault();
-
-            report.UpdateAndCheckParam(pNumber, pDate, pDateIn, pJalob, pOrg, pFio, pSro);
-
-            return Json(new { Success = "Утверждено успешно" });
-        }
-
-        public ActionResult GetCourtContent(int idObject)
-        {
-	        bool isApprovedCourtLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE);
-
-	        bool isApprovedCourt = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE);
-
-	        List<OMSudLink> courtLinks = OMSudLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
-
-            List<long> idLinks = courtLinks.Select(x => x.Id).ToList();
-            List<long?> idCourts = courtLinks.Select(x => x.IdSud).Where(x => x != null).ToList();
-
-            if (idCourts.Count == 0)
-            {
-                return PartialView("~/Views/Sud/TabContent/CourtContent.cshtml", new List<EditApprovalCourtLinkModel>());
-            }
-
-            List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.SudLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Sud
-                                                                                                                                && idCourts.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
-
-
-            List<OMParam> forModel = new List<OMParam>();
-
-            List<EditApprovalCourtLinkModel> model = new List<EditApprovalCourtLinkModel>();
-
-            foreach (var courtLink in courtLinks)
-            {
-                forModel.AddRange(param.Where(x => x.Id == courtLink.Id));
-                forModel.AddRange(param.Where(x => x.Id == courtLink.IdSud));
-
-                var tempModel = EditApprovalCourtLinkModel.FromEntity(forModel);
-                tempModel.Id = courtLink.Id;
-                tempModel.Court.Id = courtLink.IdSud;
-                tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedCourtLink;
-                tempModel.Court.IsDisableButton = tempModel.Court.IsDisableButton || !isApprovedCourt;
 
 
 				model.Add(tempModel);
-                forModel.Clear();
-            }
-            return PartialView("~/Views/Sud/TabContent/CourtContent.cshtml", model);
-        }
-        public ActionResult EditApprovalCourt(EditApprovalCourtModel model)
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE, true, false, true);
+				forModel.Clear();
+			}
 
-	        if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-                    {
-                        Control = x.Key,
-                        Message = string.Join("\n", x.Value.Errors.Select(e =>
-                        {
-                            if (e.ErrorMessage == "The value '' is invalid.")
-                            {
-                                return $"{e.ErrorMessage} Поле {x.Key}";
-                            }
+			return PartialView("~/Views/Sud/TabContent/ReportContent.cshtml", model);
+		}
 
-                            return e.ErrorMessage;
-                        }))
-                    })
-                });
-            }
+		public ActionResult EditApprovalReportLink(EditApprovalReportLinkModel model)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_OTCHET_APPROVE, true, false, true);
 
-            OMSud court = OMSud.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
-            if (court == null)
-            {
-                throw new Exception("Не надена модель по указанному ИД");
-            }
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
 
-            OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pName = OMParam.Where(x => x.Pid == long.Parse(model.Name)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.Date)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pSudDate = OMParam.Where(x => x.Pid == long.Parse(model.SudDate)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pStatus = OMParam.Where(x => x.Pid == long.Parse(model.Status)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pArchiveNumber = OMParam.Where(x => x.Pid == long.Parse(model.ArchiveNumber)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pAppealNumber = OMParam.Where(x => x.Pid == long.Parse(model.AppealNumber)).SelectAll().ExecuteFirstOrDefault();
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
 
-            court.UpdateAndCheckParam(pNumber, pName, pDate, pSudDate, pStatus, pArchiveNumber, pAppealNumber);
+			OMOtchetLink reportLink = OMOtchetLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+			if (reportLink == null)
+			{
+				throw new Exception("Не надена модель по указанному ИД");
+			}
 
-            return Json(new { Success = "Утверждено успешно" });
-        }
+			OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Descr)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pIdOtchet = OMParam.Where(x => x.Pid == long.Parse(model.IdReport)).SelectAll().ExecuteFirstOrDefault();
 
-        public ActionResult EditApprovalCourtLink(EditApprovalCourtLinkModel model)
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE, true, false, true);
+			reportLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdOtchet);
 
-	        if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-                    {
-                        Control = x.Key,
-                        Message = string.Join("\n", x.Value.Errors.Select(e =>
-                        {
-                            if (e.ErrorMessage == "The value '' is invalid.")
-                            {
-                                return $"{e.ErrorMessage} Поле {x.Key}";
-                            }
+			return Json(new { Success = "Утверждено успешно" });
+		}
+		public ActionResult EditApprovalReport(EditApprovalReportModel model)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OTCHET_APPROVE, true, false, true);
 
-                            return e.ErrorMessage;
-                        }))
-                    })
-                });
-            }
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
 
-            OMSudLink courtLink = OMSudLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
-            if (courtLink == null)
-            {
-                throw new Exception("Не надена модель по указанному ИД");
-            }
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
 
-            OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Description)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pIdSud = OMParam.Where(x => x.Pid == long.Parse(model.SudId)).SelectAll().ExecuteFirstOrDefault();
+			OMOtchet report = OMOtchet.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+			if (report == null)
+			{
+				throw new Exception("Не надена модель по указанному ИД");
+			}
 
-            courtLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdSud);
+			OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.ReportDate)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pDateIn = OMParam.Where(x => x.Pid == long.Parse(model.DateIn)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pJalob = OMParam.Where(x => x.Pid == long.Parse(model.Claim)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pOrg = OMParam.Where(x => x.Pid == long.Parse(model.Org)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pFio = OMParam.Where(x => x.Pid == long.Parse(model.Fio)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pSro = OMParam.Where(x => x.Pid == long.Parse(model.Sro)).SelectAll().ExecuteFirstOrDefault();
 
-            return Json(new { Success = "Утверждено успешно" });
-        }
-        public ActionResult GetConclusionContent(int idObject)
-        {
-	        bool isApprovedConclusion = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE);
+			report.UpdateAndCheckParam(pNumber, pDate, pDateIn, pJalob, pOrg, pFio, pSro);
 
-	        bool isApprovedConclusionLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_ZAK_APPROVE);
+			return Json(new { Success = "Утверждено успешно" });
+		}
 
-	        List<OMZakLink> conclusionLinks = OMZakLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
+		public ActionResult GetCourtContent(int idObject)
+		{
+			bool isApprovedCourtLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE);
 
-            List<long> idLinks = conclusionLinks.Select(x => x.Id).ToList();
-            List<long?> idConclusions = conclusionLinks.Select(x => x.IdZak).Where(x => x != null).ToList();
+			bool isApprovedCourt = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE);
 
-            if (idConclusions.Count == 0)
-            {
-                return PartialView("~/Views/Sud/TabContent/ConclusionContent.cshtml", new List<EditApprovalConclusionLinkModel>());
-            }
+			List<OMSudLink> courtLinks = OMSudLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
 
-            List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.ZakLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Zak
-                                                                                                                             && idConclusions.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
+			List<long> idLinks = courtLinks.Select(x => x.Id).ToList();
+			List<long?> idCourts = courtLinks.Select(x => x.IdSud).Where(x => x != null).ToList();
+
+			if (idCourts.Count == 0)
+			{
+				return PartialView("~/Views/Sud/TabContent/CourtContent.cshtml", new List<EditApprovalCourtLinkModel>());
+			}
+
+			List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.SudLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Sud
+																																&& idCourts.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
 
 
-            List<OMParam> forModel = new List<OMParam>();
+			List<OMParam> forModel = new List<OMParam>();
 
-            List<EditApprovalConclusionLinkModel> model = new List<EditApprovalConclusionLinkModel>();
+			List<EditApprovalCourtLinkModel> model = new List<EditApprovalCourtLinkModel>();
 
-            foreach (var conclusionLink in conclusionLinks)
-            {
-                forModel.AddRange(param.Where(x => x.Id == conclusionLink.Id));
-                forModel.AddRange(param.Where(x => x.Id == conclusionLink.IdZak));
+			foreach (var courtLink in courtLinks)
+			{
+				forModel.AddRange(param.Where(x => x.Id == courtLink.Id));
+				forModel.AddRange(param.Where(x => x.Id == courtLink.IdSud));
 
-                var tempModel = EditApprovalConclusionLinkModel.FromEntity(forModel);
-                tempModel.Id = conclusionLink.Id;
-                tempModel.Conclusion.Id = conclusionLink.IdZak;
-                tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedConclusionLink;
-                tempModel.Conclusion.IsDisableButton = tempModel.Conclusion.IsDisableButton || !isApprovedConclusion;
+				var tempModel = EditApprovalCourtLinkModel.FromEntity(forModel);
+				tempModel.Id = courtLink.Id;
+				tempModel.Court.Id = courtLink.IdSud;
+				tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedCourtLink;
+				tempModel.Court.IsDisableButton = tempModel.Court.IsDisableButton || !isApprovedCourt;
 
 
 				model.Add(tempModel);
-                forModel.Clear();
-            }
-            return PartialView("~/Views/Sud/TabContent/ConclusionContent.cshtml", model);
-        }
+				forModel.Clear();
+			}
+			return PartialView("~/Views/Sud/TabContent/CourtContent.cshtml", model);
+		}
+		public ActionResult EditApprovalCourt(EditApprovalCourtModel model)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_RESH_APPROVE, true, false, true);
 
-        public ActionResult EditApprovalConclusion(EditApprovalConclusionModel model)
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE, true, false, true);
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
 
-	        if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-                    {
-                        Control = x.Key,
-                        Message = string.Join("\n", x.Value.Errors.Select(e =>
-                        {
-                            if (e.ErrorMessage == "The value '' is invalid.")
-                            {
-                                return $"{e.ErrorMessage} Поле {x.Key}";
-                            }
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
 
-                            return e.ErrorMessage;
-                        }))
-                    })
-                });
-            }
+			OMSud court = OMSud.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+			if (court == null)
+			{
+				throw new Exception("Не надена модель по указанному ИД");
+			}
 
-            OMZak conclusion = OMZak.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
-            if (conclusion == null)
-            {
-                return NotFound();
-            }
+			OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pName = OMParam.Where(x => x.Pid == long.Parse(model.Name)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.Date)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pSudDate = OMParam.Where(x => x.Pid == long.Parse(model.SudDate)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pStatus = OMParam.Where(x => x.Pid == long.Parse(model.Status)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pArchiveNumber = OMParam.Where(x => x.Pid == long.Parse(model.ArchiveNumber)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pAppealNumber = OMParam.Where(x => x.Pid == long.Parse(model.AppealNumber)).SelectAll().ExecuteFirstOrDefault();
 
-            OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.CreateDate)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRecDate = OMParam.Where(x => x.Pid == long.Parse(model.RecDate)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRecLetter = OMParam.Where(x => x.Pid == long.Parse(model.RecLetter)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRecUser = OMParam.Where(x => x.Pid == long.Parse(model.RecUser)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pOrg = OMParam.Where(x => x.Pid == long.Parse(model.Org)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pFio = OMParam.Where(x => x.Pid == long.Parse(model.Fio)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pSro = OMParam.Where(x => x.Pid == long.Parse(model.Sro)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRecBefore = OMParam.Where(x => x.Pid == long.Parse(model.RecBefore)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRecAfter = OMParam.Where(x => x.Pid == long.Parse(model.RecAfter)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRecSoglas = OMParam.Where(x => x.Pid == long.Parse(model.RecSoglas)).SelectAll().ExecuteFirstOrDefault();
+			court.UpdateAndCheckParam(pNumber, pName, pDate, pSudDate, pStatus, pArchiveNumber, pAppealNumber);
 
-            conclusion.UpdateAndCheckParam(pNumber, pDate, pRecDate, pRecLetter, pRecUser, pOrg, pFio, pSro, pRecBefore, pRecAfter, pRecSoglas);
+			return Json(new { Success = "Утверждено успешно" });
+		}
 
-            return Json(new { Success = "Утверждено успешно" });
-        }
+		public ActionResult EditApprovalCourtLink(EditApprovalCourtLinkModel model)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_RESH_APPROVE, true, false, true);
 
-        public ActionResult EditApprovalConclusionLink(EditApprovalConclusionLinkModel model)
-        {
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			OMSudLink courtLink = OMSudLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+			if (courtLink == null)
+			{
+				throw new Exception("Не надена модель по указанному ИД");
+			}
+
+			OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Description)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pIdSud = OMParam.Where(x => x.Pid == long.Parse(model.SudId)).SelectAll().ExecuteFirstOrDefault();
+
+			courtLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdSud);
+
+			return Json(new { Success = "Утверждено успешно" });
+		}
+		public ActionResult GetConclusionContent(int idObject)
+		{
+			bool isApprovedConclusion = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE);
+
+			bool isApprovedConclusionLink = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_ZAK_APPROVE);
+
+			List<OMZakLink> conclusionLinks = OMZakLink.Where(x => x.IdObject == idObject).SelectAll().Execute();
+
+			List<long> idLinks = conclusionLinks.Select(x => x.Id).ToList();
+			List<long?> idConclusions = conclusionLinks.Select(x => x.IdZak).Where(x => x != null).ToList();
+
+			if (idConclusions.Count == 0)
+			{
+				return PartialView("~/Views/Sud/TabContent/ConclusionContent.cshtml", new List<EditApprovalConclusionLinkModel>());
+			}
+
+			List<OMParam> param = OMParam.Where(x => (x.IdTable == (long)OMTableParam.ZakLink && idLinks.Contains(x.Id) || x.IdTable == (long)OMTableParam.Zak
+																															 && idConclusions.Contains(x.Id)) && x.ParamStatus_Code == ProcessingStatus.Processed).SelectAll().Execute();
+
+
+			List<OMParam> forModel = new List<OMParam>();
+
+			List<EditApprovalConclusionLinkModel> model = new List<EditApprovalConclusionLinkModel>();
+
+			foreach (var conclusionLink in conclusionLinks)
+			{
+				forModel.AddRange(param.Where(x => x.Id == conclusionLink.Id));
+				forModel.AddRange(param.Where(x => x.Id == conclusionLink.IdZak));
+
+				var tempModel = EditApprovalConclusionLinkModel.FromEntity(forModel);
+				tempModel.Id = conclusionLink.Id;
+				tempModel.Conclusion.Id = conclusionLink.IdZak;
+				tempModel.IsDisableButton = tempModel.IsDisableButton || !isApprovedConclusionLink;
+				tempModel.Conclusion.IsDisableButton = tempModel.Conclusion.IsDisableButton || !isApprovedConclusion;
+
+
+				model.Add(tempModel);
+				forModel.Clear();
+			}
+			return PartialView("~/Views/Sud/TabContent/ConclusionContent.cshtml", model);
+		}
+
+		public ActionResult EditApprovalConclusion(EditApprovalConclusionModel model)
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_ZAK_APPROVE, true, false, true);
+
+			if (!ModelState.IsValid)
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
+
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
+
+			OMZak conclusion = OMZak.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+			if (conclusion == null)
+			{
+				return NotFound();
+			}
+
+			OMParam pNumber = OMParam.Where(x => x.Pid == long.Parse(model.Number)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pDate = OMParam.Where(x => x.Pid == long.Parse(model.CreateDate)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRecDate = OMParam.Where(x => x.Pid == long.Parse(model.RecDate)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRecLetter = OMParam.Where(x => x.Pid == long.Parse(model.RecLetter)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRecUser = OMParam.Where(x => x.Pid == long.Parse(model.RecUser)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pOrg = OMParam.Where(x => x.Pid == long.Parse(model.Org)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pFio = OMParam.Where(x => x.Pid == long.Parse(model.Fio)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pSro = OMParam.Where(x => x.Pid == long.Parse(model.Sro)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRecBefore = OMParam.Where(x => x.Pid == long.Parse(model.RecBefore)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRecAfter = OMParam.Where(x => x.Pid == long.Parse(model.RecAfter)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRecSoglas = OMParam.Where(x => x.Pid == long.Parse(model.RecSoglas)).SelectAll().ExecuteFirstOrDefault();
+
+			conclusion.UpdateAndCheckParam(pNumber, pDate, pRecDate, pRecLetter, pRecUser, pOrg, pFio, pSro, pRecBefore, pRecAfter, pRecSoglas);
+
+			return Json(new { Success = "Утверждено успешно" });
+		}
+
+		public ActionResult EditApprovalConclusionLink(EditApprovalConclusionLinkModel model)
+		{
 			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_ZAK_APPROVE, true, false, true);
 
 			if (!ModelState.IsValid)
-            {
-                return Json(new
-                {
-                    Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
-                    {
-                        Control = x.Key,
-                        Message = string.Join("\n", x.Value.Errors.Select(e =>
-                        {
-                            if (e.ErrorMessage == "The value '' is invalid.")
-                            {
-                                return $"{e.ErrorMessage} Поле {x.Key}";
-                            }
+			{
+				return Json(new
+				{
+					Errors = ModelState.Where(x => x.Value.Errors.Count > 0).Select(x => new
+					{
+						Control = x.Key,
+						Message = string.Join("\n", x.Value.Errors.Select(e =>
+						{
+							if (e.ErrorMessage == "The value '' is invalid.")
+							{
+								return $"{e.ErrorMessage} Поле {x.Key}";
+							}
 
-                            return e.ErrorMessage;
-                        }))
-                    })
-                });
-            }
+							return e.ErrorMessage;
+						}))
+					})
+				});
+			}
 
-            OMZakLink conclusionLink = OMZakLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
-            if (conclusionLink == null)
-            {
-                return NotFound();
-            }
+			OMZakLink conclusionLink = OMZakLink.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
+			if (conclusionLink == null)
+			{
+				return NotFound();
+			}
 
-            OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Descr)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
-            OMParam pIdZak = OMParam.Where(x => x.Pid == long.Parse(model.IdConclusion)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pUse = OMParam.Where(x => x.Pid == long.Parse(model.Use)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pDescr = OMParam.Where(x => x.Pid == long.Parse(model.Descr)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pRs = OMParam.Where(x => x.Pid == long.Parse(model.Rs)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pUprs = OMParam.Where(x => x.Pid == long.Parse(model.Uprs)).SelectAll().ExecuteFirstOrDefault();
+			OMParam pIdZak = OMParam.Where(x => x.Pid == long.Parse(model.IdConclusion)).SelectAll().ExecuteFirstOrDefault();
 
-            conclusionLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdZak);
+			conclusionLink.UpdateAndCheckParam(pUse, pDescr, pRs, pUprs, pIdZak);
 
-            return Json(new { Success = "Утверждено успешно" });
-        }
+			return Json(new { Success = "Утверждено успешно" });
+		}
 
 		#endregion
 
@@ -1360,8 +1363,8 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		public FileResult ExportDataToExcelGbu()
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_GBU, true, false, true);
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_GBU, true, false, true);
 			var file = DataExporterSud.ExportDataToExcelGbu();
 			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Выгрузка судебных решений для ГБУ" + ".xlsx");
@@ -1381,7 +1384,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new
-				{Success = "Процедура Выгрузки судебных решений для ГБУ в формате Excel успешно добавлена в очередь"});
+			{ Success = "Процедура Выгрузки судебных решений для ГБУ в формате Excel успешно добавлена в очередь" });
 		}
 
 		public ActionResult GetExportDataToXml()
@@ -1398,12 +1401,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		public FileResult ExportDataToXml()
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_XML, true, false, true);
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_XML, true, false, true);
 			var file = DataExporterSud.ExportDataToXml();
-            return File(file, "application/xml",
-                "Выгрузка судебных решений на сайт в формате XML" + ".xml");
-        }
+			return File(file, "application/xml",
+				"Выгрузка судебных решений на сайт в формате XML" + ".xml");
+		}
 
 		public ActionResult ExportDataToXmlInBackgroundMode()
 		{
@@ -1419,7 +1422,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new
-				{ Success = "Процедура Выгрузки судебных решений на сайт в формате XML успешно добавлена в очередь" });
+			{ Success = "Процедура Выгрузки судебных решений на сайт в формате XML успешно добавлена в очередь" });
 		}
 
 		public ActionResult GetExportAllDataToExcel()
@@ -1436,12 +1439,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		public FileResult ExportAllDataToExcel()
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_ALL, true, false, true);
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_EXPORT_ALL, true, false, true);
 			var file = DataExporterSud.ExportAllDataToExcel();
-            return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "Полная выгрузка" + ".xlsx");
-        }
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"Полная выгрузка" + ".xlsx");
+		}
 
 		public ActionResult ExportAllDataToExcelInBackgroundMode()
 		{
@@ -1457,7 +1460,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new
-				{ Success = "Процедура Полной выгрузки в Excel успешно добавлена в очередь" });
+			{ Success = "Процедура Полной выгрузки в Excel успешно добавлена в очередь" });
 		}
 
 		public ActionResult GetExportStatisticCheck()
@@ -1474,12 +1477,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		public FileResult ExportStatisticCheck()
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_TRUE, true, false, true);
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_TRUE, true, false, true);
 			var file = DataExporterSud.ExportStatisticCheck();
-	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-		        "Статистика по положительным судебным решениям" + ".xlsx");
-        }
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+				"Статистика по положительным судебным решениям" + ".xlsx");
+		}
 
 		public ActionResult ExportStatisticCheckInBackgroundMode()
 		{
@@ -1495,7 +1498,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new
-				{ Success = "Процедура выгрузки Статистики по положительным судебным решениям успешно добавлена в очередь" });
+			{ Success = "Процедура выгрузки Статистики по положительным судебным решениям успешно добавлена в очередь" });
 		}
 
 		public ActionResult GetExportStatistic()
@@ -1512,12 +1515,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		public FileResult ExportStatistic()
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_SUMMARY, true, false, true);
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_SUMMARY, true, false, true);
 			var file = DataExporterSud.ExportStatistic();
-	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика сводная" + ".xlsx");
-        }
+		}
 
 		public ActionResult ExportStatisticInBackgroundMode()
 		{
@@ -1533,7 +1536,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new
-				{ Success = "Процедура выгрузки сводной Статистики успешно добавлена в очередь" });
+			{ Success = "Процедура выгрузки сводной Статистики успешно добавлена в очередь" });
 		}
 
 		public ActionResult GetExportStatisticObject()
@@ -1550,12 +1553,12 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		public FileResult ExportStatisticObject()
-        {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_OBJECT, true, false, true);
+		{
+			SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.SUD_OBJECTS_STATISTICS_OBJECT, true, false, true);
 			var file = DataExporterSud.ExportStatisticObject();
-	        return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			return File(file, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 				"Статистика по объектам недвижимости" + ".xlsx");
-        }
+		}
 
 		public ActionResult ExportStatisticObjectInBackgroundMode()
 		{
@@ -1571,7 +1574,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(new
-				{ Success = "Процедура выгрузки Статистики по объектам недвижимости успешно добавлена в очередь" });
+			{ Success = "Процедура выгрузки Статистики по объектам недвижимости успешно добавлена в очередь" });
 		}
 
 		[HttpGet]
@@ -1615,7 +1618,7 @@ namespace KadOzenka.Web.Controllers
 				return NoContent();
 			}
 			return RedirectToAction("AttachmentView", "CoreAttachment",
-				new { objectId, registerId = OMOtchet.GetRegisterId()});
+				new { objectId, registerId = OMOtchet.GetRegisterId() });
 		}
 
 		public ActionResult GetAllAttachmentsConclusion(int objectId, int isFile)
@@ -1727,5 +1730,11 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
+
+		[HttpGet]
+		public ActionResult RedirectToSpd(string appId)
+		{
+			return Redirect("http://webspd/gosusl/gosuslweb/WebFormDoc.aspx?APPID=" + appId);
+		}
 	}
 }
