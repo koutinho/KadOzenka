@@ -23504,8 +23504,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_GROUP_TO_MARKET_SEGMENT_RELATION', 'territory')) then
-        execute 'alter table KO_GROUP_TO_MARKET_SEGMENT_RELATION add "territory" VARCHAR(255)';
+    if (not core_updstru_CheckExistColumn('KO_GROUP_TO_MARKET_SEGMENT_RELATION', 'territory_type')) then
+        execute 'alter table KO_GROUP_TO_MARKET_SEGMENT_RELATION add "territory_type" BIGINT NOT NULL';
     end if;
 end $$;
 
