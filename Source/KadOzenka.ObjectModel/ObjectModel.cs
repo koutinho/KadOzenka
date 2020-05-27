@@ -8490,22 +8490,57 @@ namespace ObjectModel.Ko
         }
 
 
-        private string _territory;
+        private string _territorytype;
         /// <summary>
-        /// 22200103 Территория (основная, дополнительная) (TERRITORY)
+        /// 22200103 Тип территории ()
         /// </summary>
         [RegisterAttribute(AttributeID = 22200103)]
-        public string Territory
+        public string TerritoryType
         {
             get
             {
-                CheckPropertyInited("Territory");
-                return _territory;
+                CheckPropertyInited("TerritoryType");
+                return _territorytype;
             }
             set
             {
-                _territory = value;
-                NotifyPropertyChanged("Territory");
+                _territorytype = value;
+                NotifyPropertyChanged("TerritoryType");
+            }
+        }
+
+
+        private TerritoryType _territorytype_Code;
+        /// <summary>
+        /// 22200103 Тип территории (справочный код) (TERRITORY_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22200103)]
+        public TerritoryType TerritoryType_Code
+        {
+            get
+            {
+                CheckPropertyInited("TerritoryType_Code");
+                return this._territorytype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_territorytype))
+                    {
+                         _territorytype = descr;
+                    }
+                }
+                else
+                {
+                     _territorytype = descr;
+                }
+
+                this._territorytype_Code = value;
+                NotifyPropertyChanged("TerritoryType");
+                NotifyPropertyChanged("TerritoryType_Code");
             }
         }
 

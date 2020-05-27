@@ -5661,6 +5661,46 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип территории (217)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 217)]
+    public enum TerritoryType : long
+    {
+        /// <summary>
+        /// Значение отсутствует
+        /// </summary>
+        [Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("")]
+        None = 0,
+
+		/// <summary>
+		/// Основная (1507)
+		/// </summary>
+		[Description("Основная")]
+        [EnumCode("1")]
+        [ShortTitle("")]
+        Main = 1507,
+		/// <summary>
+		/// Дополнительная (1508)
+		/// </summary>
+		[Description("Дополнительная")]
+        [EnumCode("2")]
+        [ShortTitle("")]
+        Additional = 1508,
+		/// <summary>
+		/// ОсновнаяИДополнительная (1509)
+		/// </summary>
+		[Description("ОсновнаяИДополнительная")]
+        [EnumCode("3")]
+        [ShortTitle("")]
+        MainAndAdditional = 1509,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>
