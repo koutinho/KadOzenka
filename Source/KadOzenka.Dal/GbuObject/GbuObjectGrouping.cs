@@ -8,6 +8,8 @@ using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.Directory;
 using ObjectModel.Core.TD;
 using ObjectModel.KO;
+using Core.ErrorManagment;
+using System.Security.Principal;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -1095,6 +1097,15 @@ namespace KadOzenka.Dal.GbuObject
 		public static PriorityGroupList PrioritetList = null;
 
 		public static List<string> ErrorMessages;
+
+        // TODO: заменить на SRDSession.SetThreadCurrentPrincipal после обновления платформы
+        public static void SetThreadCurrentPrincipal(long userId)
+        {
+            SRDUserBase userData = SRDCache.Users[(int)userId];
+            GenericIdentity genericIdentity = new GenericIdentity(userData.Username);
+            Thread.CurrentPrincipal = new GenericPrincipal(genericIdentity, new string[] { });
+        }
+
         /// <summary>
         /// Выполнение операции группировки
         /// </summary>
@@ -1117,6 +1128,8 @@ namespace KadOzenka.Dal.GbuObject
             bool useTask = false;
             if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
 
+            var userId = SRDSession.GetCurrentUserId().Value;
+
             if (useTask)
             {
                 List<ObjectModel.KO.OMUnit> Objs = new List<ObjectModel.KO.OMUnit>();
@@ -1126,7 +1139,20 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 MaxCount = Objs.Count;
 				CurrentCount = 0;
-				Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date); });
+				Parallel.ForEach(Objs, options, item => 
+                {
+                    SetThreadCurrentPrincipal(userId);
+
+                    try
+                    {
+                        new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date);
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorManager.LogError(ex);
+                    }
+                });
+
 				var str = string.Join(',', ErrorMessages);
 				ErrorMessages?.Clear();
 				if (MaxCount != SuccessCount)
@@ -1144,7 +1170,19 @@ namespace KadOzenka.Dal.GbuObject
                 List<ObjectModel.Gbu.OMMainObject> Objs = ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead).SelectAll().Execute();
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
-                Parallel.ForEach(Objs, options, item => { new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date); });
+                Parallel.ForEach(Objs, options, item => 
+                {
+                    SetThreadCurrentPrincipal(userId);
+
+                    try
+                    {
+                        new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date);
+                    }
+                    catch (Exception ex)
+                    {
+                        ErrorManager.LogError(ex);
+                    }
+                });
                 var str = string.Join(',', ErrorMessages);
                 ErrorMessages?.Clear();
                 if (MaxCount != SuccessCount)
