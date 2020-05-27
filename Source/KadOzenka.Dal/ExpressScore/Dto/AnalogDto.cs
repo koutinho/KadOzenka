@@ -1,4 +1,5 @@
 ﻿using System;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.ExpressScore.Dto
 {
@@ -41,5 +42,10 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// Адрес аналога
 		/// </summary>
 		public string Address { get; set; }
+
+		/// <summary>
+		/// Тип сделки
+		/// </summary>
+		public DealType DealType { get; set; }
 	}
 }
