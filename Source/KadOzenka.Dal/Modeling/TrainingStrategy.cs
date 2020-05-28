@@ -138,7 +138,8 @@ namespace KadOzenka.Dal.Modeling
 
         private void ResetPredictedPrice()
         {
-            var modelObjects = OMModelToMarketObjects.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
+            var modelObjects = OMModelToMarketObjects.Where(x => x.ModelId == Model.Id && x.PriceFromModel != null)
+                .SelectAll().Execute();
 
             modelObjects.ForEach(x =>
             {
@@ -149,7 +150,8 @@ namespace KadOzenka.Dal.Modeling
 
         private void ResetCoefficientsForPredictedPrice()
         {
-            var modelAttributeRelations = OMModelAttributesRelation.Where(x => x.ModelId == Model.Id).SelectAll().Execute();
+            var modelAttributeRelations = OMModelAttributesRelation.Where(x => x.ModelId == Model.Id && x.Coefficient != null)
+                .SelectAll().Execute();
 
             modelAttributeRelations.ForEach(x =>
             {
