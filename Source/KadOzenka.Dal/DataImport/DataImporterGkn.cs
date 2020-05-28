@@ -168,36 +168,104 @@ namespace KadOzenka.Dal.DataImport
             CountImportCarPlaces = 0;
             AreCountersInitialized = true;
 
-            Parallel.ForEach(GknItems.Buildings, options, item => ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Parcels, options, item => ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Constructions, options, item => ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Uncompliteds, options, item => ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.Flats, options, item => ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
-            Parallel.ForEach(GknItems.CarPlaces, options, item => ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument));
+            Parallel.ForEach(GknItems.Buildings, options, item => {
+                try
+                {
+                    ImportObjectBuild(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.LogError(ex);
+                }
+            });
+            Parallel.ForEach(GknItems.Parcels, options, item => {
+                try
+                {
+                    ImportObjectParcel(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.LogError(ex);
+                }
+            });
+            Parallel.ForEach(GknItems.Constructions, options, item => {
+                try
+                {
+                    ImportObjectConstruction(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.LogError(ex);
+                }
+            });
+            Parallel.ForEach(GknItems.Uncompliteds, options, item => {
+                try
+                {
+                    ImportObjectUncomplited(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.LogError(ex);
+                }
+            });
+            Parallel.ForEach(GknItems.Flats, options, item => {
+                try
+                {
+                    ImportObjectFlat(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.LogError(ex);
+                }
+            });
+            Parallel.ForEach(GknItems.CarPlaces, options, item => {
+                try
+                {
+                    ImportObjectCarPlace(item, unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument);
+                }
+                catch (Exception ex)
+                {
+                    ErrorManager.LogError(ex);
+                }
+            });
 
         }
 
         public static void SaveAttributeValueWithCheck(GbuObjectAttribute attributeValue)
         {
-            try
-            {
-                attributeValue.Save();
-            }
-            catch (Exception ex)
-            {
-                var existsAttributeValue = GbuObjectService.CheckExistsValueFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot);
+            // TODO: разобраться почему перехваченное исключение все равно приводит к "25P02: текущая транзакция прервана, команды до конца блока транзакции игнорируются"
+            //try
+            //{
+            //    attributeValue.Save();
+            //}
+            //catch (Exception ex)
+            //{
+            //    ErrorManager.LogError(ex);
 
-                // Проблема не в наличии значения на ту же дату ОТ
-                if (existsAttributeValue == null) throw ExceptionInitializer.Create("Ошибка сохранения знчения показателя", $"Значение: {attributeValue.SerializeToXml()}", ex);
+            //    var existsAttributeValue = GbuObjectService.CheckExistsValueFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot);
 
+            //    // Проблема не в наличии значения на ту же дату ОТ
+            //    if (existsAttributeValue == null) throw ExceptionInitializer.Create("Ошибка сохранения знчения показателя", $"Значение: {attributeValue.SerializeToXml()}", ex);
+
+            //    lock (locked)
+            //    {
+            //        // Проблема в наличии значения на ту же дату ОТ
+            //        attributeValue.Ot = GbuObjectService.GetNextOtFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot);
+
+            //        attributeValue.Save();
+            //    }
+            //}
+
+            if (GbuObjectService.CheckExistsValueFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot) != null)
+            {
                 lock (locked)
                 {
                     // Проблема в наличии значения на ту же дату ОТ
                     attributeValue.Ot = GbuObjectService.GetNextOtFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot);
-
-                    attributeValue.Save();
                 }
             }
+
+            attributeValue.Save();
         }
 
         public static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
