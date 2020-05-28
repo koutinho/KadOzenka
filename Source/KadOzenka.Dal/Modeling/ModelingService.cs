@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Threading.Tasks;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
@@ -431,11 +432,12 @@ namespace KadOzenka.Dal.Modeling
 
             var modelAttributes = GetModelAttributes(modelId);
 
-            for (var i = 0; i < groupedObjects.Count; i++)
+            var i = 0;
+            Parallel.ForEach(groupedObjects, groupedObj =>
             {
                 var isForTraining = i < groupedObjects.Count / 2;
+                i++;
 
-                var groupedObj = groupedObjects[i];
                 var modelObject = new OMModelToMarketObjects
                 {
                     ModelId = modelId,
@@ -449,7 +451,7 @@ namespace KadOzenka.Dal.Modeling
 
                 modelObject.Coefficients = objectCoefficients.SerializeToXml();
                 modelObject.Save();
-            }
+            });
         }
 
         private Expression<Func<OMCoreObject, bool>> GetConditionForTerritoryType(TerritoryType territoryType)
