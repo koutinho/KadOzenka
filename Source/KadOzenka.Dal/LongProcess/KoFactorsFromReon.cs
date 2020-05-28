@@ -49,22 +49,59 @@ namespace KadOzenka.Dal.LongProcess
             var units = GetUnits(task.Id);
 
             var errorIds = new List<long>();
+
+            List<string> log = new List<string>();
+            bool isError = false;
+
+            long total = units.Count;
+            long success = 0;
+            long errors = 0;
+
             units.ForEach(unit =>
             {
                 if (!unit.ObjectId.HasValue)
                     return;
 
-                var request = GetRequest(task, unit);
-                var response = ReonWebClientService.RosreestrDataGetGraphFactorsByCadNum(request.CadastralNumber, request.EstimationDate);
-                var currentErrorIds = ProcessServiceResponse(unit.ObjectId.Value, document, response);
-                errorIds.AddRange(currentErrorIds);
+                try
+                {
+                    var request = GetRequest(task, unit);
+                    var response = ReonWebClientService.RosreestrDataGetGraphFactorsByCadNum(request.CadastralNumber, request.EstimationDate);
+                    var currentErrorIds = ProcessServiceResponse(unit.ObjectId.Value, document, response);
+                    if (currentErrorIds?.Count > 0)
+                    {
+                        errorIds.AddRange(currentErrorIds);
+                        isError = true;
+                        log.Add($"{unit.CadastralNumber}: ошибка загрузки (журнал {String.Join(", ", currentErrorIds)})");
+                        errors++;
+                    }
+                    else
+                    {
+                        isError = true;
+                        log.Add($"{unit.CadastralNumber}: загружено успешно");
+                        success++;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var errorId = ErrorManager.LogError(ex);
+
+                    errors++;
+
+                    log.Add($"{unit.CadastralNumber}: ошибка загрузки (журнал {errorId})");
+                }
             });
 
-            var message = errorIds.Count > 0
-                ? $"Не удалось обработать все данные, подробно в журнале №{string.Join(", ", errorIds)}"
-                : "Операция выполнена успешно.";
+            var message = isError
+                ? $"При загрузке факторов возникли ошибки. Всего: {total}; Успешно: {success}; Ошибки: {errors}"
+                : "Загрузка факторов выполнена без ошибок. Всего: {total}; Успешно: {success}; Ошибки: {errors}";
 
-            NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН", message);
+            processQueue.Message = message;
+            processQueue.Log = String.Join("\n", log);
+            processQueue.Save();
+
+            
+            
+            NotificationSender.SendNotification(processQueue, "Получение графических факторов из ИС РЕОН завершено", message);
             WorkerCommon.SetProgress(processQueue, 100);
         }
 
