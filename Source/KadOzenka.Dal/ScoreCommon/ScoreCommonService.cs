@@ -127,7 +127,7 @@ namespace KadOzenka.Dal.ScoreCommon
 
 		private ReferenceItemCodeType GetReferenceValueType(int referenceId)
 		{
-			return OMEsReference.Where(x => x.Id == referenceId).SelectAll().ExecuteFirstOrDefault().ValueType_Code;
+			return OMEsReference.Where(x => x.Id == referenceId).Select(x => x.ValueType_Code).ExecuteFirstOrDefault().ValueType_Code;
 		}
 
 		#endregion
