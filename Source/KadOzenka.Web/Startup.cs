@@ -80,7 +80,7 @@ namespace CIPJS
             services.AddSession(options =>
             {
                 options.Cookie.Name = "CIPJS.Session";
-                options.IdleTimeout = TimeSpan.FromSeconds(60);
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
             });
             services.AddKendo();
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

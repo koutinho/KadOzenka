@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="05/27/2020 16:49:59" ReportInfo.CreatorVersion="2017.4.7.0">
+  <ScriptText>
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Windows.Forms;
+    using System.Drawing;
+    using System.Data;
+    using FastReport;
+    using FastReport.Data;
+    using FastReport.Dialog;
+    using FastReport.Barcode;
+    using FastReport.Table;
+    using FastReport.Utils;
+
+    namespace FastReport
+    {
+    public class ReportScript
+    {
+
+    }
+
+    }
+  </ScriptText>
+  <Dictionary>
+    <BusinessObjectDataSource Name="Data" ReferenceName="Data" DataType="null" Enabled="true">
+      <Column Name="PropertyType" DataType="System.String"/>
+      <Column Name="Group" DataType="System.String"/>
+      <Column Name="ParentGroup" DataType="System.String"/>
+      <Column Name="ObjectsCount" DataType="System.Decimal"/>
+    </BusinessObjectDataSource>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="7.56,505.15,9.45,382.18,114.96,206.81,326.96,101.3">
+    <DataBand Name="BandCommon" Width="1047.06" Height="85.05" CanGrow="true" Guides="28.35,85.05">
+      <TextObject Name="TitleText" Left="7.56" Top="28.35" Width="497.59" Height="56.7" CanGrow="true" BeforePrintEvent="BandCommon_BeforePrint" Text="[Common.Title]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+    </DataBand>
+    <DataBand Name="BandData1" Top="89.05" Width="1047.06" Height="212.41" Guides="0,90.88,22.72,68.16,45.44">
+      <MatrixObject Name="MatrixData" Left="9.45" Width="372.73" Height="90.88" Border.Lines="All" FixedRows="1" FixedColumns="2" RepeatHeaders="false" DataSource="Data">
+        <MatrixColumns>
+          <Header Expression="[Data.PropertyType]"/>
+        </MatrixColumns>
+        <MatrixRows>
+          <Header Expression="[Data.ParentGroup]" Sort="None"/>
+          <Header Expression="[Data.Group]" Sort="None"/>
+        </MatrixRows>
+        <MatrixCells>
+          <Cell Expression="[Data.ObjectsCount]"/>
+        </MatrixCells>
+        <TableColumn Name="Column1" Width="105.51" AutoSize="true"/>
+        <TableColumn Name="Column2" Width="91.85" AutoSize="true"/>
+        <TableColumn Name="Column3" Width="120.15" AutoSize="true"/>
+        <TableColumn Name="Column4" Width="55.22" AutoSize="true"/>
+        <TableRow Name="Row1" Height="22.72" AutoSize="true">
+          <TableCell Name="Cell1" Border.Lines="All" Text="Группа" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell7" Border.Lines="All" Text="Подгруппа" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell9" Border.Lines="All" Text="[PropertyType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell12" Border.Lines="All" Text="Итого" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row2" Height="22.72" AutoSize="true">
+          <TableCell Name="Cell3" Border.Lines="All" Text="[ParentGroup]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" RowSpan="2"/>
+          <TableCell Name="Cell8" Border.Lines="All" Text="[Group]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell10" Border.Lines="All" Text="[ObjectsCount]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell13" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row3" Height="22.72" AutoSize="true">
+          <TableCell Name="Cell5"/>
+          <TableCell Name="Cell6" Border.Lines="All" Text="Итого" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell11" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell14" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+        <TableRow Name="Row4" Height="22.72" AutoSize="true">
+          <TableCell Name="Cell15" Border.Lines="All" Text="Итого" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" ColSpan="2"/>
+          <TableCell Name="Cell16"/>
+          <TableCell Name="Cell17" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell18" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+      </MatrixObject>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="305.46" Width="1047.06" Height="47.25"/>
+  </ReportPage>
+</Report>

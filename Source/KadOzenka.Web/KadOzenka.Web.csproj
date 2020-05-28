@@ -759,7 +759,16 @@
     <None Update="Config\Reports\CCC_OUReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByGroups.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx">
@@ -1067,7 +1076,10 @@
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByGroups.frx" />
     <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\RegisteredChangedObjectsReport.frx" />

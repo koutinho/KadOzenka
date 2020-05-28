@@ -3659,84 +3659,84 @@ namespace ObjectModel.Directory
         /// </summary>
         [Description("ЦАО")]
         [EnumCode("1")]
-        [ShortTitle("")]
+        [ShortTitle("Центральный")]
         CAO = 903,
         /// <summary>
         /// САО (904)
         /// </summary>
         [Description("САО")]
         [EnumCode("2")]
-        [ShortTitle("")]
+        [ShortTitle("Северный")]
         SAO = 904,
         /// <summary>
         /// СВАО (905)
         /// </summary>
         [Description("СВАО")]
         [EnumCode("3")]
-        [ShortTitle("")]
+        [ShortTitle("Северо-Восточный")]
         SVAO = 905,
         /// <summary>
         /// ВАО (906)
         /// </summary>
         [Description("ВАО")]
         [EnumCode("4")]
-        [ShortTitle("")]
+        [ShortTitle("Восточный")]
         VAO = 906,
         /// <summary>
         /// ЮВАО (907)
         /// </summary>
         [Description("ЮВАО")]
         [EnumCode("5")]
-        [ShortTitle("")]
+        [ShortTitle("Юго-Восточный")]
         YVAO = 907,
         /// <summary>
         /// ЮАО (908)
         /// </summary>
         [Description("ЮАО")]
         [EnumCode("6")]
-        [ShortTitle("")]
+        [ShortTitle("Южный")]
         YAO = 908,
         /// <summary>
         /// ЮЗАО (909)
         /// </summary>
         [Description("ЮЗАО")]
         [EnumCode("7")]
-        [ShortTitle("")]
+        [ShortTitle("Юго-Западный")]
         YZAO = 909,
         /// <summary>
         /// ЗАО (910)
         /// </summary>
         [Description("ЗАО")]
         [EnumCode("8")]
-        [ShortTitle("")]
+        [ShortTitle("Западный")]
         ZAO = 910,
         /// <summary>
         /// СЗАО (911)
         /// </summary>
         [Description("СЗАО")]
         [EnumCode("9")]
-        [ShortTitle("")]
+        [ShortTitle("Северо-Западный")]
         SZAO = 911,
         /// <summary>
         /// ЗелАО (912)
         /// </summary>
         [Description("ЗелАО")]
         [EnumCode("10")]
-        [ShortTitle("")]
+        [ShortTitle("Зеленоградский")]
         ZelAO = 912,
         /// <summary>
         /// НАО (913)
         /// </summary>
         [Description("НАО")]
         [EnumCode("11")]
-        [ShortTitle("")]
+        [ShortTitle("НАО")]
         NAO = 913,
         /// <summary>
         /// ТАО (914)
         /// </summary>
         [Description("ТАО")]
         [EnumCode("12")]
-        [ShortTitle("")]
+        [ShortTitle("ТАО")]
         TAO = 914,
     }
 }
