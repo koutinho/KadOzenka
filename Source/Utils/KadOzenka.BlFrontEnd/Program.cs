@@ -29,8 +29,12 @@ using KadOzenka.Dal.ExcelParser;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.WebClients.ReonClient.Api;
 using System.Linq;
+using System.Threading;
+using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Core.LongProcess;
 
 namespace KadOzenka.BlFrontEnd
@@ -232,6 +236,24 @@ namespace KadOzenka.BlFrontEnd
                 new KoFactorsFromReon().StartProcess(null,
                     new OMQueue {ObjectId = taskId, UserId = SRDSession.Current.UserID }, 
                     new System.Threading.CancellationToken());
+            });
+
+            consoleHelper.AddCommand("904", "Моделирование (обучение)", () =>
+            {
+                var trainingInputParameters = new TrainingInputParameters
+                {
+                    ModelId = 44859102
+                };
+                var inputRequest = new ModelingInputParameters
+                {
+                    ModelingType = ModelingType.Training,
+                    InputParametersXml = trainingInputParameters.SerializeToXml<TrainingInputParameters>()
+                };
+                new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
+                {
+                    UserId = SRDSession.GetCurrentUserId(),
+                    Parameters = inputRequest.SerializeToXml()
+                }, new CancellationToken());
             });
 
             consoleHelper.AddCommand("554", "эксель импорт", 

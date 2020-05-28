@@ -427,8 +427,7 @@ namespace KadOzenka.Dal.Modeling
                     x.Price
                 });
 
-            var existedModelObjects = GetAllModelMarketObjects(modelId);
-            existedModelObjects.ForEach(x => x.Destroy());
+            DestroyModelMarketObjects(modelId);
 
             var modelAttributes = GetModelAttributes(modelId);
 
@@ -551,9 +550,10 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(message.ToString());
 		}
 
-		private List<OMModelToMarketObjects> GetAllModelMarketObjects(long modelId)
+		private void DestroyModelMarketObjects(long modelId)
         {
-            return OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
+            var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
+            existedModelObjects.ForEach(x => x.Destroy());
         }
 
         private ParameterDataDto GetParameterDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
