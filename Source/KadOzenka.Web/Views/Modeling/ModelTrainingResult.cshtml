@@ -58,10 +58,10 @@ else
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-5 center">
+            <div class="col-sm-5 center" id="scatterDiv">
                 <img id="scatterImg" src="@Model.ScatterImageLink" alt="Изображение не найдено"/>
             </div>
-            <div class="col-sm-5 center">
+            <div class="col-sm-5 center" id="correlationDiv">
                 <img id="correlationImg" src="@Model.CorrelationImageLink" alt="Изображение не найдено"/>
             </div>
         </div>
@@ -99,16 +99,30 @@ else
         @if (Model != null)
         {
             <text>
-                $("#correlationImg")
-                    .error(function() {
-                        $(this).attr("src", "@Model.CorrelationImageLink");
-                    });
+                $("#correlationImg").error(function() {
+                    $(this).attr("src", "@Model.CorrelationImageLink");
+                });
 
-                $("#scatterImg")
-                    .error(function() {
-                        $(this).attr("src", "@Model.ScatterImageLink");
-                    });
+                $("#scatterImg").error(function() {
+                    $(this).attr("src", "@Model.ScatterImageLink");
+                });
             </text>
+        }
+    });
+
+
+
+    $(window).load(function() {
+        var scatterDivHeight = $("#scatterDiv").height();
+        var scatterImgHeight = $("#scatterImg").height();
+
+        var correlationDivHeight = $("#correlationDiv").height();
+        var correlationImgHeight = $("#correlationImg").height();
+
+        if (scatterDivHeight != correlationDivHeight) {
+            var max = Math.max(scatterDivHeight, correlationDivHeight);
+            $("#correlationImg").css('margin-top', ((max - correlationImgHeight) / 2) + 'px');
+            $("#scatterImg").css('margin-top', ((max - scatterImgHeight) / 2) + 'px');
         }
     });
 </script>
