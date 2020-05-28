@@ -410,18 +410,22 @@ namespace KadOzenka.Dal.Modeling
 
             var groupedObjects = OMCoreObject.Where(x =>
 					x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-                    x.CadastralNumber != null && x.CadastralNumber != string.Empty && 
+                    x.CadastralNumber != null && 
                     x.ProcessType_Code != ProcessStep.Excluded)
                 //TODO PART
                 //.And(territoryCondition)
 				.Select(x => x.CadastralNumber)
 				.Select(x => x.Price)
-				.Execute()
-				.GroupBy(x => new
-				{
-					x.CadastralNumber,
-					x.Price
-				}).ToList();
+                .GroupBy(x => new
+                {
+                    x.CadastralNumber,
+                    x.Price
+                })
+                .ExecuteSelect(x => new
+                {
+                    x.CadastralNumber,
+                    x.Price
+                });
 
             var existedModelObjects = GetAllModelMarketObjects(modelId);
             existedModelObjects.ForEach(x => x.Destroy());
@@ -436,8 +440,8 @@ namespace KadOzenka.Dal.Modeling
                 var modelObject = new OMModelToMarketObjects
                 {
                     ModelId = modelId,
-                    CadastralNumber = groupedObj.Key.CadastralNumber,
-                    Price = groupedObj.Key.Price ?? 0,
+                    CadastralNumber = groupedObj.CadastralNumber,
+                    Price = groupedObj.Price ?? 0,
                     IsForTraining = isForTraining
                 };
 
@@ -549,7 +553,7 @@ namespace KadOzenka.Dal.Modeling
 
 		private List<OMModelToMarketObjects> GetAllModelMarketObjects(long modelId)
         {
-            return OMModelToMarketObjects.Where(x => x.ModelId == modelId).SelectAll().Execute();
+            return OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
         }
 
         private ParameterDataDto GetParameterDataByCadastralNumber(string kn, int tourId, int attributeId, int registerId)
