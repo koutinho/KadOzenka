@@ -4,7 +4,7 @@
               ShowActualDate="false" SearchPanel="" SearchPanelWindowHeight="654" ShowRowMenu="true">
 
 	<DefaultSearchControls>
-		<ControlElement AttributeNumber="20000500" CustomSearchUrl="/CustomSearch/CadastralQuarterFilter" AllowDelete="false" DefaultValue="77:10:0003004"/>
+		<ControlElement AttributeNumber="20000500" CustomSearchUrl="/CustomSearch/CadastralQuarterFilter" AllowDelete="true" DefaultValue="77:10:0003004"/>
 	</DefaultSearchControls>
 
 	<Buttons>
