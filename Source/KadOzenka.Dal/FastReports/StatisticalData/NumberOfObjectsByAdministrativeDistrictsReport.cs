@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using KadOzenka.Dal.ManagementDecisionSupport;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {

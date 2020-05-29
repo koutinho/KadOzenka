@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="05/28/2020 17:00:21" ReportInfo.CreatorVersion="2017.4.7.0">
+  <ScriptText>
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Windows.Forms;
+    using System.Drawing;
+    using System.Data;
+    using FastReport;
+    using FastReport.Data;
+    using FastReport.Dialog;
+    using FastReport.Barcode;
+    using FastReport.Table;
+    using FastReport.Utils;
+
+    namespace FastReport
+    {
+    public class ReportScript
+    {
+
+      //private int rowIndex;
+
+      //private float GetValue(int columnIndex)
+      //{
+        //object value = MatrixData.Data.GetValue(columnIndex, rowIndex, 0);
+        //return new Variant(value);
+      //}
+
+    private void SetValue(string complexValue, float value)
+    {
+      //int columnIndex = MatrixData.Data.Columns.Find(complexValue.Split(';'));
+      //MatrixData.Data.SetValue(columnIndex, rowIndex, value);
+    }
+
+    private void MatrixData_AfterTotals(object sender, EventArgs e)
+    {
+        //int[] rowIndices = MatrixData.Data.Rows.GetTerminalIndices();
+          
+        //for (int i = 0; i &lt; rowIndices.Length; i++)
+        //{
+        //rowIndex = rowIndices[i];
+
+        //int[] columnIndices = MatrixData.Data.Columns.GetTerminalIndices();
+        //float oplataSum = 0;
+        //foreach (int columnIndex in columnIndices)
+        //{
+        //oplataSum += GetValue(columnIndex);
+        //}
+        //SetValue(&quot;Всего&quot;, oplataSum);
+        //}
+    }
+   
+    private void BandCommon_BeforePrint(object sender, EventArgs e)
+    {
+        //TitleText.Width = MatrixData.Width;
+    }
+
+    private void BandCommon_AfterLayout(object sender, EventArgs e)
+    {
+        //TitleText.Width = MatrixData.Width;
+    }
+
+
+    }
+
+    }
+  </ScriptText>
+  <Dictionary>
+    <BusinessObjectDataSource Name="Data" ReferenceName="Data" DataType="null" Enabled="true">
+      <Column Name="AdditionalName" DataType="System.String"/>
+      <Column Name="Name" DataType="System.String"/>
+      <Column Name="ObjectsCount" DataType="System.Decimal"/>
+      <Column Name="UpksCalcType" DataType="System.String"/>
+      <Column Name="PropertyType" DataType="System.String"/>
+      <Column Name="UpksCalcValue" DataType="System.Decimal"/>
+    </BusinessObjectDataSource>
+  </Dictionary>
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="7.56,1043.8,9.45,509.52,383.88,129.61,263.72" UnlimitedWidth="true">
+    <DataBand Name="BandCommon" Width="1047.06" Height="85.05" CanGrow="true" Guides="28.35,85.05">
+      <TextObject Name="TitleText" Left="7.56" Top="28.35" Width="1036.24" Height="56.7" CanGrow="true" BeforePrintEvent="BandCommon_BeforePrint" Text="[Common.Title]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+    </DataBand>
+    <DataBand Name="BandData1" Top="89.05" Width="1047.06" Height="212.41" Guides="0,61.44,16,38.72">
+      <MatrixObject Name="MatrixData" Left="9.45" Width="500.07" Height="61.44" Border.Lines="All" FixedRows="2" FixedColumns="2" RepeatHeaders="false" DataSource="Data" ShowTitle="true">
+        <MatrixColumns>
+          <Header Expression="[Data.PropertyType]" Totals="false"/>
+        </MatrixColumns>
+        <MatrixRows>
+          <Header Expression="[Data.Name]" Totals="false"/>
+          <Header Expression="[Data.UpksCalcType]" Sort="None" Totals="false"/>
+        </MatrixRows>
+        <MatrixCells>
+          <Cell Expression="[Data.UpksCalcValue]"/>
+        </MatrixCells>
+        <TableColumn Name="Column1" Width="254.27" AutoSize="true"/>
+        <TableColumn Name="Column2" Width="120.16" AutoSize="true"/>
+        <TableColumn Name="Column3" Width="125.64" AutoSize="true"/>
+        <TableRow Name="Row1" Height="16" AutoSize="true">
+          <TableCell Name="Cell1" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" ColSpan="2"/>
+          <TableCell Name="Cell7"/>
+          <TableCell Name="Cell11" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row2" Height="22.72" AutoSize="true">
+          <TableCell Name="Cell3" Border.Lines="All" Text="[Common.DataNameColumnText]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell8" Border.Lines="All" Text="Значение" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell12" Border.Lines="All" Text="[PropertyType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row3" Height="22.72" AutoSize="true">
+          <TableCell Name="Cell5" Border.Lines="All" Text="[Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell6" Border.Lines="All" Text="[UpksCalcType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell13" Border.Lines="All" Text="[UpksCalcValue]" HorzAlign="Right" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        </TableRow>
+      </MatrixObject>
+    </DataBand>
+    <ReportSummaryBand Name="ReportSummary1" Top="305.46" Width="1047.06" Height="47.25"/>
+  </ReportPage>
+</Report>

@@ -79,7 +79,7 @@ namespace FastReport
       <Column Name="ObjectsCount" DataType="System.Decimal"/>
     </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="7.56,505.15,9.45,405.5,121.37,181.65,233.3">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="7.56,505.15,9.45,405.5,121.37,181.65,233.3" UnlimitedWidth="true">
     <DataBand Name="BandCommon" Width="1047.06" Height="85.05" CanGrow="true" Guides="28.35,85.05">
       <TextObject Name="TitleText" Left="7.56" Top="28.35" Width="497.59" Height="56.7" CanGrow="true" BeforePrintEvent="BandCommon_BeforePrint" Text="[Common.Title]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
     </DataBand>

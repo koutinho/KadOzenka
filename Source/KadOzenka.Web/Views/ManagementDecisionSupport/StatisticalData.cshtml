@@ -1,4 +1,5 @@
 ﻿@using KadOzenka.Dal.ManagementDecisionSupport
+@using KadOzenka.Dal.ManagementDecisionSupport.Enums
 
 @model KadOzenka.Web.Models.ManagementDecisionSupport.StatisticalDataModel;
 
@@ -69,7 +70,7 @@
             @Html.CustomLabelFor("Статистика по минимальным, максимальным и средним УПКС/УПРС:")
         </div>
         <div class="col-sm-11 subgroup">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts).Enable(false))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByAdministrativeDistricts))
         </div>
         <div class="col-sm-11 subgroup">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.OnTheMinMaxAverageUPKSByGroups.GetEnumDescription()).Value((long) StatisticalDataType.OnTheMinMaxAverageUPKSByGroups).Enable(false))

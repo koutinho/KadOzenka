@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.MapBuilding;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Market;

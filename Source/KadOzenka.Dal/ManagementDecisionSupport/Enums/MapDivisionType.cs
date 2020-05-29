@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.ManagementDecisionSupport
+﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 {
 	public enum MapDivisionType
 	{

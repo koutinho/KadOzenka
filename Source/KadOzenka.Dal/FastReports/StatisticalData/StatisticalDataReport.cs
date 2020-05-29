@@ -29,6 +29,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 		protected DataSet HadleData(DataSet dataSet)
 		{
+			//TODO:SHOULD BE MOVED TO PLATFORM
 			foreach (DataTable table in dataSet.Tables)
 			{
 				string tableName = table.TableName;

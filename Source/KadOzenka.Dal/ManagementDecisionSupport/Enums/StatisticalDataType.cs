@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace KadOzenka.Dal.ManagementDecisionSupport
+namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 {
 	public enum StatisticalDataType
 	{

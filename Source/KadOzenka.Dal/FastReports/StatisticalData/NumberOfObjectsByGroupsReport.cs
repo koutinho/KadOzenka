@@ -2,21 +2,22 @@
 using System.Collections.Specialized;
 using System.Data;
 using KadOzenka.Dal.ManagementDecisionSupport;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
-	public class NumberOfObjectsByGroups : StatisticalDataReport
+	public class NumberOfObjectsByGroupsReport : StatisticalDataReport
 	{
 		private readonly StatisticalDataService _statisticalDataService;
 
-		public NumberOfObjectsByGroups()
+		public NumberOfObjectsByGroupsReport()
 		{
 			_statisticalDataService = new StatisticalDataService();
 		}
 
 		protected override string TemplateName(NameValueCollection query)
 		{
-			return nameof(NumberOfObjectsByGroups);
+			return nameof(NumberOfObjectsByGroupsReport);
 		}
 
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
