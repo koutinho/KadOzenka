@@ -7,6 +7,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
     public interface ICadastralCostDeterminationResultsReport
     {
         string GetTemplateName(NameValueCollection query);
-        DataSet GetData(NameValueCollection query, HashSet<long> objectList = null);
+        DataSet GetData(NameValueCollection query, List<long> taskIds);
     }
 }

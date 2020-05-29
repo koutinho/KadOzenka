@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
+using System.Linq;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationResults
 {
@@ -23,8 +24,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
+            var taskIdList = GetTaskIdList(query).ToList();
+
             var report = GetReport(query);
-            return report.GetData(query);
+            return report.GetData(query, taskIdList);
         }
 
 

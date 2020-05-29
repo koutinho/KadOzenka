@@ -11,7 +11,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return "CadastralCostDeterminationIndividuallyResultsReport";
         }
 
-        public DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        public DataSet GetData(NameValueCollection query, List<long> taskIds)
         {
             return new DataSet();
         }
