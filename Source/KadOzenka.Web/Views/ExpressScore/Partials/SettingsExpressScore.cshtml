@@ -138,6 +138,25 @@
 							}))
 					</div>
 				</div>
+				<div class="form-group">
+					<div class="col-sm-3">
+						@Html.CustomLabelFor(@"Корректировка на этаж ""Справочник""", true)
+					</div>
+					<div class="col-sm-9">
+						@(Html.Kendo().DropDownListFor(m => m.CostFactors.FloorDicId)
+							.DataTextField("Text")
+							.DataValueField("Value")
+							.Filter(FilterType.Contains)
+							.DataSource(source =>
+							{
+								source.Read(a => a.Action("GetDictionaries", "ExpressScore"));
+							}
+							).HtmlAttributes(new
+							{
+								name = "FloorDicId"
+							}))
+					</div>
+				</div>
 			</fieldset>
 		</li>
 		<li id="StaticFactor" data-expand>

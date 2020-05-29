@@ -31,6 +31,12 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// Ид словаря доля ЗУ для обязательного параметра
 		/// </summary>
 		public decimal? LandShareDicId { get; set; }
+
+		/// <summary>
+		/// Ид словаря этажа расположения обязательный параметр
+		/// </summary>
+		public decimal? FloorDicId { get; set; }
+
 		public List<SimpleCostFactor> SimpleCostFactors { get; set; }
 		public List<ComplexCostFactor> ComplexCostFactors { get; set; }
 	}

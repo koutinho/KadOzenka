@@ -299,7 +299,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 			for (int k = 1; k < ColumnNameIndex; k++)
 			{
-				AddBoldValue(mainWorkSheet, numberRow + 1, k + 1, $"Объект аналог {k}");
+				AddBoldValue(mainWorkSheet, numberRow + 1, k + 1, $"Объект-аналог {k}");
 			}
 
 
@@ -312,8 +312,7 @@ namespace KadOzenka.Dal.ExpressScore
 			{
 				if (decimal.TryParse(val, out var d))
 				{
-					sheet.Rows[row].Cells[col].SetValue(val);
-					sheet.Rows[row].Cells[col].Style.NumberFormat = "#,##0.00";
+					sheet.Rows[row].Cells[col].SetValue(val.Replace(",", "."));
 				}
 				else
 				if (DateTime.TryParse(val, out var dat))

@@ -110,31 +110,51 @@ namespace KadOzenka.Web.Controllers
 			{
 				return SendErrorMessage("Объекты аналоги не найдены");
 			}
-			//Проверяем дату актуальности
+
+
 			List<CoordinatesDto> searchedAnalogs = new List<CoordinatesDto>();
-
-			var actualDate = new DateTime(param.ActualDate.Value.Year, param.ActualDate.Value.Month, param.ActualDate.Value.Day) + new TimeSpan(23, 59, 59);
-			var idsObjects = objects.Select(y => y.Id).ToList();
-			var cachePriceHistory = OMPriceHistory.Where(x => idsObjects.Contains(x.InitialId)).SelectAll().Execute();
-
-			foreach (var obj in objects)
+			//Проверяем дату актуальности
 			{
-				var historyPrices = cachePriceHistory.Where(x => x.InitialId == obj.Id && x.ChangingDate <= actualDate)
-					.ToList();
+				var actualDate = new DateTime(param.ActualDate.Value.Year, param.ActualDate.Value.Month, param.ActualDate.Value.Day) + new TimeSpan(23, 59, 59);
+				var idsObjects = objects.Select(y => y.Id).ToList();
+				var cachePriceHistory = OMPriceHistory.Where(x => idsObjects.Contains(x.InitialId)).SelectAll().Execute();
 
-				if (historyPrices.Count > 0)
+				var successIdsObjects = new List<long>();
+				foreach (var obj in objects)
 				{
-					searchedAnalogs.Add(obj);
-					continue;
+					var historyPrices = cachePriceHistory.Where(x => x.InitialId == obj.Id && x.ChangingDate <= actualDate)
+						.ToList();
+
+					if (historyPrices.Count > 0)
+					{
+						searchedAnalogs.Add(obj);
+						successIdsObjects.Add(obj.Id.GetValueOrDefault());
+					}
 				}
 
-				var analog = OMCoreObject.Where(x => x.Id == obj.Id && (x.ParserTime <= actualDate || x.LastDateUpdate <= actualDate))
-					.ExecuteFirstOrDefault();
-				if (analog != null)
+				List<CoordinatesDto> leftoversObjects =
+					objects.Where(x => !successIdsObjects.Contains(x.Id.GetValueOrDefault())).ToList();
+
+				if (leftoversObjects.Count > 0)
 				{
-					searchedAnalogs.Add(obj);
+					var idsLeftOversObjects = leftoversObjects.Select(x => x.Id).ToList();
+					var cacheAnalogs = OMCoreObject.Where(x => idsLeftOversObjects.Contains(x.Id)).SelectAll().Execute();
+					foreach (var obj in leftoversObjects)
+					{
+						var analogs = cacheAnalogs.Where(x =>
+							x.Id == obj.Id && (x.ParserTime <= actualDate || x.LastDateUpdate <= actualDate));
+
+						if (analogs.Any())
+						{
+							searchedAnalogs.Add(obj);
+						}
+					}
+
 				}
 			}
+
+
+
 
 			var coordinatesInput = searchedAnalogs.ToDictionary(x => x.Id.GetValueOrDefault(), y => new CoordinatesDto
 			{

@@ -12,7 +12,6 @@ namespace CIPJS.Models.ExpressScore
 		/// <summary>
 		/// Площадь
 		/// </summary>
-		[Range(1, 5000, ErrorMessage = "Диапозон значений площади от 1 до 5000 кв. м")]
 		public decimal? Square { get; set; }
 
 		/// <summary>
