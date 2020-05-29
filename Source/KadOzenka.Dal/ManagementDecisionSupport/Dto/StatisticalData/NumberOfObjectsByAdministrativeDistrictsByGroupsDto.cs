@@ -1,10 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
+﻿namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData
 {
 	public class NumberOfObjectsByAdministrativeDistrictsByGroupsDto
 	{
+		public string Name { get; set; }
+		public string FirstParentName { get; set; }
+		public string SecondParentName { get; set; }
+		public string ThirdParentName { get; set; }
+		public string Group { get; set; }
+		public bool HasGroup { get; set; }
+		public int ObjectsCount { get; set; }
 	}
 }

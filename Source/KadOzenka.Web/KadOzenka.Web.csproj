@@ -759,6 +759,15 @@
     <None Update="Config\Reports\CCC_OUReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForRegionsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1085,6 +1094,9 @@
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForRegionsReport.frx" />
+    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsReport.frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByGroupsReport.frx" />
