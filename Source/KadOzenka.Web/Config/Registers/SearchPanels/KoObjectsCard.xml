@@ -1,0 +1,3 @@
+﻿<RootElement>
+    <ControlElement Caption="Кадастровый номер" ID="item_value" OwnType="Text" AttributeNumber="20101600" QueryOperation="Like" />
+</RootElement>

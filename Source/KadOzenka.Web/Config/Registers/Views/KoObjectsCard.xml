@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RegisterView RegisterId="201" DefaultLayoutId="1002011" LinkedRegistersList="201,203,250,251,252,253" 
-              IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left" 
+              IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left"  SearchPanel="KoObjectsCard"
               ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="false" ShowFilterMenu="false"
               UseMasterPage="false">
   <Buttons>
