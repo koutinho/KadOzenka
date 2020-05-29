@@ -85,7 +85,7 @@
             @Html.CustomLabelFor("Результат оценки:")
         </div>
         <div class="col-sm-11 subgroup">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsByKR.GetEnumDescription()).Value((long) StatisticalDataType.ResultsByKR).Enable(false))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsByKR.GetEnumDescription()).Value((long) StatisticalDataType.ResultsByKR).Enable(true))
         </div>
         <div class="col-sm-11 subgroup">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApproval.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApproval).Enable(false))
