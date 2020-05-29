@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="05/29/2020 12:33:07" ReportInfo.CreatorVersion="2019.4.11.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="05/29/2020 15:04:01" ReportInfo.CreatorVersion="2019.4.11.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -75,10 +75,31 @@
     </BusinessObjectDataSource>
   </Dictionary>
   <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="7.56,505.15,9.45,405.5,121.37,181.65,233.3" Watermark.Font="Arial, 60pt" UnlimitedWidth="true">
-    <DataBand Name="BandCommon" Width="1047.06" Height="85.05" CanGrow="true" Guides="28.35,85.05">
-      <TextObject Name="Text1" Left="505.15" Top="28.35" Width="497.59" Height="56.7" CanGrow="true" BeforePrintEvent="BandCommon_BeforePrint" Text="INDIVIDUAL" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+    <ReportTitleBand Name="ReportTitle1" Width="1047.06" Height="66.15">
+      <TextObject Name="Text1" Top="9.45" Width="1039.5" Height="37.8" Text="Сведения о результатах определения кадастровой стоимости объектов недвижимости, кадастровая стоимость которых определена индивидуально" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 14pt, style=Bold"/>
+    </ReportTitleBand>
+    <DataBand Name="BandItem" Top="152.98" Width="1047.06" Height="47.25" Guides="0,90.88,22.72,45.44,68.16" PrintIfDatasourceEmpty="true">
+      <TextObject Name="Text14" Left="718.2" Width="160.65" Height="47.25" Border.Lines="All" Text="[Item.Upks]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text15" Left="878.85" Width="160.65" Height="47.25" Border.Lines="All" Text="[Item.Cost]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text9" Left="9.45" Width="94.5" Height="47.25" Border.Lines="All" Text="[Item.Number]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text11" Left="103.95" Width="228.95" Height="47.25" Border.Lines="All" Text="[Item.CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text12" Left="333.02" Width="222.26" Height="47.25" Border.Lines="All" Text="[Item.Type]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <TextObject Name="Text13" Left="555.66" Width="162.54" Height="47.25" Border.Lines="All" Text="[Item.Square]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      <DataHeaderBand Name="DataHeader1" Top="67.04" Width="1047.06" Height="85.05">
+        <TextObject Name="Text2" Left="9.45" Width="94.5" Height="66.15" Border.Lines="All" Text="№ п/п" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text4" Left="103.95" Width="228.95" Height="66.15" Border.Lines="All" Text="Кадастровый номер объекта недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text5" Left="333.02" Width="222.26" Height="66.15" Border.Lines="All" Text="Вид объекта недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text6" Left="555.66" Width="162.54" Height="66.15" Border.Lines="All" Text="Общая площадь объекта недвижимости, кв.м." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text7" Left="718.2" Width="160.65" Height="66.15" Border.Lines="All" Text="УПКС объекта недвижимости, руб./кв.м." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text8" Left="878.85" Width="160.65" Height="66.15" Border.Lines="All" Text="Кадастровая стоимость объекта недвижимости, руб." HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text16" Left="9.45" Top="66.15" Width="94.5" Height="18.9" Border.Lines="All" Text="1" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text18" Left="103.95" Top="66.15" Width="228.95" Height="18.9" Border.Lines="All" Text="2" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text19" Left="333.02" Top="66.15" Width="222.26" Height="18.9" Border.Lines="All" Text="3" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text20" Left="555.66" Top="66.15" Width="162.54" Height="18.9" Border.Lines="All" Text="4" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text21" Left="718.2" Top="66.15" Width="160.65" Height="18.9" Border.Lines="All" Text="5" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+        <TextObject Name="Text22" Left="878.85" Top="66.15" Width="160.65" Height="18.9" Border.Lines="All" Text="6" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+      </DataHeaderBand>
     </DataBand>
-    <DataBand Name="BandData1" Top="89.05" Width="1047.06" Height="212.41" Guides="0,90.88,22.72,45.44,68.16"/>
-    <ReportSummaryBand Name="ReportSummary1" Top="305.46" Width="1047.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="201.12" Width="1047.06" Height="9.45"/>
   </ReportPage>
 </Report>
