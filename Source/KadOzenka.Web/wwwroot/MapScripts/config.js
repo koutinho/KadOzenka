@@ -2,7 +2,7 @@ var AppData = {
     protocol: "https",
     version: "2.1",
     lang: "ru_RU",
-    key: "5400667f-f671-4f5b-a680-1296945f82e5",
+    key: "5b7a0369-63be-4edd-ac27-716d52c64d46",
     defaultRemoveElements: ["trafficControl", "geolocationControl", "fullscreenControl", "zoomControl"]
 };
 
