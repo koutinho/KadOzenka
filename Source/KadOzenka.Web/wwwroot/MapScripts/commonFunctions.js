@@ -84,3 +84,13 @@ function getCollorsForHeatMap(name) {
         }
     else return undefined;
 };
+
+function getDescriptionForHeatMap(name) {
+    if (heatMapData)
+        switch (currentLayer) {
+            case MapZoneType.district: return heatMapData.districts.find(x => x.name == name) ? `${name} (${numberWithSpaces(heatMapData.districts.find(x => x.name == name).counter)})` : undefined;
+            case MapZoneType.region: return heatMapData.regions.find(x => x.name == name) ? `${name} (${numberWithSpaces(heatMapData.regions.find(x => x.name == name).counter)})` : undefined;
+            case MapZoneType.zone: return heatMapData.zones.find(x => x.name == name) ? `${name} (${numberWithSpaces(heatMapData.zones.find(x => x.name == name).counter)})` : undefined;
+        }
+    else return undefined;
+};

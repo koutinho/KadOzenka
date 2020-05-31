@@ -154,10 +154,11 @@ function setCurrentLayer(url) {
             var defaultColor = null;
             geoJson.features.forEach(function (obj) {
                 var color = getCollorsForHeatMap(obj.name);
+                var description = getDescriptionForHeatMap(obj.name);
                 var opacity = color ? 0.75 : 0;
                 SOM.add(new ymaps.GeoObject({
                     geometry: obj.geometry,
-                    properties: { balloonContent: obj.name }
+                    properties: { balloonContent: description }
                 }, {
                     fillColor: color,
                     strokeColor: obj.options.strokeColor,

@@ -95,9 +95,9 @@ namespace KadOzenka.Web.Controllers
 
             return Json(new
             {
-                districts = new HeatMap().SetColors(new HeatMap().GroupList(allDistricts, districtList), colorsArray).Select(x => new { name = x.name, color = x.color}),
-                regions = new HeatMap().SetColors(new HeatMap().GroupList(allRegions, regionList), colorsArray).Select(x => new { name = x.name, color = x.color }),
-                zones = new HeatMap().SetColors(new HeatMap().GroupList(allZones, zoneList), colorsArray).Select(x => new { name = x.name, color = x.color })
+                districts = new HeatMap().SetColors(new HeatMap().GroupList(allDistricts, districtList), colorsArray).Select(x => new { name = x.name, color = x.color, counter = x.counter }),
+                regions = new HeatMap().SetColors(new HeatMap().GroupList(allRegions, regionList), colorsArray).Select(x => new { name = x.name, color = x.color, counter = x.counter }),
+                zones = new HeatMap().SetColors(new HeatMap().GroupList(allZones, zoneList), colorsArray).Select(x => new { name = x.name, color = x.color, counter = x.counter })
             });
         }
 
