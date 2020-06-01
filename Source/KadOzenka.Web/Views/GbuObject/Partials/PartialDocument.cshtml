@@ -4,6 +4,7 @@
 @model KadOzenka.Web.Models.GbuObject.PartialDocumentViewModel
 
 @Html.Hidden(string.IsNullOrEmpty(Model.ModelPrefix) ? nameof(Model.IsNewDocument) : $"{Model.ModelPrefix}.{nameof(Model.IsNewDocument)}", Model.IsNewDocument)
+
 <div class="form-group existing-document" style="@(!Model.IsNewDocument ? "" : "display: none")">
     <div class="col-sm-2">
         @Html.CustomLabelFor(m => m.IdDocument, true)
@@ -12,6 +13,7 @@
         @Html.KendoDropDownListWithAutocompleteFor(m => m.IdDocument, (IEnumerable)ViewData["Documents"], useAddTag: true, addFunction: "addButtonClick", modelPrefix: Model.ModelPrefix)
     </div>
 </div>
+
 <div class="form-group new-document" style="@(Model.IsNewDocument ? "" : "display: none")">
     <div class="col-sm-1">
         @Html.CustomLabelFor(m => m.NewDocumentName, true)
@@ -39,6 +41,8 @@
         </div>
     </div>
 </div>
+
+
 <script type="text/javascript">
     var idPrefix = '@(!string.IsNullOrEmpty(Model.ModelPrefix) ? $"{Model.ModelPrefix}_" : string.Empty)';
 
@@ -47,6 +51,7 @@
         $('.new-document').show(500);
         $(`#${idPrefix}@(nameof(Model.IsNewDocument))`).val(true);
     }
+
     function updateDocumentControl(id) {
         $('#exist-doc').click();
 	    $(`#${idPrefix}@(nameof(Model.IdDocument))`).data('kendoDropDownList').dataSource.add({ Text: $(`#${idPrefix}@(nameof(Model.NewDocumentName))`).val(), Value: id });
