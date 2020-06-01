@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Resources;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.QuerySubsystem;
@@ -446,6 +447,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 				text = new KeyValuePair<string, string>("Этажность", value: analog.FloorsCount.ToString());
 				dicText = new KeyValuePair<string, string>("Корректировка на долю земельного участка (Кдзу)", value: "1");
+				double fixedCoefflandShareZero = 0.8; // По требованию заказчика если этажность 0 то коэф 0,8
 				//Корректировка на долю ЗУ
 				if (scenarioType != null && scenarioType == ScenarioType.Oks)
 				{
@@ -453,10 +455,19 @@ namespace KadOzenka.Dal.ExpressScore
 						.Select(ScoreCommonService.ReferenceToNumber).ToList();
 
 					var coefficient = dateNumb.FirstOrDefault(x => x.Key == analog.FloorsCount)?.Value ??
-					                  dateNumb.Last()?.Value ?? 1;
-					dicText = new KeyValuePair<string, string>("Корректировка на долю земельного участка (Кдзу)", value:Math.Round(coefficient, 2).ToString("N"));
+					                  dateNumb.Last()?.Value ?? null;
 
-					cost = cost * coefficient;
+					if (analog.FloorsCount == 0 && coefficient == null)
+					{
+						coefficient = (decimal)fixedCoefflandShareZero;
+					}
+
+					if (coefficient != null)
+					{
+						dicText = new KeyValuePair<string, string>("Корректировка на долю земельного участка (Кдзу)", value: Math.Round(coefficient.GetValueOrDefault(), 2).ToString("N"));
+
+						cost = cost * coefficient.GetValueOrDefault();
+					}
 
 				}
 				costFactorsDataForReport.Add(new Tuple<string, string>(text.Key, text.Value));
@@ -475,7 +486,7 @@ namespace KadOzenka.Dal.ExpressScore
 					text = new KeyValuePair<string, string>("Этаж расположения", floor.ToString());
 
 					var floorDict = OMEsReferenceItem.Where(x => x.ReferenceId == exCostFactors.FloorDicId).SelectAll().Execute()
-						.Select(ScoreCommonService.ReferenceToNumber).OrderByDescending(x => x.Value).ToList().ToList();
+						.Select(ScoreCommonService.ReferenceToNumber).OrderByDescending(x => x.Key).ToList().ToList();
 
 					var floorFactor = floor != 0 && floorDict.Count > 0
 						? floor > floorDict.FirstOrDefault()?.Key ? floorDict.FirstOrDefault()?.Value :
@@ -928,8 +939,8 @@ namespace KadOzenka.Dal.ExpressScore
 				ReportService.AddValueRequiredParam(analog.Square.ToString(CultureInfo.InvariantCulture));
 				ReportService.AddValueRequiredParam(analog.Address.ToString(CultureInfo.InvariantCulture));
 				ReportService.AddValueRequiredParam(analog.Kn.ToString(CultureInfo.InvariantCulture));
-				ReportService.AddValueRequiredParam((analog.Price  * 12).ToString(CultureInfo.InvariantCulture));
-				ReportService.AddValueRequiredParam(Math.Round(analog.Price * 12 / analog.Square, 2).ToString(CultureInfo.InvariantCulture));
+				ReportService.AddValueRequiredParam((analog.Price  * 12).ToString("N"));
+				ReportService.AddValueRequiredParam(Math.Round(analog.Price * 12 / analog.Square, 2).ToString("N"));
 			}
 		}
 
