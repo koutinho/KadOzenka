@@ -357,7 +357,7 @@ select.EditDataSelect:focus {
 }
 
 .filterControl .allFiltersContainer .filterPanelContainer {
-    margin-top: 17.5px;
+    margin-top: 4px;
 }
 
 .filterControl .allFiltersContainer .filterPanel {
@@ -373,7 +373,7 @@ select.EditDataSelect:focus {
     background-color: #fff;
     width: fit-content;
     border: solid 1px #5c9eff;
-    padding: 5px 15px;
+    padding: 1px 5px;
     border-radius: 10px;
     font-size: 16px;
     background: #e0eeff;
@@ -513,11 +513,11 @@ select.EditDataSelect:focus {
 
 .filterControl .allFiltersContainer .filterPanel .filterButton {
     display: inline-flex;
-    height: 26px;
-    line-height: 26px;
-    padding: 0px 12px;
+    height: 20px;
+    line-height: 20px;
+    padding: 0px 8px;
     background: #5c9eff;
-    border-radius: 13px;
+    border-radius: 10px;
     vertical-align:central;
     text-align:center;
     border: solid 1px #5c9eff;
@@ -530,6 +530,12 @@ select.EditDataSelect:focus {
     -o-user-select: none;
     opacity: 0.75;
     align-items: center;
+}
+
+.filterControl .allFiltersContainer .filterPanel .filterButton.characteristicsButton {
+    min-height: 26px;
+    border-radius: 13px;
+    padding: 0px 12px;
 }
 
 .filterControl .allFiltersContainer .filterPanel .filterButton.refresh {
@@ -551,7 +557,7 @@ select.EditDataSelect:focus {
 }
 
 .filterControl .allFiltersContainer .filterPanel .filterButton:not(:first-child) {
-    margin-left: 10px;
+    margin-left: 4px;
 }
 
 .filterControl .allFiltersContainer .filterPanel .filterButton .preloaderImage {
