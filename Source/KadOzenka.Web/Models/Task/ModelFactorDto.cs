@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace KadOzenka.Web.Models.Task
+﻿namespace KadOzenka.Web.Models.Task
 {
 	public class ModelFactorDto
 	{
@@ -17,5 +12,23 @@ namespace KadOzenka.Web.Models.Task
 		public bool SignDiv { get; set; }
 		public bool SignAdd { get; set; }
 		public bool SignMarket { get; set; }
-	}
+
+
+        public static ModelFactorDto FromEntity(KadOzenka.Dal.Model.Dto.ModelFactorDto entity)
+        {
+            return new ModelFactorDto
+            {
+                Id = entity.Id,
+                ModelId = entity.ModelId,
+                FactorId = entity.FactorId,
+                Factor = entity.Factor,
+                MarkerId = entity.MarkerId,
+                Weight = entity.Weight,
+                B0 = entity.B0,
+                SignDiv = entity.SignDiv,
+                SignAdd = entity.SignAdd,
+                SignMarket = entity.SignMarket
+            };
+        }
+    }
 }

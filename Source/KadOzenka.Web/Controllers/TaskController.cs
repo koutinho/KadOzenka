@@ -298,36 +298,11 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		public JsonResult GetModelFactors(long modelId)
-		{
-			List<ModelFactorDto> factors = OMModelFactor.Where(x => x.ModelId == modelId)
-				.SelectAll()
-				.Execute()
-				.Select(factor => new ModelFactorDto
-				{
-					Id = factor.Id,
-					ModelId = factor.ModelId,
-					FactorId = factor.FactorId,
-					MarkerId = factor.MarkerId,
-					Weight = factor.Weight,
-					B0 = factor.B0,
-					SignDiv = factor.SignDiv,
-					SignAdd = factor.SignAdd,
-					SignMarket = factor.SignMarket
-				}).ToList();
+        {
+            var factorDtos = ModelService.GetModelFactors(modelId);
+            var models = factorDtos.Select(ModelFactorDto.FromEntity).ToList();
 
-			List<long?> factorIds = factors.Select(x => x.FactorId).ToList();
-			if (factorIds.Count == 0)
-			{
-				return Json(factors);
-			}
-
-			var sqlResult = GetModelFactorNameSql(factorIds);
-			foreach (ModelFactorDto factorDto in factors)
-			{
-				factorDto.Factor = sqlResult[factorDto.FactorId];
-			}
-
-			return Json(factors);
+            return Json(models);
 		}
 
 		public JsonResult GetFactors(long? tourId)
