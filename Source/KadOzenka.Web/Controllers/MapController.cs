@@ -93,11 +93,21 @@ namespace KadOzenka.Web.Controllers
             List<IGrouping<string, OMCoreObject>> regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
             List<IGrouping<string, OMCoreObject>> zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
 
+            (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) districtsData = 
+                new HeatMap().SetColors(new HeatMap().GroupList(allDistricts, districtList), colorsArray);
+            (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) regionsData =
+                new HeatMap().SetColors(new HeatMap().GroupList(allRegions, regionList), colorsArray);
+            (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) zonesData =
+                new HeatMap().SetColors(new HeatMap().GroupList(allZones, zoneList), colorsArray);
+
             return Json(new
             {
-                districts = new HeatMap().SetColors(new HeatMap().GroupList(allDistricts, districtList), colorsArray).Select(x => new { name = x.name, color = x.color, counter = x.counter }),
-                regions = new HeatMap().SetColors(new HeatMap().GroupList(allRegions, regionList), colorsArray).Select(x => new { name = x.name, color = x.color, counter = x.counter }),
-                zones = new HeatMap().SetColors(new HeatMap().GroupList(allZones, zoneList), colorsArray).Select(x => new { name = x.name, color = x.color, counter = x.counter })
+                districts = districtsData.ColoredData.Select(x => new { name = x.name, color = x.color, counter = x.counter }),
+                districtsSteps = districtsData.MinMaxData.Select(x => new { min = x.min, max = x.max }),
+                regions = regionsData.ColoredData.Select(x => new { name = x.name, color = x.color, counter = x.counter }),
+                regionsSteps = regionsData.MinMaxData.Select(x => new { min = x.min, max = x.max }),
+                zones = zonesData.ColoredData.Select(x => new { name = x.name, color = x.color, counter = x.counter }),
+                zonesSteps = zonesData.MinMaxData.Select(x => new { min = x.min, max = x.max })
             });
         }
 

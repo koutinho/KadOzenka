@@ -94,3 +94,13 @@ function getDescriptionForHeatMap(name) {
         }
     else return undefined;
 };
+
+function getMinMaxDataForHeatMap() {
+    if (heatMapData)
+        switch (currentLayer) {
+            case MapZoneType.district: return heatMapData.districtsSteps;
+            case MapZoneType.region: return heatMapData.regionsSteps;
+            case MapZoneType.zone: return heatMapData.zonesSteps;
+        }
+    else return undefined;
+};

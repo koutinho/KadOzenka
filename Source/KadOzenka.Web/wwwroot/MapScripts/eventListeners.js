@@ -93,10 +93,10 @@ function listenFilter(initialList, filterInfo, inPool, panelId, type) {
                 this.classList.toggle("inactive");
                 switch (type) {
                     case 'source':
-                        SOURCE_DATA = this.classList.contains("inactive") ? null : this.innerHTML.replace(/&nbsp;/g, " ");;
+                        SOURCE_DATA = this.classList.contains("inactive") ? null : this.innerHTML.replace(/&nbsp;/g, " ");
                         break;
                     case 'district':
-                        DISTRICTS_DATA = this.classList.contains("inactive") ? null : this.innerHTML.replace(/&nbsp;/g, " ");;
+                        DISTRICTS_DATA = this.classList.contains("inactive") ? null : this.innerHTML.replace(/&nbsp;/g, " ");
                         break;
                 }
                 refreshCurrentToken();
@@ -169,11 +169,11 @@ function setCurrentLayer(url) {
                     id: obj.id
                 }));
             });
-            //SOM.events.add("click", function (e) {
-            //    SOM.each(x => { if (x.options.get('fillColor') == 'FF0000') x.options.set('fillColor', defaultColor); });
-            //    defaultColor = `${e.get('target').options.get('fillColor')}`;
-            //    e.get('target').options.set('fillColor', "FF0000");
-            //});
+            if (getMinMaxDataForHeatMap()) {
+                var i = 0;
+                Array.from(document.getElementById('legendPaleteContainer').getElementsByClassName('coloredSegment'))
+                    .forEach(x => { x.setAttribute('title', `${getMinMaxDataForHeatMap()[i].min} - ${getMinMaxDataForHeatMap()[i].max}`); i++; });
+            }
             map.geoObjects.add(SOM);
         });
     }

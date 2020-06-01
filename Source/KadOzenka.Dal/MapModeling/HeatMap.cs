@@ -22,13 +22,14 @@ namespace KadOzenka.Dal.MapModeling
             return result;
         }
 
-        public List<(string name, string color, string counter)> SetColors(List<Tuple<string, decimal, int>> initials, string[] colorsArray)
+        public (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) SetColors(List<Tuple<string, decimal, int>> initials, string[] colorsArray)
         {
             decimal min = initials.Min(x => x.Item2), max = initials.Max(x => x.Item2), step = (max - min) / colorsArray.Length;
             int size = colorsArray.Length;
             decimal? next = null;
             List<Tuple<decimal, decimal, string>> deltas = new List<Tuple<decimal, decimal, string>>();
-            List<(string name, string color, string counter)> result = new List<(string name, string color, string counter)>();
+            List<(string name, string color, string counter)> ColoredResult = new List<(string name, string color, string counter)>();
+            List<(string min, string max)> MinMaxResult = new List<(string min, string max)>();
             for (int i = 0, j = 1; i < size; i++, j++)
             {
                 decimal start = next != null ? (decimal)next : Math.Floor(min + step * i);
@@ -42,12 +43,13 @@ namespace KadOzenka.Dal.MapModeling
                 {
                     if (pnt.Item2 < col.Item2 && pnt.Item2 > col.Item1)
                     {
-                        result.Add((pnt.Item1, col.Item3, Math.Round(pnt.Item2).ToString()));
+                        ColoredResult.Add((pnt.Item1, col.Item3, Math.Round(pnt.Item2).ToString()));
                         break;
                     }
                 }
             }
-            return result;
+            foreach (Tuple<decimal, decimal, string> col in deltas) MinMaxResult.Add((Math.Round(col.Item1).ToString(), Math.Round(col.Item2).ToString()));
+            return (ColoredResult, MinMaxResult);
         }
 
     }
