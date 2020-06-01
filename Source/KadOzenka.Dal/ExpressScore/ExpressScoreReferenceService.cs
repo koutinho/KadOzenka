@@ -135,7 +135,7 @@ namespace KadOzenka.Dal.ExpressScore
                 throw new Exception($"Не найден справочник с ИД {dto.ReferenceId}");
             }
 
-            var isExistsTheSameReferenceItem = OMEsReferenceItem.Where(x => x.Value == dto.Value && x.Id != dto.Id).ExecuteExists();
+            var isExistsTheSameReferenceItem = OMEsReferenceItem.Where(x => x.Value == dto.Value && x.Id != dto.Id && x.ReferenceId == dto.ReferenceId).ExecuteExists();
             if (isExistsTheSameReferenceItem)
             {
                 throw new Exception($"Значение '{dto.Value}' в справочнике '{reference.Name}' уже существует");
@@ -277,24 +277,24 @@ namespace KadOzenka.Dal.ExpressScore
                     }
 
                     OMEsReferenceItem obj;
-                    lock (locked)
-                    {
-                        obj = OMEsReferenceItem.Where(x => x.ReferenceId == reference.Id && x.Value == valueString).SelectAll().ExecuteFirstOrDefault();
-                    }
-                    
-                    if (obj != null)
+					lock (locked)
+					{
+						obj = OMEsReferenceItem.Where(x => x.ReferenceId == reference.Id && x.Value == valueString).SelectAll().ExecuteFirstOrDefault();
+					}
+
+					if (obj != null)
                     {
                         obj.CalculationValue = calcValue;
-                        lock (locked)
-                        {
+						lock (locked)
+						{
                             obj.Save();
                         }
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно обновлено");
                     }
                     else
                     {
-                        lock (locked)
-                        {
+						lock (locked)
+						{
                             new OMEsReferenceItem
                             {
                                 ReferenceId = reference.Id,
