@@ -115,8 +115,16 @@
         <div class="col-sm-11">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.InfoAboutCadastralCostDeterminingMethod.GetEnumDescription()).Value((long) StatisticalDataType.InfoAboutCadastralCostDeterminingMethod).Enable(true))
         </div>
-        <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CalculationParams.GetEnumDescription()).Value((long) StatisticalDataType.CalculationParams).Enable(false))
+        <div>
+            <div class="col-sm-11">
+                @Html.CustomLabelFor("Параметры расчётов:")
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CalculationParams.GetEnumDescription()).Value((long)StatisticalDataType.CalculationParams).Enable(true))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ModelingResults.GetEnumDescription()).Value((long)StatisticalDataType.ModelingResults).Enable(false))
+            </div>
         </div>
         <div class="col-sm-11">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsComposition.GetEnumDescription()).Value((long) StatisticalDataType.PricingFactorsComposition).Enable(false))

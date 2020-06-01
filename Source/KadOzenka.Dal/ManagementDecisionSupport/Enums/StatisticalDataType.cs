@@ -64,11 +64,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 		[StatisticalDataFmReportCode(1023)]
 		InfoAboutCadastralCostDeterminingMethod = 14,
 
-		[Description("Параметры расчётов")]
-		[StatisticalDataFmReportCode(1024)]
-		CalculationParams = 15,
+		[Description("Параметры расчета по подгруппам")]
+		[StatisticalDataFmReportCode(10240)]
+		CalculationParams = 150,
+        [Description("Результаты моделирования")]
+        [StatisticalDataFmReportCode(10241)]
+        ModelingResults = 151,
 
-		[Description("Состав ценообразующих факторов")]
+        [Description("Состав ценообразующих факторов")]
 		[StatisticalDataFmReportCode(1025)]
 		PricingFactorsComposition = 16,
 
