@@ -63,10 +63,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
                         JoinCondition = new QSConditionSimple
                         {
                             ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.ModelId),
-                            RightOperand = OMModel.GetColumn(x => x.Id)
+                            LeftOperand = OMUnit.GetColumn(x => x.GroupId),
+                            RightOperand = OMModel.GetColumn(x => x.GroupId)
                         },
-                        JoinType = QSJoinType.Inner
+                        JoinType = QSJoinType.Left
                     }
                 }
             };
@@ -119,12 +119,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
             for (var i = 0; i < operations.Count; i++)
             {
                 dataTable.Rows.Add(i + 1,
-                    operations[i].ObjectPropertyType.GetEnumDescription(),
+                    operations[i].ObjectPropertyType == PropertyTypes.None 
+                        ? null 
+                        : operations[i].ObjectPropertyType.GetEnumDescription(),
                     operations[i].CadastralNumber,
                     operations[i].GroupName,
                     operations[i].ModelingWay.GetEnumDescription(),
-                    operations[i].ModelCalculationType.GetEnumDescription(),
-                    operations[i].ModelCalculationMethod.GetEnumDescription(),
+                    operations[i].ModelCalculationType == KoCalculationType.None 
+                        ? null 
+                        : operations[i].ModelCalculationType.GetEnumDescription(),
+                    operations[i].ModelCalculationMethod == KoCalculationMethod.None 
+                        ? null
+                        : operations[i].ModelCalculationMethod.GetEnumDescription(),
                     operations[i].ModelName);
             }
 
