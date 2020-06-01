@@ -9,6 +9,7 @@ using ObjectModel.Directory;
 using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.Model;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using ObjectModel.KO;
@@ -41,12 +42,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
+            var modelService = new ModelService();
             var groupId = GetQueryParam<long>("Groups", query);
-            var operations = GetOperations(groupId);
+
+            var model = GetModelByGroupId(groupId);
+            var factors = modelService.GetModelFactors(model.Id);
 
             var dataSet = new DataSet();
-            var itemTable = GetItemDataTable(operations);
-            dataSet.Tables.Add(itemTable);
+
+            //var modelTable = GetModelDataTable(model);
+            //var itemTable = GetFactorsDataTable(factors);
+
+            //dataSet.Tables.Add(modelTable);
+            //dataSet.Tables.Add(itemTable);
 
             return dataSet;
         }
@@ -101,33 +109,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             return result.DistinctBy(x => x.GroupId).ToList();
         }
 
-        private List<ReportItem> GetOperations(long groupId)
+        public OMModel GetModelByGroupId(long? groupId)
         {
-            return new List<ReportItem>();
+            return OMModel.Where(x => x.GroupId == groupId).SelectAll().ExecuteFirstOrDefault();
         }
 
-        private DataTable GetItemDataTable(List<ReportItem> operations)
+        private DataTable GetModelDataTable(OMModel model)
         {
-            var dataTable = new DataTable("ITEM");
+            var dataTable = new DataTable("MODEL");
 
-            dataTable.Columns.Add("Number");
-            dataTable.Columns.Add("CadastralDistrict");
-            dataTable.Columns.Add("CadastralNumber");
+            dataTable.Columns.Add("Formula");
             dataTable.Columns.Add("Type");
-            dataTable.Columns.Add("Square");
-            dataTable.Columns.Add("Upks");
-            dataTable.Columns.Add("Cost");
 
-            for (var i = 0; i < operations.Count; i++)
-            {
-                dataTable.Rows.Add(i + 1,
-                    operations[i].CadastralDistrict,
-                    operations[i].CadastralNumber,
-                    operations[i].Type.GetEnumDescription(),
-                    operations[i].Square,
-                    operations[i].Upks,
-                    operations[i].Cost);
-            }
+            dataTable.Rows.Add(model.Formula);
+            dataTable.Rows.Add(model.AlgoritmType_Code.GetEnumDescription());
 
             return dataTable;
         }
@@ -141,16 +136,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             public long Id { get; set; }
             public long GroupId { get; set; }
             public string Name { get; set; }
-        }
-
-        private class ReportItem
-        {
-            public string CadastralDistrict { get; set; }
-            public string CadastralNumber { get; set; }
-            public PropertyTypes Type { get; set; }
-            public decimal? Square { get; set; }
-            public decimal? Upks { get; set; }
-            public decimal? Cost { get; set; }
         }
 
         #endregion
