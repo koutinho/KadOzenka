@@ -6,9 +6,9 @@
 			<div>
 				<div class="form-horizontal col-sm-12">
 					<div class="form-group"></div>
-					<div class="form-group">
-						<input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx" />
-					</div>
+                    <div class="form-group">
+                        <input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx" />
+                    </div>
 					<div class="form-group">
 						<div class="col-sm-5">
 							<div class="row">
@@ -458,21 +458,49 @@
 			$('#files').kendoUpload({
 				multiple: false,
 				localization: {
-					select: 'Загрузить Файл'
+                    select: 'Загрузить Файл',
+                    clearSelectedFiles: 'Очистить'
 				},
 				async: {
-					autoUpload: true,
+					autoUpload: false,
 					saveUrl: '@Url.Action("ParseFileColumns", "DataImport")'
-				},
-				validation: {
+                },
+                select: function(e) {
+                    var upload = e.sender;
+                    Common.UI.ShowConfirm({
+                        title: 'Подтверждение',
+                        content: 'Для корректной загрузки данных соблюдайте следующие требования к загружаемому файлу:' +
+                            '<br/> 1 столбец - № п/п' +
+                            '<br/> 2 столбец - Кадастровый номер',
+                        captionYes: "Загрузить",
+                        captionNo: "Отменить",
+                        onSuccess: function () {
+                            upload.upload();
+                        },
+                        onFail: function () {
+                            upload.clearAllFiles();
+                            var window = $(this).closest('[data-role=window]').data('kendoWindow');
+                            window.close();
+                            window.destroy();
+                        }
+                    });
+                },
+                validation: {
 					allowedExtensions: ['.xls', '.xlsx']
 				},
 				success: function (e) {
 					if (e.operation === "upload") {
 						var columnNames = e.response.ColumnsNames;
 						var dataCount = e.response.DataCount;
-						$("#columnsListBox").data("kendoListBox").setDataSource(columnNames);
-						if (dataCount > dataCountForBackgroundLoading) {
+                        var listBox = $("#columnsListBox").data("kendoListBox");
+                        listBox.setDataSource(columnNames);
+                        if (listBox.items() != null) {
+                            var numberColumn = listBox.items()[0];
+                            var cadastralNumberColumn = listBox.items()[1];
+                            listBox.enable(numberColumn, false);
+                            listBox.enable(cadastralNumberColumn, false);
+                        }
+                        if (dataCount > dataCountForBackgroundLoading) {
 							$("#backgroundDownloadCheckbox").prop('checked', true);
 						} else {
 							$("#backgroundDownloadCheckbox").prop('checked', false);
