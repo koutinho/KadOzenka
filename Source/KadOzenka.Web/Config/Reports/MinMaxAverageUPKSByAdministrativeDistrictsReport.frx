@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="05/28/2020 17:00:43" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/01/2020 10:43:53" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -108,7 +108,7 @@
         <TableRow Name="Row3" Height="22.72" AutoSize="true">
           <TableCell Name="Cell5" Border.Lines="All" Text="[Name]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell6" Border.Lines="All" Text="[UpksCalcType]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-          <TableCell Name="Cell13" Border.Lines="All" Text="[UpksCalcValue]" HorzAlign="Right" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell13" Border.Lines="All" Text="[UpksCalcValue]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
       </MatrixObject>
       <TextObject Name="Text1" Left="1398.6" Top="28.35" Width="94.5" Height="18.9" Text="[Data.UpksCalcValue]" Format="Currency" Format.UseLocale="true" HorzAlign="Right" WordWrap="false" Trimming="EllipsisCharacter"/>

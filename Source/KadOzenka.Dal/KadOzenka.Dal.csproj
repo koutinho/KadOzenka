@@ -93,4 +93,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="FastReports\StatisticalData\MinMaxAverageUPKSByCadastralQuartersReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

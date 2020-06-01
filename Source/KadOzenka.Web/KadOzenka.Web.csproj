@@ -702,9 +702,6 @@
     <None Update="Config\Registers\SearchPanels\DeclarationsSubjectSelect.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Config\Registers\SearchPanels\KoObjectsCard.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="Config\Registers\SearchPanels\EsReferenceItems.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -760,6 +757,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\CCC_OUReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx">
@@ -1067,7 +1067,6 @@
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
     <ConfigPath Remove="Config\Param\ReonService.Ppr.xml" />
     <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
-    <ConfigPath Remove="Config\Registers\SearchPanels\KoObjectsCard.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
@@ -1097,6 +1096,7 @@
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx" />
+    <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx" />
     <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForRegionsReport.frx" />

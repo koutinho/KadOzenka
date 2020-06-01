@@ -260,7 +260,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        return cadastralQuartal.Substring(0, delimeterIndex);
         }
 
-        private decimal? GetUpksCalcValue(UpksCalcType upksCalcType, List<MinMaxAverageUPKSByAdministrativeDistrictsObjectDto> dtoList)
+        protected decimal? GetUpksCalcValue<T>(UpksCalcType upksCalcType, List<T> dtoList) where T: UpksCalcDto
         {
 	        decimal? result = null;
 	        switch (upksCalcType)
