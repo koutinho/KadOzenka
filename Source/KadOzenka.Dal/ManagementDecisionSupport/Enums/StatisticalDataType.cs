@@ -40,9 +40,13 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 		[StatisticalDataFmReportCode(1018)]
 		ResultsForApproval = 9,
 
-		[Description("Результаты сводные по КР")]
-		[StatisticalDataFmReportCode(1019)]
-		KRSummaryResults = 10,
+		[Description("Сводные результаты государственной кадастровой оценки объектов недвижимости по кадастровому району (ОКС)")]
+		[StatisticalDataFmReportCode(10191)]
+		KRSummaryResultsOks = 101,
+
+		[Description("Сводные результаты государственной кадастровой оценки объектов недвижимости по кадастровому району (ЗУ)")]
+		[StatisticalDataFmReportCode(10192)]
+		KRSummaryResultsZu = 102,
 
 		[Description("Среднее значения УПКС по КК, кадастровым районам и субъекту РФ")]
 		[StatisticalDataFmReportCode(1020)]
