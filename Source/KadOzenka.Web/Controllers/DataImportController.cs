@@ -27,6 +27,7 @@ using System.IO;
 using Core.Register.Enums;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Models.DataImport;
+using ObjectModel.Core.TD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -54,7 +55,16 @@ namespace KadOzenka.Web.Controllers
 			}
 			ViewBag.DataCountForBackgroundLoading = _dataCountForBackgroundLoading;
 
-			return View();
+            ViewData["Documents"] = OMInstance.Where(x => x)
+                .Select(x => x.Description)
+                .Select(x => x.Id)
+                .Execute().Select(x => new
+                {
+                    Text = x.Description,
+                    Value = x.Id
+                }).ToList();
+
+            return View();
 		}
 		
 		public IActionResult GetTreeAttributes()
@@ -189,14 +199,19 @@ namespace KadOzenka.Web.Controllers
                 IsKey = x.IsKey
             }).ToList();
 
+            var documentId = model.Document.IsNewDocument
+                ? TaskService.CreateDocument(model.Document.NewDocumentRegNumber,
+                    model.Document.NewDocumentName, model.Document.NewDocumentDate)
+                : model.Document.IdDocument;
+
             if (model.IsBackgroundDownload)
             {
                 using (var stream = model.File.OpenReadStream())
                 {
-                    DataImporterCommon.AddImportToQueue(model.MainRegisterId, model.RegisterViewId, model.File.FileName, stream, columns, null);
+                    DataImporterCommon.AddImportToQueue(model.MainRegisterId, model.RegisterViewId, model.File.FileName, stream, columns, documentId);
                 }
 
-                return new JsonResult(new {Message = "Фоновая загрузка начата.", Success = true });
+                return new JsonResult(new { Message = "Фоновая загрузка начата.", Success = true });
             }
             else
             {
@@ -206,7 +221,7 @@ namespace KadOzenka.Web.Controllers
                     excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
                 }
 
-                var resultFile = (MemoryStream)DataImporterCommon.ImportDataFromExcel(model.MainRegisterId, excelFile, columns, null, out var success);
+                var resultFile = (MemoryStream)DataImporterCommon.ImportDataFromExcel(model.MainRegisterId, excelFile, columns, documentId, out var success);
 
                 var resultFileName = $"{Path.GetFileNameWithoutExtension(model.File.FileName)}_Result{Path.GetExtension(model.File.FileName)}";
                 HttpContext.Session.Set(resultFileName, resultFile.ToArray());
