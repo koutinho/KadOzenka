@@ -40,10 +40,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             switch (reportType)
             {
                 case "Результаты определения кадастровой стоимости":
-                    type = typeof(CadastralCostDeterminationResultsReport);
+                    type = typeof(StateResultsReport);
                     break;
                 case "Сведения о результатах определения КС ОН, КС которых определен индивидуально":
-                    type = typeof(CadastralCostDeterminationIndividuallyResultsReport);
+                    type = typeof(IndividuallyResultsReport);
                     break;
                 default:
                     throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");

@@ -7,14 +7,13 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationResults
 {
-    public class CadastralCostDeterminationIndividuallyResultsReport : ICadastralCostDeterminationResultsReport
+    public class StateResultsReport : StatisticalDataReport, ICadastralCostDeterminationResultsReport
     {
-        public string GetTemplateName(NameValueCollection query)
+        string ICadastralCostDeterminationResultsReport.GetTemplateName(NameValueCollection query)
         {
-            return "CadastralCostDeterminationIndividuallyResultsReport";
+            return "CadastralCostDeterminationResultsReport";
         }
 
-        //TODO copy from first report. we wait comments from PM
         DataSet ICadastralCostDeterminationResultsReport.GetData(NameValueCollection query, List<long> taskIdList)
         {
             var operations = GetOperations(taskIdList);
@@ -26,17 +25,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             return dataSet;
         }
 
-
+        
         #region Support Methods
 
         private List<ReportItem> GetOperations(List<long> taskIds)
         {
-            if (taskIds.Count == 0)
+            if(taskIds.Count == 0)
                 return new List<ReportItem>();
 
             var items = new List<ReportItem>();
 
-            var units = OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId))
+            var units = OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long) x.TaskId))
                 .Select(x => x.CadastralBlock)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.PropertyType_Code)
@@ -84,7 +83,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
                     operations[i].Upks,
                     operations[i].Cost);
             }
-
+            
             return dataTable;
         }
 
