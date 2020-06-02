@@ -1400,4 +1400,33 @@ input#addressInput:focus {
         background: none;
     }
 
+
+.menu-panel {
+    border: 1px solid #dedee0 !important;
+    padding: 3% !important;
+}
+
+.menu-panel-header-text {
+    color: black !important;
+    margin-left: 0 !important;
+}
+
+.menu-panel .menu-panel-row-search > input {
+    width: 92% !important;
+    border: 1px solid #ceced2 !important;
+    border-radius: 5px;
+    line-height: 25px !important;
+    padding: 1% 0 1% 1% !important;
+    margin-bottom: 3%;
+}
+
+.menu-panel .menu-panel-row-search > .k-i-search {
+    border: none !important;
+    font-size: 1.7em !important;
+    line-height: inherit !important;
+    padding-left: 0 !important;
+    width: 5% !important;
+    height: 100% !important;
+}
+
 /* ------------------------------------------------------ */
