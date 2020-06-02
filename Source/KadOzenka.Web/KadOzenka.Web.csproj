@@ -789,6 +789,12 @@
     <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Config\Reports\KRSummaryResultsOksReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Reports\KRSummaryResultsZuReport.frx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -1094,6 +1100,8 @@
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
+    <ConfigPath Remove="Config\Reports\KRSummaryResultsOksReport.frx" />
+    <ConfigPath Remove="Config\Reports\KRSummaryResultsZuReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx" />
