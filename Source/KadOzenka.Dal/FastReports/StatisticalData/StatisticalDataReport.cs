@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Linq;
+using Core.UI.Registers.Reports.Model;
 using FastReport;
 using FastReport.Matrix;
+using KadOzenka.Dal.GbuObject;
 using Newtonsoft.Json;
 using Platform.Reports;
 
@@ -10,6 +14,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public abstract class StatisticalDataReport : FastReportBase
 	{
+		protected readonly GbuObjectService GbuObjectService;
+
+		protected StatisticalDataReport()
+		{
+			GbuObjectService = new GbuObjectService();
+		}
+
 		public override string GetTitle(long? objectId)
 		{
 			return ReportType.Title;
@@ -45,6 +56,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			}
 
 			return new DataSet();
+		}
+
+		protected void InitialiseGbuAttributesFilterValue(FilterValue attributeFilterValue)
+		{
+			if (attributeFilterValue != null)
+			{
+				attributeFilterValue.ReportParameters = new List<ReportParameter>();
+				var attributes = GbuObjectService.GetGbuAttributes();
+				attributeFilterValue.ReportParameters.Add(new ReportParameter
+					{ Value = string.Empty, Key = string.Empty });
+				attributeFilterValue.ReportParameters.AddRange(attributes.Select(x => new ReportParameter
+					{ Value = $"{x.Name} ({x.ParentRegister?.RegisterDescription})", Key = $"key:{x.Id}" })
+				);
+			}
 		}
 	}
 }

@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			var nameAttr = RegisterCache.RegisterAttributes.Values
 				.First(x => x.RegisterId == rosreestrRegister.RegisterId
 							&& x.Name.Equals(
-								"Наименование земельного участка"));
+								"Наименование объекта"));
 			var purposeAttr = RegisterCache.RegisterAttributes.Values
 				.First(x => x.RegisterId == rosreestrRegister.RegisterId
 							&& x.Name.Equals(
@@ -171,7 +171,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						{
 							switch (attribute.AttributeData.Name)
 							{
-								case "Наименование земельного участка":
+								case "Наименование объекта":
 									dto.Name = attribute.GetValueInString();
 									break;
 								case "Назначение сооружения":

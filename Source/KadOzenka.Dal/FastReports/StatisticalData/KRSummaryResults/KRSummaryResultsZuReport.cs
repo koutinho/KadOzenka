@@ -4,11 +4,19 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 {
-	public class KRSummaryResultsZuReport : KRSummaryResultsReport
+	public class KRSummaryResultsZuReport : StatisticalDataReport
 	{
+		private readonly KRSummaryResultsService _summaryResultsService;
+
+		public KRSummaryResultsZuReport()
+		{
+			_summaryResultsService = new KRSummaryResultsService(GbuObjectService);
+		}
+
 
 		protected override string TemplateName(NameValueCollection query)
 		{
@@ -51,7 +59,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 			dataTable.Columns.Add("Upks");
 			dataTable.Columns.Add("CadastralCost");
 
-			var data = SummaryResultsService.GetKRSummaryResultsZuData(taskIdList, klardAttributeId.Value);
+			var data = _summaryResultsService.GetKRSummaryResultsZuData(taskIdList, klardAttributeId.Value);
 
 			var i = 1;
 			foreach (var unitDto in data)
