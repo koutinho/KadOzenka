@@ -23206,7 +23206,7 @@ namespace ObjectModel.Modeling
 namespace ObjectModel.Common
 {
     /// <summary>
-    /// 800 Журнал выгрузки по шаблону Excel (COMMON_EXPORT_BY_TEMPLATES)
+    /// 800 Журнал выгрузки данных (COMMON_EXPORT_BY_TEMPLATES)
     /// </summary>
     [RegisterInfo(RegisterID = 800)]
     [Serializable]
@@ -23816,6 +23816,26 @@ namespace ObjectModel.Common
             {
                 _numberofimportedobjects = value;
                 NotifyPropertyChanged("NumberOfImportedObjects");
+            }
+        }
+
+
+        private long? _documentid;
+        /// <summary>
+        /// 80101700 ИД документа (DOCUMENT_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 80101700)]
+        public long? DocumentId
+        {
+            get
+            {
+                CheckPropertyInited("DocumentId");
+                return _documentid;
+            }
+            set
+            {
+                _documentid = value;
+                NotifyPropertyChanged("DocumentId");
             }
         }
 

@@ -634,6 +634,13 @@ namespace ObjectModel.KO
         [XmlIgnore]
         public ObjectModel.KO.OMMarkCatalog ParentMarkCatalog { get; set; }
 
+        /// <summary>
+        /// Ссылка на (931 Список показателей реестра)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
+
     }
 }
 
@@ -1244,7 +1251,7 @@ namespace ObjectModel.Modeling
 namespace ObjectModel.Common
 {
     /// <summary>
-    /// 800 Журнал выгрузки по шаблону Excel
+    /// 800 Журнал выгрузки данных
     /// </summary>
     public partial class OMExportByTemplates
     {

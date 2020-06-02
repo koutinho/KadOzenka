@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.DataImport
             WorkerCommon.SetProgress(processQueue, 25);
 
             List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
-		    Stream resultFile = ImportDataFromExcel((int)import.MainRegisterId, excelTemplate, columns, out var success);
+		    var resultFile = ImportDataFromExcel((int)import.MainRegisterId, excelTemplate, columns, import.DocumentId, out var success);
 
             WorkerCommon.SetProgress(processQueue, 75);
 
@@ -120,55 +120,59 @@ namespace KadOzenka.Dal.DataImport
 			});
 		}
 
-		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
+        public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName,
+            Stream templateFile, List<DataExportColumn> columns, long? documentId)
+        {
+            string jsonstring = JsonConvert.SerializeObject(columns);
+            var export = new OMImportDataLog
+            {
+                UserId = SRDSession.GetCurrentUserId().Value,
+                DateCreated = DateTime.Now,
+                Status_Code = ObjectModel.Directory.Common.ImportStatus.Added, // TODO: доработать платформу, чтоб формировался Enum
+                DataFileName = templateFileName,
+                ColumnsMapping = jsonstring,
+                MainRegisterId = mainRegisterId,
+                RegisterViewId = registerViewId,
+                DocumentId = documentId
+            };
+            export.Save();
+            FileStorageManager.Save(templateFile, FileStorageName, export.DateCreated, GetTemplateName(export.Id));
+            LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+        }
+
+        public static Stream ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile,
+            List<DataExportColumn> columns, long? documentId, out bool success)
+        {
+            var mainWorkSheet = excelFile.Worksheets[0];
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            ParallelOptions options = new ParallelOptions
+            {
+                CancellationToken = cancelTokenSource.Token,
+                MaxDegreeOfParallelism = 100
+            };
+            int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+            mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат обработки");
+            List<string> columnNames = new List<string>();
+            for (int i = 0; i < maxColumns; i++) columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+
+            var register = OMRegister.Where(x => x.RegisterId == mainRegisterId).Select(x => x.AllpriTable).ExecuteFirstOrDefault();
+            bool isAllpri = !string.IsNullOrEmpty(register.AllpriTable);
+
+            if (isAllpri)
+                success = ProcessAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, documentId);
+            else
+                success = ProcessNotAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, mainRegisterId);
+
+            MemoryStream stream = new MemoryStream();
+            excelFile.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
+            return stream;
+        }
+
+        private static bool ProcessAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
+			ParallelOptions options, int maxColumns, List<string> columnNames, long? documentId)
 		{
-			string jsonstring = JsonConvert.SerializeObject(columns);
-			var export = new OMImportDataLog
-			{
-				UserId = SRDSession.GetCurrentUserId().Value,
-				DateCreated = DateTime.Now,
-				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added, // TODO: доработать платформу, чтоб формировался Enum
-				DataFileName = templateFileName,
-				ColumnsMapping = jsonstring,
-				MainRegisterId = mainRegisterId,
-				RegisterViewId = registerViewId
-			};
-			export.Save();
-			FileStorageManager.Save(templateFile, FileStorageName, export.DateCreated, GetTemplateName(export.Id));
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
-		}
-
-		public static Stream ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile, List<DataExportColumn> columns, out bool success)
-		{
-			var mainWorkSheet = excelFile.Worksheets[0];
-			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-			ParallelOptions options = new ParallelOptions
-			{
-				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 100
-			};
-			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
-			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат обработки");
-			List<string> columnNames = new List<string>();
-			for (int i = 0; i < maxColumns; i++) columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
-
-			var register = OMRegister.Where(x => x.RegisterId == mainRegisterId).Select(x => x.AllpriTable).ExecuteFirstOrDefault();
-			bool isAllpri = !string.IsNullOrEmpty(register.AllpriTable);
-
-			if (isAllpri)
-			    success = ProcessAllpri(columns, mainWorkSheet, options, maxColumns, columnNames);
-			else
-			    success = ProcessNotAllpri(columns, mainWorkSheet, options, maxColumns, columnNames, mainRegisterId);
-					   			 		  
-			MemoryStream stream = new MemoryStream();
-			excelFile.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-			return stream;
-		}
-
-		private static bool ProcessAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 
-			ParallelOptions options, int maxColumns, List<string> columnNames)
-		{
+            var success = true;
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
 				try
@@ -213,7 +217,7 @@ namespace KadOzenka.Dal.DataImport
                                     AttributeId = attribute,
                                     S = DateTime.Now,
                                     Ot = DateTime.Now,
-                                    ChangeDocId = -1
+                                    ChangeDocId = documentId ?? -1
                                 };
                                 DataExportColumn column = columns.Where(x => x.AttributrId == attribute).First();
 
@@ -248,13 +252,14 @@ namespace KadOzenka.Dal.DataImport
 					}
 				}
 				catch (Exception ex)
-				{
-					long errorId = ErrorManager.LogError(ex);
+                {
+                    success = false;
+                    long errorId = ErrorManager.LogError(ex);
 					mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"{ex.Message} (подробно в журнале №{errorId})");
 				}
 			});
 
-            return true;
+            return success;
 		}
 
 		private static bool ProcessNotAllpri(List<DataExportColumn> columns, ExcelWorksheet mainWorkSheet, 

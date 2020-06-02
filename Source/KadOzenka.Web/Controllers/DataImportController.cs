@@ -26,6 +26,7 @@ using System.Globalization;
 using System.IO;
 using Core.Register.Enums;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.Web.Models.DataImport;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -178,22 +179,42 @@ namespace KadOzenka.Web.Controllers
 			}
 		}
 
-		[HttpPost]
-		public IActionResult ImportDataFromExcel(int mainRegisterId, IFormFile file, List<DataColumnDto> columns)
+        [HttpPost]
+		public IActionResult ImportDataFromExcel(ImportGbuObjectModel model)
 		{
-			ExcelFile excelFile;
-			using (var stream = file.OpenReadStream())
-			{
-				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-			}
+            var columns = model.Columns.Select(x => new DataExportColumn
+            {
+                AttributrId = x.AttributeId,
+                ColumnName = x.ColumnName,
+                IsKey = x.IsKey
+            }).ToList();
 
-		    var resultFile = (MemoryStream)DataImporterCommon.ImportDataFromExcel(mainRegisterId, excelFile, columns.Select(x => new DataExportColumn
-				{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList(), out var success);
-		    var resultFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_Result{Path.GetExtension(file.FileName)}";
-            HttpContext.Session.Set(resultFileName, resultFile.ToArray());
+            if (model.IsBackgroundDownload)
+            {
+                using (var stream = model.File.OpenReadStream())
+                {
+                    DataImporterCommon.AddImportToQueue(model.MainRegisterId, model.RegisterViewId, model.File.FileName, stream, columns, null);
+                }
 
-		    return Content(JsonConvert.SerializeObject(new { success, resultFileName }), "application/json");
-		}
+                return new JsonResult(new {Message = "Фоновая загрузка начата.", Success = true });
+            }
+            else
+            {
+                ExcelFile excelFile;
+                using (var stream = model.File.OpenReadStream())
+                {
+                    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+                }
+
+                var resultFile = (MemoryStream)DataImporterCommon.ImportDataFromExcel(model.MainRegisterId, excelFile, columns, null, out var success);
+
+                var resultFileName = $"{Path.GetFileNameWithoutExtension(model.File.FileName)}_Result{Path.GetExtension(model.File.FileName)}";
+                HttpContext.Session.Set(resultFileName, resultFile.ToArray());
+
+                var message = success ? "Загрузка завершена." : "Не удалось выполнить загрузку. Файл содержит некорректные данные";
+                return Content(JsonConvert.SerializeObject(new { Message = message, Success = success, ResultFileName = resultFileName }), "application/json");
+            }
+        }
 
         [HttpGet]
         public ActionResult DownloadExcelResultFile(string resultFileName)
@@ -210,22 +231,7 @@ namespace KadOzenka.Web.Controllers
             return File(fileContent, contentType, resultFileName);
         }
 
-
-        [HttpPost]
-		public IActionResult AddImportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
-		{
-
-			using (var stream = file.OpenReadStream())
-			{
-				DataImporterCommon.AddImportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
-					columns.Select(x => new DataExportColumn
-						{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
-			}
-
-			return NoContent();
-		}
-
-		[HttpGet]
+        [HttpGet]
 		public ActionResult ImportGkn()
 		{
 			TaskModel dto = new TaskModel();

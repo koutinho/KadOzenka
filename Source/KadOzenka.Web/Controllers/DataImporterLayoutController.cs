@@ -77,7 +77,7 @@ namespace KadOzenka.Web.Controllers
 			var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
 				DataImporterCommon.GetTemplateName(importId));
 			var columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
-			DataImporterCommon.AddImportToQueue(import.MainRegisterId, import.RegisterViewId, import.DataFileName, fileStream, columns);
+			DataImporterCommon.AddImportToQueue(import.MainRegisterId, import.RegisterViewId, import.DataFileName, fileStream, columns, import.DocumentId);
 
 			return Content($"Выполнено повторное формирование файла по шаблону {import.DataFileName}");
 		}
