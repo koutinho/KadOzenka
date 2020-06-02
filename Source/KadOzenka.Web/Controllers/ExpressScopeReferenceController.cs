@@ -9,9 +9,11 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
+using KadOzenka.Dal.LongProcess.ExpreesScore;
 using KadOzenka.Web.Models.ExpressScoreReference;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ObjectModel.Common;
 using ObjectModel.ES;
 
 namespace KadOzenka.Web.Controllers
@@ -173,9 +175,10 @@ namespace KadOzenka.Web.Controllers
             long? referenceId = null;
             try
             {
-                using (Stream fileStream = file.OpenReadStream())
+	            using (Stream fileStream = file.OpenReadStream())
                 {
-                    var importInfo = new ImportReferenceFileInfoDto
+
+	                var importInfo = new ImportReferenceFileInfoDto
                     {
                         FileName = Path.GetFileNameWithoutExtension(file.FileName),
                         ValueColumnName = viewModel.Value,
@@ -183,7 +186,23 @@ namespace KadOzenka.Web.Controllers
                         ValueType = viewModel.ValueType
                     };
 
-                    if (viewModel.Reference.IsNewReference)
+				if (ReferenceService.UseLongProcess(fileStream))
+				{
+						fileStream.Seek(0, SeekOrigin.Begin);
+						EsUnloadReferenceFromExcel.AddProcessToQueue(fileStream, new ImportFileFromExcelDto
+		                {
+							DeleteOldValues = viewModel.Reference.DeleteOldValues,
+							FileInfo = importInfo,
+							IdReference = viewModel.Reference.IdReference.GetValueOrDefault(),
+							IsNewReference = viewModel.Reference.IsNewReference,
+							NewReferenceName = viewModel.Reference.NewReferenceName
+		                });
+
+		                return Json(new { Success = true, message = "Добавление справочника было поставленно в очередь долгих процессов. После добавления вы получите уведомление.", isLongProcess = true });
+				}
+				fileStream.Seek(0, SeekOrigin.Begin);
+
+					if (viewModel.Reference.IsNewReference)
                     {
                         referenceId = ReferenceService.CreateReferenceFromExcel(fileStream, importInfo, viewModel.Reference.NewReferenceName);
                        
@@ -192,28 +211,34 @@ namespace KadOzenka.Web.Controllers
                     {
                         ReferenceService.UpdateReferenceFromExcel(fileStream, importInfo, viewModel.Reference.IdReference.Value, viewModel.Reference.DeleteOldValues);
                     }
-                }
-            }
+				}
+			}
             catch (Exception ex)
             {
                 ErrorManager.LogError(ex);
                 return SendErrorMessage(ex.Message);
             }
 
-            return Json(new { Success = true, idNewReference = viewModel.Reference.IsNewReference ? referenceId : null });
+            return Json(new { Success = true, idNewReference = viewModel.Reference.IsNewReference ? referenceId : null, message = "Справочник успешно импортирован" });
         }
 
         [HttpGet]
-        public FileContentResult DownloadImportedFile(string fileName, string dateCreatedString, bool downloadResult)
+        public FileContentResult DownloadImportedFile(int idFile)
         {
-            var dateCreated = DateTime.ParseExact(dateCreatedString, ExpressScoreReferenceService.DateCreatedStringFormat, CultureInfo.CurrentCulture);
-            var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, dateCreated,
-                fileName);
+	        var import = OMImportDataLog.Where(x => x.Id == idFile).SelectAll().ExecuteFirstOrDefault();
+
+	        if (import == null)
+	        {
+		        throw new Exception("Указанный файл не найден.");
+	        }
+
+            var templateFile = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
+                import.Id.ToString());
             var bytes = new byte[templateFile.Length];
             templateFile.Read(bytes);
             StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
 
-            return File(bytes, contentType, $"{fileName}.{fileExtension}");
+            return File(bytes, contentType, $"{import.DataFileName}.{fileExtension}");
         }
     }
 }
