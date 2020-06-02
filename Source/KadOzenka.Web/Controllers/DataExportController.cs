@@ -79,22 +79,23 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		public IActionResult AddExportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
+		public JsonResult AddExportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
 		{
 			if (columns.All(x => x.IsKey == false))
 			{
 				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
 			}
 
-			using (var stream = file.OpenReadStream())
+            long exportByTemplateId;
+            using (var stream = file.OpenReadStream())
 			{
-				DataExporterCommon.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
+                exportByTemplateId = DataExporterCommon.AddExportToQueue(mainRegisterId, registerViewId, file.FileName, stream,
 					columns.Select(x => new DataExportColumn
 					{ AttributrId = x.AttributeId, ColumnName = x.ColumnName, IsKey = x.IsKey }).ToList());
 			}
 
-			return NoContent();
-		}
+            return new JsonResult(new {ExportByTemplateId = exportByTemplateId});
+        }
 
 		[HttpPost]
 		public ActionResult ExportDataToExcel(int mainRegisterId, IFormFile file, List<DataColumnDto> columns)

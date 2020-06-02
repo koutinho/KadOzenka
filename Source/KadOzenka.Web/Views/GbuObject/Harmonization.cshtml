@@ -191,8 +191,11 @@
                         ActionName = "GetTemplatesHarmonization"
                     }))
             </div>
-            <div class="col-sm-2 col-sm-offset-3">
+            <div class="col-sm-1 col-sm-offset-1">
                 <button style="float: right" id="performHarmonization" class="k-button" type="button">Выполнить</button>
+            </div>
+            <div class="col-sm-3">
+                <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"><span>Перейти к процессу</span></a>
             </div>
         </div>
     </div>
@@ -435,7 +438,13 @@
 							if (response.idResultAttribute && updateResultControl) {
 								updateResultControl(response.idResultAttribute);
 							}
-							Common.ShowMessage(response.Success);
+                            Common.ShowMessage(response.Success);
+                            if (response.QueueId) {
+                                var hrefForJournal = "/RegistersView/CoreLongProcessQueue?Transition=1&97500100=" + response.QueueId;
+                                var goToProcessBtn = $("#goToProcessBtn");
+                                goToProcessBtn.removeClass('k-state-disabled');
+                                goToProcessBtn.attr('href', hrefForJournal);
+                            }
 						}
 					}).fail(function (response, textStatus, errorThrown) {
 						Common.ShowError(response.responseText);

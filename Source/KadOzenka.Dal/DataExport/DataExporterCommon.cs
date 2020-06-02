@@ -106,7 +106,7 @@ namespace KadOzenka.Dal.DataExport
 			return true;
 		}
 
-		public static void AddExportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
+		public static long AddExportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, List<DataExportColumn> columns)
 		{
 			string jsonstring = JsonConvert.SerializeObject(columns);
 
@@ -125,6 +125,8 @@ namespace KadOzenka.Dal.DataExport
 			FileStorageManager.Save(templateFile, FileStorageName, export.DateCreated, GetTemplateName(export.Id));
 			
             LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+
+            return export.Id;
         }
 		
 		public static Stream ExportDataToExcel(int mainRegisterId, ExcelFile excelTemplate, List<DataExportColumn> columns)

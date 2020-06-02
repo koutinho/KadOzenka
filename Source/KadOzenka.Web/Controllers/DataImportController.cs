@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using GemBox.Spreadsheet;
-using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using Core.ErrorManagment;
@@ -206,12 +205,14 @@ namespace KadOzenka.Web.Controllers
 
             if (model.IsBackgroundDownload)
             {
+                long importDataLogId;
                 using (var stream = model.File.OpenReadStream())
                 {
-                    DataImporterCommon.AddImportToQueue(model.MainRegisterId, model.RegisterViewId, model.File.FileName, stream, columns, documentId);
+                    importDataLogId = DataImporterCommon.AddImportToQueue(model.MainRegisterId,
+                        model.RegisterViewId, model.File.FileName, stream, columns, documentId);
                 }
 
-                return new JsonResult(new { Message = "Фоновая загрузка начата.", Success = true });
+                return new JsonResult(new { Message = "Фоновая загрузка начата.", Success = true, ImportDataLogId = importDataLogId });
             }
             else
             {

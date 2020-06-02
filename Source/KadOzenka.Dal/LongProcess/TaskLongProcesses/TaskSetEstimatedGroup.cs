@@ -12,9 +12,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 	{
 		public const string LongProcessName = "SetEstimatedGroup";
 
-		public static void AddProcessToQueue(int registerId, long objectId, EstimatedGroupModel param)
+		public static long AddProcessToQueue(int registerId, long objectId, EstimatedGroupModel param)
 		{
-			LongProcessManager.AddTaskToQueue(LongProcessName, registerId, objectId, param.SerializeToXml());
+			return LongProcessManager.AddTaskToQueue(LongProcessName, registerId, objectId, param.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)

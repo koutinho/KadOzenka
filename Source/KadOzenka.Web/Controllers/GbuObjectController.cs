@@ -180,9 +180,10 @@ namespace KadOzenka.Web.Controllers
 				model.IdAttributeResult = idAttr;
 			}
 
-		    try
+            long queueId;
+            try
 			{
-				SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
+                queueId = SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
 			}
 			catch (Exception e)
 			{
@@ -192,8 +193,9 @@ namespace KadOzenka.Web.Controllers
 		    return Json(new
 		    {
 		        success = true,
-		        idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null
-		    });
+		        idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null,
+                QueueId = queueId
+            });
 		}
 		#endregion
 
@@ -363,9 +365,10 @@ namespace KadOzenka.Web.Controllers
 				viewModel.IdAttributeResult = idAttr;
 			}
 
+            long queueId;
 			try
 			{
-				HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
+                queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
 			}
 			catch (Exception e)
 			{
@@ -373,8 +376,13 @@ namespace KadOzenka.Web.Controllers
 				return BadRequest();
 			}
 
-			return Json(new { Success = "Процедура Гармонизации успешно добавлена в очередь, по результатам операции будет отправлено сообщение", idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null });
-		}
+            return Json(new
+            {
+                Success = "Процедура Гармонизации успешно добавлена в очередь, по результатам операции будет отправлено сообщение",
+                idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null,
+                QueueId = queueId
+            });
+        }
 
 		#endregion
 
@@ -439,9 +447,10 @@ namespace KadOzenka.Web.Controllers
 		        viewModel.Document.IdDocument = idDocument;
 		    }
 
+            long queueId;
             try
 			{
-				HarmonizationCodProcess.AddProcessToQueue(viewModel.ToHarmonizationCODSettings());
+                queueId = HarmonizationCodProcess.AddProcessToQueue(viewModel.ToHarmonizationCODSettings());
 			}
 			catch (Exception e)
 			{
@@ -454,8 +463,9 @@ namespace KadOzenka.Web.Controllers
 		        Success =
 		            "Процедура Гармонизации по классификатору ЦОД успешно добавлена в очередь, по результатам операции будет отправлено сообщение",
 		        idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null,
-		        idDocument = viewModel.Document.IsNewDocument ? viewModel.Document.IdDocument : null
-		    });
+		        idDocument = viewModel.Document.IsNewDocument ? viewModel.Document.IdDocument : null,
+                QueueId = queueId
+            });
 		}
 
 		#endregion
@@ -495,8 +505,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public JsonResult UnloadingFromDict(UnloadingFromDicViewModel viewModel)
 		{
-
-			if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
 			{
 				return GenerateMessageNonValidModel();
 			}
@@ -641,12 +650,13 @@ namespace KadOzenka.Web.Controllers
 	            return GenerateMessageNonValidModel();
 	        }
 
-	        try
+            long queueId;
+            try
 	        {
 	            var estimatedGroupModelParamsDto =
 	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value,
 	                    viewModel.IsOksObjType ? ObjectType.Oks : ObjectType.ZU);
-	            TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
+                queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
 	                viewModel.ToGroupModel(estimatedGroupModelParamsDto));
 	        }
 	        catch (Exception ex)
@@ -654,7 +664,7 @@ namespace KadOzenka.Web.Controllers
 	            return SendErrorMessage(ex.Message);
 	        }
 
-	        return Json(new {Success = true});
+	        return Json(new {Success = true, QueueId = queueId });
 	    }
 
 	    #endregion

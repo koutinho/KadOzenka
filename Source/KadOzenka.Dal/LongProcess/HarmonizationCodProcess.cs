@@ -13,9 +13,9 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		public const string LongProcessName = "HarmonizationCodProcess";
 
-		public static void AddProcessToQueue(HarmonizationCODSettings settings)
+		public static long AddProcessToQueue(HarmonizationCODSettings settings)
 		{
-			LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
+			return LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)

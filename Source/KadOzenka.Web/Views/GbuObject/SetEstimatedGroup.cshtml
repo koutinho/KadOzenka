@@ -60,9 +60,12 @@
 			}))
 			</div>
 
-			<div class="col-sm-2 col-sm-offset-3">
-				<button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
-			</div>
+            <div class="col-sm-1 col-sm-offset-1">
+                <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
+            </div>
+            <div class="col-sm-3">
+                <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"><span>Перейти к процессу</span></a>
+            </div>
 		</div>
 	</div>
 }
@@ -107,6 +110,12 @@
 			        }
 			        if (response.Success) {
                         Common.ShowMessage("Операция успешно добавлена в очередь");
+                        if (response.QueueId) {
+                            var hrefForJournal = "/RegistersView/CoreLongProcessQueue?Transition=1&97500100=" + response.QueueId;
+                            var goToProcessBtn = $("#goToProcessBtn");
+                            goToProcessBtn.removeClass('k-state-disabled');
+                            goToProcessBtn.attr('href', hrefForJournal);
+                        }
 			        }
 				}).fail(function (response, textStatus, errorThrown) {
 			        Common.ShowError(response.responseText);

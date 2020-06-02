@@ -14,9 +14,9 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		public const string LongProcessName = "SetPriorityGroupProcess";
 
-		public static void AddProcessToQueue(GroupingSettings settings)
+		public static long AddProcessToQueue(GroupingSettings settings)
 		{
-			LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
+			return LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)

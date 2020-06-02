@@ -120,7 +120,7 @@ namespace KadOzenka.Dal.DataImport
 			});
 		}
 
-        public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName,
+        public static long AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName,
             Stream templateFile, List<DataExportColumn> columns, long? documentId)
         {
             string jsonstring = JsonConvert.SerializeObject(columns);
@@ -138,6 +138,8 @@ namespace KadOzenka.Dal.DataImport
             export.Save();
             FileStorageManager.Save(templateFile, FileStorageName, export.DateCreated, GetTemplateName(export.Id));
             LongProcessManager.AddTaskToQueue(LongProcessName, OMExportByTemplates.GetRegisterId(), export.Id);
+
+            return export.Id;
         }
 
         public static Stream ImportDataFromExcel(int mainRegisterId, ExcelFile excelFile,

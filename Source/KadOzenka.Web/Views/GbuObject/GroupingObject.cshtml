@@ -397,15 +397,18 @@
 <div class="form-group">
     <div class="col-sm-7">
         @( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
-			{
-				ControllerName = "GbuObject",
-				ActionName = "GetTemplatesGrouping"
-			}))
-	</div>
-	
-	<div class="col-sm-2 col-sm-offset-3">
-		<button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
-	</div>
+            {
+                ControllerName = "GbuObject",
+                ActionName = "GetTemplatesGrouping"
+            }))
+    </div>
+
+    <div class="col-sm-1 col-sm-offset-1">
+        <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
+    </div>
+    <div class="col-sm-3">
+        <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"><span>Перейти к процессу</span></a>
+    </div>
 </div>
 </div>
 }
@@ -413,8 +416,7 @@
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
 	function fillForm(data) {
-		console.log('data', data);
-	    $('#valuesFilter').getKendoMultiSelect().value([]);
+        $('#valuesFilter').getKendoMultiSelect().value([]);
 	    $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
 		data.forEach(function (val) {
 			if (Object.keys(val)[0].includes('IdFactor') || Object.keys(val)[0].includes('IdAttributeResult')
@@ -619,7 +621,14 @@
 			                    updateResultControl(response.idResultAttribute);
 			                }
 			                Common.ShowMessage(
-			                    "Процедура нормализации данных успешно добавлена в очередь, по результатам операции будет отправлено сообщение");
+                                "Процедура нормализации данных успешно добавлена в очередь, по результатам операции будет отправлено сообщение");
+
+                            if (response.QueueId) {
+                                var hrefForJournal = "/RegistersView/CoreLongProcessQueue?Transition=1&97500100=" + response.QueueId;
+                                var goToProcessBtn = $("#goToProcessBtn");
+                                goToProcessBtn.removeClass('k-state-disabled');
+                                goToProcessBtn.attr('href', hrefForJournal);
+                            }
 			            }
 			        })
 			        .fail(function(response, textStatus, errorThrown) {

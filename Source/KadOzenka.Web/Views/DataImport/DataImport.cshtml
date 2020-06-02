@@ -50,6 +50,9 @@
                             </span>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <a class="k-button k-state-disabled" id="goToJournalBtn" href="" target="_blank"><span>Перейти в журнал</span></a>
+                    </div>
                 </div>
             </div>
         </li>
@@ -323,6 +326,12 @@
                             }
                             else {
                                 Common.ShowError(data.Message);
+                            }
+                            if (data.ImportDataLogId) {
+                                var hrefForJournal = "/RegistersView/DataImporter?Transition=1&80100100=" + data.ImportDataLogId;
+                                var goToJournalBtn = $("#goToJournalBtn");
+                                goToJournalBtn.removeClass('k-state-disabled');
+                                goToJournalBtn.attr('href', hrefForJournal);
                             }
                             if (data.ResultFileName) {
                                 window.location = '@Url.Action("DownloadExcelResultFile", "DataImport")' +
