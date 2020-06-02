@@ -10,6 +10,7 @@ using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Model;
+using KadOzenka.Dal.Model.Dto;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using ObjectModel.KO;
@@ -50,10 +51,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
             var dataSet = new DataSet();
 
-            //var modelTable = GetModelDataTable(model);
+            var modelTable = GetModelDataTable(model);
+            var coefficientsTable = GetCoefficientsDataTable(factors);
             //var itemTable = GetFactorsDataTable(factors);
 
-            //dataSet.Tables.Add(modelTable);
+            dataSet.Tables.Add(modelTable);
             //dataSet.Tables.Add(itemTable);
 
             return dataSet;
@@ -123,6 +125,44 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
             dataTable.Rows.Add(model.Formula);
             dataTable.Rows.Add(model.AlgoritmType_Code.GetEnumDescription());
+
+            return dataTable;
+        }
+
+        private DataTable GetCoefficientsDataTable(List<ModelFactorDto> coefficients)
+        {
+            var dataTable = new DataTable("COEFFICIENTS");
+
+            dataTable.Columns.Add("Number");
+            dataTable.Columns.Add("Name");
+            dataTable.Columns.Add("Coefficient");
+
+            for (var i = 0; i < coefficients.Count; i++)
+            {
+                dataTable.Rows.Add(i + 1,
+                    coefficients[i].Factor,
+                    coefficients[i].B0);
+            }
+
+            return dataTable;
+        }
+
+        //TODO
+        private DataTable GetQuantitativeFactors(List<ModelFactorDto> coefficients)
+        {
+            var dataTable = new DataTable("QuantitativeFactors");
+
+            dataTable.Columns.Add("Number");
+            dataTable.Columns.Add("Name");
+            dataTable.Columns.Add("MaxValue");
+            dataTable.Columns.Add("MinValue");
+
+            //for (var i = 0; i < coefficients.Count; i++)
+            //{
+            //    dataTable.Rows.Add(i + 1,
+            //        coefficients[i].Factor,
+            //        coefficients[i].B0);
+            //}
 
             return dataTable;
         }
