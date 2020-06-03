@@ -605,12 +605,17 @@ namespace KadOzenka.Dal.GbuObject
             return ValueLevel;
         }
 
-        public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual)
+        public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.Gbu.OMMainObject obj, DateTime dateActual, GbuReportService reportService)
         {
+	        int currentRow;
 	        lock (PriorityGrouping.locked)
 	        {
+		        currentRow = reportService.GetCurrentRow();
 		        PriorityGrouping.CurrentCount++;
 	        }
+
+	        reportService.AddValue(obj.CadastralNumber, 0, currentRow);
+
 			Code_Source_01 = string.Empty;
             Code_Source_02 = string.Empty;
             Code_Source_03 = string.Empty;
@@ -706,66 +711,79 @@ namespace KadOzenka.Dal.GbuObject
 
                         AddValueFactor(obj, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
-                        lock (PriorityGrouping.locked)
-                        {
-	                        PriorityGrouping.SuccessCount++;
-                        }
+						reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), 1, currentRow);
+						reportService.AddValue(resGroup, 2, currentRow);
 
-						if (setting.IdAttributeSource != null)
-                        {
-                            string[] arrsource = source.Split(';');
-                            string strsource = string.Empty;
-                            foreach (string item in arrsource)
-                            {
-                                if (item == "01")
-                                {
-                                    strsource += (Level1.AttributeName + "; ");
-                                }
-                                if (item == "02")
-                                {
-                                    strsource += (Level2.AttributeName + "; ");
-                                }
-                                if (item == "03")
-                                {
-                                    strsource += (Level3.AttributeName + "; ");
-                                }
-                                if (item == "04")
-                                {
-                                    strsource += (Level4.AttributeName + "; ");
-                                }
-                                if (item == "05")
-                                {
-                                    strsource += (Level5.AttributeName + "; ");
-                                }
-                                if (item == "06")
-                                {
-                                    strsource += (Level6.AttributeName + "; ");
-                                }
-                                if (item == "07")
-                                {
-                                    strsource += (Level7.AttributeName + "; ");
-                                }
-                                if (item == "08")
-                                {
-                                    strsource += (Level8.AttributeName + "; ");
-                                }
-                                if (item == "09")
-                                {
-                                    strsource += (Level9.AttributeName + "; ");
-                                }
-                                if (item == "10")
-                                {
-                                    strsource += (Level10.AttributeName + "; ");
-                                }
-                                if (item == "11")
-                                {
-                                    strsource += (Level11.AttributeName + "; ");
-                                }
-                            }
-                            strsource = strsource.Trim().TrimEnd(';');
-                            AddValueFactor(obj, setting.IdAttributeSource, null, dateActual, strsource);
-                        }
-                        if (setting.IdAttributeDocument != null)
+						{
+							string[] arrsource = source.Split(';');
+							string strsource = string.Empty;
+							foreach (string item in arrsource)
+							{
+								if (item == "01")
+								{
+									strsource += (Level1.AttributeName + "; ");
+								}
+
+								if (item == "02")
+								{
+									strsource += (Level2.AttributeName + "; ");
+								}
+
+								if (item == "03")
+								{
+									strsource += (Level3.AttributeName + "; ");
+								}
+
+								if (item == "04")
+								{
+									strsource += (Level4.AttributeName + "; ");
+								}
+
+								if (item == "05")
+								{
+									strsource += (Level5.AttributeName + "; ");
+								}
+
+								if (item == "06")
+								{
+									strsource += (Level6.AttributeName + "; ");
+								}
+
+								if (item == "07")
+								{
+									strsource += (Level7.AttributeName + "; ");
+								}
+
+								if (item == "08")
+								{
+									strsource += (Level8.AttributeName + "; ");
+								}
+
+								if (item == "09")
+								{
+									strsource += (Level9.AttributeName + "; ");
+								}
+
+								if (item == "10")
+								{
+									strsource += (Level10.AttributeName + "; ");
+								}
+
+								if (item == "11")
+								{
+									strsource += (Level11.AttributeName + "; ");
+								}
+							}
+
+							strsource = strsource.Trim().TrimEnd(';');
+							reportService.AddValue(strsource, 3, currentRow);
+
+							if (setting.IdAttributeSource != null)
+							{
+								AddValueFactor(obj, setting.IdAttributeSource, null, dateActual, strsource);
+							}
+						}
+						if (setting.IdAttributeDocument != null)
                         {
                             string[] arrsource = source.Split(';');
                             string strsource = string.Empty;
@@ -819,26 +837,28 @@ namespace KadOzenka.Dal.GbuObject
                             strsource = strsource.Trim().TrimEnd(';');
                             AddValueFactor(obj, setting.IdAttributeDocument, null, dateActual, strsource);
                         }
-                    }
+                        reportService.AddValue(errorCODStr, 4, currentRow);
+					}
                 }
                 else
                 {
-	                lock (PriorityGrouping.locked)
-	                {
-		                PriorityGrouping.ErrorMessages.Add(errorCODStr);
-	                }
+	                reportService.AddValue(errorCODStr, 4, currentRow);
                 }
                 #endregion
             }
 
         }
-        public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual)
+        public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, ObjectModel.KO.OMUnit unit, DateTime dateActual, GbuReportService reportService)
         {
+	        int currentRow;
 	        lock (PriorityGrouping.locked)
 	        {
 		        PriorityGrouping.CurrentCount++;
+		        currentRow = reportService.GetCurrentRow();
 	        }
 
+		
+			reportService.AddValue(unit.CadastralNumber, 0, currentRow);
 			if (unit.ObjectId != null)
             {
                 #region Поля
@@ -939,13 +959,9 @@ namespace KadOzenka.Dal.GbuObject
 
                             AddValueFactor(unit, setting.IdAttributeResult, id_doc, dateActual, resGroup);
 
-                            lock (PriorityGrouping.locked)
-                            {
-	                            PriorityGrouping.SuccessCount++;
-                            }
-
-							if (setting.IdAttributeSource != null)
-                            {
+							reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), 1, currentRow);
+							reportService.AddValue(resGroup, 2, currentRow);
+							{
                                 string[] arrsource = source.Split(';');
                                 string strsource = string.Empty;
                                 foreach (string item in arrsource)
@@ -996,7 +1012,12 @@ namespace KadOzenka.Dal.GbuObject
                                     }
                                 }
                                 strsource = strsource.Trim().TrimEnd(';');
-                                AddValueFactor(unit, setting.IdAttributeSource, null, dateActual, strsource);
+								reportService.AddValue(strsource, 3, currentRow);
+								if (setting.IdAttributeSource != null)
+								{
+									AddValueFactor(unit, setting.IdAttributeSource, null, dateActual, strsource);
+								}
+							
                             }
                             if (setting.IdAttributeDocument != null)
                             {
@@ -1052,14 +1073,21 @@ namespace KadOzenka.Dal.GbuObject
                                 strsource = strsource.Trim().TrimEnd(';');
                                 AddValueFactor(unit, setting.IdAttributeDocument, null, dateActual, strsource);
                             }
-                        }
+                            reportService.AddValue(errorCODStr, 4, currentRow);
+
+							lock (PriorityGrouping.locked)
+                            {
+	                            PriorityGrouping.SuccessCount++;
+                            }
+						}
                     }
                     else
                     {
-	                    lock (PriorityGrouping.locked)
-	                    {
-		                    PriorityGrouping.ErrorMessages.Add(errorCODStr);
-	                    }
+	                    reportService.AddValue(errorCODStr, 4, currentRow);
+						//lock (PriorityGrouping.locked)
+	     //               {
+		    //                PriorityGrouping.ErrorMessages.Add(errorCODStr);
+	     //               }
                     }
 					#endregion
 				}
@@ -1110,8 +1138,13 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Выполнение операции группировки
         /// </summary>
-        public static void SetPriorityGroup(GroupingSettings setting)
+        public static long SetPriorityGroup(GroupingSettings setting)
         {
+			var reportService =  new GbuReportService();
+			reportService.AddHeaders(0,new List<string>{"КН", "Поле в которое вносилось значение", "Внесенное значение", "Источник внесенного значения", "Ошибка"});
+
+			long reportId = 0;
+
 	        ErrorMessages = new List<string>();
 			locked = new object();
             PrioritetList = new PriorityGroupList();
@@ -1146,23 +1179,13 @@ namespace KadOzenka.Dal.GbuObject
 
                     try
                     {
-                        new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date);
+                        new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date, reportService);
                     }
                     catch (Exception ex)
                     {
                         ErrorManager.LogError(ex);
                     }
                 });
-
-				var str = string.Join(',', ErrorMessages);
-				ErrorMessages?.Clear();
-				if (MaxCount != SuccessCount)
-				{
-                    throw ExceptionInitializer.Create("При групперовке возникли ошибки", $"Всего объектов: {MaxCount}; Загружено успешно: {SuccessCount}; Всего обработано: {CurrentCount}; Ошибки: {str}");
-                }
-				CurrentCount = 0;
-				MaxCount = 0;
-				SuccessCount = 0;
             }
 			else
             {
@@ -1175,7 +1198,7 @@ namespace KadOzenka.Dal.GbuObject
 
                     try
                     {
-                        new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date);
+                        new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, (setting.DateActual == null) ? DateTime.Now.Date : setting.DateActual.Value.Date, reportService);
                     }
                     catch (Exception ex)
                     {
@@ -1183,17 +1206,17 @@ namespace KadOzenka.Dal.GbuObject
                     }
                 });
 
-                var str = string.Join(',', ErrorMessages);
-                ErrorMessages?.Clear();
-                if (MaxCount != SuccessCount)
-                {
-	                throw ExceptionInitializer.Create("При групперовке возникли ошибки", $"Всего объектов: {MaxCount}; Загружено успешно: {SuccessCount}; Всего обработано: {CurrentCount}; Ошибки: {str}");
-                }
-
-				CurrentCount = 0;
-                MaxCount = 0;
-                SuccessCount = 0;
             }
+
+			reportService.SetStyle();
+			reportService.SetIndividualWidth(1, 6);
+			reportService.SetIndividualWidth(0, 4);
+			reportService.SetIndividualWidth(2, 3);
+			reportService.SetIndividualWidth(3, 6);
+			reportService.SetIndividualWidth(4, 5);
+			reportId = reportService.SaveReport("Отчет нормолизации");
+
+            return reportId;
         }
     }
 }

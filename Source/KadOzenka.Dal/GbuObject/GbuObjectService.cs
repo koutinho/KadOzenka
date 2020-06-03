@@ -593,5 +593,10 @@ from (select
 
 			return id;
         }
+
+        public static string GetAttributeNameById(long idAttribute)
+        {
+	        return RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == idAttribute)?.Name;
+        }
 	}
 }

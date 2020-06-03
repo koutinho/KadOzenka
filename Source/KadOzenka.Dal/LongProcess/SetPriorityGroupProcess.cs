@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using DevExpress.DataAccess.Native.Utils;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Gbu.GroupingAlgoritm;
@@ -48,7 +49,7 @@ namespace KadOzenka.Dal.LongProcess
 					}
 				}, cancellationToken);
 
-				PriorityGrouping.SetPriorityGroup(settings);
+				long reportId = PriorityGrouping.SetPriorityGroup(settings);
 				//TestLongRunningProcess(settings);
 
 				cancelSource.Cancel();
@@ -57,7 +58,11 @@ namespace KadOzenka.Dal.LongProcess
 
 				WorkerCommon.SetProgress(processQueue, 100);
 
-				NotificationSender.SendNotification(processQueue, "Результат Операции группировки", "Операция успешно завершена");
+				string message = "Операция успешно завершина." +
+				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+
+
+				NotificationSender.SendNotification(processQueue, "Результат Операции группировки", message);
 			}
 			catch (Exception ex)
 			{

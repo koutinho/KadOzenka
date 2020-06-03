@@ -1,16 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Data;
-using System.Globalization;
-using System.Data.Common;
 using System.Collections.Generic;
-using Microsoft.Practices.EnterpriseLibrary.Data;
-
-using Core.Register;
-using Core.Numerator;
-using Core.Shared.Misc;
-using Core.Shared.Extensions;
-using Core.Register.RegisterEntities;
 using ObjectModel.Gbu.Harmonization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +50,7 @@ namespace KadOzenka.Dal.GbuObject
                 MaxCount = Objs.Count;
                 CurrentCount = 0;
                 Parallel.ForEach(Objs, options, item => { RunOneUnit(item, setting); });
-                CurrentCount = 0;
+                CurrentCount = 0;  
                 MaxCount = 0;
             }
             else

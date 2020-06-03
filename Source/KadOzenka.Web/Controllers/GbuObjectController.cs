@@ -6,7 +6,9 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using Core.ErrorManagment;
+using Core.Main.FileStorages;
 using Core.Register;
+using Core.Register.Enums;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.LongProcess;
@@ -183,7 +185,7 @@ namespace KadOzenka.Web.Controllers
             long queueId;
             try
 			{
-                queueId = SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
+				queueId = SetPriorityGroupProcess.AddProcessToQueue(model.CovertToGroupingSettings());
 			}
 			catch (Exception e)
 			{
@@ -675,6 +677,28 @@ namespace KadOzenka.Web.Controllers
 				.Select(x => new SelectListItem(_taskService.GetTemplateForTaskName(x), x.TaskId.ToString()))
 				.ToList();
 		}
+
+        #region Download result
+
+        public FileResult GetFileResult(long reportId)
+        {
+	        var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
+
+	        if (export == null)
+	        {
+		        throw new Exception("Файл не найден");
+	        }
+
+	        var file = FileStorageManager.GetFileStream(GbuReportService.ReportGbuStorage, export.DateCreated,
+		        export.Id.ToString());
+
+	        StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtension, out string contentType);
+
+	        return File(file, contentType, export.TemplateFileName + $".{fileExtension}");
+		}
+        
+
+        #endregion
 
 		#region Helper
 
