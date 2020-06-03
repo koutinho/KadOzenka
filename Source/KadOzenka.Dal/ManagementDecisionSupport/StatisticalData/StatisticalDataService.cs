@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
@@ -8,11 +7,34 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Market;
+using Core.Register;
+using Core.Register.RegisterEntities;
+using DevExpress.DataProcessing;
+using ObjectModel.Core.Register;
+using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
     public class StatisticalDataService
     {
+        private long? _rosreestrRegisterId;
+
+        public long RosreestrRegisterId
+        {
+            get
+            {
+                if (_rosreestrRegisterId != null)
+                    return _rosreestrRegisterId.Value;
+
+                var omMainObjectRegisterId = OMMainObject.GetRegisterId();
+                _rosreestrRegisterId = OMRegister
+                    .Where(x => x.MainRegister == omMainObjectRegisterId &&
+                                x.RegisterDescription == "Источник: Росреестр").ExecuteFirstOrDefault().RegisterId;
+
+                return _rosreestrRegisterId.Value;
+            }
+        }
+
 	    public List<NumberOfObjectsByGroupsDto> GetNumberOfObjectsByGroups(long[] taskList, bool isOksReportType)
         {
             var query = new QSQuery
@@ -252,6 +274,136 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
+        public QSQuery GetQueryForUnitsByTasks(long[] taskIdList, params QSCondition[] additionalConditions)
+        {
+            var conditions = new List<QSCondition>
+            {
+                new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIdList.Select(x => (double) x).ToList())
+            };
+            additionalConditions?.ForEach(x => conditions.Add(x));
+
+            var query = new QSQuery
+            {
+                MainRegisterID = OMUnit.GetRegisterId(),
+                Condition = new QSConditionGroup
+                {
+                    Type = QSConditionGroupType.And,
+                    Conditions = conditions
+                }
+            };
+
+            return query;
+        }
+
+        #region Rosreestr Attributes
+
+        /// <summary>
+        /// Аттрибут "Наименование объекта"
+        /// </summary>
+        public RegisterAttribute GetRosreestrObjectNameAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Наименование объекта");
+        }
+
+        /// <summary>
+        /// Аттрибут "Назначение сооружения"
+        /// </summary>
+        public RegisterAttribute GetRosreestrConstructionPurposeAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Назначение сооружения");
+        }
+
+        /// <summary>
+        /// Аттрибут "Адрес"
+        /// </summary>
+        public RegisterAttribute GetRosreestrAddressAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Адрес");
+        }
+
+        /// <summary>
+        /// Аттрибут "Местоположение"
+        /// </summary>
+        public RegisterAttribute GetRosreestrLocationAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Местоположение");
+        }
+
+        /// <summary>
+        /// Аттрибут "Земельный участок"
+        /// </summary>
+        public RegisterAttribute GetRosreestrParcelAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Земельный участок");
+        }
+
+        /// <summary>
+        /// Аттрибут "Год постройки"
+        /// </summary>
+        public RegisterAttribute GetRosreestrBuildYearAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Год постройки");
+        }
+
+        /// <summary>
+        /// Аттрибут "Год ввода в эксплуатацию"
+        /// </summary>
+        public RegisterAttribute GetRosreestrCommissioningYearAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Год ввода в эксплуатацию");
+        }
+
+        /// <summary>
+        /// Аттрибут "Количество этажей"
+        /// </summary>
+        public RegisterAttribute GetRosreestrFloorsNumberYearAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Количество этажей");
+        }
+
+        /// <summary>
+        /// Аттрибут "Количество подземных этажей"
+        /// </summary>
+        public RegisterAttribute GetRosreestrUndergroundFloorsNumberYearAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Количество подземных этажей");
+        }
+
+        /// <summary>
+        /// Аттрибут "Этаж"
+        /// </summary>
+        public RegisterAttribute GetRosreestrFloorAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Этаж");
+        }
+
+        /// <summary>
+        /// Аттрибут "Материал стен"
+        /// </summary>
+        public RegisterAttribute GetRosreestrWallMaterialAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Материал стен");
+        }
+
+        /// <summary>
+        /// Аттрибут "Вид использования по документам"
+        /// </summary>
+        public RegisterAttribute GetRosreestrTypeOfUseByDocumentsAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Вид использования по документам");
+        }
+
+        /// <summary>
+        /// Аттрибут "Категория земель"
+        /// </summary>
+        public RegisterAttribute GetRosreestrParcelCategoryAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Категория земель");
+        }
+
+        #endregion
+
+
         #region Helpers
 
         protected string GetRegionNumberByCadastralQuarter(string cadastralQuartal)
@@ -282,6 +434,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        }
 
 	        return result;
+        }
+
+        private RegisterAttribute GetRegisterAttributeByName(long registerId, string name)
+        {
+            return RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == registerId && x.Name.Equals(name));
         }
 
         #endregion Helpers

@@ -7,9 +7,7 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
-using ObjectModel.Core.Register;
 using ObjectModel.Directory;
-using ObjectModel.Gbu;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -17,75 +15,35 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	public class KRSummaryResultsService
 	{
 		private readonly GbuObjectService _gbuObjectService;
+		private readonly StatisticalDataService _statisticalDataService;
 
-		public KRSummaryResultsService(GbuObjectService gbuObjectService)
+		public KRSummaryResultsService(GbuObjectService gbuObjectService, StatisticalDataService statisticalDataService)
 		{
 			_gbuObjectService = gbuObjectService;
-		}
+            _statisticalDataService = statisticalDataService;
+        }
 
 		public List<KRSummaryResultsOksDto> GetKRSummaryResultsOksData(long[] taskIdList, long klardAttributeId, long parentKnAttributeId)
 		{
-			var omMainObjectRegisterId = OMMainObject.GetRegisterId();
-			var rosreestrRegister = OMRegister
-				.Where(x => x.MainRegister == omMainObjectRegisterId &&
-				            x.RegisterDescription == "Источник: Росреестр").ExecuteFirstOrDefault();
-
-			var gbuAttributesDataDictionary = new Dictionary<string, RegisterAttribute>();
+            var gbuAttributesDataDictionary = new Dictionary<string, RegisterAttribute>();
 			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Kladr), RegisterCache.GetAttributeData(klardAttributeId));
 			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.ParentKn), RegisterCache.GetAttributeData(parentKnAttributeId));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Name),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Наименование объекта")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Purpose),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Назначение сооружения")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Address),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Адрес")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Location),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Местоположение")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.ZuCadastralNumber),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Земельный участок")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.BuildingYear),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Год постройки")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.CommissioningYear),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Год ввода в эксплуатацию")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.FloorCount),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Количество этажей")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.UndergroundFloorCount),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Количество подземных этажей")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.FloorNumber),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Этаж")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.WallMaterial),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Материал стен")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Name), _statisticalDataService.GetRosreestrObjectNameAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Purpose), _statisticalDataService.GetRosreestrConstructionPurposeAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Address), _statisticalDataService.GetRosreestrAddressAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Location), _statisticalDataService.GetRosreestrLocationAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.ZuCadastralNumber), _statisticalDataService.GetRosreestrParcelAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.BuildingYear), _statisticalDataService.GetRosreestrBuildYearAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.CommissioningYear), _statisticalDataService.GetRosreestrCommissioningYearAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.FloorCount), _statisticalDataService.GetRosreestrFloorsNumberYearAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.UndergroundFloorCount), _statisticalDataService.GetRosreestrUndergroundFloorsNumberYearAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.FloorNumber), _statisticalDataService.GetRosreestrFloorAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.WallMaterial), _statisticalDataService.GetRosreestrWallMaterialAttribute());
 
-			var query = new QSQuery
-			{
-				MainRegisterID = OMUnit.GetRegisterId(),
-				Condition = new QSConditionGroup
-				{
-					Type = QSConditionGroupType.And,
-					Conditions = new List<QSCondition>
-					{
-						new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIdList.Select(x => (double)x).ToList()),
-						new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long)PropertyTypes.Stead),
-						new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long)PropertyTypes.None)
-					}
-				},
-				Joins = new List<QSJoin>
-				{
-					new QSJoin
-					{
-						RegisterId = OMTask.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
-							RightOperand = OMTask.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Inner
-					}
-				}
-			};
-
-			query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
+            var notSteadCondition = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long) PropertyTypes.Stead);
+            var notNoneCondition = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long)PropertyTypes.None);
+            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, notSteadCondition, notNoneCondition);
+            query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralBlock, "CadastralQuartal"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
@@ -142,51 +100,16 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<KRSummaryResultsZuDto> GetKRSummaryResultsZuData(long[] taskIdList, long klardAttributeId)
 		{
-			var omMainObjectRegisterId = OMMainObject.GetRegisterId();
-			var rosreestrRegister = OMRegister
-				.Where(x => x.MainRegister == omMainObjectRegisterId &&
-				            x.RegisterDescription == "Источник: Росреестр").ExecuteFirstOrDefault();
-
-			var gbuAttributesDataDictionary = new Dictionary<string, RegisterAttribute>();
+            var gbuAttributesDataDictionary = new Dictionary<string, RegisterAttribute>();
 			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.Kladr), RegisterCache.GetAttributeData(klardAttributeId));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.PermittedUsing),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Вид использования по документам")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.Address),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Адрес")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.Location),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Местоположение")));
-			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.LandCategory),
-				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Категория земель")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.PermittedUsing), _statisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.Address), _statisticalDataService.GetRosreestrAddressAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.Location), _statisticalDataService.GetRosreestrLocationAttribute());
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.LandCategory), _statisticalDataService.GetRosreestrParcelCategoryAttribute());
 
-			var query = new QSQuery
-			{
-				MainRegisterID = OMUnit.GetRegisterId(),
-				Condition = new QSConditionGroup
-				{
-					Type = QSConditionGroupType.And,
-					Conditions = new List<QSCondition>
-					{
-						new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIdList.Select(x => (double)x).ToList()),
-						new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.Equal, (long)PropertyTypes.Stead)
-					}
-				},
-				Joins = new List<QSJoin>
-				{
-					new QSJoin
-					{
-						RegisterId = OMTask.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMUnit.GetColumn(x => x.TaskId),
-							RightOperand = OMTask.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Inner
-					}
-				}
-			};
-
-			query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
+			var steadCondition = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.Equal, (long)PropertyTypes.Stead);
+            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, steadCondition);
+            query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralBlock, "CadastralQuartal"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));

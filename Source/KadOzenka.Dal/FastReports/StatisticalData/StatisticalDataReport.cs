@@ -7,6 +7,7 @@ using Core.UI.Registers.Reports.Model;
 using FastReport;
 using FastReport.Matrix;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using Newtonsoft.Json;
 using Platform.Reports;
 
@@ -15,11 +16,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 	public abstract class StatisticalDataReport : FastReportBase
 	{
 		protected readonly GbuObjectService GbuObjectService;
+		protected readonly StatisticalDataService StatisticalDataService;
 
 		protected StatisticalDataReport()
 		{
 			GbuObjectService = new GbuObjectService();
-		}
+            StatisticalDataService = new StatisticalDataService();
+
+        }
 
 		public override string GetTitle(long? objectId)
 		{
