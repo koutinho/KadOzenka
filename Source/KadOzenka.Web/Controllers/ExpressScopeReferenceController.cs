@@ -9,7 +9,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
-using KadOzenka.Dal.LongProcess.ExpreesScore;
+using KadOzenka.Dal.LongProcess.ExpressScore;
 using KadOzenka.Web.Models.ExpressScoreReference;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

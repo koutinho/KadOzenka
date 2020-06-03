@@ -5,17 +5,14 @@ using System.Threading.Tasks;
 using Core.Main.FileStorages;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
-using Core.SRD;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ExpressScore.Dto;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Core.Shared;
-using ObjectModel.Directory.Common;
 using ObjectModel.ES;
 
-namespace KadOzenka.Dal.LongProcess.ExpreesScore
+namespace KadOzenka.Dal.LongProcess.ExpressScore
 {
 	public class EsUnloadReferenceFromExcel: LongProcess
 	{
