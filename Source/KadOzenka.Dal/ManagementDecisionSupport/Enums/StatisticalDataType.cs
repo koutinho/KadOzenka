@@ -78,9 +78,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 		[StatisticalDataFmReportCode(1025)]
 		PricingFactorsComposition = 16,
 
-		[Description("Результаты кодировки качественных ценообразующих факторов")]
-		[StatisticalDataFmReportCode(1026)]
-		QualityPricingFactorsEncodingResults = 17,
+		[Description("Состав данных объектов недвижимости с присвоенными крви (ОКС)")]
+		[StatisticalDataFmReportCode(10261)]
+		QualityPricingFactorsEncodingResultsOks = 171,
+
+		[Description("Состав данных объектов недвижимости с присвоенными крви (ЗУ)")]
+		[StatisticalDataFmReportCode(10262)]
+		QualityPricingFactorsEncodingResultsZu = 172,
+
+		[Description("Группировка объектов недвижимости")]
+		[StatisticalDataFmReportCode(10263)]
+		QualityPricingFactorsEncodingResultsGrouping = 173,
 
 		[Description("Статистика по количеству/средних значениях/перцентилях/суммарных значениях в разрезе произвольных параметров")]
 		[StatisticalDataFmReportCode(1027)]

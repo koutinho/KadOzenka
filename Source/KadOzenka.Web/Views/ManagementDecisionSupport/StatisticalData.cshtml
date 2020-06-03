@@ -137,8 +137,19 @@
         <div class="col-sm-11">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsComposition.GetEnumDescription()).Value((long) StatisticalDataType.PricingFactorsComposition).Enable(false))
         </div>
-        <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResults.GetEnumDescription()).Value((long) StatisticalDataType.QualityPricingFactorsEncodingResults).Enable(false))
+        <div>
+            <div class="col-sm-11">
+                @Html.CustomLabelFor("Результаты кодировки качественных ценообразующих факторов:")
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsOks.GetEnumDescription()).Value((long) StatisticalDataType.QualityPricingFactorsEncodingResultsOks))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsZu.GetEnumDescription()).Value((long) StatisticalDataType.QualityPricingFactorsEncodingResultsZu))
+            </div>
+            <div class="col-sm-11 subgroup-first-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping.GetEnumDescription()).Value((long) StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping))
+            </div>
         </div>
         <div class="col-sm-11">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.StatisticsInContextOfArbitraryParams.GetEnumDescription()).Value((long) StatisticalDataType.StatisticsInContextOfArbitraryParams).Enable(false))

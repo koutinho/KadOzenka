@@ -40,13 +40,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 			var klardAttributeId = GetQueryParam<long?>("KlardAttribute", query);
 			if (!klardAttributeId.HasValue)
 			{
-				throw new Exception("Не указан Атрибут КЛАДР");
+				throw new Exception("Не указан атрибут 'КЛАДР'");
 			}
 
 			var parentKnAttributeId = GetQueryParam<long?>("ParentKnAttribute", query);
 			if (!parentKnAttributeId.HasValue)
 			{
-				throw new Exception("Не указан Атрибут КН родителя");
+				throw new Exception("Не указан атрибут 'КН родителя'");
 			}
 
 			var dataTitleTable = new DataTable("Common");

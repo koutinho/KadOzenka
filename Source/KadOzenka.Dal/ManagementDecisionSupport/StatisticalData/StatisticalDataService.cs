@@ -306,6 +306,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         }
 
         /// <summary>
+        /// Аттрибут "Наименование земельного участка"
+        /// </summary>
+        public RegisterAttribute GetRosreestrParcelNameAttribute()
+        {
+	        return GetRegisterAttributeByName(RosreestrRegisterId, "Наименование земельного участка");
+        }
+
+        /// <summary>
         /// Аттрибут "Назначение сооружения"
         /// </summary>
         public RegisterAttribute GetRosreestrConstructionPurposeAttribute()

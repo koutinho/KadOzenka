@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 			var klardAttributeId = GetQueryParam<long?>("KlardAttribute", query);
 			if (!klardAttributeId.HasValue)
 			{
-				throw new Exception("Не указан Атрибут КЛАДР");
+				throw new Exception("Не указан атрибут 'КЛАДР'");
 			}
 
 			var dataTitleTable = new DataTable("Common");
