@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Register;
 using Core.Register.QuerySubsystem;
+using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
@@ -24,57 +25,36 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<KRSummaryResultsOksDto> GetKRSummaryResultsOksData(long[] taskIdList, long klardAttributeId, long parentKnAttributeId)
 		{
-			var klardAttribute = RegisterCache.GetAttributeData(klardAttributeId);
-			var parentKnAttribute = RegisterCache.GetAttributeData(parentKnAttributeId);
-
 			var omMainObjectRegisterId = OMMainObject.GetRegisterId();
 			var rosreestrRegister = OMRegister
 				.Where(x => x.MainRegister == omMainObjectRegisterId &&
-							x.RegisterDescription == "Источник: Росреестр").ExecuteFirstOrDefault();
-			var nameAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-							&& x.Name.Equals(
-								"Наименование объекта"));
-			var purposeAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-							&& x.Name.Equals(
-								"Назначение сооружения"));
-			var addressAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-							&& x.Name.Equals(
-								"Адрес"));
-			var locationAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-							&& x.Name.Equals(
-								"Местоположение"));
-			var zuCadastralNumberAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-							&& x.Name.Equals(
-								"Земельный участок"));
-			var buildingYearAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-					            "Год постройки"));
-			var commissioningYearAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Год ввода в эксплуатацию"));
-			var floorCountAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Количество этажей"));
-			var undergroundFloorCountAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Количество подземных этажей"));
-			var floorNumberAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Этаж"));
-			var wallMaterialAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Материал стен"));
+				            x.RegisterDescription == "Источник: Росреестр").ExecuteFirstOrDefault();
+
+			var gbuAttributesDataDictionary = new Dictionary<string, RegisterAttribute>();
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Kladr), RegisterCache.GetAttributeData(klardAttributeId));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.ParentKn), RegisterCache.GetAttributeData(parentKnAttributeId));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Name),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Наименование объекта")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Purpose),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Назначение сооружения")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Address),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Адрес")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.Location),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Местоположение")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.ZuCadastralNumber),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Земельный участок")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.BuildingYear),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Год постройки")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.CommissioningYear),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Год ввода в эксплуатацию")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.FloorCount),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Количество этажей")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.UndergroundFloorCount),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Количество подземных этажей")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.FloorNumber),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Этаж")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsOksDto.WallMaterial),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Материал стен")));
 
 			var query = new QSQuery
 			{
@@ -124,25 +104,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				{
 					objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
 				}
-				var attributes = _gbuObjectService.GetAllAttributes(objectIds,
-					new List<long> { rosreestrRegister.RegisterId, klardAttribute.RegisterId, parentKnAttribute.RegisterId },
-					new List<long>
-					{
-						klardAttributeId,
-						parentKnAttributeId,
-						nameAttr.Id,
-						purposeAttr.Id,
-						addressAttr.Id,
-						locationAttr.Id,
-						zuCadastralNumberAttr.Id,
-						buildingYearAttr.Id,
-						commissioningYearAttr.Id,
-						floorCountAttr.Id,
-						undergroundFloorCountAttr.Id,
-						floorNumberAttr.Id,
-						wallMaterialAttr.Id
-
-					}, DateTime.Now.GetEndOfTheDay());
+				var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
+					gbuAttributesDataDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
+					gbuAttributesDataDictionary.Values.Select(x => x.Id).Distinct().ToList(),
+					DateTime.Now.GetEndOfTheDay());
 
 				for (var i = 0; i < table.Rows.Count; i++)
 				{
@@ -157,54 +122,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						CadastralCost = table.Rows[i]["CadastralCost"].ParseToDecimalNullable(),
 					};
 
-					foreach (var attribute in attributes.Where(x => x.ObjectId == table.Rows[i]["ObjectId"].ParseToLong()))
+					foreach (var attribute in gbuAttributes.Where(x => x.ObjectId == table.Rows[i]["ObjectId"].ParseToLong()))
 					{
-						if (attribute.AttributeId == klardAttributeId)
+						var attributeKeys = gbuAttributesDataDictionary.Where(x => x.Value.Id == attribute.AttributeId)
+							.Select(x => x.Key);
+						foreach (var key in attributeKeys)
 						{
-							dto.Kladr = attribute.GetValueInString();
-						}
-						else if (attribute.AttributeId == parentKnAttributeId)
-						{
-							dto.ParentKn = attribute.GetValueInString();
-						}
-						else
-						{
-							switch (attribute.AttributeData.Name)
-							{
-								case "Наименование объекта":
-									dto.Name = attribute.GetValueInString();
-									break;
-								case "Назначение сооружения":
-									dto.Purpose = attribute.GetValueInString();
-									break;
-								case "Адрес":
-									dto.Address = attribute.GetValueInString();
-									break;
-								case "Местоположение":
-									dto.Location = attribute.GetValueInString();
-									break;
-								case "Земельный участок":
-									dto.ZuCadastralNumber = attribute.GetValueInString();
-									break;
-								case "Год постройки":
-									dto.BuildingYear = attribute.GetValueInString();
-									break;
-								case "Год ввода в эксплуатацию":
-									dto.CommissioningYear = attribute.GetValueInString();
-									break;
-								case "Количество этажей":
-									dto.FloorCount = attribute.GetValueInString();
-									break;
-								case "Количество подземных этажей":
-									dto.UndergroundFloorCount = attribute.GetValueInString();
-									break;
-								case "Этаж":
-									dto.FloorNumber = attribute.GetValueInString();
-									break;
-								case "Материал стен":
-									dto.WallMaterial = attribute.GetValueInString();
-									break;
-							}
+							typeof(KRSummaryResultsOksDto).GetProperty(key)
+								.SetValue(dto, attribute.GetValueInString());
 						}
 					}
 
@@ -217,32 +142,21 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<KRSummaryResultsZuDto> GetKRSummaryResultsZuData(long[] taskIdList, long klardAttributeId)
 		{
-			var klardAttribute = RegisterCache.GetAttributeData(klardAttributeId);
-
 			var omMainObjectRegisterId = OMMainObject.GetRegisterId();
 			var rosreestrRegister = OMRegister
 				.Where(x => x.MainRegister == omMainObjectRegisterId &&
 				            x.RegisterDescription == "Источник: Росреестр").ExecuteFirstOrDefault();
-			var nameAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-					            "Наименование земельного участка"));
-			var permittedUsingAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Вид использования по документам"));
-			var addressAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Адрес"));
-			var locationAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Местоположение"));
-			var landCategoryAttr = RegisterCache.RegisterAttributes.Values
-				.First(x => x.RegisterId == rosreestrRegister.RegisterId
-				            && x.Name.Equals(
-								"Категория земель"));
+
+			var gbuAttributesDataDictionary = new Dictionary<string, RegisterAttribute>();
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.Kladr), RegisterCache.GetAttributeData(klardAttributeId));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.PermittedUsing),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Вид использования по документам")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.Address),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Адрес")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.Location),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Местоположение")));
+			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.LandCategory),
+				RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == rosreestrRegister.RegisterId && x.Name.Equals("Категория земель")));
 
 			var query = new QSQuery
 			{
@@ -290,18 +204,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 				{
 					objectIds.Add(table.Rows[i]["ObjectId"].ParseToLong());
 				}
-				var attributes = _gbuObjectService.GetAllAttributes(objectIds,
-					new List<long> { rosreestrRegister.RegisterId, klardAttribute.RegisterId },
-					new List<long>
-					{
-						klardAttribute.Id,
-						nameAttr.Id,
-						permittedUsingAttr.Id,
-						addressAttr.Id,
-						locationAttr.Id,
-						landCategoryAttr.Id
-
-					}, DateTime.Now.GetEndOfTheDay());
+				var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
+					gbuAttributesDataDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
+					gbuAttributesDataDictionary.Values.Select(x => x.Id).Distinct().ToList(),
+					DateTime.Now.GetEndOfTheDay());
 
 				for (var i = 0; i < table.Rows.Count; i++)
 				{
@@ -315,32 +221,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						CadastralCost = table.Rows[i]["CadastralCost"].ParseToDecimalNullable(),
 					};
 
-					foreach (var attribute in attributes.Where(x => x.ObjectId == table.Rows[i]["ObjectId"].ParseToLong()))
+					foreach (var attribute in gbuAttributes.Where(x => x.ObjectId == table.Rows[i]["ObjectId"].ParseToLong()))
 					{
-						if (attribute.AttributeId == klardAttribute.Id)
+						var attributeKeys = gbuAttributesDataDictionary.Where(x => x.Value.Id == attribute.AttributeId)
+							.Select(x => x.Key);
+						foreach (var key in attributeKeys)
 						{
-							dto.Kladr = attribute.GetValueInString();
-						}
-						else
-						{
-							switch (attribute.AttributeData.Name)
-							{
-								case "Наименование земельного участка":
-									dto.Name = attribute.GetValueInString();
-									break;
-								case "Вид использования по документам":
-									dto.PermittedUsing = attribute.GetValueInString();
-									break;
-								case "Адрес":
-									dto.Address = attribute.GetValueInString();
-									break;
-								case "Местоположение":
-									dto.Location = attribute.GetValueInString();
-									break;
-								case "Категория земель":
-									dto.LandCategory = attribute.GetValueInString();
-									break;
-							}
+							typeof(KRSummaryResultsZuDto).GetProperty(key)
+								.SetValue(dto, attribute.GetValueInString());
 						}
 					}
 
