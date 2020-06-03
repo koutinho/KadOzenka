@@ -654,9 +654,8 @@ namespace KadOzenka.Web.Controllers
             try
 	        {
 	            var estimatedGroupModelParamsDto =
-	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value,
-	                    viewModel.IsOksObjType ? ObjectType.Oks : ObjectType.ZU);
-                queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
+	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value);
+	            queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
 	                viewModel.ToGroupModel(estimatedGroupModelParamsDto));
 	        }
 	        catch (Exception ex)

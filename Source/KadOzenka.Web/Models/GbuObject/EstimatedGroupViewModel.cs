@@ -10,9 +10,7 @@ namespace KadOzenka.Web.Models.GbuObject
 	    [Required(ErrorMessage = "Параметр Задание на оценку обязательный")]
         public long? IdTask { get; set; }
 
-	    public bool IsOksObjType { get; set; } = false;
-
-		/// <summary>
+        /// <summary>
 		/// Result parameter.
 		/// </summary>
 		[Required(ErrorMessage = "Атрибут для проставления оценочной группы обязательный")]

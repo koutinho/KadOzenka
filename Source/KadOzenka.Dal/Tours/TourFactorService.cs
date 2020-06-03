@@ -66,18 +66,17 @@ namespace KadOzenka.Dal.Tours
             return register;
         }
 
-        public List<AttributeDto> GetTourAttributesWithSettings(long tourId, ObjectType objectType)
+        public List<AttributeSettingsDto> GetTourAttributesWithSettings(long tourId)
         {
-            var attributes = GetTourAttributes(tourId, objectType).Select(x => new AttributeDto { Id = x.Id, Name = x.Name }).ToList();
-            var isOks = objectType == ObjectType.Oks;
-            var tourAttributeSettings = OMTourAttributeSettings.Where(x => x.TourId == tourId && x.IsOks == isOks)
-                .SelectAll().Execute();
-            foreach (var tourAttributeSetting in tourAttributeSettings.Where(x => x.AttributeId.HasValue).ToList())
-            {
-                attributes.FirstOrDefault(x => x.Id == tourAttributeSetting.AttributeId)?.UsingTypes.Add(tourAttributeSetting.AttributeUsingType_Code);
-            }
+	        var tourAttributeSettings = OMTourAttributeSettings.Where(x => x.TourId == tourId)
+		        .SelectAll().Execute();
 
-            return attributes;
+            return tourAttributeSettings
+	            .Select(x => 
+		            new AttributeSettingsDto
+		            {AttributeId = x.AttributeId, KoAttributeUsingType = x.AttributeUsingType_Code}
+	            )
+	            .ToList();
         }
 
         public OMRegister CreateTourFactorRegister(long tourId, bool isStead)
@@ -175,7 +174,7 @@ namespace KadOzenka.Dal.Tours
         }
 
 
-        public TourEstimatedGroupAttributeParamsDto GetEstimatedGroupModelParamsForTask(long taskId, ObjectType objectType)
+        public TourEstimatedGroupAttributeParamsDto GetEstimatedGroupModelParamsForTask(long taskId)
         {
             var task = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
             if (task == null)
@@ -187,59 +186,38 @@ namespace KadOzenka.Dal.Tours
             {
                 throw new Exception($"Не найден тур для задания на оценку с ИД {taskId}");
             }
-            var isOks = objectType == ObjectType.Oks;
-            var tourKoAttributeSettings = OMTourAttributeSettings.Where(x => x.TourId == tour.Id && x.IsOks == isOks)
-                .SelectAll().Execute();
-            var tourAttributesMapping = OMTransferAttributes.Where(x => x.TourId == tour.Id && x.IsOks == isOks)
+
+            var tourKoAttributeSettings = OMTourAttributeSettings.Where(x => x.TourId == tour.Id)
                 .SelectAll().Execute();
             if (tourKoAttributeSettings.IsEmpty())
             {
                 throw new Exception($"Для тура {tour.Year} не заданы настройки использования заданных атрибутов");
             }
-            if (tourAttributesMapping.IsEmpty())
-            {
-                throw new Exception($"Для тура {tour.Year} не заданы соответствия между факторами {(isOks ? "ОКС" : "Земельных участков")} и атрибутами объектов недвижимости");
-            }
 
             var paramsDto = new TourEstimatedGroupAttributeParamsDto();
             var tourCodeGroupAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
                 x.AttributeUsingType_Code == KoAttributeUsingType.CodeGroupAttribute && x.AttributeId.HasValue)?.AttributeId;
-            if (tourCodeGroupAttributeId == null)
+            if (!tourCodeGroupAttributeId.HasValue)
             {
                 throw new Exception($"Для тура {tour.Year} не задан {KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}");
             }
-            var codeGroupAttributeMapping = tourAttributesMapping.FirstOrDefault(x => x.KoId == tourCodeGroupAttributeId);
-            if (codeGroupAttributeMapping == null)
-            {
-                throw new Exception($"Не найдено соответствие между фактором c ИД {tourCodeGroupAttributeId} ({KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}) и атрибутом объектов недвижимости ");
-            }
-            paramsDto.IdCodeGroup = codeGroupAttributeMapping.GbuId;
+            paramsDto.IdCodeGroup = tourCodeGroupAttributeId.Value;
 
             var codeQuarterAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
                 x.AttributeUsingType_Code == KoAttributeUsingType.CodeQuarterAttribute && x.AttributeId.HasValue)?.AttributeId;
-            if (codeQuarterAttributeId == null)
+            if (!codeQuarterAttributeId.HasValue)
             {
                 throw new Exception($"Для тура {tour.Year} не задан {KoAttributeUsingType.CodeQuarterAttribute.GetEnumDescription()}");
             }
-            var codeQuarterAttributeMapping = tourAttributesMapping.FirstOrDefault(x => x.KoId == codeQuarterAttributeId);
-            if (codeQuarterAttributeMapping == null)
-            {
-                throw new Exception($"Не найдено соответствие между фактором c ИД {codeQuarterAttributeId} ({KoAttributeUsingType.CodeQuarterAttribute.GetEnumDescription()}) и атрибутом объектов недвижимости ");
-            }
-            paramsDto.IdCodeQuarter = codeQuarterAttributeMapping.GbuId;
+            paramsDto.IdCodeQuarter = codeQuarterAttributeId.Value;
 
             var tourTypeRoomAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
                 x.AttributeUsingType_Code == KoAttributeUsingType.TypeRoomAttribute && x.AttributeId.HasValue)?.AttributeId;
-            if (tourTypeRoomAttributeId == null)
+            if (!tourTypeRoomAttributeId.HasValue)
             {
                 throw new Exception($"Для тура {tour.Year} не задан {KoAttributeUsingType.TypeRoomAttribute.GetEnumDescription()}");
             }
-            var typeRoomAttributeMapping = tourAttributesMapping.FirstOrDefault(x => x.KoId == tourTypeRoomAttributeId);
-            if (typeRoomAttributeMapping == null)
-            {
-                throw new Exception($"Не найдено соответствие между фактором c ИД {codeQuarterAttributeId} ({KoAttributeUsingType.TypeRoomAttribute.GetEnumDescription()}) и атрибутом объектов недвижимости ");
-            }
-            paramsDto.IdTypeRoom = typeRoomAttributeMapping.GbuId;
+            paramsDto.IdTypeRoom = tourTypeRoomAttributeId.Value;
 
             return paramsDto;
         }

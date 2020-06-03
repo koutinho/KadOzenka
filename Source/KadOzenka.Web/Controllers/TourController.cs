@@ -9,13 +9,14 @@ using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
-using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Models.Tour;
+using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -31,12 +32,15 @@ namespace KadOzenka.Web.Controllers
         public TourService TourService { get; set; }
         public GroupService GroupService { get; set; }
         public TourFactorService TourFactorService { get; set; }
+        public GbuObjectService GbuObjectService { get; set; }
 
-        public TourController()
+		public TourController()
         {
             TourFactorService = new TourFactorService();
             TourService = new TourService(TourFactorService);
             GroupService = new GroupService();
+            GbuObjectService = new GbuObjectService();
+
         }
 
         #region Карточка тура
@@ -154,24 +158,27 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult TourAttributeSettings()
         {
-            ViewData["KoAttributes"] = new List<string>();
+	        ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
+			 .Select(x => new DropDownTreeItemModel
+			 {
+				 Value = Guid.NewGuid().ToString(),
+				 Text = x.Text,
+				 Items = x.Items.Select(y => new DropDownTreeItemModel
+				 {
+					 Value = y.Value,
+					 Text = y.Text
+				 }).ToList()
+			 }).AsEnumerable();
 
-            return View(new TourAttributeSettingsModel());
+			return View(new TourAttributeSettingsModel());
         }
 
         [HttpGet]
-        public JsonResult GetKoAttributesWithSettings(long tourId, int objectType)
+        public JsonResult GetTourGbuAttributeSettings(long tourId)
         {
-            var koAttributes = TourFactorService.GetTourAttributesWithSettings(tourId, (ObjectType)objectType);
+	        var models = TourFactorService.GetTourAttributesWithSettings(tourId);
 
-            var models = koAttributes.Select(x => new
-            {
-                Id = x.Id,
-                Name = x.Name,
-                UsingTypes = x.UsingTypes
-            }).AsEnumerable();
-
-            return Json(models);
+			return Json(new {Data = models});
         }
 
         [HttpPost]
@@ -187,7 +194,6 @@ namespace KadOzenka.Web.Controllers
                 TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
                 {
                     TourId = model.TourId.Value,
-                    IsOksObjectType = model.ObjType == (long) ObjectType.Oks,
                     AttributeId = model.CodeGroupAttributeId,
                     KoAttributeUsingType = KoAttributeUsingType.CodeGroupAttribute
                 });
@@ -195,7 +201,6 @@ namespace KadOzenka.Web.Controllers
                 TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
                 {
                     TourId = model.TourId.Value,
-                    IsOksObjectType = model.ObjType == (long)ObjectType.Oks,
                     AttributeId = model.CodeQuarterAttributeId,
                     KoAttributeUsingType = KoAttributeUsingType.CodeQuarterAttribute
                 });
@@ -203,7 +208,6 @@ namespace KadOzenka.Web.Controllers
                 TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
                 {
                     TourId = model.TourId.Value,
-                    IsOksObjectType = model.ObjType == (long)ObjectType.Oks,
                     AttributeId = model.TypeRoomAttributeId,
                     KoAttributeUsingType = KoAttributeUsingType.TypeRoomAttribute
                 });

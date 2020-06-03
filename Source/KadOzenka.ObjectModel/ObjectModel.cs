@@ -11698,26 +11698,6 @@ namespace ObjectModel.KO
         }
 
 
-        private bool _isoks;
-        /// <summary>
-        /// 25800300 ОКС или ЗУ (IS_OKS)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 25800300)]
-        public bool IsOks
-        {
-            get
-            {
-                CheckPropertyInited("IsOks");
-                return _isoks;
-            }
-            set
-            {
-                _isoks = value;
-                NotifyPropertyChanged("IsOks");
-            }
-        }
-
-
         private string _attributeusingtype;
         /// <summary>
         /// 25800400 Тип использования атрибута (ATTRIBUTE_USING_TYPE)

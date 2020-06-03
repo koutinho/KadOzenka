@@ -1,12 +1,10 @@
-﻿using System.Collections.Generic;
-using ObjectModel.Directory;
+﻿using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Tours.Dto
 {
-    public class AttributeDto
+    public class AttributeSettingsDto
     {
-        public long Id { get; set; }
-        public string Name { get; set; }
-        public List<KoAttributeUsingType> UsingTypes { get; set; } = new List<KoAttributeUsingType>();
+	    public KoAttributeUsingType KoAttributeUsingType { get; set; }
+	    public long? AttributeId { get; set; }
     }
 }
