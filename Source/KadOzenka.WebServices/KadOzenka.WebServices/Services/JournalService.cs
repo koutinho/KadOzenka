@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Core.Main.FileStorages;
+using Core.Shared.Extensions;
 using KadOzenka.WebServices.Domain.Context;
 using KadOzenka.WebServices.Domain.Model;
 using KadOzenka.WebServices.Services.ModelDto;
@@ -38,7 +39,7 @@ namespace KadOzenka.WebServices.Services
 				if (record == null) return null;
 
 				var updatedRecord= UpdateReadDate(record);
-				resRecord.CreateDate = updatedRecord.CreateDate;
+				resRecord.CreateDate = updatedRecord.CreateDate.Truncate(TimeSpan.FromSeconds(1));
 				resRecord.Guid = updatedRecord.Guid;
 			}
 			catch (Exception e)

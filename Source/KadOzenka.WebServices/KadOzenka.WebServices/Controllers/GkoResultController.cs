@@ -37,12 +37,16 @@ namespace KadOzenka.WebServices
 		/// Get record without confirm date
 		/// </summary>
 		/// <response code="200">OK</response>
+		/// <response code="404">Очередь сообщений пуста</response>
 		[SwaggerResponse(statusCode: 200, type: typeof(KoResultMessage), description: "OK")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.NotFound, description: "Очередь сообщений пуста")]
 		[Route("read")]
 		[HttpGet]
 		public IActionResult Read()
 		{
 			var res = _journalService.ReadLastRecord();
+
+			if (res == null) return NotFound();
 
 			return Ok(res);
 		}
@@ -55,10 +59,10 @@ namespace KadOzenka.WebServices
 		/// <response code="404">NotFound</response>
 		[SwaggerResponse(statusCode: 200, type: typeof(OkResult), description: "OK")]
 		[SwaggerResponse(statusCode: (int)HttpStatusCode.NotFound, type: typeof(OkResult), description: "OK")]
-		[HttpPut("confirm/{guidRecord}")]
-		public IActionResult Confirm(Guid guidRecord)
+		[HttpPost("confirm")]
+		public IActionResult Confirm([FromBody]ConfirmMessage guidRecord)
 		{
-			var res = _journalService.Confirm(guidRecord);
+			var res = _journalService.Confirm(guidRecord.Guid);
 			if (!res)
 			{
 				return NotFound();
