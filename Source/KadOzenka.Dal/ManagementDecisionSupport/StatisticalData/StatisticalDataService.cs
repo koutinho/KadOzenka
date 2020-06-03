@@ -401,6 +401,30 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return GetRegisterAttributeByName(RosreestrRegisterId, "Категория земель");
         }
 
+        /// <summary>
+        /// Аттрибут "Площадь"
+        /// </summary>
+        public RegisterAttribute GetRosreestrSquareAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Площадь");
+        }
+
+        /// <summary>
+        /// Аттрибут "Наименование земельного участка"
+        /// </summary>
+        public RegisterAttribute GetRosreestrParcelNameAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Наименование земельного участка");
+        }
+
+        /// <summary>
+        /// Аттрибут "Дата образования"
+        /// </summary>
+        public RegisterAttribute GetRosreestrFormationDateAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Дата образования");
+        }
+
         #endregion
 
 

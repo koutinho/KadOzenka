@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 
             var items = new List<ReportItem>();
 
-            var units = OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long) x.TaskId))
+            var units = OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId))
                 .Select(x => x.CadastralBlock)
                 .Select(x => x.CadastralNumber)
                 .Select(x => x.PropertyType_Code)
@@ -85,11 +85,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
             }
             
             return dataTable;
-        }
-
-        private string GetCadastralDistrict(string cadastralQuartal)
-        {
-            return cadastralQuartal.Substring(0, 5);
         }
 
         #endregion

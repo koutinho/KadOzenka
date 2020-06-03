@@ -84,5 +84,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
                 );
             }
         }
-	}
+
+        public string GetCadastralDistrict(string cadastralQuartal)
+        {
+            return cadastralQuartal.Substring(0, 5);
+        }
+    }
 }
