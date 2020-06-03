@@ -32,11 +32,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
 		[StatisticalDataFmReportCode(1016)]
 		SubjectsUPKS = 7,
 
-		[Description("Результаты в разрезе КР")]
-		[StatisticalDataFmReportCode(1017)]
-		ResultsByKR = 8,
+		[Description("Земельные участки")]
+		[StatisticalDataFmReportCode(10170)]
+		ResultsByKRForParcels = 80,
+        [Description("Здания")]
+        [StatisticalDataFmReportCode(10171)]
+        ResultsByKRForBuildings = 81,
 
-		[Description("Результаты на утверждение")]
+        [Description("Результаты на утверждение")]
 		[StatisticalDataFmReportCode(1018)]
 		ResultsForApproval = 9,
 

@@ -4,14 +4,14 @@ using System.Data;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class ParcelsReport : IResultsByCadastralDistrictReport
+    public class ParcelsReport : StatisticalDataReport
     {
-        public string GetTemplateName(NameValueCollection query)
+        protected override string TemplateName(NameValueCollection query)
         {
             return "ResultsByCadastralDistrictForParcelsReport";
         }
 
-        public DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
+        protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
             return new DataSet();
         }
