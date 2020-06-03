@@ -27,8 +27,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 		{
 			if (initialisation)
 			{
-				InitialiseGbuAttributesFilterValue(filterValues.FirstOrDefault(f => f.ParamName == "KlardAttribute"));
-			}
+				var klardFilter = filterValues.FirstOrDefault(f => f.ParamName == "KlardAttribute");
+                InitialiseGbuAttributesFilterValue(klardFilter);
+            }
 		}
 
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)

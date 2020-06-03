@@ -58,18 +58,27 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			return new DataSet();
 		}
 
-		protected void InitialiseGbuAttributesFilterValue(FilterValue attributeFilterValue)
+		protected void InitialiseGbuAttributesFilterValue(params FilterValue[] filterValues)
 		{
-			if (attributeFilterValue != null)
-			{
-				attributeFilterValue.ReportParameters = new List<ReportParameter>();
-				var attributes = GbuObjectService.GetGbuAttributes();
-				attributeFilterValue.ReportParameters.Add(new ReportParameter
-					{ Value = string.Empty, Key = string.Empty });
-				attributeFilterValue.ReportParameters.AddRange(attributes.Select(x => new ReportParameter
-					{ Value = $"{x.Name} ({x.ParentRegister?.RegisterDescription})", Key = $"key:{x.Id}" })
-				);
-			}
-		}
+            if (filterValues == null)
+                return;
+
+            var attributes = GbuObjectService.GetGbuAttributes();
+
+            foreach (var filterValue in filterValues)
+            {
+                if (filterValue == null)
+                    continue;
+
+                filterValue.ReportParameters = new List<ReportParameter>
+                {
+                    new ReportParameter {Value = string.Empty, Key = string.Empty}
+                };
+
+                filterValue.ReportParameters.AddRange(attributes.Select(x => new ReportParameter
+                    { Value = $"{x.Name} ({x.ParentRegister?.RegisterDescription})", Key = $"key:{x.Id}" })
+                );
+            }
+        }
 	}
 }

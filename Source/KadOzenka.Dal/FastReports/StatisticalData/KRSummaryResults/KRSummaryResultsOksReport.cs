@@ -25,12 +25,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.KRSummaryResults
 		public override void InitializeFilterValues(long objId, string senderName, bool initialisation, List<FilterValue> filterValues)
 		{
 			if (initialisation)
-			{
-				InitialiseGbuAttributesFilterValue(
-					filterValues.FirstOrDefault(f => f.ParamName == "KlardAttribute"));
-				InitialiseGbuAttributesFilterValue(
-					filterValues.FirstOrDefault(f => f.ParamName == "ParentKnAttribute"));
-			}
+            {
+                var klardFilter = filterValues.FirstOrDefault(f => f.ParamName == "KlardAttribute");
+                var parentKnFilter = filterValues.FirstOrDefault(f => f.ParamName == "ParentKnAttribute");
+
+                InitialiseGbuAttributesFilterValue(klardFilter, parentKnFilter);
+            }
 		}
 
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
