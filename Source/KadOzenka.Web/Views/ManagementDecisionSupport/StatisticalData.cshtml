@@ -120,7 +120,7 @@
                 @Html.CustomLabelFor("Параметры расчётов:")
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CalculationParams.GetEnumDescription()).Value((long)StatisticalDataType.CalculationParams).Enable(false))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CalculationParams.GetEnumDescription()).Value((long)StatisticalDataType.CalculationParams).Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ModelingResults.GetEnumDescription()).Value((long)StatisticalDataType.ModelingResults).Enable(false))

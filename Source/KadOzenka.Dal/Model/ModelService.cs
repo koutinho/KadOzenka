@@ -65,6 +65,7 @@ namespace KadOzenka.Dal.Model
             query.AddColumn(OMModelFactor.GetColumn(x => x.ModelId, nameof(ModelFactorDto.ModelId)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactorDto.FactorId)));
             query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorDto.Factor)));
+            query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactorDto.Type)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.MarkerId, nameof(ModelFactorDto.MarkerId)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelFactorDto.Weight)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelFactorDto.B0)));
