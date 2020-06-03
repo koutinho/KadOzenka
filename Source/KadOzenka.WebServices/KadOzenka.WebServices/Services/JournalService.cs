@@ -39,8 +39,13 @@ namespace KadOzenka.WebServices.Services
 				if (record == null) return null;
 
 				var updatedRecord= UpdateReadDate(record);
+
+				var task = GetTaskById((int) record.TaskId);
 				resRecord.CreateDate = updatedRecord.CreateDate.Truncate(TimeSpan.FromSeconds(1));
 				resRecord.Guid = updatedRecord.Guid;
+				resRecord.YearTour = GetTourByTaskId((int)record.TaskId)?.Year ?? 0;
+				resRecord.DateCreatedTask = task?.CreationDate.Truncate(TimeSpan.FromSeconds(1));
+				resRecord.RegNumber = _appContext.TdInstances.FirstOrDefault(x => x.Id == task.DocumentId)?.RegNumber;
 			}
 			catch (Exception e)
 			{
@@ -160,6 +165,20 @@ namespace KadOzenka.WebServices.Services
 		{
 			record.ConfirmDate = DateTime.Now.Date;
 			_appContext.SaveChanges();
+		}
+
+		private Task GetTaskById(int taskId)
+		{
+			return _appContext.Tasks.FirstOrDefault(x => x.Id == taskId);
+		}
+
+		private Tour GetTourByTaskId(int taskId)
+		{
+			var task = GetTaskById(taskId);
+
+			if (task == null) return null;
+
+			return _appContext.Tours.FirstOrDefault(x => x.Id == task.TourId);
 		}
 
 		#endregion

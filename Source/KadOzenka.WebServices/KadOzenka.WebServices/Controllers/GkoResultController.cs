@@ -1,14 +1,8 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
 using System.Net;
-using Core.Shared.Extensions;
-using KadOzenka.WebServices.Domain.Context;
-using KadOzenka.WebServices.Domain.Model;
 using KadOzenka.WebServices.Services;
 using KadOzenka.WebServices.Services.ModelDto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
