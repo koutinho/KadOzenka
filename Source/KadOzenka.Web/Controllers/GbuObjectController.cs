@@ -619,7 +619,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			
 
-			return Json(new { Success = "Выполнено успешно!"});
+			return Json(new { Success = "Выполнено успешно! Отчет можно скачать в уведомлениях."});
 		}
 
         #endregion
@@ -657,9 +657,10 @@ namespace KadOzenka.Web.Controllers
 	        {
 	            var estimatedGroupModelParamsDto =
 	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value);
-	            queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
-	                viewModel.ToGroupModel(estimatedGroupModelParamsDto));
-	        }
+				queueId = TaskSetEstimatedGroup.AddProcessToQueue(OMTask.GetRegisterId(), viewModel.IdTask.Value,
+					viewModel.ToGroupModel(estimatedGroupModelParamsDto));
+
+			}
 	        catch (Exception ex)
 	        {
 	            return SendErrorMessage(ex.Message);

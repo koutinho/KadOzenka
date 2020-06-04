@@ -52,14 +52,14 @@ namespace KadOzenka.Dal.KoObject
 
 		public static int SuccessCount;
 
-		public static List<string> ErrorMessages;
 
-		public static void Run(EstimatedGroupModel param)
+		public static long Run(EstimatedGroupModel param)
 		{
+			var reportService = new GbuReportService();
+			reportService.AddHeaders(0, new List<string>{"КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
 			locked = new object();
 			var units = OMUnit.Where(x => x.TaskId != null && x.TaskId == param.IdTask).SelectAll().Execute().ToList();
 			CountAllUnits = units.Count;
-			ErrorMessages = new List<string>();
 
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 			ParallelOptions options = new ParallelOptions
@@ -71,19 +71,27 @@ namespace KadOzenka.Dal.KoObject
 			var attributeResult = OMAttribute.Where(x => x.Id == param.IdEstimatedSubGroup).SelectAll()
 				.ExecuteFirstOrDefault();
 
+			var attributeCodeGroup = OMAttribute.Where(x => x.Id == param.IdCodeGroup).SelectAll()
+				.ExecuteFirstOrDefault();
+
 			Parallel.ForEach(units, options, item =>
 			{
+				int rowReport;
+				lock (locked)
+				{
+					rowReport = reportService.GetCurrentRow();
+				}
+				reportService.AddValue(item.CadastralNumber, 0, rowReport);
 				var gbuObject = OMMainObject.Where(x => x.Id == item.ObjectId).SelectAll().ExecuteFirstOrDefault();
 
-				var attributeCodeGroup = OMAttribute.Where(x => x.Id == param.IdCodeGroup).SelectAll()
-					.ExecuteFirstOrDefault();
+		
 				// берем код группы (значение из справочника цод)
 				ValueItem codeGroup = GetValueFactor(gbuObject, attributeCodeGroup.RegisterId, attributeCodeGroup.Id);
 				if (string.IsNullOrEmpty(codeGroup.Value))
 				{
 					lock (locked)
 					{
-						ErrorMessages.Add($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber}");
+						reportService.AddValue($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber}",4, rowReport );
 					}
 					return;
 				}
@@ -93,15 +101,13 @@ namespace KadOzenka.Dal.KoObject
 				if (complianceGuides.Count == 1)
 				{
 					AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides[0].Group);
+					AddRowToReport(rowReport, item.CadastralNumber, param.IdCodeGroup, param.IdEstimatedSubGroup, complianceGuides[0].Group, "", reportService);
 					return;
 				}
 
 				if (complianceGuides.Count <= 1)
 				{
-					lock (locked)
-					{
-						ErrorMessages.Add($"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}");
-					}
+					reportService.AddValue($"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}", 4, rowReport);
 					return;
 				}
 				{
@@ -113,14 +119,12 @@ namespace KadOzenka.Dal.KoObject
 						ValueItem typeRoom = GetValueFactor(gbuObject, attributeRoom.RegisterId, attributeRoom.Id);
 						if (string.IsNullOrEmpty(typeRoom.Value))
 						{
-							lock (locked)
-							{
-								ErrorMessages.Add($"Не найден тип помещения для объекта {gbuObject.CadastralNumber} ");
-							}
+							reportService.AddValue($"Не найден тип помещения для объекта {gbuObject.CadastralNumber} ", 4, rowReport);
 							return;
 						}
 						var group = complianceGuides.FirstOrDefault(x => x.IsResidential == typeRoom.Value);
 						AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, group.Group);
+						AddRowToReport(rowReport, item.CadastralNumber, param.IdCodeGroup, param.IdEstimatedSubGroup, group.Group, "", reportService);
 						return;
 					}
 
@@ -131,20 +135,14 @@ namespace KadOzenka.Dal.KoObject
 
 					if (string.IsNullOrEmpty(codeQuarter.Value))
 					{
-						lock (locked)
-						{
-							ErrorMessages.Add($"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.");
-						}
+						reportService.AddValue($"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.", 4, rowReport);
 						return;
 					}
 
 					var kv = OMKadastrKvartal.Where(x => x.KadastrKvartal == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
 					if (kv == null)
 					{
-						lock (locked)
-						{
-							ErrorMessages.Add($"Не найден кадастровый квартал {codeQuarter.Value}. Необходимо обновить справочник");
-						}
+						reportService.AddValue($"Не найден кадастровый квартал {codeQuarter.Value}. Необходимо обновить справочник", 4, rowReport);
 						return;
 					}
 					var task = OMTask.Where(x => x.Id == param.IdTask).SelectAll().ExecuteFirstOrDefault();
@@ -153,28 +151,30 @@ namespace KadOzenka.Dal.KoObject
 					switch (tourYear)
 					{
 						case 2017:
-							AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2017).Group); break;
+							AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2017).Group);
+							AddRowToReport(rowReport, item.CadastralNumber, param.IdCodeGroup, param.IdEstimatedSubGroup, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2017).Group, "", reportService);
+							break;
 						case 2020:
-							AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group); break;
+							AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group);
+							AddRowToReport(rowReport, item.CadastralNumber, param.IdCodeGroup, param.IdEstimatedSubGroup, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group, "", reportService);
+							break;
 						default:
 						{
-							lock (locked)
-							{
-								ErrorMessages.Add("Для выбраного тура не предусмотренны параметры проставления оценки");
-							}
+							reportService.AddValue("Для выбраного тура не предусмотренны параметры проставления оценки", 4, rowReport);
 							return;
 						}
 					}
 				}
 			});
-			var strErrors = string.Join(',', ErrorMessages);
+			reportService.SetStyle();
+			reportService.SetIndividualWidth(1, 6);
+			reportService.SetIndividualWidth(0, 4);
+			reportService.SetIndividualWidth(2, 3);
+			reportService.SetIndividualWidth(3, 6);
+			reportService.SetIndividualWidth(4, 5);
+			long reportId = reportService.SaveReport("Отчет проставления оценочной группы");
 
-			ErrorMessages?.Clear();
-
-			if (CountAllUnits != SuccessCount)
-			{
-				throw new Exception(strErrors);
-			}
+			return reportId;
 		}
 
 		#region HelpMetods
@@ -216,7 +216,7 @@ namespace KadOzenka.Dal.KoObject
 			List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(obj.Id, new List<long> { idRegister }, new List<long> { idFactor }, DateTime.Now.Date);
 			if (attribs.Count > 0)
 			{
-				if (attribs[0].StringValue != string.Empty && attribs[0].StringValue != null)
+				if (attribs[0].GetValueInString() != string.Empty && attribs[0].GetValueInString() != null)
 				{
 					res.Value = attribs[0].StringValue;
 					res.IdDocument = attribs[0].ChangeDocId;
@@ -239,6 +239,17 @@ namespace KadOzenka.Dal.KoObject
 			}
 
 			return res;
+		}
+
+		public static void AddRowToReport(int rowNumber, string kn,  long sourceAttribute, long resultAttribute, string value, string errorMessage, GbuReportService reportService)
+		{
+			string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
+			string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
+			reportService.AddValue(kn, 0, rowNumber);
+			reportService.AddValue(sourceName, 1, rowNumber);
+			reportService.AddValue(value, 2, rowNumber);
+			reportService.AddValue(resultName, 3, rowNumber);
+			reportService.AddValue(errorMessage, 4, rowNumber);
 		}
 
 		#endregion
