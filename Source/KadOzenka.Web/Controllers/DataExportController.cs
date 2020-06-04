@@ -81,10 +81,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public JsonResult AddExportToQueue(int mainRegisterId, string registerViewId, IFormFile file, List<DataColumnDto> columns)
 		{
-			if (columns.All(x => x.IsKey == false))
-			{
-				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
-			}
+            ValidateColumns(columns);
 
             long exportByTemplateId;
             using (var stream = file.OpenReadStream())
@@ -100,10 +97,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		public ActionResult ExportDataToExcel(int mainRegisterId, IFormFile file, List<DataColumnDto> columns)
 		{
-			if (columns.All(x => x.IsKey == false))
-			{
-				throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
-			}
+			ValidateColumns(columns);
 
 			ExcelFile excelFile;
 			using (var stream = file.OpenReadStream())
@@ -118,7 +112,7 @@ namespace KadOzenka.Web.Controllers
 			return Content(JsonConvert.SerializeObject(new { success = true, fileName = file.FileName }), "application/json");
 		}
 
-		[HttpGet]
+        [HttpGet]
 		public ActionResult DownloadExcelFile(string fileName)
 		{
 			var fileContent = HttpContext.Session.Get(fileName);
@@ -277,5 +271,22 @@ namespace KadOzenka.Web.Controllers
 
 			return File(templateFile, contentType, reportName);
 		}
-	}
+
+        #region Support Methods
+
+        private void ValidateColumns(List<DataColumnDto> columns)
+        {
+            if (columns.All(x => x.IsKey == false))
+            {
+                throw new Exception("Должен быть выбран хотя бы один ключевой параметр");
+            }
+
+            if (columns.Count(x => x.IsKey) > 1)
+            {
+                throw new Exception("Должен быть выбран только один ключевой параметр");
+            }
+        }
+
+        #endregion
+    }
 }

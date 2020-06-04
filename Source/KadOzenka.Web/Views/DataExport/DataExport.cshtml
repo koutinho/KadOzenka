@@ -1,4 +1,5 @@
-﻿
+﻿@using ObjectModel.Market
+
 <form id="exportForm">
 	<ul id="upload_panelbar" class="panelBar">
 		<li id="Section_UploadBuilding" data-expand>
@@ -441,14 +442,38 @@
                 }
             });
 
+            var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
             $('#files').kendoUpload({
                 multiple: false,
                 localization: {
-                    select: 'Загрузить Файл'
+                    select: 'Загрузить Файл',
+                    clearSelectedFiles: 'Очистить'
                 },
                 async: {
-                    autoUpload: true,
+                    autoUpload: isForMarketObjects,
                     saveUrl: '@Url.Action("ParseFileColumns", "DataExport")'
+                },
+                select: function (e) {
+                    if (isForMarketObjects)
+                        return;
+                    var upload = e.sender;
+                    Common.UI.ShowConfirm({
+                        title: 'Подтверждение',
+                        content: 'Для корректной выгрузки данных соблюдайте следующие требования к загружаемому файлу:' +
+                            '<br/> 1 столбец - № п/п' +
+                            '<br/> 2 столбец - Кадастровый номер',
+                        captionYes: "Загрузить",
+                        captionNo: "Отменить",
+                        onSuccess: function () {
+                            upload.upload();
+                        },
+                        onFail: function () {
+                            upload.clearAllFiles();
+                            var window = $(this).closest('[data-role=window]').data('kendoWindow');
+                            window.close();
+                            window.destroy();
+                        }
+                    });
                 },
                 validation: {
                     allowedExtensions: ['.xls', '.xlsx']
@@ -457,13 +482,29 @@
                     if (e.operation === "upload") {
                         var columnNames = e.response.ColumnsNames;
                         var dataCount = e.response.DataCount;
-                        $("#columnsListBox").data("kendoListBox").setDataSource(columnNames);
+                        var excelColumnsListBox = $("#columnsListBox").data("kendoListBox");
+                        excelColumnsListBox.setDataSource(columnNames);
                         if (dataCount > dataCountForBackgroundLoading) {
                             $("#backgroundDownloadCheckbox").prop('checked', true);
                         } else {
                             $("#backgroundDownloadCheckbox").prop('checked', false);
                         }
                         resetData();
+                        if (!isForMarketObjects && excelColumnsListBox.items() != null) {
+                            var numberColumn = excelColumnsListBox.items()[0];
+                            var cadastralNumberColumn = excelColumnsListBox.items()[1];
+                            excelColumnsListBox.enable(numberColumn, false);
+                            excelColumnsListBox.enable(cadastralNumberColumn, false);
+                            var cadastralNumberData = excelColumnsListBox.dataItem(cadastralNumberColumn);
+                            var matchingListView = $("#listView").data('kendoListView');
+                            matchingListView.dataSource.add({
+                                IsKey: true,
+                                ColumnName: cadastralNumberData.Name,
+                                ColumnId: cadastralNumberData.Id,
+                                AttributeDescription: 'Кадастровый номер',
+                                AttributeId: 20000200
+                            });
+                        }
                     }
                 },
                 error: function (e) {
