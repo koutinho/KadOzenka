@@ -270,6 +270,7 @@ namespace KadOzenka.Dal.DataExport
             string path_name = "";
             foreach (long taskId in setting.TaskFilter)
             {
+                OMTask currentTask = OMTask.Where(x => x.Id == taskId).SelectAll().ExecuteFirstOrDefault();
                 List<OMUnit> units_all = OMUnit.Where(x => x.TaskId == taskId).SelectAll().Execute();
                 int count_curr = 0;
                 int count_all = units_all.Count();
@@ -287,7 +288,7 @@ namespace KadOzenka.Dal.DataExport
                         //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
 
                         file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
-                        Stream resultFile = SaveXmlDocument(units_curr);
+                        Stream resultFile = SaveXmlDocument(units_curr, currentTask.EstimationDate);
                         long id = SaveReportDownload.SaveReportToXml(file_name, resultFile, OMUnit.GetRegisterId());
 						res.Add(new ResultKoUnloadSettings
 						{
@@ -312,7 +313,7 @@ namespace KadOzenka.Dal.DataExport
                 //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
 
                 file_name = "Task_" + taskId + "COST_" + ConfigurationManager.AppSettings["ucSender"] + "_" + DateTime.Now.ToString("ddMMyyyy") + "_" + count_file.ToString().PadLeft(4, '0');
-                Stream resultFile1 = SaveXmlDocument(units_curr);
+                Stream resultFile1 = SaveXmlDocument(units_curr, currentTask.EstimationDate);
 				//using (FileStream output = new FileStream(file_name, FileMode.Create))
 				//{
 				//    resultFile1.CopyTo(output);
@@ -330,7 +331,7 @@ namespace KadOzenka.Dal.DataExport
             return res;
         }
 
-        public static Stream SaveXmlDocument(List<OMUnit> units)
+        public static Stream SaveXmlDocument(List<OMUnit> units, DateTime? estimationDate)
         {
             XmlDocument xmlFile = new XmlDocument();
             XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
@@ -339,7 +340,7 @@ namespace KadOzenka.Dal.DataExport
                                                      ConfigurationManager.AppSettings["ucDocName"],
                                                      ConfigurationManager.AppSettings["ucDocNum"],
                                                      ConfigurationManager.AppSettings["ucDocDate"].ParseToDateTime(),
-                                                     ConfigurationManager.AppSettings["ucAppDate"].ParseToDateTime(),
+                                                     (estimationDate != null)? estimationDate.Value:DateTime.Now,
                                                      ConfigurationManager.AppSettings["ucSender"],
                                                      DateTime.Now);
             AddXmlPackage(xmlFile, xnLandValuation, units);
@@ -1838,7 +1839,7 @@ namespace KadOzenka.Dal.DataExport
                     XmlDocument xmlFile = new XmlDocument();
                     XmlNode xnLandValuation = xmlFile.CreateElement("LandValuation");
                     xmlFile.AppendChild(xnLandValuation);
-                    DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, doc_in.CreateDate,
+                    DEKOUnit.AddXmlDocument(xmlFile, xnLandValuation, true, _doc_out.Description, _doc_out.RegNumber, _doc_out.CreateDate, (task!=null)?((task.EstimationDate!=null)?task.EstimationDate.Value:DateTime.Now):DateTime.Now,
                                    ConfigurationManager.AppSettings["ucSender"], DateTime.Now);
                     DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
