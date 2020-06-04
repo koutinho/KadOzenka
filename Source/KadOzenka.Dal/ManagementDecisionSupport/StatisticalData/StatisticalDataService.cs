@@ -364,7 +364,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         /// <summary>
         /// Аттрибут "Количество этажей"
         /// </summary>
-        public RegisterAttribute GetRosreestrFloorsNumberYearAttribute()
+        public RegisterAttribute GetRosreestrFloorsNumberAttribute()
         {
             return GetRegisterAttributeByName(RosreestrRegisterId, "Количество этажей");
         }
@@ -372,7 +372,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         /// <summary>
         /// Аттрибут "Количество подземных этажей"
         /// </summary>
-        public RegisterAttribute GetRosreestrUndergroundFloorsNumberYearAttribute()
+        public RegisterAttribute GetRosreestrUndergroundFloorsNumberAttribute()
         {
             return GetRegisterAttributeByName(RosreestrRegisterId, "Количество подземных этажей");
         }
@@ -423,6 +423,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         public RegisterAttribute GetRosreestrFormationDateAttribute()
         {
             return GetRegisterAttributeByName(RosreestrRegisterId, "Дата образования");
+        }
+
+        /// <summary>
+        /// Аттрибут "Назначение здания"
+        /// </summary>
+        public RegisterAttribute GetRosreestrBuildingPurposeAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Назначение здания");
         }
 
         #endregion

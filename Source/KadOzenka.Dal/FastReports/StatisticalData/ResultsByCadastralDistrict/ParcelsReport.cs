@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -83,15 +82,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 UsageTypeNameAttributeId = usageTypeNameAttributeId,
                 UsageTypeCodeSourceAttributeId = usageTypeCodeSourceAttributeId
             };
-        }
-
-        private long GetFilterParameterValue(NameValueCollection query, string filterName, string nameFromInterface)
-        {
-            var attributeId = GetQueryParam<long?>(filterName, query);
-            if (!attributeId.HasValue)
-                throw new Exception($"Не указан атрибут '{nameFromInterface}'");
-
-            return attributeId.Value;
         }
 
         private List<ReportItem> GetOperations(List<long> taskIds, InputParameters inputParameters)
@@ -201,7 +191,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
         {
-            var dataTable = new DataTable("ITEM");
+            var dataTable = new DataTable("Item");
 
             dataTable.Columns.Add("Number");
 

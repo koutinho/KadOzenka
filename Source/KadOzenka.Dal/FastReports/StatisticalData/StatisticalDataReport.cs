@@ -89,5 +89,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
         {
             return cadastralQuartal.Substring(0, 5);
         }
+
+        protected long GetFilterParameterValue(NameValueCollection query, string filterName, string nameFromInterface)
+        {
+            var attributeId = GetQueryParam<long?>(filterName, query);
+            if (!attributeId.HasValue)
+                throw new Exception($"Не указан атрибут '{nameFromInterface}'");
+
+            return attributeId.Value;
+        }
     }
 }
