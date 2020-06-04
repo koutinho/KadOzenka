@@ -276,9 +276,9 @@ namespace KadOzenka.Dal.GbuObject
 	        string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
 	        string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
 			_reportService.AddValue(kn,0, rowNumber);
-			_reportService.AddValue(sourceName,1, rowNumber);
+			_reportService.AddValue(sourceName,3, rowNumber);
 			_reportService.AddValue(value,2, rowNumber);
-			_reportService.AddValue(resultName,3, rowNumber);
+			_reportService.AddValue(resultName,1, rowNumber);
 			_reportService.AddValue(errorMessage,4, rowNumber);
         }
 

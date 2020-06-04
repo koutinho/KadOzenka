@@ -25,12 +25,18 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static int CurrentCount = 0;
 
-        /// <summary>
-        /// Выполнение операции гармонизации
-        /// </summary>
-        public static void Run(HarmonizationCODSettings setting)
+        private static GbuReportService _reportService;
+
+		/// <summary>
+		/// Выполнение операции гармонизации
+		/// </summary>
+		public static long Run(HarmonizationCODSettings setting)
         {
-            locked = new object();
+	        _reportService = new GbuReportService();
+
+	        _reportService.AddHeaders(0, new List<string> { "КН", "Поле в которое производилась запись", "Внесенное значение", "Источник внесенного значения", "Ошибка" });
+
+			locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
@@ -67,6 +73,18 @@ namespace KadOzenka.Dal.GbuObject
                 CurrentCount = 0;
                 MaxCount = 0;
             }
+
+            _reportService.SetStyle();
+            _reportService.SetIndividualWidth(1, 6);
+            _reportService.SetIndividualWidth(0, 4);
+            _reportService.SetIndividualWidth(2, 3);
+            _reportService.SetIndividualWidth(3, 6);
+            _reportService.SetIndividualWidth(4, 5);
+            long reportId = _reportService.SaveReport("Отчет гормонизации ЦОД");
+            _reportService = null;
+
+            return reportId;
+
         }
 
         public static void RunOneGbu(ObjectModel.Gbu.OMMainObject obj, HarmonizationCODSettings setting, List<ObjectModel.KO.OMCodDictionary> dictionaryItem)
@@ -102,7 +120,17 @@ namespace KadOzenka.Dal.GbuObject
                                             if (!GetLevelData(obj, setting.Level9Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
                                                 if (!GetLevelData(obj, setting.Level10Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
                                                 {
-                                                    var attributeValue = new GbuObjectAttribute
+	                                                int rowReport;
+
+	                                                lock (locked)
+	                                                {
+		                                                rowReport = _reportService.GetCurrentRow();
+	                                                }
+
+	                                                string message = "Для текущего объекта было установлено значение по умолчанию.";
+	                                                AddRowToReport(rowReport,obj.CadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
+
+													var attributeValue = new GbuObjectAttribute
                                                     {
                                                         Id = -1,
                                                         AttributeId = setting.IdAttributeResult.Value,
@@ -152,7 +180,17 @@ namespace KadOzenka.Dal.GbuObject
                                                 if (!GetLevelData(unit, setting.Level9Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
                                                     if (!GetLevelData(unit, setting.Level10Attribute, setting.IdAttributeResult, attribs, dictionaryItem))
                                                     {
-                                                        var attributeValue = new GbuObjectAttribute
+	                                                    int rowReport;
+
+	                                                    lock (locked)
+	                                                    {
+		                                                    rowReport = _reportService.GetCurrentRow();
+	                                                    }
+
+	                                                    string message = "Для текущего объекта было установлено значение по умолчанию.";
+	                                                    AddRowToReport(rowReport, unit.CadastralNumber, 0, setting.DefaultValue, setting.IdAttributeResult.Value, message);
+
+														var attributeValue = new GbuObjectAttribute
                                                         {
                                                             Id = -1,
                                                             AttributeId = setting.IdAttributeResult.Value,
@@ -192,7 +230,15 @@ namespace KadOzenka.Dal.GbuObject
                         }
                         if (resValue != string.Empty)
                         {
-                            res = true;
+	                        int rowReport;
+
+	                        lock (locked)
+	                        {
+		                        rowReport = _reportService.GetCurrentRow();
+	                        }
+
+	                        AddRowToReport(rowReport, obj.CadastralNumber, idSourceAttrib.Value, resValue, idResultAttrib.Value, "");
+							res = true;
                             var attributeValue = new GbuObjectAttribute
                             {
                                 Id = -1,
@@ -234,7 +280,14 @@ namespace KadOzenka.Dal.GbuObject
                         }
                         if (resValue != string.Empty)
                         {
-                            res = true;
+	                        int rowReport;
+	                        lock (locked)
+	                        {
+		                        rowReport = _reportService.GetCurrentRow();
+	                        }
+	                        AddRowToReport(rowReport, unit.CadastralNumber, idSourceAttrib.Value, attrib.GetValueInString(), idResultAttrib.Value, "");
+
+							res = true;
                             var attributeValue = new GbuObjectAttribute
                             {
                                 Id = -1,
@@ -255,6 +308,17 @@ namespace KadOzenka.Dal.GbuObject
             return res;
         }
 
-    }
+        public static void AddRowToReport(int rowNumber, string kn, long sourceAttribute, string value, long resultAttribute, string errorMessage)
+        {
+	        string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
+	        string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
+	        _reportService.AddValue(kn, 0, rowNumber);
+	        _reportService.AddValue(sourceName, 3, rowNumber);
+	        _reportService.AddValue(value, 2, rowNumber);
+	        _reportService.AddValue(resultName, 1, rowNumber);
+	        _reportService.AddValue(errorMessage, 4, rowNumber);
+        }
+
+	}
 
 }
