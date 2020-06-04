@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="05/28/2020 10:45:25" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="06/04/2020 14:34:05" ReportInfo.CreatorVersion="2017.4.7.0">
   <ScriptText>
     using System;
     using System.Collections;
@@ -15,71 +15,54 @@
     using FastReport.Table;
     using FastReport.Utils;
 
-    namespace FastReport
+namespace FastReport
+{
+  public class ReportScript
+  {
+    
+    private void MatrixData_AfterData(object sender, EventArgs e)
     {
-    public class ReportScript
-    {
-
-      //private int rowIndex;
-
-      //private float GetValue(int columnIndex)
-      //{
-        //object value = MatrixData.Data.GetValue(columnIndex, rowIndex, 0);
-        //return new Variant(value);
-      //}
-
-    private void SetValue(string complexValue, float value)
-    {
-      //int columnIndex = MatrixData.Data.Columns.Find(complexValue.Split(';'));
-      //MatrixData.Data.SetValue(columnIndex, rowIndex, value);
+      MatrixData.ResultTable.AfterData -= MatrixDataResultTable_AfterData;
+      MatrixData.ResultTable.AfterData += MatrixDataResultTable_AfterData;
     }
 
-    private void MatrixData_AfterTotals(object sender, EventArgs e)
+    
+    private void MatrixDataResultTable_AfterData(object sender, EventArgs e)
     {
-        //int[] rowIndices = MatrixData.Data.Rows.GetTerminalIndices();
-          
-        //for (int i = 0; i &lt; rowIndices.Length; i++)
-        //{
-        //rowIndex = rowIndices[i];
-
-        //int[] columnIndices = MatrixData.Data.Columns.GetTerminalIndices();
-        //float oplataSum = 0;
-        //foreach (int columnIndex in columnIndices)
-        //{
-        //oplataSum += GetValue(columnIndex);
-        //}
-        //SetValue(&quot;Всего&quot;, oplataSum);
-        //}
-    }
-   
-    private void BandCommon_BeforePrint(object sender, EventArgs e)
-    {
-        //TitleText.Width = MatrixData.Width;
+      TableResult table = sender as TableResult;
+      table[0, 0].RowSpan = 2;
+      
+      TableRow newRow = new TableRow();
+      table.Rows.Insert(0, newRow);
+      table[0, 0].ColSpan =  table.ColumnCount;
+      Font font = new Font(&quot;Times New Roman&quot;, 12.0f);
+      table[0, 0].Font = font;
+      table[0, 0].HorzAlign = HorzAlign.Center;
+      table[0, 0].VertAlign = VertAlign.Center;
+      table[0, 0].Text = Report.GetColumnValue(&quot;Common.Title&quot;).ToString();
+      table[0, 0].Padding = new System.Windows.Forms.Padding(2, 10, 2, 10);
+      
+      table.Rows[0].AutoSize = true;
     }
 
-    private void BandCommon_AfterLayout(object sender, EventArgs e)
-    {
-        //TitleText.Width = MatrixData.Width;
-    }
+  }
 
-
-    }
-
-    }
+}
   </ScriptText>
   <Dictionary>
+    <BusinessObjectDataSource Name="Common" ReferenceName="Common" DataType="null" Enabled="true">
+      <Column Name="Title" DataType="System.String"/>
+    </BusinessObjectDataSource>
     <BusinessObjectDataSource Name="Data" ReferenceName="Data" DataType="null" Enabled="true">
       <Column Name="PropertyType" DataType="System.String"/>
       <Column Name="Group" DataType="System.String"/>
       <Column Name="ObjectsCount" DataType="System.Decimal"/>
     </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="297" PaperHeight="210" RawPaperSize="9" Guides="7.56,505.15,9.45,405.5,121.37,181.65,233.3" UnlimitedWidth="true">
-    <DataBand Name="BandCommon" Width="1047.06" Height="85.05" CanGrow="true" Guides="28.35,85.05">
-      <TextObject Name="TitleText" Left="7.56" Top="28.35" Width="497.59" Height="56.7" CanGrow="true" BeforePrintEvent="BandCommon_BeforePrint" Text="[Common.Title]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
-    </DataBand>
-    <DataBand Name="BandData1" Top="89.05" Width="1047.06" Height="212.41" Guides="0,90.88,22.72,45.44,68.16">
-      <MatrixObject Name="MatrixData" Left="9.45" Width="396.05" Height="90.88" Border.Lines="All" FixedRows="2" FixedColumns="1" RepeatHeaders="false" DataSource="Data" ShowTitle="true">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="270" PaperHeight="210" RawPaperSize="9" Guides="9.45,531.13,215.87,165.53,375.05" UnlimitedWidth="true">
+    <DataBand Name="BandCommon" Width="945" CanGrow="true"/>
+    <DataBand Name="BandData1" Top="4" Width="945" Height="212.41" Guides="0,90.88,22.72,45.44,68.16">
+      <MatrixObject Name="MatrixData" Left="9.45" Width="521.68" Height="90.88" AfterDataEvent="MatrixData_AfterData" FixedRows="2" FixedColumns="1" RepeatHeaders="false" AdjustSpannedCellsWidth="true" AutoSize="false" DataSource="Data" ShowTitle="true" MatrixEvenStylePriority="Columns">
         <MatrixColumns>
           <Header Expression="[Data.Group]" Sort="None" TotalsFirst="true"/>
         </MatrixColumns>
@@ -89,16 +72,16 @@
         <MatrixCells>
           <Cell Expression="[Data.ObjectsCount]"/>
         </MatrixCells>
-        <TableColumn Name="Column1" Width="111.92" AutoSize="true"/>
-        <TableColumn Name="Column2" Width="111.93" AutoSize="true"/>
-        <TableColumn Name="Column3" Width="172.2" AutoSize="true"/>
+        <TableColumn Name="Column1" Width="206.42"/>
+        <TableColumn Name="Column2" Width="159.18"/>
+        <TableColumn Name="Column3" Width="156.08"/>
         <TableRow Name="Row1" Height="22.72" AutoSize="true">
-          <TableCell Name="Cell1" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-          <TableCell Name="Cell7" Border.Lines="All" Text="Количество объектов недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold" ColSpan="2"/>
+          <TableCell Name="Cell1" Border.Lines="All" Text="Тип объекта" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
+          <TableCell Name="Cell7" Border.Lines="All" Text="Количество объектов недвижимости" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt" ColSpan="2"/>
           <TableCell Name="Cell9"/>
         </TableRow>
         <TableRow Name="Row2" Height="22.72" AutoSize="true">
-          <TableCell Name="Cell3" Border.Lines="All" Text="Тип объекта" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
+          <TableCell Name="Cell3" Border.Lines="All" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt, style=Bold"/>
           <TableCell Name="Cell8" Border.Lines="All" Text="[Group]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
           <TableCell Name="Cell10" Border.Lines="All" Text="Всего" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         </TableRow>
@@ -114,6 +97,6 @@
         </TableRow>
       </MatrixObject>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="305.46" Width="1047.06" Height="47.25"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="220.41" Width="945" Height="47.25"/>
   </ReportPage>
 </Report>
