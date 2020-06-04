@@ -65,9 +65,7 @@ namespace KadOzenka.Dal.DataExport
 			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(export.ColumnsMapping);
 
             WorkerCommon.SetProgress(processQueue, 25);
-
             Stream resultFile = ExportDataToExcel((int)export.MainRegisterId, excelTemplate, columns);
-
             WorkerCommon.SetProgress(processQueue, 75);
 
             // Сохранение файла
@@ -133,32 +131,25 @@ namespace KadOzenka.Dal.DataExport
 		{
 			// Получить значение из ключевой колонки пакетами по 1000
 			int packageNum = 0;
-			int packageSize = 1000;
+            int packageSize = 1000;
 			var mainWorkSheet = excelTemplate.Worksheets[0];
 			bool isFinish = false;
 
 			if (mainWorkSheet.Rows.Count <= 1)  //файл пустой или в нем есть только заголовок
-			{
-				throw new Exception("В указанном файле отсутствуют данные");
-			}
-			if (!columns.Any(x => x.IsKey))
-			{
-				throw new Exception("Не указана ни одна ключевая колонка");
-			}
+                throw new Exception("В указанном файле отсутствуют данные");
+            if (!columns.Any(x => x.IsKey))
+                throw new Exception("Не указана ни одна ключевая колонка");
 
-			int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+            var columnNames = GetAllColumnNames(mainWorkSheet);
 
-			List<string> columnNames = new List<string>();
-			for (int i = 0; i < maxColumns; i++)
-			{
-				columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
-			}
-			
-			List<string> keyValues = new List<string>();			
+            //считаем, что ключевая колонка только одна
+            var keyColumn = columns.First(x => x.IsKey);
+            var keyColumnCellPosition = columnNames.IndexOf(keyColumn.ColumnName);
 
-			while (!isFinish)
+            while (!isFinish)
 			{
-				for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)		
+                var keyValues = new List<string>();
+                for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)		
 				{
 					if (i == mainWorkSheet.Rows.Count - 1) //одна строка - заголовок
 					{
@@ -166,59 +157,45 @@ namespace KadOzenka.Dal.DataExport
 						break;
 					}
 
-					keyValues.Add(mainWorkSheet.Rows[i + 1].Cells[0].Value?.ToString()); 
+                    keyValues.Add(GetCellValue(mainWorkSheet, i + 1, keyColumnCellPosition)); 
 				}
 				
 				// Получение данных для 1000 строк
-				QSQuery query = new QSQuery
+				var query = new QSQuery
 				{
 					MainRegisterID = mainRegisterId,
 					Columns = columns.Select(x => (QSColumn)new QSColumnSimple((int)x.AttributrId)).ToList(),
 					Condition = new QSConditionSimple
 					{
 						ConditionType = QSConditionType.In,
-						LeftOperand = new QSColumnSimple((int)columns.FirstOrDefault(x => x.IsKey).AttributrId),
+						LeftOperand = new QSColumnSimple(keyColumn.AttributrId),
 						RightOperand = new QSColumnConstant(keyValues)
 					}
 				};
 
-				DataTable dt = query.ExecuteQuery();
+                var dt = query.ExecuteQuery();
 
-				for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)
+                for (int i = packageNum * packageSize; i < (packageNum + 1) * packageSize; i++)
 				{
 					if (i == mainWorkSheet.Rows.Count - 1)
-					{
-						break;
-					}
+                        break;
 
-					string keyValue = mainWorkSheet.Rows[i + 1].Cells[0].Value?.ToString();
+                    var keyValue = GetCellValue(mainWorkSheet, i + 1, keyColumnCellPosition);
+                    var filteredTable = dt.FilteringAndSortingTable($"[{keyColumn.AttributrId}] = '{keyValue}'");
+					if (filteredTable.Rows.Count == 0)
+                        continue;
 
-					//считаем, что ключевая колонка только одна
-					DataExportColumn key = columns.Where(x => x.IsKey).FirstOrDefault();
+                    var row = filteredTable.Rows[0];
 
-					DataTable filtredTable = dt.FilteringAndSortingTable($"[{key.AttributrId}] = '{keyValue}'");
-					if (filtredTable.Rows.Count == 0)
-					{
-						continue;
-					}
-
-					DataRow row = filtredTable.Rows[0];    
-
-					foreach (var column in columns)
+                    foreach (var column in columns)
 					{						
 						if (column.IsKey)
-						{
-							continue;
-						}						
+                            continue;
 
-						// Заполнение данных в Excel
-						
-						int cell = columnNames.IndexOf(column.ColumnName);
+                        int cell = columnNames.IndexOf(column.ColumnName);
 						string dtColumnName = column.AttributrId.ToString();
-
-						var attributeType = RegisterCache.GetAttributeData(column.AttributrId.ParseToInt()).Type;
-
-						switch (attributeType)
+                        var attributeType = RegisterCache.GetAttributeData(column.AttributrId.ParseToInt()).Type;
+                        switch (attributeType)
 						{
 							case RegisterAttributeType.INTEGER:
 								mainWorkSheet.Rows[i + 1].Cells[cell].SetValue(row[dtColumnName].ParseToLong());
@@ -245,9 +222,7 @@ namespace KadOzenka.Dal.DataExport
 				packageNum++;
 			}
 
-			//return excelTemplate;
-
-			MemoryStream stream = new MemoryStream();
+            MemoryStream stream = new MemoryStream();
 			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
 			stream.Seek(0, SeekOrigin.Begin);
 
@@ -278,6 +253,28 @@ namespace KadOzenka.Dal.DataExport
                 IsUrgent = true,
                 IsEmail = true
             });
+        }
+
+        #endregion
+
+
+        #region Support Methods
+
+        private static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
+        {
+            var columnNames = new List<string>();
+            var maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
+            for (var i = 0; i < maxColumns; i++)
+            {
+                columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+            }
+
+            return columnNames;
+        }
+
+        private static string GetCellValue(ExcelWorksheet sheet, int row, int cell)
+        {
+            return sheet.Rows[row].Cells[cell].Value?.ToString();
         }
 
         #endregion
