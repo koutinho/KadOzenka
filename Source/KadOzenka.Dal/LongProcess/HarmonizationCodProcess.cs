@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.LongProcess
 				string message = "Операция успешно завершена." +
 				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
 
-				NotificationSender.SendNotification(new OMQueue { UserId = 2 }, "Результат Операции Гармонизации с использованием справочника ЦОД", message);
+				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации с использованием справочника ЦОД", message);
 			}
 			catch (Exception ex)
 			{

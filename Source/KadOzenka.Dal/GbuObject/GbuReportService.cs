@@ -38,6 +38,22 @@ namespace KadOzenka.Dal.GbuObject
 			return tmp;
 		}
 
+		public List<int> GetRangeRows(int rangeRows)
+		{
+			List<int> res = new List<int>();
+			int tmpRangeRows = rangeRows;
+			int counter = 0;
+			while (_currentRow + tmpRangeRows >= _currentRow)
+			{
+				res.Add(_currentRow + counter);
+				counter++;
+				tmpRangeRows--;
+			}
+
+			_currentRow += rangeRows +1;// перводим указатель на следующую пустую строку
+			return res;
+		}
+
 		public void AddHeaders(int rowNumber, List<string> values)
 		{
 			int col = 0;
