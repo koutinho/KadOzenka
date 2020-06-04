@@ -370,7 +370,7 @@ namespace KadOzenka.Web.Controllers
             long queueId;
 			try
 			{
-                queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
+				queueId = HarmonizationProcess.AddProcessToQueue(viewModel.ToHarmonizationSettings());
 			}
 			catch (Exception e)
 			{

@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.LongProcess
 					}
 				}, cancelToken);
 
-				Harmonization.Run(settings);
+				long reportId = Harmonization.Run(settings);
 				//TestLongRunningProcess(settings);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
@@ -53,7 +53,10 @@ namespace KadOzenka.Dal.LongProcess
 
 				WorkerCommon.SetProgress(processQueue, 100);
 
-				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", "Операция успешно завершена");
+				string message = "Операция успешно завершена." +
+				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
+
+				NotificationSender.SendNotification(new OMQueue { UserId = 2 }, "Результат Операции Гармонизации", message);
 			}
 			catch (Exception ex)
 			{

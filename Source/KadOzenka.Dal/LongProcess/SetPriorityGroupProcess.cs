@@ -58,7 +58,7 @@ namespace KadOzenka.Dal.LongProcess
 
 				WorkerCommon.SetProgress(processQueue, 100);
 
-				string message = "Операция успешно завершина." +
+				string message = "Операция успешно завершена." +
 				                 $@"<a href=""/GbuObject/GetFileResult?reportId={reportId}"">Скачать результат</a>";
 
 
