@@ -1,4 +1,5 @@
 ﻿@using KadOzenka.Web.Models.GbuObject
+@using ObjectModel.Market
 
 <form id="importForm">
     <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
@@ -460,17 +461,22 @@
                 }
 			});
 
-			$('#files').kendoUpload({
-				multiple: false,
-				localization: {
+            var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
+            if (isForMarketObjects)
+                $("#partialDocument").hide();
+            $('#files').kendoUpload({
+                multiple: false,
+                localization: {
                     select: 'Загрузить Файл',
                     clearSelectedFiles: 'Очистить'
-				},
-				async: {
-					autoUpload: false,
-					saveUrl: '@Url.Action("ParseFileColumns", "DataImport")'
                 },
-                select: function(e) {
+                async: {
+                    autoUpload: isForMarketObjects,
+                    saveUrl: '@Url.Action("ParseFileColumns", "DataImport")'
+                },
+                select: function (e) {
+                    if (isForMarketObjects)
+                        return;
                     var upload = e.sender;
                     Common.UI.ShowConfirm({
                         title: 'Подтверждение',
@@ -491,41 +497,41 @@
                     });
                 },
                 validation: {
-					allowedExtensions: ['.xls', '.xlsx']
-				},
-				success: function (e) {
-					if (e.operation === "upload") {
-						var columnNames = e.response.ColumnsNames;
-						var dataCount = e.response.DataCount;
+                    allowedExtensions: ['.xls', '.xlsx']
+                },
+                success: function (e) {
+                    if (e.operation === "upload") {
+                        var columnNames = e.response.ColumnsNames;
+                        var dataCount = e.response.DataCount;
                         var listBox = $("#columnsListBox").data("kendoListBox");
                         listBox.setDataSource(columnNames);
-                        if (listBox.items() != null) {
+                        if (!isForMarketObjects && listBox.items() != null) {
                             var numberColumn = listBox.items()[0];
                             var cadastralNumberColumn = listBox.items()[1];
                             listBox.enable(numberColumn, false);
                             listBox.enable(cadastralNumberColumn, false);
                         }
                         if (dataCount > dataCountForBackgroundLoading) {
-							$("#backgroundDownloadCheckbox").prop('checked', true);
-						} else {
-							$("#backgroundDownloadCheckbox").prop('checked', false);
-						}
-						resetData();
-					}
-				},
-				error: function (e) {
-					$("#columnsListBox").data("kendoListBox").setDataSource([]);
-					resetData();
-					if (e.XMLHttpRequest.responseText) {
-						Common.ShowError(e.XMLHttpRequest.responseText);
-					} else {
-						Common.ShowError("Не удалось загрузить выбранный файл");
-					}
-				},
-				clear: function (e) {
-					$("#columnsListBox").data("kendoListBox").setDataSource([]);
-					resetData();
-				}
+                            $("#backgroundDownloadCheckbox").prop('checked', true);
+                        } else {
+                            $("#backgroundDownloadCheckbox").prop('checked', false);
+                        }
+                        resetData();
+                    }
+                },
+                error: function (e) {
+                    $("#columnsListBox").data("kendoListBox").setDataSource([]);
+                    resetData();
+                    if (e.XMLHttpRequest.responseText) {
+                        Common.ShowError(e.XMLHttpRequest.responseText);
+                    } else {
+                        Common.ShowError("Не удалось загрузить выбранный файл");
+                    }
+                },
+                clear: function (e) {
+                    $("#columnsListBox").data("kendoListBox").setDataSource([]);
+                    resetData();
+                }
 			}).data('kendoUpload');
         });
 
