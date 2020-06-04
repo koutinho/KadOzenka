@@ -43,8 +43,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.ZuCadastralNumber), _statisticalDataService.GetRosreestrParcelAttribute());
 			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.BuildingYear), _statisticalDataService.GetRosreestrBuildYearAttribute());
 			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.CommissioningYear), _statisticalDataService.GetRosreestrCommissioningYearAttribute());
-			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.FloorCount), _statisticalDataService.GetRosreestrFloorsNumberYearAttribute());
-			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.UndergroundFloorCount), _statisticalDataService.GetRosreestrUndergroundFloorsNumberYearAttribute());
+			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.FloorCount), _statisticalDataService.GetRosreestrFloorsNumberAttribute());
+			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.UndergroundFloorCount), _statisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
 			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.FloorNumber), _statisticalDataService.GetRosreestrFloorAttribute());
 			gbuAttributesDataDictionary.Add(nameof(QualityPricingFactorsEncodingResultsOksDto.WallMaterial), _statisticalDataService.GetRosreestrWallMaterialAttribute());
 
