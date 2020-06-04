@@ -154,6 +154,7 @@ namespace KadOzenka.Dal.DataImport
             };
             int maxColumns = mainWorkSheet.CalculateMaxUsedColumns();
             mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат обработки");
+            mainWorkSheet.Rows[0].Cells[maxColumns + 1].SetValue("Создание объекта");
             List<string> columnNames = new List<string>();
             for (int i = 0; i < maxColumns; i++) columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 
@@ -182,6 +183,7 @@ namespace KadOzenka.Dal.DataImport
 					if (row.Index != 0) //все, кроме заголовков
 					{
 						long objectId = -1;
+                        var isNewObject = false;
 
 						//ключ - кадастровый номер, колонка №2						
 						string cadastralNumber = row.Cells[1].Value.ToString();
@@ -196,7 +198,8 @@ namespace KadOzenka.Dal.DataImport
 								ObjectType_Code = ObjectModel.Directory.PropertyTypes.Building
 							};
 							mainObject.Save();
-						}
+                            isNewObject = true;
+                        }
 						objectId = mainObject.Id;
 
 						List<long> loadColumnIds = columns.Where(y => !y.IsKey).Select(x => x.AttributrId).ToList();
@@ -250,6 +253,8 @@ namespace KadOzenka.Dal.DataImport
                             }
 
 						    mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Успешно");
+                            if(isNewObject)
+						        mainWorkSheet.Rows[row.Index].Cells[maxColumns + 1].SetValue("Объект создан");
 						}
 					}
 				}

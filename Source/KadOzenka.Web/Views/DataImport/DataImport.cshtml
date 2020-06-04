@@ -198,15 +198,20 @@
 @section scripts {
 	<script src="~/js/jquery.fancybox.min.js"></script>
 
-	<script type="text/x-kendo-tmpl" id="template">
+    <script type="text/x-kendo-tmpl" id="template">
 		<div class="matchItem k-widget">
 			<div>
 				<span>
-					<span><input type="checkbox" #=IsKey ? checked='checked' : '' # onclick="checkboxChange(this)" data-bind="checked: IsKey" /></span>
+					<span><input type="checkbox" #=IsKey ? checked='checked' : '' # onclick="checkboxChange(this)" data-bind="checked: IsKey" 
+                                  #=IsReadOnly ? disabled='disabled' : '' #/></span>
 					<span>#:ColumnName#</span>
 					<span>-</span>
 					<span>#:AttributeDescription#</span>
-					<span><a class="k-button k-delete-button deleteButton" href="\\#"><span class="k-icon k-i-close"></span></a></span>
+					<span #=IsReadOnly ? 'style="display: none"' : '' #>
+                        <a class="k-button k-delete-button deleteButton" href="\\#">
+                            <span class="k-icon k-i-close"></span>
+                        </a>
+                    </span>
 				</span>
 			</div>
 		</div>
@@ -267,7 +272,8 @@
 							$("#matchButton").data('kendoButton').enable(false);
 							var listView = $("#listView").data('kendoListView');
 							listView.dataSource.add({
-								IsKey: false,
+                                IsKey: false,
+                                IsReadOnly: false,
 								ColumnName: listBoxData.Name,
 								ColumnId: listBoxData.Id,
 								ColumnUid: listBoxData.uid,
@@ -503,20 +509,30 @@
                     if (e.operation === "upload") {
                         var columnNames = e.response.ColumnsNames;
                         var dataCount = e.response.DataCount;
-                        var listBox = $("#columnsListBox").data("kendoListBox");
-                        listBox.setDataSource(columnNames);
-                        if (!isForMarketObjects && listBox.items() != null) {
-                            var numberColumn = listBox.items()[0];
-                            var cadastralNumberColumn = listBox.items()[1];
-                            listBox.enable(numberColumn, false);
-                            listBox.enable(cadastralNumberColumn, false);
-                        }
+                        var excelColumnsListBox = $("#columnsListBox").data("kendoListBox");
+                        excelColumnsListBox.setDataSource(columnNames);
                         if (dataCount > dataCountForBackgroundLoading) {
                             $("#backgroundDownloadCheckbox").prop('checked', true);
                         } else {
                             $("#backgroundDownloadCheckbox").prop('checked', false);
                         }
                         resetData();
+                        if (!isForMarketObjects && excelColumnsListBox.items() != null) {
+                            var numberColumn = excelColumnsListBox.items()[0];
+                            var cadastralNumberColumn = excelColumnsListBox.items()[1];
+                            excelColumnsListBox.enable(numberColumn, false);
+                            excelColumnsListBox.enable(cadastralNumberColumn, false);
+                            var cadastralNumberData = excelColumnsListBox.dataItem(cadastralNumberColumn);
+                            var matchingListView = $("#listView").data('kendoListView');
+                            matchingListView.dataSource.add({
+                                IsKey: true,
+                                IsReadOnly: true,
+                                ColumnName: cadastralNumberData.Name,
+                                ColumnId: cadastralNumberData.Id,
+                                AttributeDescription: 'Кадастровый номер',
+                                AttributeId: 20000200
+                            });
+                        }
                     }
                 },
                 error: function (e) {
