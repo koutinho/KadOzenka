@@ -613,6 +613,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('COMMON_IMPORT_DATA_LOG', 'document_id')) then
+        execute 'alter table COMMON_IMPORT_DATA_LOG add "document_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_801_q_pk')) then
     execute 'alter table COMMON_IMPORT_DATA_LOG add constraint reg_801_q_pk primary key (id)';
   end if;
@@ -24210,15 +24219,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_TOUR_ATTRIBUTE_SETTINGS', 'is_oks')) then
-        execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add "is_oks" SMALLINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('KO_TOUR_ATTRIBUTE_SETTINGS', 'attribute_using_type')) then
         execute 'alter table KO_TOUR_ATTRIBUTE_SETTINGS add "attribute_using_type" VARCHAR(255) NOT NULL';
     end if;
@@ -24761,7 +24761,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_CHANGE', 'old_value')) then
-        execute 'alter table KO_UNIT_CHANGE add "old_value" VARCHAR(255)';
+        execute 'alter table KO_UNIT_CHANGE add "old_value" VARCHAR(5000)';
     end if;
 end $$;
 
@@ -24770,7 +24770,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_UNIT_CHANGE', 'new_value')) then
-        execute 'alter table KO_UNIT_CHANGE add "new_value" VARCHAR(255)';
+        execute 'alter table KO_UNIT_CHANGE add "new_value" VARCHAR(5000)';
     end if;
 end $$;
 

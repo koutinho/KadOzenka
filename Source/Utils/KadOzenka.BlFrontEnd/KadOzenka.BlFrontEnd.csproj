@@ -37,7 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetDBF" Version="6.0.0.2" />
-    <PackageReference Include="FastReport.Web" Version="2018.4.1" />
+    <PackageReference Include="FastReport.Web" Version="2020.3.4" />
     <PackageReference Include="CoreCompat.System.Drawing.v2" Version="5.2.0-preview1-r131" />
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="IronXL.Excel" Version="2019.5.2" />
