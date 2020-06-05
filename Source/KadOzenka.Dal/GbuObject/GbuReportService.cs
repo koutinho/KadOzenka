@@ -38,6 +38,11 @@ namespace KadOzenka.Dal.GbuObject
 			return tmp;
 		}
 
+		/// <summary>
+		/// Отдает запрошенное количество строк для заполнения и увеличивает значения для след запроса
+		/// </summary>
+		/// <param name="rangeRows"></param>
+		/// <returns></returns>
 		public List<int> GetRangeRows(int rangeRows)
 		{
 			List<int> res = new List<int>();

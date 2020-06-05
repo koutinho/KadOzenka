@@ -13,6 +13,15 @@ using ObjectModel.KO;
 namespace KadOzenka.Dal.KoObject
 {
 	#region TypeStructure
+
+	public enum ReportColumns: int
+	{
+		KnColumn = 0,
+		InputFieldColumn = 1,
+		ValueColumn = 2,
+		OutputFieldColumn = 3,
+		ErrorColumn = 4
+	}
 	public struct ValueItem
 	{
 		public string Value { get; set; }
@@ -81,7 +90,8 @@ namespace KadOzenka.Dal.KoObject
 				{
 					rowReport = reportService.GetCurrentRow();
 				}
-				reportService.AddValue(item.CadastralNumber, 0, rowReport);
+
+				reportService.AddValue(item.CadastralNumber, (int)ReportColumns.KnColumn, rowReport);
 				var gbuObject = OMMainObject.Where(x => x.Id == item.ObjectId).SelectAll().ExecuteFirstOrDefault();
 
 		
@@ -91,7 +101,7 @@ namespace KadOzenka.Dal.KoObject
 				{
 					lock (locked)
 					{
-						reportService.AddValue($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber}",4, rowReport );
+						AddErrorRow($"Не найдено значение из справочника ЦОД для объекта {gbuObject.CadastralNumber}", rowReport, reportService);
 					}
 					return;
 				}
@@ -107,7 +117,7 @@ namespace KadOzenka.Dal.KoObject
 
 				if (complianceGuides.Count <= 1)
 				{
-					reportService.AddValue($"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}", 4, rowReport);
+					AddErrorRow($"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}", rowReport, reportService);
 					return;
 				}
 				{
@@ -119,7 +129,7 @@ namespace KadOzenka.Dal.KoObject
 						ValueItem typeRoom = GetValueFactor(gbuObject, attributeRoom.RegisterId, attributeRoom.Id);
 						if (string.IsNullOrEmpty(typeRoom.Value))
 						{
-							reportService.AddValue($"Не найден тип помещения для объекта {gbuObject.CadastralNumber} ", 4, rowReport);
+							AddErrorRow($"Не найден тип помещения для объекта {gbuObject.CadastralNumber}", rowReport, reportService);
 							return;
 						}
 						var group = complianceGuides.FirstOrDefault(x => x.IsResidential == typeRoom.Value);
@@ -135,14 +145,14 @@ namespace KadOzenka.Dal.KoObject
 
 					if (string.IsNullOrEmpty(codeQuarter.Value))
 					{
-						reportService.AddValue($"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.", 4, rowReport);
+						AddErrorRow($"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.", rowReport, reportService);
 						return;
 					}
 
 					var kv = OMKadastrKvartal.Where(x => x.KadastrKvartal == codeQuarter.Value).SelectAll().ExecuteFirstOrDefault();
 					if (kv == null)
 					{
-						reportService.AddValue($"Не найден кадастровый квартал {codeQuarter.Value}. Необходимо обновить справочник", 4, rowReport);
+						AddErrorRow($"Не найден кадастровый квартал {codeQuarter.Value}. Необходимо обновить справочник", rowReport, reportService);
 						return;
 					}
 					var task = OMTask.Where(x => x.Id == param.IdTask).SelectAll().ExecuteFirstOrDefault();
@@ -160,7 +170,7 @@ namespace KadOzenka.Dal.KoObject
 							break;
 						default:
 						{
-							reportService.AddValue("Для выбраного тура не предусмотренны параметры проставления оценки", 4, rowReport);
+							AddErrorRow("Для выбраного тура не предусмотренны параметры проставления оценки", rowReport, reportService);
 							return;
 						}
 					}
@@ -239,6 +249,11 @@ namespace KadOzenka.Dal.KoObject
 			}
 
 			return res;
+		}
+
+		public static void AddErrorRow(string value, int rowNumber, GbuReportService reportService)
+		{
+			reportService.AddValue(value, (int)ReportColumns.ErrorColumn, rowNumber);
 		}
 
 		public static void AddRowToReport(int rowNumber, string kn,  long sourceAttribute, long resultAttribute, string value, string errorMessage, GbuReportService reportService)
