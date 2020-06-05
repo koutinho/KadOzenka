@@ -535,7 +535,7 @@ namespace KadOzenka.Web.Controllers
 		        viewModel.Document.IdDocument = idDocument;
 		    }
 
-            CodSelection.SelectByCadastralNumber(viewModel.ToCodSelectionSettings());
+			SelectionCOD.Run(viewModel.ToCodSelectionSettings());
 
 		    return Json(new
 		    {

@@ -518,19 +518,6 @@ namespace ObjectModel.Gbu.CodSelection
         public long? IdDocument;
 
     }
-    /// <summary>
-    /// Выборка из справочника ЦОД
-    /// </summary>
-    public class CodSelection
-    {
-        /// <summary>
-        /// Выборка из справочника ЦОД по кадастровому номеру
-        /// </summary>
-        public static void SelectByCadastralNumber(CodSelectionSettings setting)
-        {
-            //TODO: реализацию надо перенести из старого комплекса
-        }
-    }
 }
 
 namespace ObjectModel.Gbu.ExportAttribute
