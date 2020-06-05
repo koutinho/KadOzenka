@@ -177,11 +177,11 @@ namespace KadOzenka.Dal.KoObject
 				}
 			});
 			reportService.SetStyle();
-			reportService.SetIndividualWidth(1, 6);
-			reportService.SetIndividualWidth(0, 4);
-			reportService.SetIndividualWidth(2, 3);
-			reportService.SetIndividualWidth(3, 6);
-			reportService.SetIndividualWidth(4, 5);
+			reportService.SetIndividualWidth((int)ReportColumns.KnColumn, 4);
+			reportService.SetIndividualWidth((int)ReportColumns.InputFieldColumn, 6);
+			reportService.SetIndividualWidth((int)ReportColumns.ValueColumn, 3);
+			reportService.SetIndividualWidth((int)ReportColumns.OutputFieldColumn, 6);
+			reportService.SetIndividualWidth((int)ReportColumns.ErrorColumn, 5);
 			long reportId = reportService.SaveReport("Отчет проставления оценочной группы");
 
 			return reportId;
