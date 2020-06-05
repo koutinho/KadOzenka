@@ -44,6 +44,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
         [Description("Сооружения")]
         [StatisticalDataFmReportCode(10173)]
         ResultsByKRForConstructions = 83,
+        [Description("Помещения")]
+        [StatisticalDataFmReportCode(10174)]
+        ResultsByKRForPlacements = 84,
 
         [Description("Результаты на утверждение")]
 		[StatisticalDataFmReportCode(1018)]

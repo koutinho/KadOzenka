@@ -309,6 +309,22 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return GetRegisterAttributeByName(RosreestrRegisterId, "Процент готовности");
         }
 
+        /// <summary>
+        /// Аттрибут "Назначение помещения"
+        /// </summary>
+        public RegisterAttribute GetRosreestrPlacementPurposeAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Назначение помещения");
+        }
+
+        /// <summary>
+        /// Аттрибут "Кадастровый номер здания или сооружения, в котором расположено помещение"
+        /// </summary>
+        public RegisterAttribute GetRosreestrParentCadastralNumberAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Кадастровый номер здания или сооружения, в котором расположено помещение");
+        }
+
         #endregion
 
 
