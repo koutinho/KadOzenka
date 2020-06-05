@@ -22,6 +22,13 @@
 
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
     
+    <Button Caption="Конвертировать исходные данные в Excel" Icon="icon-excel" NavigateURL="/GknXmlToExcel/Configurator" WindowWidth="600" WindowHeight="800" OpenInRadWindow="true">
+      <Parameters>
+        <Parameter Key="TaskId" Value="{Get:20100400}"/>
+      </Parameters>
+    </Button>
+    
+    
   </Buttons>
 
 </RegisterView>

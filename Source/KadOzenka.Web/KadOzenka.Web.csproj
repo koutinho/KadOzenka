@@ -1073,6 +1073,7 @@
     <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
     <ConfigPath Remove="Config\Param\ReonService.Ppr.xml" />
     <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
+    <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
     <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
