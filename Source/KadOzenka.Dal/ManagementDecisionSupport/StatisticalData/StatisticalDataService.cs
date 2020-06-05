@@ -7,6 +7,7 @@ using ObjectModel.KO;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using ObjectModel.Core.Register;
+using ObjectModel.Directory;
 using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -81,6 +82,21 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        }
 
 	        return result;
+        }
+
+        public long? GetGroupAttributeIdFromTourSettings(long tourId)
+        {
+            return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
+        }
+
+        public long? GetObjectTypeAttributeIdFromTourSettings(long tourId)
+        {
+            return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.TypeRoomAttribute);
+        }
+
+        public long? GetCadastralQuartalAttributeIdFromTourSettings(long tourId)
+        {
+            return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.CodeQuarterAttribute);
         }
 
         #region Rosreestr Attributes
@@ -253,6 +269,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         private RegisterAttribute GetRegisterAttributeByName(long registerId, string name)
         {
             return RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == registerId && x.Name.Equals(name));
+        }
+
+        private long? GetAttributeIdFromTourSettings(long tourId, KoAttributeUsingType type)
+        {
+            return OMTourAttributeSettings
+                .Where(x => x.TourId == tourId && x.AttributeUsingType_Code == type)
+                .Select(x => x.AttributeId)
+                .ExecuteFirstOrDefault()?.AttributeId;
         }
 
         #endregion Helpers
