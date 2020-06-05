@@ -35,139 +35,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             }
         }
 
-	    public List<NumberOfObjectsByGroupsDto> GetNumberOfObjectsByGroups(long[] taskList, bool isOksReportType)
-        {
-            var query = new QSQuery
-            {
-                MainRegisterID = OMUnit.GetRegisterId(),
-                Condition = new QSConditionGroup
-                {
-                    Type = QSConditionGroupType.And,
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskList.Select(x => (double)x).ToList())
-                    }
-                },
-                Joins = new List<QSJoin>
-                {
-                    new QSJoin
-                    {
-                        RegisterId = OMTask.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.TaskId),
-                            RightOperand = OMTask.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Inner
-                    },
-                    new QSJoin
-                    {
-                        RegisterId = OMGroup.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-                            RightOperand = OMGroup.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Left
-                    },
-                }
-            };
-
-            QSCondition propertyTypeCondition;
-            if (isOksReportType)
-            {
-	            propertyTypeCondition = new QSConditionGroup()
-	            {
-		            Conditions = new List<QSCondition>
-		            {
-			            new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-				            QSConditionType.NotEqual, (long)PropertyTypes.Stead),
-			            new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-				            QSConditionType.NotEqual, (long)PropertyTypes.None),
-                    },
-		            Type = QSConditionGroupType.And
-                };
-            }
-            else
-            {
-	            propertyTypeCondition = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
-		            QSConditionType.Equal, (long)PropertyTypes.Stead);
-            }
-            var conditionGroup = new QSConditionGroup(QSConditionGroupType.And);
-            conditionGroup.Conditions = new List<QSCondition> { propertyTypeCondition, query.Condition };
-            query.Condition = conditionGroup;
-
-            query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
-            query.AddColumn(OMGroup.GetColumn(x => x.GroupName, "Group"));
-
-            var subQuery = new QSQuery(OMGroup.GetRegisterId())
-            {
-	            Columns = new List<QSColumn>
-	            {
-		            OMGroup.GetColumn(x => x.GroupName)
-	            },
-	            Condition = new QSConditionGroup(QSConditionGroupType.And)
-	            {
-		            Conditions = new List<QSCondition>
-		            {
-			            new QSConditionSimple(
-				            OMGroup.GetColumn(x => x.Id),
-				            QSConditionType.Equal,
-				            OMGroup.GetColumn(x => x.ParentId)){
-				            RightOperandLevel = 1
-			            }
-		            }
-	            }
-            };
-            query.AddColumn(subQuery, "ParentGroup");
-
-            var table = query.ExecuteQuery();
-
-            var result = new List<NumberOfObjectsByGroupsDto>();
-            if (table.Rows.Count != 0)
-            {
-                for (var i = 0; i < table.Rows.Count; i++)
-                {
-                    var dto = new NumberOfObjectsByGroupsDto
-                    {
-	                    PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
-                        Group = table.Rows[i]["Group"].ParseToStringNullable(),
-                        ParentGroup = table.Rows[i]["ParentGroup"].ParseToStringNullable(),
-                        Count = 1
-                    };
-                    result.Add(dto);
-                }
-            }
-
-            foreach (var dto in result.Where(x => string.IsNullOrEmpty(x.Group) || string.IsNullOrEmpty(x.ParentGroup)))
-            {
-	            if (string.IsNullOrEmpty(dto.Group))
-	            {
-		            dto.Group = "Без группы";
-		            dto.HasGroup = false;
-	            }
-	            if (string.IsNullOrEmpty(dto.ParentGroup))
-	            {
-		            dto.ParentGroup = "Без группы";
-		            dto.HasParentGroup = false;
-	            }
-            }
-
-            result =
-                result.GroupBy(x => new { x.PropertyType, x.Group, x.ParentGroup }).Select(
-                group => new NumberOfObjectsByGroupsDto
-                {
-	                PropertyType = group.Key.PropertyType,
-                    Group = group.Key.Group,
-                    ParentGroup = group.Key.ParentGroup,
-                    Count = group.ToList().DefaultIfEmpty().Sum(x => x.Count)
-                }).ToList().OrderBy(x => x.HasParentGroup).ThenBy(x => x.HasGroup).ToList();
-
-            return result;
-        }
-
         public List<MinMaxAverageUPKSByAdministrativeDistrictsDto> GetMinMaxAverageUPKSByAdministrativeDistricts(long[] taskList, MinMaxAverageUPKSByAdministrativeDistrictsType reportType)
         {
             var query = new QSQuery
@@ -274,11 +141,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return result;
         }
 
-        public QSQuery GetQueryForUnitsByTasks(long[] taskIdList, params QSCondition[] additionalConditions)
+        public QSQuery GetQueryForUnitsByTasks(long[] taskIdList, List<QSCondition> additionalConditions = null, List<QSJoin> additionalJoins = null)
         {
             var conditions = new List<QSCondition>
             {
-                new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIdList.Select(x => (double) x).ToList())
+                new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In, taskIdList.Select(x => (double) x).ToList())
             };
             additionalConditions?.ForEach(x => conditions.Add(x));
 
@@ -289,7 +156,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 {
                     Type = QSConditionGroupType.And,
                     Conditions = conditions
-                }
+                },
+                Joins = additionalJoins
             };
 
             return query;

@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
             var notSteadCondition = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long) PropertyTypes.Stead);
             var notNoneCondition = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.NotEqual, (long)PropertyTypes.None);
-            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, notSteadCondition, notNoneCondition);
+            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, new List<QSCondition> { notSteadCondition, notNoneCondition});
             query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralBlock, "CadastralQuartal"));
@@ -108,7 +108,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			gbuAttributesDataDictionary.Add(nameof(KRSummaryResultsZuDto.LandCategory), _statisticalDataService.GetRosreestrParcelCategoryAttribute());
 
 			var steadCondition = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.Equal, (long)PropertyTypes.Stead);
-            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, steadCondition);
+			var query = _statisticalDataService.GetQueryForUnitsByTasks(taskIdList, new List<QSCondition> {steadCondition});
             query.AddColumn(OMUnit.GetColumn(x => x.ObjectId, "ObjectId"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralBlock, "CadastralQuartal"));

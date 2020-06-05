@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public class NumberOfObjectsByGroupsReport : StatisticalDataReport
 	{
-		private readonly StatisticalDataService _statisticalDataService;
+		private readonly NumberOfObjectsByGroupsService _service;
 
 		public NumberOfObjectsByGroupsReport()
 		{
-			_statisticalDataService = new StatisticalDataService();
+			_service = new NumberOfObjectsByGroupsService(new StatisticalDataService());
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -36,7 +35,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("ObjectsCount", typeof(long));
 
 			var isOksReportType = reportType == "Статистика по группам с количеством ОКС";
-			var data = _statisticalDataService.GetNumberOfObjectsByGroups(taskIdList, isOksReportType);
+			var data = _service.GetNumberOfObjectsByGroups(taskIdList, isOksReportType);
 
 			foreach (var unitDto in data)
 			{

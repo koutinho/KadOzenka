@@ -4,9 +4,9 @@
 	{
 		public string PropertyType { get; set; }
 		public string Group { get; set; }
-		public bool HasGroup { get; set; } = true;
+		public bool HasGroup { get; set; }
 		public string ParentGroup { get; set; }
-		public bool HasParentGroup { get; set; } = true;
+		public bool HasParentGroup { get; set; }
 		public long Count { get; set; }
 	}
 }
