@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using KadOzenka.Dal.ManagementDecisionSupport;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace KadOzenka.Web.Models.ManagementDecisionSupport
 {
 	public class StatisticalDataModel
 	{
-		//public long? TourId { get; set; }
+		/// <summary>
+		/// Тур
+		/// </summary>
+		[Required(ErrorMessage = "Выберете тур")]
+		public long? TourId { get; set; }
 
 		/// <summary>
 		/// Список заданий на оценку

@@ -44,6 +44,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			return taskIdListValue;
 		}
 
+		protected long GetTourId(NameValueCollection query)
+		{
+			var tourId = GetQueryParam<long?>("TourId", query);
+			if (!tourId.HasValue)
+			{
+				throw new Exception("Истекло время ожидания сессии. Обновите страницу.");
+			}
+
+			return tourId.Value;
+		}
+
+
 		protected DataSet HadleData(DataSet dataSet)
 		{
 			//TODO:SHOULD BE MOVED TO PLATFORM
