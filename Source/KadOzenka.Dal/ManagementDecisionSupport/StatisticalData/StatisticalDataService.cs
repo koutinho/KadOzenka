@@ -433,6 +433,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return GetRegisterAttributeByName(RosreestrRegisterId, "Назначение здания");
         }
 
+        /// <summary>
+        /// Аттрибут "Процент готовности"
+        /// </summary>
+        public RegisterAttribute GetRosreestrReadinessPercentageAttribute()
+        {
+            return GetRegisterAttributeByName(RosreestrRegisterId, "Процент готовности");
+        }
+
         #endregion
 
 

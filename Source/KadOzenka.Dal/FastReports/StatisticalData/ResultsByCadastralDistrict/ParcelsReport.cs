@@ -88,7 +88,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         {
             var attributesDictionary = GetAttributesForReport(inputParameters);
 
-            var units = GetUnits(taskIds);
+            var units = GetUnits(taskIds, PropertyTypes.Stead);
             //units[0].ObjectId = 14427146; //объект у которого есть значения в РР (для тестирования)
 
             var gbuAttributes = GbuObjectService.GetAllAttributes(
@@ -171,22 +171,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             attributesDictionary.Add(nameof(CustomAttributes.UsageTypeCodeSource), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId));
 
             return attributesDictionary;
-        }
-
-        private List<OMUnit> GetUnits(List<long> taskIds)
-        {
-            return OMUnit.Where(x => taskIds.Contains((long) x.TaskId) && 
-                    x.PropertyType_Code == PropertyTypes.Stead &&
-                    x.ObjectId != null)
-                .Select(x => x.ObjectId)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.CadastralBlock)
-                .Select(x => x.PropertyType_Code)
-                .Select(x => x.Square)
-                .Select(x => x.ParentGroup.GroupName)
-                .Select(x => x.Upks)
-                .Select(x => x.CadastralCost)
-                .Execute();
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)

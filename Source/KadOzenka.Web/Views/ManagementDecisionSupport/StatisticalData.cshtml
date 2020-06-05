@@ -98,6 +98,9 @@
             <div class="col-sm-11 subgroup-second-level">
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsByKRForBuildings.GetEnumDescription()).Value((long)StatisticalDataType.ResultsByKRForBuildings).Enable(true))
             </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsByKRForUncompletedBuildings.GetEnumDescription()).Value((long)StatisticalDataType.ResultsByKRForUncompletedBuildings).Enable(true))
+            </div>
         </div>
         <div class="col-sm-11 subgroup-first-level">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApproval.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApproval).Enable(false))

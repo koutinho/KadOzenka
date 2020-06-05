@@ -208,6 +208,9 @@ where a.object_id = {objectId}";
 
 		public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null)
 		{
+            if(objectIds == null || objectIds.Count == 0)
+                return new List<GbuObjectAttribute>();
+
 			var getSources = sources;
 
 			if (getSources == null)
@@ -360,10 +363,7 @@ where a.object_id in ({String.Join(",", objectIds)})";
 						result.AddRange(QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 					}
 				}
-
-
-
-			}
+            }
 
 			return result;
 		}

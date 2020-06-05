@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -11,11 +10,10 @@ using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class BuildingsReport : StatisticalDataReport
+    public class UncompletedBuildingReport : StatisticalDataReport
     {
         private readonly string _segment = "Segment";
         private readonly string _usageTypeName = "UsageTypeName";
@@ -23,11 +21,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         private readonly string _usageTypeCodeSource = "UsageTypeCodeSource";
         private readonly string _subGroupUsageTypeCode = "SubGroupUsageTypeCode";
         private readonly string _functionalSubGroupName = "FunctionalSubGroupName";
-       
+
 
         protected override string TemplateName(NameValueCollection query)
         {
-            return "ResultsByCadastralDistrictForBuildingsReport";
+            return "ResultsByCadastralDistrictForUncompletedBuildingReport";
         }
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
@@ -86,8 +84,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         {
             var attributesDictionary = GetAttributesForReport(inputParameters);
 
-            var units = GetUnits(taskIds, PropertyTypes.Building);
-            //units[0].ObjectId = 11188991; //объект у которого есть значения в РР (для тестирования)
+            var units = GetUnits(taskIds, PropertyTypes.UncompletedBuilding);
 
             var gbuAttributes = GbuObjectService.GetAllAttributes(
                 units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
@@ -101,7 +98,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
             var result = new List<ReportItem>();
             units.ToList().ForEach(unit =>
-            //units.Where(x => x.ObjectId == 11188991).ToList().ForEach(unit =>  // для тестирования
             {
                 var item = new ReportItem
                 {
@@ -152,7 +148,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         private Dictionary<string, RegisterAttribute> GetAttributesForReport(InputParameters inputParameters)
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(RosreestrAttributes.CommissioningYear), StatisticalDataService.GetRosreestrCommissioningYearAttribute());
             attributesDictionary.Add(nameof(RosreestrAttributes.BuildYear), StatisticalDataService.GetRosreestrBuildYearAttribute());
             attributesDictionary.Add(nameof(RosreestrAttributes.FormationDate), StatisticalDataService.GetRosreestrFormationDateAttribute());
             attributesDictionary.Add(nameof(RosreestrAttributes.UndergroundFloorsNumber), StatisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
@@ -162,6 +157,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             attributesDictionary.Add(nameof(RosreestrAttributes.Address), StatisticalDataService.GetRosreestrAddressAttribute());
             attributesDictionary.Add(nameof(RosreestrAttributes.BuildingPurpose), StatisticalDataService.GetRosreestrBuildingPurposeAttribute());
             attributesDictionary.Add(nameof(RosreestrAttributes.ObjectName), StatisticalDataService.GetRosreestrObjectNameAttribute());
+            attributesDictionary.Add(nameof(RosreestrAttributes.ReadinessPercentage), StatisticalDataService.GetRosreestrReadinessPercentageAttribute());
 
             attributesDictionary.Add(nameof(CustomAttributes.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
             attributesDictionary.Add(nameof(CustomAttributes.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));
@@ -181,7 +177,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
             dataTable.Columns.Add("CadastralNumber");
 
-            dataTable.Columns.Add("CommissioningYear");
             dataTable.Columns.Add("BuildYear");
             dataTable.Columns.Add("FormationDate");
             dataTable.Columns.Add("UndergroundFloorsNumber");
@@ -193,6 +188,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             dataTable.Columns.Add("ObjectName");
 
             dataTable.Columns.Add("Square");
+
+            dataTable.Columns.Add("ReadinessPercentage");
+
             dataTable.Columns.Add("ObjectType");
             dataTable.Columns.Add("CadastralQuartal");
 
@@ -212,7 +210,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 dataTable.Rows.Add(i + 1,
                     operations[i].UnitInfo.CadastralNumber,
 
-                    operations[i].RosreestrAttributes.CommissioningYear,
                     operations[i].RosreestrAttributes.BuildYear,
                     operations[i].RosreestrAttributes.FormationDate,
                     operations[i].RosreestrAttributes.UndergroundFloorsNumber,
@@ -224,8 +221,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                     operations[i].RosreestrAttributes.ObjectName,
 
                     operations[i].UnitInfo.Square,
-                    operations[i].UnitInfo.ObjectType == PropertyTypes.None 
-                        ? null 
+
+                    operations[i].RosreestrAttributes.ReadinessPercentage,
+
+                    operations[i].UnitInfo.ObjectType == PropertyTypes.None
+                        ? null
                         : operations[i].UnitInfo.ObjectType.GetEnumDescription(),
                     operations[i].UnitInfo.CadastralQuartal,
 
@@ -271,7 +271,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
         private class RosreestrAttributes
         {
-            public string CommissioningYear { get; set; }
             public string BuildYear { get; set; }
             public string FormationDate { get; set; }
             public string UndergroundFloorsNumber { get; set; }
@@ -281,6 +280,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             public string Address { get; set; }
             public string BuildingPurpose { get; set; }
             public string ObjectName { get; set; }
+            public string ReadinessPercentage { get; set; }
         }
 
         private class CustomAttributes

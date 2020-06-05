@@ -9,6 +9,8 @@ using FastReport.Matrix;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using Newtonsoft.Json;
+using ObjectModel.Directory;
+using ObjectModel.KO;
 using Platform.Reports;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData
@@ -97,6 +99,16 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
                 throw new Exception($"Не указан атрибут '{nameFromInterface}'");
 
             return attributeId.Value;
+        }
+
+        protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
+        {
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
+                                     x.PropertyType_Code == type &&
+                                     x.ObjectId != null)
+                .Select(x => x.ParentGroup.GroupName)
+                .SelectAll()
+                .Execute();
         }
     }
 }
