@@ -12,7 +12,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
 		public MinMaxAverageUPKSByCadastralQuartersReport()
 		{
-			_service = new MinMaxAverageUPKSByCadastralQuartersService();
+			_service = new MinMaxAverageUPKSByCadastralQuartersService(new StatisticalDataService());
 		}
 
 		protected override string TemplateName(NameValueCollection query)

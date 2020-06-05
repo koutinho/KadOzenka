@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
-using System.Text;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 
@@ -13,11 +10,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public class MinMaxAverageUPKSByAdministrativeDistrictsReport : StatisticalDataReport
 	{
-		private readonly StatisticalDataService _statisticalDataService;
+		private readonly MinMaxAverageUPKSByAdministrativeDistrictsService _service;
 
 		public MinMaxAverageUPKSByAdministrativeDistrictsReport()
 		{
-			_statisticalDataService = new StatisticalDataService();
+			_service = new MinMaxAverageUPKSByAdministrativeDistrictsService(new StatisticalDataService());
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -55,7 +52,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			dataTable.Columns.Add("PropertyType", typeof(string));
 			dataTable.Columns.Add("UpksCalcValue", typeof(decimal));
 
-			var data = _statisticalDataService.GetMinMaxAverageUPKSByAdministrativeDistricts(taskIdList, reportType);
+			var data = _service.GetMinMaxAverageUPKSByAdministrativeDistricts(taskIdList, reportType);
 			foreach (var unitDto in data)
 			{
 				dataTable.Rows.Add(unitDto.AdditionalName, unitDto.Name, unitDto.ObjectsCount, unitDto.UpksCalcType.GetEnumDescription(), unitDto.PropertyType, unitDto.UpksCalcValue);

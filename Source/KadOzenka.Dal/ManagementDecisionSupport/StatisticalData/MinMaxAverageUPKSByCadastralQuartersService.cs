@@ -9,47 +9,31 @@ using ObjectModel.Market;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
-	public class MinMaxAverageUPKSByCadastralQuartersService : StatisticalDataService
+	public class MinMaxAverageUPKSByCadastralQuartersService
 	{
+		private readonly StatisticalDataService _statisticalDataService;
+
+        public MinMaxAverageUPKSByCadastralQuartersService(StatisticalDataService statisticalDataService)
+		{
+			_statisticalDataService = statisticalDataService;
+		}
+
         public List<MinMaxAverageUPKSByCadastralQuartersDto> GetMinMaxAverageUPKS(long[] taskList)
         {
-            var query = new QSQuery
+	        var quartalDictionaryJoin = new QSJoin
             {
-                MainRegisterID = OMUnit.GetRegisterId(),
-                Condition = new QSConditionGroup
-                {
-                    Type = QSConditionGroupType.And,
-                    Conditions = new List<QSCondition>
-                    {
-                        new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskList.Select(x => (double)x).ToList())
-                    }
-                },
-                Joins = new List<QSJoin>
-                {
-                    new QSJoin
-                    {
-                        RegisterId = OMTask.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.TaskId),
-                            RightOperand = OMTask.GetColumn(x => x.Id)
-                        },
-                        JoinType = QSJoinType.Inner
-                    },
-                    new QSJoin
-                    {
-                        RegisterId = OMQuartalDictionary.GetRegisterId(),
-                        JoinCondition = new QSConditionSimple
-                        {
-                            ConditionType = QSConditionType.Equal,
-                            LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
-                            RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
-                        },
-                        JoinType = QSJoinType.Inner
-                    }
-                }
+	            RegisterId = OMQuartalDictionary.GetRegisterId(),
+	            JoinCondition = new QSConditionSimple
+	            {
+		            ConditionType = QSConditionType.Equal,
+		            LeftOperand = OMUnit.GetColumn(x => x.CadastralBlock),
+		            RightOperand = OMQuartalDictionary.GetColumn(x => x.CadastralQuartal)
+	            },
+	            JoinType = QSJoinType.Inner
             };
+
+            var query = _statisticalDataService.GetQueryForUnitsByTasks(taskList,
+	            additionalJoins: new List<QSJoin> { quartalDictionaryJoin });
 
             query.AddColumn(OMQuartalDictionary.GetColumn(x => x.CadastralQuartal, "CadastralQuartal"));
             query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
@@ -64,7 +48,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                 {
                     var dto = new MinMaxAverageUPKSByCadastralQuartersObjectDto
                     {
-                        CadastralRegionNumber = GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString()),
+                        CadastralRegionNumber = _statisticalDataService.GetRegionNumberByCadastralQuarter(table.Rows[i]["CadastralQuartal"].ParseToString()),
                         CadastralQuater = table.Rows[i]["CadastralQuartal"].ParseToString(),
                         PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
                         ObjectUpks = table.Rows[i]["ObjectUpks"].ParseToDecimalNullable(),
@@ -93,7 +77,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
                         ObjectsCount = groupValues.Count,
                         PropertyType = @group.Key.PropertyType,
                         UpksCalcType = upksCalcType,
-                        UpksCalcValue = GetUpksCalcValue(upksCalcType, groupValues)
+                        UpksCalcValue = _statisticalDataService.GetUpksCalcValue(upksCalcType, groupValues)
                     };
 
                     result.Add(dto);
