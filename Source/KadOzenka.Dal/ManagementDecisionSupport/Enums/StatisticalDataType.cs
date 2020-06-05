@@ -41,6 +41,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
         [Description("ОНС")]
         [StatisticalDataFmReportCode(10172)]
         ResultsByKRForUncompletedBuildings = 82,
+        [Description("Сооружения")]
+        [StatisticalDataFmReportCode(10173)]
+        ResultsByKRForConstructions = 83,
 
         [Description("Результаты на утверждение")]
 		[StatisticalDataFmReportCode(1018)]
