@@ -84,17 +84,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        return result;
         }
 
-        public long? GetGroupAttributeIdFromTourSettings(long tourId)
+        public RegisterAttribute GetGroupAttributeIdFromTourSettings(long tourId)
         {
             return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
         }
 
-        public long? GetObjectTypeAttributeIdFromTourSettings(long tourId)
+        public RegisterAttribute GetObjectTypeAttributeIdFromTourSettings(long tourId)
         {
             return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.TypeRoomAttribute);
         }
 
-        public long? GetCadastralQuartalAttributeIdFromTourSettings(long tourId)
+        public RegisterAttribute GetCadastralQuartalAttributeIdFromTourSettings(long tourId)
         {
             return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.CodeQuarterAttribute);
         }
@@ -271,12 +271,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return RegisterCache.RegisterAttributes.Values.First(x => x.RegisterId == registerId && x.Name.Equals(name));
         }
 
-        private long? GetAttributeIdFromTourSettings(long tourId, KoAttributeUsingType type)
+        private RegisterAttribute GetAttributeIdFromTourSettings(long tourId, KoAttributeUsingType type)
         {
-            return OMTourAttributeSettings
+            var attributeId = OMTourAttributeSettings
                 .Where(x => x.TourId == tourId && x.AttributeUsingType_Code == type)
                 .Select(x => x.AttributeId)
                 .ExecuteFirstOrDefault()?.AttributeId;
+
+            return attributeId == null ? null : RegisterCache.RegisterAttributes.Values.First(x => x.Id == attributeId);
         }
 
         #endregion Helpers
