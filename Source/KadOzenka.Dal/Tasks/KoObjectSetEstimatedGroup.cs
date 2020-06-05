@@ -260,11 +260,11 @@ namespace KadOzenka.Dal.KoObject
 		{
 			string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
 			string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
-			reportService.AddValue(kn, 0, rowNumber);
-			reportService.AddValue(sourceName, 1, rowNumber);
-			reportService.AddValue(value, 2, rowNumber);
-			reportService.AddValue(resultName, 3, rowNumber);
-			reportService.AddValue(errorMessage, 4, rowNumber);
+			reportService.AddValue(kn, (int)ReportColumns.KnColumn, rowNumber);
+			reportService.AddValue(sourceName, (int)ReportColumns.InputFieldColumn, rowNumber);
+			reportService.AddValue(value, (int)ReportColumns.ValueColumn, rowNumber);
+			reportService.AddValue(resultName, (int)ReportColumns.OutputFieldColumn, rowNumber);
+			reportService.AddValue(errorMessage, (int)ReportColumns.ErrorColumn, rowNumber);
 		}
 
 		#endregion
