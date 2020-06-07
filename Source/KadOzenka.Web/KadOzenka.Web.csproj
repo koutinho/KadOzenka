@@ -450,7 +450,6 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="5.0.1" />
-    <PackageReference Include="FastReport.Web" Version="2020.3.4" />
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
@@ -459,7 +458,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.424" />
+    <PackageReference Include="Platform.Web" Version="1.0.427" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
@@ -630,6 +629,9 @@
     <None Update="ConfigCore\Registers\Views\CoreSRDRoleFilter.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ConfigCore\Registers\Views\CoreSRDRoleFunctions.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ConfigCore\Registers\Views\CoreSRDRoleSelect.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -759,7 +761,7 @@
     <None Update="Config\Reports\CCC_OUReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-      <None Update="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx">
+    <None Update="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx">
@@ -787,12 +789,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\KRSummaryResultsOksReport.frx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Config\Reports\KRSummaryResultsZuReport.frx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx">
@@ -1101,8 +1097,6 @@
     <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
     <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
     <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\KRSummaryResultsOksReport.frx" />
-    <ConfigPath Remove="Config\Reports\KRSummaryResultsZuReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx" />
     <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx" />
