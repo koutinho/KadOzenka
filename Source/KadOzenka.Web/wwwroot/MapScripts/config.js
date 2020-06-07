@@ -211,3 +211,4 @@ var heatMapData = null;
 
 var DISTRICTS_DATA = null;
 var SOURCE_DATA = null;
+var ACTUAL_DATE = null;

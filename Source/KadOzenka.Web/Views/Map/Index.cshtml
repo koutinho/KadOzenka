@@ -30,6 +30,7 @@
 </body>
 
 @section scripts {
+
     <script src="~/MapScripts/commonFunctions.js" charset="utf-8"></script>
     <script src="~/MapScripts/colorsGraduator.js" charset="utf-8"></script>
     <script src="~/MapScripts/eventListeners.js" charset="utf-8"></script>
@@ -43,6 +44,7 @@
     <script src="~/MapPlugins/Colorjoe/js/scale.fix.js" charset="utf-8"></script>
     <script src="~/MapPlugins/Colorjoe/dist/colorjoe.js" charset="utf-8"></script>
     <script src="~/MapPlugins/Colorjoe/js/init.js" charset="utf-8"></script>
+    <script src="~/MapPlugins/AirDatePicker/js/datepicker.min.js" charset="utf-8"></script>
 
     <script type="text/javascript">
         var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
@@ -76,4 +78,5 @@
     <link rel="stylesheet" href="~/MapPlugins/Colorjoe/css/iehacks.css" />
     <link rel="stylesheet" href="~/MapPlugins/Colorjoe/css/colorjoe.css" />
     <link rel="stylesheet" href="~/MapPlugins/Slider/CustomSlider.css" />
+    <link rel="stylesheet" href="~/MapPlugins/AirDatePicker/css/datepicker.css" type="text/css"/>
 }

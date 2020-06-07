@@ -16,7 +16,8 @@ function GetClusterData(bounds, zoom, token, objectId) {
             token: token,
             objectId: objectId,
             districts: DISTRICTS_DATA,
-            marketSource: SOURCE_DATA
+            marketSource: SOURCE_DATA,
+            actualDate: ACTUAL_DATE
 		},
         dataType: 'json',
         success: function (result) {
@@ -39,7 +40,8 @@ function GetHeatMapData() {
             colors: generateColor(
                 document.getElementById('rgbInitialShowPanel').style.background.replace(/[^0-9,]/gi, '').split(','),
                 document.getElementById('rgbResultShowPanel').style.background.replace(/[^0-9,]/gi, '').split(','),
-                document.getElementById("splicedDeltaController").value).reverse().join(",")
+                document.getElementById("splicedDeltaController").value).reverse().join(","),
+            actualDate: ACTUAL_DATE
         },
         dataType: 'json',
         success: function (result) {

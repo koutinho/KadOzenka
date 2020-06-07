@@ -86,6 +86,12 @@ function creatFilterWidget() {
                             <div id="sourcePanel" class="filterPanel"></div>
                         </div>
                         <div class="filterPanelContainer">
+                            <div class="filterPanel filterLabel">Дата актуальности</div>
+                            <div id="dateFilter" class="filterPanel">
+                                <div id="MapDataPicker" class="datepicker-here"></div>
+                            </div>
+                        </div>
+                        <div class="filterPanelContainer">
                             <div class="filterPanel filterAdditional">
                                 <div id="PaletteControl" class="extendButton inactive"></div>
                                 <div id="allPaletteContainer" class="allPaletteContainer inactive">
@@ -131,6 +137,9 @@ function creatFilterWidget() {
             this.addEventListeners();
         },
         addEventListeners: function () {
+
+            $('#MapDataPicker').datepicker({ inline: true, onSelect: function onSelect(fd, date) { setActualDate(date); } });
+
             document.getElementById("filterImage").addEventListener("click", function (e) {
                 document.getElementById("filterImage").classList.toggle("inactive");
                 document.getElementById("allFiltersContainer").classList.toggle("inactive");

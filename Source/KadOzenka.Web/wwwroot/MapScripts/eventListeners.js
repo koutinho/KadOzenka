@@ -241,3 +241,8 @@ function setHeatMapButtonState(active) {
         document.getElementById("refreshHeatMapButton").innerHTML = "Обновить";
     }
 };
+
+function setActualDate(date) {
+    ACTUAL_DATE = date.toLocaleDateString("ru-RU");
+    GetClusterData(map.getBounds(), map.getZoom(), currentToken, params.has('objectId') ? params.get('objectId') : null);
+};

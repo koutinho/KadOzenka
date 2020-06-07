@@ -18,6 +18,7 @@ using ObjectModel.Core.Shared;
 using System.Reflection;
 using KadOzenka.Dal.MapModeling;
 using DevExpress.DataProcessing.InMemoryDataProcessor;
+using System.Globalization;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -47,8 +48,9 @@ namespace KadOzenka.Web.Controllers
 
         public JsonResult Objects(decimal? topLatitude, decimal? topLongitude, decimal? bottomLatitude, decimal? bottomLongitude,
             int? mapZoom, int? minClusterZoom, int maxLoadedObjectsCount, int maxObjectsCount, string token, long? objectId, 
-            string districts, string marketSource)
+            string districts, string marketSource, string actualDate)
         {
+            DateTime acD;
             var query = OMCoreObject
                 .Where(x =>
                     (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
@@ -62,6 +64,7 @@ namespace KadOzenka.Web.Controllers
             if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
             if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
             if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
+            if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
             int size = query.ExecuteCount();
             if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
@@ -72,8 +75,9 @@ namespace KadOzenka.Web.Controllers
             return Json(new { token = token, arr = point, allCount = size });
         }
 
-        public JsonResult HeatMapData(string colors)
+        public JsonResult HeatMapData(string colors, string actualDate)
         {
+            DateTime acD;
             string[] colorsArray = colors.Split(",");
             var query = OMCoreObject
                 .Where(x => (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
@@ -86,6 +90,8 @@ namespace KadOzenka.Web.Controllers
             List<OMReferenceItem> allZones = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.ZoneRegion).ReferenceId).Select(x => x.Value).Execute().ToList();
 
             PrepareQueryByUserFilter(query);
+
+            if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
             List<OMCoreObject> DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion }).Execute().ToList();
 
