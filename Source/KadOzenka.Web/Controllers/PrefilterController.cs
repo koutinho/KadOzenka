@@ -89,7 +89,6 @@ namespace KadOzenka.Web.Controllers
 			var filter = CreateConditionFilter(model);
 			var c = new CoreUiController(_service, _registersService);
 			c.SaveSearchFilter(MarketObjectsRegisterViewId, filter);
-
 			return NoContent();
 		}
 

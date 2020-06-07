@@ -43,11 +43,14 @@ namespace KadOzenka.Dal.WebRequest
                                      .GetResponseStream(),
                 Encoding.UTF8).ReadToEnd();
 
-        public string GetDataByAddress(string address, string key) =>
-            new StreamReader(System.Net.WebRequest.Create(string.Format("https://geocode-maps.yandex.ru/1.x/?apikey={0}&geocode={1}&format=json&results=1&kind=house", key, address))
-                                     .GetResponse()
-                                     .GetResponseStream(),
+        public string GetDataByAddress(string address, string key)
+        {
+            return new StreamReader(System.Net.WebRequest.Create(string.Format("https://geocode-maps.yandex.ru/1.x/?apikey={0}&geocode={1}&format=json&results=1&kind=house", key, address))
+                         .GetResponse()
+                         .GetResponseStream(),
                 Encoding.UTF8).ReadToEnd();
+
+        }
 
     }
 }
