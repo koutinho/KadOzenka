@@ -40,5 +40,16 @@ namespace KadOzenka.BlFrontEnd.ExportKO
             if (response_doc != null)
                 DEKOVuon.ExportToXml(response_doc, dir_name);
         }
+
+        public static void ExportDocOtvet()
+        {
+            string dir_name = "C:\\Temp\\KO_Otvet";
+            if (!Directory.Exists(dir_name))
+                Directory.CreateDirectory(dir_name);
+
+            OMUnit unit = OMUnit.Where(x => x.CadastralNumber == "77:02:0025011:1236").SelectAll().ExecuteFirstOrDefault();
+            if (unit != null)
+                DEKODocOtvet.ExportToDoc(unit, dir_name);
+        }
     }
 }

@@ -493,9 +493,61 @@ namespace KadOzenka.Dal.DataExport
         }
 
         /// <summary>
+        /// Создает строку в таблице документа doc
+        /// Возарвщает индекс строки
+        /// </summary>
+        public static int AddRowToTableDoc(DocumentModel _document, Table _table, int _count_cells, int _begin = -1, int _end = -1)
+        {
+            _table.Rows.Add(new TableRow(_document));
+            int idx_row = _table.Rows.Count - 1;
+
+            for (int i = 0; i < _count_cells; i++)
+            {
+                if (_begin != -1 && _end != -1)
+                {
+                    if (_begin == i)
+                    {
+                        string str_merge = "Cell (" + _begin.ToString() +
+                                   "," + idx_row.ToString() + ") -> (" +
+                                   _end.ToString() + "," + idx_row.ToString() + ")";
+                        var cell_merge = new TableCell(_document, new Paragraph(_document));
+                        cell_merge.ColumnSpan = _end - _begin + 1;
+                        _table.Rows[idx_row].Cells.Add(cell_merge);
+                        i = _end;
+                    }
+                    else
+                    {
+                        var cell = new TableCell(_document);
+                        _table.Rows[idx_row].Cells.Add(cell);
+                    }
+                }
+                else
+                {
+                    var cell = new TableCell(_document);
+                    _table.Rows[idx_row].Cells.Add(cell);
+                }
+            }
+
+            return idx_row;
+        }
+
+        public static int AddEmptyRowToTableDoc(DocumentModel _document, Table _table, int _count_cells)
+        {
+            int idx = AddRowToTableDoc(_document, _table, _count_cells, 0, _count_cells - 1);
+            SetTextToCellDoc(_document, _table.Rows[idx].Cells[0], "", 8, HorizontalAlignment.Center, false, false);
+
+            return idx;
+        }
+
+        public static string SStr(string value)
+        {
+            if (value == string.Empty) return "-"; else return value;
+        }
+
+        /// <summary>
         /// Вставить текст в ячейку таблицы документа doc
         /// </summary>
-        public static void SetTextToCell(DocumentModel _document, TableCell _cell, 
+        public static void SetTextToCellDoc(DocumentModel _document, TableCell _cell, 
                                     string _col1, double _size,
                                     HorizontalAlignment _align1, bool _border, bool _bold)
         {
@@ -512,18 +564,40 @@ namespace KadOzenka.Dal.DataExport
 
             if (_border)
             {
-                _cell.CellFormat.Borders.SetBorders(MultipleBorderTypes.Outside, BorderStyle.Double, Color.Black, 1);
+                _cell.CellFormat.Borders.SetBorders(MultipleBorderTypes.Outside, BorderStyle.Single, Color.Black, 1);
             }
+            else
+                _cell.CellFormat.Borders.SetBorders(MultipleBorderTypes.Outside, BorderStyle.None, Color.Black, 1);
         }
 
-        public static void SetText3(DocumentModel document, TableRow row,
+        public static void SetText2Doc(DocumentModel document, TableRow row,
+                            string col1, string col2, int size,
+                            HorizontalAlignment align1, HorizontalAlignment align2,
+                            bool border, bool bold)
+        {
+            SetTextToCellDoc(document, row.Cells[0], col1, size, align1, border, bold);
+            SetTextToCellDoc(document, row.Cells[1], col2, size, align2, border, bold);
+        }
+
+        public static void SetText3Doc(DocumentModel document, TableRow row,
                                     string col1, string col2, string col3, int size,
                                     HorizontalAlignment align1, HorizontalAlignment align2, HorizontalAlignment align3, 
                                     bool border, bool bold)
         {
-            SetTextToCell(document, row.Cells[0], col1, size, align1, border, bold);
-            SetTextToCell(document, row.Cells[1], col2, size, align2, border, bold);
-            SetTextToCell(document, row.Cells[2], col3, size, align3, border, bold);
+            SetTextToCellDoc(document, row.Cells[0], col1, size, align1, border, bold);
+            SetTextToCellDoc(document, row.Cells[1], col2, size, align2, border, bold);
+            SetTextToCellDoc(document, row.Cells[2], col3, size, align3, border, bold);
+        }
+
+        public static void SetText4Doc(DocumentModel document, TableRow row,
+                            string col1, string col2, string col3, string col4, int size,
+                            HorizontalAlignment align1, HorizontalAlignment align2, HorizontalAlignment align3, HorizontalAlignment align4,
+                            bool border, bool bold)
+        {
+            SetTextToCellDoc(document, row.Cells[0], col1, size, align1, border, bold);
+            SetTextToCellDoc(document, row.Cells[1], col2, size, align2, border, bold);
+            SetTextToCellDoc(document, row.Cells[2], col3, size, align3, border, bold);
+            SetTextToCellDoc(document, row.Cells[3], col4, size, align4, border, bold);
         }
     }
 
