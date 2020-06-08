@@ -18,7 +18,20 @@
 			  <Parameter Key="appId" Value="[90000400]" />
 		  </Parameters>
 	  </Button>
-    
+
+	  <Button Caption="Создать деклорацю" OpenInNewWindow="true"  NavigateURL="/Sud/RedirectToSpd"
+	          Icon="fas fa-arrow-right">
+		  <ConditionGroups>
+			  <ConditionGroup HideOrDisable="Disable">
+				  <Conditions>
+					  <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="And" />
+				  </Conditions>
+			  </ConditionGroup>
+		  </ConditionGroups>
+		  <Parameters>
+			  <Parameter Key="appId" Value="[90000400]" />
+		  </Parameters>
+	  </Button>
   </Buttons>
   
 </RegisterView>
