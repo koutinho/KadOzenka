@@ -174,7 +174,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<QualityPricingFactorsEncodingResultsGroupingDto> GetGroupingData(long[] taskIdList, long tourId)
 		{
-			var codeGroupAttr = _statisticalDataService.GetGroupAttributeIdFromTourSettings(tourId);
+			var codeGroupAttr = _statisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 			if (codeGroupAttr == null)
 			{
 				throw new Exception($"Для тура {tourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
