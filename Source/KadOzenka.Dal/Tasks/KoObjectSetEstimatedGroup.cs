@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Register;
@@ -48,7 +47,9 @@ namespace KadOzenka.Dal.KoObject
 		/// </summary>
 		public long IdEstimatedSubGroup { get; set; }
 	}
+
 	#endregion
+
 
 	public class KoObjectSetEstimatedGroup
 	{
@@ -77,10 +78,10 @@ namespace KadOzenka.Dal.KoObject
 				MaxDegreeOfParallelism = 1
 			};
 
-			var attributeResult = OMAttribute.Where(x => x.Id == param.IdEstimatedSubGroup).SelectAll()
+			var estimatedSubGroupAttribute = OMAttribute.Where(x => x.Id == param.IdEstimatedSubGroup).SelectAll()
 				.ExecuteFirstOrDefault();
 
-			var attributeCodeGroup = OMAttribute.Where(x => x.Id == param.IdCodeGroup).SelectAll()
+			var codeGroupAttribute = OMAttribute.Where(x => x.Id == param.IdCodeGroup).SelectAll()
 				.ExecuteFirstOrDefault();
 
 			Parallel.ForEach(units, options, item =>
@@ -96,7 +97,7 @@ namespace KadOzenka.Dal.KoObject
 
 		
 				// берем код группы (значение из справочника цод)
-				ValueItem codeGroup = GetValueFactor(gbuObject, attributeCodeGroup.RegisterId, attributeCodeGroup.Id);
+				var codeGroup = GetValueFactor(gbuObject, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
 				if (string.IsNullOrEmpty(codeGroup.Value))
 				{
 					lock (locked)
@@ -110,8 +111,9 @@ namespace KadOzenka.Dal.KoObject
 
 				if (complianceGuides.Count == 1)
 				{
-					AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides[0].Group);
-					AddRowToReport(rowReport, item.CadastralNumber, param.IdCodeGroup, param.IdEstimatedSubGroup, complianceGuides[0].Group, "", reportService);
+                    var value = complianceGuides[0].Group;
+                    AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
+					AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 					return;
 				}
 
@@ -133,8 +135,8 @@ namespace KadOzenka.Dal.KoObject
 							return;
 						}
 						var group = complianceGuides.FirstOrDefault(x => x.IsResidential == typeRoom.Value);
-						AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, group.Group);
-						AddRowToReport(rowReport, item.CadastralNumber, param.IdCodeGroup, param.IdEstimatedSubGroup, group.Group, "", reportService);
+						AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, group.Group);
+						AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, group.Group, reportService);
 						return;
 					}
 
@@ -161,12 +163,14 @@ namespace KadOzenka.Dal.KoObject
 					switch (tourYear)
 					{
 						case 2017:
-							AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2017).Group);
-							AddRowToReport(rowReport, item.CadastralNumber, param.IdCodeGroup, param.IdEstimatedSubGroup, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2017).Group, "", reportService);
+                            var value2017 = complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2017).Group;
+                            AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value2017);
+							AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value2017, reportService);
 							break;
 						case 2020:
-							AddValueFactor(gbuObject, attributeResult.Id, codeGroup.IdDocument, DateTime.Now, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group);
-							AddRowToReport(rowReport, item.CadastralNumber, param.IdCodeGroup, param.IdEstimatedSubGroup, complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group, "", reportService);
+                            var value2020 = complianceGuides.FirstOrDefault(x => x.SubGroup == kv.TypeTerritory2020).Group;
+                            AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value2020);
+							AddRowToReport(rowReport, item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value2020, reportService);
 							break;
 						default:
 						{
@@ -187,7 +191,7 @@ namespace KadOzenka.Dal.KoObject
 			return reportId;
 		}
 
-		#region HelpMetods
+		#region Help Methods
 
 		private static void AddValueFactor(OMMainObject mObject, long? idFactor, long? idDoc, DateTime date, string value)
 		{
@@ -210,10 +214,8 @@ namespace KadOzenka.Dal.KoObject
 				{
 					SuccessCount++;
 				}
-				
-			}
-
-		}
+            }
+        }
 
 		private static ValueItem GetValueFactor(OMMainObject obj, long idRegister, long idFactor)
 		{
@@ -256,20 +258,17 @@ namespace KadOzenka.Dal.KoObject
 			reportService.AddValue(value, (int)ReportColumns.ErrorColumn, rowNumber);
 		}
 
-		public static void AddRowToReport(int rowNumber, string kn,  long sourceAttribute, long resultAttribute, string value, string errorMessage, GbuReportService reportService)
+		public static void AddRowToReport(int rowNumber, string kn, long inputAttributeId, long sourceAttributeId, string value, GbuReportService reportService)
 		{
-			string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
-			string resultName = GbuObjectService.GetAttributeNameById(resultAttribute);
+			var inputAttributeName = GbuObjectService.GetAttributeNameById(inputAttributeId);
+			var sourceAttributeName = GbuObjectService.GetAttributeNameById(sourceAttributeId);
 			reportService.AddValue(kn, (int)ReportColumns.KnColumn, rowNumber);
-			reportService.AddValue(sourceName, (int)ReportColumns.InputFieldColumn, rowNumber);
+			reportService.AddValue(inputAttributeName, (int)ReportColumns.InputFieldColumn, rowNumber);
 			reportService.AddValue(value, (int)ReportColumns.ValueColumn, rowNumber);
-			reportService.AddValue(resultName, (int)ReportColumns.OutputFieldColumn, rowNumber);
-			reportService.AddValue(errorMessage, (int)ReportColumns.ErrorColumn, rowNumber);
+			reportService.AddValue(sourceAttributeName, (int)ReportColumns.OutputFieldColumn, rowNumber);
+			reportService.AddValue(string.Empty, (int)ReportColumns.ErrorColumn, rowNumber);
 		}
 
 		#endregion
-
-
-
-	}
+    }
 }
