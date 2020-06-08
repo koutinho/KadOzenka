@@ -49,8 +49,20 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.Enums
         ResultsByKRForPlacements = 84,
 
         [Description("Результаты на утверждение")]
-		[StatisticalDataFmReportCode(1018)]
-		ResultsForApproval = 9,
+		[StatisticalDataFmReportCode(10181)]
+		ResultsForApproval = 91,
+
+		[Description("Среднее значение УПКС объектов недвижимости по административным округам")]
+		[StatisticalDataFmReportCode(10182)]
+		ResultsForApprovalUpksAverageByAdministrativeDistricts = 92,
+
+		[Description("Среднее значение УПКС объектов недвижимости по кадастровым районам")]
+		[StatisticalDataFmReportCode(10183)]
+		ResultsForApprovalUpksAverageByCadastralRegions = 93,
+
+		[Description("Среднее значение УПКС объектов недвижимости по кадастровым кварталам")]
+		[StatisticalDataFmReportCode(10184)]
+		ResultsForApprovalUpksAverageByCadastralQuarters = 94,
 
 		[Description("Сводные результаты государственной кадастровой оценки объектов недвижимости по кадастровому району (ОКС)")]
 		[StatisticalDataFmReportCode(10191)]

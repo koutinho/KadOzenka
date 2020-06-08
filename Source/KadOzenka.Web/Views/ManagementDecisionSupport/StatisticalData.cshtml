@@ -107,8 +107,22 @@
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsByKRForPlacements.GetEnumDescription()).Value((long)StatisticalDataType.ResultsByKRForPlacements).Enable(false))
             </div>
         </div>
-        <div class="col-sm-11 subgroup-first-level">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApproval.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApproval).Enable(false))
+        <div>
+            <div class="col-sm-11 subgroup-first-level">
+                @Html.CustomLabelFor("Результаты на утверждение:")
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApproval.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApproval))
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByAdministrativeDistricts.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApprovalUpksAverageByAdministrativeDistricts).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByCadastralRegions.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApprovalUpksAverageByCadastralRegions).Enable(false))
+            </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsForApprovalUpksAverageByCadastralQuarters.GetEnumDescription()).Value((long) StatisticalDataType.ResultsForApprovalUpksAverageByCadastralQuarters).Enable(false))
+            </div>
         </div>
         <div class="col-sm-11 subgroup-first-level">
             @Html.CustomLabelFor("Результаты сводные по КР:")
