@@ -22,6 +22,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			var taskIdList = GetTaskIdList(query);
+			var tourId = GetTourId(query);
 
 			var dataTitleTable = new DataTable("Common");
 			dataTitleTable.Columns.Add("Title");
@@ -36,7 +37,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.QualityPricingFactorsEncodin
 			dataTable.Columns.Add("ModelCalculationMethod");
 
 
-			var data = _service.GetGroupingData(taskIdList);
+			var data = _service.GetGroupingData(taskIdList, tourId);
 
 			var i = 1;
 			foreach (var unitDto in data)

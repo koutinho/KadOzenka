@@ -7,9 +7,7 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
-using ObjectModel.Core.Register;
 using ObjectModel.Directory;
-using ObjectModel.Gbu;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -174,8 +172,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		}
 
 
-		public List<QualityPricingFactorsEncodingResultsGroupingDto> GetGroupingData(long[] taskIdList)
+		public List<QualityPricingFactorsEncodingResultsGroupingDto> GetGroupingData(long[] taskIdList, long tourId)
 		{
+			var codeGroupAttr = GetGroupAttributeIdFromTourSettings(tourId);
+			if (codeGroupAttr == null)
+			{
+				throw new Exception($"Для тура {tourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
+			}
+
 			var query = new QSQuery
 			{
 				MainRegisterID = OMUnit.GetRegisterId(),
@@ -184,22 +188,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					Type = QSConditionGroupType.And,
 					Conditions = new List<QSCondition>
 					{
-						new QSConditionSimple(OMTask.GetColumn(x => x.Id), QSConditionType.In, taskIdList.Select(x => (double)x).ToList())
+						new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.In, taskIdList.Select(x => (double)x).ToList())
 					}
 				},
 				Joins = new List<QSJoin>
 				{
-					new QSJoin
-					{
-						RegisterId = OMGroup.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMUnit.GetColumn(x => x.GroupId),
-							RightOperand = OMGroup.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Left
-					},
 					new QSJoin
 					{
 						RegisterId = OMModel.GetRegisterId(),
@@ -213,10 +206,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					}
 				}
 			};
-
+			query.AddColumn(OMUnit.GetColumn(x => x.Id, "Id"));
 			query.AddColumn(OMUnit.GetColumn(x => x.PropertyType, "PropertyType"));
 			query.AddColumn(OMUnit.GetColumn(x => x.CadastralNumber, "CadastralNumber"));
-			query.AddColumn(OMGroup.GetColumn(x => x.Number, "GroupNumber"));
 			query.AddColumn(OMModel.GetColumn(x => x.CalculationMethod, "ModelCalculationMethod"));
 
 			var table = query.ExecuteQuery();
@@ -224,6 +216,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			var result = new List<QualityPricingFactorsEncodingResultsGroupingDto>();
 			if (table.Rows.Count != 0)
 			{
+				var objectIds = new List<long>();
+				for (var i = 0; i < table.Rows.Count; i++)
+				{
+					objectIds.Add(table.Rows[i]["Id"].ParseToLong());
+				}
+
+				var gbuAttributes = _gbuObjectService.GetAllAttributes(objectIds,
+					new List<long>{ codeGroupAttr.RegisterId },
+					new List<long> { codeGroupAttr.Id },
+					DateTime.Now.GetEndOfTheDay());
+
 				for (var i = 0; i < table.Rows.Count; i++)
 				{
 					var modelCalculationMethod = table.Rows[i]["ModelCalculationMethod"].ParseToLongNullable();
@@ -231,12 +234,15 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					{
 						PropertyType = table.Rows[i]["PropertyType"].ParseToString(),
 						CadastralNumber = table.Rows[i]["CadastralNumber"].ParseToString(),
-						GroupNumber = table.Rows[i]["GroupNumber"].ParseToStringNullable(),
 						ModelCalculationMethod =
 							((KoCalculationMethod) modelCalculationMethod.GetValueOrDefault(0)) != KoCalculationMethod.None
 								? ((KoCalculationMethod) modelCalculationMethod.GetValueOrDefault(0)).GetEnumDescription()
 								: null,
 					};
+					dto.GroupNumber = gbuAttributes
+						.FirstOrDefault(x => x.ObjectId == table.Rows[i]["Id"].ParseToLong())
+						?.GetValueInString();
+
 					result.Add(dto);
 				}
 			}
