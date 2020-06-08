@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
-using System.Reflection;
 using Core.UI.Registers.Reports.Model;
 using ObjectModel.Directory;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.GbuObject;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class ParcelsReport : StatisticalDataReport
+    public class ParcelsReport : ResultsByCadastralDistrictBaseReport
     {
         private readonly string _typeOfUseByClassifierFilter = "TypeOfUseByClassifier";
         private readonly string _infoAboutExistenceOfOtherObjects = "InfoAboutExistenceOfOtherObjects";
@@ -32,9 +29,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query)?.ToList();
+            var tourId = GetTourId(query);
             var inputParameters = GetInputParameters(query);
 
-            var operations = GetOperations(taskIds, inputParameters);
+            var operations = GetOperations(tourId, taskIds, inputParameters);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -84,12 +82,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             };
         }
 
-        private List<ReportItem> GetOperations(List<long> taskIds, InputParameters inputParameters)
+        private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
-            var attributesDictionary = GetAttributesForReport(inputParameters);
+            var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
 
             var units = GetUnits(taskIds, PropertyTypes.Stead);
-            //units[0].ObjectId = 14427146; //объект у которого есть значения в РР (для тестирования)
+            //var objectIdForTesting = 11188991;
+            //units[0].ObjectId = objectIdForTesting; //объект у которого есть значения в РР (для тестирования)
 
             var gbuAttributes = GbuObjectService.GetAllAttributes(
                 units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
@@ -97,80 +96,49 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
                 DateTime.Now.GetEndOfTheDay());
 
-            var properties = typeof(ReportItem).GetProperties();
-            var rosreestrAttributesProperty = properties.FirstOrDefault(x => x.Name == nameof(ReportItem.RosreestrAttributes));
-            var customAttributesProperty = properties.FirstOrDefault(x => x.Name == nameof(ReportItem.CustomAttributes));
-
             var result = new List<ReportItem>();
             units.ToList().ForEach(unit =>
-            //units.Where(x => x.ObjectId == 14427146).ToList().ForEach(unit =>  // для тестирования
+            //units.Where(x => x.ObjectId == objectIdForTesting).ToList().ForEach(unit =>  // для тестирования
             {
                 var item = new ReportItem
                 {
-                    UnitInfo = new UnitInfo
-                    {
-                        CadastralNumber = unit.CadastralNumber,
-                        CadastralQuartal = unit.CadastralBlock,
-                        CadastralDistrict = GetCadastralDistrict(unit.CadastralBlock),
-                        ObjectType = unit.PropertyType_Code,
-                        Square = unit.Square,
-                        Group = unit.ParentGroup?.GroupName,
-                        Upks = unit.Upks,
-                        CadastralCost = unit.CadastralCost
-                    }
+                    CadastralNumber = unit.CadastralNumber,
+                    Square = unit.Square,
+                    Upks = unit.Upks,
+                    CadastralCost = unit.CadastralCost
                 };
 
-                SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, rosreestrAttributesProperty,
-                    customAttributesProperty, item);
-
+                SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
+                item.CadastralDistrict = GetCadastralDistrict(item.CadastralQuartal);
+                
                 result.Add(item);
             });
 
             return result;
         }
 
-        private static void SetAttributes(long? objectId, List<GbuObjectAttribute> gbuAttributes, Dictionary<string, RegisterAttribute> attributesDictionary,
-            PropertyInfo rosreestrAttributesProperty, PropertyInfo customAttributesProperty, ReportItem item)
-        {
-            var objectAttributes = gbuAttributes.Where(x => x.ObjectId == objectId).ToList();
-            foreach (var objectAttribute in objectAttributes)
-            {
-                var attributeKeys = attributesDictionary.Where(x => x.Value.Id == objectAttribute.AttributeId).Select(x => x.Key);
-                foreach (var key in attributeKeys)
-                {
-                    var property = rosreestrAttributesProperty?.PropertyType.GetProperty(key);
-                    if (property == null)
-                    {
-                        property = customAttributesProperty?.PropertyType.GetProperty(key);
-                        property?.SetValue(item.CustomAttributes, objectAttribute.GetValueInString());
-                    }
-                    else
-                    {
-                        property.SetValue(item.RosreestrAttributes, objectAttribute.GetValueInString());
-                    }
-                }
-            }
-        }
-
-        private Dictionary<string, RegisterAttribute> GetAttributesForReport(InputParameters inputParameters)
+        private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId, InputParameters inputParameters)
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(RosreestrAttributes.ParcelName), StatisticalDataService.GetRosreestrParcelNameAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.Location), StatisticalDataService.GetRosreestrLocationAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.Address), StatisticalDataService.GetRosreestrAddressAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.FormationDate), StatisticalDataService.GetRosreestrFormationDateAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.ParcelCategory), StatisticalDataService.GetRosreestrParcelCategoryAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.TypeOfUseByDocuments), StatisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ParcelName), StatisticalDataService.GetRosreestrParcelNameAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
+            attributesDictionary.Add(nameof(ReportItem.FormationDate), StatisticalDataService.GetRosreestrFormationDateAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ParcelCategory), StatisticalDataService.GetRosreestrParcelCategoryAttribute());
+            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByDocuments), StatisticalDataService.GetRosreestrTypeOfUseByDocumentsAttribute());
 
-            attributesDictionary.Add(nameof(CustomAttributes.TypeOfUseByClassifier), RegisterCache.GetAttributeData(inputParameters.TypeOfUseByClassifierAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.InfoAboutExistenceOfOtherObjects), RegisterCache.GetAttributeData(inputParameters.InfoAboutExistenceOfOtherObjectsAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.InfoSource), RegisterCache.GetAttributeData(inputParameters.InfoSourceAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.UsageTypeCode), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.UsageTypeCodeSource), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.TypeOfUseByClassifier), RegisterCache.GetAttributeData(inputParameters.TypeOfUseByClassifierAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.InfoAboutExistenceOfOtherObjects), RegisterCache.GetAttributeData(inputParameters.InfoAboutExistenceOfOtherObjectsAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.InfoSource), RegisterCache.GetAttributeData(inputParameters.InfoSourceAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeCode), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeCodeSource), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId));
 
-            return attributesDictionary;
+            var generalAttributes = GetGeneralAttributesForReport(tourId);
+            var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
+
+            return result;
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
@@ -207,29 +175,27 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             for (var i = 0; i < operations.Count; i++)
             {
                 dataTable.Rows.Add(i + 1,
-                    operations[i].UnitInfo.CadastralNumber,
-                    operations[i].UnitInfo.CadastralQuartal,
-                    operations[i].UnitInfo.CadastralDistrict,
-                    operations[i].UnitInfo.ObjectType == PropertyTypes.None
-                        ? null
-                        : operations[i].UnitInfo.ObjectType.GetEnumDescription(),
-                    operations[i].UnitInfo.Square,
-                    operations[i].RosreestrAttributes.ParcelName,
-                    operations[i].RosreestrAttributes.Location,
-                    operations[i].RosreestrAttributes.Address,
-                    operations[i].RosreestrAttributes.FormationDate,
-                    operations[i].RosreestrAttributes.ParcelCategory,
-                    operations[i].RosreestrAttributes.TypeOfUseByDocuments,
-                    operations[i].CustomAttributes.TypeOfUseByClassifier,
-                    operations[i].CustomAttributes.InfoAboutExistenceOfOtherObjects,
-                    operations[i].CustomAttributes.InfoSource,
-                    operations[i].CustomAttributes.Segment,
-                    operations[i].CustomAttributes.UsageTypeCode,
-                    operations[i].CustomAttributes.UsageTypeName,
-                    operations[i].CustomAttributes.UsageTypeCodeSource,
-                    operations[i].UnitInfo.Group,
-                    operations[i].UnitInfo.Upks,
-                    operations[i].UnitInfo.CadastralCost);
+                    operations[i].CadastralNumber,
+                    operations[i].CadastralQuartal,
+                    operations[i].CadastralDistrict,
+                    operations[i].ObjectType,
+                    operations[i].Square,
+                    operations[i].ParcelName,
+                    operations[i].Location,
+                    operations[i].Address,
+                    operations[i].FormationDate,
+                    operations[i].ParcelCategory,
+                    operations[i].TypeOfUseByDocuments,
+                    operations[i].TypeOfUseByClassifier,
+                    operations[i].InfoAboutExistenceOfOtherObjects,
+                    operations[i].InfoSource,
+                    operations[i].Segment,
+                    operations[i].UsageTypeCode,
+                    operations[i].UsageTypeName,
+                    operations[i].UsageTypeCodeSource,
+                    operations[i].SubGroupNumber,
+                    operations[i].Upks,
+                    operations[i].CadastralCost);
             }
 
             return dataTable;
@@ -250,30 +216,27 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             public long UsageTypeCodeSourceAttributeId { get; set; }
         }
 
-        private class UnitInfo
+        private class ReportItem : InfoFromSettings
         {
+            //From Unit
             public string CadastralNumber { get; set; }
-            public string CadastralQuartal { get; set; }
             public string CadastralDistrict { get; set; }
-            public PropertyTypes ObjectType { get; set; }
             public decimal? Square { get; set; }
-            public string Group { get; set; }
             public decimal? Upks { get; set; }
             public decimal? CadastralCost { get; set; }
-        }
 
-        private class RosreestrAttributes
-        {
+            //From Rosreestr
             public string ParcelName { get; set; }
             public string Location { get; set; }
             public string Address { get; set; }
             public string FormationDate { get; set; }
             public string ParcelCategory { get; set; }
             public string TypeOfUseByDocuments { get; set; }
-        }
 
-        private class CustomAttributes
-        {
+            //From Tour Settings
+
+
+            //From UI
             public string TypeOfUseByClassifier { get; set; }
             public string InfoAboutExistenceOfOtherObjects { get; set; }
             public string InfoSource { get; set; }
@@ -281,20 +244,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             public string UsageTypeCode { get; set; }
             public string UsageTypeName { get; set; }
             public string UsageTypeCodeSource { get; set; }
-        }
-
-        private class ReportItem
-        {
-            public UnitInfo UnitInfo { get; set; }
-            public RosreestrAttributes RosreestrAttributes { get; set; }
-            public CustomAttributes CustomAttributes { get; set; }
-
-            public ReportItem()
-            {
-                UnitInfo = new UnitInfo();
-                RosreestrAttributes = new RosreestrAttributes();
-                CustomAttributes = new CustomAttributes();
-            }
         }
 
         #endregion

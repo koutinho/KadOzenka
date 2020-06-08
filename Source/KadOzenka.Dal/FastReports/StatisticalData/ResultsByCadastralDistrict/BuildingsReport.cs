@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
-using System.Reflection;
+using Core.Register;
 using Core.UI.Registers.Reports.Model;
 using ObjectModel.Directory;
-using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.GbuObject;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class BuildingsReport : StatisticalDataReport
+    public class BuildingsReport : ResultsByCadastralDistrictBaseReport
     {
         private readonly string _segment = "Segment";
         private readonly string _usageTypeName = "UsageTypeName";
@@ -33,9 +29,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
             var taskIds = GetTaskIdList(query)?.ToList();
+            var tourId = GetTourId(query);
             var inputParameters = GetInputParameters(query);
 
-            var operations = GetOperations(taskIds, inputParameters);
+            var operations = GetOperations(tourId, taskIds, inputParameters);
 
             var dataSet = new DataSet();
             var itemTable = GetItemDataTable(operations);
@@ -82,12 +79,13 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             };
         }
 
-        private List<ReportItem> GetOperations(List<long> taskIds, InputParameters inputParameters)
+        private List<ReportItem> GetOperations(long tourId, List<long> taskIds, InputParameters inputParameters)
         {
-            var attributesDictionary = GetAttributesForReport(inputParameters);
+            var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
 
             var units = GetUnits(taskIds, PropertyTypes.Building);
-            //units[0].ObjectId = 11188991; //объект у которого есть значения в РР (для тестирования)
+            //var objectIdForTesting = 11188991;
+            //units[0].ObjectId = objectIdForTesting; //объект у которого есть значения в РР и в настройках тура (для тестирования)
 
             var gbuAttributes = GbuObjectService.GetAllAttributes(
                 units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
@@ -95,30 +93,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
                 DateTime.Now.GetEndOfTheDay());
 
-            var properties = typeof(ReportItem).GetProperties();
-            var rosreestrAttributesProperty = properties.FirstOrDefault(x => x.Name == nameof(ReportItem.RosreestrAttributes));
-            var customAttributesProperty = properties.FirstOrDefault(x => x.Name == nameof(ReportItem.CustomAttributes));
-
             var result = new List<ReportItem>();
             units.ToList().ForEach(unit =>
-            //units.Where(x => x.ObjectId == 11188991).ToList().ForEach(unit =>  // для тестирования
+            //units.Where(x => x.ObjectId == objectIdForTesting).ToList().ForEach(unit =>  // для тестирования
             {
                 var item = new ReportItem
                 {
-                    UnitInfo = new UnitInfo
-                    {
-                        CadastralNumber = unit.CadastralNumber,
-                        CadastralQuartal = unit.CadastralBlock,
-                        ObjectType = unit.PropertyType_Code,
-                        Square = unit.Square,
-                        Group = unit.ParentGroup?.GroupName,
-                        Upks = unit.Upks,
-                        CadastralCost = unit.CadastralCost
-                    }
+                    CadastralNumber = unit.CadastralNumber,
+                    Square = unit.Square,
+                    Upks = unit.Upks,
+                    CadastralCost = unit.CadastralCost
                 };
 
-                SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, rosreestrAttributesProperty,
-                    customAttributesProperty, item);
+                SetAttributes(unit.ObjectId, gbuAttributes, attributesDictionary, item);
 
                 result.Add(item);
             });
@@ -126,51 +113,31 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             return result;
         }
 
-        private static void SetAttributes(long? objectId, List<GbuObjectAttribute> gbuAttributes, Dictionary<string, RegisterAttribute> attributesDictionary,
-            PropertyInfo rosreestrAttributesProperty, PropertyInfo customAttributesProperty, ReportItem item)
-        {
-            var objectAttributes = gbuAttributes.Where(x => x.ObjectId == objectId).ToList();
-            foreach (var objectAttribute in objectAttributes)
-            {
-                var attributeKeys = attributesDictionary.Where(x => x.Value.Id == objectAttribute.AttributeId).Select(x => x.Key);
-                foreach (var key in attributeKeys)
-                {
-                    var property = rosreestrAttributesProperty?.PropertyType.GetProperty(key);
-                    if (property == null)
-                    {
-                        property = customAttributesProperty?.PropertyType.GetProperty(key);
-                        property?.SetValue(item.CustomAttributes, objectAttribute.GetValueInString());
-                    }
-                    else
-                    {
-                        property.SetValue(item.RosreestrAttributes, objectAttribute.GetValueInString());
-                    }
-                }
-            }
-        }
-
-        private Dictionary<string, RegisterAttribute> GetAttributesForReport(InputParameters inputParameters)
+        private Dictionary<string, RegisterAttribute> GetAttributesForReport(long tourId, InputParameters inputParameters)
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
-            attributesDictionary.Add(nameof(RosreestrAttributes.CommissioningYear), StatisticalDataService.GetRosreestrCommissioningYearAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.BuildYear), StatisticalDataService.GetRosreestrBuildYearAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.FormationDate), StatisticalDataService.GetRosreestrFormationDateAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.UndergroundFloorsNumber), StatisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.FloorsNumber), StatisticalDataService.GetRosreestrFloorsNumberAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.WallMaterial), StatisticalDataService.GetRosreestrWallMaterialAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.Location), StatisticalDataService.GetRosreestrLocationAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.Address), StatisticalDataService.GetRosreestrAddressAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.BuildingPurpose), StatisticalDataService.GetRosreestrBuildingPurposeAttribute());
-            attributesDictionary.Add(nameof(RosreestrAttributes.ObjectName), StatisticalDataService.GetRosreestrObjectNameAttribute());
+            attributesDictionary.Add(nameof(ReportItem.CommissioningYear), StatisticalDataService.GetRosreestrCommissioningYearAttribute());
+            attributesDictionary.Add(nameof(ReportItem.BuildYear), StatisticalDataService.GetRosreestrBuildYearAttribute());
+            attributesDictionary.Add(nameof(ReportItem.FormationDate), StatisticalDataService.GetRosreestrFormationDateAttribute());
+            attributesDictionary.Add(nameof(ReportItem.UndergroundFloorsNumber), StatisticalDataService.GetRosreestrUndergroundFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.FloorsNumber), StatisticalDataService.GetRosreestrFloorsNumberAttribute());
+            attributesDictionary.Add(nameof(ReportItem.WallMaterial), StatisticalDataService.GetRosreestrWallMaterialAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Location), StatisticalDataService.GetRosreestrLocationAttribute());
+            attributesDictionary.Add(nameof(ReportItem.Address), StatisticalDataService.GetRosreestrAddressAttribute());
+            attributesDictionary.Add(nameof(ReportItem.BuildingPurpose), StatisticalDataService.GetRosreestrBuildingPurposeAttribute());
+            attributesDictionary.Add(nameof(ReportItem.ObjectName), StatisticalDataService.GetRosreestrObjectNameAttribute());
 
-            attributesDictionary.Add(nameof(CustomAttributes.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.UsageTypeCode), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.UsageTypeCodeSource), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.SubGroupUsageTypeCode), RegisterCache.GetAttributeData(inputParameters.SubGroupUsageTypeCodeAttributeId));
-            attributesDictionary.Add(nameof(CustomAttributes.FunctionalSubGroupName), RegisterCache.GetAttributeData(inputParameters.FunctionalSubGroupNameAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.Segment), RegisterCache.GetAttributeData(inputParameters.SegmentAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeName), RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeCode), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.UsageTypeCodeSource), RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.SubGroupUsageTypeCode), RegisterCache.GetAttributeData(inputParameters.SubGroupUsageTypeCodeAttributeId));
+            attributesDictionary.Add(nameof(ReportItem.FunctionalSubGroupName), RegisterCache.GetAttributeData(inputParameters.FunctionalSubGroupNameAttributeId));
 
-            return attributesDictionary;
+            var generalAttributes = GetGeneralAttributesForReport(tourId);
+            var result = attributesDictionary.Concat(generalAttributes).ToDictionary(x => x.Key, x => x.Value);
+
+            return result;
         }
 
         private DataTable GetItemDataTable(List<ReportItem> operations)
@@ -210,35 +177,30 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             for (var i = 0; i < operations.Count; i++)
             {
                 dataTable.Rows.Add(i + 1,
-                    operations[i].UnitInfo.CadastralNumber,
+                    operations[i].CadastralNumber,
 
-                    operations[i].RosreestrAttributes.CommissioningYear,
-                    operations[i].RosreestrAttributes.BuildYear,
-                    operations[i].RosreestrAttributes.FormationDate,
-                    operations[i].RosreestrAttributes.UndergroundFloorsNumber,
-                    operations[i].RosreestrAttributes.FloorsNumber,
-                    operations[i].RosreestrAttributes.WallMaterial,
-                    operations[i].RosreestrAttributes.Location,
-                    operations[i].RosreestrAttributes.Address,
-                    operations[i].RosreestrAttributes.BuildingPurpose,
-                    operations[i].RosreestrAttributes.ObjectName,
-
-                    operations[i].UnitInfo.Square,
-                    operations[i].UnitInfo.ObjectType == PropertyTypes.None 
-                        ? null 
-                        : operations[i].UnitInfo.ObjectType.GetEnumDescription(),
-                    operations[i].UnitInfo.CadastralQuartal,
-
-                    operations[i].CustomAttributes.Segment,
-                    operations[i].CustomAttributes.UsageTypeName,
-                    operations[i].CustomAttributes.UsageTypeCode,
-                    operations[i].CustomAttributes.UsageTypeCodeSource,
-                    operations[i].CustomAttributes.SubGroupUsageTypeCode,
-                    operations[i].CustomAttributes.FunctionalSubGroupName,
-
-                    operations[i].UnitInfo.Group,
-                    operations[i].UnitInfo.Upks,
-                    operations[i].UnitInfo.CadastralCost);
+                    operations[i].CommissioningYear,
+                    operations[i].BuildYear,
+                    operations[i].FormationDate,
+                    operations[i].UndergroundFloorsNumber,
+                    operations[i].FloorsNumber,
+                    operations[i].WallMaterial,
+                    operations[i].Location,
+                    operations[i].Address,
+                    operations[i].BuildingPurpose,
+                    operations[i].ObjectName,
+                    operations[i].Square,
+                    operations[i].ObjectType,
+                    operations[i].CadastralQuartal,
+                    operations[i].Segment,
+                    operations[i].UsageTypeName,
+                    operations[i].UsageTypeCode,
+                    operations[i].UsageTypeCodeSource,
+                    operations[i].SubGroupUsageTypeCode,
+                    operations[i].FunctionalSubGroupName,
+                    operations[i].SubGroupNumber,
+                    operations[i].Upks,
+                    operations[i].CadastralCost);
             }
 
             return dataTable;
@@ -258,19 +220,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             public long FunctionalSubGroupNameAttributeId { get; set; }
         }
 
-        private class UnitInfo
+        private class ReportItem : InfoFromSettings
         {
+            //From Unit
             public string CadastralNumber { get; set; }
             public decimal? Square { get; set; }
-            public PropertyTypes ObjectType { get; set; }
-            public string CadastralQuartal { get; set; }
-            public string Group { get; set; }
             public decimal? Upks { get; set; }
             public decimal? CadastralCost { get; set; }
-        }
 
-        private class RosreestrAttributes
-        {
+            //From Tour Settings
+
+            //From Rosreestr
             public string CommissioningYear { get; set; }
             public string BuildYear { get; set; }
             public string FormationDate { get; set; }
@@ -281,30 +241,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             public string Address { get; set; }
             public string BuildingPurpose { get; set; }
             public string ObjectName { get; set; }
-        }
 
-        private class CustomAttributes
-        {
+            //From UI
             public string Segment { get; set; }
             public string UsageTypeName { get; set; }
             public string UsageTypeCode { get; set; }
             public string UsageTypeCodeSource { get; set; }
             public string SubGroupUsageTypeCode { get; set; }
             public string FunctionalSubGroupName { get; set; }
-        }
-
-        private class ReportItem
-        {
-            public UnitInfo UnitInfo { get; set; }
-            public RosreestrAttributes RosreestrAttributes { get; set; }
-            public CustomAttributes CustomAttributes { get; set; }
-
-            public ReportItem()
-            {
-                UnitInfo = new UnitInfo();
-                RosreestrAttributes = new RosreestrAttributes();
-                CustomAttributes = new CustomAttributes();
-            }
         }
 
         #endregion

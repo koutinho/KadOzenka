@@ -101,7 +101,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
         public string GetCadastralDistrict(string cadastralQuartal)
         {
-            return cadastralQuartal.Substring(0, 5);
+            return string.IsNullOrWhiteSpace(cadastralQuartal) 
+                ? null
+                : cadastralQuartal.Substring(0, 5);
         }
 
         protected long GetFilterParameterValue(NameValueCollection query, string filterName, string nameFromInterface)

@@ -84,17 +84,17 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        return result;
         }
 
-        public RegisterAttribute GetGroupAttributeIdFromTourSettings(long tourId)
+        public RegisterAttribute GetGroupAttributeFromTourSettings(long tourId)
         {
             return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.CodeGroupAttribute);
         }
 
-        public RegisterAttribute GetObjectTypeAttributeIdFromTourSettings(long tourId)
+        public RegisterAttribute GetObjectTypeAttributeFromTourSettings(long tourId)
         {
             return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.TypeRoomAttribute);
         }
 
-        public RegisterAttribute GetCadastralQuartalAttributeIdFromTourSettings(long tourId)
+        public RegisterAttribute GetCadastralQuartalAttributeFromTourSettings(long tourId)
         {
             return GetAttributeIdFromTourSettings(tourId, KoAttributeUsingType.CodeQuarterAttribute);
         }
