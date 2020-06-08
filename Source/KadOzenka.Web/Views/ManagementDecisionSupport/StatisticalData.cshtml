@@ -106,6 +106,9 @@
             <div class="col-sm-11 subgroup-second-level">
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsByKRForPlacements.GetEnumDescription()).Value((long)StatisticalDataType.ResultsByKRForPlacements).Enable(true))
             </div>
+            <div class="col-sm-11 subgroup-second-level">
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.ResultsByKRForParking.GetEnumDescription()).Value((long)StatisticalDataType.ResultsByKRForParking).Enable(true))
+            </div>
         </div>
         <div>
             <div class="col-sm-11 subgroup-first-level">

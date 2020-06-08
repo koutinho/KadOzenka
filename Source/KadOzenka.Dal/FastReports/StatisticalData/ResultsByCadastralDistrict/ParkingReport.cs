@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
+using Core.Register;
 using Core.UI.Registers.Reports.Model;
 using ObjectModel.Directory;
-using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
-    public class PlacementsReport : ResultsByCadastralDistrictBaseReport
+    public class ParkingReport : ResultsByCadastralDistrictBaseReport
     {
         private readonly string _segment = "Segment";
         private readonly string _usageTypeName = "UsageTypeName";
@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 
         protected override string TemplateName(NameValueCollection query)
         {
-            return "ResultsByCadastralDistrictForPlacementsReport";
+            return "ResultsByCadastralDistrictForParkingReport";
         }
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
@@ -83,8 +83,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
         {
             var attributesDictionary = GetAttributesForReport(tourId, inputParameters);
 
-            var units = GetUnits(taskIds, PropertyTypes.Pllacement);
-            //объект с parent-зданием (для тестирования)
+            var units = GetUnits(taskIds, PropertyTypes.Parking);
+            ////объект с parent-зданием (для тестирования)
             //var objectIdForTesting = 11188991;
             //units[0].ObjectId = objectIdForTesting;
 
