@@ -1,12 +1,26 @@
 ﻿@model long
 
-<div>
-    <div id="grid"></div>
+
+<div class="form-horizontal" style="padding: 1%;">
+    <div>
+        <div id="grid"></div>
+    </div>
 </div>
+
+
+<script id="gridToolbarTemplate" type="text/x-kendo-template">
+    <div style="float: left">
+        <a class="k-button k-button-icon" id="getClarificationBtn" style="width:250px;">
+            <span class="k-icon k-i-question" style="padding-right: 5%"></span>
+            Предоставить разъяснения
+        </a>
+    </div>
+</script>
 
 <script>
     $(document).ready(function () {
         $("#grid").kendoGrid({
+            toolbar: kendo.template($("#gridToolbarTemplate").html()),
             dataSource: {
                 transport: {
                     read: {
@@ -16,7 +30,7 @@
                 },
                 schema: {
                     model: {
-                        id: "Id"                        
+                        id: "Id"
                     }
                 },
             },
@@ -61,27 +75,54 @@
         $('#grid').data("kendoGrid").bind("dataBound", function () {
             var grid = $("#grid").data("kendoGrid");
             var data = grid.dataSource.data();
-            $.each(data, function (i, row) {                
+            $.each(data, function (i, row) {
                 if (row.IsActual)
                     $('tr[data-uid="' + row.uid + '"] ').addClass("isActual");
                 if (row.IsBad)
                     $('tr[data-uid="' + row.uid + '"] ').addClass("isBad");
             });
         });
+
+        $('#getClarificationBtn').on('click', getClarification);
     });
-</script>
 
-<style>
-    .k-grid td {
-        white-space: normal;
+
+
+    function getClarification() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetClarification", "Unit")',
+            data: { unitId: '@Model' },
+            success: function (response) {
+                Common.ShowMessage('Файл успешно сохранен в папку с отчетами');
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
-    .isActual {
-        background-color: lightgreen;
-    }
+    </script>
 
-    .isBad {
-        background-color: red;
-        color: white;
-    }
-</style>
+
+
+
+
+    <style>
+        .k-grid td {
+            white-space: normal;
+        }
+
+        .isActual {
+            background-color: lightgreen;
+        }
+
+        .isBad {
+            background-color: red;
+            color: white;
+        }
+    </style>

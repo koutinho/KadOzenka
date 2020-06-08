@@ -1,12 +1,13 @@
 ﻿using KadOzenka.Web.Models.Task;
 using KadOzenka.Web.Models.Unit;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.Gbu;
 using ObjectModel.KO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using Core.Main.FileStorages;
+using KadOzenka.Dal.DataExport;
+using NLog.Targets;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -70,5 +71,18 @@ namespace KadOzenka.Web.Controllers
 
 			return Json(result);
 		}
-	}	
+
+        [HttpGet]
+        public ActionResult GetClarification(long unitId)
+        {
+            var unit = OMUnit.Where(x => x.Id == unitId).SelectAll().ExecuteFirstOrDefault();
+            if (unit == null)
+                throw new Exception($"Не найдена единица оценки с Id = '{unitId}'");
+
+            var directory = FileStorageManager.GetPathForStorage("SaveReportPath");
+            DEKODocOtvet.ExportToDoc(unit, directory);
+
+            return Ok();
+        }
+    }	
 }
