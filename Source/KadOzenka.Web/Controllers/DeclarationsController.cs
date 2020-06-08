@@ -16,6 +16,7 @@ using ObjectModel.Declarations;
 using ObjectModel.Directory.Declarations;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
+using Core.UI.Registers.Models.CoreUi;
 using Newtonsoft.Json;
 using ObjectModel.Core.Reports;
 using Microsoft.AspNetCore.Http;
@@ -24,7 +25,9 @@ using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.DataImport.Dto;
+using KadOzenka.Dal.Declarations;
 using ObjectModel.Core.Shared;
+using ObjectModel.Directory.Common;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -49,6 +52,12 @@ namespace KadOzenka.Web.Controllers
 		/// "Контрольный срок" должен быть -10 рабочих дней от "Срок рассмотрения"
 		/// </summary>
 		public static int DaysDiffBetweenDateCheckTimeAndDurationDateIn => 10;
+
+		private NotificationService _notificationService;
+		public DeclarationsController()
+		{
+			_notificationService = new NotificationService();
+		}
 
 		#region Declarations
 
@@ -1000,7 +1009,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				throw new Exception($"Уведомление с ИД {notificationId} не найдено");
 			}
-			var reportType = GetNotificationReportType(omUved);
+			var reportType = _notificationService.GetNotificationReportType(omUved);
 
 			return RedirectToAction("Viewer", "Report", new {reportTypeId = reportType, reportRegisterId = OMUved.GetRegisterId(), reportObjectId = notificationId});
 		}
@@ -1017,7 +1026,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			var registerId = OMUved.GetRegisterId();
-			var reportType = GetNotificationReportType(omUved);
+			var reportType = _notificationService.GetNotificationReportType(omUved);
 			var savedReport = OMSavedReport.Where(x =>
 					x.ObjectId == notificationId &&
 					x.ObjectRegisterId == registerId &&
@@ -1034,29 +1043,31 @@ namespace KadOzenka.Web.Controllers
 			return RedirectToAction("DownloadSavedReport", "Report", new { savedReportId = savedReport.Id });
 		}
 
-		private int GetNotificationReportType(OMUved omUved)
+		public IActionResult SendNotificationToSpd(long notificationId)
 		{
-			int reportType;
-			switch (omUved?.Type_Code)
+			try
 			{
-				case UvedType.Item5:
-					reportType = 1001;
-					break;
-				case UvedType.Item3:
-					reportType = 1002;
-					break;
-				case UvedType.Item4:
-					reportType = 1003;
-					break;
-				case UvedType.Item1:
-					reportType = 1004;
-					break;
-				default:
-					throw new Exception(
-						$"Тип уведомления '{omUved?.Type_Code.GetEnumDescription()}' не поддерживает формирование по шаблону");
+				_notificationService.SendNotificationToSpd(notificationId);
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return View("~/Views/Shared/ModalDialogDetails.cshtml", new ModalDialogDetails
+				{
+					Message = "Уведомление не было отправлено. Подробнее в журнале ошибок.",
+					Icon = ModalDialogDetails.IconType.Warning,
+					Buttons = ModalDialogDetails.ButtonType.Ok,
+					Action = ModalDialogDetails.ActionType.Reload
+				});
 			}
 
-			return reportType;
+			return View("~/Views/Shared/ModalDialogDetails.cshtml", new ModalDialogDetails
+			{
+				Message = "Уведомление было отправлено",
+				Icon = ModalDialogDetails.IconType.Ok,
+				Buttons = ModalDialogDetails.ButtonType.Ok,
+				Action = ModalDialogDetails.ActionType.Reload
+			});
 		}
 
 		#endregion Notifications
