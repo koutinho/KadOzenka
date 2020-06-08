@@ -18355,7 +18355,26 @@ namespace ObjectModel.Declarations
             }
         }
 
-    }
+        private long? _spdid;
+        /// <summary>
+        /// 50103400 Идентификатор СПД (SPD_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 50103400)]
+        public long? SpdId
+        {
+	        get
+	        {
+		        CheckPropertyInited("SpdId");
+		        return _spdid;
+	        }
+	        set
+	        {
+		        _spdid = value;
+		        NotifyPropertyChanged("SpdId");
+	        }
+        }
+
+	}
 }
 
 namespace ObjectModel.Declarations
