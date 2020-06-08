@@ -12,7 +12,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
-	public class QualityPricingFactorsEncodingResultsService : StatisticalDataService
+	public class QualityPricingFactorsEncodingResultsService
 	{
 		private readonly GbuObjectService _gbuObjectService;
 		private readonly StatisticalDataService _statisticalDataService;
@@ -174,7 +174,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 		public List<QualityPricingFactorsEncodingResultsGroupingDto> GetGroupingData(long[] taskIdList, long tourId)
 		{
-			var codeGroupAttr = GetGroupAttributeIdFromTourSettings(tourId);
+			var codeGroupAttr = _statisticalDataService.GetGroupAttributeIdFromTourSettings(tourId);
 			if (codeGroupAttr == null)
 			{
 				throw new Exception($"Для тура {tourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
