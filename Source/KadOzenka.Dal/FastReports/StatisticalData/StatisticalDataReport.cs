@@ -17,6 +17,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 {
 	public abstract class StatisticalDataReport : FastReportBase
 	{
+		public static readonly int PrecisionForDecimalValues = 2;
+
 		protected readonly GbuObjectService GbuObjectService;
 		protected readonly StatisticalDataService StatisticalDataService;
 

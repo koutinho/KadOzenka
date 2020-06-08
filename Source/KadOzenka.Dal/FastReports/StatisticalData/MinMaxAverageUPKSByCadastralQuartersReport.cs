@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using Core.Shared.Extensions;
@@ -41,7 +42,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 			var data = _service.GetMinMaxAverageUPKS(taskIdList);
 			foreach (var unitDto in data)
 			{
-				dataTable.Rows.Add(unitDto.CadastralRegionNumber, unitDto.CadastralQuater, unitDto.ObjectsCount, unitDto.UpksCalcType.GetEnumDescription(), unitDto.PropertyType, unitDto.UpksCalcValue);
+				dataTable.Rows.Add(unitDto.CadastralRegionNumber, unitDto.CadastralQuater, unitDto.ObjectsCount,
+					unitDto.UpksCalcType.GetEnumDescription(), unitDto.PropertyType,
+					(unitDto.UpksCalcValue.HasValue
+						? Math.Round(unitDto.UpksCalcValue.Value, PrecisionForDecimalValues)
+						: (decimal?) null));
 			}
 
 			var dataSet = new DataSet();
