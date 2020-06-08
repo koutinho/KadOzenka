@@ -2,6 +2,8 @@
 using Core.Register.RegisterEntities;
 using System.Linq;
 using KadOzenka.Dal.GbuObject;
+using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
 {
@@ -36,6 +38,15 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                     item.GetType().GetProperty(key)?.SetValue(item, objectAttribute.GetValueInString());
                 }
             }
+        }
+
+        protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
+        {
+            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
+                                     x.PropertyType_Code == type &&
+                                     x.ObjectId != null)
+                .SelectAll()
+                .Execute();
         }
     }
 }

@@ -114,15 +114,5 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 
             return attributeId.Value;
         }
-
-        protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
-        {
-            return OMUnit.Where(x => taskIds.Contains((long)x.TaskId) &&
-                                     x.PropertyType_Code == type &&
-                                     x.ObjectId != null)
-                .Select(x => x.ParentGroup.GroupName)
-                .SelectAll()
-                .Execute();
-        }
     }
 }
