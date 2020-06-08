@@ -3359,6 +3359,11 @@ namespace KadOzenka.Dal.DataExport
         /// </summary>
         public static void ExportToDoc(OMUnit _unit, string _dir_name)
         {
+            OMTask task = OMTask.Where(x => x.Id == _unit.TaskId).SelectAll().ExecuteFirstOrDefault();
+            if (task == null) return;
+            OMGroup group_unit = OMGroup.Where(x => x.Id == _unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+            if (group_unit == null) return;
+
             Console.WriteLine("Выгрузка Otvet ...");
             if (!Directory.Exists(_dir_name)) Directory.CreateDirectory(_dir_name);
             string file_name = _dir_name + "\\Ответ_" + _unit.Id.ToString() + ".docx";
@@ -3393,30 +3398,28 @@ namespace KadOzenka.Dal.DataExport
             string str_3_0 = "-";
             string value_attr = "";
 
-            OMGroup group_unit = OMGroup.Where(x => x.Id == _unit.GroupId).SelectAll().ExecuteFirstOrDefault();
+
+
             #region Нашли и записали в список входящий документ
-            OMInstance doc_in = new OMInstance();
-            OMTask task = OMTask.Where(x => x.Id == _unit.TaskId).SelectAll().ExecuteFirstOrDefault();
-            if (task != null)
-            {
-                doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
-            }
+
+            OMInstance doc_in = OMInstance.Where(x => x.Id == task.DocumentId).SelectAll().ExecuteFirstOrDefault();
+            KoNoteType doc_status = task.NoteType_Code;
+                
             #endregion
             OMInstance doc_out = OMInstance.Where(x => x.Id == _unit.ResponseDocId).SelectAll().ExecuteFirstOrDefault();
             if (doc_out != null)
             {
                 strDateOut = doc_out.CreateDate.ToString("dd.MM.yyyy"); //odoc.DATE_DOC.ToString("dd.MM.yyyy");
-                long doc_status = doc_out.Status;
                 switch (doc_status)
                 {
-                    case 1:      // STATUS_DOC == СтатусДокумента.Ежедневка)
+                    case KoNoteType.Day:      // STATUS_DOC == СтатусДокумента.Ежедневка)
                         strActReq_01_10 = "-";
                         strActReq_01_06 = DataExportCommon.GetFullNameDoc(doc_out);
                         strActReq_01_07 = "Ковалев Д.В." + Environment.NewLine + "Капитонов К.С.";
                         str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями статьи 16 Федерального закона от 03 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
 
                         break;
-                    case 2:      //СтатусДокумента.Обращение
+                    case KoNoteType.Petition:      //СтатусДокумента.Обращение
                         strActReq_01_10 = "-";
                         str_3_0 = "Кадастровая стоимость объекта недвижимости определена в соответствии с положениями статьи 21 Федерального закона от 03 июля 2016 г. № 237-ФЗ «О государственной кадастровой оценке».";
 
