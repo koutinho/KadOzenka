@@ -3374,9 +3374,6 @@ namespace KadOzenka.Dal.DataExport
             table.Columns.Add(new TableColumn(96f / 2.54f * 7.25f));
             table.Columns.Add(new TableColumn(96f / 2.54f * 2.95f));
             table.Columns.Add(new TableColumn(96f / 2.54f * 5.80f));
-            //table.Rows.Add(new TableRow(document, new TableCell(document) { ColumnSpan = 3 }));
-            //table.Rows.Add(new TableRow(document, new TableCell(document) { ColumnSpan = 3 }));
-            //table.Rows.Add(new TableRow(document, new TableCell(document) { ColumnSpan = 3 }));
             table.TableFormat.PreferredWidth = new TableWidth(100, TableWidthUnit.Percentage);
             table.TableFormat.Alignment = HorizontalAlignment.Center;
             table.TableFormat.Borders.ClearBorders();
@@ -3431,7 +3428,6 @@ namespace KadOzenka.Dal.DataExport
 
             #region 0. Заголовок:
             idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
-            //DataExportCommon.SetText2Doc(document, table.Rows[idx_row], " ", "Приложение", 12, HorizontalAlignment.Left, HorizontalAlignment.Right, false, false);
             DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Приложение", 12, HorizontalAlignment.Right, false, false);
             idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells-1);
             DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Разъяснения, связанные с определением кадастровой стоимости", 14, HorizontalAlignment.Center, false, true);
@@ -3798,489 +3794,51 @@ namespace KadOzenka.Dal.DataExport
                  HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
                  true, true);
 
+            int pp = 0;
+            OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
+            if (model != null)
+            {
+                if (model.ModelFactor.Count == 0)
+                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
 
+                foreach (OMModelFactor factor in model.ModelFactor)
+                {
+                    RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
+                    factor.FillMarkCatalogs(model);
 
+                    string name = attribute_factor.Name;
+                    //string desc = attribute_factor.Description;
+                    string value = "-";
 
+                    int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
+                    List<CalcItem> FactorValuesGroup = new List<CalcItem>();
+                    DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
+                    if (data != null)
+                    {
+                        foreach (DataRow row in data.Rows)
+                        {
+                            FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                        }
+                    }
+                    CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
+                    if (factor_item != null)
+                    {
+                        value = factor_item.Value;
+                    }
 
-            //ALLGroupItem calc_group = subgroup.CurGroup;
-            //ALLSubGroupItem calc_subgroup = subgroup;
-            //ALLObjectItem calc_obj = obj;
-            //ALLObjectItem fact_obj = obj;
-            //ALLObjectItem fact_par = obj;
+                    pp++;
+                    idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
+                    DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
+                         "2.3." + pp.ToString(),
+                         name,
+                         value,
+                         "-",
+                         12,
+                         HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                         true, false);
+                }
+            }
 
-            //if (obj.TYPE_OBJECT == euTypeObject.otFlat)
-            //{
-            //    fact_par = ALLObjectItem.GetObjectBuilding(obj.KN_PARENT, ALLParamItem.Exist_Object, false, DateTime.Now.AddDays(1));
-            //}
-            //if (subgroup.Type_SubGroup == 9)
-            //{
-            //    ALLObjectItem buildobj = ALLObjectItem.GetObjectBuilding(obj.KN_PARENT, ALLParamItem.Exist_Object, false, DateTime.Now.AddDays(1));
-            //    if ((buildobj != null) && ((buildobj.KN_OBJECT == obj.CALC_PARENT) || (obj.CALC_PARENT == string.Empty)))
-            //    {
-            //        calc_group = ALLGroupItem.GetGroup(buildobj.ID_GROUP);
-            //        calc_subgroup = calc_group.GetSubGroup(buildobj.ID_SUBGROUP);
-            //        calc_obj = buildobj;
-            //    }
-            //}
-
-
-            //int cc = 0;
-            ////Моделирование
-            //if (calc_subgroup.Type_SubGroup <= 1)
-            //{
-            //    ALLSubGroupFormulaWeightItem[] fws = ALLSubGroupFormulaWeightItem.GetSubGroupFormulaWeight(calc_subgroup);
-            //    ALLFactorValueItem[] fvs = ALLFactorValueItem.GetAllFactors(calc_obj.TYPE_OBJECT, calc_obj.Id, calc_obj.ID_GROUP, false);
-            //    foreach (ALLSubGroupFormulaWeightItem fw in fws)
-            //    {
-            //        cc++;
-            //        string num = "2.3." + cc.ToString();
-            //        string nam = fw.Name_Factor;
-            //        string val = string.Empty;
-            //        string ist = "-";
-            //        foreach (ALLFactorValueItem fv in fvs)
-            //        {
-            //            if (fw.Id_Factor == fv.ID_FACTOR)
-            //            {
-            //                val = fv.VALUE_FACTOR;
-            //                if (fw.Pr_Metka)
-            //                {
-            //                    List<ALLFactorMetkaItem> fmis = new List<ALLFactorMetkaItem>();
-            //                    fmis.AddRange(ALLFactorMetkaItem.GetFactorMetkas(ALLFactorItem.GetFactor(fv.ID_FACTOR), calc_subgroup));
-            //                    ALLFactorMetkaItem fmi = fmis.Find(x => x.Value_Factor.ToUpper() == val.ToUpper());
-            //                    if (fmi != null)
-            //                    {
-            //                        val = val + " (подставляемое значение: " + fmi.Metka_Factor.ToString().Replace(".00000000000000000000", ".00") + ")";
-            //                    }
-            //                }
-
-            //                ALLFactorItem fact = ALLFactorItem.GetFactor(fv.ID_FACTOR);
-            //                if (fact != null)
-            //                {
-            //                    objHar har = objHar.GetHar(fact.ID_SPR);
-            //                    if (har != null)
-            //                    {
-            //                        objObject gbu_obj = objObject.GetObjectByCadastralNumber(calc_obj.KN_OBJECT);
-            //                        if (calc_obj.TYPE_OBJECT == euTypeObject.otFlat)
-            //                            if (fact.PARENT_SOURCE)
-            //                                gbu_obj = objObject.GetObjectByCadastralNumber(fact_par.KN_OBJECT);
-
-            //                        if (gbu_obj != null)
-            //                        {
-            //                            objHarValue[] hvalues = objHarValue.GetHars(gbu_obj.Id, har.Id, har.Type);
-            //                            objHarValue chv = null;
-            //                            foreach (objHarValue hv in hvalues)
-            //                            {
-            //                                if (hv.Date_Value.Date <= ddt.Date) chv = hv;
-            //                            }
-            //                            if (chv != null)
-            //                            {
-            //                                Int64 id_doc = chv.Id_Document;
-
-            //                                objDocument doc = objDocument.GetDocument(id_doc);
-            //                                if (doc != null)
-            //                                {
-            //                                    ist = doc.Full_Name_Document;
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        ist = fact.MAIN_SOURCE;
-            //                    }
-            //                }
-
-            //            }
-            //        }
-            //        SetEmptyRow(t1, curCount + 1);
-            //        SetText4(t1.Rows[curCount++ - 1], num, nam, val, ist, 10, Alignment.center, Alignment.left, Alignment.center, Alignment.left, true, false);
-            //        //excell.SetValue(1, 61 + cc - 1, 4, new object[] { num, nam, val, ist }, Color.White);
-            //        //excell.AddRow(1, 61 + cc);
-            //    }
-
-            //    ALLSubGroupKoeffItem[] koeffs = ALLSubGroupKoeffItem.GetAllFactors(calc_subgroup.Id, false);
-            //    List<ALLFactorItem> factors = new List<ALLFactorItem>();
-            //    foreach (ALLSubGroupKoeffItem koeff in koeffs)
-            //    {
-            //        ALLFactorItem factor_kf = (ALLFactorItem.GetFactor(koeff.ID_FACTOR));
-            //        cc++;
-            //        string num = "2.3." + cc.ToString();
-            //        string nam = factor_kf.NAME_FACTOR;
-            //        string val = string.Empty;
-            //        string ist = "-";
-            //        foreach (ALLFactorValueItem fv in fvs)
-            //        {
-            //            if (koeff.ID_FACTOR == fv.ID_FACTOR)
-            //            {
-            //                val = fv.VALUE_FACTOR;
-            //                if (koeff.IS_METKA)
-            //                {
-            //                    List<ALLFactorMetkaItem> fmis = new List<ALLFactorMetkaItem>();
-            //                    fmis.AddRange(ALLFactorMetkaItem.GetFactorMetkas(ALLFactorItem.GetFactor(fv.ID_FACTOR), calc_subgroup));
-            //                    ALLFactorMetkaItem fmi = fmis.Find(x => x.Value_Factor.ToUpper() == val.ToUpper());
-            //                    if (fmi != null)
-            //                    {
-            //                        val = val + " (подставляемое значение: " + fmi.Metka_Factor.ToString().Replace(".00000000000000000000", ".00") + ")";
-            //                    }
-            //                }
-
-            //                ALLFactorItem fact = ALLFactorItem.GetFactor(fv.ID_FACTOR);
-            //                if (fact != null)
-            //                {
-            //                    objHar har = objHar.GetHar(fact.ID_SPR);
-            //                    if (har != null)
-            //                    {
-            //                        objObject gbu_obj = objObject.GetObjectByCadastralNumber(calc_obj.KN_OBJECT);
-            //                        if (calc_obj.TYPE_OBJECT == euTypeObject.otFlat)
-            //                            if (fact.PARENT_SOURCE)
-            //                                gbu_obj = objObject.GetObjectByCadastralNumber(fact_par.KN_OBJECT);
-            //                        if (gbu_obj != null)
-            //                        {
-            //                            objHarValue[] hvalues = objHarValue.GetHars(gbu_obj.Id, har.Id, har.Type);
-            //                            objHarValue chv = null;
-            //                            foreach (objHarValue hv in hvalues)
-            //                            {
-            //                                if (hv.Date_Value.Date <= ddt.Date) chv = hv;
-            //                            }
-            //                            if (chv != null)
-            //                            {
-            //                                Int64 id_doc = chv.Id_Document;
-
-            //                                objDocument doc = objDocument.GetDocument(id_doc);
-            //                                if (doc != null)
-            //                                {
-            //                                    ist = doc.Full_Name_Document;
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        ist = fact.MAIN_SOURCE;
-            //                    }
-            //                }
-
-
-
-            //            }
-
-            //        }
-
-            //        SetEmptyRow(t1, curCount + 1);
-            //        SetText4(t1.Rows[curCount++ - 1], num, nam, val, ist, 10, Alignment.center, Alignment.left, Alignment.center, Alignment.left, true, false);
-            //        //excell.SetValue(1, 61 + cc - 1, 4, new object[] { num, nam, val, ist }, Color.White);
-            //        //excell.AddRow(1, 61 + cc);
-            //    }
-            //}
-            ////Помещения по зданиям
-            //if (subgroup.Type_SubGroup == 9)
-            //{
-            //    ALLSubGroupKoeffItem[] koeffs = ALLSubGroupKoeffItem.GetAllFactors(subgroup.Id, false);
-            //    ALLFactorValueItem[] fvs = ALLFactorValueItem.GetAllFactors(obj.TYPE_OBJECT, obj.Id, obj.ID_GROUP, false);
-            //    List<ALLFactorItem> factors = new List<ALLFactorItem>();
-            //    foreach (ALLSubGroupKoeffItem koeff in koeffs)
-            //    {
-            //        ALLFactorItem factor_kf = (ALLFactorItem.GetFactor(koeff.ID_FACTOR));
-            //        cc++;
-            //        string num = "2.3." + cc.ToString();
-            //        string nam = factor_kf.NAME_FACTOR;
-            //        string val = string.Empty;
-            //        string ist = "-";
-            //        foreach (ALLFactorValueItem fv in fvs)
-            //        {
-            //            if (koeff.ID_FACTOR == fv.ID_FACTOR)
-            //            {
-            //                val = fv.VALUE_FACTOR;
-            //                if (koeff.IS_METKA)
-            //                {
-            //                    List<ALLFactorMetkaItem> fmis = new List<ALLFactorMetkaItem>();
-            //                    fmis.AddRange(ALLFactorMetkaItem.GetFactorMetkas(ALLFactorItem.GetFactor(fv.ID_FACTOR), subgroup));
-            //                    ALLFactorMetkaItem fmi = fmis.Find(x => x.Value_Factor.ToUpper() == val.ToUpper());
-            //                    if (fmi != null)
-            //                    {
-            //                        val = val + " (подставляемое значение: " + fmi.Metka_Factor.ToString().Replace(".00000000000000000000", ".00") + ")";
-            //                    }
-            //                }
-            //                ALLFactorItem fact = ALLFactorItem.GetFactor(fv.ID_FACTOR);
-            //                if (fact != null)
-            //                {
-            //                    objHar har = objHar.GetHar(fact.ID_SPR);
-            //                    if (har != null)
-            //                    {
-            //                        objObject gbu_obj = objObject.GetObjectByCadastralNumber(calc_obj.KN_OBJECT);
-            //                        if (gbu_obj != null)
-            //                        {
-            //                            objHarValue[] hvalues = objHarValue.GetHars(gbu_obj.Id, har.Id, har.Type);
-            //                            objHarValue chv = null;
-            //                            foreach (objHarValue hv in hvalues)
-            //                            {
-            //                                if (hv.Date_Value.Date <= ddt.Date) chv = hv;
-            //                            }
-            //                            if (chv != null)
-            //                            {
-            //                                Int64 id_doc = chv.Id_Document;
-
-            //                                objDocument doc = objDocument.GetDocument(id_doc);
-            //                                if (doc != null)
-            //                                {
-            //                                    ist = doc.Full_Name_Document;
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        ist = fact.MAIN_SOURCE;
-            //                    }
-
-            //                }
-
-            //            }
-            //        }
-
-            //        SetEmptyRow(t1, curCount + 1);
-            //        SetText4(t1.Rows[curCount++ - 1], num, nam, val, ist, 10, Alignment.center, Alignment.left, Alignment.center, Alignment.left, true, false);
-            //        //excell.SetValue(1, 61 + cc - 1, 4, new object[] { num, nam, val, ist }, Color.White);
-            //        //excell.AddRow(1, 61 + cc);
-            //    }
-            //}
-            ////Среднее
-            //if (subgroup.Type_SubGroup == 10)
-            //{
-            //    ALLSubGroupKoeffItem[] koeffs = ALLSubGroupKoeffItem.GetAllFactors(subgroup.Id, false);
-            //    ALLFactorValueItem[] fvs = ALLFactorValueItem.GetAllFactors(obj.TYPE_OBJECT, obj.Id, obj.ID_GROUP, false);
-            //    List<ALLFactorItem> factors = new List<ALLFactorItem>();
-            //    foreach (ALLSubGroupKoeffItem koeff in koeffs)
-            //    {
-            //        ALLFactorItem factor_kf = (ALLFactorItem.GetFactor(koeff.ID_FACTOR));
-            //        cc++;
-            //        string num = "2.3." + cc.ToString();
-            //        string nam = factor_kf.NAME_FACTOR;
-            //        string val = string.Empty;
-            //        string ist = "-";
-            //        foreach (ALLFactorValueItem fv in fvs)
-            //        {
-            //            if (koeff.ID_FACTOR == fv.ID_FACTOR)
-            //            {
-            //                val = fv.VALUE_FACTOR;
-            //                if (koeff.IS_METKA)
-            //                {
-            //                    List<ALLFactorMetkaItem> fmis = new List<ALLFactorMetkaItem>();
-            //                    fmis.AddRange(ALLFactorMetkaItem.GetFactorMetkas(ALLFactorItem.GetFactor(fv.ID_FACTOR), subgroup));
-            //                    ALLFactorMetkaItem fmi = fmis.Find(x => x.Value_Factor.ToUpper() == val.ToUpper());
-            //                    if (fmi != null)
-            //                    {
-            //                        val = val + " (подставляемое значение: " + fmi.Metka_Factor.ToString().Replace(".00000000000000000000", ".00") + ")";
-            //                    }
-            //                }
-            //                ALLFactorItem fact = ALLFactorItem.GetFactor(fv.ID_FACTOR);
-            //                if (fact != null)
-            //                {
-            //                    objHar har = objHar.GetHar(fact.ID_SPR);
-            //                    if (har != null)
-            //                    {
-            //                        objObject gbu_obj = objObject.GetObjectByCadastralNumber(calc_obj.KN_OBJECT);
-            //                        if (gbu_obj != null)
-            //                        {
-            //                            objHarValue[] hvalues = objHarValue.GetHars(gbu_obj.Id, har.Id, har.Type);
-            //                            objHarValue chv = null;
-            //                            foreach (objHarValue hv in hvalues)
-            //                            {
-            //                                if (hv.Date_Value.Date <= ddt.Date) chv = hv;
-            //                            }
-            //                            if (chv != null)
-            //                            {
-            //                                Int64 id_doc = chv.Id_Document;
-
-            //                                objDocument doc = objDocument.GetDocument(id_doc);
-            //                                if (doc != null)
-            //                                {
-            //                                    ist = doc.Full_Name_Document;
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        ist = fact.MAIN_SOURCE;
-            //                    }
-
-            //                }
-
-            //            }
-            //        }
-
-            //        SetEmptyRow(t1, curCount + 1);
-            //        SetText4(t1.Rows[curCount++ - 1], num, nam, val, ist, 10, Alignment.center, Alignment.left, Alignment.center, Alignment.left, true, false);
-            //        //excell.SetValue(1, 61 + cc - 1, 4, new object[] { num, nam, val, ist }, Color.White);
-            //        //excell.AddRow(1, 61 + cc);
-            //    }
-            //}
-            ////ОНС
-            //if (subgroup.Type_SubGroup == 11)
-            //{
-            //    ALLSubGroupKoeffItem[] koeffs = ALLSubGroupKoeffItem.GetAllFactors(subgroup.Id, false);
-            //    ALLFactorValueItem[] fvs = ALLFactorValueItem.GetAllFactors(obj.TYPE_OBJECT, obj.Id, obj.ID_GROUP, false);
-            //    List<ALLFactorItem> factors = new List<ALLFactorItem>();
-            //    foreach (ALLSubGroupKoeffItem koeff in koeffs)
-            //    {
-            //        ALLFactorItem factor_kf = (ALLFactorItem.GetFactor(koeff.ID_FACTOR));
-            //        cc++;
-            //        string num = "2.3." + cc.ToString();
-            //        string nam = factor_kf.NAME_FACTOR;
-            //        string val = string.Empty;
-            //        string ist = "-";
-            //        foreach (ALLFactorValueItem fv in fvs)
-            //        {
-            //            if (koeff.ID_FACTOR == fv.ID_FACTOR)
-            //            {
-            //                val = fv.VALUE_FACTOR;
-            //                if (koeff.IS_METKA)
-            //                {
-            //                    List<ALLFactorMetkaItem> fmis = new List<ALLFactorMetkaItem>();
-            //                    fmis.AddRange(ALLFactorMetkaItem.GetFactorMetkas(ALLFactorItem.GetFactor(fv.ID_FACTOR), subgroup));
-            //                    ALLFactorMetkaItem fmi = fmis.Find(x => x.Value_Factor.ToUpper() == val.ToUpper());
-            //                    if (fmi != null)
-            //                    {
-            //                        val = val + " (подставляемое значение: " + fmi.Metka_Factor.ToString().Replace(".00000000000000000000", ".00") + ")";
-            //                    }
-            //                }
-            //                ALLFactorItem fact = ALLFactorItem.GetFactor(fv.ID_FACTOR);
-            //                if (fact != null)
-            //                {
-            //                    objHar har = objHar.GetHar(fact.ID_SPR);
-            //                    if (har != null)
-            //                    {
-            //                        objObject gbu_obj = objObject.GetObjectByCadastralNumber(calc_obj.KN_OBJECT);
-            //                        if (gbu_obj != null)
-            //                        {
-            //                            objHarValue[] hvalues = objHarValue.GetHars(gbu_obj.Id, har.Id, har.Type);
-            //                            objHarValue chv = null;
-            //                            foreach (objHarValue hv in hvalues)
-            //                            {
-            //                                if (hv.Date_Value.Date <= ddt.Date) chv = hv;
-            //                            }
-            //                            if (chv != null)
-            //                            {
-            //                                Int64 id_doc = chv.Id_Document;
-
-            //                                objDocument doc = objDocument.GetDocument(id_doc);
-            //                                if (doc != null)
-            //                                {
-            //                                    ist = doc.Full_Name_Document;
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        ist = fact.MAIN_SOURCE;
-            //                    }
-
-            //                }
-
-            //            }
-            //        }
-
-            //        SetEmptyRow(t1, curCount + 1);
-            //        SetText4(t1.Rows[curCount++ - 1], num, nam, val, ist, 10, Alignment.center, Alignment.left, Alignment.center, Alignment.left, true, false);
-            //        //excell.SetValue(1, 61 + cc - 1, 4, new object[] { num, nam, val, ist }, Color.White);
-            //        //excell.AddRow(1, 61 + cc);
-            //    }
-            //    cc++;
-            //    string pnum = "2.3." + cc.ToString();
-            //    string pnam = "Степень готовности объекта незавершенного строительства";
-            //    string sprocent = obj.PROCENT;
-            //    double procent = 50;
-            //    if (sprocent != String.Empty)
-            //        procent = Convert.ToInt32(sprocent);
-
-            //    string pval = (procent / 100).ToString("0.00%");
-            //    string pist = "-";
-
-            //    SetEmptyRow(t1, curCount + 1);
-            //    SetText4(t1.Rows[curCount++ - 1], pnum, pnam, pval, pist, 10, Alignment.center, Alignment.left, Alignment.center, Alignment.left, true, false);
-            //    //excell.SetValue(1, 61 + cc - 1, 4, new object[] { pnum, pnam, pval, pist }, Color.White);
-            //    //excell.AddRow(1, 61 + cc);
-            //}
-            ////Минимальное
-            //if (subgroup.Type_SubGroup == 12)
-            //{
-            //    ALLSubGroupKoeffItem[] koeffs = ALLSubGroupKoeffItem.GetAllFactors(subgroup.Id, false);
-            //    ALLFactorValueItem[] fvs = ALLFactorValueItem.GetAllFactors(obj.TYPE_OBJECT, obj.Id, obj.ID_GROUP, false);
-            //    List<ALLFactorItem> factors = new List<ALLFactorItem>();
-            //    foreach (ALLSubGroupKoeffItem koeff in koeffs)
-            //    {
-            //        ALLFactorItem factor_kf = (ALLFactorItem.GetFactor(koeff.ID_FACTOR));
-            //        cc++;
-            //        string num = "2.3." + cc.ToString();
-            //        string nam = factor_kf.NAME_FACTOR;
-            //        string val = string.Empty;
-            //        string ist = "-";
-            //        foreach (ALLFactorValueItem fv in fvs)
-            //        {
-            //            if (koeff.ID_FACTOR == fv.ID_FACTOR)
-            //            {
-            //                val = fv.VALUE_FACTOR;
-            //                if (koeff.IS_METKA)
-            //                {
-            //                    List<ALLFactorMetkaItem> fmis = new List<ALLFactorMetkaItem>();
-            //                    fmis.AddRange(ALLFactorMetkaItem.GetFactorMetkas(ALLFactorItem.GetFactor(fv.ID_FACTOR), subgroup));
-            //                    ALLFactorMetkaItem fmi = fmis.Find(x => x.Value_Factor.ToUpper() == val.ToUpper());
-            //                    if (fmi != null)
-            //                    {
-            //                        val = val + " (подставляемое значение: " + fmi.Metka_Factor.ToString().Replace(".00000000000000000000", ".00") + ")";
-            //                    }
-            //                }
-            //                ALLFactorItem fact = ALLFactorItem.GetFactor(fv.ID_FACTOR);
-            //                if (fact != null)
-            //                {
-            //                    objHar har = objHar.GetHar(fact.ID_SPR);
-            //                    if (har != null)
-            //                    {
-            //                        objObject gbu_obj = objObject.GetObjectByCadastralNumber(calc_obj.KN_OBJECT);
-            //                        if (gbu_obj != null)
-            //                        {
-            //                            objHarValue[] hvalues = objHarValue.GetHars(gbu_obj.Id, har.Id, har.Type);
-            //                            objHarValue chv = null;
-            //                            foreach (objHarValue hv in hvalues)
-            //                            {
-            //                                if (hv.Date_Value.Date <= ddt.Date) chv = hv;
-            //                            }
-            //                            if (chv != null)
-            //                            {
-            //                                Int64 id_doc = chv.Id_Document;
-
-            //                                objDocument doc = objDocument.GetDocument(id_doc);
-            //                                if (doc != null)
-            //                                {
-            //                                    ist = doc.Full_Name_Document;
-            //                                }
-            //                            }
-            //                        }
-            //                    }
-            //                    else
-            //                    {
-            //                        ist = fact.MAIN_SOURCE;
-            //                    }
-
-            //                }
-
-            //            }
-            //        }
-
-            //        SetEmptyRow(t1, curCount + 1);
-            //        SetText4(t1.Rows[curCount++ - 1], num, nam, val, ist, 10, Alignment.center, Alignment.left, Alignment.center, Alignment.left, true, false);
-            //        //excell.SetValue(1, 61 + cc - 1, 4, new object[] { num, nam, val, ist }, Color.White);
-            //        //excell.AddRow(1, 61 + cc);
-            //    }
-            //}
-
-            //if (t1.Rows.Count == 74)
-            //{
-            //    SetEmptyRow(t1, curCount + 1);
-            //    SetText4(t1.Rows[curCount++ - 1], "-", "-", "-", "-", 10, Alignment.center, Alignment.left, Alignment.center, Alignment.left, true, false);
-            //}
             #endregion
 
 
