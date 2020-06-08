@@ -3359,12 +3359,14 @@ namespace KadOzenka.Dal.DataExport
         /// </summary>
         public static void ExportToDoc(OMUnit _unit, string _dir_name)
         {
+            Console.WriteLine("Выгрузка Otvet ...");
             if (!Directory.Exists(_dir_name)) Directory.CreateDirectory(_dir_name);
             string file_name = _dir_name + "\\Ответ_" + _unit.Id.ToString() + ".docx";
             ComponentInfo.SetLicense("DN-2020Feb27-7KwYZ43Y+lJR5YBeTLWW8F+pXE9Aj3uU2ru+Jk1lHxILYWKJhT8TZQLCztE1qx6MQx/MnAR8BGGPC6QpAmIgm2EZh0w==A");
             var document = new DocumentModel();
             document.DefaultParagraphFormat.SpaceAfter = 0;
 
+            Console.WriteLine(" - создание таблицы ...");
             #region Создание таблицы      
             int count_rows  = 81;
             int idx_row = -1;
@@ -3377,9 +3379,11 @@ namespace KadOzenka.Dal.DataExport
             table.TableFormat.PreferredWidth = new TableWidth(100, TableWidthUnit.Percentage);
             table.TableFormat.Alignment = HorizontalAlignment.Center;
             table.TableFormat.Borders.ClearBorders();
-            
-            #endregion
 
+            #endregion
+            Console.WriteLine(" - создание таблицы выполнено");
+
+            Console.WriteLine(" - заголовок ...");
             #region Сбор и формирование данных по объекту
             string strDateApp = "01.01.2018";
             string strDateOut = "01.01.2019";
@@ -3424,8 +3428,6 @@ namespace KadOzenka.Dal.DataExport
 
             }
 
-            int curCount = 1;
-
             #region 0. Заголовок:
             idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
             DataExportCommon.SetTextToCellDoc(document, table.Rows[idx_row].Cells[0], "Приложение", 12, HorizontalAlignment.Right, false, false);
@@ -3447,7 +3449,7 @@ namespace KadOzenka.Dal.DataExport
                 "_________________ г., сообщаем относительно определения кадастровой" + /*Environment.NewLine +*/ "  " +
                 "стоимости объекта недвижимости с кадастровым номером " + _unit.CadastralNumber, 12, HorizontalAlignment.Center, false, true);
             #endregion
-
+            Console.WriteLine(" - заголовок выполнено");
             #region 1. Общие сведения:
             idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
             idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
@@ -3578,6 +3580,7 @@ namespace KadOzenka.Dal.DataExport
                 false, true);
             #endregion
 
+            Console.WriteLine(" - характеристики ...");
             #region  2.1.  О  характеристиках объекта недвижимости, с использованием которых была определена его кадастровая стоимость:
             idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
             idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
@@ -3726,6 +3729,8 @@ namespace KadOzenka.Dal.DataExport
                  HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center,
                  true, false);
             #endregion
+            Console.WriteLine(" - характеристики выполнено");
+
 
             #region 2.2. О рынке недвижимости:
             idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -3774,6 +3779,7 @@ namespace KadOzenka.Dal.DataExport
 
             #endregion
 
+            Console.WriteLine(" - факторы ...");
             #region 2.3. Факторы:
             idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
             idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells, 0, count_cells - 1);
@@ -3794,55 +3800,56 @@ namespace KadOzenka.Dal.DataExport
                  HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
                  true, true);
 
-            int pp = 0;
-            OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
-            if (model != null)
+            if (group_unit != null)
             {
-                if (model.ModelFactor.Count == 0)
-                    model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-
-                foreach (OMModelFactor factor in model.ModelFactor)
+                int pp = 0;
+                OMModel model = OMModel.Where(x => x.GroupId == group_unit.Id).SelectAll().ExecuteFirstOrDefault();
+                if (model != null)
                 {
-                    RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
-                    factor.FillMarkCatalogs(model);
+                    if (model.ModelFactor.Count == 0)
+                        model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
 
-                    string name = attribute_factor.Name;
-                    //string desc = attribute_factor.Description;
-                    string value = "-";
-
-                    int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
-                    List<CalcItem> FactorValuesGroup = new List<CalcItem>();
-                    DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
-                    if (data != null)
+                    foreach (OMModelFactor factor in model.ModelFactor)
                     {
-                        foreach (DataRow row in data.Rows)
+                        RegisterAttribute attribute_factor = RegisterCache.GetAttributeData((int)(factor.FactorId));
+                        factor.FillMarkCatalogs(model);
+
+                        string name = attribute_factor.Name;
+                        //string desc = attribute_factor.Description;
+                        string value = "-";
+
+                        int? factorReestrId = OMGroup.GetFactorReestrId(group_unit);
+                        List<CalcItem> FactorValuesGroup = new List<CalcItem>();
+                        DataTable data = RegisterStorage.GetAttributes((int)_unit.Id, factorReestrId.Value);
+                        if (data != null)
                         {
-                            FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                            foreach (DataRow row in data.Rows)
+                            {
+                                FactorValuesGroup.Add(new CalcItem(row.ItemArray[1].ParseToLong(), row.ItemArray[6].ParseToString(), row.ItemArray[7].ParseToString()));
+                            }
                         }
-                    }
-                    CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
-                    if (factor_item != null)
-                    {
-                        value = factor_item.Value;
-                    }
+                        CalcItem factor_item = FactorValuesGroup.Find(x => x.FactorId == factor.FactorId);
+                        if (factor_item != null)
+                        {
+                            value = factor_item.Value;
+                        }
 
-                    pp++;
-                    idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
-                    DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
-                         "2.3." + pp.ToString(),
-                         name,
-                         value,
-                         "-",
-                         12,
-                         HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                         true, false);
+                        pp++;
+                        idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
+                        DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
+                             "2.3." + pp.ToString(),
+                             name,
+                             value,
+                             "-",
+                             12,
+                             HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center, HorizontalAlignment.Center,
+                             true, false);
+                    }
                 }
             }
 
             #endregion
-
-
-
+            Console.WriteLine(" - факторы выполнено");
 
             #region  3. 
             idx_row = DataExportCommon.AddEmptyRowToTableDoc(document, table, count_cells);
@@ -3890,6 +3897,7 @@ namespace KadOzenka.Dal.DataExport
 
             #endregion
 
+            Console.WriteLine(" - сохранение ...");
             #region Задаем параметры страницы и сохраняем таблицу и документ
             var section   = new Section(document, table);
             PageSetup ps  = new PageSetup();
@@ -3905,6 +3913,9 @@ namespace KadOzenka.Dal.DataExport
             document.Sections.Add(section);
             document.Save(file_name);
             #endregion
+            Console.WriteLine(" - сохранение выполнено");
+
+            Console.WriteLine("Выгрузка Otvet выполнено");
         }
     }
 
