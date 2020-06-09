@@ -69,13 +69,15 @@ namespace KadOzenka.WebServices
 		/// Get Report by guid
 		/// </summary>
 		/// <param name="guidRecord">Guid record</param>
+		/// <response code="200">OK</response>
+		/// <response code="404">NotFound</response>
 		[HttpGet("DownloadReport/{guidRecord}")]
-		public FileResult DownloadReport(Guid guidRecord)
+		public ActionResult DownloadReport(Guid guidRecord)
 		{
 			var res = _journalService.GetFileReport(guidRecord);
 			if (res == null)
 			{
-				throw new Exception("Не удалось выгрузить файл");
+				return NotFound("Отчет не был найден");
 			}
 
 			return File(res.Stream, res.ContentType, res.FileName);
