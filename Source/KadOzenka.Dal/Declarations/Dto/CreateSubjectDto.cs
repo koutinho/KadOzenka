@@ -74,6 +74,6 @@ namespace KadOzenka.Dal.Declarations.Dto
 		/// <summary>
 		/// Квартира (FLAT)
 		/// </summary>
-		public ulong? Flat { get; set; }
+		public string Flat { get; set; }
 	}
 }

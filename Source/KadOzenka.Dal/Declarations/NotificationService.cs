@@ -71,10 +71,11 @@ namespace KadOzenka.Dal.Declarations
 
 				ApplicationDocument spdDoc = new ApplicationDocument
 				{
-					FILENAME = savedReport.Title,
+					FILENAME = downloadFileName,
 					BYTES = data,
-					DOCNAME = downloadFileName,
-					DEFINITION = savedReport.Comments
+					DOCNAME = savedReport.Title,
+					DEFINITION = savedReport.Title,
+					DOCDATE = savedReport.CreateDate,
 				};
 
 				BaseResponse response = SpdRequest.AddApplicationDocument(appId.GetValueOrDefault(), spdDoc);
