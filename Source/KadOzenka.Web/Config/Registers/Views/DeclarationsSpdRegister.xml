@@ -19,8 +19,8 @@
 		  </Parameters>
 	  </Button>
 
-	  <Button Caption="Создать деклорацю" OpenInNewWindow="true"  NavigateURL="/Sud/RedirectToSpd"
-	          Icon="fas fa-arrow-right">
+	  <Button Caption="Создать деклорацю"  NavigateURL="/Declarations/CreateFromSpd"
+	          Icon="fas fa-plus">
 		  <ConditionGroups>
 			  <ConditionGroup HideOrDisable="Disable">
 				  <Conditions>
@@ -29,7 +29,7 @@
 			  </ConditionGroup>
 		  </ConditionGroups>
 		  <Parameters>
-			  <Parameter Key="appId" Value="[90000400]" />
+			  <Parameter Key="spdId" Value="[90000100]" />
 		  </Parameters>
 	  </Button>
   </Buttons>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Transactions;
@@ -7,7 +8,6 @@ using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.SRD;
-using Core.UI.Registers.Controllers;
 using KadOzenka.Web.Models.Declarations;
 using KadOzenka.Web.Models.Declarations.DeclarationTabModel;
 using Microsoft.AspNetCore.Mvc;
@@ -20,14 +20,13 @@ using Core.UI.Registers.Models.CoreUi;
 using Newtonsoft.Json;
 using ObjectModel.Core.Reports;
 using Microsoft.AspNetCore.Http;
-using GemBox.Spreadsheet;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
-using KadOzenka.Dal.DataImport.Dto;
 using KadOzenka.Dal.Declarations;
+using KadOzenka.Dal.Declarations.Dto;
 using ObjectModel.Core.Shared;
-using ObjectModel.Directory.Common;
+using ObjectModel.SPD;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -54,9 +53,11 @@ namespace KadOzenka.Web.Controllers
 		public static int DaysDiffBetweenDateCheckTimeAndDurationDateIn => 10;
 
 		private NotificationService _notificationService;
+		private DeclarationService _declarationService;
 		public DeclarationsController()
 		{
 			_notificationService = new NotificationService();
+			_declarationService = new DeclarationService();
 		}
 
 		#region Declarations
@@ -120,20 +121,8 @@ namespace KadOzenka.Web.Controllers
 				? DeclarationModel.FromEntity(declaration, owner, agent, book, userIsp, result == null ? new OMResult() : result)
 				: DeclarationModel.FromEntity(null, null, null, null, userIsp, null);
 
-			model.IsCreateDeclaration =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_CREATE);
-			model.IsEditDeclaration =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT);
-			model.IsEditDeclarationSupplyBlock =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_SUPPLY_BLOCK);
-			model.IsEditDeclarationProcessingBlock =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_PROCESSING_BLOCK);
-			model.IsEditDeclarationStatus =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_STATUS);
-			model.IsEditDeclarationFormalChecking =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_FORMAL_CHECKING);
-			model.IsEditDeclarationAttachments =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_ATTACHMENTS);
+			CheckDeclarationPermissions(ref model);
+
 
 			return View(model);
 		}
@@ -189,21 +178,52 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			declarationViewModel.Id = id;
-			declarationViewModel.IsCreateDeclaration =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_CREATE);
-			declarationViewModel.IsEditDeclaration =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT);
-			declarationViewModel.IsEditDeclarationSupplyBlock =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_SUPPLY_BLOCK);
-			declarationViewModel.IsEditDeclarationProcessingBlock =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_PROCESSING_BLOCK);
-			declarationViewModel.IsEditDeclarationStatus =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_STATUS);
-			declarationViewModel.IsEditDeclarationFormalChecking =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_FORMAL_CHECKING);
-			declarationViewModel.IsEditDeclarationAttachments =
-				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_ATTACHMENTS);
+
+			CheckDeclarationPermissions(ref declarationViewModel);
 			return Json(new { Success = "Сохранено успешно", data = declarationViewModel });
+		}
+
+		[HttpGet]
+		public IActionResult CreateFromSpd(long spdId)
+		{
+			if (spdId == 0)
+			{
+				return NoContent();
+			}
+
+			var userIsp = OMUser
+				.Where(x => x.Id == SRDSession.GetCurrentUserId())
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+
+			var request = OMRequestRegistration.Where(x => x.Id == spdId).SelectAll().ExecuteFirstOrDefault();
+			OMSubject subject = null;
+			try
+			{
+				subject = _declarationService.GetOrCreateSubject(request);
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				Console.WriteLine(e);
+				throw new Exception("Во время получения отправителя возникли ошибки. Подробнее в журнале ошибок");
+			}
+
+			var model = DeclarationModel.FromEntity(null, null, null, null, userIsp, null);
+			model.SpdAppId = request.AppId;
+			model.SpdAppDate = request.AppDate.GetValueOrDefault();
+			model.SpdAppName = request.AppName;
+			model.FromSpd = true;
+			model.OwnerDisplay = subject != null
+				? subject.Type_Code == SubjectType.Ul
+					? subject.Name
+					: $"{subject.F_Name} {subject.I_Name} {subject.O_Name}"
+				: null;
+			model.OwnerId = subject?.Id;
+
+			CheckDeclarationPermissions(ref model);
+
+			return View("EditDeclaration", model);
 		}
 
 		public IQueryable GetAutoCompleteSubject(string searchText)
@@ -267,6 +287,8 @@ namespace KadOzenka.Web.Controllers
 			var model = DeclarationNotificationModel.FromEntity(declaration);
 			model.IsEditApproveNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_APPROVE_NOTIFICATION);
 			model.IsEditOtherNotifications = SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_NOTIFICATIONS_OTHER_NOTIFICATIONS);
+
+			ViewBag.UseSpd = declaration != null && declaration.SpdAppId != null;
 			return PartialView("~/Views/Declarations/DeclarationTabContent/NotificationContent.cshtml", model);
 		}
 
@@ -1138,5 +1160,27 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion Signatories
+
+		#region support methods
+
+		public void CheckDeclarationPermissions(ref DeclarationModel model)
+		{
+			model.IsCreateDeclaration =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_CREATE);
+			model.IsEditDeclaration =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT);
+			model.IsEditDeclarationSupplyBlock =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_SUPPLY_BLOCK);
+			model.IsEditDeclarationProcessingBlock =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_PROCESSING_BLOCK);
+			model.IsEditDeclarationStatus =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_STATUS);
+			model.IsEditDeclarationFormalChecking =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_FORMAL_CHECKING);
+			model.IsEditDeclarationAttachments =
+				SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.DECLARATIONS_DECLARATION_EDIT_ATTACHMENTS);
+		}
+
+		#endregion
 	}
 }
